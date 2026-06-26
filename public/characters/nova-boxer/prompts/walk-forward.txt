@@ -1,0 +1,3 @@
+Nova Boxer: original side-view boxing fighter with blue jacket, white gloves, yellow shoes. Rebuilt with fixed character-scale atlas normalization.
+Character: Nova Boxer.
+State: walk-forward. Frames normalized: 8.

@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\public\\characters\\mira-volt",
+  "states_mode": "walk-forward",
+  "checked_states": [
+    "walk-forward"
+  ],
+  "errors": [],
+  "warnings": [
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.4531,
+        "min_lower_body_diff": 0.3155,
+        "support_balance_range": 0.1042,
+        "body_center_x_range": 0.0039,
+        "body_center_y_range": 0.0117,
+        "support_balances": [
+          -0.0579,
+          -0.1184,
+          -0.0278,
+          -0.0142,
+          -0.0492,
+          -0.0192,
+          -0.0687,
+          -0.0441
+        ]
+      }
+    }
+  ]
+}

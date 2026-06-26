@@ -1,0 +1,44 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\public\\characters\\rook-apprentice",
+  "states_mode": "walk-forward",
+  "checked_states": [
+    "walk-forward"
+  ],
+  "errors": [],
+  "warnings": [
+    "walk-forward: foot/support balance barely alternates (range 0.022; target >= 0.045)",
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "foot/support balance barely alternates (range 0.022; target >= 0.045)",
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.2927,
+        "min_lower_body_diff": 0.1136,
+        "support_balance_range": 0.0221,
+        "body_center_x_range": 0.0039,
+        "body_center_y_range": 0.0,
+        "support_balances": [
+          -0.0319,
+          -0.0338,
+          -0.0364,
+          -0.0415,
+          -0.0297,
+          -0.0292,
+          -0.0452,
+          -0.0513
+        ]
+      }
+    }
+  ]
+}

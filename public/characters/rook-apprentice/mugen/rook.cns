@@ -1,0 +1,58 @@
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 0
+velset = 0,0
+
+[State 200, HitDef]
+type = HitDef
+trigger1 = Time = 1
+damage = 42,4
+guardflag = MA
+pausetime = 7,7
+guard.pausetime = 4,4
+ground.hittime = 14
+guard.hittime = 9
+ground.velocity = -4
+guard.velocity = -2
+
+[State 200, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 210]
+type = S
+movetype = A
+physics = S
+anim = 210
+ctrl = 0
+velset = 0,0
+
+[State 210, HitDef]
+type = HitDef
+trigger1 = Time = 1
+damage = 58,6
+guardflag = MA
+pausetime = 9,9
+guard.pausetime = 5,5
+ground.hittime = 18
+guard.hittime = 11
+ground.velocity = -6
+guard.velocity = -3
+
+[State 210, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1

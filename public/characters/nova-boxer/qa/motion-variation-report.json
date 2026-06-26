@@ -1,0 +1,42 @@
+{
+  "ok": true,
+  "engine": "motion-variation-heuristic",
+  "run_dir": "D:\\DEV\\mugen-sandbox-prototypes\\mugen-web-sandbox\\public\\characters\\nova-boxer",
+  "states_mode": "walk-forward",
+  "checked_states": [
+    "walk-forward"
+  ],
+  "errors": [],
+  "warnings": [
+    "walk-forward: body center is nearly static; verify body bob/weight shift visually"
+  ],
+  "results": [
+    {
+      "state": "walk-forward",
+      "frames": 8,
+      "loop": true,
+      "ok": true,
+      "errors": [],
+      "warnings": [
+        "body center is nearly static; verify body bob/weight shift visually"
+      ],
+      "metrics": {
+        "average_lower_body_diff": 0.383,
+        "min_lower_body_diff": 0.0693,
+        "support_balance_range": 0.0463,
+        "body_center_x_range": 0.0039,
+        "body_center_y_range": 0.0039,
+        "support_balances": [
+          -0.0467,
+          -0.0069,
+          -0.0499,
+          -0.0036,
+          -0.0167,
+          -0.0095,
+          -0.0343,
+          -0.0334
+        ]
+      }
+    }
+  ]
+}

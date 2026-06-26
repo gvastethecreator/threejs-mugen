@@ -1,0 +1,121 @@
+; idle
+[Begin Action 0]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,0,0,0,7
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,1,0,0,7
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,2,0,0,7
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+0,3,0,0,7
+
+; walk-forward
+[Begin Action 20]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,0,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,1,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,2,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,3,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,4,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,5,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,6,0,0,10
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+20,7,0,0,10
+
+; crouch
+[Begin Action 10]
+Loopstart
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+10,0,0,0,5
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+10,1,0,0,7
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+10,2,0,0,7
+
+; jump
+[Begin Action 40]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+40,0,0,0,6
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+40,1,0,0,7
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+40,2,0,0,8
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+40,3,0,0,8
+
+; punch
+[Begin Action 200]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+200,0,0,0,4
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+200,1,0,0,4
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+Clsn1: 1
+ Clsn1[0] = 18,-72,86,-42
+200,2,0,0,5
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+200,3,0,0,7
+
+; kick
+[Begin Action 210]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+210,0,0,0,5
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+210,1,0,0,5
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+Clsn1: 1
+ Clsn1[0] = 12,-54,96,-18
+210,2,0,0,5
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+210,3,0,0,8
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+210,4,0,0,8
+
+; hitstun
+[Begin Action 500]
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+500,0,0,0,6
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+500,1,0,0,6
+Clsn2Default: 1
+ Clsn2[0] = -24,-96,24,0
+500,2,0,0,6
+

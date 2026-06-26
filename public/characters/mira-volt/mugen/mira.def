@@ -1,0 +1,16 @@
+; Original local test character template for MUGEN Web Sandbox
+[Info]
+name = "Mira Volt"
+displayname = "Mira Volt"
+versiondate = 06,24,2026
+mugenversion = 1.0
+author = "Codex + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = mira.cmd
+cns = mira.cns
+st = mira.cns
+sprite = mira.sff ; not shipped yet; browser runtime uses ../sprite-sheet-alpha.png
+anim = mira.air
+sound =

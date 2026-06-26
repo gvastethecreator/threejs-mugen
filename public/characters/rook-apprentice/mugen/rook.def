@@ -1,0 +1,16 @@
+; Original local test character template for MUGEN Web Sandbox
+[Info]
+name = "Rook Apprentice"
+displayname = "Rook Apprentice"
+versiondate = 06,24,2026
+mugenversion = 1.0
+author = "Codex + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = rook.cmd
+cns = rook.cns
+st = rook.cns
+sprite = rook.sff ; not shipped yet; browser runtime uses ../sprite-sheet-alpha.png
+anim = rook.air
+sound =

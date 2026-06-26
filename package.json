@@ -1,0 +1,28 @@
+{
+  "name": "mugen-web-sandbox",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "qa:smoke": "node scripts/qa_smoke.cjs",
+    "qa:trace": "node scripts/qa_traces.cjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "@types/three": "^0.184.1",
+    "jsdom": "^29.1.1",
+    "playwright": "^1.61.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12",
+    "vitest": "^4.1.9"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "three": "^0.184.0"
+  }
+}

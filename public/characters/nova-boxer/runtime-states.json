@@ -1,0 +1,87 @@
+{
+    "id":  "nova-boxer",
+    "displayName":  "Nova Boxer",
+    "source":  "imagegen + MUGEN 1.1 KFM structure reference",
+    "states":  [
+                   {
+                       "state":  "idle",
+                       "frames":  4,
+                       "action":  0,
+                       "durations":  [
+                                         7,
+                                         7,
+                                         7,
+                                         7
+                                     ]
+                   },
+                   {
+                       "state":  "walk-forward",
+                       "frames":  8,
+                       "action":  20,
+                       "durations":  [
+                                         10,
+                                         10,
+                                         10,
+                                         10,
+                                         10,
+                                         10,
+                                         10,
+                                         10
+                                     ]
+                   },
+                   {
+                       "state":  "crouch",
+                       "frames":  3,
+                       "action":  10,
+                       "durations":  [
+                                         5,
+                                         7,
+                                         7
+                                     ]
+                   },
+                   {
+                       "state":  "jump",
+                       "frames":  4,
+                       "action":  40,
+                       "durations":  [
+                                         6,
+                                         7,
+                                         8,
+                                         8
+                                     ]
+                   },
+                   {
+                       "state":  "punch",
+                       "frames":  4,
+                       "action":  200,
+                       "durations":  [
+                                         4,
+                                         4,
+                                         5,
+                                         7
+                                     ]
+                   },
+                   {
+                       "state":  "kick",
+                       "frames":  5,
+                       "action":  210,
+                       "durations":  [
+                                         5,
+                                         5,
+                                         5,
+                                         8,
+                                         8
+                                     ]
+                   },
+                   {
+                       "state":  "hitstun",
+                       "frames":  3,
+                       "action":  500,
+                       "durations":  [
+                                         6,
+                                         6,
+                                         6
+                                     ]
+                   }
+               ]
+}

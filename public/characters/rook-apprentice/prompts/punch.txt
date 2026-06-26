@@ -1,0 +1,3 @@
+Rook Apprentice: original side-view martial artist apprentice with teal vest and orange headband. Rebuilt with fixed character-scale atlas normalization.
+Character: Rook Apprentice.
+State: punch. Frames normalized: 4.

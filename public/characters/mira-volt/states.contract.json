@@ -1,0 +1,44 @@
+{
+  "idle": {
+    "frames": 4,
+    "fps": 8,
+    "loop": true,
+    "action": "standing electric kickboxer idle guard"
+  },
+  "walk-forward": {
+    "frames": 8,
+    "fps": 7,
+    "loop": true,
+    "action": "grounded side-view walk forward, small steps, one foot planted, not running"
+  },
+  "crouch": {
+    "frames": 3,
+    "fps": 8,
+    "loop": true,
+    "action": "crouching guard transition"
+  },
+  "jump": {
+    "frames": 4,
+    "fps": 8,
+    "loop": false,
+    "action": "forward fighting jump arc poses"
+  },
+  "punch": {
+    "frames": 4,
+    "fps": 12,
+    "loop": false,
+    "action": "straight electric punch"
+  },
+  "kick": {
+    "frames": 5,
+    "fps": 12,
+    "loop": false,
+    "action": "high electric side kick"
+  },
+  "hitstun": {
+    "frames": 3,
+    "fps": 8,
+    "loop": false,
+    "action": "recoiling hit stun"
+  }
+}

@@ -1,0 +1,68 @@
+{
+    "preset":  {
+                   "id":  "custom-atlas",
+                   "camera":  "custom",
+                   "columns":  8,
+                   "formats":  [
+                                   "png",
+                                   "webp"
+                               ],
+                   "compatibility":  [
+
+                                     ],
+                   "asset_kind":  "sprite"
+               },
+    "cell":  {
+                 "width":  128,
+                 "height":  128,
+                 "safe_margin":  16
+             },
+    "states":  {
+                   "idle":  {
+                                "frames":  4,
+                                "fps":  8,
+                                "loop":  true,
+                                "action":  "standing boxing idle guard"
+                            },
+                   "walk-forward":  {
+                                        "frames":  8,
+                                        "fps":  6,
+                                        "loop":  true,
+                                        "action":  "grounded side-view slow walk forward, small steps, one foot planted, not running"
+                                    },
+                   "crouch":  {
+                                  "frames":  3,
+                                  "fps":  8,
+                                  "loop":  true,
+                                  "action":  "crouching boxing guard transition"
+                              },
+                   "jump":  {
+                                "frames":  4,
+                                "fps":  8,
+                                "loop":  false,
+                                "action":  "compact fighting jump arc poses"
+                            },
+                   "punch":  {
+                                 "frames":  4,
+                                 "fps":  12,
+                                 "loop":  false,
+                                 "action":  "straight boxing punch"
+                             },
+                   "kick":  {
+                                "frames":  5,
+                                "fps":  12,
+                                "loop":  false,
+                                "action":  "mid-height kick"
+                            },
+                   "hitstun":  {
+                                   "frames":  3,
+                                   "fps":  8,
+                                   "loop":  false,
+                                   "action":  "recoiling hit stun"
+                               }
+               },
+    "asset_kind":  "sprite",
+    "extraction_mode":  "components",
+    "style_preset":  "illustration",
+    "motion_phase_guides":  true
+}

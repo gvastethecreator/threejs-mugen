@@ -1,0 +1,16 @@
+; Original local test character template for MUGEN Web Sandbox
+[Info]
+name = "Nova Boxer"
+displayname = "Nova Boxer"
+versiondate = 06,24,2026
+mugenversion = 1.0
+author = "Codex + imagegen"
+localcoord = 320,240
+
+[Files]
+cmd = nova.cmd
+cns = nova.cns
+st = nova.cns
+sprite = nova.sff ; not shipped yet; browser runtime uses ../sprite-sheet-alpha.png
+anim = nova.air
+sound =

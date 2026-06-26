@@ -1,0 +1,290 @@
+{
+    "characterId":  "mira-volt",
+    "engine":  "imagegen-sheet-normalizer",
+    "game_input":  "sprite-sheet-alpha.png",
+    "degraded_static_fallback":  false,
+    "curation_applied":  false,
+    "sprite_sheet_alpha":  "sprite-sheet-alpha.png",
+    "sprite_sheet_alpha_report":  "sprite-sheet-alpha.report.json",
+    "base_image":  "source/mira-volt-imagegen-sheet.png",
+    "cell":  {
+                 "shape":  "square",
+                 "width":  128,
+                 "height":  128,
+                 "safe_margin_x":  16,
+                 "safe_margin_y":  16,
+                 "size":  128,
+                 "safe_margin":  16
+             },
+    "animation":  {
+                      "cellWidth":  128,
+                      "cellHeight":  128,
+                      "columns":  8,
+                      "rows":  {
+                                   "idle":  {
+                                                "row":  0,
+                                                "frames":  4,
+                                                "fps":  8,
+                                                "loop":  true
+                                            },
+                                   "walk-forward":  {
+                                                        "row":  1,
+                                                        "frames":  8,
+                                                        "fps":  6,
+                                                        "loop":  true
+                                                    },
+                                   "crouch":  {
+                                                  "row":  2,
+                                                  "frames":  3,
+                                                  "fps":  8,
+                                                  "loop":  true
+                                              },
+                                   "jump":  {
+                                                "row":  3,
+                                                "frames":  4,
+                                                "fps":  8,
+                                                "loop":  false
+                                            },
+                                   "punch":  {
+                                                 "row":  4,
+                                                 "frames":  4,
+                                                 "fps":  12,
+                                                 "loop":  false
+                                             },
+                                   "kick":  {
+                                                "row":  5,
+                                                "frames":  5,
+                                                "fps":  12,
+                                                "loop":  false
+                                            },
+                                   "hitstun":  {
+                                                   "row":  6,
+                                                   "frames":  3,
+                                                   "fps":  8,
+                                                   "loop":  false
+                                               }
+                               }
+                  },
+    "frame_layout":  {
+                         "sheetWidth":  1024,
+                         "sheetHeight":  896,
+                         "cellWidth":  128,
+                         "cellHeight":  128,
+                         "rows":  {
+                                      "idle":  [
+                                                   {
+                                                       "x":  0,
+                                                       "y":  0,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  128,
+                                                       "y":  0,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  256,
+                                                       "y":  0,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  384,
+                                                       "y":  0,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   }
+                                               ],
+                                      "walk-forward":  [
+                                                           {
+                                                               "x":  0,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  128,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  256,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  384,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  512,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  640,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  768,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           },
+                                                           {
+                                                               "x":  896,
+                                                               "y":  128,
+                                                               "w":  128,
+                                                               "h":  128
+                                                           }
+                                                       ],
+                                      "crouch":  [
+                                                     {
+                                                         "x":  0,
+                                                         "y":  256,
+                                                         "w":  128,
+                                                         "h":  128
+                                                     },
+                                                     {
+                                                         "x":  128,
+                                                         "y":  256,
+                                                         "w":  128,
+                                                         "h":  128
+                                                     },
+                                                     {
+                                                         "x":  256,
+                                                         "y":  256,
+                                                         "w":  128,
+                                                         "h":  128
+                                                     }
+                                                 ],
+                                      "jump":  [
+                                                   {
+                                                       "x":  0,
+                                                       "y":  384,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  128,
+                                                       "y":  384,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  256,
+                                                       "y":  384,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  384,
+                                                       "y":  384,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   }
+                                               ],
+                                      "punch":  [
+                                                    {
+                                                        "x":  0,
+                                                        "y":  512,
+                                                        "w":  128,
+                                                        "h":  128
+                                                    },
+                                                    {
+                                                        "x":  128,
+                                                        "y":  512,
+                                                        "w":  128,
+                                                        "h":  128
+                                                    },
+                                                    {
+                                                        "x":  256,
+                                                        "y":  512,
+                                                        "w":  128,
+                                                        "h":  128
+                                                    },
+                                                    {
+                                                        "x":  384,
+                                                        "y":  512,
+                                                        "w":  128,
+                                                        "h":  128
+                                                    }
+                                                ],
+                                      "kick":  [
+                                                   {
+                                                       "x":  0,
+                                                       "y":  640,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  128,
+                                                       "y":  640,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  256,
+                                                       "y":  640,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  384,
+                                                       "y":  640,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   },
+                                                   {
+                                                       "x":  512,
+                                                       "y":  640,
+                                                       "w":  128,
+                                                       "h":  128
+                                                   }
+                                               ],
+                                      "hitstun":  [
+                                                      {
+                                                          "x":  0,
+                                                          "y":  768,
+                                                          "w":  128,
+                                                          "h":  128
+                                                      },
+                                                      {
+                                                          "x":  128,
+                                                          "y":  768,
+                                                          "w":  128,
+                                                          "h":  128
+                                                      },
+                                                      {
+                                                          "x":  256,
+                                                          "y":  768,
+                                                          "w":  128,
+                                                          "h":  128
+                                                      }
+                                                  ]
+                                  }
+                     },
+    "preset":  {
+                   "id":  "custom-atlas",
+                   "camera":  "custom",
+                   "columns":  8,
+                   "formats":  [
+                                   "png"
+                               ],
+                   "compatibility":  [
+
+                                     ],
+                   "asset_kind":  "sprite"
+               },
+    "asset_kind":  "sprite",
+    "extraction_mode":  "imagegen-components"
+}

@@ -1,0 +1,87 @@
+{
+  "ok": true,
+  "engine": "imagegen-sheet-normalizer",
+  "source": "imagegen row replacement plus deterministic atlas composition",
+  "rows": [
+    {
+      "state": "idle",
+      "ok": true,
+      "frames": 4,
+      "files": [
+        "frames/idle/frame-0.png",
+        "frames/idle/frame-1.png",
+        "frames/idle/frame-2.png",
+        "frames/idle/frame-3.png"
+      ]
+    },
+    {
+      "state": "walk-forward",
+      "ok": true,
+      "frames": 8,
+      "files": [
+        "frames/walk-forward/frame-0.png",
+        "frames/walk-forward/frame-1.png",
+        "frames/walk-forward/frame-2.png",
+        "frames/walk-forward/frame-3.png",
+        "frames/walk-forward/frame-4.png",
+        "frames/walk-forward/frame-5.png",
+        "frames/walk-forward/frame-6.png",
+        "frames/walk-forward/frame-7.png"
+      ]
+    },
+    {
+      "state": "crouch",
+      "ok": true,
+      "frames": 3,
+      "files": [
+        "frames/crouch/frame-0.png",
+        "frames/crouch/frame-1.png",
+        "frames/crouch/frame-2.png"
+      ]
+    },
+    {
+      "state": "jump",
+      "ok": true,
+      "frames": 4,
+      "files": [
+        "frames/jump/frame-0.png",
+        "frames/jump/frame-1.png",
+        "frames/jump/frame-2.png",
+        "frames/jump/frame-3.png"
+      ]
+    },
+    {
+      "state": "punch",
+      "ok": true,
+      "frames": 4,
+      "files": [
+        "frames/punch/frame-0.png",
+        "frames/punch/frame-1.png",
+        "frames/punch/frame-2.png",
+        "frames/punch/frame-3.png"
+      ]
+    },
+    {
+      "state": "kick",
+      "ok": true,
+      "frames": 5,
+      "files": [
+        "frames/kick/frame-0.png",
+        "frames/kick/frame-1.png",
+        "frames/kick/frame-2.png",
+        "frames/kick/frame-3.png",
+        "frames/kick/frame-4.png"
+      ]
+    },
+    {
+      "state": "hitstun",
+      "ok": true,
+      "frames": 3,
+      "files": [
+        "frames/hitstun/frame-0.png",
+        "frames/hitstun/frame-1.png",
+        "frames/hitstun/frame-2.png"
+      ]
+    }
+  ]
+}
