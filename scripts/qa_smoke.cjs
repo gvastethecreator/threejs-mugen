@@ -14,8 +14,10 @@ const routeParams = `p1=${DEFAULT_P1}&p2=${DEFAULT_P2}&stage=${DEFAULT_STAGE}`;
 const runtimeRoute = `/?mode=match&${routeParams}`;
 const studioWorkbenchRoute = `/?mode=studio&studio=workbench&${routeParams}`;
 const studioBuildRoute = `/?mode=studio&studio=build&${routeParams}`;
+const studioModulesRoute = `/?mode=studio&studio=modules&${routeParams}`;
 const studioAssetsRoute = `/?mode=studio&studio=assets&${routeParams}`;
 const studioStageRoute = `/?mode=studio&studio=stage&${routeParams}`;
+const studioDebugRoute = `/?mode=studio&studio=debug&${routeParams}`;
 const studioBgCtrlStageRoute = `/?mode=studio&studio=stage&p1=${DEFAULT_P1}&p2=${DEFAULT_P2}&stage=bgctrl-lab`;
 
 async function main() {
@@ -51,10 +53,13 @@ async function main() {
     });
 
     const studioWorkbench = await captureStudioWorkbench(page, server.baseUrl, outDir);
+    const studioWorkbenchTablet = await captureStudioWorkbenchTablet(page, server.baseUrl, outDir);
+    const commandPaletteA11y = await captureCommandPaletteA11y(page, server.baseUrl, outDir);
 
     const importedFixturePath = path.resolve(process.cwd(), process.env.QA_IMPORTED_FIXTURE_PATH ?? DEFAULT_IMPORTED_FIXTURE);
     const buildPage = await context.newPage();
     const studioBuild = await captureStudioBuild(buildPage, server.baseUrl, outDir, fs.existsSync(importedFixturePath) ? importedFixturePath : undefined);
+    const studioModules = await captureStudioModules(buildPage, outDir);
     const relinkPage = await context.newPage();
     const studioSourceRelink = await captureStudioSourceRelink(
       relinkPage,
@@ -68,7 +73,12 @@ async function main() {
     await ikemenPage.close();
     const studioStage = await captureStudioStage(buildPage, outDir);
     const studioEvidence = await captureStudioEvidence(buildPage, outDir);
-    const studioDebug = await captureStudioDebug(buildPage, outDir);
+    const studioDebug = await captureStudioDebug(
+      buildPage,
+      server.baseUrl,
+      outDir,
+      fs.existsSync(importedFixturePath) ? importedFixturePath : undefined,
+    );
     const bgCtrlStagePage = await context.newPage();
     const studioBgCtrlStage = await captureStudioBgCtrlStage(bgCtrlStagePage, server.baseUrl, outDir);
     await bgCtrlStagePage.close();
@@ -89,13 +99,17 @@ async function main() {
         runtime: runtimeRoute,
         studioWorkbench: studioWorkbenchRoute,
         studioBuild: studioBuildRoute,
+        studioModules: studioModulesRoute,
         studioAssets: studioAssetsRoute,
       },
       checks: {
         runtimeDesktop,
         runtimeMobile,
         studioWorkbench,
+        studioWorkbenchTablet,
+        commandPaletteA11y,
         studioBuild,
+        studioModules,
         studioSourceRelink,
         ikemenScan,
         studioStage,
@@ -112,7 +126,11 @@ async function main() {
         runtimeDesktop: path.join(outDir, "runtime-desktop.png"),
         runtimeMobile: path.join(outDir, "runtime-mobile.png"),
         studioWorkbench: path.join(outDir, "studio-workbench.png"),
+        studioWorkbenchTablet: path.join(outDir, "studio-workbench-tablet.png"),
+        commandPalette: path.join(outDir, "studio-command-palette.png"),
         studioBuild: path.join(outDir, "studio-build.png"),
+        studioModules: path.join(outDir, "studio-modules.png"),
+        studioModulesContracts: path.join(outDir, "studio-modules-contracts.png"),
         studioSourceRelink: path.join(outDir, "studio-source-relink.png"),
         ikemenScan: path.join(outDir, "ikemen-scan-evidence.png"),
         studioStage: path.join(outDir, "studio-stage.png"),
@@ -193,6 +211,24 @@ function findFreePort(startPort) {
   });
 }
 
+async function evaluateWithStableBridge(page, callback) {
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
+      await waitForBridge(page);
+      return await page.evaluate(callback);
+    } catch (error) {
+      lastError = error;
+      if (!String(error?.message ?? error).includes("Execution context was destroyed")) {
+        throw error;
+      }
+      await page.waitForTimeout(150);
+    }
+  }
+  throw lastError;
+}
+
 async function captureRuntime(page, baseUrl, options) {
   await page.setViewportSize(options.viewport);
   await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
@@ -249,7 +285,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
   await waitForBridge(page);
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(outDir, "studio-workbench.png"), fullPage: true });
-  return page.evaluate(() => {
+  return evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const bodyText = document.body.innerText;
     const bodyTextLower = bodyText.toLowerCase();
@@ -262,7 +298,7 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       bodyHasLoadMugenZip: bodyText.includes("Load MUGEN ZIP"),
       bodyHasSurfaceJumps: bodyText.includes("Assets") && bodyText.includes("Evidence") && bodyText.includes("Build") && bodyText.includes("Debug"),
       laneCount: document.querySelectorAll(".workbench-lane-strip > span").length,
-      surfaceJumpCount: document.querySelectorAll(".surface-jump-button").length,
+      surfaceJumpCount: document.querySelectorAll(".surface-jump-button, .workbench-route-button").length,
       actionCount: document.querySelectorAll(".workbench-action-bar button").length,
       shellWidth: shell?.width ?? 0,
       bodyScrollWidth: document.body.scrollWidth,
@@ -270,6 +306,86 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       overflowX: document.body.scrollWidth > window.innerWidth + 1,
     };
   });
+}
+
+async function captureStudioWorkbenchTablet(page, baseUrl, outDir) {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: path.join(outDir, "studio-workbench-tablet.png"), fullPage: true });
+  return evaluateWithStableBridge(page, () => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const shell = document.querySelector(".app-shell")?.getBoundingClientRect();
+    const status = document.querySelector(".stage-status")?.getBoundingClientRect();
+    const clientWidth = document.documentElement.clientWidth;
+    const bodyScrollWidth = document.body.scrollWidth;
+    const documentScrollWidth = document.documentElement.scrollWidth;
+    return {
+      mode: bridge?.mode,
+      studioTab: bridge?.studioTab,
+      clientWidth,
+      shellWidth: shell?.width ?? 0,
+      bodyScrollWidth,
+      documentScrollWidth,
+      stageStatusVisible: Boolean(status && status.width > 0 && status.height > 0),
+      overflowX: bodyScrollWidth > clientWidth + 1 || documentScrollWidth > clientWidth + 1,
+    };
+  });
+}
+
+async function captureCommandPaletteA11y(page, baseUrl, outDir) {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto(`${baseUrl}${studioWorkbenchRoute}`, { waitUntil: "networkidle" });
+  await waitForBridge(page);
+  await page.waitForTimeout(200);
+
+  const launcher = page.locator('[data-action="open-command-palette"]').first();
+  await launcher.focus();
+  await page.keyboard.press("Control+K");
+  await page.waitForSelector(".command-palette-shell");
+  await page.waitForSelector("[data-command-palette-search]");
+  await page.screenshot({ path: path.join(outDir, "studio-command-palette.png"), fullPage: true });
+
+  const openedProbe = await page.evaluate(() => {
+    const shell = document.querySelector(".command-palette-shell");
+    const active = document.activeElement;
+    return {
+      opened: Boolean(shell),
+      searchFocused: active?.matches("[data-command-palette-search]") ?? false,
+      activeInsideShell: shell?.contains(active) ?? false,
+      resultButtons: document.querySelectorAll(".command-result").length,
+    };
+  });
+
+  await page.locator(".command-palette-close").first().focus();
+  await page.keyboard.press("Shift+Tab");
+  const focusStayedInsideAfterShiftTab = await page.evaluate(() => {
+    const shell = document.querySelector(".command-palette-shell");
+    return shell?.contains(document.activeElement) ?? false;
+  });
+  for (let i = 0; i < 24; i += 1) {
+    await page.keyboard.press("Tab");
+  }
+  const focusStayedInsideAfterManyTabs = await page.evaluate(() => {
+    const shell = document.querySelector(".command-palette-shell");
+    return shell?.contains(document.activeElement) ?? false;
+  });
+
+  await page.keyboard.press("Escape");
+  await page.waitForSelector(".command-palette-shell", { state: "detached" });
+  await page.waitForTimeout(80);
+  const closedProbe = await page.evaluate(() => ({
+    closedOnEscape: !document.querySelector(".command-palette-shell"),
+    focusRestoredToLauncher: document.activeElement?.matches('[data-action="open-command-palette"]') ?? false,
+  }));
+
+  return {
+    ...openedProbe,
+    focusStayedInsideAfterShiftTab,
+    focusStayedInsideAfterManyTabs,
+    ...closedProbe,
+  };
 }
 
 async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
@@ -290,16 +406,20 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   }
   await page.locator('[data-action="compile-project"]').first().click();
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
+  const exportTraceButton = page.locator('#left-pane .full-width-action[data-action="export-trace-artifact"]').first();
+  await exportTraceButton.scrollIntoViewIfNeeded();
   const [download] = await Promise.all([
-    page.waitForEvent("download"),
-    page.locator('[data-action="export-trace-artifact"]').first().click(),
+    page.waitForEvent("download", { timeout: 90000 }),
+    exportTraceButton.click(),
   ]);
   const tracePath = path.join(outDir, "trace-artifact.json");
   await download.saveAs(tracePath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
+  const exportPackageButton = page.locator('#left-pane .full-width-action[data-action="export-package"]').first();
+  await exportPackageButton.scrollIntoViewIfNeeded();
   const [packageDownload] = await Promise.all([
-    page.waitForEvent("download"),
-    page.locator('[data-action="export-package"]').first().click(),
+    page.waitForEvent("download", { timeout: 90000 }),
+    exportPackageButton.click(),
   ]);
   const packagePath = path.join(outDir, "project-package.zip");
   await packageDownload.saveAs(packagePath);
@@ -317,11 +437,15 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       bodyHasBuild: document.body.innerText.includes("Build Outputs"),
       bodyHasTrace: document.body.innerText.includes("Trace Evidence"),
       bodyHasPackage: document.body.innerText.includes("Project Package"),
+      bodyHasArchitectureBoundaries: document.body.innerText.includes("Architecture boundaries") || document.body.innerText.includes("Architecture Boundaries"),
       compiledProject: Boolean(bridge?.compiledProject),
       projectBundle: bridge?.projectBundle,
       traceArtifactStatus: bridge?.traceArtifact?.status,
       traceArtifactChecksum: bridge?.traceArtifact?.trace?.checksum,
       traceArtifacts: bridge?.traceArtifacts?.length ?? 0,
+      architectureGateStatus: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.status,
+      architectureGateEvidenceIds: bridge?.studio?.gates?.find((gate) => gate.id === "architecture-boundaries")?.evidenceIds ?? [],
+      architectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
       stageReports: bridge?.stages?.length ?? 0,
       stageLayerReports: bridge?.stages?.reduce((total, stage) => total + (stage.backgrounds?.layers?.length ?? 0), 0) ?? 0,
       stageLayerStatuses: [
@@ -338,6 +462,52 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       downloadedPackage: window.__DOWNLOADED_PACKAGE__,
     };
   }, downloadedArtifact).then((result) => ({ ...result, downloadedPackage, importedFixtureLoaded, importedFixtureName }));
+}
+
+async function captureStudioModules(page, outDir) {
+  await page.locator('[data-studio-tab="modules"]').first().click();
+  await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "modules");
+  const hasCompiledProject = await page
+    .waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject), undefined, { timeout: 3000 })
+    .then(() => true)
+    .catch(() => false);
+  if (!hasCompiledProject) {
+    await page.locator('[data-action="compile-project"]').first().click();
+    await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
+  }
+  await page.waitForTimeout(150);
+  await page.screenshot({ path: path.join(outDir, "studio-modules.png"), fullPage: true });
+  await page.locator("#right-pane").evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  await page.waitForTimeout(100);
+  await page.screenshot({ path: path.join(outDir, "studio-modules-contracts.png"), fullPage: false });
+  return evaluateWithStableBridge(page, () => {
+    const bridge = window.__MUGEN_WEB_SANDBOX__;
+    const compiled = bridge?.compiledProject;
+    const contracts = compiled?.contracts;
+    const modules = bridge?.studio?.modules ?? [];
+    const bodyText = document.body.innerText;
+    return {
+      mode: bridge?.mode,
+      studioTab: bridge?.studioTab,
+      bodyHasModuleGraph: bodyText.includes("Module Graph Studio"),
+      bodyHasSharedContracts: bodyText.includes("Shared Contracts"),
+      bodyHasSharedCoreBoundary: bodyText.includes("Forbidden in shared core"),
+      bodyHasPlatformerBoundary: bodyText.includes("Platformer blocked concepts"),
+      bodyHasCnsBlocked: bodyText.includes("CNS") && bodyText.includes("HitDef") && bodyText.includes("MUGEN command routing"),
+      contractSchema: contracts?.schemaVersion,
+      sharedContracts: contracts?.sharedContracts?.length ?? 0,
+      moduleContracts: contracts?.moduleContracts?.length ?? 0,
+      sharedCoreForbidden: contracts?.boundaries?.sharedCoreForbidden?.length ?? 0,
+      platformerForbidden: contracts?.boundaries?.platformerForbidden?.length ?? 0,
+      platformerBlocksCns: contracts?.boundaries?.platformerForbidden?.includes("CNS") ?? false,
+      platformerBlocksHitDef: contracts?.boundaries?.platformerForbidden?.includes("HitDef") ?? false,
+      modulesWithConsumes: modules.filter((module) => (module.consumes?.length ?? 0) > 0).length,
+      modulesWithProvides: modules.filter((module) => (module.provides?.length ?? 0) > 0).length,
+      modulesWithBlockedClaims: modules.filter((module) => String(module.claimBlocked ?? "").length > 0).length,
+    };
+  });
 }
 
 async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixturePath) {
@@ -374,7 +544,7 @@ async function captureStudioSourceRelink(page, baseUrl, outDir, importedFixtureP
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-source-relink.png"), fullPage: true });
 
-  const after = await page.evaluate(() => {
+  const after = await evaluateWithStableBridge(page, () => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const sourcePackages = bridge?.project?.sourcePackages ?? [];
     const bodyText = document.body.innerText;
@@ -564,6 +734,14 @@ async function inspectPackageZip(packagePath) {
     missingBundledFiles: missingBundledFiles.map((asset) => asset.packagePath),
     bundledWithoutChecksum: bundledWithoutChecksum.map((asset) => asset.packagePath),
     runtimeSchema: runtime.schemaVersion,
+    runtimeContractSchema: runtime.contracts?.schemaVersion,
+    runtimeSharedContracts: runtime.contracts?.sharedContracts?.length ?? 0,
+    runtimeModuleContracts: runtime.contracts?.moduleContracts?.length ?? 0,
+    runtimeSharedCoreForbidden: runtime.contracts?.boundaries?.sharedCoreForbidden?.length ?? 0,
+    runtimePlatformerForbidden: runtime.contracts?.boundaries?.platformerForbidden?.length ?? 0,
+    runtimeBlocksCns: runtime.contracts?.boundaries?.sharedCoreForbidden?.includes("CNS") ?? false,
+    runtimeBlocksHitDef: runtime.contracts?.boundaries?.sharedCoreForbidden?.includes("HitDef") ?? false,
+    runtimeHasPlatformerContract: runtime.contracts?.moduleContracts?.some((contract) => contract.id === "platformer-module") ?? false,
     sourceRuntimeAssetCount: Object.keys(sourceRuntimeMap).length,
     hasTrace: files.includes("qa/latest-trace-artifact.json"),
     hasAssetManifest: files.includes("assets/package-assets.json"),
@@ -677,6 +855,9 @@ async function captureStudioEvidence(page, outDir) {
       bodyHasTraceFrameDelta: Boolean(document.querySelector("[data-trace-frame-delta]")),
       bodyHasTraceWorldDelta: Boolean(document.querySelector("[data-trace-world-delta]")),
       bodyHasTrace: document.body.innerText.toLowerCase().includes("trace"),
+      hasArchitectureGateRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "gate:architecture-boundaries")),
+      hasArchitectureEvidenceRecord: Boolean(bridge?.studioEvidence?.records?.some((record) => record.id === "test:architecture-boundaries")),
+      architectureEvidenceStatus: bridge?.studioEvidence?.records?.find((record) => record.id === "test:architecture-boundaries")?.status,
       traceArtifacts: bridge?.traceArtifacts?.length ?? 0,
       persistedTraceArtifacts: bridge?.studioEvidence?.stats?.persistedTraceArtifacts ?? 0,
       persistedTraceComparisons: bridge?.studioEvidence?.persistedTraceComparisons?.length ?? 0,
@@ -809,7 +990,29 @@ async function captureStudioAssetReplacement(context, baseUrl, outDir) {
   }
 }
 
-async function captureStudioDebug(page, outDir) {
+async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await waitForBridge(page);
+  if (importedFixturePath) {
+    const hasImportedCharacter = await page.evaluate(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.character));
+    if (!hasImportedCharacter) {
+      await page.locator("#zip-input").setInputFiles(importedFixturePath);
+      await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.character));
+      await page.locator('[data-mode="studio"]').first().click();
+      await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
+    }
+  }
+  if (!(await page.locator('[data-studio-tab="debug"]').first().isVisible().catch(() => false))) {
+    const studioMode = page.locator('[data-mode="studio"]').first();
+    if (await studioMode.isVisible().catch(() => false)) {
+      await studioMode.click();
+      await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "studio");
+    }
+  }
+  if (!(await page.locator('[data-studio-tab="debug"]').first().isVisible().catch(() => false))) {
+    await page.goto(`${baseUrl}${studioDebugRoute}`, { waitUntil: "networkidle" });
+    await waitForBridge(page);
+  }
   await page.locator('[data-studio-tab="debug"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioTab === "debug");
   await page.locator('[data-debug-actor-id="p2"]').first().click();
@@ -1050,7 +1253,22 @@ function isKnownBenignWarning(text) {
 
 function assertSmoke(diagnostics) {
   const failures = [];
-  const { runtimeDesktop, runtimeMobile, studioWorkbench, studioBuild, studioSourceRelink, ikemenScan, studioStage, studioAssets, studioReplacement, studioEvidence, studioDebug } = diagnostics.checks;
+  const {
+    runtimeDesktop,
+    runtimeMobile,
+    studioWorkbench,
+    studioWorkbenchTablet,
+    commandPaletteA11y,
+    studioBuild,
+    studioModules,
+    studioSourceRelink,
+    ikemenScan,
+    studioStage,
+    studioAssets,
+    studioReplacement,
+    studioEvidence,
+    studioDebug,
+  } = diagnostics.checks;
   for (const runtime of [runtimeDesktop, runtimeMobile]) {
     if (runtime.mode !== "match" || !runtime.bodyHasRuntime || !runtime.bodyHasP1 || !runtime.bodyHasP2) {
       failures.push(`${runtime.label}: runtime shell or roster text missing`);
@@ -1088,6 +1306,25 @@ function assertSmoke(diagnostics) {
   ) {
     failures.push("studio-workbench: Workbench command center was missing, incomplete, or horizontally overflowing");
   }
+  if (
+    studioWorkbenchTablet.mode !== "studio" ||
+    studioWorkbenchTablet.studioTab !== "workbench" ||
+    studioWorkbenchTablet.overflowX ||
+    !studioWorkbenchTablet.stageStatusVisible
+  ) {
+    failures.push("studio-workbench-tablet: 1024px workbench layout overflowed or lost stage status");
+  }
+  if (
+    !commandPaletteA11y.opened ||
+    !commandPaletteA11y.searchFocused ||
+    !commandPaletteA11y.activeInsideShell ||
+    !commandPaletteA11y.focusStayedInsideAfterShiftTab ||
+    !commandPaletteA11y.focusStayedInsideAfterManyTabs ||
+    !commandPaletteA11y.closedOnEscape ||
+    !commandPaletteA11y.focusRestoredToLauncher
+  ) {
+    failures.push("command-palette: focus trap, initial focus, Escape close, or focus restore failed");
+  }
   if (studioBuild.mode !== "studio" || studioBuild.studioTab !== "build" || !studioBuild.bodyHasBuild) {
     failures.push("studio-build: Build surface did not render");
   }
@@ -1098,8 +1335,24 @@ function assertSmoke(diagnostics) {
     failures.push("studio-build: project package panel or bridge summary missing");
   }
   if (
+    !studioBuild.bodyHasArchitectureBoundaries ||
+    studioBuild.architectureGateStatus !== "ok" ||
+    !studioBuild.architectureGateEvidenceIds?.includes("test:architecture-boundaries") ||
+    !studioBuild.architectureEvidenceRecord
+  ) {
+    failures.push("studio-build: architecture boundary gate was not visible or linked to Studio evidence");
+  }
+  if (
     studioBuild.downloadedPackage?.manifestSchema !== "mugen-web-sandbox/export-bundle/v0" ||
     studioBuild.downloadedPackage?.runtimeSchema !== "mugen-web-sandbox/runtime-manifest/v0" ||
+    studioBuild.downloadedPackage?.runtimeContractSchema !== "mugen-web-sandbox/shared-engine-contracts/v0" ||
+    (studioBuild.downloadedPackage?.runtimeSharedContracts ?? 0) < 8 ||
+    (studioBuild.downloadedPackage?.runtimeModuleContracts ?? 0) < 3 ||
+    (studioBuild.downloadedPackage?.runtimeSharedCoreForbidden ?? 0) < 8 ||
+    (studioBuild.downloadedPackage?.runtimePlatformerForbidden ?? 0) < 4 ||
+    !studioBuild.downloadedPackage?.runtimeBlocksCns ||
+    !studioBuild.downloadedPackage?.runtimeBlocksHitDef ||
+    !studioBuild.downloadedPackage?.runtimeHasPlatformerContract ||
     studioBuild.downloadedPackage?.binaryBundlingStatus !== "bundled" ||
     (studioBuild.downloadedPackage?.binaryBundled ?? 0) < 20 ||
     (studioBuild.downloadedPackage?.binaryBytes ?? 0) <= 0 ||
@@ -1138,6 +1391,27 @@ function assertSmoke(diagnostics) {
   }
   if (studioBuild.traceArtifactStatus !== "passed" || studioBuild.downloadedArtifact.status !== "passed") {
     failures.push("studio-build: trace artifact did not pass");
+  }
+  if (
+    studioModules.mode !== "studio" ||
+    studioModules.studioTab !== "modules" ||
+    !studioModules.bodyHasModuleGraph ||
+    !studioModules.bodyHasSharedContracts ||
+    !studioModules.bodyHasSharedCoreBoundary ||
+    !studioModules.bodyHasPlatformerBoundary ||
+    !studioModules.bodyHasCnsBlocked ||
+    studioModules.contractSchema !== "mugen-web-sandbox/shared-engine-contracts/v0" ||
+    studioModules.sharedContracts < 8 ||
+    studioModules.moduleContracts < 3 ||
+    studioModules.sharedCoreForbidden < 8 ||
+    studioModules.platformerForbidden < 4 ||
+    !studioModules.platformerBlocksCns ||
+    !studioModules.platformerBlocksHitDef ||
+    studioModules.modulesWithConsumes < 4 ||
+    studioModules.modulesWithProvides < 3 ||
+    studioModules.modulesWithBlockedClaims < 4
+  ) {
+    failures.push("studio-modules: shared module contracts and boundary claims were not visible through Studio Modules and the QA bridge");
   }
   if (
     !studioSourceRelink?.skipped &&
@@ -1251,6 +1525,9 @@ function assertSmoke(diagnostics) {
   }
   if (studioEvidence.mode !== "studio" || studioEvidence.studioTab !== "evidence" || !studioEvidence.bodyHasEvidence) {
     failures.push("studio-evidence: Evidence surface did not render");
+  }
+  if (!studioEvidence.hasArchitectureGateRecord || !studioEvidence.hasArchitectureEvidenceRecord || studioEvidence.architectureEvidenceStatus !== "ok") {
+    failures.push("studio-evidence: architecture boundary gate/evidence records were not exposed through the Evidence Browser bridge");
   }
   if ((studioEvidence.traceArtifacts ?? 0) < 1 || studioEvidence.latestTraceStatus !== "passed") {
     failures.push("studio-evidence: trace history missing after export");
@@ -1449,10 +1726,29 @@ function summarizeDiagnostics(diagnostics) {
       actions: diagnostics.checks.studioWorkbench.actionCount,
       overflowX: diagnostics.checks.studioWorkbench.overflowX,
     },
+    studioWorkbenchTablet: {
+      tab: diagnostics.checks.studioWorkbenchTablet.studioTab,
+      clientWidth: diagnostics.checks.studioWorkbenchTablet.clientWidth,
+      bodyScrollWidth: diagnostics.checks.studioWorkbenchTablet.bodyScrollWidth,
+      documentScrollWidth: diagnostics.checks.studioWorkbenchTablet.documentScrollWidth,
+      stageStatusVisible: diagnostics.checks.studioWorkbenchTablet.stageStatusVisible,
+      overflowX: diagnostics.checks.studioWorkbenchTablet.overflowX,
+    },
+    commandPaletteA11y: {
+      opened: diagnostics.checks.commandPaletteA11y.opened,
+      searchFocused: diagnostics.checks.commandPaletteA11y.searchFocused,
+      focusStayedInsideAfterShiftTab: diagnostics.checks.commandPaletteA11y.focusStayedInsideAfterShiftTab,
+      focusStayedInsideAfterManyTabs: diagnostics.checks.commandPaletteA11y.focusStayedInsideAfterManyTabs,
+      closedOnEscape: diagnostics.checks.commandPaletteA11y.closedOnEscape,
+      focusRestoredToLauncher: diagnostics.checks.commandPaletteA11y.focusRestoredToLauncher,
+    },
     studioBuild: {
       compiledProject: diagnostics.checks.studioBuild.compiledProject,
       traceArtifactStatus: diagnostics.checks.studioBuild.traceArtifactStatus,
       checksum: diagnostics.checks.studioBuild.traceArtifactChecksum,
+      contractSchema: diagnostics.checks.studioBuild.downloadedPackage?.runtimeContractSchema,
+      sharedContracts: diagnostics.checks.studioBuild.downloadedPackage?.runtimeSharedContracts,
+      moduleContracts: diagnostics.checks.studioBuild.downloadedPackage?.runtimeModuleContracts,
       stageReports: diagnostics.checks.studioBuild.stageReports,
       stageLayerReports: diagnostics.checks.studioBuild.stageLayerReports,
       stageLayerStatuses: diagnostics.checks.studioBuild.stageLayerStatuses,
@@ -1464,6 +1760,17 @@ function summarizeDiagnostics(diagnostics) {
       sourcePackages: diagnostics.checks.studioBuild.downloadedPackage?.projectSourcePackages,
       linkedSourcePackages: diagnostics.checks.studioBuild.downloadedPackage?.linkedProjectSourcePackages,
       sourceRequiredPaths: diagnostics.checks.studioBuild.downloadedPackage?.projectSourceRequiredPaths,
+      architectureGateStatus: diagnostics.checks.studioBuild.architectureGateStatus,
+      architectureEvidenceRecord: diagnostics.checks.studioBuild.architectureEvidenceRecord,
+      bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
+    },
+    studioModules: {
+      schema: diagnostics.checks.studioModules.contractSchema,
+      sharedContracts: diagnostics.checks.studioModules.sharedContracts,
+      moduleContracts: diagnostics.checks.studioModules.moduleContracts,
+      sharedCoreForbidden: diagnostics.checks.studioModules.sharedCoreForbidden,
+      platformerForbidden: diagnostics.checks.studioModules.platformerForbidden,
+      modulesWithConsumes: diagnostics.checks.studioModules.modulesWithConsumes,
     },
     studioSourceRelink: diagnostics.checks.studioSourceRelink?.skipped
       ? { skipped: true, reason: diagnostics.checks.studioSourceRelink.reason }
@@ -1533,6 +1840,9 @@ function summarizeDiagnostics(diagnostics) {
       worldDeltaStats: diagnostics.checks.studioEvidence.traceWorldStatRows,
       latestTraceStatus: diagnostics.checks.studioEvidence.latestTraceStatus,
       topAction: diagnostics.checks.studioEvidence.topEvidenceAction,
+      architectureGateRecord: diagnostics.checks.studioEvidence.hasArchitectureGateRecord,
+      architectureEvidenceRecord: diagnostics.checks.studioEvidence.hasArchitectureEvidenceRecord,
+      architectureEvidenceStatus: diagnostics.checks.studioEvidence.architectureEvidenceStatus,
     },
     studioDebug: {
       actors: diagnostics.checks.studioDebug.actorRegistryCount,

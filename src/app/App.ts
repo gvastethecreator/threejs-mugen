@@ -1,5 +1,29 @@
 import { createFrameLoop } from "../game/loop/createFrameLoop";
 import JSZip from "jszip";
+import iconActivity from "@tabler/icons/outline/activity.svg?raw";
+import iconAlertTriangle from "@tabler/icons/outline/alert-triangle.svg?raw";
+import iconArchive from "@tabler/icons/outline/archive.svg?raw";
+import iconBinaryTree from "@tabler/icons/outline/binary-tree.svg?raw";
+import iconBox from "@tabler/icons/outline/box.svg?raw";
+import iconBug from "@tabler/icons/outline/bug.svg?raw";
+import iconCircleCheck from "@tabler/icons/outline/circle-check.svg?raw";
+import iconCircleX from "@tabler/icons/outline/circle-x.svg?raw";
+import iconClock from "@tabler/icons/outline/clock.svg?raw";
+import iconCpu from "@tabler/icons/outline/cpu.svg?raw";
+import iconDashboard from "@tabler/icons/outline/layout-dashboard.svg?raw";
+import iconDatabase from "@tabler/icons/outline/database.svg?raw";
+import iconFileAnalytics from "@tabler/icons/outline/file-analytics.svg?raw";
+import iconFileExport from "@tabler/icons/outline/file-export.svg?raw";
+import iconFolder from "@tabler/icons/outline/folder.svg?raw";
+import iconGamepad from "@tabler/icons/outline/device-gamepad-2.svg?raw";
+import iconPackage from "@tabler/icons/outline/package.svg?raw";
+import iconPhoto from "@tabler/icons/outline/photo.svg?raw";
+import iconRoute from "@tabler/icons/outline/route.svg?raw";
+import iconSearch from "@tabler/icons/outline/search.svg?raw";
+import iconServer from "@tabler/icons/outline/server.svg?raw";
+import iconShield from "@tabler/icons/outline/shield.svg?raw";
+import iconTools from "@tabler/icons/outline/tools.svg?raw";
+import iconWand from "@tabler/icons/outline/wand.svg?raw";
 import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
 import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
@@ -69,6 +93,136 @@ type StudioEvidenceCategory = "gate" | "asset" | "trace" | "compile" | "compatib
 type StudioEvidenceFilter = "all" | "attention" | StudioEvidenceCategory;
 type StudioAssetFilter = "all" | "attention" | "characters" | "stages" | "generated" | "imported" | "reports" | "selected";
 type StudioDebugFilter = "overview" | "targets" | "effects" | "pause" | "audio";
+type StudioIconName =
+  | "activity"
+  | "alert"
+  | "archive"
+  | "assets"
+  | "bug"
+  | "build"
+  | "check"
+  | "data"
+  | "debug"
+  | "error"
+  | "evidence"
+  | "export"
+  | "folder"
+  | "match"
+  | "modules"
+  | "package"
+  | "pending"
+  | "route"
+  | "search"
+  | "server"
+  | "shield"
+  | "stage"
+  | "studio"
+  | "tools"
+  | "wand"
+  | "workbench";
+
+const TABLER_ICONS: Record<StudioIconName, string> = {
+  activity: iconActivity,
+  alert: iconAlertTriangle,
+  archive: iconArchive,
+  assets: iconPhoto,
+  bug: iconBug,
+  build: iconPackage,
+  check: iconCircleCheck,
+  data: iconDatabase,
+  debug: iconBug,
+  error: iconCircleX,
+  evidence: iconFileAnalytics,
+  export: iconFileExport,
+  folder: iconFolder,
+  match: iconGamepad,
+  modules: iconBinaryTree,
+  package: iconBox,
+  pending: iconClock,
+  route: iconRoute,
+  search: iconSearch,
+  server: iconServer,
+  shield: iconShield,
+  stage: iconServer,
+  studio: iconCpu,
+  tools: iconTools,
+  wand: iconWand,
+  workbench: iconDashboard,
+};
+
+function tablerIcon(name: StudioIconName, className = "ui-icon"): string {
+  return TABLER_ICONS[name]
+    .replace("<svg", `<svg class="${className}" aria-hidden="true" focusable="false"`)
+    .replace(/width="24"/, "")
+    .replace(/height="24"/, "");
+}
+
+function iconForStatus(status: StudioStatus): StudioIconName {
+  if (status === "ok" || status === "active") {
+    return "check";
+  }
+  if (status === "fail" || status === "blocked" || status === "unsupported") {
+    return "error";
+  }
+  if (status === "pending" || status === "planned" || status === "unknown") {
+    return "pending";
+  }
+  return "alert";
+}
+
+function iconForMode(mode: AppMode): StudioIconName {
+  if (mode === "match") {
+    return "match";
+  }
+  if (mode === "inspect") {
+    return "data";
+  }
+  return "studio";
+}
+
+function iconForStudioTab(tab: StudioTab): StudioIconName {
+  const icons: Record<StudioTab, StudioIconName> = {
+    workbench: "workbench",
+    assets: "assets",
+    inspector: "data",
+    stage: "stage",
+    debug: "debug",
+    evidence: "evidence",
+    modules: "modules",
+    build: "build",
+  };
+  return icons[tab];
+}
+
+function iconForAction(label: string, attribute: string): StudioIconName {
+  const key = `${label} ${attribute}`.toLowerCase();
+  if (key.includes("playtest") || key.includes("match")) {
+    return "match";
+  }
+  if (key.includes("evidence") || key.includes("trace")) {
+    return "evidence";
+  }
+  if (key.includes("compile") || key.includes("build") || key.includes("package") || key.includes("ship")) {
+    return "build";
+  }
+  if (key.includes("asset") || key.includes("sprite")) {
+    return "assets";
+  }
+  if (key.includes("debug")) {
+    return "debug";
+  }
+  if (key.includes("zip") || key.includes("folder") || key.includes("source")) {
+    return "folder";
+  }
+  if (key.includes("export") || key.includes("report")) {
+    return "export";
+  }
+  if (key.includes("inspect") || key.includes("data")) {
+    return "data";
+  }
+  return "tools";
+}
+
 type StudioEvidenceRecord = {
   id: string;
   label: string;
@@ -403,6 +557,7 @@ export class App {
   private selectedTraceFrameIndex = 0;
   private commandPaletteOpen = false;
   private commandPaletteQuery = "";
+  private commandPaletteReturnFocus?: HTMLElement;
   private pendingMs = 0;
   private renderBusy = false;
   private lastPanelUpdate = 0;
@@ -435,28 +590,28 @@ export class App {
             <div class="workspace-brand" id="workspace-brand"></div>
             <div id="mode-controls"></div>
             <div id="workspace-summary"></div>
-            <div id="workspace-actions"></div>
           </div>
+          <div id="workspace-actions"></div>
           <div class="section file-loader-section">
             <div class="drop-zone" id="drop-zone">
               <div>
-                <strong>Load character</strong>
-                <p>Drop a .zip, or choose a folder with a .def file.</p>
+                <strong>Load MUGEN package</strong>
+                <p>Drop a character ZIP or choose a local folder with a .def file. Files stay in this browser session.</p>
               </div>
               <div class="file-actions">
-                <button type="button" data-open-zip>ZIP</button>
-                <button type="button" data-open-folder>Folder</button>
+                <button type="button" data-open-zip>Choose ZIP</button>
+                <button type="button" data-open-folder>Choose Folder</button>
               </div>
-              <input id="zip-input" type="file" accept=".zip,application/zip" />
-              <input id="folder-input" type="file" webkitdirectory multiple />
-              <input id="project-input" type="file" accept=".json,application/json" hidden />
+              <input id="zip-input" type="file" accept=".zip,application/zip" aria-label="Choose character ZIP" />
+              <input id="folder-input" type="file" webkitdirectory multiple aria-label="Choose character folder" />
+              <input id="project-input" type="file" accept=".json,application/json" aria-label="Open project JSON" hidden />
             </div>
           </div>
           <div id="navigator"></div>
         </aside>
         <section class="stage" id="stage" aria-label="Runtime viewport">
           <div class="stage-toolbar" aria-label="Runtime controls">
-            <div class="toolbar-group">
+            <div class="toolbar-group toolbar-run-group">
               <span class="toolbar-label">Run</span>
               <button type="button" data-action="play-pause" aria-label="Pause or resume simulation">Pause</button>
               <button type="button" data-action="step" aria-label="Advance one frame">1F</button>
@@ -470,7 +625,7 @@ export class App {
                 </select>
               </label>
             </div>
-            <div class="toolbar-group">
+            <div class="toolbar-group toolbar-view-group">
               <span class="toolbar-label">View</span>
               <label class="toggle-pill"><input type="checkbox" data-toggle="showGrid" checked /> Grid</label>
               <label class="toggle-pill"><input type="checkbox" data-toggle="showAxis" checked /> Axis</label>
@@ -820,6 +975,10 @@ export class App {
       if (event.key === "Escape" && this.commandPaletteOpen) {
         event.preventDefault();
         this.closeCommandPalette();
+        return;
+      }
+      if (event.key === "Tab" && this.commandPaletteOpen) {
+        this.trapCommandPaletteFocus(event);
       }
     });
 
@@ -1411,14 +1570,15 @@ export class App {
     return `
       <div class="mode-control-stack">
         <div class="mode-switch" role="group" aria-label="Sandbox mode">
-          ${this.renderModeButton("match", "Runtime", "playtest")}
-          ${this.renderModeButton("inspect", "Inspector", "parse")}
+          ${this.renderModeButton("match", "Match", "play")}
+          ${this.renderModeButton("inspect", "Inspect", "import")}
           ${this.renderModeButton("studio", "Studio", "build")}
         </div>
-        <button type="button" class="command-launcher" data-action="open-command-palette" aria-keyshortcuts="Control+K Meta+K">
+        <button type="button" class="command-launcher" data-action="open-command-palette" aria-keyshortcuts="Control+K Meta+K" aria-expanded="${this.commandPaletteOpen}">
+          ${tablerIcon("search", "ui-icon command-launcher-icon")}
           <span>
-            <strong>Find action</strong>
-            <small>Modes, loaders, evidence, exports</small>
+            <strong>Command Palette</strong>
+            <small>Modes, loaders, evidence, build</small>
           </span>
           <span class="badge">${this.getCommandPaletteActions().length}</span>
         </button>
@@ -1491,6 +1651,7 @@ export class App {
   }
 
   private openCommandPalette(): void {
+    this.commandPaletteReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.commandPaletteOpen = true;
     this.commandPaletteQuery = "";
     this.updateUi();
@@ -1506,6 +1667,15 @@ export class App {
     this.commandPaletteOpen = false;
     this.commandPaletteQuery = "";
     this.updateUi();
+    const returnFocus = this.commandPaletteReturnFocus;
+    requestAnimationFrame(() => {
+      if (returnFocus?.isConnected) {
+        returnFocus.focus();
+      } else {
+        this.root.querySelector<HTMLElement>('[data-action="open-command-palette"]')?.focus();
+      }
+      this.commandPaletteReturnFocus = undefined;
+    });
   }
 
   private executeCommandPaletteAction(commandId: string): void {
@@ -1519,6 +1689,33 @@ export class App {
     this.updateUi();
     if (commandId.startsWith("debug-actor:")) {
       this.scrollRightPaneToTop();
+    }
+  }
+
+  private trapCommandPaletteFocus(event: KeyboardEvent): void {
+    const shell = this.root.querySelector<HTMLElement>(".command-palette-shell");
+    if (!shell) {
+      return;
+    }
+    const focusable = Array.from(
+      shell.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((element) => element.offsetParent !== null || element === document.activeElement);
+    const first = focusable[0];
+    const last = focusable.at(-1);
+    if (!first || !last) {
+      event.preventDefault();
+      return;
+    }
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 
@@ -2013,23 +2210,61 @@ export class App {
   }
 
   private renderWorkspaceBrand(): string {
+    const studioSurfaces: Record<StudioTab, { eyebrow: string; title: string; description: string }> = {
+      workbench: {
+        eyebrow: "Engine Studio",
+        title: "Studio Workbench",
+        description: "Assemble roster, stage, evidence, and export contract from one local control room.",
+      },
+      assets: {
+        eyebrow: "Asset workbench",
+        title: "Asset Library",
+        description: "Track source packages, runtime ownership, dependency gaps, replacements, and export readiness.",
+      },
+      inspector: {
+        eyebrow: "Data inspector",
+        title: "Character Inspector",
+        description: "Inspect AIR timelines, CNS/CMD routes, sprite metadata, and package diagnostics.",
+      },
+      stage: {
+        eyebrow: "Stage lab",
+        title: "Stage Inspector",
+        description: "Review camera bounds, floor data, background layers, controllers, and import gaps.",
+      },
+      debug: {
+        eyebrow: "Runtime debug",
+        title: "Runtime Debug Studio",
+        description: "Inspect live actors, targets, effects, pause state, audio events, and trace-backed links.",
+      },
+      evidence: {
+        eyebrow: "QA desk",
+        title: "Evidence Browser",
+        description: "Compare trace artifacts, compatibility gates, persisted evidence, and diagnostic blockers.",
+      },
+      modules: {
+        eyebrow: "Engine map",
+        title: "Module Contracts",
+        description: "Review active engine modules, planned runtime contracts, and compatibility boundaries.",
+      },
+      build: {
+        eyebrow: "Build desk",
+        title: "Build & Export",
+        description: "Compile runtime manifests, package local outputs, and verify export diagnostics.",
+      },
+    };
     const surface =
       this.mode === "studio"
-        ? {
-            eyebrow: "Creator studio",
-            title: "Project Workbench",
-            description: "Assemble fighters, stages, evidence, exports, and future engine modules from one local project surface.",
-          }
+        ? studioSurfaces[this.studioTab]
         : this.mode === "inspect"
           ? {
               eyebrow: "MUGEN inspector",
               title: "Character Intake",
-              description: "Load a package, resolve DEF paths, inspect AIR/CNS/CMD data, and keep unsupported features visible.",
+              description: "Resolve DEF paths, inspect AIR/CNS/CMD data, and expose unsupported features.",
             }
           : {
-              eyebrow: "Runtime lab",
-              title: "Playable Sandbox",
-              description: "Run a local Three.js match, verify collision/debug overlays, and compare generated/imported fighters.",
+              eyebrow: "Match lab",
+              title: "Runtime Console",
+              description: "Playtest roster, inspect collision/debug signals, then route fixes into Studio.",
             };
     return `
       <span class="workspace-eyebrow">${escapeHtml(surface.eyebrow)}</span>
@@ -2047,6 +2282,7 @@ export class App {
         ariaLabel,
       )}" title="${escapeHtml(ariaLabel)}"${currentAttr} data-mode="${mode}">
         <span class="mode-button-top">
+          ${tablerIcon(iconForMode(mode), "ui-icon mode-icon")}
           <span class="mode-label">${escapeHtml(label)}</span>
           <span class="mode-dot is-${status.tone}" aria-hidden="true"></span>
         </span>
@@ -2076,10 +2312,10 @@ export class App {
       const attentionGates = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
       return `
         <div class="workspace-summary" aria-label="Studio workspace status">
-          <span><b>${summary.stats.characters}</b> characters</span>
-          <span><b>${summary.stats.stages}</b> stages</span>
-          <span><b>${summary.stats.generatedAtlases}</b> atlases</span>
-          <span class="${attentionGates ? "is-warn" : "is-ok"}"><b>${attentionGates}</b> gate issues</span>
+          <span><b>${summary.stats.characters}</b><small>chars</small></span>
+          <span><b>${summary.stats.stages}</b><small>stages</small></span>
+          <span><b>${summary.stats.generatedAtlases}</b><small>atlases</small></span>
+          <span class="${attentionGates ? "is-warn" : "is-ok"}"><b>${attentionGates}</b><small>gates</small></span>
         </div>
       `;
     }
@@ -2089,10 +2325,10 @@ export class App {
       const commands = this.character?.commands.length ?? 0;
       return `
         <div class="workspace-summary" aria-label="Inspector workspace status">
-          <span class="${this.character ? "is-ok" : "is-warn"}"><b>${this.character ? "loaded" : "empty"}</b> package</span>
-          <span><b>${actions}</b> actions</span>
-          <span><b>${states}</b> states</span>
-          <span><b>${commands}</b> commands</span>
+          <span class="${this.character ? "is-ok" : "is-warn"}"><b>${this.character ? "loaded" : "empty"}</b><small>package</small></span>
+          <span><b>${actions}</b><small>actions</small></span>
+          <span><b>${states}</b><small>states</small></span>
+          <span><b>${commands}</b><small>commands</small></span>
         </div>
       `;
     }
@@ -2100,10 +2336,10 @@ export class App {
     const p2 = this.findFighter(this.selectedP2);
     return `
       <div class="workspace-summary" aria-label="Runtime workspace status">
-        <span><b>${escapeHtml(p1?.displayName ?? "P1")}</b> P1</span>
-        <span><b>${escapeHtml(p2?.displayName ?? "CPU")}</b> CPU</span>
-        <span><b>${this.getAvailableFighters().length}</b> fighters</span>
-        <span class="${diagnostics ? "is-warn" : "is-ok"}"><b>${diagnostics}</b> diagnostics</span>
+        <span><b>${escapeHtml(p1?.displayName ?? "P1")}</b><small>P1</small></span>
+        <span><b>${escapeHtml(p2?.displayName ?? "CPU")}</b><small>CPU</small></span>
+        <span><b>${this.getAvailableFighters().length}</b><small>fighters</small></span>
+        <span class="${diagnostics ? "is-warn" : "is-ok"}"><b>${diagnostics}</b><small>diagnostics</small></span>
       </div>
     `;
   }
@@ -2114,23 +2350,26 @@ export class App {
       const primaryGate = this.getPrimaryStudioGate(summary);
       const issueCount = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
       const compiled = this.lastCompiledProject;
+      const focusAction = primaryGate
+        ? { label: primaryGate.nextAction.label, attribute: this.studioNextActionAttribute(primaryGate.nextAction) }
+        : this.getStudioFocusPrimaryAction();
+      const actionButtons = [
+        {
+          label: focusAction.label,
+          detail: primaryGate ? "Resolve active gate" : "Primary studio action",
+          attribute: focusAction.attribute,
+          primary: true,
+        },
+        { label: "Playtest", detail: "Run roster", attribute: 'data-mode="match"', primary: false },
+        { label: "Evidence", detail: "Trace gates", attribute: 'data-studio-tab="evidence"', primary: false },
+        { label: "Compile", detail: "Manifest", attribute: 'data-action="compile-project"', primary: false },
+        { label: "Build", detail: "Package", attribute: 'data-studio-tab="build"', primary: false },
+      ].filter((candidate, index, candidates) => candidates.findIndex((item) => item.label === candidate.label) === index);
       return `
         <div class="workspace-actions" aria-label="Studio quick actions">
           ${this.renderStudioMissionStrip(summary, primaryGate, issueCount, compiled)}
-          <div class="workspace-next">
-            <span>Next studio action</span>
-            <strong>${escapeHtml(primaryGate?.nextAction.label ?? "Playtest current roster")}</strong>
-            <small>${escapeHtml(primaryGate?.impact ?? (compiled ? "Runtime manifest is ready for export." : "Compile when the current setup is stable."))}</small>
-          </div>
           <div class="workspace-action-grid">
-            <button type="button" class="primary-action" data-mode="match">Playtest</button>
-            <button type="button" data-studio-tab="evidence">Evidence</button>
-            <button type="button" data-action="compile-project">Compile</button>
-            <button type="button" data-studio-tab="build">Build</button>
-          </div>
-          <div class="readiness-strip compact">
-            <span class="${issueCount ? "is-warn" : "is-ok"}"><b>${summary.gates.length - issueCount}/${summary.gates.length}</b> gates clear</span>
-            <span class="${compiled ? "is-ok" : "is-warn"}"><b>${compiled ? "ready" : "pending"}</b> manifest</span>
+            ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
           </div>
         </div>
       `;
@@ -2147,9 +2386,9 @@ export class App {
             <small>${loaded ? "Browse AIR, states, commands, collisions, and compatibility facts." : "Drop a ZIP/folder or choose files locally. Nothing is uploaded."}</small>
           </div>
           <div class="workspace-action-grid">
-            <button type="button" class="primary-action" data-action="load-zip">ZIP</button>
+            <button type="button" class="primary-action" data-action="load-zip">Open ZIP</button>
             <button type="button" data-action="load-folder">Folder</button>
-            <button type="button" data-mode="studio">Studio</button>
+            <button type="button" data-mode="studio">Workbench</button>
             <button type="button" data-action="export-report" ${loaded ? "" : "disabled"}>Report</button>
           </div>
         </div>
@@ -2164,15 +2403,50 @@ export class App {
         <div class="workspace-next">
           <span>Live playtest</span>
           <strong>${escapeHtml(p1?.displayName ?? "P1")} vs ${escapeHtml(p2?.displayName ?? "CPU")}</strong>
-          <small>${diagnostics ? `${diagnostics} diagnostics need review before calling this build clean.` : "Runtime roster is ready for local testing."}</small>
+          <small>${diagnostics ? `${diagnostics} diagnostics need review before this build is clean.` : "Runtime roster is ready for local testing."}</small>
         </div>
         <div class="workspace-action-grid">
           <button type="button" class="primary-action" data-action="reset-round">Reset</button>
-          <button type="button" data-mode="inspect">Load</button>
+          <button type="button" data-mode="inspect">Inspect</button>
           <button type="button" data-studio-tab="debug">Debug</button>
-          <button type="button" data-studio-tab="build">Build</button>
+          <button type="button" data-studio-tab="build">Ship</button>
         </div>
       </div>
+    `;
+  }
+
+  private studioNextActionAttribute(action: StudioNextAction): string {
+    switch (action.kind) {
+      case "open-evidence":
+        return 'data-studio-tab="evidence"';
+      case "open-build":
+        return 'data-studio-tab="build"';
+      case "open-character-preview":
+        return 'data-mode="inspect"';
+      case "open-stage-preview":
+        return 'data-studio-tab="stage"';
+      case "relink-source":
+        return 'data-action="load-zip"';
+      case "replace-asset":
+      case "regenerate-source":
+        return 'data-studio-tab="assets" data-asset-filter="attention"';
+      case "run-trace":
+        return 'data-action="export-trace-artifact"';
+      case "run-smoke":
+        return 'data-studio-tab="build"';
+      case "not-supported-yet":
+        return 'data-studio-tab="modules"';
+    }
+  }
+
+  private renderWorkspaceActionButton(input: { label: string; detail: string; attribute: string; primary: boolean }): string {
+    const ariaLabel = `${input.label}: ${input.detail}`;
+    return `
+      <button type="button"${input.primary ? ' class="primary-action"' : ""} ${input.attribute} aria-label="${escapeHtml(ariaLabel)}">
+        ${tablerIcon(iconForAction(input.label, input.attribute), "ui-icon action-icon")}
+        <span class="workspace-action-label">${escapeHtml(input.label)}</span>
+        <small>${escapeHtml(input.detail)}</small>
+      </button>
     `;
   }
 
@@ -2262,16 +2536,9 @@ export class App {
 
   private renderStudioNavigator(): string {
     const activeNavigator = this.renderActiveStudioNavigator();
-    if (this.studioTab === "workbench") {
-      return `
-        ${activeNavigator}
-        ${this.renderStudioTabs({ compact: true })}
-      `;
-    }
-
     return `
-      ${activeNavigator}
       ${this.renderStudioTabs({ compact: true })}
+      ${activeNavigator}
     `;
   }
 
@@ -2303,6 +2570,16 @@ export class App {
   private renderStudioTabs(options: { compact?: boolean } = {}): string {
     const activeTab = STUDIO_TABS.find((tab) => tab.id === this.studioTab);
     const activeStatus = this.getStudioTabStatus(this.studioTab);
+    const compactLabels: Record<StudioTab, string> = {
+      workbench: "Work",
+      assets: "Assets",
+      inspector: "Data",
+      stage: "Stage",
+      debug: "Debug",
+      evidence: "Trace",
+      modules: "Mods",
+      build: "Build",
+    };
     return `
       <div class="section studio-tab-section ${options.compact ? "is-compact" : ""}">
         <div class="section-heading-row">
@@ -2315,12 +2592,15 @@ export class App {
         <div class="tabs studio-tabs" role="tablist" aria-label="Studio surfaces">
           ${STUDIO_TABS.map((tab) => {
             const status = this.getStudioTabStatus(tab.id);
+            const selected = this.studioTab === tab.id;
+            const currentAttr = selected ? ' aria-current="page"' : "";
             return `
-              <button type="button" role="tab" aria-selected="${this.studioTab === tab.id}" aria-label="${escapeHtml(
+              <button type="button" role="tab" aria-selected="${selected}" aria-label="${escapeHtml(
                 `${tab.label}: ${tab.summary}. ${status.label}`,
-              )}" class="tab ${this.studioTab === tab.id ? "is-active" : ""}" data-studio-tab="${tab.id}">
+              )}"${currentAttr} class="tab ${selected ? "is-active" : ""}" data-studio-tab="${tab.id}">
                 <span class="tab-topline">
-                  <span class="tab-label">${escapeHtml(tab.label)}</span>
+                  ${tablerIcon(iconForStudioTab(tab.id), "ui-icon tab-icon")}
+                  <span class="tab-label">${escapeHtml(options.compact ? compactLabels[tab.id] : tab.label)}</span>
                   <span class="tab-dot tab-dot-${status.tone}" aria-hidden="true"></span>
                 </span>
                 <span class="tab-status">${escapeHtml(status.label)}</span>
@@ -2505,44 +2785,48 @@ export class App {
     const importedReady = Boolean(sourceName || this.importedProjectManifest);
     const buildStatus: StudioStatus = compiled ? (compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok") : "pending";
     const gateStatus: StudioStatus = attentionGates.length ? primaryGate?.status ?? "warn" : "ok";
+    const directiveAction = primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-studio-tab="workbench"';
+    const manifestShort = manifest.schemaVersion.replace("mugen-web-sandbox/", "");
     return `
-      <div class="section section-emphasis studio-command-center workbench-command-center">
-        <div class="command-center-header">
-          <div>
-            <span class="panel-kicker">Workbench command</span>
-            <h2>${escapeHtml(summary.name)}</h2>
-            <p>${escapeHtml(summary.entry.p1)} vs ${escapeHtml(summary.entry.p2)} on ${escapeHtml(summary.entry.stage)}</p>
-          </div>
+      <div class="workbench-ops-section" role="region" aria-labelledby="workbench-ops-title">
+        <header class="workbench-ops-head">
+          <span class="gate-kicker">Workbench command</span>
+          <h2 id="workbench-ops-title">${escapeHtml(summary.name)}</h2>
+          <p>${escapeHtml(summary.entry.p1)} vs ${escapeHtml(summary.entry.p2)} on ${escapeHtml(summary.entry.stage)}</p>
           <span class="badge ${this.statusClassName(gateStatus)}">${attentionGates.length ? `${attentionGates.length} issues` : "steady"}</span>
-        </div>
-        <div class="command-center-main workbench-command-main">
-          <div class="operator-callout">
-            <span class="panel-kicker">Operator priority</span>
-            <strong>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</strong>
-            <small>${escapeHtml(primaryGate?.impact ?? "No gate impact has been reported yet.")}</small>
-            <div class="badge-row">
-              ${this.statusBadge(primaryGate?.status ?? "unknown")}
-              <span class="badge">${summary.gates.length - attentionGates.length}/${summary.gates.length} gates clear</span>
-              <span class="badge ${compiled ? "ok" : "warn"}">${compiled ? "manifest ready" : "manifest pending"}</span>
-            </div>
-          </div>
+        </header>
+        <button type="button" class="workbench-directive is-${this.statusClassName(primaryGate?.status ?? "unknown")}" ${directiveAction}>
+          <span class="gate-kicker">Operator priority</span>
+          <strong>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</strong>
+          <small>${escapeHtml(primaryGate?.impact ?? "No gate impact has been reported yet.")}</small>
+          <span class="workbench-directive-metrics">
+            ${this.statusBadge(primaryGate?.status ?? "unknown")}
+            <span class="badge">${summary.gates.length - attentionGates.length}/${summary.gates.length} gates clear</span>
+            <span class="badge ${compiled ? "ok" : "warn"}">${compiled ? "manifest ready" : "manifest pending"}</span>
+          </span>
+        </button>
+        <div class="workbench-command-main">
           <div class="workbench-surface-grid" aria-label="Workbench surface jumps">
-            <button type="button" class="surface-jump-button is-${assetsNeedingAttention.length ? "warn" : "ok"}" data-studio-tab="assets" data-asset-filter="${assetsNeedingAttention.length ? "attention" : "all"}" aria-label="Open Assets: ${escapeHtml(assetsNeedingAttention.length ? `${assetsNeedingAttention.length} assets need work` : `${summary.assets.length} assets ready`)}">
+            <button type="button" class="workbench-route-button is-${assetsNeedingAttention.length ? "warn" : "ok"}" data-studio-tab="assets" data-asset-filter="${assetsNeedingAttention.length ? "attention" : "all"}" aria-label="Open Assets: ${escapeHtml(assetsNeedingAttention.length ? `${assetsNeedingAttention.length} assets need work` : `${summary.assets.length} assets ready`)}">
+              ${tablerIcon("assets", "ui-icon route-icon")}
               <span>Assets</span>
               <strong>${assetsNeedingAttention.length ? `${assetsNeedingAttention.length} need work` : `${summary.assets.length} ready`}</strong>
               <small>${escapeHtml(assetsNeedingAttention[0]?.label ?? "source/runtime map")}</small>
             </button>
-            <button type="button" class="surface-jump-button is-${traceCount ? "ok" : "warn"}" data-studio-tab="evidence" aria-label="Open Evidence: ${traceCount ? `${traceCount} traces available` : "capture trace"}">
+            <button type="button" class="workbench-route-button is-${traceCount ? "ok" : "warn"}" data-studio-tab="evidence" aria-label="Open Evidence: ${traceCount ? `${traceCount} traces available` : "capture trace"}">
+              ${tablerIcon("evidence", "ui-icon route-icon")}
               <span>Evidence</span>
               <strong>${traceCount ? `${traceCount} traces` : "capture trace"}</strong>
               <small>${traceCount ? "review gates" : "export smoke run"}</small>
             </button>
-            <button type="button" class="surface-jump-button is-${compiled ? "ok" : "warn"}" data-studio-tab="build" aria-label="Open Build: ${compiled ? "package ready" : "compile next"}">
+            <button type="button" class="workbench-route-button is-${compiled ? "ok" : "warn"}" data-studio-tab="build" aria-label="Open Build: ${compiled ? "package ready" : "compile next"}">
+              ${tablerIcon("build", "ui-icon route-icon")}
               <span>Build</span>
               <strong>${compiled ? "package ready" : "compile next"}</strong>
-              <small>${compiled ? `${compiled.modules.active.length} active modules` : manifest.schemaVersion}</small>
+              <small>${compiled ? `${compiled.modules.active.length} active modules` : manifestShort}</small>
             </button>
-            <button type="button" class="surface-jump-button is-ok" data-studio-tab="debug" aria-label="Open Debug: ${this.matchRuntime.getActorRegistry().actors.length} live actors">
+            <button type="button" class="workbench-route-button is-ok" data-studio-tab="debug" aria-label="Open Debug: ${this.matchRuntime.getActorRegistry().actors.length} live actors">
+              ${tablerIcon("debug", "ui-icon route-icon")}
               <span>Debug</span>
               <strong>${this.matchRuntime.getActorRegistry().actors.length} actors live</strong>
               <small>registry lenses</small>
@@ -2568,17 +2852,17 @@ export class App {
           <span class="${this.statusClassName(buildStatus) === "ok" ? "is-ok" : "is-warn"}">
             <small>Build</small>
             <b>${compiled ? "ready" : "pending"}</b>
-            <em>${compiled ? `${compiled.modules.active.length} modules active` : manifest.schemaVersion}</em>
+            <em>${compiled ? `${compiled.modules.active.length} modules active` : manifestShort}</em>
           </span>
         </div>
         <div class="workbench-action-bar" aria-label="Primary workbench actions">
           <button type="button" class="primary-action" data-mode="match">Playtest</button>
-          <button type="button" data-action="load-zip">Load MUGEN ZIP</button>
+          <button type="button" data-action="load-zip">Load ZIP</button>
           <button type="button" data-action="export-trace-artifact">Export Trace</button>
-          <button type="button" data-action="compile-project">Compile Runtime</button>
+          <button type="button" data-action="compile-project">Compile</button>
         </div>
         <div class="badge-row">
-          <span class="badge">${escapeHtml(manifest.schemaVersion)}</span>
+          <span class="badge">${escapeHtml(manifestShort)}</span>
           <span class="badge">${summary.modules.length} modules</span>
           <span class="badge">${summary.assets.length} assets</span>
           ${compiled?.diagnostics.warnings.length ? `<span class="badge warn">${compiled.diagnostics.warnings.length} compile warnings</span>` : ""}
@@ -3040,235 +3324,28 @@ export class App {
   }
 
   private renderStudioRightPane(): string {
-    const focus = this.renderStudioFocusPanel();
     if (this.studioTab === "assets") {
-      return focus + this.renderStudioAssetsRightPane();
+      return this.renderStudioAssetsRightPane();
     }
     if (this.studioTab === "inspector") {
-      return focus + this.renderStudioInspectorRightPane();
+      return this.renderStudioInspectorRightPane();
     }
     if (this.studioTab === "stage") {
-      return focus + this.renderStudioStageRightPane();
+      return this.renderStudioStageRightPane();
     }
     if (this.studioTab === "debug") {
-      return focus + this.renderStudioDebugRightPane();
+      return this.renderStudioDebugRightPane();
     }
     if (this.studioTab === "modules") {
-      return focus + this.renderStudioModulesRightPane();
+      return this.renderStudioModulesRightPane();
     }
     if (this.studioTab === "evidence") {
-      return focus + this.renderStudioEvidenceRightPane();
+      return this.renderStudioEvidenceRightPane();
     }
     if (this.studioTab === "build") {
-      return focus + this.renderStudioBuildRightPane();
+      return this.renderStudioBuildRightPane();
     }
-    return focus + this.renderStudioWorkbenchRightPane();
-  }
-
-  private renderStudioFocusPanel(): string {
-    const summary = this.getStudioProjectSummary();
-    const activeTab = STUDIO_TABS.find((tab) => tab.id === this.studioTab);
-    const primaryGate = this.getPrimaryStudioGate(summary);
-    const status = this.getStudioTabStatus(this.studioTab);
-    const action = this.getStudioFocusPrimaryAction();
-    const actionQueue = this.getStudioActionQueue(summary);
-    const statusClass = status.tone === "ok" ? "ok" : status.tone === "error" ? "error" : status.tone === "warn" ? "warn" : "active";
-    const focusActions = [
-      { label: action.label, attribute: action.attribute, primary: true },
-      { label: "Playtest", attribute: 'data-mode="match"', primary: false },
-      { label: "Compile", attribute: 'data-action="compile-project"', primary: false },
-      { label: "Evidence", attribute: 'data-studio-tab="evidence"', primary: false },
-    ].filter((candidate, index, candidates) => candidates.findIndex((item) => item.label === candidate.label) === index);
-    return `
-      <div class="section studio-focus-panel">
-        <div class="section-heading-row">
-          <div>
-            <span class="panel-kicker">Studio focus</span>
-            <h2>${escapeHtml(activeTab?.label ?? "Studio")}</h2>
-          </div>
-          <span class="badge ${statusClass}">${escapeHtml(status.label)}</span>
-        </div>
-        <div class="studio-focus-decision-row">
-          <div class="studio-focus-hero is-${this.statusClassName(primaryGate?.status ?? "unknown")}">
-            <div>
-              <span class="panel-kicker">Current decision</span>
-              <strong>${escapeHtml(primaryGate?.nextAction.label ?? action.label)}</strong>
-              <small>${escapeHtml(primaryGate?.impact ?? activeTab?.summary ?? "Use this surface to turn project state into runnable evidence.")}</small>
-            </div>
-            ${this.statusBadge(primaryGate?.status ?? "unknown")}
-          </div>
-          <div class="studio-focus-actions" aria-label="Studio focus actions">
-            ${focusActions
-              .map(
-                (focusAction) =>
-                  `<button type="button" class="${focusAction.primary ? "primary-action" : ""}" ${focusAction.attribute}>${escapeHtml(focusAction.label)}</button>`,
-              )
-              .join("")}
-          </div>
-        </div>
-        ${this.renderStudioFocusRail(summary, primaryGate)}
-        ${this.renderStudioActionQueue(actionQueue)}
-      </div>
-    `;
-  }
-
-  private renderStudioFocusRail(summary: StudioProjectSummary, primaryGate: StudioProjectSummary["gates"][number] | undefined): string {
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status));
-    const compiled = this.lastCompiledProject;
-    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
-    const clearGateCount = summary.gates.filter((gate) => !isAttentionStatus(gate.status)).length;
-    const manifestStatus: StudioStatus = compiled ? (compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok") : "pending";
-    return `
-      <div class="studio-focus-rail" aria-label="Studio readiness checkpoints">
-        ${this.renderStudioFocusRailItem({
-          label: "Gate",
-          value: `${clearGateCount}/${summary.gates.length}`,
-          detail: primaryGate?.label ?? "no gate",
-          status: primaryGate?.status ?? "unknown",
-          attribute: 'data-studio-tab="evidence"',
-        })}
-        ${this.renderStudioFocusRailItem({
-          label: "Assets",
-          value: attentionAssets.length ? `${attentionAssets.length} warn` : `${summary.assets.length} ready`,
-          detail: attentionAssets[0]?.label ?? "records mapped",
-          status: attentionAssets.length ? "warn" : "ok",
-          attribute: attentionAssets.length ? 'data-studio-tab="assets" data-asset-filter="attention"' : 'data-studio-tab="assets"',
-        })}
-        ${this.renderStudioFocusRailItem({
-          label: "Trace",
-          value: traceCount ? `${traceCount}` : "none",
-          detail: traceCount ? "evidence linked" : "export needed",
-          status: traceCount ? "ok" : "pending",
-          attribute: traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"',
-        })}
-        ${this.renderStudioFocusRailItem({
-          label: "Build",
-          value: compiled ? "ready" : "pending",
-          detail: compiled ? `${compiled.modules.active.length} modules` : "compile manifest",
-          status: manifestStatus,
-          attribute: compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"',
-        })}
-      </div>
-    `;
-  }
-
-  private renderStudioFocusRailItem(input: {
-    label: string;
-    value: string;
-    detail: string;
-    status: StudioStatus;
-    attribute: string;
-  }): string {
-    return `
-      <button type="button" class="studio-focus-rail-item is-${this.statusClassName(input.status)}" ${input.attribute}>
-        <span>${escapeHtml(input.label)}</span>
-        <strong>${escapeHtml(input.value)}</strong>
-        <small>${escapeHtml(input.detail)}</small>
-      </button>
-    `;
-  }
-
-  private getStudioActionQueue(summary: StudioProjectSummary): Array<{
-    label: string;
-    value: string;
-    detail: string;
-    status: StudioStatus;
-    attribute: string;
-  }> {
-    const primaryGate = this.getPrimaryStudioGate(summary);
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status));
-    const compiled = this.lastCompiledProject;
-    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
-    const gateStatus = primaryGate?.status ?? "unknown";
-    const assetStatus: StudioStatus = attentionAssets.length ? "warn" : "ok";
-    const manifestStatus: StudioStatus = compiled ? (compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok") : "pending";
-    const traceStatus: StudioStatus = traceCount ? "ok" : "pending";
-    const rows = [
-      {
-        label: "Gate",
-        value: primaryGate ? primaryGate.label : "No gates",
-        detail: primaryGate ? primaryGate.nextAction.label : "Create or load a project",
-        status: gateStatus,
-        attribute: 'data-studio-tab="evidence"',
-      },
-      {
-        label: "Assets",
-        value: attentionAssets.length ? `${attentionAssets.length} need work` : "Mapped",
-        detail: attentionAssets[0]?.nextAction.label ?? `${summary.assets.length} asset records tracked`,
-        status: assetStatus,
-        attribute: attentionAssets.length ? 'data-studio-tab="assets" data-asset-filter="attention"' : 'data-studio-tab="assets"',
-      },
-      {
-        label: "Manifest",
-        value: compiled ? "Compiled" : "Pending",
-        detail: compiled ? `${compiled.modules.active.length} active modules` : "Compile runtime-manifest/v0",
-        status: manifestStatus,
-        attribute: compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"',
-      },
-      {
-        label: "Evidence",
-        value: traceCount ? `${traceCount} traces` : "No trace",
-        detail: traceCount ? "Review current and persisted evidence" : "Export a smoke trace from Build",
-        status: traceStatus,
-        attribute: traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"',
-      },
-    ];
-    return rows.sort((left, right) => this.studioStatusWeight(right.status) - this.studioStatusWeight(left.status));
-  }
-
-  private studioStatusWeight(status: StudioStatus): number {
-    if (status === "fail" || status === "blocked" || status === "unsupported") {
-      return 4;
-    }
-    if (status === "warn" || status === "partial" || status === "unknown") {
-      return 3;
-    }
-    if (status === "pending" || status === "planned") {
-      return 2;
-    }
-    return 1;
-  }
-
-  private renderStudioActionQueue(
-    rows: Array<{
-      label: string;
-      value: string;
-      detail: string;
-      status: StudioStatus;
-      attribute: string;
-    }>,
-  ): string {
-    return `
-      <div class="studio-action-queue" aria-label="Studio action queue">
-        <div class="studio-action-queue-head">
-          <span class="panel-kicker">Action queue</span>
-          <span class="badge">${rows.length} checks</span>
-        </div>
-        ${rows.map((row, index) => this.renderStudioActionQueueRow(row, index)).join("")}
-      </div>
-    `;
-  }
-
-  private renderStudioActionQueueRow(input: {
-    label: string;
-    value: string;
-    detail: string;
-    status: StudioStatus;
-    attribute: string;
-  }, index: number): string {
-    return `
-      <button type="button" class="studio-action-queue-row ${index === 0 ? "is-priority" : ""} is-${this.statusClassName(input.status)}" ${input.attribute} aria-label="${escapeHtml(
-        `${index + 1}. ${input.label}: ${input.value}. ${input.detail}`,
-      )}">
-        <span class="studio-action-index">${index + 1}</span>
-        <span class="studio-action-main">
-          <span class="studio-action-label">${escapeHtml(input.label)}</span>
-          <strong>${escapeHtml(input.value)}</strong>
-          <small>${escapeHtml(input.detail)}</small>
-        </span>
-        ${this.statusBadge(input.status)}
-      </button>
-    `;
+    return this.renderStudioWorkbenchRightPane();
   }
 
   private getStudioFocusPrimaryAction(): { label: string; attribute: string } {
@@ -3315,9 +3392,9 @@ export class App {
   private renderStudioHealthPanel(summary: StudioProjectSummary): string {
     const statusCounts = countBy(summary.gates, (gate) => this.statusClassName(gate.status));
     const primaryGate = this.getPrimaryStudioGate(summary);
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).slice(0, 3);
+    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).slice(0, 4);
     return `
-      <div class="section section-emphasis">
+      <div class="section section-emphasis studio-health-panel">
         <div class="section-heading-row">
           <h2>Project Health</h2>
           <span class="badge ${primaryGate && isAttentionStatus(primaryGate.status) ? "warn" : "ok"}">${primaryGate && isAttentionStatus(primaryGate.status) ? "needs action" : "steady"}</span>
@@ -3328,19 +3405,34 @@ export class App {
           <span class="${statusCounts.get("error") ? "is-error" : ""}"><b>${statusCounts.get("error") ?? 0}</b> blocked</span>
           <span class="${summary.assets.some((asset) => isAttentionStatus(asset.status)) ? "is-warn" : "is-ok"}"><b>${summary.assets.length}</b> assets</span>
         </div>
-        <div class="studio-primary-next">
-          <span>${this.statusBadge(primaryGate?.status ?? "unknown")}</span>
+        <button type="button" class="studio-primary-next" ${primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-studio-tab="workbench"'}>
+          ${this.statusBadge(primaryGate?.status ?? "unknown")}
           <div>
             <strong>${escapeHtml(primaryGate?.label ?? "No active gate")}</strong>
-            <small>${escapeHtml(primaryGate?.detail ?? "The project has no gate records yet.")}</small>
+            <small>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</small>
           </div>
-        </div>
+        </button>
         ${
           attentionAssets.length
-            ? `<div class="list compact-list">${attentionAssets.map((asset) => this.renderStudioAsset(asset, { selectable: true })).join("")}</div>`
+            ? `<div class="health-queue" aria-label="Asset attention queue">${attentionAssets.map((asset) => this.renderStudioHealthAsset(asset)).join("")}</div>`
             : `<div class="empty-state compact">No asset records currently need attention.</div>`
         }
       </div>
+    `;
+  }
+
+  private renderStudioHealthAsset(asset: StudioProjectSummary["assets"][number]): string {
+    return `
+      <button type="button" class="health-queue-row is-${this.statusClassName(asset.status)}" data-studio-tab="assets" data-studio-asset-id="${escapeHtml(asset.id)}" data-asset-filter="attention">
+        <span class="health-queue-main">
+          <strong>${escapeHtml(asset.label)}</strong>
+          <small>${escapeHtml(asset.kind)} / ${escapeHtml(asset.source)}</small>
+        </span>
+        <span class="health-queue-meta">
+          ${this.statusBadge(asset.status)}
+          <span class="health-queue-next">${escapeHtml(asset.nextAction.label)}</span>
+        </span>
+      </button>
     `;
   }
 
@@ -3358,7 +3450,9 @@ export class App {
                 <dt>Entry</dt><dd class="mono">${escapeHtml(compiled.entry.p1)} vs ${escapeHtml(compiled.entry.p2)}</dd>
                 <dt>Stage</dt><dd class="mono">${escapeHtml(compiled.entry.stage)}</dd>
                 <dt>Tick</dt><dd class="mono">${compiled.runtime.tickRate} fps</dd>
+                <dt>Contracts</dt><dd class="mono">${compiled.contracts.sharedContracts.length} shared / ${compiled.contracts.moduleContracts.length} modules</dd>
               </dl>
+              ${this.renderSharedContractsStrip(compiled)}
               <div class="badge-row">
                 <span class="badge ok">${compiled.modules.active.length} active</span>
                 <span class="badge warn">${compiled.modules.planned.length} planned</span>
@@ -3380,46 +3474,72 @@ export class App {
 
   private renderEngineModulesPanel(summary: StudioProjectSummary): string {
     return `
-      <div class="section">
-        <h2>Engine Modules</h2>
-        <div class="list">
+      <div class="section engine-modules-panel">
+        <div class="section-heading-row">
+          <h2>Engine Modules</h2>
+          <span class="badge">${summary.modules.length} modules</span>
+        </div>
+        <div class="engine-module-table" role="table" aria-label="Engine module status">
+          <div class="engine-module-row engine-module-row-head" role="row">
+            <span>Module</span>
+            <span>Status</span>
+            <span>Contracts</span>
+            <span>Blocked</span>
+          </div>
           ${summary.modules
             .map(
               (module) => `
-                <div class="list-item state-list-item">
-                  <span>
-                    <span class="list-title">${escapeHtml(module.label)}</span>
-                    <span class="list-meta">${escapeHtml(module.detail)}</span>
-                    <span class="badge-row">
-                      ${this.statusBadge(module.status)}
-                      <span class="badge">${escapeHtml(module.id)}</span>
-                    </span>
+                <div class="engine-module-row is-${this.statusClassName(module.status)}" role="row">
+                  <span class="engine-module-name">
+                    <strong>${escapeHtml(module.label)}</strong>
+                    <small>${escapeHtml(module.id)}${module.role ? ` / ${escapeHtml(module.role)}` : ""}</small>
                   </span>
+                  <span>${this.statusBadge(module.status)}</span>
+                  <span class="engine-module-contracts">
+                    <b>${module.consumes.length}</b><small>in</small>
+                    <b>${module.provides.length}</b><small>out</small>
+                  </span>
+                  <span class="engine-module-blocked">${escapeHtml(this.moduleBlockedPreview(module))}</span>
                 </div>
               `,
             )
             .join("")}
         </div>
+        <button type="button" class="full-width-action" data-studio-tab="modules">Open module contracts</button>
       </div>
     `;
   }
 
+  private moduleBlockedPreview(module: StudioProjectSummary["modules"][number]): string {
+    const forbidden = module.forbiddenSharedCoreConcepts;
+    return forbidden.length ? forbidden.slice(0, 3).join(", ") + (forbidden.length > 3 ? ` +${forbidden.length - 3}` : "") : "none";
+  }
+
   private renderAcceptanceGatesPanel(summary: StudioProjectSummary): string {
+    const attention = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+    const clear = summary.gates.length - attention;
     return `
-      <div class="section">
-        <h2>Acceptance Gates</h2>
-        <div class="list">
+      <div class="acceptance-gates-section" role="region" aria-labelledby="acceptance-gates-heading">
+        <header class="section-heading-row acceptance-gate-heading">
+          <span class="gate-kicker">Release desk</span>
+          <h2 id="acceptance-gates-heading">Acceptance Gates</h2>
+          <span class="badge ${attention ? "warn" : "ok"}">${clear}/${summary.gates.length} clear</span>
+        </header>
+        <div class="acceptance-gate-board" aria-label="Acceptance gate board">
           ${summary.gates
             .map(
               (gate) => `
-                <div class="list-item state-list-item">
-                  <span>
-                    <span class="list-title">${escapeHtml(gate.label)}</span>
-                    <span class="list-meta">${escapeHtml(gate.detail)}</span>
-                    <span class="list-meta">Next action: ${escapeHtml(gate.nextAction.label)}</span>
-                    <span class="badge-row">${this.statusBadge(gate.status)}</span>
+                <button type="button" class="acceptance-gate-row is-${this.statusClassName(gate.status)}" ${this.studioNextActionAttribute(gate.nextAction)}>
+                  <span class="acceptance-gate-state">${this.statusBadge(gate.status)}</span>
+                  <span class="acceptance-gate-main">
+                    <strong>${escapeHtml(gate.label)}</strong>
+                    <small>${escapeHtml(gate.detail)}</small>
                   </span>
-                </div>
+                  <span class="acceptance-gate-action">
+                    <b>${escapeHtml(gate.nextAction.label)}</b>
+                    <small>${escapeHtml(gate.affectedSystem ?? "studio")} / ${gate.evidenceIds.length} evidence</small>
+                  </span>
+                </button>
               `,
             )
             .join("")}
@@ -3849,7 +3969,7 @@ export class App {
         ${
           selection.selectedActor
             ? `
-              <div class="debug-selected-card">
+              <div class="debug-selection-panel">
                 <strong>${escapeHtml(selection.selectedActor.label)}</strong>
                 <span class="list-meta mono">${escapeHtml(selection.selectedActor.id)} / ${escapeHtml(selection.selectedActor.layer)} / ${escapeHtml(selection.selectedActor.source ?? "unknown")}</span>
                 <span class="badge-row">
@@ -4051,12 +4171,12 @@ export class App {
           ${this.studioStat("Audio", audioCounts.soundEvents + audioCounts.envShakeEvents)}
         </div>
         <div class="debug-lens-grid">
-          <div class="debug-lens-card">
+          <div class="debug-lens-meter">
             <span class="panel-kicker">Selection</span>
             <strong>${escapeHtml(selection.selectedActor?.label ?? "No actor")}</strong>
             <small>${escapeHtml(selection.selectedActor ? `${selection.selectedActor.id} / ${selection.selectedActor.kind} / state ${selection.selectedActor.stateNo}` : "Registry empty")}</small>
           </div>
-          <div class="debug-lens-card">
+          <div class="debug-lens-meter">
             <span class="panel-kicker">Runtime focus</span>
             <strong>${snapshot.matchPause ? `${snapshot.matchPause.type} pause` : "No match pause"}</strong>
             <small>${snapshot.matchPause ? `${snapshot.matchPause.remaining}f remaining / actor ${escapeHtml(snapshot.matchPause.actorId)}` : `${snapshot.playing ? "playing" : "paused"} / tick ${snapshot.tick}`}</small>
@@ -4079,12 +4199,12 @@ export class App {
           <span class="badge ${registry.targetLinks.length ? "warn" : "ok"}">${registry.targetLinks.length} active</span>
         </div>
         <div class="debug-lens-grid">
-          <div class="debug-lens-card">
+          <div class="debug-lens-meter">
             <span class="panel-kicker">Selected actor</span>
             <strong>${selection.relatedTargetLinks.length}</strong>
             <small>${escapeHtml(selection.selectedActor?.id ?? "none")} target references</small>
           </div>
-          <div class="debug-lens-card">
+          <div class="debug-lens-meter">
             <span class="panel-kicker">World</span>
             <strong>${registry.targetLinks.length}</strong>
             <small>${registry.players.length} player actors / ${registry.effects.length} effect actors</small>
@@ -4232,7 +4352,7 @@ export class App {
   }
 
   private renderStudioDebugTargetWorldEvidence(selection: StudioDebugSelectionSummary): string {
-    const artifact = this.lastTraceArtifact;
+    const artifact = this.getActiveTraceArtifact();
     if (!artifact) {
       return this.renderStudioDebugWorldEvidenceEmpty(
         "targets",
@@ -4277,7 +4397,7 @@ export class App {
   }
 
   private renderStudioDebugEffectWorldEvidence(selection: StudioDebugSelectionSummary): string {
-    const artifact = this.lastTraceArtifact;
+    const artifact = this.getActiveTraceArtifact();
     if (!artifact) {
       return this.renderStudioDebugWorldEvidenceEmpty(
         "effects",
@@ -4326,7 +4446,7 @@ export class App {
   }
 
   private renderStudioDebugPauseTraceEvidence(): string {
-    const artifact = this.lastTraceArtifact;
+    const artifact = this.getActiveTraceArtifact();
     if (!artifact) {
       return this.renderStudioDebugWorldEvidenceEmpty(
         "pause",
@@ -4918,7 +5038,33 @@ export class App {
   private renderStudioModulesNavigator(): string {
     const summary = this.getStudioProjectSummary();
     const compiled = this.lastCompiledProject;
+    const sharedContracts = compiled?.contracts.sharedContracts ?? [];
+    const sharedForbidden =
+      compiled?.contracts.boundaries.sharedCoreForbidden ??
+      summary.modules.find((module) => module.id === "three-render")?.forbiddenSharedCoreConcepts ??
+      [];
+    const platformerForbidden =
+      compiled?.contracts.boundaries.platformerForbidden ??
+      summary.modules.find((module) => module.id === "platformer-module")?.forbiddenSharedCoreConcepts ??
+      [];
     return `
+      <div class="section">
+        <h2>Shared Contracts</h2>
+        <div class="studio-stat-grid">
+          ${this.studioStat("Shared", sharedContracts.length)}
+          ${this.studioStat("Modules", compiled?.contracts.moduleContracts.length ?? summary.modules.length)}
+          ${this.studioStat("Core blocks", sharedForbidden.length)}
+          ${this.studioStat("Genre blocks", platformerForbidden.length)}
+        </div>
+        <div class="contract-strip compact" aria-label="Visible shared engine contract ids">
+          ${this.renderContractPills(sharedContracts, compiled ? "none" : "compile first")}
+        </div>
+        <div class="badge-row">
+          <span class="badge warn">CNS blocked</span>
+          <span class="badge warn">HitDef blocked</span>
+          <span class="badge warn">ZSS blocked</span>
+        </div>
+      </div>
       <div class="section">
         <h2>Module Graph Studio</h2>
         <div class="module-graph">
@@ -4950,6 +5096,7 @@ export class App {
 
   private renderStudioModulesRightPane(): string {
     const summary = this.getStudioProjectSummary();
+    const compiled = this.lastCompiledProject;
     return `
       ${this.renderRuntimeManifestPanel()}
       ${this.renderEngineModulesPanel(summary)}
@@ -4960,6 +5107,7 @@ export class App {
           <span class="pipeline-step active">Three adapter<small>Scene graph renders snapshots only.</small></span>
           <span class="pipeline-step">Future modules<small>Platformer and other genres must compile to their own runtime contracts.</small></span>
         </div>
+        ${this.renderSharedBoundaryPanel(summary, compiled)}
       </div>
     `;
   }
@@ -5135,29 +5283,34 @@ export class App {
   }
 
   private renderBuildReadinessRecord(record: BuildReadinessRecord): string {
-    const relinkAction =
+    const relinkActions =
       record.nextAction.kind === "relink-source"
-        ? `<span class="row-actions" data-source-package-id="${escapeHtml(record.nextAction.targetId ?? "")}">
+        ? `
+            <span class="row-actions" data-source-package-id="${escapeHtml(record.nextAction.targetId ?? "")}">
             <button type="button" data-action="relink-source">Relink ZIP</button>
             <button type="button" data-action="relink-source-folder">Folder</button>
-          </span>`
+            </span>
+          `
         : "";
+    const statusClass = this.statusClassName(record.status);
     return `
-      <div class="list-item">
-        <span>
+      <div class="list-item build-readiness-record is-${statusClass}">
+        <span class="build-readiness-main">
+          <span class="record-kicker">${escapeHtml(record.state)} / ${escapeHtml(record.severity)} / ${escapeHtml(record.affectedSystem ?? "project")}</span>
           <span class="list-title">${escapeHtml(record.label)}</span>
-          <span class="list-meta">${escapeHtml(record.state)} / ${escapeHtml(record.detail)}</span>
-          <span class="list-meta">Impact: ${escapeHtml(record.impact)}</span>
-          <span class="list-meta">Next action: ${escapeHtml(record.nextAction.label)}</span>
-          <span class="badge-row">
-            ${this.statusBadge(record.status)}
-            <span class="badge ${record.canExport ? "ok" : "warn"}">${record.canExport ? "can export" : "blocked"}</span>
-            <span class="badge">${escapeHtml(record.severity)}</span>
+          <span class="list-meta">${escapeHtml(record.detail)}</span>
+          <span class="record-route"><b>Impact</b><span>${escapeHtml(record.impact)}</span></span>
+          <span class="record-route"><b>Next</b><span>${escapeHtml(record.nextAction.label)}</span></span>
+          <span class="badge-row record-evidence">
             <span class="badge">${escapeHtml(record.id)}</span>
-            ${record.evidenceIds.slice(0, 2).map((id) => `<span class="badge">${escapeHtml(id)}</span>`).join("")}
+            ${record.evidenceIds.slice(0, 3).map((id) => `<span class="badge">${escapeHtml(id)}</span>`).join("")}
           </span>
         </span>
-        ${relinkAction}
+        <span class="record-side">
+          ${this.statusBadge(record.status)}
+          <span class="badge ${record.canExport ? "ok" : "warn"}">${record.canExport ? "exportable" : "blocked"}</span>
+          ${relinkActions}
+        </span>
       </div>
     `;
   }
@@ -5165,7 +5318,7 @@ export class App {
   private renderStudioEvidenceNavigator(): string {
     const evidence = this.getStudioEvidenceSummary();
     const records = this.getFilteredEvidenceRecords(evidence);
-    const currentTrace = this.lastTraceArtifact;
+    const currentTrace = this.getActiveTraceArtifact();
     const comparison = evidence.persistedTraceComparisons[0];
     return `
       <div class="section section-emphasis studio-command-center evidence-command-center">
@@ -5261,7 +5414,7 @@ export class App {
           <dt>Total</dt><dd class="mono">${evidence.stats.total}</dd>
           <dt>Visible</dt><dd class="mono">${records.length}</dd>
           <dt>Attention</dt><dd class="mono">${evidence.stats.attention}</dd>
-          <dt>Trace</dt><dd class="mono">${this.lastTraceArtifact ? this.lastTraceArtifact.trace.checksum : "not exported"}</dd>
+          <dt>Trace</dt><dd class="mono">${this.getActiveTraceArtifact() ? this.getActiveTraceArtifact()?.trace.checksum : "not exported"}</dd>
           <dt>Persisted</dt><dd class="mono">${evidence.stats.persistedTraceArtifacts}</dd>
           <dt>Comparisons</dt><dd class="mono">${evidence.persistedTraceComparisons.length}</dd>
           <dt>Top action</dt><dd>${evidence.topAction ? escapeHtml(evidence.topAction.label) : "none"}</dd>
@@ -5290,7 +5443,7 @@ export class App {
   }
 
   private renderTraceFrameScrubberPanel(): string {
-    const artifact = this.lastTraceArtifact;
+    const artifact = this.getActiveTraceArtifact();
     if (!artifact) {
       return `
         <div class="section">
@@ -5669,6 +5822,45 @@ export class App {
     `;
   }
 
+  private renderSharedContractsStrip(compiled: CompiledRuntimeManifest): string {
+    return `
+      <div class="contract-strip" aria-label="Shared engine contracts">
+        <strong>Shared Contracts</strong>
+        <div>${this.renderContractPills(compiled.contracts.sharedContracts, "none")}</div>
+      </div>
+    `;
+  }
+
+  private renderSharedBoundaryPanel(summary: StudioProjectSummary, compiled?: CompiledRuntimeManifest): string {
+    const platformer = summary.modules.find((module) => module.id === "platformer-module");
+    const sharedForbidden =
+      compiled?.contracts.boundaries.sharedCoreForbidden ??
+      summary.modules.find((module) => module.id === "three-render")?.forbiddenSharedCoreConcepts ??
+      [];
+    const platformerForbidden = compiled?.contracts.boundaries.platformerForbidden ?? platformer?.forbiddenSharedCoreConcepts ?? [];
+    return `
+      <div class="module-boundary-grid" aria-label="Shared engine boundary claims">
+        <div class="module-boundary-card">
+          <strong>Forbidden in shared core</strong>
+          <small>Compatibility-only concepts stay inside mugen-compat.</small>
+          ${this.renderContractPills(sharedForbidden, "none")}
+        </div>
+        <div class="module-boundary-card">
+          <strong>Platformer blocked concepts</strong>
+          <small>Future platformer module cannot depend on fighting controller semantics.</small>
+          ${this.renderContractPills(platformerForbidden, "none")}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderContractPills(items: readonly string[], emptyLabel: string): string {
+    if (items.length === 0) {
+      return `<span class="badge">${escapeHtml(emptyLabel)}</span>`;
+    }
+    return `<span class="contract-pill-row">${items.map((item) => `<span class="badge">${escapeHtml(item)}</span>`).join("")}</span>`;
+  }
+
   private renderTraceEvidencePanel(): string {
     const artifact = this.lastTraceArtifact;
     const history = this.traceArtifacts;
@@ -5856,7 +6048,7 @@ export class App {
   }
 
   private getStudioDebugTraceEvidence(actor: MatchWorldActorRegistrySnapshot["actors"][number] | undefined): StudioDebugTraceEvidence {
-    const artifact = this.lastTraceArtifact;
+    const artifact = this.getActiveTraceArtifact();
     if (!actor || !artifact) {
       return {
         traceFrameCount: 0,
@@ -6720,6 +6912,19 @@ export class App {
           : { kind: "open-evidence", label: "Review compile evidence", targetId: "compile:runtime-manifest" },
       },
       {
+        id: "architecture-boundaries",
+        label: "Architecture boundaries",
+        status: "ok",
+        state: "exportable",
+        detail: "Shared engine, MUGEN compatibility, renderer, Studio, and future module boundaries are covered by the import-boundary gate.",
+        affectedSystem: "module",
+        impact: "Keeps renderer-independent engine contracts portable while MUGEN-specific parser/runtime code stays behind compatibility adapters.",
+        evidenceIds: ["test:architecture-boundaries", "module-contracts"],
+        blockedBy: [],
+        canExport: true,
+        nextAction: { kind: "open-evidence", label: "Review boundary evidence", targetId: "test:architecture-boundaries" },
+      },
+      {
         id: "asset-validation",
         label: "Asset validation",
         status: assetAttention.some((asset) => asset.status === "fail") ? "fail" : assetAttention.length ? "warn" : "ok",
@@ -6964,11 +7169,16 @@ export class App {
     }));
   }
 
+  private getActiveTraceArtifact(): RuntimeTraceArtifact | undefined {
+    return this.lastTraceArtifact ?? this.traceArtifacts[0] ?? this.storedTraceEvidence[0]?.artifact;
+  }
+
   private getTraceFrameScrubberSummary(): StudioTraceFrameScrubberSummary {
-    if (!this.lastTraceArtifact) {
+    const artifact = this.getActiveTraceArtifact();
+    if (!artifact) {
       return { selectedFrameIndex: 0, totalFrames: 0 };
     }
-    const frames = this.getTraceArtifactFrameSummaries(this.lastTraceArtifact);
+    const frames = this.getTraceArtifactFrameSummaries(artifact);
     const selectedFrameIndex = Math.min(Math.max(0, this.selectedTraceFrameIndex), Math.max(0, frames.length - 1));
     return {
       selectedFrameIndex,
@@ -7063,6 +7273,22 @@ export class App {
 
   private getCompileEvidenceRecords(): StudioEvidenceRecord[] {
     const compiled = this.lastCompiledProject;
+    const architectureBoundaryEvidence: StudioEvidenceRecord = {
+      id: "test:architecture-boundaries",
+      label: "Architecture Boundaries",
+      category: "compile",
+      status: "ok",
+      detail: "Vitest import-boundary gate protects shared engine, MUGEN compatibility, renderer, Studio, and future modules.",
+      tags: ["architecture-boundaries", "module-contracts", "renderer-independent", "vitest"],
+      level: "Guarded",
+      severity: "notice",
+      affectedSystem: "module",
+      impact: "Makes the modular port strategy visible in Studio Evidence instead of only living in test output.",
+      evidenceIds: ["src/tests/ArchitectureBoundaries.test.ts", "src/engine/ModuleContracts.ts"],
+      blockedBy: [],
+      canExport: true,
+      nextAction: { kind: "open-build", label: "Review Build readiness", targetId: "architecture-boundaries" },
+    };
     if (!compiled) {
       return [
         {
@@ -7074,6 +7300,7 @@ export class App {
           tags: ["runtime-manifest/v0", "build-center"],
           level: "Compiled",
         },
+        architectureBoundaryEvidence,
       ];
     }
     const status: StudioStatus = compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok";
@@ -7087,6 +7314,7 @@ export class App {
         tags: ["runtime-manifest/v0", compiled.schemaVersion],
         level: "Compiled",
       },
+      architectureBoundaryEvidence,
       ...compiled.diagnostics.errors.map((message, index) => ({
         id: `compile:error:${index}`,
         label: "Compile Error",
@@ -7343,18 +7571,22 @@ export class App {
   }
 
   private renderEvidenceRecord(record: StudioEvidenceRecord): string {
+    const statusClass = this.statusClassName(record.status);
     return `
-      <div class="list-item">
-        <span>
+      <div class="list-item evidence-record is-${statusClass}">
+        <span class="evidence-record-main">
+          <span class="record-kicker">${escapeHtml(record.category)} / ${escapeHtml(record.level ?? "unleveled")}</span>
           <span class="list-title">${escapeHtml(record.label)}</span>
-          <span class="list-meta">${escapeHtml(record.category)} / ${escapeHtml(record.level ?? "Unleveled")} / ${escapeHtml(record.detail)}</span>
-          ${record.impact ? `<span class="list-meta">Impact: ${escapeHtml(record.impact)}</span>` : ""}
-          ${record.nextAction ? `<span class="list-meta">Next action: ${escapeHtml(record.nextAction.label)}</span>` : ""}
-          <span class="badge-row">
-            ${this.statusBadge(record.status)}
-            ${record.canExport !== undefined ? `<span class="badge ${record.canExport ? "ok" : "warn"}">${record.canExport ? "can export" : "blocked"}</span>` : ""}
+          <span class="list-meta">${escapeHtml(record.detail)}</span>
+          ${record.impact ? `<span class="record-route"><b>Impact</b><span>${escapeHtml(record.impact)}</span></span>` : ""}
+          ${record.nextAction ? `<span class="record-route"><b>Next</b><span>${escapeHtml(record.nextAction.label)}</span></span>` : ""}
+          <span class="badge-row record-evidence">
             ${record.tags.slice(0, 4).map((tag) => `<span class="badge">${escapeHtml(tag)}</span>`).join("")}
           </span>
+        </span>
+        <span class="record-side">
+          ${this.statusBadge(record.status)}
+          ${record.canExport !== undefined ? `<span class="badge ${record.canExport ? "ok" : "warn"}">${record.canExport ? "exportable" : "blocked"}</span>` : ""}
         </span>
       </div>
     `;
@@ -7398,7 +7630,7 @@ export class App {
 
   private statusBadge(status: StudioProjectSummary["gates"][number]["status"]): string {
     const className = status === "ok" || status === "active" ? "ok" : status === "fail" || status === "blocked" || status === "unsupported" ? "error" : status === "planned" ? "" : "warn";
-    return `<span class="badge status-badge status-${escapeHtml(status)} ${className}">${escapeHtml(status)}</span>`;
+    return `<span class="badge status-badge status-${escapeHtml(status)} ${className}">${tablerIcon(iconForStatus(status), "ui-icon status-icon")}<span>${escapeHtml(status)}</span></span>`;
   }
 
   private statusClassName(status: StudioStatus): string {
@@ -8026,14 +8258,21 @@ export class App {
     const visibleDiagnostics = diagnostics.slice(0, 40);
     const visibleRuntimeLogs = runtimeLogs.slice(0, Math.max(0, 60 - visibleDiagnostics.length));
     const hiddenRows = diagnostics.length + runtimeLogs.length - visibleDiagnostics.length - visibleRuntimeLogs.length;
+    const consoleTone = errors ? "error" : warnings ? "warn" : "ok";
+    const latestSignal = visibleDiagnostics[0]?.message ?? visibleRuntimeLogs[0] ?? "No warnings or runtime messages yet.";
     return `
-      <div class="console-toolbar">
-        <strong>Console</strong>
-        <span class="badge ${errors ? "error" : "ok"}">${errors} errors</span>
-        <span class="badge ${warnings ? "warn" : "ok"}">${warnings} warnings</span>
-        <span class="badge">${runtimeLogs.length} runtime logs</span>
-        <span class="badge">Three.js renderer</span>
-        ${hiddenRows > 0 ? `<span class="badge warn">${hiddenRows} hidden rows</span>` : ""}
+      <div class="console-toolbar is-${consoleTone}">
+        <div class="console-title">
+          <strong>Console</strong>
+          <span>${escapeHtml(latestSignal)}</span>
+        </div>
+        <div class="console-metrics" aria-label="Console summary">
+          <span class="badge ${errors ? "error" : "ok"}">${errors} errors</span>
+          <span class="badge ${warnings ? "warn" : "ok"}">${warnings} warnings</span>
+          <span class="badge">${runtimeLogs.length} runtime logs</span>
+          <span class="badge">Three.js renderer</span>
+          ${hiddenRows > 0 ? `<span class="badge warn">${hiddenRows} hidden rows</span>` : ""}
+        </div>
       </div>
       <div class="console-list" aria-live="polite">
         ${visibleDiagnostics
@@ -8096,7 +8335,7 @@ export class App {
           <span class="round-state ${round?.state ?? "fight"}">${escapeHtml(round?.message ?? "Fight")}</span>
           <strong>${round?.timer ?? 99}</strong>
           ${this.snapshot.matchPause ? `<span>${escapeHtml(formatHudMatchPause(this.snapshot.matchPause))}</span>` : ""}
-          <span>${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
+          <span class="round-stage">${escapeHtml(this.snapshot.stage.displayName ?? "Stage")}</span>
         </div>
         ${this.renderHudFighter(p2, "right")}
       </div>
@@ -8109,7 +8348,8 @@ export class App {
     return `
       <div class="hud-fighter ${side}">
         <div class="hud-fighter-top">
-          <strong>${escapeHtml(actor.label)}</strong>
+          <strong class="hud-fighter-name">${escapeHtml(actor.label)}</strong>
+          <strong class="hud-fighter-role">${side === "left" ? "P1" : "P2"}</strong>
           <span class="mono">${actor.runtime.life}</span>
         </div>
         <div class="hud-meter hud-life"><span style="width: ${lifePercent}%"></span></div>
@@ -8556,7 +8796,7 @@ export class App {
     document.body.append(link);
     link.click();
     link.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
   }
 
   private withSessionCompatibility(report: CompatibilityReport): CompatibilityReport {
@@ -8665,59 +8905,111 @@ export class App {
     const frame = actor?.frame;
     if (this.mode === "match") {
       const activeCommands = this.getActiveCommandNames().slice(0, 3);
+      const stage = this.findStage(this.selectedStageId);
+      const stageAsset = this.importedStages.some((stagePackage) => stagePackage.stage.id === stage?.id)
+        ? "import DEF"
+        : stage?.layers.some((layer) => layer.assetUrl)
+          ? "art PNG"
+          : "geometry";
+      const p1Atlas = this.atlasStatusByFighter.get(this.selectedP1) ?? "loading";
+      const p1Qa = this.atlasMotionQaByFighter.get(this.selectedP1);
+      const p1QaLabel =
+        !p1Qa || p1Qa.status === "loading"
+          ? "loading"
+          : p1Qa.status === "pass"
+            ? "ok"
+            : p1Qa.status === "warn"
+              ? `warn ${p1Qa.warnings.length}`
+              : p1Qa.status === "missing"
+                ? "missing"
+                : `fail ${p1Qa.errors.length}`;
       return `
-        <span class="badge active">Runtime Mode</span>
-        <span class="badge">${escapeHtml(actor?.label ?? "P1")} HP ${actor?.runtime.life ?? 0}</span>
-        <span class="badge">${escapeHtml(opponent?.label ?? "CPU")} HP ${opponent?.runtime.life ?? 0}</span>
-        <span class="badge">State ${actor?.runtime.stateType ?? "-"}/${actor?.runtime.moveType ?? "-"}</span>
-        <span class="badge">Anim ${actor?.runtime.animNo ?? "-"}</span>
-        ${activeCommands.length ? `<span class="badge active">Cmd ${escapeHtml(activeCommands.join(", "))}</span>` : ""}
-        <span class="badge ok">${this.getAvailableFighters().length} fighters</span>
-        <span class="badge">Stage ${escapeHtml(this.snapshot.stage.displayName ?? "-")}</span>
-        ${this.renderStageAssetBadge()}
-        ${this.renderP1AssetBadge()}
-        ${this.renderMotionQaBadge(this.selectedP1)}
+        <div class="stage-status-card">
+          <div class="stage-status-main">
+            <span class="stage-status-mode">Runtime Mode</span>
+            <strong>${escapeHtml(actor?.label ?? "P1")} vs ${escapeHtml(opponent?.label ?? "CPU")}</strong>
+            <small>${escapeHtml(this.snapshot.stage.displayName ?? "Stage")} / state ${escapeHtml(actor?.runtime.stateType ?? "-")}/${escapeHtml(actor?.runtime.moveType ?? "-")}/${escapeHtml(actor?.runtime.physics ?? "-")} / anim ${actor?.runtime.animNo ?? "-"}</small>
+          </div>
+          <div class="stage-status-grid" aria-label="Runtime state summary">
+            ${this.renderStageStatusMetric("P1", `${actor?.runtime.life ?? 0} HP`, "ok")}
+            ${this.renderStageStatusMetric("CPU", `${opponent?.runtime.life ?? 0} HP`, "ok")}
+            ${this.renderStageStatusMetric("Cmd", activeCommands.length ? activeCommands.join(", ") : "idle", activeCommands.length ? "active" : undefined)}
+            ${this.renderStageStatusMetric("Stage", stageAsset, stageAsset === "geometry" ? undefined : "ok")}
+            ${this.renderStageStatusMetric("Atlas", p1Atlas, p1Atlas === "loaded" ? "ok" : p1Atlas === "fallback" ? "warn" : undefined)}
+            ${this.renderStageStatusMetric("Walk QA", p1QaLabel, p1Qa?.status === "pass" ? "ok" : p1Qa?.status === "fail" ? "error" : p1Qa?.status === "warn" || p1Qa?.status === "missing" ? "warn" : undefined)}
+          </div>
+        </div>
       `;
     }
     if (this.mode === "studio") {
       const summary = this.getStudioProjectSummary();
       if (this.studioTab === "inspector") {
         return `
-          <span class="badge active">Studio Mode</span>
-          <span class="badge">inspector preview</span>
-          <span class="badge">Action ${renderSnapshot.selectedActionId ?? "-"}</span>
-          <span class="badge">Frame ${actor?.runtime.frameIndex ?? "-"}</span>
-          <span class="badge">Sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</span>
-          <span class="badge ${frame?.clsn1.length ? "ok" : ""}">Clsn1 ${frame?.clsn1.length ?? 0}</span>
-          <span class="badge ${frame?.clsn2.length ? "ok" : ""}">Clsn2 ${frame?.clsn2.length ?? 0}</span>
+          <div class="stage-status-card">
+            <div class="stage-status-main">
+              <span class="stage-status-mode">Studio Mode</span>
+              <strong>Inspector preview</strong>
+              <small>Action ${renderSnapshot.selectedActionId ?? "-"} / frame ${actor?.runtime.frameIndex ?? "-"} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</small>
+            </div>
+            <div class="stage-status-grid" aria-label="Inspector collision summary">
+              ${this.renderStageStatusMetric("Clsn1", String(frame?.clsn1.length ?? 0), frame?.clsn1.length ? "active" : undefined)}
+              ${this.renderStageStatusMetric("Clsn2", String(frame?.clsn2.length ?? 0), frame?.clsn2.length ? "ok" : undefined)}
+            </div>
+          </div>
         `;
       }
       const gateIssues = summary.gates.filter((gate) => gate.status === "warn" || gate.status === "fail" || gate.status === "pending").length;
+      const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
+      const compiled = this.lastCompiledProject;
       return `
-        <span class="badge active">Studio Mode</span>
-        <span class="badge">${escapeHtml(this.studioTab)}</span>
-        <span class="badge">${summary.stats.characters} characters</span>
-        <span class="badge">${summary.stats.stages} stages</span>
-        <span class="badge">${summary.stats.generatedAtlases} atlases</span>
-        <span class="badge ${gateIssues > 0 ? "warn" : "ok"}">Gates ${summary.gates.length - gateIssues}/${summary.gates.length}</span>
-        <span class="badge">Playtest ${escapeHtml(actor?.label ?? "P1")} vs ${escapeHtml(opponent?.label ?? "CPU")}</span>
+        <div class="stage-status-card">
+          <div class="stage-status-main">
+            <span class="stage-status-mode">Studio Mode</span>
+            <strong>${escapeHtml(this.studioTab)} deck</strong>
+            <small>Playtest ${escapeHtml(actor?.label ?? "P1")} vs ${escapeHtml(opponent?.label ?? "CPU")}</small>
+          </div>
+          <div class="stage-status-grid" aria-label="Studio state summary">
+            ${this.renderStageStatusMetric("Gates", `${summary.gates.length - gateIssues}/${summary.gates.length}`, gateIssues > 0 ? "warn" : "ok")}
+            ${this.renderStageStatusMetric("Assets", `${summary.stats.characters}c / ${summary.stats.stages}s`)}
+            ${this.renderStageStatusMetric("Trace", traceCount ? String(traceCount) : "none", traceCount ? "ok" : "warn")}
+            ${this.renderStageStatusMetric("Build", compiled ? "ready" : "pending", compiled ? "ok" : "warn")}
+          </div>
+        </div>
       `;
     }
     if (!this.character) {
       return `
-        <span class="badge active">Inspector Mode</span>
-        <span class="badge warn">No character loaded</span>
-        <span class="badge">Drop ZIP or choose Folder</span>
+        <div class="stage-status-card">
+          <div class="stage-status-main">
+            <span class="stage-status-mode">Inspector Mode</span>
+            <strong>No character loaded</strong>
+            <small>Drop ZIP or choose Folder</small>
+          </div>
+        </div>
       `;
     }
     const decodedSprites = this.character.spriteArchive?.sprites.length ?? 0;
     const spriteTotal = this.character.spriteArchive?.metadata?.spriteTotal ?? decodedSprites;
     return `
-      <span class="badge active">Character data</span>
-      <span class="badge">Action ${this.snapshot.selectedActionId ?? "-"}</span>
-      <span class="badge">Frame ${actor?.runtime.frameIndex ?? "-"}</span>
-      <span class="badge">Sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "mock"}</span>
-      <span class="badge ${decodedSprites > 0 ? "ok" : "warn"}">SFF sprites ${decodedSprites > 0 ? `${decodedSprites}/${spriteTotal}` : "mock fallback"}</span>
+      <div class="stage-status-card">
+        <div class="stage-status-main">
+          <span class="stage-status-mode">Character data</span>
+          <strong>Action ${this.snapshot.selectedActionId ?? "-"}</strong>
+          <small>Frame ${actor?.runtime.frameIndex ?? "-"} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "mock"}</small>
+        </div>
+        <div class="stage-status-grid" aria-label="Character preview summary">
+          ${this.renderStageStatusMetric("SFF", decodedSprites > 0 ? `${decodedSprites}/${spriteTotal}` : "mock fallback", decodedSprites > 0 ? "ok" : "warn")}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderStageStatusMetric(label: string, value: string, tone?: "active" | "ok" | "warn" | "error"): string {
+    return `
+      <span class="stage-status-metric ${tone ? `is-${tone}` : ""}">
+        <small>${escapeHtml(label)}</small>
+        <b>${escapeHtml(value)}</b>
+      </span>
     `;
   }
 
@@ -8906,27 +9198,6 @@ export class App {
         walkQaErrors: [...qa.errors],
       };
     });
-  }
-
-  private renderStageAssetBadge(): string {
-    const stage = this.findStage(this.selectedStageId);
-    if (this.importedStages.some((stagePackage) => stagePackage.stage.id === stage?.id)) {
-      return `<span class="badge ok">Stage imported DEF</span>`;
-    }
-    if (stage?.layers.some((layer) => layer.assetUrl)) {
-      return `<span class="badge ok">Stage art PNG</span>`;
-    }
-    return `<span class="badge">Stage geometry</span>`;
-  }
-
-  private renderP1AssetBadge(): string {
-    const fighter = this.findFighter(this.selectedP1);
-    if (fighter?.source === "imported") {
-      return `<span class="badge ok">P1 imported SFF</span>`;
-    }
-    return `<span class="badge ${this.atlasStatusByFighter.get(this.selectedP1) === "loaded" ? "ok" : "warn"}">P1 atlas ${
-      this.atlasStatusByFighter.get(this.selectedP1) ?? "loading"
-    }</span>`;
   }
 
   private renderMotionQaBadge(fighterId: string): string {
