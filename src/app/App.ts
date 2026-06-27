@@ -337,6 +337,11 @@ type StudioDebugTraceEvidence = {
   frames: StudioDebugTraceFrameLink[];
   gates: StudioDebugTraceGateLink[];
 };
+type StudioDebugHitPauseSummary = {
+  active: boolean;
+  remaining: number;
+  actors: MugenSnapshot["actors"];
+};
 type StudioDebugSelectionSummary = {
   selectedActorId?: string;
   selectedActor?: MatchWorldActorRegistrySnapshot["actors"][number];
@@ -1698,7 +1703,7 @@ export class App {
           ${tablerIcon("search", "ui-icon command-launcher-icon")}
           <span>
             <strong>Command Palette</strong>
-            <small>Modes, loaders, evidence, build</small>
+            <small>Modes, loaders, build</small>
           </span>
           <span class="badge">${this.getCommandPaletteActions().length}</span>
         </button>
@@ -4147,6 +4152,7 @@ export class App {
     registry: MatchWorldActorRegistrySnapshot,
     snapshot: MugenSnapshot,
   ): string {
+    const hitPause = this.getStudioDebugHitPauseSummary(snapshot);
     const audioCounts = this.getStudioDebugAudioEventCounts(snapshot);
     const effectStoreTotal = registry.effectStores.reduce((total, store) => total + store.total, 0);
     const filters: { id: StudioDebugFilter; label: string; detail: string; count: string | number; tone?: string }[] = [
@@ -4174,9 +4180,13 @@ export class App {
       {
         id: "pause",
         label: "Pause",
-        detail: snapshot.matchPause ? `${snapshot.matchPause.type} from ${snapshot.matchPause.actorId}` : "not active",
-        count: snapshot.matchPause ? snapshot.matchPause.remaining : 0,
-        tone: snapshot.matchPause ? "active" : undefined,
+        detail: snapshot.matchPause
+          ? `${snapshot.matchPause.type} from ${snapshot.matchPause.actorId}`
+          : hitPause.active
+            ? `HitPause on ${hitPause.actors.length} actor${hitPause.actors.length === 1 ? "" : "s"}`
+            : "not active",
+        count: snapshot.matchPause ? snapshot.matchPause.remaining : hitPause.remaining,
+        tone: snapshot.matchPause || hitPause.active ? "active" : undefined,
       },
       {
         id: "audio",
@@ -4220,6 +4230,7 @@ export class App {
     const snapshot = this.matchRuntime.getSnapshot();
     const registry = this.matchRuntime.getActorRegistry();
     const selection = this.getStudioDebugSelection(registry, snapshot);
+    const hitPause = this.getStudioDebugHitPauseSummary(snapshot);
     return `
       ${this.renderStudioDebugLens(selection, registry, snapshot)}
       ${this.renderStudioDebugActorDetail(selection)}
@@ -4231,7 +4242,7 @@ export class App {
           <dt>Playing</dt><dd class="mono">${snapshot.playing ? "true" : "false"}</dd>
           <dt>Round</dt><dd class="mono">${escapeHtml(snapshot.round?.message ?? "-")} / ${snapshot.round?.timer ?? "-"}</dd>
           <dt>Stage</dt><dd class="mono">${escapeHtml(snapshot.stage.displayName ?? snapshot.stage.id ?? "Stage")}</dd>
-          <dt>Pause</dt><dd class="mono">${snapshot.matchPause ? `${escapeHtml(snapshot.matchPause.type)} ${snapshot.matchPause.remaining}f` : "-"}</dd>
+          <dt>Pause</dt><dd class="mono">${this.formatStudioDebugPauseSummary(snapshot.matchPause, hitPause)}</dd>
           <dt>Effects</dt><dd class="mono">${snapshot.effects?.length ?? 0}</dd>
         </dl>
         <div class="badge-row">
@@ -4277,6 +4288,8 @@ export class App {
       return this.renderStudioDebugAudioLens(selection, snapshot);
     }
     const audioCounts = this.getStudioDebugAudioEventCounts(snapshot);
+    const hitPause = this.getStudioDebugHitPauseSummary(snapshot);
+    const pauseFocus = this.formatStudioDebugPauseFocus(snapshot.matchPause, hitPause, snapshot);
     return `
       <div class="section debug-lens-section" data-debug-filter-panel="overview">
         <div class="section-heading-row">
@@ -4300,8 +4313,8 @@ export class App {
           </div>
           <div class="debug-lens-meter">
             <span class="panel-kicker">Runtime focus</span>
-            <strong>${snapshot.matchPause ? `${snapshot.matchPause.type} pause` : "No match pause"}</strong>
-            <small>${snapshot.matchPause ? `${snapshot.matchPause.remaining}f remaining / actor ${escapeHtml(snapshot.matchPause.actorId)}` : `${snapshot.playing ? "playing" : "paused"} / tick ${snapshot.tick}`}</small>
+            <strong>${escapeHtml(pauseFocus.title)}</strong>
+            <small>${escapeHtml(pauseFocus.detail)}</small>
           </div>
         </div>
       </div>
@@ -4414,18 +4427,19 @@ export class App {
 
   private renderStudioDebugPauseLens(selection: StudioDebugSelectionSummary, snapshot: MugenSnapshot): string {
     const pause = snapshot.matchPause;
+    const hitPause = this.getStudioDebugHitPauseSummary(snapshot);
     const session = selection.runtimeSession;
     const pauseControllerRows = this.renderDebugCountRows(
       this.filterDebugCountRecord(session?.executedControllers ?? {}, (key) => key.toLowerCase().includes("pause")),
-      "No Pause or SuperPause controller has executed for the selected CNS actor yet.",
+      "No Pause, SuperPause, or hit pause controller has executed for the selected CNS actor yet.",
       "controller",
     );
     const pauseOperationRows = this.renderDebugCountRows(
       this.filterDebugCountRecord(session?.executedOperations ?? {}, (key) => key.toLowerCase().includes("pause")),
-      "No typed pause operation has executed for the selected CNS actor yet.",
+      "No typed pause or hit pause operation has executed for the selected CNS actor yet.",
     );
     const actors = this.getStudioDebugSnapshotActors(snapshot);
-    const frozenRows = pause
+    const matchPauseRows = pause
       ? actors
           .map(
             (actor) => `
@@ -4438,14 +4452,30 @@ export class App {
           )
           .join("")
       : `<div class="empty-state compact">No global match pause is active on this frame.</div>`;
+    const hitPauseRows = hitPause.active
+      ? hitPause.actors
+          .map(
+            (actor) => `
+              <div class="compat-row" data-debug-hitpause-row>
+                <span class="badge warn">${escapeHtml(actor.id)}</span>
+                <span>${escapeHtml(actor.label)} / state ${actor.runtime.stateNo} / anim ${actor.runtime.animNo}</span>
+                <span class="mono">${actor.hitPause ?? 0}f / ${actor.runtime.ctrl ? "ctrl" : "no ctrl"} / ${actor.runtime.stateType}${actor.runtime.moveType}${actor.runtime.physics}</span>
+              </div>
+            `,
+          )
+          .join("")
+      : `<div class="empty-state compact">No actor hitpause is active on this frame.</div>`;
     return `
       <div class="section debug-lens-section" data-debug-filter-panel="pause">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Debug lens</span>
-            <h2>Pause</h2>
+            <h2>Pause / HitPause</h2>
           </div>
-          <span class="badge ${pause ? "active" : "ok"}">${pause ? `${pause.remaining}f` : "clear"}</span>
+          <span class="badge ${pause || hitPause.active ? "active" : "ok"}" data-debug-hitpause-count>${this.formatStudioDebugPauseSummary(
+            pause,
+            hitPause,
+          )}</span>
         </div>
         <dl class="kv studio-kv">
           <dt>Type</dt><dd class="mono">${pause ? escapeHtml(pause.type) : "-"}</dd>
@@ -4453,6 +4483,7 @@ export class App {
           <dt>Move time</dt><dd class="mono">${pause ? pause.moveTime : "-"}</dd>
           <dt>Darken</dt><dd class="mono">${pause ? String(pause.darken) : "-"}</dd>
           <dt>Source state</dt><dd class="mono">${pause ? pause.sourceStateNo : "-"}</dd>
+          <dt>HitPause</dt><dd class="mono">${hitPause.active ? `${hitPause.remaining}f / ${hitPause.actors.length} actor${hitPause.actors.length === 1 ? "" : "s"}` : "-"}</dd>
         </dl>
         ${this.renderStudioDebugPauseTraceEvidence()}
         <div class="debug-evidence-grid">
@@ -4466,8 +4497,12 @@ export class App {
           </div>
         </div>
         <div class="debug-evidence-block">
-          <span class="panel-kicker">Actor frame state</span>
-          <div class="compat-list">${frozenRows}</div>
+          <span class="panel-kicker">Match pause actor state</span>
+          <div class="compat-list">${matchPauseRows}</div>
+        </div>
+        <div class="debug-evidence-block">
+          <span class="panel-kicker">HitPause actors</span>
+          <div class="compat-list">${hitPauseRows}</div>
         </div>
       </div>
     `;
@@ -4572,7 +4607,7 @@ export class App {
     if (!artifact) {
       return this.renderStudioDebugWorldEvidenceEmpty(
         "pause",
-        "Export a trace artifact from Build to compare Pause/SuperPause gate evidence.",
+        "Export a trace artifact from Build to compare Pause, SuperPause, and HitPause gate evidence.",
       );
     }
     const pauseRows = artifact.gates.flatMap((gate) => [
@@ -4614,7 +4649,7 @@ export class App {
       ),
     ]);
     if (!pauseRows.length) {
-      return this.renderStudioDebugWorldEvidenceEmpty("pause", "The latest Studio trace has no Pause/SuperPause gate evidence.");
+      return this.renderStudioDebugWorldEvidenceEmpty("pause", "The latest Studio trace has no Pause, SuperPause, or HitPause gate evidence.");
     }
     return `
       <div class="debug-evidence-block" data-debug-world-evidence="pause">
@@ -4747,6 +4782,55 @@ export class App {
 
   private getStudioDebugSnapshotActors(snapshot: MugenSnapshot): MugenSnapshot["actors"] {
     return [...snapshot.actors, ...(snapshot.effects ?? [])];
+  }
+
+  private getStudioDebugHitPauseSummary(snapshot: MugenSnapshot): StudioDebugHitPauseSummary {
+    const actors = this.getStudioDebugSnapshotActors(snapshot).filter((actor) => (actor.hitPause ?? 0) > 0);
+    return {
+      active: actors.length > 0,
+      remaining: actors.reduce((max, actor) => Math.max(max, actor.hitPause ?? 0), 0),
+      actors,
+    };
+  }
+
+  private formatStudioDebugPauseSummary(
+    pause: MugenSnapshot["matchPause"],
+    hitPause: StudioDebugHitPauseSummary,
+  ): string {
+    if (pause) {
+      return `${pause.type} ${pause.remaining}f`;
+    }
+    if (hitPause.active) {
+      return `HitPause ${hitPause.remaining}f`;
+    }
+    return "clear";
+  }
+
+  private formatStudioDebugPauseFocus(
+    pause: MugenSnapshot["matchPause"],
+    hitPause: StudioDebugHitPauseSummary,
+    snapshot: MugenSnapshot,
+  ): { title: string; detail: string } {
+    if (pause) {
+      return {
+        title: `${pause.type} pause`,
+        detail: `${pause.remaining}f remaining / actor ${pause.actorId}`,
+      };
+    }
+    if (hitPause.active) {
+      const actorList = hitPause.actors
+        .slice(0, 3)
+        .map((actor) => `${actor.id}:${actor.hitPause ?? 0}f`)
+        .join(", ");
+      return {
+        title: `HitPause ${hitPause.remaining}f`,
+        detail: `${actorList}${hitPause.actors.length > 3 ? `, +${hitPause.actors.length - 3}` : ""}`,
+      };
+    }
+    return {
+      title: "No pause",
+      detail: `${snapshot.playing ? "playing" : "paused"} / tick ${snapshot.tick}`,
+    };
   }
 
   private getStudioDebugAudioEventCounts(snapshot: MugenSnapshot): { soundEvents: number; envShakeEvents: number } {

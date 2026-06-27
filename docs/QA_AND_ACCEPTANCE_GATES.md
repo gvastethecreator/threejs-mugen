@@ -79,12 +79,15 @@ Default output path:
   studio-build.png
   studio-assets.png
   studio-evidence.png
+  studio-debug.png
+  studio-debug-pause.png
+  studio-debug-evidence-mobile.png
   trace-artifact.json
 ```
 
 The command starts a local Vite server automatically. Set `QA_BASE_URL=http://host:port` to verify an already-running app instead.
 
-Feature-specific milestone closeout can still use focused Playwright scripts when a deeper fixture or interaction is required, but `pnpm qa:smoke` is now the first reusable gate for the default Runtime and Studio Build/Evidence paths.
+Feature-specific milestone closeout can still use focused Playwright scripts when a deeper fixture or interaction is required, but `pnpm qa:smoke` is now the first reusable gate for the default Runtime and Studio Build/Evidence paths. Runtime Debug Studio smoke also validates URL-backed debug lenses, including the Pause / HitPause panel contract even when no active hitpause frame is captured.
 
 ## Compatibility Acceptance Levels
 

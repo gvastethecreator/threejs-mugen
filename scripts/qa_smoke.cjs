@@ -1161,6 +1161,9 @@ async function captureStudioDebugLens(page, filter, outDir) {
       worldFrameRows: panel?.querySelectorAll("[data-debug-world-evidence] .debug-world-frame-row").length ?? 0,
       worldFrameButtons: panel?.querySelectorAll("[data-debug-world-evidence] [data-trace-frame-index]").length ?? 0,
       compatRows: panel?.querySelectorAll(".compat-row").length ?? 0,
+      hitPauseRows: panel?.querySelectorAll("[data-debug-hitpause-row]").length ?? 0,
+      hitPauseCountText: panel?.querySelector("[data-debug-hitpause-count]")?.textContent?.trim() ?? "",
+      bodyHasHitPauseCopy: panel?.textContent?.includes("HitPause") ?? false,
       hasEmptyState: Boolean(panel?.querySelector(".empty-state")),
     };
   }, filter);
@@ -1632,9 +1635,11 @@ function assertSmoke(diagnostics) {
     !studioDebug.debugLenses?.pause?.url?.includes("debug=pause") ||
     studioDebug.debugLenses?.pause?.selectedButtonPressed !== "true" ||
     !studioDebug.debugLenses?.pause?.bodyHasPanel ||
-    !studioDebug.debugLenses?.pause?.worldEvidence
+    !studioDebug.debugLenses?.pause?.worldEvidence ||
+    !studioDebug.debugLenses?.pause?.hitPauseCountText ||
+    !studioDebug.debugLenses?.pause?.bodyHasHitPauseCopy
   ) {
-    failures.push("studio-debug: pause lens did not expose pause panel and URL state");
+    failures.push("studio-debug: pause lens did not expose pause/hitpause panel and URL state");
   }
   if (
     studioDebug.worldEvidenceJump?.mode !== "studio" ||
