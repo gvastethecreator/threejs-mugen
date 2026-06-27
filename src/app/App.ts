@@ -3426,6 +3426,56 @@ export class App {
         </div>
       `;
     }
+    const replacementFlow = this.renderStudioAssetInspectorDrawer("Replacement Flow", this.renderAssetReplacementFlow(library), {
+      badge: `${library.replacementPlan.candidates.length} candidates`,
+      open: true,
+    });
+    const sourceRuntimeMap = this.renderStudioAssetInspectorDrawer("Source / Runtime Map", this.renderAssetSourceRuntimeMap(library.sourceRuntimeMap), {
+      badge: `${library.sourceRuntimeMap.records.length} records`,
+      open: true,
+    });
+    const dependencyGraph = this.renderStudioAssetInspectorDrawer("Dependency Graph", this.renderAssetDependencyGraph(library), {
+      badge: `${library.selectedDependencyGraph.nodes.length} nodes`,
+    });
+    const dependencyDrilldown = this.renderStudioAssetInspectorDrawer(
+      "Dependency Drilldown",
+      `
+        <div class="list compact-list">
+          ${
+            library.selectedDependencies.length
+              ? library.selectedDependencies.map((dependency) => this.renderAssetDependencyRecord(dependency)).join("")
+              : `<div class="empty-state">No dependency records are attached to this asset yet.</div>`
+          }
+        </div>
+      `,
+      { badge: `${library.selectedDependencies.length} records` },
+    );
+    const missingReferences = this.renderStudioAssetInspectorDrawer(
+      "Missing / Partial References",
+      `
+        <div class="list compact-list">
+          ${
+            library.missingReferences.length
+              ? library.missingReferences.map((dependency) => this.renderAssetDependencyRecord(dependency)).join("")
+              : `<div class="empty-state">No missing or partial references for this asset under the current project manifest.</div>`
+          }
+        </div>
+      `,
+      { badge: `${library.missingReferences.length} refs` },
+    );
+    const relatedEvidence = this.renderStudioAssetInspectorDrawer(
+      "Related Evidence",
+      `
+        <div class="list compact-list">
+          ${
+            library.relatedEvidence.length
+              ? library.relatedEvidence.slice(0, 6).map((record) => this.renderEvidenceRecord(record)).join("")
+              : `<div class="empty-state">No evidence records are linked to this asset yet.</div>`
+          }
+        </div>
+      `,
+      { badge: `${library.relatedEvidence.length} records` },
+    );
     return `
       <div class="section">
         <div class="section-heading-row">
@@ -3455,48 +3505,26 @@ export class App {
           ${asset.blockedBy.map((id) => `<span class="badge warn">blocked by ${escapeHtml(id)}</span>`).join("")}
         </div>
       </div>
-      <div class="section">
-        <h2>Replacement Flow</h2>
-        ${this.renderAssetReplacementFlow(library)}
-      </div>
-      <div class="section">
-        <h2>Source / Runtime Map</h2>
-        ${this.renderAssetSourceRuntimeMap(library.sourceRuntimeMap)}
-      </div>
-      <div class="section">
-        <h2>Dependency Graph</h2>
-        ${this.renderAssetDependencyGraph(library)}
-      </div>
-      <div class="section">
-        <h2>Dependency Drilldown</h2>
-        <div class="list compact-list">
-          ${
-            library.selectedDependencies.length
-              ? library.selectedDependencies.map((dependency) => this.renderAssetDependencyRecord(dependency)).join("")
-              : `<div class="empty-state">No dependency records are attached to this asset yet.</div>`
-          }
+      ${replacementFlow}
+      ${sourceRuntimeMap}
+      ${dependencyGraph}
+      ${dependencyDrilldown}
+      ${missingReferences}
+      ${relatedEvidence}
+    `;
+  }
+
+  private renderStudioAssetInspectorDrawer(title: string, body: string, options: { badge?: string; open?: boolean } = {}): string {
+    return `
+      <details class="section collapsible-section asset-inspector-drawer" ${options.open ? "open" : ""}>
+        <summary>
+          <span>${escapeHtml(title)}</span>
+          ${options.badge ? `<small>${escapeHtml(options.badge)}</small>` : ""}
+        </summary>
+        <div class="asset-inspector-drawer-body">
+          ${body}
         </div>
-      </div>
-      <div class="section">
-        <h2>Missing / Partial References</h2>
-        <div class="list compact-list">
-          ${
-            library.missingReferences.length
-              ? library.missingReferences.map((dependency) => this.renderAssetDependencyRecord(dependency)).join("")
-              : `<div class="empty-state">No missing or partial references for this asset under the current project manifest.</div>`
-          }
-        </div>
-      </div>
-      <div class="section">
-        <h2>Related Evidence</h2>
-        <div class="list compact-list">
-          ${
-            library.relatedEvidence.length
-              ? library.relatedEvidence.slice(0, 6).map((record) => this.renderEvidenceRecord(record)).join("")
-              : `<div class="empty-state">No evidence records are linked to this asset yet.</div>`
-          }
-        </div>
-      </div>
+      </details>
     `;
   }
 

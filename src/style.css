@@ -21190,3 +21190,72 @@ input {
     box-shadow: var(--dcc-raise);
   }
 }
+
+/* Desktop asset inspector drawers: keep deep data available without a full-page dump. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer {
+    padding: 0;
+    background: var(--dcc-panel);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content 12px;
+    min-height: 31px;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 7px;
+    border-bottom: 1px solid var(--dcc-line);
+    background: var(--dcc-control);
+    box-shadow: var(--dcc-raise);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer:not([open]) > summary {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary::after {
+    width: 12px;
+    height: 12px;
+    border: 0;
+    color: color-mix(in srgb, var(--section-accent) 64%, var(--muted));
+    content: "+";
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer[open] > summary::after {
+    content: "-";
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary small {
+    color: var(--subtle);
+    text-align: right;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body {
+    display: grid;
+    gap: 5px;
+    padding: 6px 7px 7px;
+    background: var(--dcc-panel);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body > .list,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body .replacement-flow,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body .source-runtime-map,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body .asset-graph {
+    min-width: 0;
+  }
+}
