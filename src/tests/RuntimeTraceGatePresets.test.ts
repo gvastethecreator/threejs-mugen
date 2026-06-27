@@ -3,6 +3,7 @@ import {
   createNativeHitTraceArtifact,
   createNativeWhiffTraceArtifact,
   createSyntheticImportedCommonGetHitTraceArtifact,
+  createSyntheticImportedCustomStateTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
@@ -66,6 +67,7 @@ import {
   createSyntheticImportedTraceFighter,
   importedGuardScript,
   importedCommonGetHitScript,
+  importedCustomStateScript,
   importedDefaultGetHitScript,
   importedDefaultFallGetHitScript,
   importedDefaultFallRecoveryInputScript,
@@ -992,6 +994,44 @@ describe("RuntimeTraceGatePresets", () => {
         recover: false,
         recoverTime: 30,
       },
+    });
+  });
+
+  it("creates a synthetic imported custom-state artifact with owner-backed SelfState evidence", () => {
+    const artifact = createSyntheticImportedCustomStateTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-custom-state-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-custom-state-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 889]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 888, moveType: "H" }),
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 889, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      customOwnerId: undefined,
+      stateNo: 0,
+      animNo: 0,
+      ctrl: true,
+      moveType: "I",
     });
   });
 
@@ -2510,6 +2550,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(importedCommonGetHitScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-common-gethit-x",
       "common-gethit-settle",
+    ]);
+    expect(importedCustomStateScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-custom-state-x",
+      "custom-state-return-settle",
     ]);
     expect(importedDefaultGetHitScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-default-gethit-x"]);
     expect(importedDefaultGetHitProgressionScript().map((frame) => frame.label).filter(Boolean)).toEqual([

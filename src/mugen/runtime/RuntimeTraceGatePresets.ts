@@ -1125,6 +1125,62 @@ export function createSyntheticImportedCommonGetHitTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCustomStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-custom-state-attacker",
+    displayName: "Synthetic Imported Custom State Attacker",
+    customStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-custom-state-defender",
+    displayName: "Synthetic Imported Custom State Defender",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-custom-state-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-custom-state-golden",
+      label: "Synthetic imported owner-backed custom-state route",
+      source: "imported",
+      notes: [
+        "Synthetic imported custom-state trace proves HitDef p2stateno can put an imported defender into attacker-owned state data, keep that ownership through ChangeState, and clear it through SelfState. It does not claim full throw, redirect, helper/root/parent, or exact MUGEN/IKEMEN custom-state parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-custom-state-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SelfState"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, moveType: "I" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createImportedDefaultGetHitTraceArtifact(
   imported: DemoFighterDefinition,
   options: RuntimeTraceGatePresetOptions & {
@@ -3465,6 +3521,13 @@ export function importedCommonGetHitScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedCustomStateScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-custom-state-x", frames: 12, p1: ["x"], p2: [] },
+    { label: "custom-state-return-settle", frames: 10, p1: [], p2: [] },
+  ]);
+}
+
 export function importedDefaultGetHitScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([{ label: "imported-default-gethit-x", frames: 2, p1: ["x"], p2: [] }]);
 }
@@ -3814,6 +3877,14 @@ export type SyntheticImportedTraceFighterOptions = {
     headPos?: [number, number];
     midPos?: [number, number];
   };
+  customStateRoute?: {
+    startStateNo: number;
+    chainStateNo?: number;
+    changeStateAfter?: number;
+    selfStateAfter?: number;
+    animNo?: number;
+    chainAnimNo?: number;
+  };
 };
 
 export function createSyntheticImportedTraceFighter(options: SyntheticImportedTraceFighterOptions = {}): DemoFighterDefinition {
@@ -3840,6 +3911,12 @@ guard.velocity = -2
 `;
   const guardDistanceLine = options.guardDistance === undefined ? "" : `guard.dist = ${options.guardDistance}`;
   const fallLine = options.fall ? fallHitDefBlock(options.fall) : "";
+  const customStateLine = options.customStateRoute
+    ? `
+p2stateno = ${options.customStateRoute.startStateNo}
+p2getp1state = 1
+`
+    : "";
   const getHitStateLine = options.getHitState
     ? `
 p2stateno = ${options.getHitState.stateNo}
@@ -3921,7 +3998,7 @@ priority = ${options.hitDefPriority ?? 4}, Hit
 ${guardLine}
 ${guardDistanceLine}
 ${fallLine}
-${getHitStateLine}
+${customStateLine || getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock() : ""}
@@ -3952,6 +4029,7 @@ ${options.withRemoveExplod ? removeExplodControllerBlock() : ""}
 ${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(9000) > 0", options.numExplodStateNo, "NumExplod Branch")}
 
 ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
+${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -4052,6 +4130,16 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
           ] as Array<[number, MugenAnimationAction]>)
         : []),
       ...(options.getHitState?.stateNo === undefined ? [] : ([[options.getHitState.stateNo, traceAction(options.getHitState.animNo ?? options.getHitState.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.customStateRoute === undefined
+        ? []
+        : ([
+            [options.customStateRoute.startStateNo, traceAction(options.customStateRoute.animNo ?? options.customStateRoute.startStateNo)],
+            ...(options.customStateRoute.chainStateNo === undefined
+              ? []
+              : ([[options.customStateRoute.chainStateNo, traceAction(options.customStateRoute.chainAnimNo ?? options.customStateRoute.chainStateNo)]] as Array<
+                  [number, MugenAnimationAction]
+                >)),
+          ] as Array<[number, MugenAnimationAction]>)),
       ...(options.defaultGetHitState?.stateNo === undefined
         ? []
         : ([[options.defaultGetHitState.stateNo, traceAction(options.defaultGetHitState.animNo ?? options.defaultGetHitState.stateNo)]] as Array<
@@ -4346,6 +4434,48 @@ yvel = -7
 [State ${state.stateNo}, Fall Camera Shake]
 type = FallEnvShake
 trigger1 = Time = 3
+`;
+}
+
+function customStateRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["customStateRoute"]>): string {
+  const startAnim = route.animNo ?? route.startStateNo;
+  const chainState = route.chainStateNo;
+  const chainAnim = route.chainAnimNo ?? chainState;
+  const selfStateDelay = route.selfStateAfter ?? 4;
+  return `
+[Statedef ${route.startStateNo}]
+type = A
+movetype = H
+physics = N
+anim = ${startAnim}
+ctrl = 0
+${chainState === undefined ? "" : `
+[State ${route.startStateNo}, Chain Owner Custom State]
+type = ChangeState
+trigger1 = Time >= ${route.changeStateAfter ?? 1}
+value = ${chainState}
+`}
+${chainState === undefined ? `
+[State ${route.startStateNo}, Return To Self]
+type = SelfState
+trigger1 = Time >= ${selfStateDelay}
+value = 0
+ctrl = 1
+` : ""}
+${chainState === undefined ? "" : `
+[Statedef ${chainState}]
+type = A
+movetype = H
+physics = N
+anim = ${chainAnim}
+ctrl = 0
+
+[State ${chainState}, Return To Self]
+type = SelfState
+trigger1 = Time >= ${selfStateDelay}
+value = 0
+ctrl = 1
+`}
 `;
 }
 

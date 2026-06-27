@@ -371,6 +371,7 @@ export type RuntimeTraceFinalActorRequirement = {
   actorId?: string;
   source?: NonNullable<ActorSnapshot["source"]>;
   actorKind?: RuntimeActorKind;
+  customOwnerId?: string;
   stateNo?: number;
   animNo?: number;
   life?: number;
@@ -387,6 +388,7 @@ export type RuntimeTraceActorFrameRequirement = {
   source?: NonNullable<ActorSnapshot["source"]>;
   actorKind?: RuntimeActorKind;
   ownerId?: string;
+  customOwnerId?: string;
   animNo?: number;
   moveType?: string;
   clsn1Count?: number;
@@ -412,6 +414,7 @@ export type RuntimeTraceGateActorFrameEvidence = {
   source?: ActorSnapshot["source"];
   actorKind: RuntimeActorKind;
   ownerId: string;
+  customOwnerId?: string;
   animNo: number;
   moveType: string;
   clsn1Count: number;
@@ -433,6 +436,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "label"
   | "actorKind"
   | "source"
+  | "customOwnerId"
   | "stateNo"
   | "animNo"
   | "life"
@@ -949,6 +953,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               source: actor.source,
               actorKind: actor.actorKind,
               ownerId: actor.ownerId,
+              customOwnerId: actor.customOwnerId,
               animNo: actor.animNo,
               moveType: actor.moveType,
               clsn1Count: actor.clsn1Count,
@@ -1454,6 +1459,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     label: actor.label,
     actorKind: actor.actorKind,
     source: actor.source,
+    customOwnerId: actor.customOwnerId,
     stateNo: actor.stateNo,
     animNo: actor.animNo,
     life: actor.life,
@@ -1567,6 +1573,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.source ?? "none",
     actor.actorKind,
     actor.ownerId,
+    actor.customOwnerId ?? "none",
     actor.animNo,
     actor.moveType,
     actor.clsn1Count,
@@ -1580,6 +1587,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.source ?? "none",
     actor.actorKind,
     actor.ownerId,
+    actor.customOwnerId ?? "none",
     actor.animNo,
     actor.moveType,
     actor.clsn1Count,
@@ -1596,6 +1604,7 @@ function matchesActorFrameRequirement(
     (requirement.source === undefined || actor.source === requirement.source) &&
     (requirement.actorKind === undefined || actor.actorKind === requirement.actorKind) &&
     (requirement.ownerId === undefined || actor.ownerId === requirement.ownerId) &&
+    (requirement.customOwnerId === undefined || actor.customOwnerId === requirement.customOwnerId) &&
     (requirement.animNo === undefined || actor.animNo === requirement.animNo) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
     (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&

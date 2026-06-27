@@ -231,6 +231,11 @@ async function main() {
       artifact: presets.createSyntheticImportedStateExitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-custom-state",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-target",
       required: true,
       artifact: presets.createSyntheticImportedTargetTraceArtifact(),
@@ -822,6 +827,7 @@ function validateTraceCoverage(coverage) {
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredArtifactNames = [
+    "synthetic-imported-custom-state",
     "synthetic-imported-bindtotarget-head",
     "synthetic-imported-bindtotarget-mid",
     "synthetic-imported-targetbind-pause",
