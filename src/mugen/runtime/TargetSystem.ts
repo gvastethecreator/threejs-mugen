@@ -62,7 +62,7 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
     }
     const operation = options.operation?.controllerType === "targetdrop" ? options.operation : undefined;
     const excludeId = operation?.excludeId ?? firstNumber(findControllerParam(options.controller, "excludeid") ?? findControllerParam(options.controller, "id"));
-    const keepOne = operation?.keepOne ?? (firstNumber(findControllerParam(options.controller, "keepone")) ?? 0) !== 0;
+    const keepOne = operation?.keepOne ?? (firstNumber(findControllerParam(options.controller, "keepone")) ?? 1) !== 0;
     const beforeCount = options.actor.targets.length;
     const next = dropRuntimeTargets({ targets: options.actor.targets, bindings: options.actor.targetBindings }, excludeId, keepOne);
     options.actor.targets = next.targets;

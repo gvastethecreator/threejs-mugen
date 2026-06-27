@@ -372,6 +372,7 @@ function effectActor(
     hitPause: 0,
     guarding: false,
     guardStun: 0,
+    targetCount: 0,
     clsn1Count: effect.kind === "projectile" ? 1 : 0,
     clsn2Count: 1,
     effect,

@@ -1442,6 +1442,11 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      actorKind: "player",
+      source: "imported",
+      targetCount: 0,
+    });
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
   });
 

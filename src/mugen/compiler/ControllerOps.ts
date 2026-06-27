@@ -555,7 +555,7 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
   const requestedId = firstNumber(findParam(controller, "id"));
   if (type === "targetdrop") {
     const excludeId = firstNumber(findParam(controller, "excludeid") ?? findParam(controller, "id"));
-    return { kind: "target", controllerType: "targetdrop", excludeId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 0) !== 0 };
+    return { kind: "target", controllerType: "targetdrop", excludeId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 1) !== 0 };
   }
   if (type === "targetlifeadd") {
     return {

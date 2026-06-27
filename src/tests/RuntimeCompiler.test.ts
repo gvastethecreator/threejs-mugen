@@ -153,6 +153,7 @@ time = 20
     const bindToTarget = compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Foot", time: "6" }));
     const state = compileControllerIr(controller(200, "TargetState", [], { id: "3", value: "5300" }));
     const drop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3", keepone: "1" }));
+    const defaultDrop = compileControllerIr(controller(200, "TargetDrop", [], { excludeID: "3" }));
 
     expect(life.operation).toMatchObject({
       kind: "target",
@@ -187,6 +188,12 @@ time = 20
       stateNo: 5300,
     });
     expect(drop.operation).toMatchObject({
+      kind: "target",
+      controllerType: "targetdrop",
+      excludeId: 3,
+      keepOne: true,
+    });
+    expect(defaultDrop.operation).toMatchObject({
       kind: "target",
       controllerType: "targetdrop",
       excludeId: 3,

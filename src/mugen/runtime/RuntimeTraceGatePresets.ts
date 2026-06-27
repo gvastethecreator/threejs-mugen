@@ -2100,6 +2100,7 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
             bindingOffsetY: -12,
           },
         ],
+        requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 }],
       },
     ],
   });

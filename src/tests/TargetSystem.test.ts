@@ -102,6 +102,27 @@ describe("TargetSystem", () => {
     });
   });
 
+  it("defaults TargetDrop keepone to one when keepone is omitted", () => {
+    const actor = targetActor("p1", {
+      targets: [
+        { actorId: "p2", targetId: 1, age: 0 },
+        { actorId: "helper", targetId: 1, age: 0 },
+        { actorId: "projectile", targetId: 3, age: 0 },
+      ],
+      targetBindings: [binding({ actorId: "p2", targetId: 1 }), binding({ actorId: "helper", targetId: 1 }), binding({ actorId: "projectile", targetId: 3 })],
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [],
+      controller: controller("TargetDrop", { excludeID: "1" }),
+    });
+
+    expect(actor.targets).toEqual([{ actorId: "p2", targetId: 1, age: 0 }]);
+    expect(actor.targetBindings).toEqual([binding({ actorId: "p2", targetId: 1 })]);
+    expect(actor.runtime.targetCount).toBe(1);
+  });
+
   it("creates and resolves target bindings with duration clamping", () => {
     const bindings: RuntimeTargetBinding[] = [];
     const created = createRuntimeTargetBinding({

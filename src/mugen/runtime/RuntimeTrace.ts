@@ -56,6 +56,7 @@ export type RuntimeTraceActor = {
   guardSlideTime?: number;
   guardControlTime?: number;
   hitFall?: RuntimeTraceHitFallSummary;
+  targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   customOwnerId?: string;
   clsn1Count: number;
@@ -381,6 +382,7 @@ export type RuntimeTraceFinalActorRequirement = {
   physics?: string;
   guarding?: boolean;
   hitFall?: RuntimeTraceHitFallRequirement;
+  targetCount?: number;
 };
 
 export type RuntimeTraceActorFrameRequirement = {
@@ -446,6 +448,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "physics"
   | "guarding"
   | "hitFall"
+  | "targetCount"
 >;
 
 export type RuntimeTrace = {
@@ -1469,6 +1472,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     physics: actor.physics,
     guarding: actor.guarding,
     hitFall: actor.hitFall ? cloneTraceHitFall(actor.hitFall) : undefined,
+    targetCount: actor.targetCount,
   };
 }
 
@@ -1856,6 +1860,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     ...(actor.runtime.guardSlideTime ? { guardSlideTime: actor.runtime.guardSlideTime } : {}),
     ...(actor.runtime.guardControlTime ? { guardControlTime: actor.runtime.guardControlTime } : {}),
     hitFall: actor.runtime.hitFall ? cloneTraceHitFall(actor.runtime.hitFall) : undefined,
+    targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     customOwnerId: actor.runtime.customState?.ownerId,
     clsn1Count: actor.clsn1.length,
@@ -1863,8 +1868,8 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
   };
 }
 
-function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "effect"> {
-  const { animTime: _animTime, hitPause: _hitPause, effect: _effect, ...checksumActor } = actor;
+function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "targetCount" | "effect"> {
+  const { animTime: _animTime, hitPause: _hitPause, targetCount: _targetCount, effect: _effect, ...checksumActor } = actor;
   return checksumActor;
 }
 
