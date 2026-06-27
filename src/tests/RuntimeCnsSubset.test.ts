@@ -22,6 +22,9 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("PrevStateType = A", { self: runtimeState() })).toBe(0);
     expect(evaluateExpression("PrevMoveType = A", { self: runtimeState({ prevMoveType: "A" }) })).toBe(1);
     expect(evaluateExpression("PrevMoveType = A", { self: runtimeState() })).toBe(0);
+    expect(evaluateExpression("StageTime >= 7", { self: state, stageTime: 8 })).toBe(1);
+    expect(evaluateExpression("GameTime = 8", { self: state, stageTime: 8 })).toBe(1);
+    expect(evaluateExpression("StageTime > 0", { self: state })).toBe(0);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);
     expect(evaluateExpression("sysvar(0)", { self: runtimeState({ sysvars: [1] }) })).toBe(1);
     expect(evaluateExpression("power >= 1000", { self: runtimeState({ power: 0 }) })).toBe(0);

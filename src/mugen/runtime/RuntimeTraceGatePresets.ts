@@ -349,6 +349,29 @@ export function createSyntheticImportedSelfCommandTraceArtifact(options: Runtime
   );
 }
 
+export function createSyntheticImportedStageTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-stagetime",
+      displayName: "Synthetic Imported StageTime",
+      stageTimeEntry: { minStageTime: 3, stateNo: 279 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-stagetime-golden",
+      targetLabel: "Synthetic imported StageTime route",
+      script: importedDelayedXScript(),
+      requiredRoutedStates: [279],
+      requiredExecutedStates: [279],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported StageTime trace proves State -1 routing can branch on the current match tick through a bounded StageTime trigger. It does not claim IKEMEN round system, stage script, pause, replay, rollback, or exact timing parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4856,6 +4879,14 @@ export function qcfXScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedDelayedXScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "stage-time-wait", frames: 3, p1: [], p2: [] },
+    { label: "stage-time-x", frames: 1, p1: ["x"], p2: [] },
+    { label: "stage-time-settle", frames: 1, p1: [], p2: [] },
+  ]);
+}
+
 export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
@@ -4966,6 +4997,7 @@ export type SyntheticImportedTraceFighterOptions = {
   p2MetricsStateEntry?: { stateNo: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
+  stageTimeEntry?: { minStageTime: number; stateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -5100,6 +5132,7 @@ ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(opti
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
 ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
+${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -5207,6 +5240,7 @@ ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.sta
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
+${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -5330,6 +5364,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.selfCommandEntry === undefined
         ? []
         : ([[options.selfCommandEntry.stateNo, traceAction(options.selfCommandEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.stageTimeEntry === undefined
+        ? []
+        : ([[options.stageTimeEntry.stateNo, traceAction(options.stageTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6788,6 +6825,17 @@ value = ${route.stateNo}
 triggerall = command = "${route.commandName}"
 trigger1 = ctrl
 trigger1 = SelfCommand = "${route.commandName}"
+`;
+}
+
+function stageTimeStateEntryBlock(route: { minStageTime: number; stateNo: number }): string {
+  return `
+[State -1, StageTime Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = StageTime >= ${route.minStageTime}
 `;
 }
 

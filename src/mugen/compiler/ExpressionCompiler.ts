@@ -140,6 +140,8 @@ const supportedExpressionIdentifiers = new Set([
   "roundsexisted",
   "roundstate",
   "selfcommand",
+  "gametime",
+  "stagetime",
   "statetype",
   "stateno",
   "statetime",

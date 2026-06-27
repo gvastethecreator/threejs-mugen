@@ -305,9 +305,9 @@ export class PlayableMatchRuntime {
     this.roundTimerFrames = Math.max(0, this.roundTimerFrames - 1);
     this.p1.commandBuffer.push(this.tick, p1Input);
     this.p2.commandBuffer.push(this.tick, p2Input);
-    handlePlayerInput(this.p1, p1Input, this.p2);
+    handlePlayerInput(this.p1, p1Input, this.p2, this.tick);
     if (input.p2) {
-      handlePlayerInput(this.p2, p2Input, this.p1);
+      handlePlayerInput(this.p2, p2Input, this.p1, this.tick);
     } else {
       handleSimpleAi(this.p2, this.p1, this.tick);
     }
@@ -357,7 +357,7 @@ export class PlayableMatchRuntime {
     const actorMoved = canActorMoveDuringPause(pause, actor.id);
     if (actorMoved) {
       if (actor === this.p1 || input.p2) {
-        handlePlayerInput(actor, actorInput, opponent);
+        handlePlayerInput(actor, actorInput, opponent, this.tick);
       } else {
         handleSimpleAi(actor, opponent, this.tick);
       }
@@ -630,7 +630,7 @@ function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState
   return state?.moveType ? normalizeMoveType(state.moveType, fighter.runtime.moveType) : fighter.runtime.moveType;
 }
 
-function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState): void {
+function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState, tick: number): void {
   if (fighter.hitStun > 0 || (fighter.runtime.guardStun ?? 0) > 0 || fighter.currentMove) {
     return;
   }
@@ -638,8 +638,8 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     return;
   }
 
-  runStateEntrySetupControllers(fighter, opponent);
-  if (tryApplyStateEntry(fighter, opponent)) {
+  runStateEntrySetupControllers(fighter, opponent, tick);
+  if (tryApplyStateEntry(fighter, opponent, tick)) {
     return;
   }
 
@@ -954,19 +954,19 @@ function runActiveStateControllers(
   }
 
   for (const controller of stateProgram.controllers) {
-    if (!triggersPass(controller, fighter, opponent, owner)) {
+    if (!triggersPass(controller, fighter, opponent, owner, tick)) {
       continue;
     }
     const dispatch = dispatchStateProgramController(controller);
     const rawController = controller.source;
 
     if (dispatch.kind === "change-state") {
-      const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent, owner);
+      const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent, owner, tick);
       if (stateId === undefined) {
         continue;
       }
-      const animOverride = resolveDispatchNumber(dispatch.animOverride, dispatch.animExpression, fighter, opponent, owner);
-      const ctrl = resolveDispatchBoolean(dispatch.ctrl, dispatch.ctrlExpression, fighter, opponent, owner);
+      const animOverride = resolveDispatchNumber(dispatch.animOverride, dispatch.animExpression, fighter, opponent, owner, tick);
+      const ctrl = resolveDispatchBoolean(dispatch.ctrl, dispatch.ctrlExpression, fighter, opponent, owner, tick);
       recordControllerExecution(fighter, rawController);
       enterState(fighter, stateId, undefined, {
         clearStateOwner: dispatch.clearStateOwner,
@@ -980,12 +980,12 @@ function runActiveStateControllers(
     }
 
     if (dispatch.kind === "change-anim") {
-      const actionId = resolveDispatchNumber(dispatch.actionId, dispatch.actionExpression, fighter, opponent, owner);
+      const actionId = resolveDispatchNumber(dispatch.actionId, dispatch.actionExpression, fighter, opponent, owner, tick);
       if (actionId === undefined) {
         continue;
       }
-      const elem = resolveDispatchNumber(dispatch.elem, dispatch.elemExpression, fighter, opponent, owner);
-      const elemTime = resolveDispatchNumber(dispatch.elemTime, dispatch.elemTimeExpression, fighter, opponent, owner);
+      const elem = resolveDispatchNumber(dispatch.elem, dispatch.elemExpression, fighter, opponent, owner, tick);
+      const elemTime = resolveDispatchNumber(dispatch.elemTime, dispatch.elemTimeExpression, fighter, opponent, owner, tick);
       recordControllerExecution(fighter, rawController);
       const animationOwner = dispatch.animationSource === "state-owner" ? owner : fighter;
       changeAction(fighter, actionId, dispatch.animationSource, animationOwner.definition, {
@@ -999,6 +999,7 @@ function runActiveStateControllers(
       recordControllerExecution(fighter, rawController);
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         getConst: (name) => runtimeConst(owner.definition, name),
+        stageTime: tick,
       });
       if (controller.operation) {
         recordControllerOperation(fighter, controller.operation);
@@ -2478,7 +2479,7 @@ function cloneBox(box: CollisionBox): CollisionBox {
   return { x1: box.x1, y1: box.y1, x2: box.x2, y2: box.y2 };
 }
 
-function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchState): boolean {
+function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): boolean {
   const entries = fighter.runtimeProgram?.stateEntries ?? [];
   if (entries.length === 0) {
     return false;
@@ -2489,10 +2490,10 @@ function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchSt
     if (dispatch.kind !== "change-state") {
       continue;
     }
-    if (!triggersPass(controller, fighter, opponent)) {
+    if (!triggersPass(controller, fighter, opponent, fighter, tick)) {
       continue;
     }
-    const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent);
+    const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent, fighter, tick);
     if (stateId === undefined) {
       continue;
     }
@@ -2509,7 +2510,7 @@ function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchSt
   return false;
 }
 
-function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: FighterMatchState): void {
+function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
   const entries = fighter.runtimeProgram?.stateEntries ?? [];
   if (entries.length === 0 || fighter.definition.source !== "imported") {
     return;
@@ -2519,12 +2520,12 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
     if (dispatch.kind === "change-state") {
       continue;
     }
-    if (!triggersPass(controller, fighter, opponent)) {
+    if (!triggersPass(controller, fighter, opponent, fighter, tick)) {
       continue;
     }
     if (isStateEntrySetupDispatch(dispatch)) {
       recordControllerExecution(fighter, controller.source);
-      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined);
+      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, { stageTime: tick });
     }
   }
 }
@@ -2668,9 +2669,10 @@ function triggersPass(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageTime?: number,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
-  if (!triggerAll.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner))) {
+  if (!triggerAll.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner, stageTime))) {
     return false;
   }
 
@@ -2689,7 +2691,7 @@ function triggersPass(
   }
 
   return [...grouped.values()].some((triggers) =>
-    triggers.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner)),
+    triggers.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner, stageTime)),
   );
 }
 
@@ -2699,6 +2701,7 @@ function resolveDispatchNumber(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageTime?: number,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -2709,6 +2712,7 @@ function resolveDispatchNumber(
   const evaluated = evaluateExpression(expression, {
     self: fighter.runtime,
     opponent: opponent.runtime,
+    stageTime,
     stateTime: fighter.stateElapsed,
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
@@ -2748,11 +2752,12 @@ function resolveDispatchBoolean(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageTime?: number,
 ): boolean | undefined {
   if (value !== undefined) {
     return value;
   }
-  const numberValue = resolveDispatchNumber(undefined, expression, fighter, opponent, owner);
+  const numberValue = resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageTime);
   return numberValue === undefined ? undefined : numberValue !== 0;
 }
 
@@ -2761,10 +2766,12 @@ function evaluateRuntimeTrigger(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageTime?: number,
 ): boolean {
   return evaluateTriggerIr(trigger, {
     self: fighter.runtime,
     opponent: opponent.runtime,
+    stageTime,
     stateTime: fighter.stateElapsed,
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),

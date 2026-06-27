@@ -34,7 +34,7 @@ time = 20
   });
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
-    const clean = compileExpression('P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x"');
+    const clean = compileExpression('P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3');
     const contact = compileExpression("MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1");
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
@@ -44,10 +44,11 @@ time = 20
     );
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
 
-    expect(clean.normalized).toBe('p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x"');
+    expect(clean.normalized).toBe('p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3');
     expect(clean.supportLevel).toBe("executable");
     expect(clean.functions).toEqual(["SelfAnimExist", "SelfStateNoExist"]);
     expect(clean.identifiers).toContain("SelfCommand");
+    expect(clean.identifiers).toContain("StageTime");
     expect(contact.supportLevel).toBe("executable");
     expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit", "ProjHitTime"]);
     expect(contact.identifiers).toEqual(["HitCount", "MoveGuarded", "MoveReversed", "UniqHitCount"]);

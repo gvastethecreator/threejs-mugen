@@ -89,8 +89,10 @@ import {
   createSyntheticImportedRemoveExplodTraceArtifact,
   createSyntheticImportedSelfCommandTraceArtifact,
   createSyntheticImportedSelfStateNoExistTraceArtifact,
+  createSyntheticImportedStageTimeTraceArtifact,
   createSyntheticImportedXTraceArtifact,
   createSyntheticImportedTraceFighter,
+  importedDelayedXScript,
   importedGuardScript,
   importedCommonGetHitScript,
   importedCustomStateScript,
@@ -524,6 +526,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([278]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([278]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 278)).toBe(true);
+  });
+
+  it("creates a synthetic imported StageTime artifact with match-tick branch evidence", () => {
+    const artifact = createSyntheticImportedStageTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-stagetime-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(279);
+    expect(evidence?.executedStates).toContain(279);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([279]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([279]);
+    expect(artifact.trace.frames.some((frame) => frame.tick >= 3)).toBe(true);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 279)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {
@@ -3455,6 +3484,11 @@ describe("RuntimeTraceGatePresets", () => {
     expect(importedAutoGuardEndScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-auto-guard-end-start",
       "imported-auto-guard-end-release",
+    ]);
+    expect(importedDelayedXScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "stage-time-wait",
+      "stage-time-x",
+      "stage-time-settle",
     ]);
     expect(importedCommonGetHitScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-common-gethit-x",

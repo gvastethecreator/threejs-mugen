@@ -91,6 +91,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSelfCommandTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-stagetime",
+      required: true,
+      artifact: presets.createSyntheticImportedStageTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),

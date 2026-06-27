@@ -73,7 +73,7 @@ describe("scanIkemenFeatures", () => {
     const files = new Map<string, string>([
       [
         "chars/neo/neo.cns",
-        '[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\ntrigger3 = PrevAnim = 200\ntrigger4 = SelfStateNoExist(200)\ntrigger5 = SelfCommand = "x"\ntrigger6 = ReceivedDamage > 0\nvalue = 210\n',
+        '[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\ntrigger3 = PrevAnim = 200\ntrigger4 = SelfStateNoExist(200)\ntrigger5 = SelfCommand = "x"\ntrigger6 = StageTime >= 3\ntrigger7 = ReceivedDamage > 0\nvalue = 210\n',
       ],
     ]);
 
@@ -87,6 +87,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN extended trigger PrevAnim"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger SelfStateNoExist"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger SelfCommand"]).toBeUndefined();
+    expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger ReceivedDamage"]).toBe(1);
   });
 
@@ -134,7 +135,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN stage parameter startz"]).toBe(1);
     expect(report.features["IKEMEN stage parameter verticalfollowzoomdelta"]).toBe(1);
     expect(report.features["IKEMEN controller Zoom"]).toBe(1);
-    expect(report.features["IKEMEN extended trigger StageTime"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger SelfCommand"]).toBeUndefined();
   });
 
@@ -181,7 +182,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN controller Depth"]).toBe(1);
     expect(report.features["IKEMEN controller GetHitVarSet"]).toBe(1);
     expect(report.features["IKEMEN controller MapSet"]).toBe(1);
-    expect(report.features["IKEMEN extended trigger StageTime"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN screenpack menu item"]).toBe(3);
     expect(report.features["IKEMEN extra menu mode freebattle"]).toBe(1);
     expect(report.features["IKEMEN extra menu mode storymode"]).toBe(1);

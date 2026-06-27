@@ -33,6 +33,7 @@ export type ExpressionContext = {
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
+  stageTime?: number;
   stateTime?: number;
   uniqueHitCount?: () => number;
   animTimeRemaining?: number;
@@ -242,6 +243,9 @@ class ExpressionParser {
     const lower = identifier.toLowerCase();
     if (lower === "time") {
       return this.context.stateTime ?? this.context.self.animTime;
+    }
+    if (lower === "stagetime" || lower === "gametime") {
+      return this.context.stageTime ?? 0;
     }
     if (lower === "stateno") {
       return this.context.self.stateNo;
