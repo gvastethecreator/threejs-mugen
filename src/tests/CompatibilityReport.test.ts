@@ -57,6 +57,7 @@ describe("createCompatibilityReport", () => {
             "GetHitVar(animtype) = [3,5]",
             "P2BodyDist X < 40",
             "SelfAnimExist(anim + 3)",
+            "SelfStateNoExist(300)",
           ]),
         ]),
       ],
@@ -67,8 +68,8 @@ describe("createCompatibilityReport", () => {
       unsupported: [],
     });
 
-    expect(report.triggers.total).toBe(9);
-    expect(report.triggers.supported).toBe(9);
+    expect(report.triggers.total).toBe(10);
+    expect(report.triggers.supported).toBe(10);
     expect(report.triggers.unsupported).toBe(0);
     expect(report.triggers.unsupportedFeatures).toEqual({});
     expect(report.states.triggerSupported).toBe(1);

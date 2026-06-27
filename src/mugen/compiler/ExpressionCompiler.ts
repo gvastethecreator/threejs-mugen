@@ -172,6 +172,7 @@ const supportedExpressionFunctions = new Set([
   "projhit",
   "projhittime",
   "selfanimexist",
+  "selfstatenoexist",
   "sysvar",
   "var",
 ]);

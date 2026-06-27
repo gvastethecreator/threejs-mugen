@@ -104,6 +104,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("GetHitVar(animtype) = [3,5]", { self: state, getHitVar: () => 4 })).toBe(1);
     expect(evaluateExpression("SelfAnimExist(anim + 3)", { self: state, animExists: (id) => id === 45 })).toBe(1);
+    expect(evaluateExpression("SelfStateNoExist(5000)", { self: state, stateExists: (id) => id === 5000 })).toBe(1);
+    expect(evaluateExpression("!SelfStateNoExist(9999)", { self: state, stateExists: (id) => id === 5000 })).toBe(1);
     expect(evaluateExpression("ifelse(ctrl, 10, 20)", { self: state })).toBe(10);
     expect(
       evaluateExpression("Const(movement.down.bounce.offset.y) = 24", {

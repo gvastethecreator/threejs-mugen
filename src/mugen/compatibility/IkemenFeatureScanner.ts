@@ -543,7 +543,6 @@ const IKEMEN_TRIGGER_NAMES = new Map(
     "Score",
     "ScoreTotal",
     "SelfCommand",
-    "SelfStateNoExist",
     "Shader",
     "Sign",
     "SoundVar",

@@ -2713,6 +2713,7 @@ function resolveDispatchNumber(
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
     animExists: (animationId) => fighter.definition.animations.has(animationId),
+    stateExists: (stateNo) => fighterHasState(fighter, stateNo),
     commandActive: (name) => fighter.commandBuffer.isCommandActive(name, fighter.definition.commands ?? []),
     getConst: (name) => runtimeConst(owner.definition, name),
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
@@ -2768,6 +2769,7 @@ function evaluateRuntimeTrigger(
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
     animExists: (animationId) => fighter.definition.animations.has(animationId),
+    stateExists: (stateNo) => fighterHasState(fighter, stateNo),
     commandActive: (name) => fighter.commandBuffer.isCommandActive(name, fighter.definition.commands ?? []),
     getConst: (name) => runtimeConst(owner.definition, name),
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
@@ -2792,6 +2794,15 @@ function evaluateRuntimeTrigger(
     projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
     uniqueHitCount: () => moveHitCountValue(fighter, true),
   });
+}
+
+function fighterHasState(fighter: FighterMatchState, stateNo: number): boolean {
+  const id = Math.trunc(stateNo);
+  return (
+    fighter.runtimeProgram?.states.some((state) => state.id === id) ??
+    fighter.definition.states?.some((state) => state.id === id) ??
+    false
+  );
 }
 
 function runtimeConst(definition: DemoFighterDefinition, name: string): number | undefined {

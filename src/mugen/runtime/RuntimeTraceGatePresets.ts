@@ -303,6 +303,29 @@ export function createSyntheticImportedP2MetricsTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedSelfStateNoExistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-selfstatenoexist",
+      displayName: "Synthetic Imported SelfStateNoExist",
+      selfStateNoExistEntry: { existingStateNo: 277, missingStateNo: 9999, stateNo: 277 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-selfstatenoexist-golden",
+      targetLabel: "Synthetic imported SelfStateNoExist route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [277],
+      requiredExecutedStates: [277],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported SelfStateNoExist trace proves State -1 routing can branch on an existing own state and reject a missing own state in the current imported runtime. Redirect, helper, state-owner, and IKEMEN/MUGEN exact lookup parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4918,6 +4941,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
+  selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -5047,9 +5071,10 @@ name = "recovery"
 command = x+y
 time = 5
 `).commands;
-  const stateEntryControllers = parseCns(`
+const stateEntryControllers = parseCns(`
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
+${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -5155,6 +5180,7 @@ ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRout
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
+${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -5270,6 +5296,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.p2MetricsStateEntry === undefined
         ? []
         : ([[options.p2MetricsStateEntry.stateNo, traceAction(options.p2MetricsStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.selfStateNoExistEntry === undefined
+        ? []
+        : ([[options.selfStateNoExistEntry.stateNo, traceAction(options.selfStateNoExistEntry.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6705,6 +6736,18 @@ trigger1 = Facing = 1
 trigger1 = P2Facing = -1
 trigger1 = P2Life = 1000
 trigger1 = P2Power = 0
+`;
+}
+
+function selfStateNoExistStateEntryBlock(route: { existingStateNo: number; missingStateNo: number; stateNo: number }): string {
+  return `
+[State -1, SelfStateNoExist Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = SelfStateNoExist(${route.existingStateNo})
+trigger1 = !SelfStateNoExist(${route.missingStateNo})
 `;
 }
 

@@ -7,6 +7,7 @@ export type ExpressionContext = {
   self: CharacterRuntimeState;
   opponent?: CharacterRuntimeState;
   animExists?: (animationId: number) => boolean;
+  stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
   getConst?: (name: string) => number | undefined;
   getHitVar?: (name: string) => number | undefined;
@@ -443,6 +444,9 @@ class ExpressionParser {
     }
     if (lower === "selfanimexist") {
       return this.context.animExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
+    }
+    if (lower === "selfstatenoexist") {
+      return this.context.stateExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
     }
     if (lower === "sysvar") {
       return this.context.self.sysvars?.[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
