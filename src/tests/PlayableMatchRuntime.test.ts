@@ -235,6 +235,32 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).not.toContain(263);
   });
 
+  it("evaluates bounded HitCount and UniqHitCount after direct imported HitDef contact", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitCountStateNo: 264,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+
+    for (let frame = 0; frame < 10; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(264);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(264);
+  });
+
   it("evaluates bounded HitDefAttr triggers against the current imported HitDef attr", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1705,6 +1731,7 @@ function createImportedFixture(
     defaultGetHitStateNo?: number;
     moveHitStateNo?: number;
     moveHitCounterStateNo?: number;
+    hitCountStateNo?: number;
     moveGuardStateNo?: number;
     withMoveHitReset?: boolean;
     hitDefAttrStateNo?: number;
@@ -1776,6 +1803,7 @@ ctrl = 1
     ...(options.extraStateNos ?? []),
     ...(options.moveHitStateNo === undefined ? [] : [options.moveHitStateNo]),
     ...(options.moveHitCounterStateNo === undefined ? [] : [options.moveHitCounterStateNo]),
+    ...(options.hitCountStateNo === undefined ? [] : [options.hitCountStateNo]),
     ...(options.moveGuardStateNo === undefined ? [] : [options.moveGuardStateNo]),
     ...(options.hitDefAttrStateNo === undefined ? [] : [options.hitDefAttrStateNo]),
     ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
@@ -2276,6 +2304,16 @@ ctrl = 0
 type = ChangeState
 trigger1 = MoveHit >= 1
 value = ${options.moveHitCounterStateNo}
+ctrl = 0
+`,
+    options.hitCountStateNo === undefined
+      ? ""
+      : `
+[State 200, HitCount Branch]
+type = ChangeState
+trigger1 = HitCount >= 1
+trigger1 = UniqHitCount >= 1
+value = ${options.hitCountStateNo}
 ctrl = 0
 `,
     options.moveGuardStateNo === undefined

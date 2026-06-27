@@ -95,6 +95,7 @@ const supportedExpressionIdentifiers = new Set([
   "frontedgedist",
   "hitfall",
   "hitdefattr",
+  "hitcount",
   "hitover",
   "hitshakeover",
   "inguarddist",
@@ -138,6 +139,7 @@ const supportedExpressionIdentifiers = new Set([
   "stateno",
   "statetime",
   "time",
+  "uniqhitcount",
   "velx",
   "vely",
 ]);

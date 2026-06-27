@@ -93,6 +93,8 @@ Current Explod cut: bounded `removeongethit = 1` support prunes owner-side visua
 
 Current direct-contact cut: bounded `MoveContact`, `MoveHit`, and `MoveGuarded` now return direct-contact age counters for the current owner state, and partial `MoveHitReset` clears that direct-contact memory. The required `synthetic-imported-movehit-counter.json` trace proves a `MoveHit >= 1` branch after direct imported `HitDef` contact. Exact first-tick timing, hitpause accounting, helpers, redirects, teams, multi-target lifetime, and full MUGEN/IKEMEN parity remain future work.
 
+Current hit-count cut: bounded `HitCount` and `UniqHitCount` now work for direct `HitDef` hits in the current two-actor owner state. The required `synthetic-imported-hitcount.json` trace proves a `HitCount >= 1 && UniqHitCount >= 1` branch after direct imported contact. Guard/projectile counts, helpers, multi-target uniqueness, combo lifetime, and exact parity remain future work.
+
 ## Controls
 
 ```txt

@@ -156,6 +156,9 @@ type FighterContactState = {
   moveContactTime?: number;
   moveHitTime?: number;
   moveGuardTime?: number;
+  moveHitCount?: number;
+  moveUniqueHitCount?: number;
+  moveHitTargetIds?: Set<string>;
   projectileContactState?: number;
   projectileHitState?: number;
   projectileGuardState?: number;
@@ -1471,14 +1474,28 @@ function resetMoveContactState(fighter: FighterMatchState): void {
   delete fighter.contact.moveContactTime;
   delete fighter.contact.moveHitTime;
   delete fighter.contact.moveGuardTime;
+  delete fighter.contact.moveHitCount;
+  delete fighter.contact.moveUniqueHitCount;
+  delete fighter.contact.moveHitTargetIds;
 }
 
-function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard"): void {
+function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targetActorId?: string): void {
   fighter.contact.moveContactState = fighter.runtime.stateNo;
   fighter.contact.moveContactTime = 0;
   if (kind === "hit") {
     fighter.contact.moveHitState = fighter.runtime.stateNo;
     fighter.contact.moveHitTime = 0;
+    fighter.contact.moveHitCount = (fighter.contact.moveHitCount ?? 0) + 1;
+    if (targetActorId) {
+      const targetIds = fighter.contact.moveHitTargetIds ?? new Set<string>();
+      if (!targetIds.has(targetActorId)) {
+        targetIds.add(targetActorId);
+        fighter.contact.moveUniqueHitCount = (fighter.contact.moveUniqueHitCount ?? 0) + 1;
+      }
+      fighter.contact.moveHitTargetIds = targetIds;
+    } else {
+      fighter.contact.moveUniqueHitCount = (fighter.contact.moveUniqueHitCount ?? 0) + 1;
+    }
   } else {
     fighter.contact.moveGuardState = fighter.runtime.stateNo;
     fighter.contact.moveGuardTime = 0;
@@ -1527,6 +1544,13 @@ function moveContactValue(fighter: FighterMatchState, kind: "contact" | "hit" | 
     return fighter.contact.moveGuardState === fighter.runtime.stateNo ? fighter.contact.moveGuardTime ?? 0 : 0;
   }
   return fighter.contact.moveContactState === fighter.runtime.stateNo ? fighter.contact.moveContactTime ?? 0 : 0;
+}
+
+function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number {
+  if (fighter.contact.moveHitState !== fighter.runtime.stateNo) {
+    return 0;
+  }
+  return unique ? fighter.contact.moveUniqueHitCount ?? 0 : fighter.contact.moveHitCount ?? 0;
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
@@ -1868,7 +1892,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     holdingBack: isRuntimeHoldingBack(defender.currentInput),
   });
   if (result.kind === "guard") {
-    markMoveContact(attacker, "guard");
+    markMoveContact(attacker, "guard", defender.id);
     interruptCurrentMove(defender);
     attacker.hitPause = result.pause;
     defender.hitPause = result.pause;
@@ -1890,7 +1914,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     return;
   }
 
-  markMoveContact(attacker, "hit");
+  markMoveContact(attacker, "hit", defender.id);
   attacker.hitPause = result.pause;
   interruptCurrentMove(defender);
   defender.hitPause = result.pause;
@@ -2657,6 +2681,7 @@ function resolveDispatchNumber(
     getConst: (name) => runtimeConst(owner.definition, name),
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
     hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
+    hitCount: () => moveHitCountValue(fighter, false),
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
@@ -2673,6 +2698,7 @@ function resolveDispatchNumber(
     projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
     projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
     projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
+    uniqueHitCount: () => moveHitCountValue(fighter, true),
   });
   const numberValue = Number(evaluated);
   return Number.isFinite(numberValue) ? Math.trunc(numberValue) : undefined;
@@ -2709,6 +2735,7 @@ function evaluateRuntimeTrigger(
     getConst: (name) => runtimeConst(owner.definition, name),
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
     hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
+    hitCount: () => moveHitCountValue(fighter, false),
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
@@ -2725,6 +2752,7 @@ function evaluateRuntimeTrigger(
     projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
     projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
     projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
+    uniqueHitCount: () => moveHitCountValue(fighter, true),
   });
 }
 

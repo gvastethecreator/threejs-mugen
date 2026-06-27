@@ -135,6 +135,26 @@ export function createSyntheticImportedMoveHitCounterTraceArtifact(options: Runt
   );
 }
 
+export function createSyntheticImportedHitCountTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitcount",
+      displayName: "Synthetic Imported HitCount",
+      hitCountStateNo: 264,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitcount-golden",
+      targetLabel: "Synthetic imported HitCount route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 264],
+      notes: [
+        "Synthetic imported HitCount trace proves direct HitDef contact can evaluate bounded HitCount and UniqHitCount branches for the current two-actor owner state. Multi-target, helper-owned, and exact combo-count parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedHitDefAttrTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4823,6 +4843,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveContactStateNo?: number;
   moveHitStateNo?: number;
   moveHitCounterStateNo?: number;
+  hitCountStateNo?: number;
   moveGuardStateNo?: number;
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
@@ -5038,6 +5059,7 @@ ${options.projGuardStateNo === undefined ? "" : contactBranchBlock("ProjGuarded(
 ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContact", options.moveContactStateNo, "MoveContact Branch")}
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
+${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
@@ -5137,6 +5159,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.moveContactStateNo === undefined ? [] : ([[options.moveContactStateNo, traceAction(options.moveContactStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),

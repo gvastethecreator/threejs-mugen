@@ -11,6 +11,7 @@ export type ExpressionContext = {
   getConst?: (name: string) => number | undefined;
   getHitVar?: (name: string) => number | undefined;
   hitDefAttr?: (attrFilter: string) => boolean;
+  hitCount?: () => number;
   hitOver?: () => boolean;
   hitShakeOver?: () => boolean;
   inGuardDist?: () => boolean;
@@ -31,6 +32,7 @@ export type ExpressionContext = {
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
   stateTime?: number;
+  uniqueHitCount?: () => number;
   animTimeRemaining?: number;
 };
 
@@ -334,6 +336,12 @@ class ExpressionParser {
     }
     if (lower === "hitfall") {
       return this.context.self.hitFall?.falling ? 1 : 0;
+    }
+    if (lower === "hitcount") {
+      return this.context.hitCount?.() ?? 0;
+    }
+    if (lower === "uniqhitcount") {
+      return this.context.uniqueHitCount?.() ?? 0;
     }
     if (lower === "canrecover") {
       const hitFall = this.context.self.hitFall;
