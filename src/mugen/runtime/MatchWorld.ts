@@ -43,6 +43,7 @@ export type MatchWorldActorRecord = {
   targetCount: number;
   targets: RuntimeTargetSnapshot[];
   targetBindings: RuntimeTargetBindingSnapshot[];
+  bindToTarget?: RuntimeTargetBindingSnapshot;
   lifecycle: MatchWorldActorLifecycleRecord;
 };
 
@@ -212,16 +213,30 @@ function buildMatchWorldActorRegistryFromRecords(
       effects.push(actor.id);
     }
     for (const target of actor.targets) {
-      const binding = actor.targetBindings.find(
-        (candidate) => candidate.actorId === target.actorId && candidate.targetId === target.targetId,
-      );
-      targetLinks.push({
-        ownerId: actor.id,
-        actorId: target.actorId,
-        targetId: target.targetId,
-        age: target.age,
-        binding: binding ? cloneTargetBinding(binding) : undefined,
-      });
+      const bindings = [
+        ...actor.targetBindings.filter((candidate) => candidate.actorId === target.actorId && candidate.targetId === target.targetId),
+        ...(actor.bindToTarget?.actorId === target.actorId && actor.bindToTarget.targetId === target.targetId
+          ? [actor.bindToTarget]
+          : []),
+      ];
+      if (bindings.length === 0) {
+        targetLinks.push({
+          ownerId: actor.id,
+          actorId: target.actorId,
+          targetId: target.targetId,
+          age: target.age,
+        });
+      } else {
+        for (const binding of bindings) {
+          targetLinks.push({
+            ownerId: actor.id,
+            actorId: target.actorId,
+            targetId: target.targetId,
+            age: target.age,
+            binding: cloneTargetBinding(binding),
+          });
+        }
+      }
     }
   }
 
@@ -266,6 +281,7 @@ function toActorRecordBase(actor: ActorSnapshot, layer: MatchWorldActorRecord["l
     targetCount: actor.runtime.targetCount ?? 0,
     targets: actor.runtime.targetRefs?.map((target) => ({ ...target })) ?? [],
     targetBindings: actor.runtime.targetBindings?.map(cloneTargetBinding) ?? [],
+    bindToTarget: actor.runtime.bindToTarget ? cloneTargetBinding(actor.runtime.bindToTarget) : undefined,
   };
 }
 
@@ -412,7 +428,10 @@ function actorRegistryKey(snapshot: MugenSnapshot, effectStores: RuntimeEffectAc
             `${binding.actorId}:${binding.targetId ?? "*"}:${binding.remaining}:${binding.offset.x},${binding.offset.y}`,
         )
         .join(",");
-      return `${actor.id}:${targets}:${bindings}`;
+      const bindToTarget = actor.runtime.bindToTarget
+        ? `${actor.runtime.bindToTarget.actorId}:${actor.runtime.bindToTarget.targetId ?? "*"}:${actor.runtime.bindToTarget.remaining}:${actor.runtime.bindToTarget.offset.x},${actor.runtime.bindToTarget.offset.y}`
+        : "";
+      return `${actor.id}:${targets}:${bindings}:${bindToTarget}`;
     })
     .join("|");
   const storeKey = effectStores

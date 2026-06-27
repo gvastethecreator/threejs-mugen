@@ -2049,6 +2049,69 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedBindToTargetHeadTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-head-attacker",
+    displayName: "Synthetic Imported BindToTarget Head Attacker",
+    withBindToTarget: true,
+    bindToTargetPostype: "Head",
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-head-target",
+    displayName: "Synthetic Imported BindToTarget Head Target",
+    sizeConstants: {
+      headPos: [6, -72],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: target, stage }), script, {
+    label: "synthetic-imported-bindtotarget-head-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-bindtotarget-head-golden",
+      label: "Synthetic imported BindToTarget Head anchor route",
+      source: "imported",
+      notes: [
+        "Synthetic imported BindToTarget trace proves parsed target [Size] head.pos constants feed a bounded Head owner-to-target bind and expose the resolved offset in world target-link evidence.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-bindtotarget-head-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "BindToTarget"],
+        requiredExecutedOperations: ["hitdef", "bindtotarget"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77 },
+          {
+            ownerId: "p1",
+            actorId: "p2",
+            targetId: 77,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 26,
+            bindingOffsetY: -80,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetBindPauseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetBindPauseScript();
@@ -3642,6 +3705,7 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withTargetControllers?: boolean;
   withBindToTarget?: boolean;
+  bindToTargetPostype?: "Foot" | "Mid" | "Head";
   withTargetDrop?: boolean;
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
@@ -3683,6 +3747,10 @@ export type SyntheticImportedTraceFighterOptions = {
   withAutoGuardStartStates?: boolean;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
+  sizeConstants?: {
+    headPos?: [number, number];
+    midPos?: [number, number];
+  };
 };
 
 export function createSyntheticImportedTraceFighter(options: SyntheticImportedTraceFighterOptions = {}): DemoFighterDefinition {
@@ -3752,6 +3820,7 @@ triggerall = command = "x"
 trigger1 = ctrl
 `).controllers;
   const stateFile = parseCns(`
+${sizeConstantsBlock(options.sizeConstants)}
 [Statedef 0]
 type = S
 movetype = I
@@ -3791,7 +3860,7 @@ ${guardDistanceLine}
 ${fallLine}
 ${getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
-${options.withBindToTarget ? bindToTargetBlock(77) : ""}
+${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock() : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
@@ -4013,10 +4082,22 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
           ] as Array<[number, MugenAnimationAction]>)),
     ]),
     constants: {
+      ...stateFile.constants,
       "velocity.air.gethit.groundrecover.x": -0.15,
       "velocity.air.gethit.groundrecover.y": -3.5,
     },
   };
+}
+
+function sizeConstantsBlock(size: SyntheticImportedTraceFighterOptions["sizeConstants"]): string {
+  if (!size?.headPos && !size?.midPos) {
+    return "";
+  }
+  return `
+[Size]
+${size.headPos ? `head.pos = ${size.headPos[0]},${size.headPos[1]}` : ""}
+${size.midPos ? `mid.pos = ${size.midPos[0]},${size.midPos[1]}` : ""}
+`;
 }
 
 function commonGetHitFallData(): NonNullable<DemoMove["fall"]> {
@@ -4145,13 +4226,13 @@ time = 4
 `;
 }
 
-function bindToTargetBlock(targetId: number): string {
+function bindToTargetBlock(targetId: number, postype: "Foot" | "Mid" | "Head" = "Foot"): string {
   return `
 [State 200, Bind Owner To Target]
 type = BindToTarget
 trigger1 = Time = 2
 id = ${targetId}
-pos = 20,-8,Foot
+pos = 20,-8,${postype}
 time = 4
 `;
 }

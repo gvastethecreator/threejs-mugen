@@ -200,6 +200,7 @@ describe("MatchWorld", () => {
         targetCount: 1,
         targetRefs: [{ actorId: "p2", targetId: 77, age: 3 }],
         targetBindings: [{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 24, y: -8 } }],
+        bindToTarget: { actorId: "p2", targetId: 77, remaining: 3, offset: { x: 26, y: -80 } },
       },
     };
     const p2 = source.actors[1]!;
@@ -210,6 +211,12 @@ describe("MatchWorld", () => {
     expect(registry.byId.p1?.targetBindings).toEqual([
       { actorId: "p2", targetId: 77, remaining: 4, offset: { x: 24, y: -8 } },
     ]);
+    expect(registry.byId.p1?.bindToTarget).toEqual({
+      actorId: "p2",
+      targetId: 77,
+      remaining: 3,
+      offset: { x: 26, y: -80 },
+    });
     expect(registry.targetLinks).toEqual([
       {
         ownerId: "p1",
@@ -217,6 +224,13 @@ describe("MatchWorld", () => {
         targetId: 77,
         age: 3,
         binding: { actorId: "p2", targetId: 77, remaining: 4, offset: { x: 24, y: -8 } },
+      },
+      {
+        ownerId: "p1",
+        actorId: "p2",
+        targetId: 77,
+        age: 3,
+        binding: { actorId: "p2", targetId: 77, remaining: 3, offset: { x: 26, y: -80 } },
       },
     ]);
   });
