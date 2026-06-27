@@ -10772,6 +10772,84 @@ input {
   text-overflow: clip;
 }
 
+/* Runtime Debug hardening: dense instrumentation without soft dashboard cards. */
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-tabs,
+.app-shell.mode-studio[data-studio-tab="debug"] .tab-count,
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="debug"] .empty-state,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-trace-frame-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .badge,
+.app-shell.mode-studio[data-studio-tab="debug"] .status-badge,
+.app-shell.mode-studio[data-studio-tab="debug"] button {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-stat-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-stat-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-list {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button {
+  min-height: 36px;
+  padding: 6px 7px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:last-child {
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .studio-stat span,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter small,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button small,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small,
+.app-shell.mode-studio[data-studio-tab="debug"] .section-heading-row small,
+.app-shell.mode-studio[data-studio-tab="debug"] .empty-state {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  font-size: 12px;
+  line-height: 1.22;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .empty-state {
+  min-height: 0;
+  padding: 8px 9px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button.is-selected,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button.is-selected {
+  background: color-mix(in srgb, var(--info) 6%, var(--editor-row));
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--info) 72%, transparent);
+}
+
 @media (max-width: 620px) {
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column,
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip,
