@@ -13,9 +13,12 @@ import iconCpu from "@tabler/icons/outline/cpu.svg?raw";
 import iconDashboard from "@tabler/icons/outline/layout-dashboard.svg?raw";
 import iconDatabase from "@tabler/icons/outline/database.svg?raw";
 import iconFileAnalytics from "@tabler/icons/outline/file-analytics.svg?raw";
+import iconFileDescription from "@tabler/icons/outline/file-description.svg?raw";
 import iconFileExport from "@tabler/icons/outline/file-export.svg?raw";
 import iconFolder from "@tabler/icons/outline/folder.svg?raw";
 import iconGamepad from "@tabler/icons/outline/device-gamepad-2.svg?raw";
+import iconLibraryPhoto from "@tabler/icons/outline/library-photo.svg?raw";
+import iconMap from "@tabler/icons/outline/map-2.svg?raw";
 import iconPackage from "@tabler/icons/outline/package.svg?raw";
 import iconPhoto from "@tabler/icons/outline/photo.svg?raw";
 import iconPlayerPause from "@tabler/icons/outline/player-pause.svg?raw";
@@ -27,8 +30,10 @@ import iconSearch from "@tabler/icons/outline/search.svg?raw";
 import iconServer from "@tabler/icons/outline/server.svg?raw";
 import iconShield from "@tabler/icons/outline/shield.svg?raw";
 import iconShieldHalf from "@tabler/icons/outline/shield-half.svg?raw";
+import iconSpeaker from "@tabler/icons/outline/device-speaker.svg?raw";
 import iconTarget from "@tabler/icons/outline/target.svg?raw";
 import iconTools from "@tabler/icons/outline/tools.svg?raw";
+import iconUser from "@tabler/icons/outline/user-square-rounded.svg?raw";
 import iconWand from "@tabler/icons/outline/wand.svg?raw";
 import iconX from "@tabler/icons/outline/x.svg?raw";
 import iconAxisX from "@tabler/icons/outline/axis-x.svg?raw";
@@ -106,9 +111,11 @@ type StudioIconName =
   | "activity"
   | "alert"
   | "archive"
+  | "assetAtlas"
   | "assets"
   | "bug"
   | "build"
+  | "character"
   | "check"
   | "close"
   | "data"
@@ -127,11 +134,14 @@ type StudioIconName =
   | "search"
   | "server"
   | "shield"
+  | "sound"
   | "axis"
   | "grid"
   | "hit"
   | "hurt"
+  | "report"
   | "reset"
+  | "stageMap"
   | "stage"
   | "step"
   | "studio"
@@ -143,9 +153,11 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   activity: iconActivity,
   alert: iconAlertTriangle,
   archive: iconArchive,
+  assetAtlas: iconLibraryPhoto,
   assets: iconPhoto,
   bug: iconBug,
   build: iconPackage,
+  character: iconUser,
   check: iconCircleCheck,
   close: iconX,
   data: iconDatabase,
@@ -164,11 +176,14 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   search: iconSearch,
   server: iconServer,
   shield: iconShield,
+  sound: iconSpeaker,
   axis: iconAxisX,
   grid: iconGrid3x3,
   hit: iconTarget,
   hurt: iconShieldHalf,
+  report: iconFileDescription,
   reset: iconRefresh,
+  stageMap: iconMap,
   stage: iconServer,
   step: iconPlayerTrackNext,
   studio: iconCpu,
@@ -258,6 +273,25 @@ function iconForAction(label: string, attribute: string): StudioIconName {
     return "data";
   }
   return "tools";
+}
+
+function iconForAssetRecord(asset: StudioProjectSummary["assets"][number]): StudioIconName {
+  if (asset.kind === "character") {
+    return "character";
+  }
+  if (asset.kind === "stage") {
+    return "stageMap";
+  }
+  if (asset.kind === "sprite-atlas") {
+    return "assetAtlas";
+  }
+  if (asset.kind === "sound") {
+    return "sound";
+  }
+  if (asset.kind === "report") {
+    return "report";
+  }
+  return "package";
 }
 
 function studioActionButton(
@@ -3170,7 +3204,6 @@ export class App {
   private renderStudioAssetsNavigator(): string {
     const library = this.getStudioAssetLibrarySummary();
     return `
-      ${this.renderStudioAssetsCommandCenter(library)}
       <div class="section">
         <div class="section-heading-row">
           <h2>Project Assets</h2>
@@ -3187,6 +3220,7 @@ export class App {
             : `<div class="empty-state">No assets match this filter.</div>`
         }
       </div>
+      ${this.renderStudioAssetsCommandCenter(library)}
       <div class="section">
         <h2>Asset Actions</h2>
         <div class="action-stack">
@@ -8172,7 +8206,7 @@ export class App {
     const tagName = options.selectable ? "button" : "div";
     const selectedClass = options.selected ? " is-selected" : "";
     const statusClass = this.statusClassName(asset.status);
-    const iconName = iconForAction(asset.label, `${asset.kind} ${asset.source} ${asset.detail} ${asset.tags.join(" ")}`);
+    const iconName = iconForAssetRecord(asset);
     return `
       <${tagName} ${options.selectable ? 'type="button"' : ""} class="list-item asset-row is-${statusClass}${selectedClass}"${tagAttributes}>
         <span class="asset-row-icon">${tablerIcon(iconName, "ui-icon")}</span>
