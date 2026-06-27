@@ -8696,7 +8696,7 @@ input {
   .app-shell.mode-match .workspace-eyebrow,
   .app-shell.mode-inspect .workspace-eyebrow {
     color: color-mix(in srgb, var(--surface-accent) 62%, var(--muted));
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-match .workspace-brand h1,
@@ -8738,7 +8738,7 @@ input {
     gap: 4px 8px;
     padding: 6px 8px;
     border: 0;
-    border-left: 2px solid transparent;
+    border-left: 1px solid transparent;
     border-bottom: 1px solid var(--legacy-rule);
     border-radius: 0;
     background: var(--legacy-row);
@@ -8763,7 +8763,7 @@ input {
 
   .app-shell.mode-match .mode-switch button[data-mode="studio"],
   .app-shell.mode-inspect .mode-switch button[data-mode="studio"] {
-    --mode-accent: #a79572;
+    --mode-accent: #9d927c;
   }
 
   .app-shell.mode-match .mode-switch button.is-active,
@@ -8829,7 +8829,7 @@ input {
     justify-self: end;
     max-width: 86px;
     color: color-mix(in srgb, var(--muted) 78%, var(--text));
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.1;
     text-align: right;
   }
@@ -8887,7 +8887,7 @@ input {
   .app-shell.mode-match .command-launcher small,
   .app-shell.mode-inspect .command-launcher small {
     color: color-mix(in srgb, var(--muted) 82%, var(--text));
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-match .workspace-summary,
@@ -8957,7 +8957,7 @@ input {
   .app-shell.mode-inspect .file-loader-section {
     --section-accent: var(--legacy-task-accent);
     border-color: var(--legacy-frame);
-    border-left: 2px solid var(--section-accent);
+    border-left: 1px solid var(--section-accent);
     border-radius: 2px;
     background: #090c10;
   }
@@ -8987,13 +8987,13 @@ input {
   .app-shell.mode-match .runtime-overview-panel,
   .app-shell.mode-inspect .runtime-overview-panel {
     --section-accent: var(--legacy-stage-accent);
-    border-left: 2px solid var(--section-accent);
+    border-left: 1px solid var(--section-accent);
   }
 
   .app-shell.mode-match .runtime-debug-panel,
   .app-shell.mode-inspect .runtime-debug-panel {
     --section-accent: var(--legacy-debug-accent);
-    border-left: 2px solid var(--section-accent);
+    border-left: 1px solid var(--section-accent);
   }
 
   .app-shell.mode-match .panel-kicker,
@@ -9007,7 +9007,7 @@ input {
   .app-shell.mode-inspect .workspace-next,
   .app-shell.mode-match .empty-state,
   .app-shell.mode-inspect .empty-state {
-    border-left: 2px solid color-mix(in srgb, var(--section-accent, var(--surface-accent)) 66%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--section-accent, var(--surface-accent)) 66%, transparent);
     box-shadow: none;
   }
 
@@ -9225,7 +9225,7 @@ input {
   align-content: center;
   gap: 4px;
   border: 1px solid var(--studio-panel-line);
-  border-left: 2px solid color-mix(in srgb, var(--section-accent, var(--accent)) 52%, var(--studio-panel-line));
+  border-left: 1px solid color-mix(in srgb, var(--section-accent, var(--accent)) 52%, var(--studio-panel-line));
   background: color-mix(in srgb, var(--editor-row, var(--surface-flat)) 92%, black);
 }
 
