@@ -411,7 +411,9 @@ export type RuntimeTraceActorFrameRequirement = {
   ownerId?: string;
   customOwnerId?: string;
   animNo?: number;
+  stateType?: string;
   moveType?: string;
+  physics?: string;
   clsn1Count?: number;
   clsn2Count?: number;
   minFrames?: number;
@@ -444,7 +446,9 @@ export type RuntimeTraceGateActorFrameEvidence = {
   ownerId: string;
   customOwnerId?: string;
   animNo: number;
+  stateType: string;
   moveType: string;
+  physics: string;
   clsn1Count: number;
   clsn2Count: number;
   minPos: { x: number; y: number };
@@ -1028,7 +1032,9 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               ownerId: actor.ownerId,
               customOwnerId: actor.customOwnerId,
               animNo: actor.animNo,
+              stateType: actor.stateType,
               moveType: actor.moveType,
+              physics: actor.physics,
               clsn1Count: actor.clsn1Count,
               clsn2Count: actor.clsn2Count,
               minPos: { ...actor.pos },
@@ -1732,7 +1738,9 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.ownerId,
     actor.customOwnerId ?? "none",
     actor.animNo,
+    actor.stateType,
     actor.moveType,
+    actor.physics,
     actor.clsn1Count,
     actor.clsn2Count,
     actor.bodyWidth?.front === undefined ? "wf*" : `wf${actor.bodyWidth.front}`,
@@ -1753,7 +1761,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.ownerId,
     actor.customOwnerId ?? "none",
     actor.animNo,
+    actor.stateType,
     actor.moveType,
+    actor.physics,
     actor.clsn1Count,
     actor.clsn2Count,
     actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
@@ -1777,7 +1787,9 @@ function matchesActorFrameRequirement(
     (requirement.ownerId === undefined || actor.ownerId === requirement.ownerId) &&
     (requirement.customOwnerId === undefined || actor.customOwnerId === requirement.customOwnerId) &&
     (requirement.animNo === undefined || actor.animNo === requirement.animNo) &&
+    (requirement.stateType === undefined || actor.stateType === requirement.stateType) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
+    (requirement.physics === undefined || actor.physics === requirement.physics) &&
     (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&
     (requirement.clsn2Count === undefined || actor.clsn2Count === requirement.clsn2Count) &&
     (requirement.minFrames === undefined || actor.frames >= requirement.minFrames) &&

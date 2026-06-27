@@ -2436,6 +2436,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "collision") {
     return `collision:${operation.controllerType}`;
   }
+  if (operation.kind === "metadata") {
+    return `metadata:${operation.controllerType}`;
+  }
   if (operation.kind === "resource") {
     return `resource:${operation.controllerType}`;
   }

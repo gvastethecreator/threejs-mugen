@@ -269,6 +269,22 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static StateTypeSet controllers into typed metadata operations", () => {
+    const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
+    const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));
+    const dynamic = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "IfElse(Time > 0, A, S)" }));
+
+    expect(stateTypeSet.operation).toEqual({
+      kind: "metadata",
+      controllerType: "statetypeset",
+      stateType: "C",
+      moveType: "A",
+      physics: "N",
+    });
+    expect(partial.operation).toEqual({ kind: "metadata", controllerType: "statetypeset", moveType: "I" });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static resource and variable controllers into typed operations", () => {
     const ctrl = compileControllerIr(controller(200, "CtrlSet", [], { value: "1" }));
     const life = compileControllerIr(controller(200, "LifeAdd", [], { value: "-25", kill: "0" }));

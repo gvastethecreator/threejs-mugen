@@ -44,6 +44,7 @@ import {
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
+  createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -548,6 +549,43 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.some((actor) => actor.bodyWidth?.front === 18 && actor.bodyWidth.back === 44)).toBe(true);
+  });
+
+  it("creates a synthetic imported StateTypeSet artifact with typed metadata evidence", () => {
+    const artifact = createSyntheticImportedStateTypeSetTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-statetypeset-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-statetypeset-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          stateType: "C",
+          moveType: "A",
+          physics: "N",
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some((actor) => actor.stateType === "C" && actor.moveType === "A" && actor.physics === "N"),
+    ).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

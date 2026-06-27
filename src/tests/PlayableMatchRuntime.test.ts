@@ -1144,12 +1144,17 @@ describe("PlayableMatchRuntime", () => {
 
     expect(actor?.runtime.facing).toBe(-1);
     expect(actor?.runtime.playerPush).toBe(false);
+    expect(actor?.runtime.stateType).toBe("C");
+    expect(actor?.runtime.moveType).toBe("A");
+    expect(actor?.runtime.physics).toBe("N");
     expect(actor?.runtime.life).toBe(777);
     expect(actor?.runtime.power).toBe(1234);
     expect(actor?.runtime.pos.x).toBe(-20);
     expect(snapshot.actors[1]?.runtime.pos.x).toBe(35);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Turn).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PlayerPush).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.StateTypeSet).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["metadata:statetypeset"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.LifeSet).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PowerSet).toBe(1);
   });
@@ -1867,6 +1872,13 @@ trigger1 = Time = 0
 type = PlayerPush
 trigger1 = Time = 0
 value = 0
+
+[State 200, Metadata]
+type = StateTypeSet
+trigger1 = Time = 0
+statetype = C
+movetype = A
+physics = N
 
 [State 200, Fixed Life]
 type = LifeSet

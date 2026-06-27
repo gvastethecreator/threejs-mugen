@@ -197,6 +197,14 @@ export type CollisionControllerOp = {
   back: number;
 };
 
+export type MetadataControllerOp = {
+  kind: "metadata";
+  controllerType: "statetypeset";
+  stateType?: "S" | "C" | "A" | "L";
+  moveType?: "I" | "A" | "H";
+  physics?: "S" | "C" | "A" | "N";
+};
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
@@ -275,6 +283,7 @@ export type ControllerOp =
   | KinematicControllerOp
   | BoundsControllerOp
   | CollisionControllerOp
+  | MetadataControllerOp
   | ResourceControllerOp
   | VariableControllerOp
   | HitEligibilityControllerOp
@@ -292,6 +301,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "width") {
     return compileWidthControllerOp(controller);
+  }
+  if (type === "statetypeset") {
+    return compileStateTypeSetControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -417,6 +429,22 @@ function compileWidthControllerOp(controller: MugenStateController): CollisionCo
     front: clampStaticBodyWidth(pair[0]),
     back: clampStaticBodyWidth(pair[1] ?? pair[0]),
   };
+}
+
+function compileStateTypeSetControllerOp(controller: MugenStateController): MetadataControllerOp | undefined {
+  const stateType = normalizeStateType(findParam(controller, "statetype") ?? findParam(controller, "stateType"));
+  const moveType = normalizeMoveType(findParam(controller, "movetype") ?? findParam(controller, "moveType"));
+  const physics = normalizePhysics(findParam(controller, "physics"));
+  if (!stateType && !moveType && !physics) {
+    return undefined;
+  }
+  return definedObject({
+    kind: "metadata" as const,
+    controllerType: "statetypeset" as const,
+    stateType,
+    moveType,
+    physics,
+  });
 }
 
 function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
@@ -942,6 +970,21 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function normalizeStateType(value: string | undefined): MetadataControllerOp["stateType"] | undefined {
+  const normalized = stripMugenString(value)?.toUpperCase();
+  return normalized === "S" || normalized === "C" || normalized === "A" || normalized === "L" ? normalized : undefined;
+}
+
+function normalizeMoveType(value: string | undefined): MetadataControllerOp["moveType"] | undefined {
+  const normalized = stripMugenString(value)?.toUpperCase();
+  return normalized === "I" || normalized === "A" || normalized === "H" ? normalized : undefined;
+}
+
+function normalizePhysics(value: string | undefined): MetadataControllerOp["physics"] | undefined {
+  const normalized = stripMugenString(value)?.toUpperCase();
+  return normalized === "S" || normalized === "C" || normalized === "A" || normalized === "N" ? normalized : undefined;
 }
 
 function booleanNumber(value: string | undefined): boolean | undefined {

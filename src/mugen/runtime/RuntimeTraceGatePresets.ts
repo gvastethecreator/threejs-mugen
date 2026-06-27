@@ -658,6 +658,56 @@ export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedStateTypeSetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-statetypeset",
+    displayName: "Synthetic Imported StateTypeSet",
+    withStateTypeSet: { stateType: "C", moveType: "A", physics: "N" },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-statetypeset-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-statetypeset-golden",
+      label: "Synthetic imported StateTypeSet route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported StateTypeSet trace proves static StateTypeSet lowers into typed metadata operation evidence and updates stateType/moveType/physics in the current runtime snapshot. It does not claim full MUGEN/IKEMEN metadata tick-order or physics parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-statetypeset-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "StateTypeSet", "HitDef"],
+        requiredExecutedOperations: ["metadata:statetypeset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            stateType: "C",
+            moveType: "A",
+            physics: "N",
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4244,6 +4294,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
   withWidthController?: [number, number?];
+  withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4368,6 +4419,7 @@ ${options.attackMultiplier !== undefined ? attackMultiplierController(options.at
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
+${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4768,6 +4820,17 @@ function widthControllerBlock(width: [number, number?]): string {
 type = Width
 trigger1 = Time >= 0
 player = ${width[0]},${width[1] ?? width[0]}
+`;
+}
+
+function stateTypeSetControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withStateTypeSet"]>): string {
+  return `
+[State 200, StateTypeSet Probe]
+type = StateTypeSet
+trigger1 = Time >= 0
+${config.stateType ? `statetype = ${config.stateType}` : ""}
+${config.moveType ? `movetype = ${config.moveType}` : ""}
+${config.physics ? `physics = ${config.physics}` : ""}
 `;
 }
 

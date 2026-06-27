@@ -6,6 +6,7 @@ import type {
   HitFallControllerOp,
   HitOverrideControllerOp,
   KinematicControllerOp,
+  MetadataControllerOp,
   MovementKinematicControllerOp,
   ResourceControllerOp,
   VariableControllerOp,
@@ -118,7 +119,7 @@ export function executeControllerIr(
     const operation = resourceOperation(controller, "ctrlset");
     next.ctrl = operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0;
   } else if (type === "statetypeset") {
-    applyStateTypeSet(next, controller);
+    applyStateTypeSet(next, controller, metadataOperation(controller, "statetypeset"));
   } else if (type === "lifeadd") {
     const operation = resourceOperation(controller, "lifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
@@ -289,6 +290,15 @@ function boundsOperation<T extends BoundsControllerOp["controllerType"]>(
 ): Extract<BoundsControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "bounds" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<BoundsControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function metadataOperation<T extends MetadataControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<MetadataControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "metadata" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<MetadataControllerOp, { controllerType: T }>)
     : undefined;
 }
 
@@ -682,10 +692,14 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
   return undefined;
 }
 
-function applyStateTypeSet(state: CharacterRuntimeState, controller: ControllerExecutionSource): void {
-  const stateType = enumParam(controller, "statetype", "stateType");
-  const moveType = enumParam(controller, "movetype", "moveType");
-  const physics = enumParam(controller, "physics");
+function applyStateTypeSet(
+  state: CharacterRuntimeState,
+  controller: ControllerExecutionSource,
+  operation?: MetadataControllerOp,
+): void {
+  const stateType = operation?.stateType ?? enumParam(controller, "statetype", "stateType");
+  const moveType = operation?.moveType ?? enumParam(controller, "movetype", "moveType");
+  const physics = operation?.physics ?? enumParam(controller, "physics");
   if (stateType === "S" || stateType === "C" || stateType === "A" || stateType === "L") {
     state.stateType = stateType;
   }
