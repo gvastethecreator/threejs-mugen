@@ -3059,10 +3059,10 @@ export class App {
           </span>
         </div>
         <div class="workbench-action-bar" aria-label="Primary workbench actions">
-          <button type="button" class="primary-action" data-mode="match">Playtest</button>
-          <button type="button" data-action="load-zip">Load ZIP</button>
-          <button type="button" data-action="export-trace-artifact">Export Trace</button>
-          <button type="button" data-action="compile-project">Compile</button>
+          <button type="button" class="primary-action" data-mode="match">${tablerIcon("match", "ui-icon action-icon")}<span>Playtest</span></button>
+          <button type="button" data-action="load-zip">${tablerIcon("folder", "ui-icon action-icon")}<span>Load Source</span></button>
+          <button type="button" data-action="export-trace-artifact">${tablerIcon("evidence", "ui-icon action-icon")}<span>Export Trace</span></button>
+          <button type="button" data-action="compile-project">${tablerIcon("build", "ui-icon action-icon")}<span>Compile</span></button>
         </div>
         <div class="badge-row">
           <span class="badge">${escapeHtml(manifestShort)}</span>
