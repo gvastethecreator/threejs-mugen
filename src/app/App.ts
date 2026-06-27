@@ -1081,9 +1081,12 @@ export class App {
       { fighterId: "mira-volt", label: "Mira Volt", path: "mira-volt", minGroup: 11000, maxGroup: 11999 },
       { fighterId: "rook-apprentice", label: "Rook Apprentice", path: "rook-apprentice", minGroup: 14000, maxGroup: 14999 },
     ];
-    await this.waitForAtlasLoadSlot();
+    const visibleFighterIds = new Set([this.selectedP1, this.selectedP2]);
+    atlasRoutes.sort((left, right) => Number(!visibleFighterIds.has(left.fighterId)) - Number(!visibleFighterIds.has(right.fighterId)));
     for (const route of atlasRoutes) {
-      await this.waitForAtlasLoadSlot();
+      if (!visibleFighterIds.has(route.fighterId)) {
+        await this.waitForAtlasLoadSlot();
+      }
       try {
         const provider = await AtlasSpriteProvider.fromUrls(
           `/characters/${route.path}/sprite-sheet-alpha.png?v=${atlasVersion}`,
