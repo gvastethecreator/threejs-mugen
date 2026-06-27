@@ -9922,7 +9922,7 @@ input {
 .app-shell.mode-studio .action-label {
   min-width: 0;
   overflow: visible;
-  line-height: 1.12;
+  line-height: 1.05;
   overflow-wrap: anywhere;
   text-overflow: clip;
   white-space: normal;
@@ -10251,7 +10251,8 @@ input {
 .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button,
 .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-actions-section button,
 .app-shell.mode-studio[data-studio-tab="evidence"] .studio-tabs button {
-  min-height: 34px;
+  min-height: 40px;
+  padding-block: 7px;
   border-radius: 2px;
 }
 
@@ -10402,6 +10403,11 @@ input {
     inset 0 -1px 0 rgba(0, 0, 0, 0.34);
 }
 
+.app-shell.mode-studio[data-studio-tab="build"] .studio-tabs,
+.app-shell.mode-studio[data-studio-tab="build"] .empty-state {
+  border-radius: 2px;
+}
+
 .app-shell.mode-studio[data-studio-tab="build"] {
   --build: #8a98a6;
 }
@@ -10444,8 +10450,8 @@ input {
 }
 
 .app-shell.mode-studio[data-studio-tab="build"] .workspace-action-grid button {
-  min-height: 34px;
-  padding-block: 5px;
+  min-height: 40px;
+  padding-block: 7px;
 }
 
 .app-shell.mode-studio[data-studio-tab="build"] .workspace-action-grid button small {
@@ -10527,7 +10533,7 @@ input {
 }
 
 .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button {
-  min-height: 35px;
+  min-height: 40px;
   border: 0;
   border-right: 1px solid color-mix(in srgb, var(--editor-edge) 62%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 62%, transparent);
@@ -10537,7 +10543,7 @@ input {
 
 .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .primary-action {
   grid-column: 1 / -1;
-  box-shadow: inset 2px 0 0 var(--build);
+  box-shadow: inset 1px 0 0 var(--build);
 }
 
 .app-shell.mode-studio[data-studio-tab="build"] .build-readiness-header {
@@ -11198,8 +11204,8 @@ input {
 .app-shell.mode-studio[data-studio-tab="assets"] .action-stack button,
 .app-shell.mode-studio[data-studio-tab="assets"] .pane-right button,
 .app-shell.mode-studio[data-studio-tab="assets"] .primary-action {
-  min-height: 32px;
-  padding: 5px 7px;
+  min-height: 40px;
+  padding: 7px;
   border-radius: 2px;
 }
 
@@ -11876,6 +11882,7 @@ input {
   right: auto;
   bottom: 12px;
   width: min(520px, calc(42% - 16px));
+  max-height: 148px;
 }
 
 .app-shell.mode-studio .workspace-action-grid {
@@ -11907,15 +11914,15 @@ input {
 .app-shell.mode-studio .mode-switch .mode-button-top,
 .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr) 7px;
+  grid-template-columns: 15px minmax(39px, 1fr) 7px;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .app-shell.mode-studio .mode-switch button {
   align-content: center;
   gap: 2px;
-  padding-inline: 7px;
+  padding-inline: 6px;
 }
 
 .app-shell.mode-studio .mode-label,
@@ -12099,10 +12106,10 @@ input {
 
 .app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-row {
   grid-template-columns: minmax(0, 1fr) minmax(86px, auto);
-  min-height: 34px;
+  min-height: 40px;
   gap: 4px 7px;
   align-items: center;
-  padding: 5px 7px;
+  padding: 6px 7px;
 }
 
 .app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-main {
@@ -12139,8 +12146,8 @@ input {
 }
 
 .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .empty-state button {
-  min-height: 32px;
-  padding-block: 5px;
+  min-height: 40px;
+  padding-block: 6px;
 }
 
 .app-shell.mode-studio[data-studio-tab="workbench"] .engine-modules-panel {
@@ -12200,8 +12207,8 @@ input {
 }
 
 .app-shell.mode-studio[data-studio-tab="workbench"] .engine-modules-panel .full-width-action {
-  min-height: 32px;
-  padding-block: 5px;
+  min-height: 40px;
+  padding-block: 6px;
 }
 
 .app-shell.mode-studio .studio-chrome-brand strong,
