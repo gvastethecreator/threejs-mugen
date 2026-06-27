@@ -21724,3 +21724,88 @@ input {
     line-height: 1.2;
   }
 }
+
+/* Desktop evidence/build ledgers: keep dense rows, but stop hiding decision text. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, max-content);
+    min-height: 78px;
+    align-items: start;
+    gap: 6px 8px;
+    padding-block: 7px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record-main {
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-meta {
+    display: -webkit-box;
+    max-height: none;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-meta {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: start;
+    gap: 6px;
+    min-width: 0;
+    line-height: 1.18;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route b,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route b {
+    padding-top: 1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route span {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route + .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route + .record-route span {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .studio-kv {
+    grid-template-columns: minmax(88px, 0.34fr) minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .studio-kv dd {
+    min-height: 25px;
+    align-content: start;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .studio-kv dd {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
