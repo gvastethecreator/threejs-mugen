@@ -1529,11 +1529,19 @@ export class App {
     const now = performance.now();
     if (now - this.lastPanelUpdate > 180) {
       this.lastPanelUpdate = now;
-      this.updateUi();
+      if (this.shouldUseLiveUiRefresh()) {
+        this.updateLiveUi();
+      } else {
+        this.updateUi();
+      }
     }
   }
 
-  private updateUi(): void {
+  private shouldUseLiveUiRefresh(): boolean {
+    return this.mode === "studio" && this.studioTab !== "debug";
+  }
+
+  private syncShellState(): void {
     const shell = this.root.querySelector<HTMLElement>(".app-shell");
     shell?.classList.toggle("mode-match", this.mode === "match");
     shell?.classList.toggle("mode-inspect", this.mode === "inspect");
@@ -1543,6 +1551,18 @@ export class App {
     shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
     shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
+  }
+
+  private updateLiveUi(): void {
+    this.syncShellState();
+    this.setHtml("#console", this.renderConsole());
+    this.setHtml("#stage-status", this.renderStageStatus());
+    this.setHtml("#round-hud", this.renderRoundHud());
+    this.syncRuntimeControls();
+  }
+
+  private updateUi(): void {
+    this.syncShellState();
     this.setHtml("#studio-chrome", this.renderStudioChrome());
     this.setHtml("#workspace-brand", this.renderWorkspaceBrand());
     this.setHtml("#mode-controls", this.renderModeControls());
@@ -1558,6 +1578,10 @@ export class App {
       this.setHtml("#command-palette-root", this.renderCommandPalette());
     }
     this.installDiagnosticsBridge();
+    this.syncRuntimeControls();
+  }
+
+  private syncRuntimeControls(): void {
     const playPause = this.root.querySelector<HTMLButtonElement>('[data-action="play-pause"]');
     if (playPause) {
       playPause.textContent = this.snapshot.playing ? "Pause" : "Play";

@@ -15521,3 +15521,16 @@ input {
     font-size: 10px;
   }
 }
+
+/* EOF lane ledger: prefer readable state rows over squeezed readiness tiles. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .workbench-lane-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .workbench-lane-strip span {
+    grid-template-columns: minmax(64px, 0.34fr) minmax(74px, 0.42fr) minmax(0, 1fr);
+    min-height: 36px;
+    align-items: center;
+  }
+}
