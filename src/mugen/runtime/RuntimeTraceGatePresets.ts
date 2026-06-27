@@ -4165,6 +4165,65 @@ export function createSyntheticImportedHelperTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedHelperVelocityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-velocity-attacker",
+    displayName: "Synthetic Imported Helper Velocity Attacker",
+    withHelper: true,
+    helperVelocity: [3, -1],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-velocity-golden",
+      label: "Synthetic imported Helper velocity route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper velocity trace proves a bounded visual Helper can consume static velset params and expose moving position plus velocity in trace evidence. It does not claim helper VM, helper physics, redirects, helper combat, DestroySelf, or exact MUGEN/IKEMEN helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-velocity-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            animNo: 920,
+            observedVelXAtLeast: 3,
+            observedVelYAtMost: -1,
+            observedPosXAtLeast: -180,
+            observedPosYAtMost: -36,
+            minFrames: 2,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedExplodScript();
@@ -5102,6 +5161,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   withHelper?: boolean;
+  helperVelocity?: [number, number];
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -5320,7 +5380,7 @@ ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveRever
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
-${options.withHelper ? helperControllerBlock() : ""}
+${options.withHelper ? helperControllerBlock(options.helperVelocity) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
 ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
@@ -6996,7 +7056,8 @@ ctrl = 0
 `;
 }
 
-function helperControllerBlock(): string {
+function helperControllerBlock(velocity?: [number, number]): string {
+  const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -7010,6 +7071,7 @@ postype = p1
 facing = 1
 sprpriority = 8
 removetime = 30
+${velocityLine}
 `;
 }
 

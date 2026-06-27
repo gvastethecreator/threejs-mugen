@@ -74,6 +74,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     stateNo: 6000,
     animNo: 6100,
     pos: { x: 0, y: 0 },
+    vel: { x: 0, y: 0 },
     facing: 1,
     frameIndex: 0,
     frameElapsed: 0,
@@ -92,6 +93,7 @@ describe("HelperSystem", () => {
         id: "440",
         name: '"spark helper"',
         facing: "-1",
+        velset: "2,-1",
         removetime: "9999",
         sprpriority: "25",
       }),
@@ -119,6 +121,7 @@ describe("HelperSystem", () => {
       stateNo: 6000,
       animNo: 6100,
       pos: { x: 24, y: -12 },
+      vel: { x: 2, y: -1 },
       facing: -1,
       removeTime: 1200,
       spritePriority: 10,
@@ -133,6 +136,7 @@ describe("HelperSystem", () => {
       stateNo: 6101,
       animNo: 6102,
       pos: [12, -4],
+      velocity: [3, -2],
       postype: "p1",
       facing: 1,
       removeTime: 25,
@@ -163,6 +167,7 @@ describe("HelperSystem", () => {
       name: "Typed Buddy",
       stateNo: 6101,
       animNo: 6102,
+      vel: { x: 3, y: -2 },
       facing: 1,
       removeTime: 25,
       spritePriority: 6,
@@ -177,9 +182,12 @@ describe("HelperSystem", () => {
     const remaining = advanceRuntimeHelpers([active, expired, outside], stage);
     expect(remaining.map((entry) => entry.serialId)).toEqual(["active"]);
     expect(active.age).toBe(1);
+    expect(active.pos).toEqual({ x: 0, y: 0 });
     expect(active.frameIndex).toBe(0);
 
+    active.vel = { x: 2, y: -1 };
     advanceRuntimeHelpers([active], stage);
+    expect(active.pos).toEqual({ x: 2, y: -1 });
     expect(active.frameIndex).toBe(1);
 
     advanceRuntimeHelpers([active], stage);
@@ -202,6 +210,7 @@ describe("HelperSystem", () => {
       spriteOwnerLabel: "Demo",
       runtime: {
         pos: { x: 0, y: 0 },
+        vel: { x: 0, y: 0 },
         facing: 1,
         spritePriority: 3,
         stateNo: 6000,

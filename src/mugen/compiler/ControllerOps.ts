@@ -112,6 +112,7 @@ export type HelperControllerOp = {
   stateNo?: number;
   animNo?: number;
   pos?: [number, number];
+  velocity?: [number, number];
   postype?: string;
   facing?: number;
   removeTime: number;
@@ -974,6 +975,7 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     stateNo: firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value")),
     animNo: firstNumber(findParam(controller, "anim")),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
+    velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
     postype: stripMugenString(findParam(controller, "postype")),
     facing: firstNumber(findParam(controller, "facing")),
     removeTime: firstNumber(findParam(controller, "removetime")) ?? 180,

@@ -20,6 +20,7 @@ export type RuntimeHelper = {
   stateNo?: number;
   animNo: number;
   pos: { x: number; y: number };
+  vel: { x: number; y: number };
   facing: 1 | -1;
   frameIndex: number;
   frameElapsed: number;
@@ -61,6 +62,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     stateNo: input.stateNo,
     animNo: input.animNo,
     pos: input.pos,
+    vel: helperVelocity(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     frameIndex: 0,
     frameElapsed: 0,
@@ -73,6 +75,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
 export function advanceRuntimeHelpers(helpers: RuntimeHelper[], stage: Pick<MugenStageDefinition, "bounds">): RuntimeHelper[] {
   for (const helper of helpers) {
     helper.age += 1;
+    helper.pos.x += helper.vel.x;
+    helper.pos.y += helper.vel.y;
     helper.frameElapsed += 1;
     const frame = helper.action.frames[helper.frameIndex];
     if (frame && helper.frameElapsed >= Math.max(1, frame.duration)) {
@@ -124,7 +128,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         },
         runtime: {
           pos: { ...helper.pos },
-          vel: { x: 0, y: 0 },
+          vel: { ...helper.vel },
           facing: helper.facing,
           spritePriority: helper.spritePriority,
           stateNo: helper.stateNo ?? sourceStateNo,
@@ -169,6 +173,28 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function helperVelocity(controller: MugenStateController, operation: HelperControllerOp | undefined): { x: number; y: number } {
+  const velocity = operation?.velocity ?? numberPair(findControllerParam(controller, "velset") ?? findControllerParam(controller, "vel") ?? findControllerParam(controller, "velocity"));
+  return {
+    x: clampHelperVelocity(velocity?.[0] ?? 0),
+    y: clampHelperVelocity(velocity?.[1] ?? 0),
+  };
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const [rawX, rawY] = value.split(",");
+  const x = Number(rawX?.trim());
+  const y = Number(rawY?.trim());
+  return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : undefined;
+}
+
+function clampHelperVelocity(value: number): number {
+  return Math.max(-80, Math.min(80, value));
 }
 
 function clampHelperTime(value: number): number {

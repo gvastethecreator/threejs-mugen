@@ -38,6 +38,7 @@ import {
   createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
+  createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
@@ -3217,6 +3218,54 @@ describe("RuntimeTraceGatePresets", () => {
       parentId: "p1",
       layer: "effect",
     });
+  });
+
+  it("creates a synthetic imported Helper velocity artifact with moving helper evidence", () => {
+    const artifact = createSyntheticImportedHelperVelocityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-velocity-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-velocity-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("helper");
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "helper",
+          ownerId: "p1",
+          animNo: 920,
+          maxVel: expect.objectContaining({ x: 3 }),
+          minVel: expect.objectContaining({ y: -1 }),
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "helper",
+        ownerId: "p1",
+        animNo: 920,
+        observedVelXAtLeast: 3,
+        observedVelYAtMost: -1,
+        observedPosXAtLeast: -180,
+        observedPosYAtMost: -36,
+        minFrames: 2,
+      },
+    ]);
   });
 
   it("creates a synthetic imported Explod artifact with typed explod operation evidence", () => {
