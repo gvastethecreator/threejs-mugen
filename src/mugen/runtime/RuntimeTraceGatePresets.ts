@@ -799,6 +799,7 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
     attacker,
     targetId: "synthetic-imported-default-guard-state-golden",
     targetLabel: "Synthetic imported Common1 guard-hit route",
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     notes: [
       "Synthetic imported guard-state trace proves a held-back defender can enter its own Common1-style guard-hit states 150 and 151 after blocking an imported HitDef, including runtime-backed guard.slidetime and guard.ctrltime exposure through GetHitVar. It does not claim full guard-distance, guard-start, or guard-end parity.",
     ],
@@ -815,6 +816,7 @@ export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: Ru
     ...options,
     script: importedDefaultCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredActiveCommands: ["holddown", "x"],
     targetId: "synthetic-imported-crouch-guard-state-golden",
     targetLabel: "Synthetic imported Common1 crouch guard-hit route",
@@ -834,6 +836,7 @@ export function createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(opt
     ...options,
     script: importedDefaultDiagonalCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredActiveCommands: ["holdback", "holddown", "x"],
     targetId: "synthetic-imported-diagonal-crouch-guard-state-golden",
     targetLabel: "Synthetic imported atomic DB crouch guard-hit route",
@@ -871,6 +874,7 @@ export function createSyntheticImportedAirGuardStateTraceArtifact(options: Runti
     script: importedDefaultAirGuardStateScript(),
     requiredExecutedStates: [200, 154, 155],
     requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredActiveCommands: ["holdback", "x"],
     requiredFinalActors: [
       {

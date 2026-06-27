@@ -3732,6 +3732,7 @@ export class App {
         </div>
         <div class="engine-module-table" role="table" aria-label="Engine module status">
           <div class="engine-module-row engine-module-row-head" role="row">
+            <span aria-hidden="true"></span>
             <span>Module</span>
             <span>Status</span>
             <span>Contracts</span>
@@ -3741,15 +3742,13 @@ export class App {
             .map(
               (module) => `
                 <div class="engine-module-row is-${this.statusClassName(module.status)}" role="row">
+                  <span class="engine-module-icon">${tablerIcon("modules", "ui-icon")}</span>
                   <span class="engine-module-name">
                     <strong>${escapeHtml(module.label)}</strong>
                     <small>${escapeHtml(module.id)}${module.role ? ` / ${escapeHtml(module.role)}` : ""}</small>
                   </span>
-                  <span>${this.statusBadge(module.status)}</span>
-                  <span class="engine-module-contracts">
-                    <b>${module.consumes.length}</b><small>in</small>
-                    <b>${module.provides.length}</b><small>out</small>
-                  </span>
+                  <span class="engine-module-status">${this.statusBadge(module.status)}</span>
+                  <span class="engine-module-contracts">${module.consumes.length} in / ${module.provides.length} out</span>
                   <span class="engine-module-blocked">${escapeHtml(this.moduleBlockedPreview(module))}</span>
                 </div>
               `,
@@ -8141,8 +8140,10 @@ export class App {
     const tagName = options.selectable ? "button" : "div";
     const selectedClass = options.selected ? " is-selected" : "";
     const statusClass = this.statusClassName(asset.status);
+    const iconName = iconForAction(asset.label, `${asset.kind} ${asset.source} ${asset.detail} ${asset.tags.join(" ")}`);
     return `
       <${tagName} ${options.selectable ? 'type="button"' : ""} class="list-item asset-row is-${statusClass}${selectedClass}"${tagAttributes}>
+        <span class="asset-row-icon">${tablerIcon(iconName, "ui-icon")}</span>
         <span class="asset-row-main">
           <span class="asset-row-title">
             <span class="list-title">${escapeHtml(asset.label)}</span>

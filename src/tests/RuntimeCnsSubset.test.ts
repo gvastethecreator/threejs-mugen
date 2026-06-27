@@ -254,8 +254,9 @@ describe("StateControllerExecutor", () => {
       power: 50,
     });
     const unsupported: string[] = [];
+    const compiledHitVelSet = compileControllerIr(controller("HitVelSet", { x: "1", y: "1" }));
 
-    state = executeStateController(controller("HitVelSet", { x: "1", y: "1" }), state, (item) => unsupported.push(item));
+    state = executeControllerIr(compiledHitVelSet, state, (item) => unsupported.push(item));
     state = executeStateController(controller("PlayerPush", { value: "0" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("Turn", {}), state, (item) => unsupported.push(item));
     state = executeStateController(controller("PosFreeze", { x: "1", y: "0" }), state, (item) => unsupported.push(item));
@@ -285,6 +286,7 @@ describe("StateControllerExecutor", () => {
     );
 
     expect(state.vel).toEqual({ x: -6, y: -9 });
+    expect(compiledHitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 1 });
     expect(state.playerPush).toBe(false);
     expect(state.facing).toBe(-1);
     expect(state.posFreeze).toEqual({ x: true, y: false });

@@ -75,8 +75,9 @@ export function executeControllerIr(
     const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 1;
     next.vel = { x: next.vel.x * x, y: next.vel.y * y };
   } else if (type === "hitvelset") {
-    const xFlag = numberParam(controller, next, context, "x") ?? 0;
-    const yFlag = numberParam(controller, next, context, "y") ?? 0;
+    const operation = kinematicOperation(controller, "hitvelset");
+    const xFlag = operation?.x ?? numberParam(controller, next, context, "x") ?? 0;
+    const yFlag = operation?.y ?? numberParam(controller, next, context, "y") ?? 0;
     if (next.hitVelocity && xFlag !== 0) {
       next.vel.x = next.hitVelocity.x;
     }

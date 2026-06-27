@@ -657,6 +657,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
@@ -725,6 +726,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holddown", "x"]));
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
   });
 
@@ -750,6 +752,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "holddown", "x"]));
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
   });
 
@@ -790,6 +793,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([154, 155, 200]));
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");

@@ -162,7 +162,7 @@ export type FallEnvShakeControllerOp = {
 
 export type MovementKinematicControllerOp = {
   kind: "kinematic";
-  controllerType: "velset" | "veladd" | "velmul" | "posset" | "posadd";
+  controllerType: "velset" | "veladd" | "velmul" | "hitvelset" | "posset" | "posadd";
   x?: number;
   y?: number;
 };
@@ -315,7 +315,15 @@ export function compileControllerOp(controller: MugenStateController): Controlle
 }
 
 function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {
-  return type === "velset" || type === "veladd" || type === "velmul" || type === "posset" || type === "posadd" || type === "gravity";
+  return (
+    type === "velset" ||
+    type === "veladd" ||
+    type === "velmul" ||
+    type === "hitvelset" ||
+    type === "posset" ||
+    type === "posadd" ||
+    type === "gravity"
+  );
 }
 
 function compileKinematicControllerOp(controller: MugenStateController, type: KinematicControllerOp["controllerType"]): KinematicControllerOp | undefined {

@@ -832,6 +832,7 @@ function validateTraceCoverage(coverage) {
     "helper",
     "explod",
     "removeexplod",
+    "kinematic:hitvelset",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
