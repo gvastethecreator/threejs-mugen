@@ -3432,7 +3432,6 @@ export class App {
     });
     const sourceRuntimeMap = this.renderStudioAssetInspectorDrawer("Source / Runtime Map", this.renderAssetSourceRuntimeMap(library.sourceRuntimeMap), {
       badge: `${library.sourceRuntimeMap.records.length} records`,
-      open: true,
     });
     const dependencyGraph = this.renderStudioAssetInspectorDrawer("Dependency Graph", this.renderAssetDependencyGraph(library), {
       badge: `${library.selectedDependencyGraph.nodes.length} nodes`,
