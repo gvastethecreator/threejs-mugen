@@ -125,6 +125,7 @@ const supportedExpressionIdentifiers = new Set([
   "posx",
   "posy",
   "power",
+  "prevmovetype",
   "prevstateno",
   "projcontact",
   "projcontacttime",

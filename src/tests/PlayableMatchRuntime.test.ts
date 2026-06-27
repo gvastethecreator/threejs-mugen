@@ -305,6 +305,23 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 267, 268]));
   });
 
+  it("tracks PrevMoveType for imported state trigger routing", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      withPrevMoveTypeBranch: { intermediateStateNo: 269, finalStateNo: 270 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(269);
+    expect(snapshot.actors[0]?.runtime.prevMoveType).toBe("A");
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(270);
+    expect(snapshot.actors[0]?.runtime.prevMoveType).toBe("I");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 269, 270]));
+  });
+
   it("respects imported HitDef kill = 0 for direct hits", () => {
     const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 2000, hitDefKill: false });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
@@ -1771,6 +1788,7 @@ function createImportedFixture(
     projHitStateNo?: number;
     projGuardStateNo?: number;
     withPrevStateBranch?: { intermediateStateNo: number; finalStateNo: number };
+    withPrevMoveTypeBranch?: { intermediateStateNo: number; finalStateNo: number };
   } = {},
 ): DemoFighterDefinition {
   const withStateMove = options.withStateMove ?? true;
@@ -1842,6 +1860,9 @@ ctrl = 1
     ...(options.hitDefAttrStateNo === undefined ? [] : [options.hitDefAttrStateNo]),
     ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
     ...(options.projGuardStateNo === undefined ? [] : [options.projGuardStateNo]),
+    ...(options.withPrevMoveTypeBranch === undefined
+      ? []
+      : [options.withPrevMoveTypeBranch.intermediateStateNo, options.withPrevMoveTypeBranch.finalStateNo]),
   ];
   const extraStates = [...new Set(extraStateNos)]
     .map(
@@ -2406,6 +2427,15 @@ value = ${options.withPrevStateBranch.intermediateStateNo}
 ctrl = 0
 `
     : "";
+  const prevMoveTypeEntry = options.withPrevMoveTypeBranch
+    ? `
+[State 200, PrevMoveType Entry]
+type = ChangeState
+trigger1 = Time = 0
+value = ${options.withPrevMoveTypeBranch.intermediateStateNo}
+ctrl = 0
+`
+    : "";
   const prevStateBranchStates = options.withPrevStateBranch
     ? `
 [Statedef ${options.withPrevStateBranch.intermediateStateNo}]
@@ -2426,6 +2456,29 @@ type = S
 movetype = I
 physics = S
 anim = ${options.withPrevStateBranch.finalStateNo}
+ctrl = 1
+`
+    : "";
+  const prevMoveTypeBranchStates = options.withPrevMoveTypeBranch
+    ? `
+[Statedef ${options.withPrevMoveTypeBranch.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevMoveTypeBranch.intermediateStateNo}
+ctrl = 0
+
+[State ${options.withPrevMoveTypeBranch.intermediateStateNo}, PrevMoveType Branch]
+type = ChangeState
+trigger1 = PrevMoveType = A
+value = ${options.withPrevMoveTypeBranch.finalStateNo}
+ctrl = 1
+
+[Statedef ${options.withPrevMoveTypeBranch.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevMoveTypeBranch.finalStateNo}
 ctrl = 1
 `
     : "";
@@ -2509,6 +2562,7 @@ value = 0
 ctrl = 1
 
 ${prevStateEntry}
+${prevMoveTypeEntry}
 [State 200, Runtime HitDef]
 type = HitDef
 trigger1 = Time = 0
@@ -2566,6 +2620,7 @@ ctrl = 0
 
 ${changeStateDef}
 ${prevStateBranchStates}
+${prevMoveTypeBranchStates}
 
 ${options.hitDefP1StateNo !== undefined ? `
 [Statedef ${options.hitDefP1StateNo}]
@@ -2700,6 +2755,10 @@ ctrl = 0
   if (options.withPrevStateBranch) {
     animations.set(options.withPrevStateBranch.intermediateStateNo, fixtureAction(options.withPrevStateBranch.intermediateStateNo));
     animations.set(options.withPrevStateBranch.finalStateNo, fixtureAction(options.withPrevStateBranch.finalStateNo));
+  }
+  if (options.withPrevMoveTypeBranch) {
+    animations.set(options.withPrevMoveTypeBranch.intermediateStateNo, fixtureAction(options.withPrevMoveTypeBranch.intermediateStateNo));
+    animations.set(options.withPrevMoveTypeBranch.finalStateNo, fixtureAction(options.withPrevMoveTypeBranch.finalStateNo));
   }
 
   return {

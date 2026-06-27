@@ -196,6 +196,26 @@ export function createSyntheticImportedPrevStateTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedPrevMoveTypeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-prevmovetype",
+      displayName: "Synthetic Imported PrevMoveType",
+      prevMoveTypeRoute: { intermediateStateNo: 269, finalStateNo: 270 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-prevmovetype-golden",
+      targetLabel: "Synthetic imported PrevMoveType route",
+      script: importedOneShotXScript(),
+      requiredExecutedStates: [200, 269, 270],
+      notes: [
+        "Synthetic imported PrevMoveType trace proves the runtime records previous move type across ChangeState and can branch from an intermediate state using PrevMoveType = A. Exact MUGEN/IKEMEN tick-order parity and custom-state ownership edges remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedEnemyNearTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4851,6 +4871,7 @@ export type SyntheticImportedTraceFighterOptions = {
   numTargetStateNo?: number;
   numHelperStateNo?: number;
   prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
+  prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
   withHelper?: boolean;
@@ -5043,6 +5064,7 @@ ${guardDistanceLine}
 ${fallLine}
 ${customStateLine || getHitStateLine}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
+${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(77, options.targetStateRoute.startStateNo) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
@@ -5082,6 +5104,7 @@ ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
 ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
+${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
@@ -5173,6 +5196,12 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
         : ([
             [options.prevStateRoute.intermediateStateNo, traceAction(options.prevStateRoute.intermediateStateNo)],
             [options.prevStateRoute.finalStateNo, traceAction(options.prevStateRoute.finalStateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
+      ...(options.prevMoveTypeRoute === undefined
+        ? []
+        : ([
+            [options.prevMoveTypeRoute.intermediateStateNo, traceAction(options.prevMoveTypeRoute.intermediateStateNo)],
+            [options.prevMoveTypeRoute.finalStateNo, traceAction(options.prevMoveTypeRoute.finalStateNo)],
           ] as Array<[number, MugenAnimationAction]>)),
       ...(options.enemyNearStateEntry === undefined
         ? []
@@ -6463,6 +6492,16 @@ ctrl = 0
 `;
 }
 
+function prevMoveTypeEntryBlock(stateNo: number): string {
+  return `
+[State 200, PrevMoveType Entry]
+type = ChangeState
+trigger1 = Time = 2
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
 function prevStateRouteBlock(route: { intermediateStateNo: number; finalStateNo: number }): string {
   return `
 [Statedef ${route.intermediateStateNo}]
@@ -6475,6 +6514,30 @@ ctrl = 0
 [State ${route.intermediateStateNo}, PrevState Branch]
 type = ChangeState
 trigger1 = PrevStateNo = 200
+value = ${route.finalStateNo}
+ctrl = 1
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.finalStateNo}
+ctrl = 1
+`;
+}
+
+function prevMoveTypeRouteBlock(route: { intermediateStateNo: number; finalStateNo: number }): string {
+  return `
+[Statedef ${route.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.intermediateStateNo}
+ctrl = 0
+
+[State ${route.intermediateStateNo}, PrevMoveType Branch]
+type = ChangeState
+trigger1 = PrevMoveType = A
 value = ${route.finalStateNo}
 ctrl = 1
 

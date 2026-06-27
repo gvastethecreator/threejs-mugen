@@ -326,6 +326,9 @@ class ExpressionParser {
     if (lower === "prevstateno") {
       return this.context.self.prevStateNo ?? 0;
     }
+    if (lower === "prevmovetype") {
+      return this.context.self.prevMoveType ?? "I";
+    }
     if (lower === "roundno") {
       return 1;
     }

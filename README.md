@@ -97,6 +97,8 @@ Current hit-count cut: bounded `HitCount` and `UniqHitCount` now work for direct
 
 Current reversal-trigger cut: bounded `MoveReversed` now works for the attacker state after a defender-side partial `ReversalDef` counters a matching direct `HitDef`. The required `synthetic-imported-reversal.json` trace proves the defender route into `777` and the attacker's delayed `MoveReversed >= 1` branch into `778` after hitpause. Exact reversal priority, projectile/helper/custom-state reversal behavior, trigger lifetime, and full MUGEN/IKEMEN parity remain future work.
 
+Current previous-state trigger cut: bounded `PrevMoveType` now joins `PrevStateNo` for imported state routing. The required `synthetic-imported-prevmovetype.json` trace proves a route from attack state `200` into an intermediate state, then a `PrevMoveType = A` branch into `270`. Exact tick-order parity, redirects, helper/team state ownership, and every custom-state edge remain future work.
+
 ## Controls
 
 ```txt

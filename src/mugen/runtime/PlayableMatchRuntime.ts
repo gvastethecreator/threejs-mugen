@@ -602,6 +602,7 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
   if (fighter.runtime.stateNo !== stateNo) {
     fighter.runtime.prevStateNo = fighter.runtime.stateNo;
+    fighter.runtime.prevMoveType = currentStateMoveType(fighter);
     fighter.runtime.stateNo = stateNo;
     if (options.resetElapsed) {
       fighter.stateElapsed = -1;
@@ -609,6 +610,14 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
     return;
   }
   fighter.runtime.stateNo = stateNo;
+}
+
+function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState["moveType"] {
+  const owner = fighter.stateOwner ?? fighter;
+  const state =
+    owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
+    owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
+  return state?.moveType ? normalizeMoveType(state.moveType, fighter.runtime.moveType) : fighter.runtime.moveType;
 }
 
 function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState): void {

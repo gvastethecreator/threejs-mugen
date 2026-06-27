@@ -82,6 +82,7 @@ import {
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
   createSyntheticImportedP2MetricsTraceArtifact,
+  createSyntheticImportedPrevMoveTypeTraceArtifact,
   createSyntheticImportedPrevStateTraceArtifact,
   createSyntheticImportedRemoveExplodTraceArtifact,
   createSyntheticImportedXTraceArtifact,
@@ -330,6 +331,34 @@ describe("RuntimeTraceGatePresets", () => {
       ),
     ).toBe(true);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 0 && actor.prevStateNo === 268)).toBe(true);
+  });
+
+  it("creates a synthetic imported PrevMoveType artifact with branch evidence", () => {
+    const artifact = createSyntheticImportedPrevMoveTypeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-prevmovetype-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 269, 270]));
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 269, 270]);
+    expect(
+      artifact.trace.frames.some((frame) =>
+        frame.delta?.actorChanges.some((actor) => actor.id === "p1" && actor.changes.includes("state 269->270")),
+      ),
+    ).toBe(true);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 0 && actor.prevMoveType === "I")).toBe(true);
   });
 
   it("creates a synthetic imported EnemyNear artifact with redirect branch evidence", () => {

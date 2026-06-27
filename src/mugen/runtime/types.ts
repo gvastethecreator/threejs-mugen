@@ -53,6 +53,7 @@ export type CharacterRuntimeState = {
   customState?: RuntimeCustomState;
   assertSpecial?: RuntimeAssertSpecial;
   prevStateNo?: number;
+  prevMoveType?: "I" | "A" | "H";
   stateNo: number;
   animNo: number;
   animTime: number;
