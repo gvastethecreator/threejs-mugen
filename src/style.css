@@ -4819,9 +4819,18 @@ button.controller-chip {
 }
 
 .command-result:hover,
-.command-result:focus-visible {
+.command-result:focus-visible,
+.command-result.is-active,
+.command-result[aria-selected="true"] {
   border-color: color-mix(in srgb, var(--surface-accent) 54%, var(--panel-border));
   background: color-mix(in srgb, var(--surface-accent) 8%, var(--surface-hover));
+}
+
+.command-result.is-active,
+.command-result[aria-selected="true"] {
+  box-shadow:
+    inset 2px 0 0 color-mix(in srgb, var(--surface-accent) 78%, transparent),
+    var(--shadow-panel);
 }
 
 .command-result-main {

@@ -584,6 +584,7 @@ export class App {
   private selectedTraceFrameIndex = 0;
   private commandPaletteOpen = false;
   private commandPaletteQuery = "";
+  private commandPaletteActiveIndex = 0;
   private commandPaletteReturnFocus?: HTMLElement;
   private studioLeftDockOpen = true;
   private studioRightDockOpen = true;
@@ -997,7 +998,10 @@ export class App {
       const target = event.target as HTMLInputElement;
       if (target.dataset.commandPaletteSearch !== undefined) {
         this.commandPaletteQuery = target.value;
-        this.setHtml("#command-palette-results", this.renderCommandPaletteResults());
+        this.commandPaletteActiveIndex = 0;
+        const actions = this.getVisibleCommandPaletteActions();
+        this.setHtml("#command-palette-results", this.renderCommandPaletteResults(actions));
+        this.syncCommandPaletteActiveDescendant(actions);
         return;
       }
       if (target.dataset.filter === "navigator") {
@@ -1018,6 +1022,9 @@ export class App {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         this.openCommandPalette();
+        return;
+      }
+      if (this.commandPaletteOpen && this.handleCommandPaletteKeydown(event)) {
         return;
       }
       if (event.key === "Escape" && this.commandPaletteOpen) {
@@ -1715,6 +1722,8 @@ export class App {
     if (!this.commandPaletteOpen) {
       return "";
     }
+    const actions = this.getVisibleCommandPaletteActions();
+    const activeResultId = actions.length ? `command-result-${Math.min(this.commandPaletteActiveIndex, actions.length - 1)}` : undefined;
     return `
       <div class="command-palette-shell" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
         <button type="button" class="command-palette-backdrop" data-action="close-command-palette" aria-label="Close command palette"></button>
@@ -1730,20 +1739,20 @@ export class App {
           </div>
           <label class="command-palette-search">
             <span>Search actions</span>
-            <input type="search" data-command-palette-search value="${escapeHtml(this.commandPaletteQuery)}" placeholder="mode, load, evidence, build..." autocomplete="off" spellcheck="false" />
+            <input type="search" data-command-palette-search value="${escapeHtml(this.commandPaletteQuery)}" placeholder="mode, load, evidence, build..." autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="command-palette-results"${activeResultId ? ` aria-activedescendant="${activeResultId}"` : ""} />
           </label>
-          <div id="command-palette-results" class="command-palette-results" aria-live="polite">
-            ${this.renderCommandPaletteResults()}
+          <div id="command-palette-results" class="command-palette-results" role="listbox" aria-live="polite">
+            ${this.renderCommandPaletteResults(actions)}
           </div>
         </div>
       </div>
     `;
   }
 
-  private renderCommandPaletteResults(): string {
+  private getVisibleCommandPaletteActions(): CommandPaletteAction[] {
     const query = this.commandPaletteQuery.trim().toLowerCase();
     const terms = query.split(/\s+/).filter(Boolean);
-    const actions = this.getCommandPaletteActions()
+    return this.getCommandPaletteActions()
       .filter((action) => {
         if (terms.length === 0) {
           return true;
@@ -1752,6 +1761,9 @@ export class App {
         return terms.every((term) => haystack.includes(term));
       })
       .slice(0, 14);
+  }
+
+  private renderCommandPaletteResults(actions = this.getVisibleCommandPaletteActions()): string {
     if (actions.length === 0) {
       return `
         <div class="empty-state compact">
@@ -1762,8 +1774,10 @@ export class App {
     }
     return actions
       .map(
-        (action) => `
-          <button type="button" class="command-result" data-command-id="${escapeHtml(action.id)}" ${action.disabled ? "disabled" : ""}>
+        (action, index) => {
+          const selected = index === Math.min(this.commandPaletteActiveIndex, actions.length - 1);
+          return `
+          <button type="button" id="command-result-${index}" role="option" aria-selected="${selected}" class="command-result ${selected ? "is-active" : ""}" data-command-id="${escapeHtml(action.id)}" ${action.disabled ? "disabled" : ""}>
             <span class="command-result-main">
               <strong>${escapeHtml(action.label)}</strong>
               <small>${escapeHtml(action.detail)}</small>
@@ -1772,7 +1786,8 @@ export class App {
               <span class="badge ${this.commandToneClass(action.tone)}">${escapeHtml(action.group)}</span>
             </span>
           </button>
-        `,
+        `;
+        },
       )
       .join("");
   }
@@ -1781,6 +1796,7 @@ export class App {
     this.commandPaletteReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : undefined;
     this.commandPaletteOpen = true;
     this.commandPaletteQuery = "";
+    this.commandPaletteActiveIndex = 0;
     this.updateUi();
     requestAnimationFrame(() => {
       this.root.querySelector<HTMLInputElement>("[data-command-palette-search]")?.focus();
@@ -1793,6 +1809,7 @@ export class App {
     }
     this.commandPaletteOpen = false;
     this.commandPaletteQuery = "";
+    this.commandPaletteActiveIndex = 0;
     this.updateUi();
     const returnFocus = this.commandPaletteReturnFocus;
     requestAnimationFrame(() => {
@@ -1812,6 +1829,7 @@ export class App {
     }
     this.commandPaletteOpen = false;
     this.commandPaletteQuery = "";
+    this.commandPaletteActiveIndex = 0;
     action.run();
     this.updateUi();
     if (commandId.startsWith("debug-actor:")) {
@@ -1844,6 +1862,64 @@ export class App {
       event.preventDefault();
       first.focus();
     }
+  }
+
+  private handleCommandPaletteKeydown(event: KeyboardEvent): boolean {
+    const shell = this.root.querySelector<HTMLElement>(".command-palette-shell");
+    if (!shell || !shell.contains(document.activeElement)) {
+      return false;
+    }
+    if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      const actions = this.getVisibleCommandPaletteActions();
+      if (!actions.length) {
+        return true;
+      }
+      if (event.key === "Home") {
+        this.commandPaletteActiveIndex = 0;
+      } else if (event.key === "End") {
+        this.commandPaletteActiveIndex = actions.length - 1;
+      } else {
+        const direction = event.key === "ArrowDown" ? 1 : -1;
+        this.commandPaletteActiveIndex = (this.commandPaletteActiveIndex + direction + actions.length) % actions.length;
+      }
+      this.setHtml("#command-palette-results", this.renderCommandPaletteResults(actions));
+      this.syncCommandPaletteActiveDescendant(actions);
+      this.scrollActiveCommandResultIntoView();
+      return true;
+    }
+    if (event.key === "Enter") {
+      if (document.activeElement?.matches(".command-palette-close")) {
+        return false;
+      }
+      const actions = this.getVisibleCommandPaletteActions();
+      const action = actions[Math.min(this.commandPaletteActiveIndex, actions.length - 1)];
+      if (!action || action.disabled) {
+        return false;
+      }
+      event.preventDefault();
+      this.executeCommandPaletteAction(action.id);
+      return true;
+    }
+    return false;
+  }
+
+  private scrollActiveCommandResultIntoView(): void {
+    requestAnimationFrame(() => {
+      this.root.querySelector<HTMLElement>(".command-result.is-active")?.scrollIntoView({ block: "nearest" });
+    });
+  }
+
+  private syncCommandPaletteActiveDescendant(actions = this.getVisibleCommandPaletteActions()): void {
+    const input = this.root.querySelector<HTMLInputElement>("[data-command-palette-search]");
+    if (!input) {
+      return;
+    }
+    if (!actions.length) {
+      input.removeAttribute("aria-activedescendant");
+      return;
+    }
+    input.setAttribute("aria-activedescendant", `command-result-${Math.min(this.commandPaletteActiveIndex, actions.length - 1)}`);
   }
 
   private scrollRightPaneToTop(): void {
