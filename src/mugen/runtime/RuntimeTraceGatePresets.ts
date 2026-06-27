@@ -155,6 +155,51 @@ export function createSyntheticImportedHitCountTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-receiveddamage-attacker",
+    displayName: "Synthetic Imported ReceivedDamage Attacker",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-receiveddamage-defender",
+    displayName: "Synthetic Imported ReceivedDamage Defender",
+    receivedDamageRoute: { sourceStateNo: 5000, finalStateNo: 280 },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXHitstunScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-receiveddamage-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-receiveddamage-golden",
+      label: "Synthetic imported ReceivedDamage route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported ReceivedDamage trace proves a bounded direct HitDef can mark defender-local received damage and hits after default get-hit state entry, then branch through ReceivedDamage > 0 and ReceivedHits >= 1. Projectile, target-controller, guard-chip, helper, custom-state, and exact timing parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-receiveddamage-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 280],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 280 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefAttrTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4984,6 +5029,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveHitStateNo?: number;
   moveHitCounterStateNo?: number;
   hitCountStateNo?: number;
+  receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
   hitDefAttrStateNo?: number;
@@ -5232,6 +5278,7 @@ ${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(90
 ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
+${options.receivedDamageRoute ? receivedDamageRouteBlock(options.receivedDamageRoute) : ""}
 ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
 ${options.prevAnimRoute ? prevAnimRouteBlock(options.prevAnimRoute) : ""}
 ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRoute) : ""}
@@ -5320,6 +5367,12 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.receivedDamageRoute === undefined
+        ? []
+        : ([
+            [options.receivedDamageRoute.sourceStateNo, traceAction(options.receivedDamageRoute.sourceStateNo)],
+            [options.receivedDamageRoute.finalStateNo, traceAction(options.receivedDamageRoute.finalStateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveReversedStateNo === undefined ? [] : ([[options.moveReversedStateNo, traceAction(options.moveReversedStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -6636,6 +6689,31 @@ function contactBranchBlock(trigger: string, stateNo: number, label: string): st
 type = ChangeState
 trigger1 = ${trigger}
 value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function receivedDamageRouteBlock(route: { sourceStateNo: number; finalStateNo: number }): string {
+  return `
+[Statedef ${route.sourceStateNo}]
+type = S
+movetype = H
+physics = N
+anim = ${route.sourceStateNo}
+ctrl = 0
+
+[State ${route.sourceStateNo}, Received Damage Branch]
+type = ChangeState
+trigger1 = ReceivedDamage > 0
+trigger1 = ReceivedHits >= 1
+value = ${route.finalStateNo}
+ctrl = 0
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = H
+physics = N
+anim = ${route.finalStateNo}
 ctrl = 0
 `;
 }

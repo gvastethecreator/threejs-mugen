@@ -69,6 +69,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("MoveReversed >= 1", { self: state, moveReversed: () => 2 })).toBe(1);
     expect(evaluateExpression("HitCount >= 2", { self: state, hitCount: () => 2 })).toBe(1);
     expect(evaluateExpression("UniqHitCount = 1", { self: state, uniqueHitCount: () => 1 })).toBe(1);
+    expect(evaluateExpression("ReceivedDamage > 30", { self: state, receivedDamage: () => 37 })).toBe(1);
+    expect(evaluateExpression("ReceivedHits >= 1", { self: state, receivedHits: () => 1 })).toBe(1);
     expect(evaluateExpression("HitDefAttr(SC, NA, SA, HA)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr = SC, NA, SA, HA", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr != A, NT", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);

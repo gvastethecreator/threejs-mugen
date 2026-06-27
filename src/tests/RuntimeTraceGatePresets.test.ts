@@ -73,6 +73,7 @@ import {
   createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
+  createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
@@ -285,6 +286,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 264]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported ReceivedDamage artifact with defender-local branch evidence", () => {
+    const artifact = createSyntheticImportedReceivedDamageTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-receiveddamage-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-receiveddamage-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 280]));
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 5000, 280]);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p2" && actor.stateNo === 280)).toBe(true);
   });
 
   it("creates a synthetic imported HitDefAttr artifact with attr-filter branch evidence", () => {

@@ -136,6 +136,8 @@ const supportedExpressionIdentifiers = new Set([
   "projhit",
   "projhittime",
   "random",
+  "receiveddamage",
+  "receivedhits",
   "roundno",
   "roundsexisted",
   "roundstate",

@@ -33,6 +33,8 @@ export type ExpressionContext = {
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
+  receivedDamage?: () => number;
+  receivedHits?: () => number;
   stageTime?: number;
   stateTime?: number;
   uniqueHitCount?: () => number;
@@ -357,6 +359,12 @@ class ExpressionParser {
     }
     if (lower === "uniqhitcount") {
       return this.context.uniqueHitCount?.() ?? 0;
+    }
+    if (lower === "receiveddamage") {
+      return this.context.receivedDamage?.() ?? 0;
+    }
+    if (lower === "receivedhits") {
+      return this.context.receivedHits?.() ?? 0;
     }
     if (lower === "canrecover") {
       const hitFall = this.context.self.hitFall;

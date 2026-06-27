@@ -161,6 +161,10 @@ type FighterContactState = {
   moveHitTargetIds?: Set<string>;
   moveReversedState?: number;
   moveReversedTime?: number;
+  receivedDamageState?: number;
+  receivedDamageAmount?: number;
+  receivedHitsState?: number;
+  receivedHitsCount?: number;
   projectileContactState?: number;
   projectileHitState?: number;
   projectileGuardState?: number;
@@ -1531,6 +1535,13 @@ function markMoveReversed(fighter: FighterMatchState): void {
   fighter.contact.moveReversedTime = 0;
 }
 
+function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
+  fighter.contact.receivedDamageState = fighter.runtime.stateNo;
+  fighter.contact.receivedDamageAmount = Math.max(0, Math.round(damage));
+  fighter.contact.receivedHitsState = fighter.runtime.stateNo;
+  fighter.contact.receivedHitsCount = (fighter.contact.receivedHitsCount ?? 0) + 1;
+}
+
 function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
   fighter.contact.projectileContactState = fighter.runtime.stateNo;
   fighter.contact.projectileId = projectileId;
@@ -1587,6 +1598,14 @@ function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number 
 
 function moveReversedValue(fighter: FighterMatchState): number {
   return fighter.contact.moveReversedState === fighter.runtime.stateNo ? fighter.contact.moveReversedTime ?? 0 : 0;
+}
+
+function receivedDamageValue(fighter: FighterMatchState): number {
+  return fighter.contact.receivedDamageState === fighter.runtime.stateNo ? fighter.contact.receivedDamageAmount ?? 0 : 0;
+}
+
+function receivedHitsValue(fighter: FighterMatchState): number {
+  return fighter.contact.receivedHitsState === fighter.runtime.stateNo ? fighter.contact.receivedHitsCount ?? 0 : 0;
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
@@ -1970,6 +1989,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
   attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
   applyHitStateTransitions(attacker, defender, move);
   applyDefaultGetHitState(defender, move);
+  markReceivedDamage(defender, result.damage);
   log(`${attacker.label} hit ${defender.label} for ${result.damage}`);
 }
 
@@ -2730,6 +2750,8 @@ function resolveDispatchNumber(
     moveHit: () => moveContactValue(fighter, "hit"),
     moveGuarded: () => moveContactValue(fighter, "guard"),
     moveReversed: () => moveReversedValue(fighter),
+    receivedDamage: () => receivedDamageValue(fighter),
+    receivedHits: () => receivedHitsValue(fighter),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
@@ -2789,6 +2811,8 @@ function evaluateRuntimeTrigger(
     moveHit: () => moveContactValue(fighter, "hit"),
     moveGuarded: () => moveContactValue(fighter, "guard"),
     moveReversed: () => moveReversedValue(fighter),
+    receivedDamage: () => receivedDamageValue(fighter),
+    receivedHits: () => receivedHitsValue(fighter),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
