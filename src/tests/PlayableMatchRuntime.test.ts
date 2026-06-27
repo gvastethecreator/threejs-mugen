@@ -181,6 +181,33 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(260);
   });
 
+  it("evaluates bounded HitDefAttr triggers against the current imported HitDef attr", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefAttr: "S,NA",
+      hitDefAttrStateNo: 261,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+
+    for (let frame = 0; frame < 10; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(261);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(261);
+  });
+
   it("respects imported HitDef kill = 0 for direct hits", () => {
     const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 2000, hitDefKill: false });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
@@ -1607,6 +1634,7 @@ function createImportedFixture(
     defaultGetHitStateNo?: number;
     moveHitStateNo?: number;
     moveGuardStateNo?: number;
+    hitDefAttrStateNo?: number;
     projHitStateNo?: number;
     projGuardStateNo?: number;
   } = {},
@@ -1674,6 +1702,7 @@ ctrl = 1
     ...(options.extraStateNos ?? []),
     ...(options.moveHitStateNo === undefined ? [] : [options.moveHitStateNo]),
     ...(options.moveGuardStateNo === undefined ? [] : [options.moveGuardStateNo]),
+    ...(options.hitDefAttrStateNo === undefined ? [] : [options.hitDefAttrStateNo]),
     ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
     ...(options.projGuardStateNo === undefined ? [] : [options.projGuardStateNo]),
   ];
@@ -2165,6 +2194,16 @@ ctrl = 0
 type = ChangeState
 trigger1 = MoveGuarded
 value = ${options.moveGuardStateNo}
+ctrl = 0
+`,
+    options.hitDefAttrStateNo === undefined
+      ? ""
+      : `
+[State 200, HitDefAttr Branch]
+type = ChangeState
+trigger1 = HitDefAttr = SC, NA, SA, HA
+trigger1 = MoveContact
+value = ${options.hitDefAttrStateNo}
 ctrl = 0
 `,
     options.projHitStateNo === undefined

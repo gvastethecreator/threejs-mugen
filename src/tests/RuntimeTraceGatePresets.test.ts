@@ -71,6 +71,7 @@ import {
   createSyntheticImportedBindToTargetMidTraceArtifact,
   createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
+  createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
   createSyntheticImportedNumExplodTraceArtifact,
   createSyntheticImportedNumHelperTraceArtifact,
@@ -221,6 +222,30 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedStates).toContain(262);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 262]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported HitDefAttr artifact with attr-filter branch evidence", () => {
+    const artifact = createSyntheticImportedHitDefAttrTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdefattr-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(266);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 266]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
   });

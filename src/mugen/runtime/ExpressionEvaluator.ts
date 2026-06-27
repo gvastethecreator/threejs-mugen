@@ -10,6 +10,7 @@ export type ExpressionContext = {
   commandActive?: (name: string) => boolean;
   getConst?: (name: string) => number | undefined;
   getHitVar?: (name: string) => number | undefined;
+  hitDefAttr?: (attrFilter: string) => boolean;
   hitOver?: () => boolean;
   hitShakeOver?: () => boolean;
   inGuardDist?: () => boolean;
@@ -36,6 +37,11 @@ export function evaluateExpression(expression: string, context: ExpressionContex
   if (commandMatch) {
     const active = context.commandActive?.(commandMatch[2] ?? "") ? 1 : 0;
     return commandMatch[1] === "!=" ? (active ? 0 : 1) : active;
+  }
+  const hitDefAttrMatch = /^hitdefattr\s*(=|!=)\s*(.+)$/i.exec(normalized.trim());
+  if (hitDefAttrMatch) {
+    const active = context.hitDefAttr?.(hitDefAttrMatch[2] ?? "") ? 1 : 0;
+    return hitDefAttrMatch[1] === "!=" ? (active ? 0 : 1) : active;
   }
 
   const parser = new ExpressionParser(tokenize(normalized), context);
@@ -384,7 +390,7 @@ class ExpressionParser {
       return this.p2Dist(axis);
     }
     if (lower === "hitdefattr") {
-      return 0;
+      return this.context.hitDefAttr?.(args.map(String).join(",")) ? 1 : 0;
     }
     if (lower === "numtarget") {
       return this.numTarget(optionalPositiveInteger(args[0]));

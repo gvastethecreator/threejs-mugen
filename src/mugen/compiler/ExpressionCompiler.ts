@@ -77,6 +77,7 @@ const supportedExpressionIdentifiers = new Set([
   "frontedgebodydist",
   "frontedgedist",
   "hitfall",
+  "hitdefattr",
   "hitover",
   "hitshakeover",
   "inguarddist",

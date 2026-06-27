@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
+import { hitAttributeMatches } from "../mugen/runtime/CombatResolver";
 import { evaluateExpression } from "../mugen/runtime/ExpressionEvaluator";
 import { executeControllerIr, executeStateController } from "../mugen/runtime/StateControllerExecutor";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -49,6 +50,10 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("!HitOver", { self: state, hitOver: () => false })).toBe(1);
     expect(evaluateExpression("MoveContact && MoveHit", { self: state, moveContact: () => true, moveHit: () => true })).toBe(1);
     expect(evaluateExpression("MoveGuarded", { self: state, moveGuarded: () => true })).toBe(1);
+    expect(evaluateExpression("HitDefAttr(SC, NA, SA, HA)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
+    expect(evaluateExpression("HitDefAttr = SC, NA, SA, HA", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
+    expect(evaluateExpression("HitDefAttr != A, NT", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
+    expect(evaluateExpression("HitDefAttr(A, NT)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(0);
     expect(evaluateExpression("ProjHit(77)", { self: state, projHit: (id) => id === 77 })).toBe(1);
     expect(evaluateExpression("ProjContact && !ProjGuarded(77)", { self: state, projContact: () => true, projGuarded: () => false })).toBe(1);
     expect(evaluateExpression("NumTarget > 0", { self: runtimeState({ targetCount: 1 }) })).toBe(1);

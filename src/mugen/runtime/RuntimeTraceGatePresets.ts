@@ -115,6 +115,27 @@ export function createSyntheticImportedMoveContactTraceArtifact(options: Runtime
   );
 }
 
+export function createSyntheticImportedHitDefAttrTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitdefattr",
+      displayName: "Synthetic Imported HitDefAttr",
+      hitDefAttr: "S,NA",
+      hitDefAttrStateNo: 266,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitdefattr-golden",
+      targetLabel: "Synthetic imported HitDefAttr route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 266],
+      notes: [
+        "Synthetic imported HitDefAttr trace proves a KFM-style HitDefAttr = SC, NA, SA, HA plus MoveContact branch can evaluate against the current active HitDef attr. Exact cancel timing, helper/projectile attrs, redirects, priority classes, and full MUGEN/IKEMEN attr parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4655,6 +4676,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveContactStateNo?: number;
   moveHitStateNo?: number;
   moveGuardStateNo?: number;
+  hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
   numHelperStateNo?: number;
   withHelper?: boolean;
@@ -4861,6 +4883,7 @@ ${options.projGuardStateNo === undefined ? "" : contactBranchBlock("ProjGuarded(
 ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContact", options.moveContactStateNo, "MoveContact Branch")}
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
+${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
 ${options.withHelper ? helperControllerBlock() : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
@@ -4954,6 +4977,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.moveContactStateNo === undefined ? [] : ([[options.moveContactStateNo, traceAction(options.moveContactStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6224,6 +6248,17 @@ function contactBranchBlock(trigger: string, stateNo: number, label: string): st
 [State 200, ${label}]
 type = ChangeState
 trigger1 = ${trigger}
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function hitDefAttrBranchBlock(stateNo: number): string {
+  return `
+[State 200, HitDefAttr Branch]
+type = ChangeState
+trigger1 = HitDefAttr = SC, NA, SA, HA
+trigger1 = MoveContact
 value = ${stateNo}
 ctrl = 0
 `;

@@ -37,6 +37,7 @@ time = 20
     const clean = compileExpression("P2BodyDist X < 40 && SelfAnimExist(anim + 3)");
     const contact = compileExpression("MoveGuarded || ProjHit(77) || ProjGuarded(77) || NumTarget(77) > 0");
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
+    const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const unsupported = compileExpression("enemynear, stateno = 5000");
 
     expect(clean.normalized).toBe("p2bodydistx < 40 && SelfAnimExist(anim + 3)");
@@ -48,6 +49,8 @@ time = 20
     expect(actorCounts.supportLevel).toBe("executable");
     expect(actorCounts.functions).toEqual(["NumExplod", "NumHelper", "NumProjID"]);
     expect(actorCounts.identifiers).toEqual(["NumProj"]);
+    expect(hitDefAttr.supportLevel).toBe("executable");
+    expect(hitDefAttr.identifiers).toEqual(["HitDefAttr"]);
     expect(unsupported.supportLevel).toBe("unsupported");
     expect(unsupported.unsupportedFeatures).toEqual(["enemynear"]);
   });

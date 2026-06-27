@@ -36,6 +36,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdefattr",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefAttrTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
@@ -941,6 +946,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-palfx",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
+    "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
