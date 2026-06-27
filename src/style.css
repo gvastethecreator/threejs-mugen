@@ -9337,7 +9337,7 @@ input {
 .app-shell.mode-studio[data-studio-tab="build"] .record-kicker,
 .app-shell.mode-studio[data-studio-tab="modules"] .record-kicker {
   color: color-mix(in srgb, var(--section-accent, var(--accent)) 58%, var(--muted));
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0;
 }
 
@@ -9370,6 +9370,341 @@ input {
 .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .empty-state.compact,
 .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .empty-state.compact {
   padding: 7px 8px;
+}
+
+/* Evidence Browser command-room polish: dense neutral ledgers, color as signal only. */
+.app-shell.mode-studio[data-studio-tab="evidence"] {
+  --evidence-ok: #78c986;
+  --evidence-warn: #d7a74c;
+  --evidence-danger: #d76b66;
+  --evidence-info: #72a7c9;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center {
+  gap: 7px;
+  padding: 9px 10px;
+  border-color: color-mix(in srgb, var(--trace) 28%, var(--editor-edge));
+  background: var(--editor-panel);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-header {
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-header h2,
+.app-shell.mode-studio[data-studio-tab="evidence"] .section > h2,
+.app-shell.mode-studio[data-studio-tab="evidence"] .section-heading-row h2 {
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .panel-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-meta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip em,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge {
+  font-size: 12px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .panel-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker {
+  color: color-mix(in srgb, var(--trace) 64%, var(--muted));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-strip,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compact-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record:last-child {
+  border-bottom: 0;
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step.active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-error {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-ok b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-ok b {
+  color: var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn b {
+  color: var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-error b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-error b {
+  color: var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-meta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip em {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  line-height: 1.22;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button strong,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-title {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
+  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr);
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .operator-callout,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-world-delta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-delta {
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 74%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-actions-section .action-stack {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .tabs.studio-tabs,
+.app-shell.mode-studio[data-studio-tab="evidence"] .tab-count {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-actions-section button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-tabs button {
+  min-height: 34px;
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+  display: grid;
+  grid-template-columns: minmax(88px, 0.34fr) minmax(0, 1fr);
+  margin: 8px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd {
+  min-height: 28px;
+  padding: 6px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 60%, transparent);
+  line-height: 1.24;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 84%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 42%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd {
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt:nth-last-child(-n + 2),
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd:nth-last-child(-n + 1) {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-strip {
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  margin: 8px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button {
+  gap: 2px;
+  text-align: left;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button.is-selected {
+  color: var(--text);
+  background: color-mix(in srgb, var(--trace) 7%, var(--editor-row));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--trace) 62%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .contract-pill-row {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge {
+  min-height: 22px;
+  border-radius: 2px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.active {
+  color: var(--evidence-ok);
+  border-color: color-mix(in srgb, var(--evidence-ok) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-ok) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.partial {
+  color: var(--evidence-warn);
+  border-color: color-mix(in srgb, var(--evidence-warn) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-warn) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.fail,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.fail,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.error {
+  color: var(--evidence-danger);
+  border-color: color-mix(in srgb, var(--evidence-danger) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-danger) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-ok {
+  box-shadow: inset 1px 0 0 var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-planned,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-partial {
+  box-shadow: inset 1px 0 0 var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-blocked {
+  box-shadow: inset 1px 0 0 var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .section {
+  padding: 9px 10px;
+}
+
+@media (max-width: 860px) {
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+    grid-template-columns: minmax(76px, 0.38fr) minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .trace-world-row,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-delta-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step {
