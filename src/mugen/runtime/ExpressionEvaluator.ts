@@ -326,6 +326,9 @@ class ExpressionParser {
     if (lower === "prevstateno") {
       return this.context.self.prevStateNo ?? 0;
     }
+    if (lower === "prevanim") {
+      return this.context.self.prevAnimNo ?? 0;
+    }
     if (lower === "prevstatetype") {
       return this.context.self.prevStateType ?? "S";
     }

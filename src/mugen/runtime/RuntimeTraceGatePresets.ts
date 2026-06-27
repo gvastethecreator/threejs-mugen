@@ -216,6 +216,26 @@ export function createSyntheticImportedPrevMoveTypeTraceArtifact(options: Runtim
   );
 }
 
+export function createSyntheticImportedPrevAnimTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-prevanim",
+      displayName: "Synthetic Imported PrevAnim",
+      prevAnimRoute: { previousAnimNo: 205, intermediateStateNo: 275, finalStateNo: 276 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-prevanim-golden",
+      targetLabel: "Synthetic imported PrevAnim route",
+      script: importedOneShotXScript(),
+      requiredExecutedStates: [200, 275, 276],
+      notes: [
+        "Synthetic imported PrevAnim trace proves the runtime records previous animation across ChangeState after a state-local ChangeAnim and can branch from an intermediate state using PrevAnim = 205. Exact MUGEN/IKEMEN tick-order parity and custom-state ownership edges remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedPrevStateTypeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4893,6 +4913,7 @@ export type SyntheticImportedTraceFighterOptions = {
   numTargetStateNo?: number;
   numHelperStateNo?: number;
   prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
+  prevAnimRoute?: { previousAnimNo: number; intermediateStateNo: number; finalStateNo: number };
   prevStateTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
@@ -5087,6 +5108,7 @@ ${guardDistanceLine}
 ${fallLine}
 ${customStateLine || getHitStateLine}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
+${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
@@ -5128,6 +5150,7 @@ ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
 ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
+${options.prevAnimRoute ? prevAnimRouteBlock(options.prevAnimRoute) : ""}
 ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRoute) : ""}
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
@@ -5221,6 +5244,13 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
         : ([
             [options.prevStateRoute.intermediateStateNo, traceAction(options.prevStateRoute.intermediateStateNo)],
             [options.prevStateRoute.finalStateNo, traceAction(options.prevStateRoute.finalStateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
+      ...(options.prevAnimRoute === undefined
+        ? []
+        : ([
+            [options.prevAnimRoute.previousAnimNo, traceAction(options.prevAnimRoute.previousAnimNo)],
+            [options.prevAnimRoute.intermediateStateNo, traceAction(options.prevAnimRoute.intermediateStateNo)],
+            [options.prevAnimRoute.finalStateNo, traceAction(options.prevAnimRoute.finalStateNo)],
           ] as Array<[number, MugenAnimationAction]>)),
       ...(options.prevMoveTypeRoute === undefined
         ? []
@@ -6533,6 +6563,21 @@ ctrl = 0
 `;
 }
 
+function prevAnimEntryBlock(route: { previousAnimNo: number; intermediateStateNo: number }): string {
+  return `
+[State 200, PrevAnim Probe]
+type = ChangeAnim
+trigger1 = Time = 1
+value = ${route.previousAnimNo}
+
+[State 200, PrevAnim Entry]
+type = ChangeState
+trigger1 = Time = 2
+value = ${route.intermediateStateNo}
+ctrl = 0
+`;
+}
+
 function prevStateTypeEntryBlock(stateNo: number): string {
   return `
 [State 200, PrevStateType Entry]
@@ -6540,6 +6585,30 @@ type = ChangeState
 trigger1 = Time = 2
 value = ${stateNo}
 ctrl = 0
+`;
+}
+
+function prevAnimRouteBlock(route: { previousAnimNo: number; intermediateStateNo: number; finalStateNo: number }): string {
+  return `
+[Statedef ${route.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.intermediateStateNo}
+ctrl = 0
+
+[State ${route.intermediateStateNo}, PrevAnim Branch]
+type = ChangeState
+trigger1 = PrevAnim = ${route.previousAnimNo}
+value = ${route.finalStateNo}
+ctrl = 1
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.finalStateNo}
+ctrl = 1
 `;
 }
 

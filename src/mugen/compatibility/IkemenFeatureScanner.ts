@@ -567,7 +567,7 @@ const IKEMEN_TRIGGER_NAMES = new Map(
   ].map((name) => [name.toLowerCase(), name]),
 );
 
-const BOUNDED_SUPPORTED_TRIGGER_NAMES = new Set(["PrevMoveType", "PrevStateType"]);
+const BOUNDED_SUPPORTED_TRIGGER_NAMES = new Set(["PrevAnim", "PrevMoveType", "PrevStateType"]);
 
 class FindingAccumulator {
   private readonly findings = new Map<string, IkemenScanFinding>();

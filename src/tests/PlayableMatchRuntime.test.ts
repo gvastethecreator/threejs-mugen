@@ -322,6 +322,23 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 269, 270]));
   });
 
+  it("tracks PrevAnim for imported state trigger routing after ChangeAnim", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      withPrevAnimBranch: { previousAnimNo: 205, intermediateStateNo: 275, finalStateNo: 276 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(275);
+    expect(snapshot.actors[0]?.runtime.prevAnimNo).toBe(205);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(276);
+    expect(snapshot.actors[0]?.runtime.prevAnimNo).toBe(275);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 275, 276]));
+  });
+
   it("tracks PrevStateType for imported state trigger routing", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1807,6 +1824,7 @@ function createImportedFixture(
     projHitStateNo?: number;
     projGuardStateNo?: number;
     withPrevStateBranch?: { intermediateStateNo: number; finalStateNo: number };
+    withPrevAnimBranch?: { previousAnimNo: number; intermediateStateNo: number; finalStateNo: number };
     withPrevStateTypeBranch?: { intermediateStateNo: number; finalStateNo: number };
     withPrevMoveTypeBranch?: { intermediateStateNo: number; finalStateNo: number };
   } = {},
@@ -1883,6 +1901,13 @@ ctrl = 1
     ...(options.withPrevMoveTypeBranch === undefined
       ? []
       : [options.withPrevMoveTypeBranch.intermediateStateNo, options.withPrevMoveTypeBranch.finalStateNo]),
+    ...(options.withPrevAnimBranch === undefined
+      ? []
+      : [
+          options.withPrevAnimBranch.previousAnimNo,
+          options.withPrevAnimBranch.intermediateStateNo,
+          options.withPrevAnimBranch.finalStateNo,
+        ]),
     ...(options.withPrevStateTypeBranch === undefined
       ? []
       : [options.withPrevStateTypeBranch.intermediateStateNo, options.withPrevStateTypeBranch.finalStateNo]),
@@ -2459,6 +2484,20 @@ value = ${options.withPrevMoveTypeBranch.intermediateStateNo}
 ctrl = 0
 `
     : "";
+  const prevAnimEntry = options.withPrevAnimBranch
+    ? `
+[State 200, PrevAnim Probe]
+type = ChangeAnim
+trigger1 = Time = 0
+value = ${options.withPrevAnimBranch.previousAnimNo}
+
+[State 200, PrevAnim Entry]
+type = ChangeState
+trigger1 = Time = 0
+value = ${options.withPrevAnimBranch.intermediateStateNo}
+ctrl = 0
+`
+    : "";
   const prevStateTypeEntry = options.withPrevStateTypeBranch
     ? `
 [State 200, PrevStateType Entry]
@@ -2511,6 +2550,29 @@ type = S
 movetype = I
 physics = S
 anim = ${options.withPrevMoveTypeBranch.finalStateNo}
+ctrl = 1
+`
+    : "";
+  const prevAnimBranchStates = options.withPrevAnimBranch
+    ? `
+[Statedef ${options.withPrevAnimBranch.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevAnimBranch.intermediateStateNo}
+ctrl = 0
+
+[State ${options.withPrevAnimBranch.intermediateStateNo}, PrevAnim Branch]
+type = ChangeState
+trigger1 = PrevAnim = ${options.withPrevAnimBranch.previousAnimNo}
+value = ${options.withPrevAnimBranch.finalStateNo}
+ctrl = 1
+
+[Statedef ${options.withPrevAnimBranch.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevAnimBranch.finalStateNo}
 ctrl = 1
 `
     : "";
@@ -2618,6 +2680,7 @@ ctrl = 1
 
 ${prevStateEntry}
 ${prevMoveTypeEntry}
+${prevAnimEntry}
 ${prevStateTypeEntry}
 [State 200, Runtime HitDef]
 type = HitDef
@@ -2677,6 +2740,7 @@ ctrl = 0
 ${changeStateDef}
 ${prevStateBranchStates}
 ${prevMoveTypeBranchStates}
+${prevAnimBranchStates}
 ${prevStateTypeBranchStates}
 
 ${options.hitDefP1StateNo !== undefined ? `
@@ -2816,6 +2880,11 @@ ctrl = 0
   if (options.withPrevMoveTypeBranch) {
     animations.set(options.withPrevMoveTypeBranch.intermediateStateNo, fixtureAction(options.withPrevMoveTypeBranch.intermediateStateNo));
     animations.set(options.withPrevMoveTypeBranch.finalStateNo, fixtureAction(options.withPrevMoveTypeBranch.finalStateNo));
+  }
+  if (options.withPrevAnimBranch) {
+    animations.set(options.withPrevAnimBranch.previousAnimNo, fixtureAction(options.withPrevAnimBranch.previousAnimNo));
+    animations.set(options.withPrevAnimBranch.intermediateStateNo, fixtureAction(options.withPrevAnimBranch.intermediateStateNo));
+    animations.set(options.withPrevAnimBranch.finalStateNo, fixtureAction(options.withPrevAnimBranch.finalStateNo));
   }
   if (options.withPrevStateTypeBranch) {
     animations.set(options.withPrevStateTypeBranch.intermediateStateNo, fixtureAction(options.withPrevStateTypeBranch.intermediateStateNo));

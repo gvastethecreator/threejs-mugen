@@ -51,6 +51,7 @@ export function executeControllerIr(
     }
     if (next.stateNo !== value) {
       next.prevStateNo = next.stateNo;
+      next.prevAnimNo = next.animNo;
     }
     next.stateNo = value;
     next.animTime = 0;

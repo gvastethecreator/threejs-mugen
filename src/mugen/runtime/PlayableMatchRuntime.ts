@@ -602,6 +602,7 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
   if (fighter.runtime.stateNo !== stateNo) {
     fighter.runtime.prevStateNo = fighter.runtime.stateNo;
+    fighter.runtime.prevAnimNo = fighter.runtime.animNo;
     fighter.runtime.prevStateType = currentStateType(fighter);
     fighter.runtime.prevMoveType = currentStateMoveType(fighter);
     fighter.runtime.stateNo = stateNo;
