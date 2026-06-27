@@ -840,7 +840,7 @@ async function captureStudioStage(page, outDir) {
 
 async function captureStudioBgCtrlStage(page, baseUrl, outDir) {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto(`${baseUrl}${studioBgCtrlStageRoute}`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}${studioBgCtrlStageRoute}`, { waitUntil: "domcontentloaded" });
   await waitForBridge(page);
   await page.waitForTimeout(600);
   await page.screenshot({ path: path.join(outDir, "studio-stage-bgctrl.png"), fullPage: true });
