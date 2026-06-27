@@ -50,16 +50,26 @@ describe("EffectActorSystem", () => {
       },
     });
 
-    expect(runtimeExplodActorsToSnapshots(store, 200).map((snapshot) => snapshot.id)).toEqual(["p1-explod-1", "p1-explod-0"]);
+    const explodSnapshots = runtimeExplodActorsToSnapshots(store, 200);
+    expect(explodSnapshots.map((snapshot) => snapshot.id)).toEqual(["p1-explod-1", "p1-explod-0"]);
+    expect(explodSnapshots[0]?.effect).toMatchObject({
+      kind: "explod",
+      id: 11,
+      removeOnGetHit: false,
+      ignoreHitPause: false,
+      scale: { x: 1, y: 1 },
+    });
     expect(runtimeHelperActorsToSnapshots(store, 200)[0]).toMatchObject({
       id: "p1-helper-0",
       actorKind: "helper",
       ownerId: "p1",
+      effect: { kind: "helper", id: 20, name: "Buddy" },
     });
     expect(runtimeProjectileActorsToSnapshots(store, 200)[0]).toMatchObject({
       id: "p1-projectile-0",
       actorKind: "projectile",
       runtime: { moveType: "A" },
+      effect: { kind: "projectile", id: 30, priority: 1, hitsRemaining: 1 },
     });
   });
 

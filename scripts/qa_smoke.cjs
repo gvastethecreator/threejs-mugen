@@ -1161,6 +1161,9 @@ async function captureStudioDebugLens(page, filter, outDir) {
       worldFrameRows: panel?.querySelectorAll("[data-debug-world-evidence] .debug-world-frame-row").length ?? 0,
       worldFrameButtons: panel?.querySelectorAll("[data-debug-world-evidence] [data-trace-frame-index]").length ?? 0,
       compatRows: panel?.querySelectorAll(".compat-row").length ?? 0,
+      effectDrilldown: Boolean(panel?.querySelector("[data-debug-effect-drilldown]")),
+      effectDrilldownKind: panel?.querySelector("[data-debug-effect-drilldown]")?.getAttribute("data-debug-effect-drilldown") ?? "",
+      bodyHasEffectDrilldownCopy: panel?.textContent?.includes("Selected effect drilldown") ?? false,
       hitPauseRows: panel?.querySelectorAll("[data-debug-hitpause-row]").length ?? 0,
       hitPauseCountText: panel?.querySelector("[data-debug-hitpause-count]")?.textContent?.trim() ?? "",
       bodyHasHitPauseCopy: panel?.textContent?.includes("HitPause") ?? false,
@@ -1626,9 +1629,11 @@ function assertSmoke(diagnostics) {
     !studioDebug.debugLenses?.effects?.bodyHasPanel ||
     studioDebug.debugLenses?.effects?.effectStoreRows < 1 ||
     !studioDebug.debugLenses?.effects?.worldEvidence ||
-    studioDebug.debugLenses?.effects?.worldFrameRows < 1
+    studioDebug.debugLenses?.effects?.worldFrameRows < 1 ||
+    !studioDebug.debugLenses?.effects?.effectDrilldown ||
+    !studioDebug.debugLenses?.effects?.bodyHasEffectDrilldownCopy
   ) {
-    failures.push("studio-debug: effects lens did not expose effect-store rows and URL state");
+    failures.push("studio-debug: effects lens did not expose effect-store rows, drilldown contract, and URL state");
   }
   if (
     studioDebug.debugLenses?.pause?.filter !== "pause" ||
@@ -1882,6 +1887,7 @@ function summarizeDiagnostics(diagnostics) {
         effects: {
           stores: diagnostics.checks.studioDebug.debugLenses?.effects?.effectStoreRows,
           worldFrames: diagnostics.checks.studioDebug.debugLenses?.effects?.worldFrameRows,
+          drilldown: diagnostics.checks.studioDebug.debugLenses?.effects?.effectDrilldownKind,
         },
         pause: {
           panel: diagnostics.checks.studioDebug.debugLenses?.pause?.bodyHasPanel,

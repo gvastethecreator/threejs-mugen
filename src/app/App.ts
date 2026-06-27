@@ -4279,7 +4279,7 @@ export class App {
       return this.renderStudioDebugTargetsLens(selection, registry);
     }
     if (this.studioDebugFilter === "effects") {
-      return this.renderStudioDebugEffectsLens(selection, registry);
+      return this.renderStudioDebugEffectsLens(selection, registry, snapshot);
     }
     if (this.studioDebugFilter === "pause") {
       return this.renderStudioDebugPauseLens(selection, snapshot);
@@ -4358,22 +4358,30 @@ export class App {
     `;
   }
 
-  private renderStudioDebugEffectsLens(selection: StudioDebugSelectionSummary, registry: MatchWorldActorRegistrySnapshot): string {
+  private renderStudioDebugEffectsLens(
+    selection: StudioDebugSelectionSummary,
+    registry: MatchWorldActorRegistrySnapshot,
+    snapshot: MugenSnapshot,
+  ): string {
     const effectActors = registry.actors.filter((actor) => actor.layer === "effect");
     const effectKindCounts = countBy(effectActors, (actor) => actor.kind);
+    const snapshotActors = new Map(this.getStudioDebugSnapshotActors(snapshot).map((actor) => [actor.id, actor]));
     const effectRows = effectActors.length
       ? effectActors
           .map(
-            (actor) => `
-              <button type="button" class="compat-row debug-effect-row" data-debug-actor-id="${escapeHtml(actor.id)}">
+            (actor) => {
+              const effectSnapshot = snapshotActors.get(actor.id);
+              return `
+              <button type="button" class="compat-row debug-effect-row" data-debug-actor-id="${escapeHtml(actor.id)}" data-debug-effect-kind="${escapeHtml(actor.kind)}">
                 <span class="badge ${actor.id === selection.selectedActorId ? "active" : "warn"}">${escapeHtml(actor.kind)}</span>
                 <span>
                   <span class="list-title">${escapeHtml(actor.label)}</span>
-                  <span class="list-meta">${escapeHtml(actor.id)} / owner ${escapeHtml(actor.ownerId)} / state ${actor.stateNo} / anim ${actor.animNo}</span>
+                  <span class="list-meta">${escapeHtml(this.formatStudioDebugEffectRowMeta(actor, effectSnapshot))}</span>
                 </span>
-                <span class="mono">${escapeHtml(actor.lifecycle.status)} ${actor.lifecycle.ageTicks}f</span>
+                <span class="mono">${escapeHtml(this.formatStudioDebugEffectRowValue(actor, effectSnapshot))}</span>
               </button>
-            `,
+            `;
+            },
           )
           .join("")
       : `<div class="empty-state compact">No helper, projectile, or explod actors are live right now.</div>`;
@@ -4413,6 +4421,7 @@ export class App {
           ${selection.effectStore ? `<span class="badge active">selected store ${selection.effectStore.total}</span>` : ""}
         </div>
         ${this.renderStudioDebugEffectWorldEvidence(selection)}
+        ${this.renderStudioDebugEffectDrilldown(selection.snapshotActor)}
         <div class="debug-evidence-block">
           <span class="panel-kicker">Live effect actors</span>
           <div class="compat-list">${effectRows}</div>
@@ -4421,6 +4430,100 @@ export class App {
           <span class="panel-kicker">Effect stores</span>
           <div class="debug-effect-store-list">${storeRows}</div>
         </div>
+      </div>
+    `;
+  }
+
+  private formatStudioDebugEffectRowMeta(
+    actor: MatchWorldActorRegistrySnapshot["actors"][number],
+    snapshotActor: MugenSnapshot["actors"][number] | undefined,
+  ): string {
+    const base = `${actor.id} / owner ${actor.ownerId} / state ${actor.stateNo} / anim ${actor.animNo}`;
+    const effect = snapshotActor?.effect;
+    if (!effect) {
+      return base;
+    }
+    if (effect.kind === "projectile") {
+      return `${base} / proj ${effect.id ?? "-"} / dmg ${effect.damage} / guard ${effect.guardDamage}`;
+    }
+    if (effect.kind === "explod") {
+      return `${base} / explod ${effect.id ?? "-"} / scale ${formatDecimal(effect.scale.x)},${formatDecimal(effect.scale.y)}`;
+    }
+    return `${base} / helper ${effect.id ?? "-"}${effect.name ? ` / ${effect.name}` : ""}`;
+  }
+
+  private formatStudioDebugEffectRowValue(
+    actor: MatchWorldActorRegistrySnapshot["actors"][number],
+    snapshotActor: MugenSnapshot["actors"][number] | undefined,
+  ): string {
+    const effect = snapshotActor?.effect;
+    if (effect?.kind === "projectile") {
+      return `P${effect.priority} H${effect.hitsRemaining} ${effect.removalReason ?? actor.lifecycle.status}`;
+    }
+    if (effect?.kind === "explod") {
+      return `${effect.ignoreHitPause ? "ihp " : ""}${actor.lifecycle.status} ${effect.age}f`;
+    }
+    if (effect?.kind === "helper") {
+      return `${actor.lifecycle.status} ${effect.age}f`;
+    }
+    return `${actor.lifecycle.status} ${actor.lifecycle.ageTicks}f`;
+  }
+
+  private renderStudioDebugEffectDrilldown(actor: MugenSnapshot["actors"][number] | undefined): string {
+    if (!actor?.effect) {
+      return `
+        <div class="debug-evidence-block" data-debug-effect-drilldown="none">
+          <div class="section-heading-row compact-heading">
+            <span class="panel-kicker">Selected effect drilldown</span>
+            <span class="badge warn">none</span>
+          </div>
+          <div class="empty-state compact">Select a live helper, projectile, or explod actor to inspect effect-specific runtime payload.</div>
+        </div>
+      `;
+    }
+    const effect = actor.effect;
+    const commonRows = `
+      <dt>Actor</dt><dd class="mono">${escapeHtml(actor.id)} / ${escapeHtml(actor.label)}</dd>
+      <dt>Owner</dt><dd class="mono">${escapeHtml(actor.ownerId)} / root ${escapeHtml(actor.rootId)} / parent ${escapeHtml(actor.parentId)}</dd>
+      <dt>Runtime</dt><dd class="mono">pos ${formatDecimal(actor.runtime.pos.x)}, ${formatDecimal(actor.runtime.pos.y)} / vel ${formatDecimal(actor.runtime.vel.x)}, ${formatDecimal(actor.runtime.vel.y)}</dd>
+      <dt>Sprite</dt><dd class="mono">${actor.runtime.animNo}:${actor.runtime.frameIndex} / priority ${actor.runtime.spritePriority ?? 0}</dd>
+      <dt>Boxes</dt><dd class="mono">Clsn1 ${actor.clsn1.length} / Clsn2 ${actor.clsn2.length}</dd>
+    `;
+    let detailRows = "";
+    if (effect.kind === "projectile") {
+      detailRows = `
+        <dt>Projectile</dt><dd class="mono">id ${effect.id ?? "-"} / priority ${effect.priority} / hits ${effect.hitsRemaining}</dd>
+        <dt>Hit</dt><dd class="mono">damage ${effect.damage} / pause ${effect.hitPause} / stun ${effect.hitStun}</dd>
+        <dt>Guard</dt><dd class="mono">damage ${effect.guardDamage} / pause ${effect.guardPause} / stun ${effect.guardStun} / dist ${effect.guardDistance} / ${escapeHtml(effect.guardFlag ?? "-")}</dd>
+        <dt>Rehit</dt><dd class="mono">miss ${effect.missTimeRemaining}/${effect.missTime} / removeOnHit ${String(effect.removeOnHit)} / hasHit ${String(effect.hasHit)}</dd>
+        <dt>Removal</dt><dd class="mono">${escapeHtml(effect.removalReason ?? "-")} / terminal ${escapeHtml(effect.terminalReason ?? "-")} ${effect.terminalAge ?? "-"}/${effect.terminalDuration ?? "-"}</dd>
+        <dt>Anims</dt><dd class="mono">hit ${effect.hitAnimNo ?? "-"} / rem ${effect.removeAnimNo ?? "-"} / cancel ${effect.cancelAnimNo ?? "-"}</dd>
+      `;
+    } else if (effect.kind === "explod") {
+      detailRows = `
+        <dt>Explod</dt><dd class="mono">id ${effect.id ?? "-"} / age ${effect.age} / remove ${effect.removeTime}</dd>
+        <dt>Flags</dt><dd class="mono">removeOnGetHit ${String(effect.removeOnGetHit)} / ignoreHitPause ${String(effect.ignoreHitPause)}</dd>
+        <dt>Pause budget</dt><dd class="mono">pause ${effect.pauseMoveTime} / super ${effect.superMoveTime}</dd>
+        <dt>Bind</dt><dd class="mono">${effect.bindRemaining ?? "-"} / ${effect.bindOffset ? `${formatDecimal(effect.bindOffset.x)}, ${formatDecimal(effect.bindOffset.y)}` : "-"}</dd>
+        <dt>Render</dt><dd class="mono">scale ${formatDecimal(effect.scale.x)}, ${formatDecimal(effect.scale.y)} / opacity ${formatDecimal(effect.opacity)}</dd>
+      `;
+    } else {
+      detailRows = `
+        <dt>Helper</dt><dd class="mono">id ${effect.id ?? "-"} / ${escapeHtml(effect.name ?? "unnamed")}</dd>
+        <dt>State</dt><dd class="mono">${effect.stateNo ?? "-"} / anim ${actor.runtime.animNo}</dd>
+        <dt>Lifetime</dt><dd class="mono">age ${effect.age} / remove ${effect.removeTime}</dd>
+      `;
+    }
+    return `
+      <div class="debug-evidence-block" data-debug-effect-drilldown="${escapeHtml(effect.kind)}">
+        <div class="section-heading-row compact-heading">
+          <span class="panel-kicker">Selected effect drilldown</span>
+          <span class="badge warn">${escapeHtml(effect.kind)}</span>
+        </div>
+        <dl class="kv studio-kv">
+          ${commonRows}
+          ${detailRows}
+        </dl>
       </div>
     `;
   }
@@ -4974,6 +5077,7 @@ export class App {
           ${selection.snapshotActor?.envShakeEvents?.length ? `<span class="badge warn">shake ${selection.snapshotActor.envShakeEvents.length}</span>` : ""}
         </div>
       </div>
+      ${actor.layer === "effect" && this.studioDebugFilter !== "effects" ? this.renderStudioDebugEffectDrilldown(selection.snapshotActor) : ""}
       ${this.renderStudioDebugExecutionEvidence(selection)}
       ${this.renderStudioDebugTraceEvidence(selection)}
       <div class="section">
@@ -9633,6 +9737,13 @@ function formatSignedDelta(value: number | undefined): string {
     return "n/a";
   }
   return value > 0 ? `+${value}` : `${value}`;
+}
+
+function formatDecimal(value: number): string {
+  if (Number.isInteger(value)) {
+    return String(value);
+  }
+  return value.toFixed(2).replace(/0+$/g, "").replace(/\.$/g, "");
 }
 
 async function sha256Hex(buffer: ArrayBuffer): Promise<string> {

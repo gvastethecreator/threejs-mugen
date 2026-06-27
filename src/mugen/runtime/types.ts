@@ -195,6 +195,60 @@ export type RuntimeActorIdentity = {
   parentId: string;
 };
 
+export type ActorEffectSnapshot =
+  | {
+      kind: "explod";
+      id?: number;
+      age: number;
+      removeTime: number;
+      spritePriority: number;
+      opacity: number;
+      scale: { x: number; y: number };
+      removeOnGetHit: boolean;
+      ignoreHitPause: boolean;
+      pauseMoveTime: number;
+      superMoveTime: number;
+      bindRemaining?: number;
+      bindOffset?: { x: number; y: number };
+    }
+  | {
+      kind: "helper";
+      id?: number;
+      name?: string;
+      stateNo?: number;
+      age: number;
+      removeTime: number;
+      spritePriority: number;
+    }
+  | {
+      kind: "projectile";
+      id?: number;
+      age: number;
+      removeTime: number;
+      spritePriority: number;
+      priority: number;
+      hitsRemaining: number;
+      missTime: number;
+      missTimeRemaining: number;
+      damage: number;
+      hitPause: number;
+      hitStun: number;
+      guardDamage: number;
+      guardPause: number;
+      guardStun: number;
+      guardDistance: number;
+      guardFlag?: string;
+      removeOnHit: boolean;
+      hasHit: boolean;
+      removalReason?: "hit" | "timeout" | "bounds" | "cancel";
+      terminalReason?: "hit" | "timeout" | "bounds" | "cancel";
+      terminalAge?: number;
+      terminalDuration?: number;
+      hitAnimNo?: number;
+      removeAnimNo?: number;
+      cancelAnimNo?: number;
+    };
+
 export type ActorSnapshot = RuntimeActorIdentity & {
   id: string;
   label: string;
@@ -203,6 +257,7 @@ export type ActorSnapshot = RuntimeActorIdentity & {
   spriteOwnerDefinitionId?: string;
   spriteOwnerLabel?: string;
   hitPause?: number;
+  effect?: ActorEffectSnapshot;
   runtime: CharacterRuntimeState;
   frame?: MugenAnimationFrame;
   clsn1: CollisionBox[];

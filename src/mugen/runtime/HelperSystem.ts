@@ -113,6 +113,15 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         spriteOwnerId: helper.spriteOwnerId,
         spriteOwnerDefinitionId: helper.spriteOwnerDefinitionId,
         spriteOwnerLabel: helper.spriteOwnerLabel,
+        effect: {
+          kind: "helper",
+          id: helper.helperId,
+          name: helper.name,
+          stateNo: helper.stateNo,
+          age: helper.age,
+          removeTime: helper.removeTime,
+          spritePriority: helper.spritePriority,
+        },
         runtime: {
           pos: { ...helper.pos },
           vel: { x: 0, y: 0 },
