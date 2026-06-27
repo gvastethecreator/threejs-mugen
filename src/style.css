@@ -11372,6 +11372,129 @@ input {
   padding-left: 0;
 }
 
+.app-shell.mode-studio .studio-mission-strip {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 78%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .studio-mission-node {
+  grid-template-columns: 30px minmax(0, 1fr) 8px;
+  min-height: 47px;
+  gap: 3px 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .studio-mission-node:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio .studio-mission-node:hover {
+  background: var(--editor-row-hover);
+}
+
+.app-shell.mode-studio .studio-mission-node::before {
+  width: 2px;
+  border-radius: 0;
+}
+
+.app-shell.mode-studio .studio-mission-node::after {
+  position: static;
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  width: 7px;
+  height: 7px;
+  align-self: center;
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .studio-mission-step {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 24px;
+  min-height: 22px;
+  padding: 3px 4px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--editor-panel-raised) 70%, black);
+  color: color-mix(in srgb, var(--section-accent) 62%, var(--subtle));
+  text-align: center;
+}
+
+.app-shell.mode-studio .studio-mission-main {
+  grid-column: 2;
+  gap: 1px;
+}
+
+.app-shell.mode-studio .studio-mission-main strong,
+.app-shell.mode-studio .studio-mission-main small,
+.app-shell.mode-studio .studio-mission-detail {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-line-clamp: unset;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio .studio-mission-main strong {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio .studio-mission-main small,
+.app-shell.mode-studio .studio-mission-detail {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  font-size: 12px;
+  line-height: 1.18;
+}
+
+.app-shell.mode-studio .studio-mission-detail {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker {
+  width: 100%;
+  max-width: none;
+  overflow: visible;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat small {
+  font-size: 12px;
+  line-height: 1.12;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .panel-kicker {
+  width: auto;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-grid small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-card small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid small {
+  font-size: 12px;
+  line-height: 1.12;
+}
+
 .app-shell.mode-studio .studio-chrome-brand strong,
 .app-shell.mode-studio .studio-chrome-brand small,
 .app-shell.mode-studio .studio-chrome-readout b,

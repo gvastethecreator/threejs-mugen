@@ -188,7 +188,8 @@ Minimum trace evidence:
 - `synthetic-imported-superpause.json`: required imported CMD/CNS State -1 `x -> 200` route where `SuperPause` compiles into typed `pause:superpause` operation evidence, emits a pause runtime event, preserves a `matchPause` snapshot for actor/state/darken/remaining/movetime evidence, and proves the opponent actor remains frozen across the pause window.
 - `synthetic-imported-superpause-projectile-freeze.json`: required imported CMD/CNS State -1 `x -> 200` route where `Projectile` and `SuperPause` execute together, the projectile effect actor spawns through `MatchWorld` lifecycle/store evidence, `requiredMatchPauseAdvances` proves the `p1` projectile effect advances while the source `movetime` is active, and `requiredMatchPauseFreezes` proves it remains frozen afterward during the bounded pause window.
 - `synthetic-imported-superpause-effect-freeze.json`: required imported CMD/CNS State -1 `x -> 200` route where `Helper`, `Explod`, and `SuperPause` execute together, helper/explod actors spawn through `MatchWorld` lifecycle/store evidence, `requiredMatchPauseAdvances` proves source-owned helper/explod actors advance while source `movetime` is active, and `requiredMatchPauseFreezes` proves both freeze afterward during the bounded pause window. This proves visual effect actor pause evidence only, not Helper VM, Explod binding/removal parity, exact pause layering, or IKEMEN/MUGEN effect parity.
-- `synthetic-imported-explod-supermovetime.json`: required imported CMD/CNS State -1 `x -> 200` route where two visual Explods and `SuperPause` execute together, one Explod freezes after source `movetime`, the second Explod with `supermovetime = 4` advances after source `movetime`, and MatchWorld store/lifecycle evidence proves both actors were produced by the P1 effect store. Current checksum: `8215716a`. This proves bounded Explod `supermovetime` only, not exact `pausemovetime`, helper-owned Explods, FightFX/common animation routing, or full MUGEN/IKEMEN pause layering.
+- `synthetic-imported-explod-supermovetime.json`: required imported CMD/CNS State -1 `x -> 200` route where two visual Explods and `SuperPause` execute together, one Explod freezes after source `movetime`, the second Explod with `supermovetime = 4` advances after source `movetime`, and MatchWorld store/lifecycle evidence proves both actors were produced by the P1 effect store. Current checksum: `8215716a`. This proves bounded Explod `supermovetime` only, not regular `Pause` behavior, helper-owned Explods, FightFX/common animation routing, or full MUGEN/IKEMEN pause layering.
+- `synthetic-imported-explod-pausemovetime.json`: required imported CMD/CNS State -1 `x -> 200` route where two visual Explods and regular `Pause` execute together, one Explod freezes after source `movetime`, the second Explod with `pausemovetime = 4` advances after source `movetime`, and MatchWorld store/lifecycle evidence proves both actors were produced by the P1 effect store. Current checksum: `f943653e`. This proves bounded Explod `pausemovetime` only, not `SuperPause` layering, helper-owned Explods, FightFX/common animation routing, or full MUGEN/IKEMEN pause layering.
 - `synthetic-imported-projectile.json`: required imported CMD/CNS State -1 `x -> 200` route where `Projectile` compiles into typed `projectile` operation evidence, spawns and removes a colliding projectile effect actor through required `MatchWorld` lifecycle events, proves the `p1` effect store produced a projectile, produces hit event/combat reason evidence, leaves world-visible projectile target-memory evidence through `targetLinks`, and evaluates a bounded `ProjHit(77)` branch back in the owner state. This proves the bounded projectile actor lifecycle plus target-memory/contact-trigger path only, not exact priority classes, exact trigger timing, visible remove/cancel animation playback, or full projectile parity.
 - `synthetic-imported-projectile-contact.json`: required imported CMD/CNS State -1 `x -> 200` route where `Projectile` contact evaluates a bounded `ProjContact(77)` branch back in the owner state while still proving projectile lifecycle, hit evidence, target-link evidence, and producer-store evidence. This proves projectile contact-trigger plumbing only, not exact trigger timing, multi-target lifetime, helper ownership, or full projectile parity.
 - `synthetic-imported-projectile-guard.json`: required imported CMD/CNS State -1 `x -> 200` route where the same bounded `Projectile` actor carries typed guard params, a held-back defender blocks it through the shared partial hit/guard combat resolver, guard event/combat reason evidence plus projectile target-link evidence are produced, and a bounded `ProjGuarded(77)` branch evaluates back in the owner state. This proves bounded projectile guard/contact-trigger resolution only, not exact priority classes, exact trigger timing, exact guard-state timing, sparks, sounds, visible remove/cancel animation playback, or full projectile parity.
@@ -232,17 +233,18 @@ This proves bounded owner-side direct/projectile hit-or-guard pruning only. It d
 
 ## Current Explod Pause-Budget Gate
 
-`pnpm qa:trace` includes required `synthetic-imported-explod-supermovetime.json`.
+`pnpm qa:trace` includes required `synthetic-imported-explod-pausemovetime.json` and `synthetic-imported-explod-supermovetime.json`.
 
-This gate proves:
+These gates prove:
 
-- imported P1 creates two source-owned visual `Explod` actors during a SuperPause route;
-- one Explod without `supermovetime` freezes after source `movetime`;
-- one Explod with `supermovetime = 4` advances after source `movetime`;
+- imported P1 creates two source-owned visual `Explod` actors during regular `Pause` and `SuperPause` routes;
+- one Explod without `pausemovetime`/`supermovetime` freezes after source `movetime`;
+- one Explod with `pausemovetime = 4` advances after regular `Pause` source `movetime`;
+- one Explod with `supermovetime = 4` advances after `SuperPause` source `movetime`;
 - MatchWorld emits Explod spawn/store evidence with P1 serial progression;
 - trace evidence records both match-pause freeze and advance rows by exact Explod actor id.
 
-This proves bounded Explod `supermovetime` actor advance only. `ignorehitpause` and `pausemovetime` have unit/runtime coverage but are not yet separate required trace artifacts, and exact MUGEN/IKEMEN pause layering remains unsupported.
+This proves bounded Explod `pausemovetime`/`supermovetime` actor advance only. `ignorehitpause` has unit/runtime coverage but is not yet a separate required trace artifact, and exact MUGEN/IKEMEN pause layering remains unsupported.
 
 ## Playable MVP Acceptance
 

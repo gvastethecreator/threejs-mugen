@@ -5493,7 +5493,7 @@ export class App {
         </div>
         <div class="command-center-main">
           <div class="operator-callout">
-            <span class="panel-kicker">Next evidence action</span>
+            <span class="panel-kicker">Next action</span>
             <strong>${escapeHtml(evidence.topAction?.label ?? "Export trace artifact")}</strong>
             <small>${escapeHtml(evidence.topImpact ?? "Capture a deterministic runtime trace before treating compatibility claims as evidence.")}</small>
           </div>
@@ -7683,7 +7683,7 @@ export class App {
   }
 
   private renderEvidenceFilterButton(filter: StudioEvidenceFilter, evidence: StudioEvidenceSummary): string {
-    const label = filter === "attention" ? "Needs Attention" : filter === "all" ? "All" : filter[0]!.toUpperCase() + filter.slice(1);
+    const label = filter === "attention" ? "Attention" : filter === "compatibility" ? "Compat" : filter === "all" ? "All" : filter[0]!.toUpperCase() + filter.slice(1);
     const count = this.getEvidenceFilterCount(filter, evidence);
     return `
       <button type="button" role="tab" aria-selected="${this.studioEvidenceFilter === filter}" class="tab ${this.studioEvidenceFilter === filter ? "is-active" : ""}" data-evidence-filter="${filter}">
@@ -7696,7 +7696,7 @@ export class App {
   private renderAssetFilterButton(filter: StudioAssetFilter, library: StudioAssetLibrarySummary): string {
     const label =
       filter === "attention"
-        ? "Needs Attention"
+        ? "Attention"
         : filter === "all"
           ? "All"
           : filter[0]!.toUpperCase() + filter.slice(1);

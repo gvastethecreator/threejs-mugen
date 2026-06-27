@@ -2285,6 +2285,57 @@ export function createSyntheticImportedExplodSuperMoveTimeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedExplodPauseMoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedPauseEffectScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-pausemovetime-attacker",
+    displayName: "Synthetic Imported Explod PauseMoveTime Attacker",
+    withPause: true,
+    withExplod: true,
+    withPauseMoveExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-pausemovetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-pausemovetime-golden",
+      label: "Synthetic imported Explod pausemovetime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod pausemovetime trace proves one Explod freezes during Pause while another continues through its own pausemovetime budget. It does not claim SuperPause, helper-owned Explod, binding, or IKEMEN pause layering parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-pausemovetime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Pause", { type: "Explod", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", "pause:pause", { operation: "explod", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minExplods: 2, minNextExplodSerial: 2 }],
+        requiredMatchPauses: [{ type: "Pause", actorId: "p1", sourceStateNo: 200, darken: false, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [{ type: "Pause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 }],
+        requiredMatchPauseAdvances: [
+          { type: "Pause", actorId: "p1-explod-1", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -3289,6 +3340,13 @@ export function importedSuperPauseEffectScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedPauseEffectScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-pause-effect-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "pause-effect-settle", frames: 3, p1: [], p2: [] },
+  ]);
+}
+
 export function importedProjectileScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-projectile-x", frames: 14, p1: ["x"], p2: [] },
@@ -3492,6 +3550,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withTargetControllers?: boolean;
   withTargetDrop?: boolean;
   withPrePauseTargetBind?: boolean;
+  withPause?: boolean;
   withDelayedSuperPause?: boolean;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
@@ -3518,6 +3577,7 @@ export type SyntheticImportedTraceFighterOptions = {
   numHelperStateNo?: number;
   withHelper?: boolean;
   withExplod?: boolean;
+  withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
   withMovingExplod?: boolean;
   withBoundExplod?: boolean;
@@ -3638,6 +3698,7 @@ ${getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
 ${options.withTargetDrop ? targetDropBlock(77) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
+${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
@@ -3653,6 +3714,7 @@ ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77
 ${options.withHelper ? helperControllerBlock() : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
+${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
 ${options.withSuperMoveExplod ? superMoveExplodControllerBlock() : ""}
 ${options.withMovingExplod ? movingExplodControllerBlock() : ""}
 ${options.withBoundExplod ? boundExplodControllerBlock() : ""}
@@ -3742,6 +3804,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withSuperMoveExplod ? ([[935, explodTraceAction(935)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withMovingExplod ? ([[931, explodTraceAction(931)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withBoundExplod ? ([[932, explodTraceAction(932)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -4698,6 +4761,16 @@ poweradd = 100
 `;
 }
 
+function pauseControllerBlock(): string {
+  return `
+[State 200, Pause]
+type = Pause
+trigger1 = Time = 2
+time = 7
+movetime = 1
+`;
+}
+
 function delayedSuperPauseControllerBlock(): string {
   return `
 [State 200, Delayed Super Pause]
@@ -4819,6 +4892,24 @@ facing = 1
 sprpriority = 7
 removetime = 30
 supermovetime = 4
+trans = add
+`;
+}
+
+function pauseMoveExplodControllerBlock(): string {
+  return `
+[State 200, PauseMove Visual Explod]
+type = Explod
+trigger1 = Time = 2
+id = 9006
+anim = 936
+pos = 42,-24
+postype = p1
+vel = 5,0
+facing = 1
+sprpriority = 7
+removetime = 30
+pausemovetime = 4
 trans = add
 `;
 }

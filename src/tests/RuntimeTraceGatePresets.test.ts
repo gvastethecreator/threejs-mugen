@@ -31,6 +31,7 @@ import {
   createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact,
   createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact,
   createSyntheticImportedExplodScaleTraceArtifact,
+  createSyntheticImportedExplodPauseMoveTimeTraceArtifact,
   createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
@@ -1630,6 +1631,59 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({
           type: "SuperPause",
+          actorId: "p1-explod-1",
+          actorKind: "explod",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime", "pos"]),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Explod pausemovetime artifact with freeze and advance evidence", () => {
+    const artifact = createSyntheticImportedExplodPauseMoveTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-pausemovetime-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-pausemovetime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "Pause", { type: "Explod", minCount: 2 }]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "pause:pause", { operation: "explod", minCount: 2 }]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      { type: "Pause", actorId: "p1", sourceStateNo: 200, darken: false, minFrames: 2, minRemaining: 7, minMoveTime: 1 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([
+      { type: "Pause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "Pause", actorId: "p1-explod-1", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+    ]);
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Pause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["pause:pause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "Pause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1" }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "Pause",
           actorId: "p1-explod-1",
           actorKind: "explod",
           ownerId: "p1",
