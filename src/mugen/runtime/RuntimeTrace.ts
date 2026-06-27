@@ -227,6 +227,50 @@ export type RuntimeTraceEffectStoreRequirement = {
   includesProjectile?: string;
 };
 
+export type RuntimeTraceEffectPayloadRequirement = {
+  actorId?: string;
+  actorKind?: RuntimeActorKind;
+  ownerId?: string;
+  source?: ActorSnapshot["source"];
+  kind?: RuntimeTraceEffectSummary["kind"];
+  effectId?: number;
+  minAge?: number;
+  maxAge?: number;
+  minRemoveTime?: number;
+  minSpritePriority?: number;
+  name?: string;
+  helperStateNo?: number;
+  minPriority?: number;
+  minHitsRemaining?: number;
+  maxHitsRemaining?: number;
+  hasHit?: boolean;
+  removalReason?: Extract<RuntimeTraceEffectSummary, { kind: "projectile" }>["removalReason"];
+  terminalReason?: Extract<RuntimeTraceEffectSummary, { kind: "projectile" }>["terminalReason"];
+  minTerminalAge?: number;
+  minTerminalDuration?: number;
+  ignoreHitPause?: boolean;
+  removeOnGetHit?: boolean;
+  minPauseMoveTime?: number;
+  minSuperMoveTime?: number;
+  minBindRemaining?: number;
+  maxBindRemaining?: number;
+  scaleX?: number;
+  scaleY?: number;
+};
+
+export type RuntimeTraceGateEffectPayloadEvidence = {
+  frameIndex: number;
+  tick: number;
+  actorId: string;
+  label: string;
+  source?: ActorSnapshot["source"];
+  actorKind: RuntimeActorKind;
+  ownerId: string;
+  rootId: string;
+  parentId: string;
+  effect: RuntimeTraceEffectSummary;
+};
+
 export type RuntimeTracePauseEvidenceType = RuntimeMatchPauseSnapshot["type"] | "HitPause";
 
 export type RuntimeTraceMatchPauseRequirement = {
@@ -410,6 +454,7 @@ export type RuntimeTraceGate = {
   requiredCombatReasons?: RuntimeTraceCombatReason["reason"][];
   requiredWorldLifecycleEvents?: RuntimeTraceWorldLifecycleEventRequirement[];
   requiredEffectStores?: RuntimeTraceEffectStoreRequirement[];
+  requiredEffectPayloads?: RuntimeTraceEffectPayloadRequirement[];
   requiredMatchPauses?: RuntimeTraceMatchPauseRequirement[];
   requiredMatchPauseFreezes?: RuntimeTraceMatchPauseFreezeRequirement[];
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
@@ -432,6 +477,7 @@ export type RuntimeTraceGateEvidence = {
   combatReasons: RuntimeTraceCombatReason["reason"][];
   worldLifecycleEvents: RuntimeTraceGateWorldLifecycleEventEvidence[];
   effectStores: RuntimeTraceGateEffectStoreEvidence[];
+  effectPayloads: RuntimeTraceGateEffectPayloadEvidence[];
   matchPauses: RuntimeTraceGateMatchPauseEvidence[];
   matchPauseFreezes: RuntimeTraceGateMatchPauseFreezeEvidence[];
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
@@ -583,6 +629,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing effect store: ${describeEffectStoreRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredEffectPayloads ?? []) {
+    if (!evidence.effectPayloads.some((payload) => matchesEffectPayloadRequirement(payload, requirement))) {
+      failures.push(`Missing effect payload: ${describeEffectPayloadRequirement(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredMatchPauses ?? []) {
     if (!evidence.matchPauses.some((pause) => matchesMatchPauseRequirement(pause, requirement))) {
       failures.push(`Missing match pause: ${describeMatchPauseRequirement(requirement)}`);
@@ -652,6 +703,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const worldLifecycleEvents = new Map<string, RuntimeTraceGateWorldLifecycleEventEvidence>();
   const worldLifecycleEventOccurrences = new Set<string>();
   const effectStores = new Map<string, RuntimeTraceGateEffectStoreAccumulator>();
+  const effectPayloads = new Map<string, RuntimeTraceGateEffectPayloadEvidence>();
   const matchPauses = new Map<string, RuntimeTraceGateMatchPauseEvidence>();
   const matchPauseOccurrences = new Set<string>();
   const matchPauseFreezes = new Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>();
@@ -671,6 +723,12 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     }
     for (const effect of frame.effects) {
       effectKinds.add(effect.actorKind);
+    }
+    for (const actor of allActors) {
+      if (actor.effect) {
+        const payload = summarizeEffectPayloadEvidence(frame, actor);
+        effectPayloads.set(effectPayloadEvidenceKey(payload), payload);
+      }
     }
     for (const actor of frame.compatibility ?? []) {
       for (const stateNo of actor.routedStates) {
@@ -918,6 +976,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     effectStores: [...effectStores.values()]
       .map(finalizeEffectStoreEvidence)
       .sort((left, right) => left.ownerId.localeCompare(right.ownerId)),
+    effectPayloads: [...effectPayloads.values()].sort((left, right) => effectPayloadEvidenceKey(left).localeCompare(effectPayloadEvidenceKey(right))),
     matchPauses: [...matchPauses.values()].sort((left, right) => matchPauseGateEvidenceKey(left).localeCompare(matchPauseGateEvidenceKey(right))),
     matchPauseFreezes: [...matchPauseFreezes.values()].sort((left, right) =>
       matchPauseFreezeEvidenceKey(left.type, left.actorId).localeCompare(matchPauseFreezeEvidenceKey(right.type, right.actorId)),
@@ -966,6 +1025,31 @@ function finalizeEffectStoreEvidence(
     projectiles: sortStrings([...store.projectiles]),
     nextSerials: { ...store.nextSerials },
   };
+}
+
+function summarizeEffectPayloadEvidence(
+  frame: Omit<RuntimeTraceFrame, "input" | "events"> | RuntimeTraceFrame,
+  actor: RuntimeTraceActor,
+): RuntimeTraceGateEffectPayloadEvidence {
+  if (!actor.effect) {
+    throw new Error("summarizeEffectPayloadEvidence requires an actor effect payload");
+  }
+  return {
+    frameIndex: frame.frameIndex,
+    tick: frame.tick,
+    actorId: actor.id,
+    label: actor.label,
+    source: actor.source,
+    actorKind: actor.actorKind,
+    ownerId: actor.ownerId,
+    rootId: actor.rootId,
+    parentId: actor.parentId,
+    effect: cloneTraceEffect(actor.effect),
+  };
+}
+
+function effectPayloadEvidenceKey(payload: RuntimeTraceGateEffectPayloadEvidence): string {
+  return `${payload.tick}:${payload.frameIndex}:${payload.actorId}:${payload.effect.kind}:${JSON.stringify(payload.effect)}`;
 }
 
 function summarizeWorldLifecycleEventEvidence(
@@ -1037,6 +1121,111 @@ function matchesEffectStoreRequirement(
 }
 
 function describeEffectStoreRequirement(requirement: RuntimeTraceEffectStoreRequirement): string {
+  return Object.entries(requirement)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
+function matchesEffectPayloadRequirement(
+  payload: RuntimeTraceGateEffectPayloadEvidence,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  const effect = payload.effect;
+  return (
+    (requirement.actorId === undefined || payload.actorId === requirement.actorId) &&
+    (requirement.actorKind === undefined || payload.actorKind === requirement.actorKind) &&
+    (requirement.ownerId === undefined || payload.ownerId === requirement.ownerId) &&
+    (requirement.source === undefined || payload.source === requirement.source) &&
+    (requirement.kind === undefined || effect.kind === requirement.kind) &&
+    (requirement.effectId === undefined || effect.id === requirement.effectId) &&
+    (requirement.minAge === undefined || effect.age >= requirement.minAge) &&
+    (requirement.maxAge === undefined || effect.age <= requirement.maxAge) &&
+    (requirement.minRemoveTime === undefined || effect.removeTime >= requirement.minRemoveTime) &&
+    (requirement.minSpritePriority === undefined || effect.spritePriority >= requirement.minSpritePriority) &&
+    matchesHelperPayloadRequirement(effect, requirement) &&
+    matchesProjectilePayloadRequirement(effect, requirement) &&
+    matchesExplodPayloadRequirement(effect, requirement)
+  );
+}
+
+function matchesHelperPayloadRequirement(
+  effect: RuntimeTraceEffectSummary,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  if (requirement.name === undefined && requirement.helperStateNo === undefined) {
+    return true;
+  }
+  return (
+    effect.kind === "helper" &&
+    (requirement.name === undefined || effect.name === requirement.name) &&
+    (requirement.helperStateNo === undefined || effect.stateNo === requirement.helperStateNo)
+  );
+}
+
+function matchesProjectilePayloadRequirement(
+  effect: RuntimeTraceEffectSummary,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  const hasProjectileRequirement =
+    requirement.minPriority !== undefined ||
+    requirement.minHitsRemaining !== undefined ||
+    requirement.maxHitsRemaining !== undefined ||
+    requirement.hasHit !== undefined ||
+    requirement.removalReason !== undefined ||
+    requirement.terminalReason !== undefined ||
+    requirement.minTerminalAge !== undefined ||
+    requirement.minTerminalDuration !== undefined;
+  if (!hasProjectileRequirement) {
+    return true;
+  }
+  return (
+    effect.kind === "projectile" &&
+    (requirement.minPriority === undefined || effect.priority >= requirement.minPriority) &&
+    (requirement.minHitsRemaining === undefined || effect.hitsRemaining >= requirement.minHitsRemaining) &&
+    (requirement.maxHitsRemaining === undefined || effect.hitsRemaining <= requirement.maxHitsRemaining) &&
+    (requirement.hasHit === undefined || effect.hasHit === requirement.hasHit) &&
+    (requirement.removalReason === undefined || effect.removalReason === requirement.removalReason) &&
+    (requirement.terminalReason === undefined || effect.terminalReason === requirement.terminalReason) &&
+    (requirement.minTerminalAge === undefined || (effect.terminalAge ?? -Infinity) >= requirement.minTerminalAge) &&
+    (requirement.minTerminalDuration === undefined || (effect.terminalDuration ?? -Infinity) >= requirement.minTerminalDuration)
+  );
+}
+
+function matchesExplodPayloadRequirement(
+  effect: RuntimeTraceEffectSummary,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  const hasExplodRequirement =
+    requirement.ignoreHitPause !== undefined ||
+    requirement.removeOnGetHit !== undefined ||
+    requirement.minPauseMoveTime !== undefined ||
+    requirement.minSuperMoveTime !== undefined ||
+    requirement.minBindRemaining !== undefined ||
+    requirement.maxBindRemaining !== undefined ||
+    requirement.scaleX !== undefined ||
+    requirement.scaleY !== undefined;
+  if (!hasExplodRequirement) {
+    return true;
+  }
+  return (
+    effect.kind === "explod" &&
+    (requirement.ignoreHitPause === undefined || effect.ignoreHitPause === requirement.ignoreHitPause) &&
+    (requirement.removeOnGetHit === undefined || effect.removeOnGetHit === requirement.removeOnGetHit) &&
+    (requirement.minPauseMoveTime === undefined || effect.pauseMoveTime >= requirement.minPauseMoveTime) &&
+    (requirement.minSuperMoveTime === undefined || effect.superMoveTime >= requirement.minSuperMoveTime) &&
+    (requirement.minBindRemaining === undefined || (effect.bindRemaining ?? -Infinity) >= requirement.minBindRemaining) &&
+    (requirement.maxBindRemaining === undefined || (effect.bindRemaining ?? Infinity) <= requirement.maxBindRemaining) &&
+    (requirement.scaleX === undefined || sameTraceNumber(effect.scale.x, requirement.scaleX)) &&
+    (requirement.scaleY === undefined || sameTraceNumber(effect.scale.y, requirement.scaleY))
+  );
+}
+
+function sameTraceNumber(left: number, right: number): boolean {
+  return Math.abs(left - right) < 0.0001;
+}
+
+function describeEffectPayloadRequirement(requirement: RuntimeTraceEffectPayloadRequirement): string {
   return Object.entries(requirement)
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${String(value)}`)

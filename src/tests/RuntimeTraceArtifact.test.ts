@@ -114,6 +114,7 @@ describe("RuntimeTraceArtifact", () => {
           requiredExecutedOperations: ["hitdef"],
           requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1" }],
           requiredEffectStores: [{ ownerId: "p1", minProjectiles: 1 }],
+          requiredEffectPayloads: [{ kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true }],
           requiredMatchPauses: [{ type: "SuperPause", minFrames: 1 }],
           requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 1 }],
           requiredMatchPauseAdvances: [{ type: "SuperPause", actorKind: "projectile", ownerId: "p1", minAdvancedFrames: 1 }],
@@ -142,6 +143,7 @@ describe("RuntimeTraceArtifact", () => {
       "Missing combat reason: hit",
       "Missing world lifecycle event: type=spawn, kind=projectile, ownerId=p1",
       "Missing effect store: ownerId=p1, minProjectiles=1",
+      "Missing effect payload: kind=projectile, ownerId=p1, effectId=77, hasHit=true",
       "Missing match pause: type=SuperPause, minFrames=1",
       "Missing match pause freeze: type=SuperPause, actorId=p2, minFrozenFrames=1",
       "Missing match pause advance: type=SuperPause, actorKind=projectile, ownerId=p1, minAdvancedFrames=1",
@@ -230,6 +232,53 @@ describe("RuntimeTraceArtifact", () => {
       expect(exportedExplod.scale).not.toBe(sourceExplod.scale);
       expect(exportedExplod.bindOffset).not.toBe(sourceExplod.bindOffset);
     }
+  });
+
+  it("gates typed effect payload samples across projectile and explod traces", () => {
+    const projectile = effectActor(
+      "fx-p1-proj-1",
+      "Nova fireball",
+      projectileEffect({ hitsRemaining: 0, hasHit: true, removalReason: "hit", terminalReason: "hit", terminalAge: 2 }),
+    );
+    const explod = effectActor(
+      "fx-p1-explod-1",
+      "Nova flash",
+      explodEffect({
+        scale: { x: 1.5, y: 0.75 },
+        bindRemaining: 3,
+        ignoreHitPause: true,
+        pauseMoveTime: 4,
+      }),
+    );
+    const frame = traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-payload", effects: [projectile, explod] });
+    const trace = traceFromFrames([frame]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-effect-payload-gate",
+        label: "Synthetic effect payload gate",
+        source: "native",
+      },
+      gates: [
+        {
+          label: "effect-payloads",
+          requiredEffectPayloads: [
+            { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit", minTerminalAge: 1 },
+            { kind: "explod", ownerId: "p1", effectId: 8, ignoreHitPause: true, minPauseMoveTime: 4, maxBindRemaining: 3, scaleX: 1.5, scaleY: 0.75 },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit", minTerminalAge: 1 },
+      { kind: "explod", ownerId: "p1", effectId: 8, ignoreHitPause: true, minPauseMoveTime: 4, maxBindRemaining: 3, scaleX: 1.5, scaleY: 0.75 },
+    ]);
+    expect(artifact.gates[0]?.evidence.effectPayloads.map((payload) => payload.effect.kind)).toEqual(["explod", "projectile"]);
+    expect(artifact.gates[0]?.failures).toEqual([]);
   });
 });
 

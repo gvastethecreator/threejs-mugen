@@ -2438,6 +2438,9 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
           { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
         requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
       },
     ],
@@ -2765,6 +2768,7 @@ export function createSyntheticImportedHelperTraceArtifact(options: RuntimeTrace
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minAge: 1 }],
       },
     ],
   });
@@ -2809,6 +2813,7 @@ export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTrace
           { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "explod", ownerId: "p1", effectId: 9000, minAge: 1 }],
       },
     ],
   });
@@ -2853,6 +2858,7 @@ export function createSyntheticImportedExplodVelocityTraceArtifact(options: Runt
           { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "explod", ownerId: "p1", effectId: 9001, minAge: 1 }],
         requiredActorFrames: [
           {
             actorKind: "explod",
@@ -2909,6 +2915,7 @@ export function createSyntheticImportedExplodBindTraceArtifact(options: RuntimeT
           { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "explod", ownerId: "p1", effectId: 9002, maxBindRemaining: 7 }],
         requiredActorFrames: [
           {
             actorKind: "explod",
@@ -2963,6 +2970,7 @@ export function createSyntheticImportedExplodScaleTraceArtifact(options: Runtime
           { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "explod", ownerId: "p1", effectId: 9003, scaleX: 2, scaleY: 0.5 }],
         requiredActorFrames: [
           {
             actorKind: "explod",

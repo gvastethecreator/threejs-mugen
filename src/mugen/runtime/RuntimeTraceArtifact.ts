@@ -158,6 +158,10 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           projectiles: [...store.projectiles],
           nextSerials: { ...store.nextSerials },
         })),
+        effectPayloads: gate.evidence.effectPayloads.map((payload) => ({
+          ...payload,
+          effect: cloneTraceEffect(payload.effect),
+        })),
         matchPauses: gate.evidence.matchPauses.map((pause) => ({ ...pause })),
         matchPauseFreezes: gate.evidence.matchPauseFreezes.map((freeze) => ({
           ...freeze,
@@ -499,6 +503,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredCombatReasons: gate.requiredCombatReasons ? [...gate.requiredCombatReasons] : undefined,
     requiredWorldLifecycleEvents: gate.requiredWorldLifecycleEvents?.map((requirement) => ({ ...requirement })),
     requiredEffectStores: gate.requiredEffectStores?.map((requirement) => ({ ...requirement })),
+    requiredEffectPayloads: gate.requiredEffectPayloads?.map((requirement) => ({ ...requirement })),
     requiredMatchPauses: gate.requiredMatchPauses?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseFreezes: gate.requiredMatchPauseFreezes?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseAdvances: gate.requiredMatchPauseAdvances?.map((requirement) => ({ ...requirement })),
