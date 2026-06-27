@@ -18,13 +18,21 @@ import iconFolder from "@tabler/icons/outline/folder.svg?raw";
 import iconGamepad from "@tabler/icons/outline/device-gamepad-2.svg?raw";
 import iconPackage from "@tabler/icons/outline/package.svg?raw";
 import iconPhoto from "@tabler/icons/outline/photo.svg?raw";
+import iconPlayerPause from "@tabler/icons/outline/player-pause.svg?raw";
+import iconPlayerPlay from "@tabler/icons/outline/player-play.svg?raw";
+import iconPlayerTrackNext from "@tabler/icons/outline/player-track-next.svg?raw";
+import iconRefresh from "@tabler/icons/outline/refresh.svg?raw";
 import iconRoute from "@tabler/icons/outline/route.svg?raw";
 import iconSearch from "@tabler/icons/outline/search.svg?raw";
 import iconServer from "@tabler/icons/outline/server.svg?raw";
 import iconShield from "@tabler/icons/outline/shield.svg?raw";
+import iconShieldHalf from "@tabler/icons/outline/shield-half.svg?raw";
+import iconTarget from "@tabler/icons/outline/target.svg?raw";
 import iconTools from "@tabler/icons/outline/tools.svg?raw";
 import iconWand from "@tabler/icons/outline/wand.svg?raw";
 import iconX from "@tabler/icons/outline/x.svg?raw";
+import iconAxisX from "@tabler/icons/outline/axis-x.svg?raw";
+import iconGrid3x3 from "@tabler/icons/outline/grid-3x3.svg?raw";
 import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
 import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
@@ -113,11 +121,19 @@ type StudioIconName =
   | "modules"
   | "package"
   | "pending"
+  | "play"
+  | "pause"
   | "route"
   | "search"
   | "server"
   | "shield"
+  | "axis"
+  | "grid"
+  | "hit"
+  | "hurt"
+  | "reset"
   | "stage"
+  | "step"
   | "studio"
   | "tools"
   | "wand"
@@ -142,11 +158,19 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   modules: iconBinaryTree,
   package: iconBox,
   pending: iconClock,
+  play: iconPlayerPlay,
+  pause: iconPlayerPause,
   route: iconRoute,
   search: iconSearch,
   server: iconServer,
   shield: iconShield,
+  axis: iconAxisX,
+  grid: iconGrid3x3,
+  hit: iconTarget,
+  hurt: iconShieldHalf,
+  reset: iconRefresh,
   stage: iconServer,
+  step: iconPlayerTrackNext,
   studio: iconCpu,
   tools: iconTools,
   wand: iconWand,
@@ -158,6 +182,10 @@ function tablerIcon(name: StudioIconName, className = "ui-icon"): string {
     .replace("<svg", `<svg class="${className}" aria-hidden="true" focusable="false"`)
     .replace(/width="24"/, "")
     .replace(/height="24"/, "");
+}
+
+function runtimeControlContent(icon: StudioIconName, label: string): string {
+  return `${tablerIcon(icon, "ui-icon runtime-control-icon")}<span>${escapeHtml(label)}</span>`;
 }
 
 function iconForStatus(status: StudioStatus): StudioIconName {
@@ -651,10 +679,10 @@ export class App {
           <div class="stage-toolbar" aria-label="Runtime controls">
             <div class="toolbar-group toolbar-run-group">
               <span class="toolbar-label">Run</span>
-              <button type="button" data-action="play-pause" aria-label="Pause or resume simulation">Pause</button>
-              <button type="button" data-action="step" aria-label="Advance one frame">1F</button>
-              <button type="button" data-action="reset-round" aria-label="Reset current round">Reset</button>
-              <label>Speed
+              <button type="button" data-action="play-pause" data-runtime-state="pause" aria-label="Pause or resume simulation">${runtimeControlContent("pause", "Pause")}</button>
+              <button type="button" data-action="step" aria-label="Advance one frame">${runtimeControlContent("step", "1F")}</button>
+              <button type="button" data-action="reset-round" aria-label="Reset current round">${runtimeControlContent("reset", "Reset")}</button>
+              <label class="speed-control">${runtimeControlContent("activity", "Speed")}
                 <select data-action="speed">
                   <option value="0.5">0.5x</option>
                   <option value="1" selected>1x</option>
@@ -665,10 +693,10 @@ export class App {
             </div>
             <div class="toolbar-group toolbar-view-group">
               <span class="toolbar-label">View</span>
-              <label class="toggle-pill"><input type="checkbox" data-toggle="showGrid" checked /> Grid</label>
-              <label class="toggle-pill"><input type="checkbox" data-toggle="showAxis" checked /> Axis</label>
-              <label class="toggle-pill" title="Show Clsn1 hitboxes"><input type="checkbox" data-toggle="showClsn1" checked /> Hit</label>
-              <label class="toggle-pill" title="Show Clsn2 hurtboxes"><input type="checkbox" data-toggle="showClsn2" checked /> Hurt</label>
+              <label class="toggle-pill" title="Toggle grid" aria-label="Toggle grid"><input type="checkbox" data-toggle="showGrid" checked />${runtimeControlContent("grid", "Grid")}</label>
+              <label class="toggle-pill" title="Toggle axis" aria-label="Toggle axis"><input type="checkbox" data-toggle="showAxis" checked />${runtimeControlContent("axis", "Axis")}</label>
+              <label class="toggle-pill" title="Show Clsn1 hitboxes" aria-label="Show Clsn1 hitboxes"><input type="checkbox" data-toggle="showClsn1" checked />${runtimeControlContent("hit", "Hit")}</label>
+              <label class="toggle-pill" title="Show Clsn2 hurtboxes" aria-label="Show Clsn2 hurtboxes"><input type="checkbox" data-toggle="showClsn2" checked />${runtimeControlContent("hurt", "Hurt")}</label>
             </div>
           </div>
           <div class="round-hud" id="round-hud"></div>
@@ -1606,7 +1634,11 @@ export class App {
   private syncRuntimeControls(): void {
     const playPause = this.root.querySelector<HTMLButtonElement>('[data-action="play-pause"]');
     if (playPause) {
-      playPause.textContent = this.snapshot.playing ? "Pause" : "Play";
+      const runtimeState = this.snapshot.playing ? "pause" : "play";
+      if (playPause.dataset.runtimeState !== runtimeState) {
+        playPause.dataset.runtimeState = runtimeState;
+        playPause.innerHTML = runtimeControlContent(runtimeState, this.snapshot.playing ? "Pause" : "Play");
+      }
     }
     const speedSelect = this.root.querySelector<HTMLSelectElement>('[data-action="speed"]');
     if (speedSelect) {

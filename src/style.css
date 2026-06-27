@@ -18654,3 +18654,112 @@ input {
     max-width: 88px;
   }
 }
+
+/* Runtime control deck: icon-led instrument buttons without stealing playfield. */
+.runtime-control-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  stroke-width: 1.9;
+}
+
+.stage-toolbar button > span,
+.stage-toolbar .toggle-pill > span,
+.stage-toolbar .speed-control > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage-toolbar button,
+.stage-toolbar .toggle-pill,
+.stage-toolbar .speed-control {
+  align-items: center;
+  gap: 6px;
+}
+
+.stage-toolbar .speed-control {
+  display: inline-grid;
+  grid-template-columns: 14px auto minmax(58px, max-content);
+}
+
+.stage-toolbar .speed-control select {
+  min-width: 58px;
+}
+
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .stage-toolbar {
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .toolbar-group {
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill,
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    min-height: 32px;
+    padding: 5px 8px;
+    border-width: 0 0 0 1px !important;
+    border-color: var(--dcc-line) !important;
+    background: var(--dcc-control) !important;
+    color: color-mix(in srgb, var(--text) 88%, var(--muted));
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .runtime-control-icon {
+    color: color-mix(in srgb, var(--section-accent) 58%, var(--muted));
+  }
+
+  .app-shell.mode-studio .stage-toolbar button:hover,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill:hover,
+  .app-shell.mode-studio .stage-toolbar .speed-control:hover {
+    background: var(--dcc-control-hover) !important;
+    color: var(--text);
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toggle-pill::before {
+    width: 11px;
+    height: 11px;
+    flex-basis: 11px;
+    border-radius: 0;
+  }
+
+  .app-shell.mode-studio .toolbar-view-group .toggle-pill {
+    min-width: 38px;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
+  .app-shell.mode-studio .toolbar-view-group .toggle-pill > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toggle-pill:has(input[type="checkbox"]:checked)::before {
+    background: color-mix(in srgb, var(--section-accent) 64%, var(--dcc-field));
+    box-shadow: inset 0 0 0 3px var(--dcc-field);
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    grid-template-columns: 14px auto 58px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control select {
+    min-height: 24px;
+    padding: 2px 18px 2px 6px;
+    border: 1px solid var(--dcc-line-hard);
+    background: var(--dcc-field);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+}
