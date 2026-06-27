@@ -11,6 +11,7 @@ import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
+import { RuntimeTargetWorld } from "./TargetSystem";
 import type {
   ActorSnapshot,
   MugenSnapshot,
@@ -111,17 +112,19 @@ export type MatchWorldActorRegistrySnapshot = {
 export class MatchWorld {
   private runtime: PlayableMatchRuntime;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
+  private readonly targetWorld: RuntimeTargetWorld;
   private lifecycleTracker = new MatchWorldLifecycleTracker();
   private actorRegistry: MatchWorldActorRegistrySnapshot;
   private registryKey = "";
 
   constructor(options: MatchWorldOptions = {}) {
     this.effectActorWorld = new RuntimeEffectActorWorld();
+    this.targetWorld = new RuntimeTargetWorld();
     this.runtime = new PlayableMatchRuntime(
       options.p1 ?? demoFighters[0]!,
       options.p2 ?? demoFighters[1]!,
       options.stage ?? trainingStage,
-      { effectActorWorld: this.effectActorWorld },
+      { effectActorWorld: this.effectActorWorld, targetWorld: this.targetWorld },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);
   }

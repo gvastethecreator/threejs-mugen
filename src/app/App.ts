@@ -1835,24 +1835,31 @@ export class App {
       return "";
     }
     const actions = this.getVisibleCommandPaletteActions();
+    const actionTotal = this.getCommandPaletteActions().length;
     const activeResultId = actions.length ? `command-result-${Math.min(this.commandPaletteActiveIndex, actions.length - 1)}` : undefined;
     return `
       <div class="command-palette-shell" role="dialog" aria-modal="true" aria-labelledby="command-palette-title">
         <button type="button" class="command-palette-backdrop" data-action="close-command-palette" aria-label="Close command palette"></button>
         <div class="command-palette-panel">
           <div class="command-palette-header">
-            <div>
+            <div class="command-palette-title-block">
               <span class="panel-kicker">Command center</span>
-              <h2 id="command-palette-title">Run action</h2>
+              <h2 id="command-palette-title">Action index</h2>
             </div>
+            <span class="command-palette-count">${actions.length}/${actionTotal}</span>
             <button type="button" class="command-palette-close" data-action="close-command-palette" aria-label="Close command palette" title="Close">
               ${tablerIcon("close", "ui-icon")}
             </button>
           </div>
           <label class="command-palette-search">
-            <span>Action search</span>
+            <span>Filter</span>
             <input type="search" data-command-palette-search value="${escapeHtml(this.commandPaletteQuery)}" placeholder="mode, load, evidence, build..." autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="command-palette-results"${activeResultId ? ` aria-activedescendant="${activeResultId}"` : ""} />
           </label>
+          <div class="command-palette-grid-head" aria-hidden="true">
+            <span>Action</span>
+            <span>Surface</span>
+            <span>Signal</span>
+          </div>
           <div id="command-palette-results" class="command-palette-results" role="listbox" aria-live="polite">
             ${this.renderCommandPaletteResults(actions)}
           </div>
@@ -1890,14 +1897,15 @@ export class App {
           const selected = index === Math.min(this.commandPaletteActiveIndex, actions.length - 1);
           const iconName = iconForAction(action.label, [action.id, action.group, ...action.keywords].join(" "));
           return `
-          <button type="button" id="command-result-${index}" role="option" aria-selected="${selected}" class="command-result ${selected ? "is-active" : ""}" data-command-id="${escapeHtml(action.id)}" ${action.disabled ? "disabled" : ""}>
+          <button type="button" id="command-result-${index}" role="option" aria-selected="${selected}" class="command-result tone-${action.tone} ${selected ? "is-active" : ""}" data-command-id="${escapeHtml(action.id)}" data-command-tone="${escapeHtml(action.tone)}" ${action.disabled ? "disabled" : ""}>
             <span class="command-result-icon">${tablerIcon(iconName, "ui-icon")}</span>
             <span class="command-result-main">
               <strong>${escapeHtml(action.label)}</strong>
               <small>${escapeHtml(action.detail)}</small>
             </span>
             <span class="command-result-meta">
-              <span class="badge ${this.commandToneClass(action.tone)}">${escapeHtml(action.group)}</span>
+              <span class="badge command-result-group">${escapeHtml(action.group)}</span>
+              <span class="command-result-signal signal-${action.disabled ? "disabled" : action.tone}">${escapeHtml(this.commandToneLabel(action.tone, action.disabled))}</span>
             </span>
           </button>
         `;
@@ -2211,11 +2219,23 @@ export class App {
     });
   }
 
-  private commandToneClass(tone: CommandPaletteTone): string {
-    if (tone === "neutral") {
-      return "";
+  private commandToneLabel(tone: CommandPaletteTone, disabled = false): string {
+    if (disabled) {
+      return "disabled";
     }
-    return tone;
+    if (tone === "ok") {
+      return "ready";
+    }
+    if (tone === "warn") {
+      return "review";
+    }
+    if (tone === "error") {
+      return "blocked";
+    }
+    if (tone === "active") {
+      return "active";
+    }
+    return "open";
   }
 
   private getCommandPaletteActions(): CommandPaletteAction[] {

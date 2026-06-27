@@ -70,13 +70,9 @@ import {
   tickRuntimePaletteFx,
 } from "./SpriteEffectSystem";
 import {
-  advanceRuntimeTargetMemory,
-  applyRuntimeTargetController,
   createRuntimeTargetBinding,
-  matchesRuntimeTargetId,
-  rememberRuntimeTarget,
+  RuntimeTargetWorld,
   resolveRuntimeTargetBindingPosition,
-  snapshotRuntimeTargetMemory,
   type RuntimeTarget,
   type RuntimeTargetBinding,
 } from "./TargetSystem";
@@ -112,6 +108,7 @@ export type MatchStepOptions = {
 export type PlayableMatchRuntimeOptions = {
   effectActorWorld?: RuntimeEffectActorWorld;
   effectActorStores?: RuntimeEffectActorStores;
+  targetWorld?: RuntimeTargetWorld;
 };
 
 type FighterMatchState = {
@@ -147,6 +144,7 @@ type FighterMatchState = {
   soundEvents: RuntimeSoundEvent[];
   envShakeEvents: RuntimeEnvShakeEvent[];
   effectActorWorld: RuntimeEffectActorWorld;
+  targetWorld: RuntimeTargetWorld;
   lastExecutedState?: number;
   contact: FighterContactState;
 };
@@ -190,6 +188,7 @@ export class PlayableMatchRuntime {
   private readonly p2: FighterMatchState;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
+  private readonly targetWorld: RuntimeTargetWorld;
   private matchPause?: RuntimeMatchPause;
   private toggles = {
     showClsn1: true,
@@ -206,6 +205,7 @@ export class PlayableMatchRuntime {
   ) {
     this.stage = stage;
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
+    this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
     this.p1 = createFighterState(
       "p1",
       p1Definition,
@@ -213,6 +213,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p1.y,
       stage.playerStart.p1.facing,
       this.effectActorWorld,
+      this.targetWorld,
     );
     this.p2 = createFighterState(
       "p2",
@@ -221,6 +222,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p2.y,
       stage.playerStart.p2.facing,
       this.effectActorWorld,
+      this.targetWorld,
     );
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
@@ -456,6 +458,7 @@ export class PlayableMatchRuntime {
         this.stage.playerStart.p1.y,
         this.stage.playerStart.p1.facing,
         this.effectActorWorld,
+        this.targetWorld,
       ),
     );
     Object.assign(
@@ -467,6 +470,7 @@ export class PlayableMatchRuntime {
         this.stage.playerStart.p2.y,
         this.stage.playerStart.p2.facing,
         this.effectActorWorld,
+        this.targetWorld,
       ),
     );
     this.logs.unshift("Round reset");
@@ -507,6 +511,7 @@ function createFighterState(
   y: number,
   facing: 1 | -1,
   effectActorWorld = new RuntimeEffectActorWorld(),
+  targetWorld = new RuntimeTargetWorld(),
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
@@ -563,6 +568,7 @@ function createFighterState(
     soundEvents: [],
     envShakeEvents: [],
     effectActorWorld,
+    targetWorld,
     contact: {},
   };
 }
@@ -1324,7 +1330,7 @@ function applyTargetController(
   controller: MugenStateController,
   operation?: TargetControllerOp,
 ): void {
-  applyRuntimeTargetController({
+  fighter.targetWorld.applyController({
     actor: fighter,
     candidateTargets: [opponent],
     controller,
@@ -1347,7 +1353,7 @@ function applyBindToTargetController(
   operation?: BindToTargetControllerOp,
 ): void {
   const requestedId = operation?.requestedId ?? firstNumber(findParam(controller, "id")) ?? -1;
-  const target = fighter.targets.find((candidate) => candidate.actorId === opponent.id && matchesRuntimeTargetId(candidate, requestedId));
+  const target = fighter.targetWorld.find(fighter, opponent.id, requestedId);
   if (!target) {
     return;
   }
@@ -1372,11 +1378,7 @@ function canEnterState(target: FighterMatchState, stateId: number, owner: Fighte
 }
 
 function advanceTargetMemory(fighter: FighterMatchState): void {
-  const next = advanceRuntimeTargetMemory({ targets: fighter.targets, bindings: fighter.targetBindings });
-  fighter.targets = next.targets;
-  fighter.targetBindings = next.bindings;
-  fighter.bindToTarget = tickBindToTarget(fighter.bindToTarget, fighter.targets);
-  syncTargetCount(fighter);
+  fighter.targetWorld.advance(fighter);
 }
 
 function applyTargetBindings(fighter: FighterMatchState, opponent: FighterMatchState): void {
@@ -1433,27 +1435,8 @@ function normalizeBindToTargetPostype(value: string | undefined): "foot" | "mid"
   return normalized === "mid" || normalized === "head" ? normalized : "foot";
 }
 
-function tickBindToTarget(
-  binding: RuntimeTargetBinding | undefined,
-  targets: RuntimeTarget[],
-): RuntimeTargetBinding | undefined {
-  if (!binding || !targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
-    return undefined;
-  }
-  if (binding.remaining === Number.POSITIVE_INFINITY) {
-    return binding;
-  }
-  const remaining = binding.remaining - 1;
-  return remaining > 0 ? { ...binding, remaining } : undefined;
-}
-
 function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {
-  attacker.targets = rememberRuntimeTarget(attacker.targets, defender.id, targetId);
-  syncTargetCount(attacker);
-}
-
-function syncTargetCount(fighter: FighterMatchState): void {
-  fighter.runtime.targetCount = fighter.targets.length;
+  attacker.targetWorld.remember(attacker, defender.id, targetId);
 }
 
 function resetContactState(fighter: FighterMatchState): void {
@@ -1503,7 +1486,7 @@ function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit
 }
 
 function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {
-  return fighter.targets.filter((target) => matchesRuntimeTargetId(target, targetId)).length;
+  return fighter.targetWorld.count(fighter, targetId);
 }
 
 function countRuntimeExplods(fighter: FighterMatchState, explodId?: number): number {
@@ -2267,10 +2250,7 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
   const frame = getCurrentFrame(fighter);
   const move = fighter.currentMove;
   const activeHitbox = move && isMoveActive(move, fighter.moveTick) ? [move.hitbox] : frame?.clsn1 ?? [];
-  const targetSnapshot = snapshotRuntimeTargetMemory({
-    targets: fighter.targets,
-    bindings: fighter.targetBindings,
-  });
+  const targetSnapshot = fighter.targetWorld.snapshot(fighter);
   return {
     id: fighter.id,
     label: fighter.label,
@@ -2283,7 +2263,7 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
     hitPause: fighter.hitPause,
     runtime: {
       ...structuredClone(fighter.runtime),
-      targetCount: fighter.targets.length,
+      targetCount: fighter.targetWorld.count(fighter),
       targetRefs: targetSnapshot.targets,
       targetBindings: targetSnapshot.bindings,
       ...(fighter.bindToTarget

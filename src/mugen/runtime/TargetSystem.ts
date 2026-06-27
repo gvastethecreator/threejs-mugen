@@ -33,6 +33,10 @@ export type RuntimeTargetControllerActor = {
   targetBindings: RuntimeTargetBinding[];
 };
 
+export type RuntimeTargetWorldActor = RuntimeTargetControllerActor & {
+  bindToTarget?: RuntimeTargetBinding;
+};
+
 export type RuntimeTargetControllerOptions<TActor extends RuntimeTargetControllerActor> = {
   actor: TActor;
   candidateTargets: TActor[];
@@ -48,6 +52,39 @@ export type RuntimeTargetControllerResult = {
   matchedTargets: number;
   operationExecuted: boolean;
 };
+
+export class RuntimeTargetWorld {
+  remember(actor: RuntimeTargetControllerActor, targetActorId: string, targetId: number | undefined): void {
+    actor.targets = rememberRuntimeTarget(actor.targets, targetActorId, targetId);
+    syncRuntimeTargetCount(actor);
+  }
+
+  advance(actor: RuntimeTargetWorldActor): void {
+    const next = advanceRuntimeTargetMemory({ targets: actor.targets, bindings: actor.targetBindings });
+    actor.targets = next.targets;
+    actor.targetBindings = next.bindings;
+    actor.bindToTarget = tickRuntimeBindToTarget(actor.bindToTarget, actor.targets);
+    syncRuntimeTargetCount(actor);
+  }
+
+  snapshot(actor: RuntimeTargetControllerActor): RuntimeTargetMemorySnapshot {
+    return snapshotRuntimeTargetMemory({ targets: actor.targets, bindings: actor.targetBindings });
+  }
+
+  count(actor: RuntimeTargetControllerActor, targetId?: number): number {
+    return actor.targets.filter((target) => matchesRuntimeTargetId(target, targetId)).length;
+  }
+
+  find(actor: RuntimeTargetControllerActor, actorId: string, requestedId?: number): RuntimeTarget | undefined {
+    return actor.targets.find((target) => target.actorId === actorId && matchesRuntimeTargetId(target, requestedId));
+  }
+
+  applyController<TActor extends RuntimeTargetControllerActor>(
+    options: RuntimeTargetControllerOptions<TActor>,
+  ): RuntimeTargetControllerResult {
+    return applyRuntimeTargetController(options);
+  }
+}
 
 export function applyRuntimeTargetController<TActor extends RuntimeTargetControllerActor>(
   options: RuntimeTargetControllerOptions<TActor>,
@@ -261,6 +298,20 @@ export function addRuntimeTargetBinding(
   bindings.unshift(binding);
   bindings.splice(limit);
   return bindings;
+}
+
+export function tickRuntimeBindToTarget(
+  binding: RuntimeTargetBinding | undefined,
+  targets: RuntimeTarget[],
+): RuntimeTargetBinding | undefined {
+  if (!binding || !targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
+    return undefined;
+  }
+  if (binding.remaining === Number.POSITIVE_INFINITY) {
+    return binding;
+  }
+  const remaining = binding.remaining - 1;
+  return remaining > 0 ? { ...binding, remaining } : undefined;
 }
 
 export function resolveRuntimeTargetBindingPosition(

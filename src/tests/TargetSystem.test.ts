@@ -11,9 +11,10 @@ import {
   matchesRuntimeTargetId,
   rememberRuntimeTarget,
   resolveRuntimeTargetBindingPosition,
+  RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
-  type RuntimeTargetControllerActor,
+  type RuntimeTargetWorldActor,
 } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -45,6 +46,31 @@ describe("TargetSystem", () => {
     expect(hasRuntimeTarget(targets, "p2", 99)).toBe(false);
     expect(matchesRuntimeTargetId({ targetId: 5 }, -1)).toBe(true);
     expect(findRuntimeTargetId(targets, "helper")).toBe(2);
+  });
+
+  it("wraps target memory mutation behind RuntimeTargetWorld", () => {
+    const world = new RuntimeTargetWorld();
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "old", targetId: 1, age: 600 }],
+      targetBindings: [binding({ actorId: "p2", targetId: 77, remaining: 2 })],
+    });
+    actor.bindToTarget = binding({ actorId: "p2", targetId: 77, remaining: 2 });
+
+    world.remember(actor, "p2", 77);
+
+    expect(world.count(actor, 77)).toBe(1);
+    expect(world.find(actor, "p2", 77)).toMatchObject({ actorId: "p2", targetId: 77, age: 0 });
+    expect(actor.runtime.targetCount).toBe(2);
+
+    world.advance(actor);
+    const snapshot = world.snapshot(actor);
+
+    expect(actor.targets).toEqual([{ actorId: "p2", targetId: 77, age: 1 }]);
+    expect(actor.targetBindings).toEqual([binding({ actorId: "p2", targetId: 77, remaining: 1 })]);
+    expect(actor.bindToTarget).toEqual(binding({ actorId: "p2", targetId: 77, remaining: 1 }));
+    expect(actor.runtime.targetCount).toBe(1);
+    expect(snapshot.targets).toEqual([{ actorId: "p2", targetId: 77, age: 1 }]);
+    expect(snapshot.bindings).toEqual([{ actorId: "p2", targetId: 77, remaining: 1, offset: { x: 10, y: -5 } }]);
   });
 
   it("advances target memory and target bindings with expiry", () => {
@@ -283,7 +309,7 @@ function targetActor(
     targets?: RuntimeTarget[];
     targetBindings?: RuntimeTargetBinding[];
   } = {},
-): RuntimeTargetControllerActor {
+): RuntimeTargetWorldActor {
   return {
     id,
     runtime: runtime(overrides.runtime),
