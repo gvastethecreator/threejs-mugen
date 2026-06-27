@@ -9293,7 +9293,7 @@ input {
   .app-shell.mode-studio .stage-toolbar button,
   .app-shell.mode-studio .stage-toolbar .toggle-pill,
   .app-shell.mode-studio .toolbar-group select {
-    min-height: 34px;
+    min-height: 40px;
   }
 
   .app-shell.mode-studio .stage-status {
@@ -14809,7 +14809,7 @@ input {
   .app-shell.mode-studio .stage-toolbar button,
   .app-shell.mode-studio .stage-toolbar .toggle-pill,
   .app-shell.mode-studio .toolbar-group select {
-    min-height: 34px;
+    min-height: 40px;
   }
 
   .app-shell.mode-studio .stage-status {
