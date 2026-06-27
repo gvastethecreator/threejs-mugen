@@ -1388,7 +1388,15 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 }),
-        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true }),
+        expect.objectContaining({
+          ownerId: "p1",
+          actorId: "p2",
+          targetId: 77,
+          hasBinding: true,
+          minBindingRemaining: 3,
+          maxBindingRemaining: 3,
+          bindingOffset: { x: 36, y: -12 },
+        }),
       ]),
     );
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
@@ -1420,8 +1428,20 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.targetLinks).toEqual(
-      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true })]),
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          actorId: "p2",
+          targetId: 77,
+          hasBinding: true,
+          frames: expect.any(Number),
+          minBindingRemaining: 1,
+          maxBindingRemaining: 3,
+          bindingOffset: { x: 36, y: -12 },
+        }),
+      ]),
     );
+    expect(evidence?.targetLinks.find((link) => link.hasBinding)?.frames).toBeGreaterThanOrEqual(2);
     expect(evidence?.matchPauseAdvances).toEqual(
       expect.arrayContaining([expect.objectContaining({ type: "SuperPause", actorId: "p1" })]),
     );

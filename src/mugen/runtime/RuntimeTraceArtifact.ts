@@ -171,7 +171,10 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...advance,
           changedFields: [...advance.changedFields],
         })),
-        targetLinks: gate.evidence.targetLinks.map((link) => ({ ...link })),
+        targetLinks: gate.evidence.targetLinks.map((link) => ({
+          ...link,
+          bindingOffset: link.bindingOffset ? { ...link.bindingOffset } : undefined,
+        })),
         actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },

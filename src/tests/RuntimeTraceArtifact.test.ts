@@ -118,7 +118,17 @@ describe("RuntimeTraceArtifact", () => {
           requiredMatchPauses: [{ type: "SuperPause", minFrames: 1 }],
           requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 1 }],
           requiredMatchPauseAdvances: [{ type: "SuperPause", actorKind: "projectile", ownerId: "p1", minAdvancedFrames: 1 }],
-          requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+          requiredTargetLinks: [
+            {
+              ownerId: "p1",
+              actorId: "p2",
+              targetId: 77,
+              hasBinding: true,
+              minFrames: 2,
+              bindingOffsetX: 36,
+              bindingOffsetY: -12,
+            },
+          ],
         },
       ],
     });
@@ -134,7 +144,17 @@ describe("RuntimeTraceArtifact", () => {
       requiredMatchPauses: [{ type: "SuperPause", minFrames: 1 }],
       requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 1 }],
       requiredMatchPauseAdvances: [{ type: "SuperPause", actorKind: "projectile", ownerId: "p1", minAdvancedFrames: 1 }],
-      requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      requiredTargetLinks: [
+        {
+          ownerId: "p1",
+          actorId: "p2",
+          targetId: 77,
+          hasBinding: true,
+          minFrames: 2,
+          bindingOffsetX: 36,
+          bindingOffsetY: -12,
+        },
+      ],
     });
     expect(artifact.gates[0]?.failures).toEqual([
       "Missing actor source: imported",
@@ -147,7 +167,7 @@ describe("RuntimeTraceArtifact", () => {
       "Missing match pause: type=SuperPause, minFrames=1",
       "Missing match pause freeze: type=SuperPause, actorId=p2, minFrozenFrames=1",
       "Missing match pause advance: type=SuperPause, actorKind=projectile, ownerId=p1, minAdvancedFrames=1",
-      "Missing target link: ownerId=p1, actorId=p2, targetId=77",
+      "Missing target link: ownerId=p1, actorId=p2, targetId=77, hasBinding=true, minFrames=2, bindingOffsetX=36, bindingOffsetY=-12",
     ]);
     expect(artifact.trace.finalActors).toHaveLength(2);
   });

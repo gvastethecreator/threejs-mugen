@@ -187,6 +187,13 @@ export type RuntimeTraceTargetLinkRequirement = {
   actorId?: string;
   targetId?: number;
   hasBinding?: boolean;
+  minFrames?: number;
+  minAge?: number;
+  maxAge?: number;
+  minBindingRemaining?: number;
+  maxBindingRemaining?: number;
+  bindingOffsetX?: number;
+  bindingOffsetY?: number;
 };
 
 export type RuntimeTraceWorldLifecycleEventRequirement = {
@@ -349,6 +356,15 @@ export type RuntimeTraceGateTargetLinkEvidence = {
   actorId: string;
   targetId?: number;
   hasBinding: boolean;
+  firstTick: number;
+  lastTick: number;
+  frames: number;
+  minAge: number;
+  maxAge: number;
+  minBindingRemaining?: number;
+  maxBindingRemaining?: number;
+  bindingInfinite?: boolean;
+  bindingOffset?: { x: number; y: number };
 };
 
 export type RuntimeTraceFinalActorRequirement = {
@@ -886,13 +902,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       collectHitPauseMotionEvidence(frame, previousFrame, matchPauseFreezes, matchPauseAdvances);
     }
     for (const link of frame.world?.targetLinks ?? []) {
-      const evidence = {
-        ownerId: link.ownerId,
-        actorId: link.actorId,
-        targetId: link.targetId,
-        hasBinding: Boolean(link.binding),
-      };
-      targetLinks.set(targetLinkEvidenceKey(evidence), evidence);
+      const evidence = summarizeTargetLinkEvidence(frame.tick, link);
+      const key = targetLinkEvidenceKey(evidence);
+      const existing = targetLinks.get(key);
+      targetLinks.set(key, existing ? mergeTargetLinkEvidence(existing, evidence) : evidence);
     }
     for (const actor of allActors) {
       const key = actorFrameEvidenceKey(actor);
@@ -1453,8 +1466,70 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
   };
 }
 
+function summarizeTargetLinkEvidence(tick: number, link: RuntimeTraceWorldTargetLink): RuntimeTraceGateTargetLinkEvidence {
+  const numericRemaining = typeof link.binding?.remaining === "number" ? link.binding.remaining : undefined;
+  return {
+    ownerId: link.ownerId,
+    actorId: link.actorId,
+    targetId: link.targetId,
+    hasBinding: Boolean(link.binding),
+    firstTick: tick,
+    lastTick: tick,
+    frames: 1,
+    minAge: link.age,
+    maxAge: link.age,
+    minBindingRemaining: numericRemaining,
+    maxBindingRemaining: numericRemaining,
+    bindingInfinite: link.binding?.remaining === "infinite" ? true : undefined,
+    bindingOffset: link.binding ? { ...link.binding.offset } : undefined,
+  };
+}
+
+function mergeTargetLinkEvidence(
+  current: RuntimeTraceGateTargetLinkEvidence,
+  next: RuntimeTraceGateTargetLinkEvidence,
+): RuntimeTraceGateTargetLinkEvidence {
+  return {
+    ...current,
+    firstTick: Math.min(current.firstTick, next.firstTick),
+    lastTick: Math.max(current.lastTick, next.lastTick),
+    frames: current.frames + next.frames,
+    minAge: Math.min(current.minAge, next.minAge),
+    maxAge: Math.max(current.maxAge, next.maxAge),
+    minBindingRemaining: minOptionalTraceNumber(current.minBindingRemaining, next.minBindingRemaining),
+    maxBindingRemaining: maxOptionalTraceNumber(current.maxBindingRemaining, next.maxBindingRemaining),
+    bindingInfinite: current.bindingInfinite || next.bindingInfinite || undefined,
+  };
+}
+
+function minOptionalTraceNumber(left: number | undefined, right: number | undefined): number | undefined {
+  if (left === undefined) {
+    return right;
+  }
+  if (right === undefined) {
+    return left;
+  }
+  return Math.min(left, right);
+}
+
+function maxOptionalTraceNumber(left: number | undefined, right: number | undefined): number | undefined {
+  if (left === undefined) {
+    return right;
+  }
+  if (right === undefined) {
+    return left;
+  }
+  return Math.max(left, right);
+}
+
 function targetLinkEvidenceKey(link: RuntimeTraceGateTargetLinkEvidence): string {
-  return `${link.ownerId}->${link.actorId}:${link.targetId ?? "*"}:${link.hasBinding ? "binding" : "memory"}`;
+  return [
+    link.ownerId,
+    link.actorId,
+    link.targetId ?? "*",
+    link.hasBinding ? "binding" : "memory",
+    link.bindingOffset ? `${link.bindingOffset.x},${link.bindingOffset.y}` : "none",
+  ].join(":");
 }
 
 function matchesTargetLinkRequirement(
@@ -1465,7 +1540,17 @@ function matchesTargetLinkRequirement(
     (requirement.ownerId === undefined || link.ownerId === requirement.ownerId) &&
     (requirement.actorId === undefined || link.actorId === requirement.actorId) &&
     (requirement.targetId === undefined || link.targetId === requirement.targetId) &&
-    (requirement.hasBinding === undefined || link.hasBinding === requirement.hasBinding)
+    (requirement.hasBinding === undefined || link.hasBinding === requirement.hasBinding) &&
+    (requirement.minFrames === undefined || link.frames >= requirement.minFrames) &&
+    (requirement.minAge === undefined || link.maxAge >= requirement.minAge) &&
+    (requirement.maxAge === undefined || link.minAge <= requirement.maxAge) &&
+    (requirement.minBindingRemaining === undefined ||
+      link.bindingInfinite === true ||
+      (link.maxBindingRemaining ?? -Infinity) >= requirement.minBindingRemaining) &&
+    (requirement.maxBindingRemaining === undefined ||
+      (link.minBindingRemaining ?? Infinity) <= requirement.maxBindingRemaining) &&
+    (requirement.bindingOffsetX === undefined || sameTraceNumber(link.bindingOffset?.x ?? NaN, requirement.bindingOffsetX)) &&
+    (requirement.bindingOffsetY === undefined || sameTraceNumber(link.bindingOffset?.y ?? NaN, requirement.bindingOffsetY))
   );
 }
 
