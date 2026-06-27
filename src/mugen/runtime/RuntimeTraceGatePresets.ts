@@ -756,6 +756,54 @@ export function createSyntheticImportedPlayerPushTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedTurnTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-turn",
+    displayName: "Synthetic Imported Turn",
+    withTurn: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-turn-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-turn-golden",
+      label: "Synthetic imported Turn route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Turn trace proves static Turn lowers into typed orientation operation evidence and flips the current runtime facing for the bounded actor frame. It does not claim exact MUGEN/IKEMEN auto-facing, tick-order, team, helper, or target-facing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-turn-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Turn", "HitDef"],
+        requiredExecutedOperations: ["orientation:turn", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            facing: -1,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4344,6 +4392,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withWidthController?: [number, number?];
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
+  withTurn?: boolean;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4470,6 +4519,7 @@ ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
+${options.withTurn ? turnControllerBlock() : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4890,6 +4940,14 @@ function playerPushControllerBlock(enabled: boolean): string {
 type = PlayerPush
 trigger1 = Time >= 0
 value = ${enabled ? 1 : 0}
+`;
+}
+
+function turnControllerBlock(): string {
+  return `
+[State 200, Turn Probe]
+type = Turn
+trigger1 = Time >= 0
 `;
 }
 

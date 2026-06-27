@@ -412,6 +412,7 @@ export type RuntimeTraceActorFrameRequirement = {
   ownerId?: string;
   customOwnerId?: string;
   animNo?: number;
+  facing?: 1 | -1;
   stateType?: string;
   moveType?: string;
   physics?: string;
@@ -448,6 +449,7 @@ export type RuntimeTraceGateActorFrameEvidence = {
   ownerId: string;
   customOwnerId?: string;
   animNo: number;
+  facing: 1 | -1;
   stateType: string;
   moveType: string;
   physics: string;
@@ -1035,6 +1037,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               ownerId: actor.ownerId,
               customOwnerId: actor.customOwnerId,
               animNo: actor.animNo,
+              facing: actor.facing,
               stateType: actor.stateType,
               moveType: actor.moveType,
               physics: actor.physics,
@@ -1742,6 +1745,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.ownerId,
     actor.customOwnerId ?? "none",
     actor.animNo,
+    actor.facing,
     actor.stateType,
     actor.moveType,
     actor.physics,
@@ -1766,6 +1770,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.ownerId,
     actor.customOwnerId ?? "none",
     actor.animNo,
+    actor.facing,
     actor.stateType,
     actor.moveType,
     actor.physics,
@@ -1793,6 +1798,7 @@ function matchesActorFrameRequirement(
     (requirement.ownerId === undefined || actor.ownerId === requirement.ownerId) &&
     (requirement.customOwnerId === undefined || actor.customOwnerId === requirement.customOwnerId) &&
     (requirement.animNo === undefined || actor.animNo === requirement.animNo) &&
+    (requirement.facing === undefined || actor.facing === requirement.facing) &&
     (requirement.stateType === undefined || actor.stateType === requirement.stateType) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
     (requirement.physics === undefined || actor.physics === requirement.physics) &&

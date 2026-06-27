@@ -2443,6 +2443,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "metadata") {
     return `metadata:${operation.controllerType}`;
   }
+  if (operation.kind === "orientation") {
+    return `orientation:${operation.controllerType}`;
+  }
   if (operation.kind === "resource") {
     return `resource:${operation.controllerType}`;
   }

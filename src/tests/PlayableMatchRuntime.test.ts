@@ -1152,6 +1152,7 @@ describe("PlayableMatchRuntime", () => {
     expect(actor?.runtime.pos.x).toBe(-20);
     expect(snapshot.actors[1]?.runtime.pos.x).toBe(35);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Turn).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["orientation:turn"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PlayerPush).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["collision:playerpush"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.StateTypeSet).toBe(1);

@@ -281,6 +281,12 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles Turn controllers into typed orientation operations", () => {
+    const turn = compileControllerIr(controller(200, "Turn", [], {}));
+
+    expect(turn.operation).toEqual({ kind: "orientation", controllerType: "turn" });
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

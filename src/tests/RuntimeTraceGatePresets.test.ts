@@ -46,6 +46,7 @@ import {
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
+  createSyntheticImportedTurnTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -620,6 +621,39 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.some((actor) => actor.playerPush === false)).toBe(true);
+  });
+
+  it("creates a synthetic imported Turn artifact with typed orientation evidence", () => {
+    const artifact = createSyntheticImportedTurnTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-turn-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-turn-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Turn).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["orientation:turn"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          facing: -1,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.facing === -1)).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

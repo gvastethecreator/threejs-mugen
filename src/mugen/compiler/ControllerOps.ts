@@ -211,6 +211,11 @@ export type MetadataControllerOp = {
   physics?: "S" | "C" | "A" | "N";
 };
 
+export type OrientationControllerOp = {
+  kind: "orientation";
+  controllerType: "turn";
+};
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
@@ -290,6 +295,7 @@ export type ControllerOp =
   | BoundsControllerOp
   | CollisionControllerOp
   | MetadataControllerOp
+  | OrientationControllerOp
   | ResourceControllerOp
   | VariableControllerOp
   | HitEligibilityControllerOp
@@ -313,6 +319,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "statetypeset") {
     return compileStateTypeSetControllerOp(controller);
+  }
+  if (type === "turn") {
+    return { kind: "orientation", controllerType: "turn" };
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);

@@ -101,6 +101,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPlayerPushTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-turn",
+      required: true,
+      artifact: presets.createSyntheticImportedTurnTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -863,6 +868,7 @@ function validateTraceCoverage(coverage) {
     "collision:width",
     "collision:playerpush",
     "metadata:statetypeset",
+    "orientation:turn",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -900,6 +906,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-width",
     "synthetic-imported-statetypeset",
     "synthetic-imported-playerpush",
+    "synthetic-imported-turn",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

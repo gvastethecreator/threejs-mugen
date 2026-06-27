@@ -9,6 +9,7 @@ import type {
   KinematicControllerOp,
   MetadataControllerOp,
   MovementKinematicControllerOp,
+  OrientationControllerOp,
   ResourceControllerOp,
   VariableControllerOp,
 } from "../compiler/ControllerOps";
@@ -152,6 +153,11 @@ export function executeControllerIr(
     const operation = collisionOperation(controller, "playerpush");
     next.playerPush = operation?.enabled ?? (numberParam(controller, next, context, "value") ?? 1) !== 0;
   } else if (type === "turn") {
+    const operation = orientationOperation(controller, "turn");
+    if (controller.operation && !operation) {
+      reportUnsupported(`${controller.type}:operation-mismatch`);
+      return next;
+    }
     next.facing = next.facing === 1 ? -1 : 1;
   } else if (type === "hitby" || type === "nothitby") {
     applyHitByController(next, controller, type === "hitby" ? "allow" : "deny", hitEligibilityOperation(controller, type));
@@ -310,6 +316,15 @@ function metadataOperation<T extends MetadataControllerOp["controllerType"]>(
 ): Extract<MetadataControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "metadata" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<MetadataControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function orientationOperation<T extends OrientationControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<OrientationControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "orientation" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<OrientationControllerOp, { controllerType: T }>)
     : undefined;
 }
 
