@@ -9502,7 +9502,7 @@ input {
 
   .app-shell.mode-studio .workbench-route-button {
     grid-template-columns: 17px minmax(70px, 0.58fr) minmax(0, 1fr) minmax(0, 0.82fr);
-    min-height: 38px;
+    min-height: 40px;
     padding: 5px 7px;
   }
 
@@ -9524,7 +9524,7 @@ input {
 
   .app-shell.mode-studio .workbench-action-bar button {
     grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 36px;
+    min-height: 40px;
     border-width: 0 0 1px;
   }
 
@@ -9784,7 +9784,7 @@ input {
 
   .app-shell.mode-studio .workbench-route-button {
     grid-template-columns: 17px minmax(70px, 0.58fr) minmax(0, 1fr) minmax(0, 0.82fr);
-    min-height: 38px;
+    min-height: 40px;
     padding: 5px 7px;
   }
 
@@ -9810,7 +9810,7 @@ input {
 
   .app-shell.mode-studio .workbench-action-bar button {
     grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 36px;
+    min-height: 40px;
     border-width: 0 0 1px;
   }
 
@@ -15369,5 +15369,155 @@ input {
   .app-shell.mode-studio :focus-visible {
     outline: 2px solid color-mix(in srgb, var(--section-accent) 70%, white);
     outline-offset: 1px;
+  }
+}
+
+/* EOF DCC authority: enforced after legacy Studio cascade. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --console-reserved-height: 78px;
+  }
+
+  .app-shell.mode-studio .workspace-brand p,
+  .app-shell.mode-studio .tab-summary,
+  .app-shell.mode-studio .mode-hint,
+  .app-shell.mode-studio .command-launcher small,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-hint {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 35px;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 7px;
+    border-width: 0 0 1px;
+    border-right: 0;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) 6px;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
+    justify-self: end;
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
+    box-shadow:
+      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 76%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
+  }
+
+  .app-shell.mode-studio .workbench-surface-grid,
+  .app-shell.mode-studio .workbench-action-bar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .workbench-route-button {
+    grid-template-columns: 17px minmax(70px, 0.58fr) minmax(0, 1fr) minmax(0, 0.82fr);
+    min-height: 40px;
+    padding: 5px 7px;
+  }
+
+  .app-shell.mode-studio .workbench-route-button small {
+    justify-self: end;
+    color: var(--subtle);
+  }
+
+  .app-shell.mode-studio .workbench-action-bar button {
+    grid-template-columns: 16px minmax(0, 1fr);
+    min-height: 40px;
+    border-width: 0 0 1px;
+  }
+
+  .app-shell.mode-studio .workbench-action-bar button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .console {
+    display: grid;
+    grid-template-rows: 28px minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .console-toolbar {
+    min-height: 28px;
+    padding: 3px 8px;
+    border-bottom: 1px solid var(--editor-edge);
+    background: #06080b;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .console-list {
+    gap: 0;
+    overflow: auto;
+    padding: 0 8px 5px;
+  }
+
+  .app-shell.mode-studio .log-line {
+    grid-template-columns: 68px minmax(0, 1fr) minmax(112px, 180px);
+    min-height: 20px;
+    padding: 2px 0;
+    border-bottom-color: color-mix(in srgb, var(--editor-edge) 58%, transparent);
+    font-size: 11px;
+  }
+}
+
+/* EOF command shelf: keep Studio quick actions out of tile-dashboard territory. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .workspace-action-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr) auto;
+    min-height: 40px;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid small {
+    justify-self: end;
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 10px;
   }
 }
