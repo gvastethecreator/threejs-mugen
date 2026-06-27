@@ -84,6 +84,8 @@ time = 20
 
   it("keeps controller support metadata in one registry", () => {
     expect(isRuntimeExecutableController("HitDef")).toBe(true);
+    expect(isRuntimeExecutableController("MoveHitReset")).toBe(true);
+    expect(getControllerSupport("MoveHitReset").runtimeLabel).toBe("contact memory");
     expect(isRuntimeExecutableController("ForceFeedback")).toBe(true);
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
     expect(isRuntimeExecutableController("Trans")).toBe(false);

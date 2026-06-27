@@ -98,6 +98,7 @@ describe("createCompatibilityReport", () => {
     expect(isRuntimeSupportedController("ForceFeedback")).toBe(true);
     expect(isRuntimeSupportedController("HitOverride")).toBe(true);
     expect(isRuntimeSupportedController("ReversalDef")).toBe(true);
+    expect(isRuntimeSupportedController("MoveHitReset")).toBe(true);
 
     const analysis = analyzeControllerTriggers(
       controller(200, "HitDef", ["AnimElem = 3", "enemynear(1), stateno = 5000", "P2BodyDist X < 40"]),

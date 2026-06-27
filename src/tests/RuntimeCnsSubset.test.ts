@@ -52,6 +52,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("!HitOver", { self: state, hitOver: () => false })).toBe(1);
     expect(evaluateExpression("MoveContact && MoveHit", { self: state, moveContact: () => true, moveHit: () => true })).toBe(1);
     expect(evaluateExpression("MoveGuarded", { self: state, moveGuarded: () => true })).toBe(1);
+    expect(evaluateExpression("MoveHit >= 3", { self: state, moveHit: () => 3 })).toBe(1);
+    expect(evaluateExpression("MoveContact = 0", { self: state, moveContact: () => 0 })).toBe(1);
     expect(evaluateExpression("HitDefAttr(SC, NA, SA, HA)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr = SC, NA, SA, HA", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);
     expect(evaluateExpression("HitDefAttr != A, NT", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(1);

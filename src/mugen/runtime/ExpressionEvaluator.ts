@@ -14,9 +14,9 @@ export type ExpressionContext = {
   hitOver?: () => boolean;
   hitShakeOver?: () => boolean;
   inGuardDist?: () => boolean;
-  moveContact?: () => boolean;
-  moveHit?: () => boolean;
-  moveGuarded?: () => boolean;
+  moveContact?: () => boolean | number;
+  moveHit?: () => boolean | number;
+  moveGuarded?: () => boolean | number;
   numExplod?: (explodId?: number) => number;
   numHelper?: (helperId?: number) => number;
   numProj?: (projectileId?: number) => number;
@@ -355,13 +355,13 @@ class ExpressionParser {
       return this.context.inGuardDist?.() ? 1 : 0;
     }
     if (lower === "movecontact") {
-      return this.context.moveContact?.() ? 1 : 0;
+      return contactTriggerValue(this.context.moveContact?.());
     }
     if (lower === "movehit") {
-      return this.context.moveHit?.() ? 1 : 0;
+      return contactTriggerValue(this.context.moveHit?.());
     }
     if (lower === "moveguarded") {
-      return this.context.moveGuarded?.() ? 1 : 0;
+      return contactTriggerValue(this.context.moveGuarded?.());
     }
     if (lower === "numtarget") {
       return this.numTarget();
@@ -716,6 +716,16 @@ function truthy(value: ExpressionValue): boolean {
     return value;
   }
   return value.length > 0;
+}
+
+function contactTriggerValue(value: boolean | number | undefined): number {
+  if (value === undefined) {
+    return 0;
+  }
+  if (typeof value === "boolean") {
+    return value ? 1 : 0;
+  }
+  return Number.isFinite(value) ? value : 0;
 }
 
 function optionalProjectileId(value: ExpressionValue | undefined): number | undefined {

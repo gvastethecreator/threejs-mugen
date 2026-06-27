@@ -36,6 +36,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-movehit-counter",
+      required: true,
+      artifact: presets.createSyntheticImportedMoveHitCounterTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdefattr",
       required: true,
       artifact: presets.createSyntheticImportedHitDefAttrTraceArtifact(),

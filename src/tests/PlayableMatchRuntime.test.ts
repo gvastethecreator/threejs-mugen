@@ -181,6 +181,60 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(260);
   });
 
+  it("evaluates bounded MoveHit as a direct-contact frame counter", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      moveHitCounterStateNo: 263,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+
+    for (let frame = 0; frame < 10; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(263);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(263);
+  });
+
+  it("executes MoveHitReset as bounded direct-contact memory reset", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      withMoveHitReset: true,
+      moveHitCounterStateNo: 263,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+
+    for (let frame = 0; frame < 10; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.MoveHitReset).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).not.toContain(263);
+  });
+
   it("evaluates bounded HitDefAttr triggers against the current imported HitDef attr", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1650,7 +1704,9 @@ function createImportedFixture(
     dataLiedownTime?: number;
     defaultGetHitStateNo?: number;
     moveHitStateNo?: number;
+    moveHitCounterStateNo?: number;
     moveGuardStateNo?: number;
+    withMoveHitReset?: boolean;
     hitDefAttrStateNo?: number;
     projHitStateNo?: number;
     projGuardStateNo?: number;
@@ -1719,6 +1775,7 @@ ctrl = 1
   const extraStateNos = [
     ...(options.extraStateNos ?? []),
     ...(options.moveHitStateNo === undefined ? [] : [options.moveHitStateNo]),
+    ...(options.moveHitCounterStateNo === undefined ? [] : [options.moveHitCounterStateNo]),
     ...(options.moveGuardStateNo === undefined ? [] : [options.moveGuardStateNo]),
     ...(options.hitDefAttrStateNo === undefined ? [] : [options.hitDefAttrStateNo]),
     ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
@@ -2196,6 +2253,13 @@ var(9) = 90
 `
     : "";
   const contactTriggerBranches = [
+    options.withMoveHitReset
+      ? `
+[State 200, Reset Direct Contact]
+type = MoveHitReset
+trigger1 = MoveHit >= 1
+`
+      : "",
     options.moveHitStateNo === undefined
       ? ""
       : `
@@ -2203,6 +2267,15 @@ var(9) = 90
 type = ChangeState
 trigger1 = MoveHit
 value = ${options.moveHitStateNo}
+ctrl = 0
+`,
+    options.moveHitCounterStateNo === undefined
+      ? ""
+      : `
+[State 200, MoveHit Counter Branch]
+type = ChangeState
+trigger1 = MoveHit >= 1
+value = ${options.moveHitCounterStateNo}
 ctrl = 0
 `,
     options.moveGuardStateNo === undefined

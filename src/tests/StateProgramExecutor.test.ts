@@ -56,11 +56,13 @@ describe("StateProgramExecutor dispatch", () => {
     const vel = dispatchStateProgramController(compileControllerIr(controller("VelSet", { x: "2" })));
     const hit = dispatchStateProgramController(compileControllerIr(controller("HitDef", { damage: "30" })));
     const target = dispatchStateProgramController(compileControllerIr(controller("TargetLifeAdd", { value: "-20" })));
+    const reset = dispatchStateProgramController(compileControllerIr(controller("MoveHitReset", {})));
 
     expect(vel.kind).toBe("runtime-controller");
     expect(isStateEntrySetupDispatch(vel)).toBe(false);
     expect(hit).toMatchObject({ kind: "side-effect", effect: "hitdef" });
     expect(target).toMatchObject({ kind: "side-effect", effect: "target" });
+    expect(reset).toMatchObject({ kind: "side-effect", effect: "contact" });
   });
 
   it("marks State -1 setup controllers explicitly", () => {

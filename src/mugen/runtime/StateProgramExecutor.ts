@@ -17,7 +17,8 @@ export type StateProgramSideEffect =
   | "bindtotarget"
   | "pause"
   | "sound"
-  | "envshake";
+  | "envshake"
+  | "contact";
 
 export type StateProgramDispatch =
   | {
@@ -75,6 +76,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   playsnd: "sound",
   stopsnd: "sound",
   envshake: "envshake",
+  movehitreset: "contact",
 };
 
 const runtimeControllers = new Set([

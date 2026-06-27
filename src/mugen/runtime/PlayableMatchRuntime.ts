@@ -153,6 +153,9 @@ type FighterContactState = {
   moveContactState?: number;
   moveHitState?: number;
   moveGuardState?: number;
+  moveContactTime?: number;
+  moveHitTime?: number;
+  moveGuardTime?: number;
   projectileContactState?: number;
   projectileHitState?: number;
   projectileGuardState?: number;
@@ -1070,6 +1073,9 @@ function runActiveStateControllers(
       } else if (dispatch.effect === "envshake") {
         recordControllerExecution(fighter, rawController);
         recordEnvShakeEvent(fighter, rawController, tick);
+      } else if (dispatch.effect === "contact") {
+        recordControllerExecution(fighter, rawController);
+        resetMoveContactState(fighter);
       }
     }
   }
@@ -1458,12 +1464,24 @@ function resetContactState(fighter: FighterMatchState): void {
   fighter.contact = {};
 }
 
+function resetMoveContactState(fighter: FighterMatchState): void {
+  delete fighter.contact.moveContactState;
+  delete fighter.contact.moveHitState;
+  delete fighter.contact.moveGuardState;
+  delete fighter.contact.moveContactTime;
+  delete fighter.contact.moveHitTime;
+  delete fighter.contact.moveGuardTime;
+}
+
 function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard"): void {
   fighter.contact.moveContactState = fighter.runtime.stateNo;
+  fighter.contact.moveContactTime = 0;
   if (kind === "hit") {
     fighter.contact.moveHitState = fighter.runtime.stateNo;
+    fighter.contact.moveHitTime = 0;
   } else {
     fighter.contact.moveGuardState = fighter.runtime.stateNo;
+    fighter.contact.moveGuardTime = 0;
   }
 }
 
@@ -1481,6 +1499,15 @@ function markProjectileContact(fighter: FighterMatchState, projectileId: number 
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {
+  if (fighter.contact.moveContactTime !== undefined) {
+    fighter.contact.moveContactTime += 1;
+  }
+  if (fighter.contact.moveHitTime !== undefined) {
+    fighter.contact.moveHitTime += 1;
+  }
+  if (fighter.contact.moveGuardTime !== undefined) {
+    fighter.contact.moveGuardTime += 1;
+  }
   if (fighter.contact.projectileContactTime !== undefined) {
     fighter.contact.projectileContactTime += 1;
   }
@@ -1492,14 +1519,14 @@ function advanceContactTimers(fighter: FighterMatchState): void {
   }
 }
 
-function hasMoveContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): boolean {
+function moveContactValue(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): number {
   if (kind === "hit") {
-    return fighter.contact.moveHitState === fighter.runtime.stateNo;
+    return fighter.contact.moveHitState === fighter.runtime.stateNo ? fighter.contact.moveHitTime ?? 0 : 0;
   }
   if (kind === "guard") {
-    return fighter.contact.moveGuardState === fighter.runtime.stateNo;
+    return fighter.contact.moveGuardState === fighter.runtime.stateNo ? fighter.contact.moveGuardTime ?? 0 : 0;
   }
-  return fighter.contact.moveContactState === fighter.runtime.stateNo;
+  return fighter.contact.moveContactState === fighter.runtime.stateNo ? fighter.contact.moveContactTime ?? 0 : 0;
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
@@ -2633,9 +2660,9 @@ function resolveDispatchNumber(
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
-    moveContact: () => hasMoveContact(fighter, "contact"),
-    moveHit: () => hasMoveContact(fighter, "hit"),
-    moveGuarded: () => hasMoveContact(fighter, "guard"),
+    moveContact: () => moveContactValue(fighter, "contact"),
+    moveHit: () => moveContactValue(fighter, "hit"),
+    moveGuarded: () => moveContactValue(fighter, "guard"),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
@@ -2685,9 +2712,9 @@ function evaluateRuntimeTrigger(
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
-    moveContact: () => hasMoveContact(fighter, "contact"),
-    moveHit: () => hasMoveContact(fighter, "hit"),
-    moveGuarded: () => hasMoveContact(fighter, "guard"),
+    moveContact: () => moveContactValue(fighter, "contact"),
+    moveHit: () => moveContactValue(fighter, "hit"),
+    moveGuarded: () => moveContactValue(fighter, "guard"),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
