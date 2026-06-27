@@ -561,6 +561,9 @@ export class App {
   private commandPaletteOpen = false;
   private commandPaletteQuery = "";
   private commandPaletteReturnFocus?: HTMLElement;
+  private studioLeftDockOpen = true;
+  private studioRightDockOpen = true;
+  private studioFocusMode = false;
   private pendingMs = 0;
   private renderBusy = false;
   private lastPanelUpdate = 0;
@@ -688,6 +691,23 @@ export class App {
       }
       if (action === "close-command-palette") {
         this.closeCommandPalette();
+        return;
+      }
+      if (action === "toggle-left-dock") {
+        this.studioLeftDockOpen = !this.studioLeftDockOpen;
+        this.studioFocusMode = false;
+        this.updateUi();
+        return;
+      }
+      if (action === "toggle-right-dock") {
+        this.studioRightDockOpen = !this.studioRightDockOpen;
+        this.studioFocusMode = false;
+        this.updateUi();
+        return;
+      }
+      if (action === "toggle-focus-mode") {
+        this.studioFocusMode = !this.studioFocusMode;
+        this.updateUi();
         return;
       }
       if (action === "play-pause") {
@@ -1489,6 +1509,9 @@ export class App {
     shell?.classList.toggle("mode-studio", this.mode === "studio");
     shell?.setAttribute("data-surface", this.mode);
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
+    shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
+    shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
     this.setHtml("#studio-chrome", this.renderStudioChrome());
     this.setHtml("#workspace-brand", this.renderWorkspaceBrand());
     this.setHtml("#mode-controls", this.renderModeControls());
@@ -1538,6 +1561,8 @@ export class App {
     const p2 = this.findFighter(this.selectedP2);
     const stage = this.findStage(this.selectedStageId);
     const buildLabel = this.lastCompiledProject ? "build ready" : "manifest pending";
+    const leftDockPressed = !this.studioFocusMode && this.studioLeftDockOpen;
+    const rightDockPressed = !this.studioFocusMode && this.studioRightDockOpen;
     return `
       <div class="studio-chrome-brand">
         ${tablerIcon("studio", "ui-icon studio-chrome-icon")}
@@ -1580,6 +1605,18 @@ export class App {
         <button type="button" data-action="compile-project" aria-label="Compile runtime manifest">
           ${tablerIcon("build", "ui-icon")}
           <span>Compile</span>
+        </button>
+        <button type="button" class="${leftDockPressed ? "is-active" : ""}" data-action="toggle-left-dock" aria-pressed="${leftDockPressed}" aria-label="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}" title="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}">
+          ${tablerIcon("route", "ui-icon")}
+          <span>Nav</span>
+        </button>
+        <button type="button" class="${rightDockPressed ? "is-active" : ""}" data-action="toggle-right-dock" aria-pressed="${rightDockPressed}" aria-label="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}" title="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}">
+          ${tablerIcon("data", "ui-icon")}
+          <span>Inspect</span>
+        </button>
+        <button type="button" class="${this.studioFocusMode ? "is-active" : ""}" data-action="toggle-focus-mode" aria-pressed="${this.studioFocusMode}" aria-label="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}" title="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}">
+          ${tablerIcon("activity", "ui-icon")}
+          <span>Focus</span>
         </button>
       </div>
     `;

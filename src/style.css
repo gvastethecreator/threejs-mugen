@@ -8661,8 +8661,24 @@ input {
   grid-row: 2;
 }
 
+.app-shell.mode-studio .pane {
+  grid-column: 1;
+}
+
+.app-shell.mode-studio .stage {
+  grid-column: 2;
+}
+
+.app-shell.mode-studio .pane-right {
+  grid-column: 3;
+}
+
 .app-shell.mode-studio .console {
   grid-row: 3;
+}
+
+#command-palette-root:empty {
+  display: none;
 }
 
 .studio-chrome-brand,
@@ -8770,9 +8786,56 @@ input {
   white-space: nowrap;
 }
 
+.studio-chrome-actions button.is-active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--section-accent, var(--accent)) 54%, var(--editor-edge));
+  background: color-mix(in srgb, var(--section-accent, var(--accent)) 10%, var(--editor-command));
+}
+
 .studio-chrome-actions .ui-icon {
   width: 15px;
   height: 15px;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"] {
+  grid-template-columns: 0 minmax(620px, 1fr) minmax(300px, 338px);
+}
+
+.app-shell.mode-studio[data-right-dock="closed"] {
+  grid-template-columns: minmax(286px, 318px) minmax(620px, 1fr) 0;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"][data-right-dock="closed"],
+.app-shell.mode-studio[data-focus-mode="true"] {
+  --console-reserved-height: 31px;
+  grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"] #left-pane,
+.app-shell.mode-studio[data-right-dock="closed"] #right-pane,
+.app-shell.mode-studio[data-focus-mode="true"] #left-pane,
+.app-shell.mode-studio[data-focus-mode="true"] #right-pane {
+  display: none;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .console-list {
+  display: none;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .console-toolbar {
+  min-height: 30px;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .stage-toolbar {
+  top: 88px;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .round-hud {
+  top: 10px;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .round-hud-panel {
+  max-width: 720px;
 }
 
 @media (max-width: 1160px) {
@@ -8792,7 +8855,23 @@ input {
   .app-shell.mode-studio .pane,
   .app-shell.mode-studio .pane-right,
   .app-shell.mode-studio .console {
+    grid-column: 1;
     grid-row: auto;
+  }
+
+  .app-shell.mode-studio[data-left-dock="closed"],
+  .app-shell.mode-studio[data-right-dock="closed"],
+  .app-shell.mode-studio[data-left-dock="closed"][data-right-dock="closed"],
+  .app-shell.mode-studio[data-focus-mode="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .console {
+    min-height: 31px;
   }
 
   .studio-chrome-readout {
@@ -8831,5 +8910,22 @@ input {
 
   .studio-chrome-actions button span {
     display: none;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .studio-chrome {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 52px;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .studio-chrome-readout {
+    display: none;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .round-hud {
+    top: 8px;
+  }
+
+  .app-shell.mode-studio[data-focus-mode="true"] .stage-toolbar {
+    top: 64px;
   }
 }
