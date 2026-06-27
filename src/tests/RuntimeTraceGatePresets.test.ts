@@ -63,6 +63,7 @@ import {
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedModifyProjectileTraceArtifact,
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
@@ -2937,6 +2938,51 @@ describe("RuntimeTraceGatePresets", () => {
         observedVelXAtLeast: 8,
         observedVelXAtMost: 2,
       },
+    ]);
+  });
+
+  it("creates a synthetic imported ModifyProjectile artifact with live projectile mutation evidence", () => {
+    const artifact = createSyntheticImportedModifyProjectileTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-modifyprojectile-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "projectile",
+          ownerId: "p1",
+          animNo: 910,
+          maxScale: expect.objectContaining({ x: 2 }),
+          minScale: expect.objectContaining({ y: 0.5 }),
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "HitDef",
+      "Projectile",
+      "ModifyProjectile",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "projectile",
+      "modifyprojectile",
     ]);
   });
 

@@ -7,6 +7,7 @@ import type {
   FallEnvShakeControllerOp,
   HelperControllerOp,
   HitDefControllerOp,
+  ModifyProjectileControllerOp,
   PauseControllerOp,
   ProjectileControllerOp,
   RemoveExplodControllerOp,
@@ -1087,6 +1088,13 @@ function runActiveStateControllers(
       } else if (dispatch.effect === "projectile") {
         recordControllerExecution(fighter, rawController);
         createProjectile(fighter, opponent, rawController, controller.operation?.kind === "projectile" ? controller.operation : undefined);
+      } else if (dispatch.effect === "modifyprojectile") {
+        recordControllerExecution(fighter, rawController);
+        modifyProjectiles(
+          fighter,
+          rawController,
+          controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined,
+        );
       } else if (dispatch.effect === "target") {
         recordControllerExecution(fighter, rawController);
         applyTargetController(fighter, opponent, rawController, controller.operation?.kind === "target" ? controller.operation : undefined);
@@ -1376,6 +1384,20 @@ function resolveProjectileTerminalActions(
     remove: removeAnim === undefined ? undefined : owner.definition.animations.get(removeAnim),
     cancel: cancelAnim === undefined ? undefined : owner.definition.animations.get(cancelAnim),
   };
+}
+
+function modifyProjectiles(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: ModifyProjectileControllerOp,
+): void {
+  const changed = fighter.effectActorWorld.modifyProjectiles(fighter.id, {
+    controller,
+    operation,
+  });
+  if (operation && changed > 0) {
+    recordControllerOperation(fighter, operation);
+  }
 }
 
 function applyTargetController(

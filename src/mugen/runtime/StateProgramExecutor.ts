@@ -13,6 +13,7 @@ export type StateProgramSideEffect =
   | "removeexplod"
   | "helper"
   | "projectile"
+  | "modifyprojectile"
   | "target"
   | "bindtotarget"
   | "pause"
@@ -70,6 +71,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   removeexplod: "removeexplod",
   helper: "helper",
   projectile: "projectile",
+  modifyprojectile: "modifyprojectile",
   bindtotarget: "bindtotarget",
   pause: "pause",
   superpause: "pause",

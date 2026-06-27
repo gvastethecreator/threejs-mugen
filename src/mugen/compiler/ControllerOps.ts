@@ -105,6 +105,21 @@ export type ProjectileControllerOp = {
   removeOnHit: boolean;
 };
 
+export type ModifyProjectileControllerOp = {
+  kind: "modifyprojectile";
+  projectileId?: number;
+  velocity?: [number, number];
+  acceleration?: [number, number];
+  velocityMultiplier?: [number, number];
+  scale?: [number, number];
+  removeTime?: number;
+  spritePriority?: number;
+  priority?: number;
+  hitCount?: number;
+  missTime?: number;
+  removeOnHit?: boolean;
+};
+
 export type HelperControllerOp = {
   kind: "helper";
   helperId?: number;
@@ -329,6 +344,7 @@ export type ControllerOp =
   | BindToTargetControllerOp
   | PauseControllerOp
   | ProjectileControllerOp
+  | ModifyProjectileControllerOp
   | HelperControllerOp
   | ExplodControllerOp
   | RemoveExplodControllerOp
@@ -414,6 +430,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "projectile") {
     return compileProjectileControllerOp(controller);
+  }
+  if (type === "modifyprojectile") {
+    return compileModifyProjectileControllerOp(controller);
   }
   if (type === "helper") {
     return compileHelperControllerOp(controller);
@@ -968,6 +987,23 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity: numberPair(findParam(controller, "guard.velocity")),
     removeOnHit: (firstNumber(findParam(controller, "projremove")) ?? 1) !== 0,
+  });
+}
+
+function compileModifyProjectileControllerOp(controller: MugenStateController): ModifyProjectileControllerOp {
+  return definedObject({
+    kind: "modifyprojectile" as const,
+    projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
+    velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
+    velocityMultiplier: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "velmul"))),
+    scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
+    removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")),
+    spritePriority: firstNumber(findParam(controller, "sprpriority")),
+    priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")),
+    hitCount: firstNumber(findParam(controller, "projhits")),
+    missTime: firstNumber(findParam(controller, "projmisstime")),
+    removeOnHit: booleanNumber(findParam(controller, "projremove")),
   });
 }
 

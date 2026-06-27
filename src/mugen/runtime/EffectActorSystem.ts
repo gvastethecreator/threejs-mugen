@@ -21,9 +21,11 @@ import {
 import {
   advanceRuntimeProjectiles,
   createRuntimeProjectile,
+  modifyRuntimeProjectiles,
   runtimeProjectilesToSnapshots,
   shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
+  type RuntimeProjectileModifyInput,
   type RuntimeProjectileSpawnInput,
 } from "./ProjectileSystem";
 import {
@@ -148,6 +150,10 @@ export class RuntimeEffectActorWorld {
 
   spawnProjectile(ownerId: string, input: Omit<RuntimeProjectileSpawnInput, "serialId">): RuntimeProjectile {
     return spawnRuntimeProjectileActor(this.getStore(ownerId), ownerId, input);
+  }
+
+  modifyProjectiles(ownerId: string, input: RuntimeProjectileModifyInput): number {
+    return modifyRuntimeProjectileActors(this.getStore(ownerId), input);
   }
 
   advanceProjectiles(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">): void {
@@ -321,6 +327,10 @@ export function spawnRuntimeProjectileActor(
   store.projectiles.unshift(projectile);
   store.projectiles.splice(16);
   return projectile;
+}
+
+export function modifyRuntimeProjectileActors(store: RuntimeEffectActorStore, input: RuntimeProjectileModifyInput): number {
+  return modifyRuntimeProjectiles(store.projectiles, input);
 }
 
 export function advanceRuntimeProjectileActors(

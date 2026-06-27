@@ -1,5 +1,5 @@
 import type { CollisionBox } from "../model/CollisionBox";
-import type { ProjectileControllerOp } from "../compiler/ControllerOps";
+import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../compiler/ControllerOps";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
@@ -94,6 +94,11 @@ export type RuntimeProjectileSpawnInput = {
   damageScale?: number;
 };
 
+export type RuntimeProjectileModifyInput = {
+  controller: MugenStateController;
+  operation?: ModifyProjectileControllerOp;
+};
+
 export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): RuntimeProjectile {
   const operation = input.operation;
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
@@ -171,6 +176,66 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     removeOnHit: operation?.removeOnHit ?? (firstNumber(findControllerParam(input.controller, "projremove")) ?? 1) !== 0,
     hasHit: false,
   };
+}
+
+export function modifyRuntimeProjectiles(projectiles: RuntimeProjectile[], input: RuntimeProjectileModifyInput): number {
+  const operation = input.operation;
+  const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id"));
+  const velocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel"));
+  const acceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel"));
+  const velocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul"));
+  const scale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale"));
+  const removeTime = operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime"));
+  const spritePriority = operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority"));
+  const priority = operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority"));
+  const hitCount = operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits"));
+  const missTime = operation?.missTime ?? firstNumber(findControllerParam(input.controller, "projmisstime"));
+  const removeOnHit = operation?.removeOnHit ?? booleanNumber(findControllerParam(input.controller, "projremove"));
+  let changed = 0;
+
+  for (const projectile of projectiles) {
+    if (projectile.removalReason || projectile.terminalPlayback) {
+      continue;
+    }
+    if (projectileId !== undefined && projectile.projectileId !== projectileId) {
+      continue;
+    }
+    if (velocity) {
+      projectile.vel = { x: velocity[0] * projectile.facing, y: velocity[1] };
+    }
+    if (acceleration) {
+      projectile.accel = { x: acceleration[0] * projectile.facing, y: acceleration[1] };
+    }
+    if (velocityMultiplier) {
+      projectile.velMul = pairToVelocityMultiplier(velocityMultiplier);
+    }
+    if (scale) {
+      projectile.scale = pairToScale(scale);
+    }
+    if (removeTime !== undefined) {
+      projectile.removeTime = clampProjectileTime(removeTime);
+    }
+    if (spritePriority !== undefined) {
+      projectile.spritePriority = Math.max(-5, Math.min(10, Math.round(spritePriority)));
+    }
+    if (priority !== undefined) {
+      projectile.priority = clampProjectilePriority(priority);
+    }
+    if (hitCount !== undefined) {
+      projectile.hitsRemaining = clampProjectileHits(hitCount);
+      projectile.hasHit = false;
+    }
+    if (missTime !== undefined) {
+      projectile.missTime = clampProjectileMissTime(missTime);
+      projectile.missTimeRemaining = Math.min(projectile.missTimeRemaining, projectile.missTime);
+    }
+    if (removeOnHit !== undefined) {
+      projectile.removeOnHit = removeOnHit;
+    }
+    changed += 1;
+  }
+
+  return changed;
 }
 
 export function advanceRuntimeProjectiles(
@@ -468,6 +533,11 @@ function secondNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function booleanNumber(value: string | undefined): boolean | undefined {
+  const numberValue = firstNumber(value);
+  return numberValue === undefined ? undefined : numberValue !== 0;
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

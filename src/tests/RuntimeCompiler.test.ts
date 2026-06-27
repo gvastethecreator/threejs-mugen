@@ -609,6 +609,39 @@ time = 20
     });
   });
 
+  it("compiles ModifyProjectile controllers into typed projectile mutation operations", () => {
+    const modifyProjectile = compileControllerIr(
+      controller(1000, "ModifyProjectile", [], {
+        projid: "77",
+        velocity: "5,-1",
+        accel: "0.25,0",
+        velmul: "0.5,1",
+        projscale: "1.5,0.75",
+        projremovetime: "18",
+        sprpriority: "8",
+        projpriority: "3",
+        projhits: "4",
+        projmisstime: "5",
+        projremove: "0",
+      }),
+    );
+
+    expect(modifyProjectile.operation).toEqual({
+      kind: "modifyprojectile",
+      projectileId: 77,
+      velocity: [5, -1],
+      acceleration: [0.25, 0],
+      velocityMultiplier: [0.5, 1],
+      scale: [1.5, 0.75],
+      removeTime: 18,
+      spritePriority: 8,
+      priority: 3,
+      hitCount: 4,
+      missTime: 5,
+      removeOnHit: false,
+    });
+  });
+
   it("compiles Helper controllers into typed helper operations", () => {
     const helper = compileControllerIr(
       controller(200, "Helper", [], {

@@ -8,6 +8,7 @@ import {
   canRuntimeProjectileContact,
   createRuntimeProjectile,
   getRuntimeProjectileHitboxes,
+  modifyRuntimeProjectiles,
   recordRuntimeProjectileContact,
   runtimeProjectileWorldBox,
   runtimeProjectilesToSnapshots,
@@ -310,6 +311,45 @@ describe("ProjectileSystem", () => {
         velMul: { x: 0.5, y: 2 },
       },
     });
+  });
+
+  it("modifies matching active projectiles through bounded ModifyProjectile params", () => {
+    const matching = projectile({ projectileId: 77, facing: -1, vel: { x: -2, y: 0 }, hitsRemaining: 1 });
+    const other = projectile({ serialId: "other", projectileId: 88, vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+    const terminal = projectile({ serialId: "terminal", projectileId: 77, terminalPlayback: { reason: "hit", age: 0, duration: 2 } });
+
+    const changed = modifyRuntimeProjectiles([matching, other, terminal], {
+      controller: controller({
+        projid: "77",
+        velocity: "6,-1",
+        accel: "0.5,0.25",
+        velmul: "0.5,1",
+        projscale: "1.5,0.75",
+        projremovetime: "18",
+        sprpriority: "8",
+        projpriority: "3",
+        projhits: "4",
+        projmisstime: "5",
+        projremove: "0",
+      }),
+    });
+
+    expect(changed).toBe(1);
+    expect(matching).toMatchObject({
+      vel: { x: -6, y: -1 },
+      accel: { x: -0.5, y: 0.25 },
+      velMul: { x: 0.5, y: 1 },
+      scale: { x: 1.5, y: 0.75 },
+      removeTime: 18,
+      spritePriority: 8,
+      priority: 3,
+      hitsRemaining: 4,
+      missTime: 5,
+      removeOnHit: false,
+      hasHit: false,
+    });
+    expect(other).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
+    expect(terminal).toMatchObject({ vel: { x: 2, y: 0 }, scale: { x: 1, y: 1 } });
   });
 
   it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {

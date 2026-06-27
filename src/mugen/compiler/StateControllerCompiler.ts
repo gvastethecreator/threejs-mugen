@@ -45,6 +45,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   removeexplod: partial("effect actors"),
   helper: partial("bounded visual helper"),
   projectile: partial("bounded projectile"),
+  modifyprojectile: partial("bounded projectile mutation"),
   targetdrop: partial("target memory"),
   targetfacing: partial("target memory"),
   targetlifeadd: partial("target memory"),

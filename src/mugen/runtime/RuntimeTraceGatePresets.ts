@@ -3838,6 +3838,77 @@ export function createSyntheticImportedProjectileVelMulTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedModifyProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileMotionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-attacker",
+    displayName: "Synthetic Imported ModifyProjectile Attacker",
+    withProjectile: true,
+    projectileOffset: [80, -45],
+    projectileVelocity: [1, 0],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileVelocity: [12, -1],
+    modifyProjectileAccel: [0, 0.25],
+    modifyProjectileVelocityMultiplier: [0.75, 1],
+    modifyProjectileScale: [2, 0.5],
+    modifyProjectileRemoveTime: 18,
+    modifyProjectilePriority: 3,
+    modifyProjectileHits: 4,
+    modifyProjectileMissTime: 5,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-golden",
+      label: "Synthetic imported ModifyProjectile route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported ModifyProjectile trace proves a bounded owner-side ModifyProjectile controller can mutate a live projectile's static velocity, acceleration, velocity multiplier, scale, priority, hit budget, miss time, and remove time through the shared effect actor world. It does not claim exact MUGEN/IKEMEN tick order, dynamic expressions, helper-owned projectiles, redirects, multi-projectile selection parity, or full projectile lifecycle parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-modifyprojectile-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile", "ModifyProjectile"],
+        requiredExecutedOperations: ["hitdef", "projectile", "modifyprojectile"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, minAge: 3, minPriority: 3, minHitsRemaining: 4, scaleX: 2, scaleY: 0.5 },
+        ],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 910,
+            moveType: "A",
+            minFrames: 3,
+            observedVelXAtLeast: 8,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -5362,6 +5433,16 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileAccel?: [number, number];
   projectileVelocityMultiplier?: [number, number];
   projectileScale?: [number, number];
+  withModifyProjectile?: boolean;
+  modifyProjectileTriggerTime?: number;
+  modifyProjectileVelocity?: [number, number];
+  modifyProjectileAccel?: [number, number];
+  modifyProjectileVelocityMultiplier?: [number, number];
+  modifyProjectileScale?: [number, number];
+  modifyProjectileRemoveTime?: number;
+  modifyProjectilePriority?: number;
+  modifyProjectileHits?: number;
+  modifyProjectileMissTime?: number;
   projectileGroundVelocity?: [number, number?];
   projectileHits?: number;
   projectileMissTime?: number;
@@ -5605,6 +5686,17 @@ ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale) : ""}
+${options.withModifyProjectile ? modifyProjectileControllerBlock({
+  triggerTime: options.modifyProjectileTriggerTime,
+  velocity: options.modifyProjectileVelocity,
+  accel: options.modifyProjectileAccel,
+  velocityMultiplier: options.modifyProjectileVelocityMultiplier,
+  scale: options.modifyProjectileScale,
+  removeTime: options.modifyProjectileRemoveTime,
+  priority: options.modifyProjectilePriority,
+  hits: options.modifyProjectileHits,
+  missTime: options.modifyProjectileMissTime,
+}) : ""}
 ${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
 ${options.projContactStateNo === undefined ? "" : contactBranchBlock("ProjContact(77)", options.projContactStateNo, "ProjContact Branch")}
 ${options.projHitStateNo === undefined ? "" : contactBranchBlock("ProjHit(77)", options.projHitStateNo, "ProjHit Branch")}
@@ -7040,6 +7132,42 @@ guard.hittime = 8
 guard.velocity = -2
 guard.dist = 120
 sprpriority = 7
+`;
+}
+
+function modifyProjectileControllerBlock(input: {
+  triggerTime?: number;
+  velocity?: [number, number];
+  accel?: [number, number];
+  velocityMultiplier?: [number, number];
+  scale?: [number, number];
+  removeTime?: number;
+  priority?: number;
+  hits?: number;
+  missTime?: number;
+}): string {
+  const velocityLine = input.velocity === undefined ? "" : `velocity = ${input.velocity[0]},${input.velocity[1]}`;
+  const accelLine = input.accel === undefined ? "" : `accel = ${input.accel[0]},${input.accel[1]}`;
+  const velocityMultiplierLine =
+    input.velocityMultiplier === undefined ? "" : `velmul = ${input.velocityMultiplier[0]},${input.velocityMultiplier[1]}`;
+  const scaleLine = input.scale === undefined ? "" : `projscale = ${input.scale[0]},${input.scale[1]}`;
+  const removeTimeLine = input.removeTime === undefined ? "" : `projremovetime = ${input.removeTime}`;
+  const priorityLine = input.priority === undefined ? "" : `projpriority = ${input.priority}`;
+  const hitsLine = input.hits === undefined ? "" : `projhits = ${input.hits}`;
+  const missTimeLine = input.missTime === undefined ? "" : `projmisstime = ${input.missTime}`;
+  return `
+[State 200, Modify Fast Projectile]
+type = ModifyProjectile
+trigger1 = Time = ${input.triggerTime ?? 3}
+projid = 77
+${velocityLine}
+${accelLine}
+${velocityMultiplierLine}
+${scaleLine}
+${removeTimeLine}
+${priorityLine}
+${hitsLine}
+${missTimeLine}
 `;
 }
 
