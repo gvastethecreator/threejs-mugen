@@ -26,6 +26,8 @@ export type RuntimeTraceScriptSegment = RuntimeTraceInputFrame & {
   frames?: number;
 };
 
+export type RuntimeTraceEffectSummary = NonNullable<ActorSnapshot["effect"]>;
+
 export type RuntimeTraceActor = {
   id: string;
   label: string;
@@ -54,6 +56,7 @@ export type RuntimeTraceActor = {
   guardSlideTime?: number;
   guardControlTime?: number;
   hitFall?: RuntimeTraceHitFallSummary;
+  effect?: RuntimeTraceEffectSummary;
   customOwnerId?: string;
   clsn1Count: number;
   clsn2Count: number;
@@ -1570,15 +1573,36 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     ...(actor.runtime.guardSlideTime ? { guardSlideTime: actor.runtime.guardSlideTime } : {}),
     ...(actor.runtime.guardControlTime ? { guardControlTime: actor.runtime.guardControlTime } : {}),
     hitFall: actor.runtime.hitFall ? cloneTraceHitFall(actor.runtime.hitFall) : undefined,
+    effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     customOwnerId: actor.runtime.customState?.ownerId,
     clsn1Count: actor.clsn1.length,
     clsn2Count: actor.clsn2.length,
   };
 }
 
-function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause"> {
-  const { animTime: _animTime, hitPause: _hitPause, ...checksumActor } = actor;
+function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "effect"> {
+  const { animTime: _animTime, hitPause: _hitPause, effect: _effect, ...checksumActor } = actor;
   return checksumActor;
+}
+
+function cloneTraceEffect(effect: RuntimeTraceEffectSummary): RuntimeTraceEffectSummary {
+  if (effect.kind === "explod") {
+    return {
+      ...effect,
+      opacity: roundTraceNumber(effect.opacity),
+      scale: {
+        x: roundTraceNumber(effect.scale.x),
+        y: roundTraceNumber(effect.scale.y),
+      },
+      bindOffset: effect.bindOffset
+        ? {
+            x: roundTraceNumber(effect.bindOffset.x),
+            y: roundTraceNumber(effect.bindOffset.y),
+          }
+        : undefined,
+    };
+  }
+  return { ...effect };
 }
 
 function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHitFallSummary {

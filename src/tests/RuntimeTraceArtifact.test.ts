@@ -4,6 +4,7 @@ import { trainingStage } from "../mugen/runtime/demoStage";
 import { PlayableMatchRuntime } from "../mugen/runtime/PlayableMatchRuntime";
 import { createRuntimeTraceArtifact, serializeRuntimeTraceArtifact } from "../mugen/runtime/RuntimeTraceArtifact";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "../mugen/runtime/RuntimeTrace";
+import type { RuntimeTrace, RuntimeTraceFrame } from "../mugen/runtime/RuntimeTrace";
 
 const closeStage = {
   ...trainingStage,
@@ -148,4 +149,210 @@ describe("RuntimeTraceArtifact", () => {
     ]);
     expect(artifact.trace.finalActors).toHaveLength(2);
   });
+
+  it("exports effect payloads and effect field deltas without hiding actor evidence", () => {
+    const projectile0 = effectActor("fx-p1-proj-1", "Nova fireball", projectileEffect({ hitsRemaining: 2, missTimeRemaining: 5 }));
+    const projectile1 = effectActor(
+      "fx-p1-proj-1",
+      "Nova fireball",
+      projectileEffect({
+        hitsRemaining: 1,
+        missTimeRemaining: 4,
+        hasHit: true,
+        removalReason: "hit",
+        terminalReason: "hit",
+        terminalAge: 1,
+      }),
+    );
+    const explod0 = effectActor("fx-p1-explod-1", "Nova flash", explodEffect());
+    const explod1 = effectActor(
+      "fx-p1-explod-1",
+      "Nova flash",
+      explodEffect({
+        opacity: 0.5,
+        scale: { x: 1.5, y: 0.75 },
+        bindRemaining: 4,
+        bindOffset: { x: 12, y: -3 },
+      }),
+    );
+    const frame0 = traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-0", effects: [projectile0, explod0] });
+    const frame1 = traceFrame({ frameIndex: 1, tick: 2, checksum: "stable-1", effects: [projectile1, explod1] });
+    const trace = traceFromFrames([frame0, frame1]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-effect-payload",
+        label: "Synthetic effect payload trace",
+        source: "native",
+      },
+      gates: [],
+    });
+
+    const projectileDelta = artifact.trace.frames[1]?.delta?.actorChanges.find((change) => change.id === "fx-p1-proj-1");
+    expect(projectileDelta).toMatchObject({
+      layer: "effect",
+      actorKind: "projectile",
+    });
+    expect(projectileDelta?.changes).toEqual(
+      expect.arrayContaining([
+        "effect hits 2->1",
+        "effect miss 5->4",
+        "effect hasHit false->true",
+        "effect removal none->hit",
+        "effect terminal none->hit",
+      ]),
+    );
+
+    const explodDelta = artifact.trace.frames[1]?.delta?.actorChanges.find((change) => change.id === "fx-p1-explod-1");
+    expect(explodDelta?.changes).toEqual(
+      expect.arrayContaining(["effect opacity 1->0.5", "effect scale 1,1->1.5,0.75", "effect bindRemaining 8->4"]),
+    );
+    expect(artifact.trace.finalEffects.find((actor) => actor.id === "fx-p1-proj-1")?.effect).toMatchObject({
+      kind: "projectile",
+      hitsRemaining: 1,
+      hasHit: true,
+      removalReason: "hit",
+      terminalReason: "hit",
+    });
+
+    const sourceExplod = frame1.effects.find((actor) => actor.id === "fx-p1-explod-1")?.effect;
+    const exportedExplod = artifact.trace.finalEffects.find((actor) => actor.id === "fx-p1-explod-1")?.effect;
+    expect(exportedExplod).toMatchObject({
+      kind: "explod",
+      opacity: 0.5,
+      scale: { x: 1.5, y: 0.75 },
+      bindOffset: { x: 12, y: -3 },
+    });
+    if (sourceExplod?.kind === "explod" && exportedExplod?.kind === "explod") {
+      expect(exportedExplod).not.toBe(sourceExplod);
+      expect(exportedExplod.scale).not.toBe(sourceExplod.scale);
+      expect(exportedExplod.bindOffset).not.toBe(sourceExplod.bindOffset);
+    }
+  });
 });
+
+function traceFromFrames(frames: RuntimeTraceFrame[]): RuntimeTrace {
+  const initialFrame = frames[0];
+  const finalFrame = frames.at(-1);
+  if (!initialFrame || !finalFrame) {
+    throw new Error("traceFromFrames requires at least one frame");
+  }
+  const { input: _input, events: _events, ...initial } = initialFrame;
+  return {
+    label: "synthetic-effect-payload",
+    frameCount: frames.length,
+    initial,
+    frames,
+    events: frames.flatMap((frame) => frame.events),
+    combatReasons: frames.flatMap((frame) => frame.combatReasons),
+    final: finalFrame,
+    checksum: "synthetic-checksum",
+  };
+}
+
+function traceFrame(
+  input: Pick<RuntimeTraceFrame, "frameIndex" | "tick" | "checksum" | "effects"> & Partial<RuntimeTraceFrame>,
+): RuntimeTraceFrame {
+  const frame: RuntimeTraceFrame = {
+    frameIndex: input.frameIndex,
+    tick: input.tick,
+    input: input.input ?? { p1: [], p2: [], force: false },
+    actors: input.actors ?? [],
+    effects: input.effects,
+    events: input.events ?? [],
+    combatReasons: input.combatReasons ?? [],
+    checksum: input.checksum,
+  };
+  if (input.label !== undefined) {
+    frame.label = input.label;
+  }
+  if (input.world !== undefined) {
+    frame.world = input.world;
+  }
+  return frame;
+}
+
+function effectActor(
+  id: string,
+  label: string,
+  effect: NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>,
+): RuntimeTraceFrame["effects"][number] {
+  return {
+    id,
+    label,
+    actorKind: effect.kind,
+    ownerId: "p1",
+    rootId: "p1",
+    parentId: "p1",
+    source: "effect",
+    stateNo: 0,
+    animNo: effect.kind === "projectile" ? 910 : 920,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: false,
+    stateType: "S",
+    moveType: effect.kind === "projectile" ? "A" : "I",
+    physics: "N",
+    pos: { x: 0, y: 0 },
+    vel: { x: 0, y: 0 },
+    facing: 1,
+    hitPause: 0,
+    guarding: false,
+    guardStun: 0,
+    clsn1Count: effect.kind === "projectile" ? 1 : 0,
+    clsn2Count: 1,
+    effect,
+  };
+}
+
+function projectileEffect(
+  overrides: Partial<Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "projectile" }>> = {},
+): Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "projectile" }> {
+  return {
+    kind: "projectile",
+    id: 77,
+    age: 4,
+    removeTime: 30,
+    spritePriority: 4,
+    priority: 2,
+    hitsRemaining: 1,
+    missTime: 6,
+    missTimeRemaining: 0,
+    damage: 35,
+    hitPause: 8,
+    hitStun: 14,
+    guardDamage: 6,
+    guardPause: 6,
+    guardStun: 10,
+    guardDistance: 28,
+    guardFlag: "MA",
+    removeOnHit: true,
+    hasHit: false,
+    ...overrides,
+  };
+}
+
+function explodEffect(
+  overrides: Partial<Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "explod" }>> = {},
+): Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "explod" }> {
+  return {
+    kind: "explod",
+    id: 8,
+    age: 2,
+    removeTime: 18,
+    spritePriority: 3,
+    opacity: 1,
+    scale: { x: 1, y: 1 },
+    removeOnGetHit: false,
+    ignoreHitPause: true,
+    pauseMoveTime: 2,
+    superMoveTime: 0,
+    bindRemaining: 8,
+    bindOffset: { x: 0, y: 0 },
+    ...overrides,
+  };
+}

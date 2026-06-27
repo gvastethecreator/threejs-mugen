@@ -7,6 +7,9 @@ import type {
 } from "./RuntimeTrace";
 import { evaluateRuntimeTraceGate } from "./RuntimeTrace";
 
+type RuntimeTraceArtifactActor = RuntimeTraceFrame["actors"][number];
+type RuntimeTraceArtifactEffect = NonNullable<RuntimeTraceArtifactActor["effect"]>;
+
 export type RuntimeTraceArtifactStatus = "passed" | "failed";
 
 export type RuntimeTraceArtifactTarget = {
@@ -301,7 +304,111 @@ function compareTraceActors(
   if (current.vel.x !== previous.vel.x || current.vel.y !== previous.vel.y) {
     changes.push(`vel ${formatPoint(previous.vel)}->${formatPoint(current.vel)}`);
   }
+  changes.push(...compareTraceActorEffects(current.effect, previous.effect));
   return changes;
+}
+
+function compareTraceActorEffects(
+  current: RuntimeTraceArtifactActor["effect"],
+  previous: RuntimeTraceArtifactActor["effect"],
+): string[] {
+  if (!current && !previous) {
+    return [];
+  }
+  if (current && !previous) {
+    return [`effect attached ${current.kind}`];
+  }
+  if (!current && previous) {
+    return [`effect removed ${previous.kind}`];
+  }
+  if (!current || !previous) {
+    return [];
+  }
+  if (current.kind !== previous.kind) {
+    return [`effect ${previous.kind}->${current.kind}`];
+  }
+
+  const changes: string[] = [];
+  if (current.kind === "explod" && previous.kind === "explod") {
+    pushEffectValueChange(changes, "effect id", previous.id, current.id);
+    pushEffectValueChange(changes, "effect remove", previous.removeTime, current.removeTime);
+    pushEffectValueChange(changes, "effect sprPriority", previous.spritePriority, current.spritePriority);
+    pushEffectValueChange(changes, "effect opacity", previous.opacity, current.opacity);
+    if (current.scale.x !== previous.scale.x || current.scale.y !== previous.scale.y) {
+      changes.push(`effect scale ${formatPoint(previous.scale)}->${formatPoint(current.scale)}`);
+    }
+    pushEffectValueChange(changes, "effect removeOnGetHit", previous.removeOnGetHit, current.removeOnGetHit);
+    pushEffectValueChange(changes, "effect ignoreHitPause", previous.ignoreHitPause, current.ignoreHitPause);
+    pushEffectValueChange(changes, "effect pauseMoveTime", previous.pauseMoveTime, current.pauseMoveTime);
+    pushEffectValueChange(changes, "effect superMoveTime", previous.superMoveTime, current.superMoveTime);
+    pushEffectValueChange(changes, "effect bindRemaining", previous.bindRemaining, current.bindRemaining);
+    if (!sameOptionalPoint(current.bindOffset, previous.bindOffset)) {
+      changes.push(`effect bindOffset ${formatOptionalPoint(previous.bindOffset)}->${formatOptionalPoint(current.bindOffset)}`);
+    }
+    return changes;
+  }
+
+  if (current.kind === "helper" && previous.kind === "helper") {
+    pushEffectValueChange(changes, "effect id", previous.id, current.id);
+    pushEffectValueChange(changes, "effect name", previous.name, current.name);
+    pushEffectValueChange(changes, "effect state", previous.stateNo, current.stateNo);
+    pushEffectValueChange(changes, "effect remove", previous.removeTime, current.removeTime);
+    pushEffectValueChange(changes, "effect sprPriority", previous.spritePriority, current.spritePriority);
+    return changes;
+  }
+
+  if (current.kind === "projectile" && previous.kind === "projectile") {
+    pushEffectValueChange(changes, "effect id", previous.id, current.id);
+    pushEffectValueChange(changes, "effect remove", previous.removeTime, current.removeTime);
+    pushEffectValueChange(changes, "effect sprPriority", previous.spritePriority, current.spritePriority);
+    pushEffectValueChange(changes, "effect priority", previous.priority, current.priority);
+    pushEffectValueChange(changes, "effect hits", previous.hitsRemaining, current.hitsRemaining);
+    pushEffectValueChange(changes, "effect miss", previous.missTimeRemaining, current.missTimeRemaining);
+    pushEffectValueChange(changes, "effect damage", previous.damage, current.damage);
+    pushEffectValueChange(changes, "effect hitPause", previous.hitPause, current.hitPause);
+    pushEffectValueChange(changes, "effect hitStun", previous.hitStun, current.hitStun);
+    pushEffectValueChange(changes, "effect guardDamage", previous.guardDamage, current.guardDamage);
+    pushEffectValueChange(changes, "effect guardPause", previous.guardPause, current.guardPause);
+    pushEffectValueChange(changes, "effect guardStun", previous.guardStun, current.guardStun);
+    pushEffectValueChange(changes, "effect guardDistance", previous.guardDistance, current.guardDistance);
+    pushEffectValueChange(changes, "effect guardFlag", previous.guardFlag, current.guardFlag);
+    pushEffectValueChange(changes, "effect removeOnHit", previous.removeOnHit, current.removeOnHit);
+    pushEffectValueChange(changes, "effect hasHit", previous.hasHit, current.hasHit);
+    pushEffectValueChange(changes, "effect removal", previous.removalReason, current.removalReason);
+    pushEffectValueChange(changes, "effect terminal", previous.terminalReason, current.terminalReason);
+    pushEffectValueChange(changes, "effect terminalAge", previous.terminalAge, current.terminalAge);
+    pushEffectValueChange(changes, "effect terminalDuration", previous.terminalDuration, current.terminalDuration);
+    pushEffectValueChange(changes, "effect hitAnim", previous.hitAnimNo, current.hitAnimNo);
+    pushEffectValueChange(changes, "effect removeAnim", previous.removeAnimNo, current.removeAnimNo);
+    pushEffectValueChange(changes, "effect cancelAnim", previous.cancelAnimNo, current.cancelAnimNo);
+  }
+  return changes;
+}
+
+function pushEffectValueChange(
+  changes: string[],
+  label: string,
+  previous: string | number | boolean | undefined,
+  current: string | number | boolean | undefined,
+): void {
+  if (previous !== current) {
+    changes.push(`${label} ${formatEffectValue(previous)}->${formatEffectValue(current)}`);
+  }
+}
+
+function formatEffectValue(value: string | number | boolean | undefined): string {
+  return value === undefined ? "none" : String(value);
+}
+
+function sameOptionalPoint(left: { x: number; y: number } | undefined, right: { x: number; y: number } | undefined): boolean {
+  if (!left || !right) {
+    return left === right;
+  }
+  return left.x === right.x && left.y === right.y;
+}
+
+function formatOptionalPoint(point: { x: number; y: number } | undefined): string {
+  return point ? formatPoint(point) : "none";
 }
 
 function summarizeWorldDelta(
@@ -409,6 +516,7 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     ...actor,
     pos: { ...actor.pos },
     vel: { ...actor.vel },
+    effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     hitFall: actor.hitFall
       ? {
           ...actor.hitFall,
@@ -417,6 +525,17 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
         }
       : undefined,
   };
+}
+
+function cloneTraceEffect(effect: RuntimeTraceArtifactEffect): RuntimeTraceArtifactEffect {
+  if (effect.kind === "explod") {
+    return {
+      ...effect,
+      scale: { ...effect.scale },
+      bindOffset: effect.bindOffset ? { ...effect.bindOffset } : undefined,
+    };
+  }
+  return { ...effect };
 }
 
 function cloneTraceGateFinalActor(
