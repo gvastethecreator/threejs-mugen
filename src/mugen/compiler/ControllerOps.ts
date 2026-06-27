@@ -216,11 +216,21 @@ export type OrientationControllerOp = {
   controllerType: "turn";
 };
 
-export type SpriteEffectControllerOp = {
-  kind: "sprite-effect";
-  controllerType: "sprpriority";
-  priority: number;
-};
+export type SpriteEffectControllerOp =
+  | {
+      kind: "sprite-effect";
+      controllerType: "sprpriority";
+      priority: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "palfx";
+      time: number;
+      add: [number, number, number];
+      mul: [number, number, number];
+      color: number;
+      invert: boolean;
+    };
 
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
@@ -332,6 +342,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "sprpriority") {
     return compileSprPriorityControllerOp(controller);
+  }
+  if (type === "palfx") {
+    return compilePalFxControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -497,6 +510,33 @@ function compileSprPriorityControllerOp(controller: MugenStateController): Sprit
     kind: "sprite-effect",
     controllerType: "sprpriority",
     priority: clampSpritePriority(priority),
+  };
+}
+
+function compilePalFxControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const time = firstNumber(findParam(controller, "time"));
+  const add = strictNumberTripletOrDefault(findParam(controller, "add"), [0, 0, 0], -255, 255);
+  const mul = strictNumberTripletOrDefault(findParam(controller, "mul"), [256, 256, 256], 0, 512);
+  const color = firstNumber(findParam(controller, "color"));
+  const invertRaw = findParam(controller, "invertall") ?? findParam(controller, "invert");
+  const invert = booleanNumber(invertRaw);
+  if (
+    time === undefined ||
+    add === undefined ||
+    mul === undefined ||
+    (findParam(controller, "color") !== undefined && color === undefined) ||
+    (invertRaw !== undefined && invert === undefined)
+  ) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "palfx",
+    time: clampPaletteFxTime(time),
+    add,
+    mul,
+    color: clampPaletteFxColor(color ?? 256),
+    invert: invert ?? false,
   };
 }
 
@@ -1005,6 +1045,22 @@ function strictNumberPair(value: string | undefined): [number, number?] | undefi
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
 }
 
+function strictNumberTripletOrDefault(
+  value: string | undefined,
+  fallback: [number, number, number],
+  min: number,
+  max: number,
+): [number, number, number] | undefined {
+  if (value === undefined) {
+    return fallback;
+  }
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (values.length < 3 || values.some((item) => !Number.isFinite(item))) {
+    return undefined;
+  }
+  return [clampNumber(values[0]!, min, max), clampNumber(values[1]!, min, max), clampNumber(values[2]!, min, max)];
+}
+
 function pairWithDefault(value: [number, number?] | undefined): [number, number] {
   return [value?.[0] ?? 0, value?.[1] ?? 0];
 }
@@ -1058,6 +1114,18 @@ function clampStaticBodyWidth(value: number): number {
 
 function clampSpritePriority(value: number): number {
   return Math.max(-5, Math.min(10, Math.round(value)));
+}
+
+function clampPaletteFxTime(value: number): number {
+  return Math.max(0, Math.min(600, Math.round(value)));
+}
+
+function clampPaletteFxColor(value: number): number {
+  return Math.max(0, Math.min(256, Math.round(value)));
+}
+
+function clampNumber(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }
 
 function controllerDuration(value: number): number {

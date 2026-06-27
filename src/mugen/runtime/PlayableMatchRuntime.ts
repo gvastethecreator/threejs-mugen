@@ -994,7 +994,14 @@ function runActiveStateControllers(
         applySprPriorityController(fighter, rawController, operation);
       } else if (dispatch.effect === "palfx") {
         recordControllerExecution(fighter, rawController);
-        applyPalFxController(fighter, rawController);
+        const operation =
+          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "palfx"
+            ? controller.operation
+            : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applyPalFxController(fighter, rawController, operation);
       } else if (dispatch.effect === "afterimage") {
         recordControllerExecution(fighter, rawController);
         applyAfterImageController(fighter, rawController);
@@ -1057,8 +1064,12 @@ function applySprPriorityController(
   applyRuntimeSpritePriorityController(fighter.runtime, controller, operation);
 }
 
-function applyPalFxController(fighter: FighterMatchState, controller: MugenStateController): void {
-  applyRuntimePaletteFxController(fighter.runtime, controller);
+function applyPalFxController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
+): void {
+  applyRuntimePaletteFxController(fighter.runtime, controller, operation);
 }
 
 function tickHitBySlots(state: CharacterRuntimeState): void {

@@ -297,6 +297,40 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static PalFX controllers into typed sprite-effect operations", () => {
+    const value = compileControllerIr(
+      controller(200, "PalFX", [], {
+        time: "18",
+        add: "80,-10,300",
+        mul: "256,160,160",
+        color: "999",
+        invertall: "1",
+      }),
+    );
+    const clear = compileControllerIr(controller(200, "PalFX", [], { time: "0" }));
+    const dynamic = compileControllerIr(controller(200, "PalFX", [], { time: "18", add: "Const(data.life),0,0" }));
+
+    expect(value.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 18,
+      add: [80, -10, 255],
+      mul: [256, 160, 160],
+      color: 256,
+      invert: true,
+    });
+    expect(clear.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 0,
+      add: [0, 0, 0],
+      mul: [256, 256, 256],
+      color: 256,
+      invert: false,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

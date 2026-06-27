@@ -852,6 +852,66 @@ export function createSyntheticImportedSprPriorityTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedPalFxTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-palfx",
+    displayName: "Synthetic Imported PalFX",
+    withPalFx: {
+      time: 18,
+      add: [80, -10, 300],
+      mul: [256, 160, 160],
+      color: 999,
+      invert: true,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-palfx-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-palfx-golden",
+      label: "Synthetic imported PalFX route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported PalFX trace proves static PalFX lowers into typed sprite-effect operation evidence and reaches bounded material telemetry. It does not claim exact MUGEN/IKEMEN palette math, blending, remap, sinadd, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-palfx-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "PalFX", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:palfx", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            paletteFxTime: 18,
+            paletteFxAddR: 80,
+            paletteFxAddG: -10,
+            paletteFxAddB: 255,
+            paletteFxMulG: 160,
+            paletteFxColor: 256,
+            paletteFxInvert: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4442,6 +4502,13 @@ export type SyntheticImportedTraceFighterOptions = {
   withPlayerPush?: boolean;
   withTurn?: boolean;
   withSprPriority?: number;
+  withPalFx?: {
+    time: number;
+    add?: [number, number, number];
+    mul?: [number, number, number];
+    color?: number;
+    invert?: boolean;
+  };
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4570,6 +4637,7 @@ ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSe
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
+${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -5007,6 +5075,19 @@ function sprPriorityControllerBlock(priority: number): string {
 type = SprPriority
 trigger1 = Time >= 0
 value = ${priority}
+`;
+}
+
+function palFxControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withPalFx"]>): string {
+  return `
+[State 200, PalFX Probe]
+type = PalFX
+trigger1 = Time >= 0
+time = ${options.time}
+add = ${(options.add ?? [0, 0, 0]).join(",")}
+mul = ${(options.mul ?? [256, 256, 256]).join(",")}
+color = ${options.color ?? 256}
+invertall = ${options.invert ? 1 : 0}
 `;
 }
 

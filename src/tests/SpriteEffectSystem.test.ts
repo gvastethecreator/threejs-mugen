@@ -53,6 +53,24 @@ describe("SpriteEffectSystem", () => {
     expect(state.paletteFx?.remaining).toBe(1);
     tickRuntimePaletteFx(state);
     expect(state.paletteFx).toBeUndefined();
+
+    applyRuntimePaletteFxController(state, controller("PalFX", { time: "1" }), {
+      kind: "sprite-effect",
+      controllerType: "palfx",
+      time: 4,
+      add: [10, 20, 30],
+      mul: [256, 200, 180],
+      color: 128,
+      invert: true,
+    });
+    expect(state.paletteFx).toMatchObject({
+      remaining: 4,
+      time: 4,
+      add: [10, 20, 30],
+      mul: [256, 200, 180],
+      color: 128,
+      invert: true,
+    });
   });
 
   it("clears PalFX when the controller time is zero", () => {

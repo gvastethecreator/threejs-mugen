@@ -17,8 +17,12 @@ export function applyRuntimeSpritePriorityController(
   state.spritePriority = Math.max(-5, Math.min(10, Math.round(priority)));
 }
 
-export function applyRuntimePaletteFxController(state: CharacterRuntimeState, controller: MugenStateController): void {
-  const time = clampFxTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
+export function applyRuntimePaletteFxController(
+  state: CharacterRuntimeState,
+  controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
+): void {
+  const time = operation?.time ?? clampFxTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
   if (time <= 0) {
     state.paletteFx = undefined;
     return;
@@ -26,10 +30,11 @@ export function applyRuntimePaletteFxController(state: CharacterRuntimeState, co
   state.paletteFx = {
     remaining: time,
     time,
-    add: colorTriplet(findControllerParam(controller, "add"), [0, 0, 0], -255, 255),
-    mul: colorTriplet(findControllerParam(controller, "mul"), [256, 256, 256], 0, 512),
-    color: clampColorLevel(firstNumber(findControllerParam(controller, "color")) ?? 256),
+    add: operation?.add ?? colorTriplet(findControllerParam(controller, "add"), [0, 0, 0], -255, 255),
+    mul: operation?.mul ?? colorTriplet(findControllerParam(controller, "mul"), [256, 256, 256], 0, 512),
+    color: operation?.color ?? clampColorLevel(firstNumber(findControllerParam(controller, "color")) ?? 256),
     invert:
+      operation?.invert ??
       (firstNumber(findControllerParam(controller, "invertall")) ??
         firstNumber(findControllerParam(controller, "invert"))) === 1,
   };

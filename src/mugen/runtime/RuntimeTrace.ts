@@ -53,6 +53,13 @@ export type RuntimeTraceActor = {
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
   spritePriority?: number;
+  paletteFx?: {
+    time: number;
+    add: [number, number, number];
+    mul: [number, number, number];
+    color: number;
+    invert: boolean;
+  };
   posFreeze?: { x: boolean; y: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   facing: 1 | -1;
@@ -436,6 +443,15 @@ export type RuntimeTraceActorFrameRequirement = {
   bodyWidthBack?: number;
   playerPush?: boolean;
   spritePriority?: number;
+  paletteFxTime?: number;
+  paletteFxAddR?: number;
+  paletteFxAddG?: number;
+  paletteFxAddB?: number;
+  paletteFxMulR?: number;
+  paletteFxMulG?: number;
+  paletteFxMulB?: number;
+  paletteFxColor?: number;
+  paletteFxInvert?: boolean;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -467,6 +483,15 @@ export type RuntimeTraceGateActorFrameEvidence = {
   bodyWidthBack?: number;
   playerPush?: boolean;
   spritePriority?: number;
+  paletteFxTime?: number;
+  paletteFxAddR?: number;
+  paletteFxAddG?: number;
+  paletteFxAddB?: number;
+  paletteFxMulR?: number;
+  paletteFxMulG?: number;
+  paletteFxMulB?: number;
+  paletteFxColor?: number;
+  paletteFxInvert?: boolean;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -1056,6 +1081,15 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
               spritePriority: actor.spritePriority,
+              paletteFxTime: actor.paletteFx?.time,
+              paletteFxAddR: actor.paletteFx?.add[0],
+              paletteFxAddG: actor.paletteFx?.add[1],
+              paletteFxAddB: actor.paletteFx?.add[2],
+              paletteFxMulR: actor.paletteFx?.mul[0],
+              paletteFxMulG: actor.paletteFx?.mul[1],
+              paletteFxMulB: actor.paletteFx?.mul[2],
+              paletteFxColor: actor.paletteFx?.color,
+              paletteFxInvert: actor.paletteFx?.invert,
               posFreezeX: actor.posFreeze?.x,
               posFreezeY: actor.posFreeze?.y,
               screenBound: actor.screenBound?.bound,
@@ -1759,6 +1793,9 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.bodyWidth?.back === undefined ? "wb*" : `wb${actor.bodyWidth.back}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
+    actor.paletteFx === undefined
+      ? "pf*"
+      : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
     actor.posFreeze?.x === undefined ? "pfx*" : `pfx${actor.posFreeze.x ? 1 : 0}`,
     actor.posFreeze?.y === undefined ? "pfy*" : `pfy${actor.posFreeze.y ? 1 : 0}`,
     actor.screenBound?.bound === undefined ? "sb*" : `sb${actor.screenBound.bound ? 1 : 0}`,
@@ -1785,6 +1822,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
+    actor.paletteFxTime === undefined
+      ? "pf*"
+      : `pf${actor.paletteFxTime}:${actor.paletteFxAddR},${actor.paletteFxAddG},${actor.paletteFxAddB}:${actor.paletteFxMulR},${actor.paletteFxMulG},${actor.paletteFxMulB}:${actor.paletteFxColor}:${actor.paletteFxInvert ? 1 : 0}`,
     actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
     actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
     actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
@@ -1827,6 +1867,15 @@ function matchesActorFrameRequirement(
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&
     (requirement.spritePriority === undefined || actor.spritePriority === requirement.spritePriority) &&
+    (requirement.paletteFxTime === undefined || actor.paletteFxTime === requirement.paletteFxTime) &&
+    (requirement.paletteFxAddR === undefined || actor.paletteFxAddR === requirement.paletteFxAddR) &&
+    (requirement.paletteFxAddG === undefined || actor.paletteFxAddG === requirement.paletteFxAddG) &&
+    (requirement.paletteFxAddB === undefined || actor.paletteFxAddB === requirement.paletteFxAddB) &&
+    (requirement.paletteFxMulR === undefined || actor.paletteFxMulR === requirement.paletteFxMulR) &&
+    (requirement.paletteFxMulG === undefined || actor.paletteFxMulG === requirement.paletteFxMulG) &&
+    (requirement.paletteFxMulB === undefined || actor.paletteFxMulB === requirement.paletteFxMulB) &&
+    (requirement.paletteFxColor === undefined || actor.paletteFxColor === requirement.paletteFxColor) &&
+    (requirement.paletteFxInvert === undefined || actor.paletteFxInvert === requirement.paletteFxInvert) &&
     (requirement.posFreezeX === undefined || actor.posFreezeX === requirement.posFreezeX) &&
     (requirement.posFreezeY === undefined || actor.posFreezeY === requirement.posFreezeY) &&
     (requirement.screenBound === undefined || actor.screenBound === requirement.screenBound) &&
@@ -2096,6 +2145,15 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       : undefined,
     playerPush: actor.runtime.playerPush,
     spritePriority: actor.runtime.spritePriority,
+    paletteFx: actor.runtime.paletteFx
+      ? {
+          time: actor.runtime.paletteFx.time,
+          add: [...actor.runtime.paletteFx.add],
+          mul: [...actor.runtime.paletteFx.mul],
+          color: actor.runtime.paletteFx.color,
+          invert: actor.runtime.paletteFx.invert,
+        }
+      : undefined,
     posFreeze: actor.runtime.posFreeze ? { ...actor.runtime.posFreeze } : undefined,
     screenBound: actor.runtime.screenBound ? { ...actor.runtime.screenBound } : undefined,
     facing: actor.runtime.facing,
@@ -2117,7 +2175,16 @@ function summarizeActorForChecksum(
   actor: RuntimeTraceActor,
 ): Omit<
   RuntimeTraceActor,
-  "animTime" | "hitPause" | "targetCount" | "effect" | "bodyWidth" | "playerPush" | "spritePriority" | "posFreeze" | "screenBound"
+  | "animTime"
+  | "hitPause"
+  | "targetCount"
+  | "effect"
+  | "bodyWidth"
+  | "playerPush"
+  | "spritePriority"
+  | "paletteFx"
+  | "posFreeze"
+  | "screenBound"
 > {
   const {
     animTime: _animTime,
@@ -2127,6 +2194,7 @@ function summarizeActorForChecksum(
     bodyWidth: _bodyWidth,
     playerPush: _playerPush,
     spritePriority: _spritePriority,
+    paletteFx: _paletteFx,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     ...checksumActor

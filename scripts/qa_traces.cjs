@@ -111,6 +111,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSprPriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-palfx",
+      required: true,
+      artifact: presets.createSyntheticImportedPalFxTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -875,6 +880,7 @@ function validateTraceCoverage(coverage) {
     "metadata:statetypeset",
     "orientation:turn",
     "sprite-effect:sprpriority",
+    "sprite-effect:palfx",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -914,6 +920,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-playerpush",
     "synthetic-imported-turn",
     "synthetic-imported-sprpriority",
+    "synthetic-imported-palfx",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

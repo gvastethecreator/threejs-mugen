@@ -51,11 +51,12 @@ Every controller family should have:
 | `PlayerPush` | compiled, executed-partial | unit tests, `synthetic-imported-playerpush.json` | Static `value` lowers into typed `collision:playerpush` operation evidence and updates the bounded current-tick body-push flag. Dynamic params, exact overlap resolution, team/helper push rules, and tick-order parity remain future work. |
 | `Turn` | compiled, executed-partial | unit tests, `synthetic-imported-turn.json` | Static `Turn` lowers into typed `orientation:turn` operation evidence and flips the bounded current runtime facing. Exact auto-facing, tick order, team/helper/target-facing parity, and broader orientation semantics remain future work. |
 | `SprPriority` | compiled, executed-partial | unit tests, `synthetic-imported-sprpriority.json` | Static `value` / `priority` params lower into typed `sprite-effect:sprpriority` operation evidence and update bounded renderer ordering telemetry. Exact layer/shadow/helper/Explod draw-order parity remains future work. |
+| `PalFX` | compiled, executed-partial | unit tests, `synthetic-imported-palfx.json` | Static `time` / `add` / `mul` / `color` / `invert` params lower into typed `sprite-effect:palfx` operation evidence and update bounded material telemetry. Dynamic params, `sinadd`, palette remap interaction, exact blending, and engine-perfect color math remain future work. |
 | `CtrlSet` | compiled, executed-partial | unit tests/runtime traces | Runtime control flag only; static numeric values lower into typed `resource:ctrlset` evidence. |
 | `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet` | executed-partial | unit tests/runtime traces | Basic arithmetic; negative `LifeAdd` respects bounded `kill = 0` and defender-side `NoKO` clamps. Scaling, redirects, round-flow, and edge rules remain partial. |
 | `VarSet`, `VarAdd`, `VarRangeSet` | executed-partial | unit tests/runtime traces | Numeric vars/fvars are partial; typed/raw `VarSet` and `VarAdd` support `sysvar(n)` for bounded Common1 system-variable branches such as air guard landing. `VarRangeSet` stays limited to vars/fvars. |
 | `PlaySnd`, `StopSnd` | executed-partial | runtime events | Emits sound events; Web Audio/SND parity partial. |
-| `PalFX`, `RemapPal`, `AfterImage`, `AfterImageTime` | executed-partial | runtime/session evidence | Rendering/effect parity partial. |
+| `RemapPal`, `AfterImage`, `AfterImageTime` | executed-partial | runtime/session evidence | Rendering/effect parity partial. |
 | `EnvShake` | executed-partial | runtime events | Presentation parity partial. |
 | `ForceFeedback`, `Null` | noop | compatibility reports | Accepted no-op; must be visible as such. |
 
