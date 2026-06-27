@@ -280,7 +280,10 @@ class ExpressionParser {
     if (lower === "p2movetype") {
       return this.context.opponent?.moveType ?? "I";
     }
-    if (lower === "prevstateno" || lower === "roundno") {
+    if (lower === "prevstateno") {
+      return this.context.self.prevStateNo ?? 0;
+    }
+    if (lower === "roundno") {
       return 1;
     }
     if (lower === "roundstate") {

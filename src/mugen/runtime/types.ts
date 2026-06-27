@@ -52,6 +52,7 @@ export type CharacterRuntimeState = {
   animationSource?: "self" | "state-owner";
   customState?: RuntimeCustomState;
   assertSpecial?: RuntimeAssertSpecial;
+  prevStateNo?: number;
   stateNo: number;
   animNo: number;
   animTime: number;

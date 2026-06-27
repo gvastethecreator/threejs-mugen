@@ -14,6 +14,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("animelem = 1", { self: state })).toBe(1);
     expect(evaluateExpression("!ctrl", { self: state })).toBe(0);
     expect(evaluateExpression("3 + 4 * 2", { self: state })).toBe(11);
+    expect(evaluateExpression("PrevStateNo = 100", { self: runtimeState({ prevStateNo: 100 }) })).toBe(1);
+    expect(evaluateExpression("PrevStateNo = 100", { self: runtimeState() })).toBe(0);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);
     expect(evaluateExpression("sysvar(0)", { self: runtimeState({ sysvars: [1] }) })).toBe(1);
     expect(evaluateExpression("power >= 1000", { self: runtimeState({ power: 0 }) })).toBe(0);
@@ -165,6 +167,7 @@ describe("StateControllerExecutor", () => {
     expect(state.vel).toEqual({ x: 3, y: -1.5 });
     expect(state.pos).toEqual({ x: 4, y: 0 });
     expect(state.stateNo).toBe(210);
+    expect(state.prevStateNo).toBe(0);
     expect(state.ctrl).toBe(false);
     expect(unsupported).toEqual([]);
   });

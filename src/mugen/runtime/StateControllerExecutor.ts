@@ -49,6 +49,9 @@ export function executeControllerIr(
       reportUnsupported(`${controller.type}:missing-value`);
       return next;
     }
+    if (next.stateNo !== value) {
+      next.prevStateNo = next.stateNo;
+    }
     next.stateNo = value;
     next.animTime = 0;
     next.frameIndex = 0;

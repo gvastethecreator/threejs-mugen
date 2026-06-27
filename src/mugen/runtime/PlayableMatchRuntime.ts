@@ -588,6 +588,18 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
   });
 }
 
+function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
+  if (fighter.runtime.stateNo !== stateNo) {
+    fighter.runtime.prevStateNo = fighter.runtime.stateNo;
+    fighter.runtime.stateNo = stateNo;
+    if (options.resetElapsed) {
+      fighter.stateElapsed = -1;
+    }
+    return;
+  }
+  fighter.runtime.stateNo = stateNo;
+}
+
 function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState): void {
   if (fighter.hitStun > 0 || (fighter.runtime.guardStun ?? 0) > 0 || fighter.currentMove) {
     return;
@@ -611,7 +623,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
   }
   if (hasRuntimeDirection(input, "D") && fighter.runtime.stateType !== "A") {
     changeAction(fighter, fighter.definition.crouchAction);
-    fighter.runtime.stateNo = fighter.definition.crouchAction;
+    setRuntimeStateNo(fighter, fighter.definition.crouchAction);
     fighter.runtime.stateType = "C";
     fighter.runtime.physics = "C";
     fighter.runtime.vel.x = 0;
@@ -622,7 +634,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     fighter.runtime.stateType = "A";
     fighter.runtime.physics = "A";
     changeAction(fighter, fighter.definition.jumpAction);
-    fighter.runtime.stateNo = fighter.definition.jumpAction;
+    setRuntimeStateNo(fighter, fighter.definition.jumpAction);
     return;
   }
 
@@ -636,14 +648,14 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     fighter.runtime.stateType = "S";
     fighter.runtime.physics = "S";
     changeAction(fighter, fighter.definition.walkAction);
-    fighter.runtime.stateNo = fighter.definition.walkAction;
+    setRuntimeStateNo(fighter, fighter.definition.walkAction);
   } else {
     fighter.runtime.vel.x = 0;
     if (fighter.runtime.stateType !== "A") {
       fighter.runtime.stateType = "S";
       fighter.runtime.physics = "S";
       changeAction(fighter, fighter.definition.idleAction);
-      fighter.runtime.stateNo = fighter.definition.idleAction;
+      setRuntimeStateNo(fighter, fighter.definition.idleAction);
       fighter.runtime.ctrl = true;
     }
   }
@@ -661,7 +673,7 @@ function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState,
   if (distance > 110 && !fighter.runtime.assertSpecial?.noWalk) {
     fighter.runtime.vel.x = fighter.runtime.facing * fighter.definition.speed * 0.65;
     changeAction(fighter, fighter.definition.walkAction);
-    fighter.runtime.stateNo = fighter.definition.walkAction;
+    setRuntimeStateNo(fighter, fighter.definition.walkAction);
   } else {
     fighter.runtime.vel.x = 0;
     if (fighter.aiCooldown === 0) {
@@ -669,7 +681,7 @@ function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState,
       fighter.aiCooldown = 70;
     } else {
       changeAction(fighter, fighter.definition.idleAction);
-      fighter.runtime.stateNo = fighter.definition.idleAction;
+      setRuntimeStateNo(fighter, fighter.definition.idleAction);
     }
   }
 }
@@ -726,7 +738,7 @@ function advanceFighter(
       if (!wasReversal) {
         fighter.runtime.moveType = "I";
         fighter.runtime.ctrl = true;
-        fighter.runtime.stateNo = fighter.definition.idleAction;
+        setRuntimeStateNo(fighter, fighter.definition.idleAction);
         changeAction(fighter, fighter.definition.idleAction);
       }
     }
@@ -853,8 +865,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
     fighter.stateOwner = undefined;
     fighter.runtime.customState = undefined;
   }
-  fighter.runtime.stateNo = stateId;
-  fighter.stateElapsed = -1;
+  setRuntimeStateNo(fighter, stateId, { resetElapsed: true });
   fighter.firedHitDefs.clear();
   resetContactState(fighter);
   if (state?.type) {

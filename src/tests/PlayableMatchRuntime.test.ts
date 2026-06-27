@@ -208,6 +208,23 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(261);
   });
 
+  it("tracks PrevStateNo for imported state trigger routing", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      withPrevStateBranch: { intermediateStateNo: 267, finalStateNo: 268 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(267);
+    expect(snapshot.actors[0]?.runtime.prevStateNo).toBe(200);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(268);
+    expect(snapshot.actors[0]?.runtime.prevStateNo).toBe(267);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 267, 268]));
+  });
+
   it("respects imported HitDef kill = 0 for direct hits", () => {
     const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 2000, hitDefKill: false });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
@@ -1637,6 +1654,7 @@ function createImportedFixture(
     hitDefAttrStateNo?: number;
     projHitStateNo?: number;
     projGuardStateNo?: number;
+    withPrevStateBranch?: { intermediateStateNo: number; finalStateNo: number };
   } = {},
 ): DemoFighterDefinition {
   const withStateMove = options.withStateMove ?? true;
@@ -2225,6 +2243,38 @@ value = ${options.projGuardStateNo}
 ctrl = 0
 `,
   ].join("");
+  const prevStateEntry = options.withPrevStateBranch
+    ? `
+[State 200, PrevState Entry]
+type = ChangeState
+trigger1 = Time = 0
+value = ${options.withPrevStateBranch.intermediateStateNo}
+ctrl = 0
+`
+    : "";
+  const prevStateBranchStates = options.withPrevStateBranch
+    ? `
+[Statedef ${options.withPrevStateBranch.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevStateBranch.intermediateStateNo}
+ctrl = 0
+
+[State ${options.withPrevStateBranch.intermediateStateNo}, PrevState Branch]
+type = ChangeState
+trigger1 = PrevStateNo = 200
+value = ${options.withPrevStateBranch.finalStateNo}
+ctrl = 1
+
+[Statedef ${options.withPrevStateBranch.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevStateBranch.finalStateNo}
+ctrl = 1
+`
+    : "";
   const changeStateDef = options.withChangeState
     ? `
 [Statedef ${options.withChangeState.stateNo}]
@@ -2304,6 +2354,7 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+${prevStateEntry}
 [State 200, Runtime HitDef]
 type = HitDef
 trigger1 = Time = 0
@@ -2360,6 +2411,7 @@ ctrl = 0
 ` : ""}
 
 ${changeStateDef}
+${prevStateBranchStates}
 
 ${options.hitDefP1StateNo !== undefined ? `
 [Statedef ${options.hitDefP1StateNo}]
@@ -2490,6 +2542,10 @@ ctrl = 0
   }
   if (options.defaultGetHitStateNo !== undefined) {
     animations.set(options.defaultGetHitStateNo, fixtureAction(options.defaultGetHitStateNo));
+  }
+  if (options.withPrevStateBranch) {
+    animations.set(options.withPrevStateBranch.intermediateStateNo, fixtureAction(options.withPrevStateBranch.intermediateStateNo));
+    animations.set(options.withPrevStateBranch.finalStateNo, fixtureAction(options.withPrevStateBranch.finalStateNo));
   }
 
   return {

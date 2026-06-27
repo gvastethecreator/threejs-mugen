@@ -41,6 +41,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefAttrTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-prevstateno",
+      required: true,
+      artifact: presets.createSyntheticImportedPrevStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),

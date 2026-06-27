@@ -136,6 +136,26 @@ export function createSyntheticImportedHitDefAttrTraceArtifact(options: RuntimeT
   );
 }
 
+export function createSyntheticImportedPrevStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-prevstateno",
+      displayName: "Synthetic Imported PrevStateNo",
+      prevStateRoute: { intermediateStateNo: 267, finalStateNo: 268 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-prevstateno-golden",
+      targetLabel: "Synthetic imported PrevStateNo route",
+      script: importedOneShotXScript(),
+      requiredExecutedStates: [200, 267, 268],
+      notes: [
+        "Synthetic imported PrevStateNo trace proves the runtime records previous state number across ChangeState and can branch from an intermediate state using PrevStateNo = 200. Exact MUGEN/IKEMEN tick-order parity and every state-owner edge case remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -337,10 +357,11 @@ export function createImportedXTraceArtifact(
     notes?: string[];
     requireHitEvent?: boolean;
     requiredExecutedStates?: number[];
+    script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = importedXScript();
+  const script = options.script ?? importedXScript();
   const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
     label: `${imported.id}-x-golden`,
   });
@@ -4287,6 +4308,13 @@ export function importedXScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+function importedOneShotXScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-x-press", frames: 1, p1: ["x"], p2: [] },
+    { label: "prevstateno-route", frames: 10, p1: [], p2: [] },
+  ]);
+}
+
 export function importedHitDefPriorityScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-hitdef-priority-x", frames: 8, p1: ["x"], p2: ["x"] },
@@ -4679,6 +4707,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
   numHelperStateNo?: number;
+  prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -4866,6 +4895,7 @@ ${guardLine}
 ${guardDistanceLine}
 ${fallLine}
 ${customStateLine || getHitStateLine}
+${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(77, options.targetStateRoute.startStateNo) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
@@ -4900,6 +4930,7 @@ ${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(90
 ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
+${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -4980,6 +5011,12 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.prevStateRoute === undefined
+        ? []
+        : ([
+            [options.prevStateRoute.intermediateStateNo, traceAction(options.prevStateRoute.intermediateStateNo)],
+            [options.prevStateRoute.finalStateNo, traceAction(options.prevStateRoute.finalStateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6250,6 +6287,40 @@ type = ChangeState
 trigger1 = ${trigger}
 value = ${stateNo}
 ctrl = 0
+`;
+}
+
+function prevStateEntryBlock(stateNo: number): string {
+  return `
+[State 200, PrevState Entry]
+type = ChangeState
+trigger1 = Time = 2
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function prevStateRouteBlock(route: { intermediateStateNo: number; finalStateNo: number }): string {
+  return `
+[Statedef ${route.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.intermediateStateNo}
+ctrl = 0
+
+[State ${route.intermediateStateNo}, PrevState Branch]
+type = ChangeState
+trigger1 = PrevStateNo = 200
+value = ${route.finalStateNo}
+ctrl = 1
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.finalStateNo}
+ctrl = 1
 `;
 }
 

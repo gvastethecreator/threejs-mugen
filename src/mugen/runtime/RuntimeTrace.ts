@@ -37,6 +37,7 @@ export type RuntimeTraceActor = {
   rootId: string;
   parentId: string;
   source?: ActorSnapshot["source"];
+  prevStateNo?: number;
   stateNo: number;
   animNo: number;
   animTime: number;
@@ -2179,6 +2180,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     rootId: actor.rootId,
     parentId: actor.parentId,
     source: actor.source,
+    prevStateNo: actor.runtime.prevStateNo,
     stateNo: actor.runtime.stateNo,
     animNo: actor.runtime.animNo,
     animTime: roundTraceNumber(actor.runtime.animTime),
@@ -2261,6 +2263,7 @@ function summarizeActorForChecksum(
 ): Omit<
   RuntimeTraceActor,
   | "animTime"
+  | "prevStateNo"
   | "hitPause"
   | "targetCount"
   | "effect"
@@ -2275,6 +2278,7 @@ function summarizeActorForChecksum(
 > {
   const {
     animTime: _animTime,
+    prevStateNo: _prevStateNo,
     hitPause: _hitPause,
     targetCount: _targetCount,
     effect: _effect,
