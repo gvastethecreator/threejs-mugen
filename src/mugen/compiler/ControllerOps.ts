@@ -42,7 +42,7 @@ export type HitDefFallOp = {
 };
 
 export type TargetControllerOp =
-  | { kind: "target"; controllerType: "targetdrop"; requestedId?: number; keepOne: boolean }
+  | { kind: "target"; controllerType: "targetdrop"; excludeId?: number; keepOne: boolean }
   | { kind: "target"; controllerType: "targetlifeadd"; requestedId?: number; value: number; absolute: boolean; kill: boolean }
   | { kind: "target"; controllerType: "targetpoweradd"; requestedId?: number; value: number }
   | { kind: "target"; controllerType: "targetfacing"; requestedId?: number; value: number }
@@ -542,7 +542,8 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
   const type = controller.type.toLowerCase();
   const requestedId = firstNumber(findParam(controller, "id"));
   if (type === "targetdrop") {
-    return { kind: "target", controllerType: "targetdrop", requestedId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 1) !== 0 };
+    const excludeId = firstNumber(findParam(controller, "excludeid") ?? findParam(controller, "id"));
+    return { kind: "target", controllerType: "targetdrop", excludeId, keepOne: (firstNumber(findParam(controller, "keepone")) ?? 0) !== 0 };
   }
   if (type === "targetlifeadd") {
     return {

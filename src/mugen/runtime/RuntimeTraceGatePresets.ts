@@ -3787,7 +3787,7 @@ ${guardDistanceLine}
 ${fallLine}
 ${getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
-${options.withTargetDrop ? targetDropBlock(77) : ""}
+${options.withTargetDrop ? targetDropBlock() : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
@@ -4821,12 +4821,12 @@ ctrl = 1
 `;
 }
 
-function targetDropBlock(targetId: number): string {
+function targetDropBlock(): string {
   return `
 [State 200, Target Drop]
 type = TargetDrop
 trigger1 = Time = 3
-id = ${targetId}
+excludeID = -1
 keepone = 0
 `;
 }

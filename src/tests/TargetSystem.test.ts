@@ -65,27 +65,40 @@ describe("TargetSystem", () => {
     expect(next.bindings).toEqual([infiniteBinding]);
   });
 
-  it("drops matching target ids and preserves current bounded keep-one behavior", () => {
+  it("drops all targets except excludeID and preserves bounded keepone behavior", () => {
     const memory = {
       targets: [
         { actorId: "p2", targetId: 1, age: 0 },
-        { actorId: "helper", targetId: 2, age: 0 },
+        { actorId: "helper", targetId: 1, age: 0 },
         { actorId: "projectile", targetId: 3, age: 0 },
       ],
-      bindings: [binding({ actorId: "p2", targetId: 1 }), binding({ actorId: "helper", targetId: 2 })],
+      bindings: [binding({ actorId: "p2", targetId: 1 }), binding({ actorId: "helper", targetId: 1 }), binding({ actorId: "projectile", targetId: 3 })],
     };
 
     expect(dropRuntimeTargets(memory, 1, false)).toMatchObject({
       targets: [
-        { actorId: "helper", targetId: 2 },
-        { actorId: "projectile", targetId: 3 },
+        { actorId: "p2", targetId: 1 },
+        { actorId: "helper", targetId: 1 },
       ],
-      bindings: [{ actorId: "helper", targetId: 2 }],
+      bindings: [
+        { actorId: "p2", targetId: 1 },
+        { actorId: "helper", targetId: 1 },
+      ],
     });
 
     expect(dropRuntimeTargets(memory, 1, true)).toMatchObject({
-      targets: [{ actorId: "helper", targetId: 2 }],
-      bindings: [{ actorId: "helper", targetId: 2 }],
+      targets: [{ actorId: "p2", targetId: 1 }],
+      bindings: [{ actorId: "p2", targetId: 1 }],
+    });
+
+    expect(dropRuntimeTargets(memory, -1, false)).toEqual({
+      targets: [],
+      bindings: [],
+    });
+
+    expect(dropRuntimeTargets(memory, 99, false)).toEqual({
+      targets: [],
+      bindings: [],
     });
   });
 
@@ -210,8 +223,8 @@ describe("TargetSystem", () => {
     applyRuntimeTargetController({
       actor,
       candidateTargets: [target],
-      controller: controller("TargetDrop", { id: "77", keepone: "0" }),
-      operation: { kind: "target", controllerType: "targetdrop", requestedId: 77, keepOne: false },
+      controller: controller("TargetDrop", { excludeID: "88", keepone: "0" }),
+      operation: { kind: "target", controllerType: "targetdrop", excludeId: 88, keepOne: false },
     });
 
     expect(entered).toEqual([{ actorId: "p2", stateId: 5300 }]);

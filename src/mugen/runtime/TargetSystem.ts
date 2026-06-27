@@ -52,26 +52,33 @@ export type RuntimeTargetControllerResult = {
 export function applyRuntimeTargetController<TActor extends RuntimeTargetControllerActor>(
   options: RuntimeTargetControllerOptions<TActor>,
 ): RuntimeTargetControllerResult {
-  const requestedId = options.operation?.requestedId ?? firstNumber(findControllerParam(options.controller, "id"));
-  const targets = matchingRuntimeTargetActors(options.actor.targets, options.candidateTargets, requestedId);
   const type = options.operation?.controllerType ?? options.controller.type.toLowerCase();
+  if (type === "targetdrop") {
+    if (options.actor.targets.length === 0) {
+      return { controllerType: type, matchedTargets: 0, operationExecuted: false };
+    }
+    if (options.operation) {
+      options.onOperation?.(options.operation);
+    }
+    const operation = options.operation?.controllerType === "targetdrop" ? options.operation : undefined;
+    const excludeId = operation?.excludeId ?? firstNumber(findControllerParam(options.controller, "excludeid") ?? findControllerParam(options.controller, "id"));
+    const keepOne = operation?.keepOne ?? (firstNumber(findControllerParam(options.controller, "keepone")) ?? 0) !== 0;
+    const beforeCount = options.actor.targets.length;
+    const next = dropRuntimeTargets({ targets: options.actor.targets, bindings: options.actor.targetBindings }, excludeId, keepOne);
+    options.actor.targets = next.targets;
+    options.actor.targetBindings = next.bindings;
+    syncRuntimeTargetCount(options.actor);
+    return { controllerType: type, matchedTargets: beforeCount, operationExecuted: Boolean(options.operation) };
+  }
+
+  const targetOperation = options.operation?.controllerType === "targetdrop" ? undefined : options.operation;
+  const requestedId = targetOperation?.requestedId ?? firstNumber(findControllerParam(options.controller, "id"));
+  const targets = matchingRuntimeTargetActors(options.actor.targets, options.candidateTargets, requestedId);
   if (targets.length === 0) {
     return { controllerType: type, matchedTargets: 0, operationExecuted: false };
   }
   if (options.operation) {
     options.onOperation?.(options.operation);
-  }
-
-  if (type === "targetdrop") {
-    const keepOne =
-      options.operation?.controllerType === "targetdrop"
-        ? options.operation.keepOne
-        : (firstNumber(findControllerParam(options.controller, "keepone")) ?? 1) !== 0;
-    const next = dropRuntimeTargets({ targets: options.actor.targets, bindings: options.actor.targetBindings }, requestedId, keepOne);
-    options.actor.targets = next.targets;
-    options.actor.targetBindings = next.bindings;
-    syncRuntimeTargetCount(options.actor);
-    return { controllerType: type, matchedTargets: targets.length, operationExecuted: Boolean(options.operation) };
   }
 
   for (const target of targets) {
@@ -192,15 +199,20 @@ export function snapshotRuntimeTargetMemory(memory: RuntimeTargetMemory): Runtim
 
 export function dropRuntimeTargets(
   memory: RuntimeTargetMemory,
-  requestedId: number | undefined,
+  excludeId: number | undefined,
   keepOne: boolean,
 ): RuntimeTargetMemory {
+  const keptTargets = memory.targets.filter((target) => shouldKeepTargetAfterDrop(target, excludeId));
+  const boundedTargets = keepOne ? keptTargets.slice(0, 1) : keptTargets;
   return {
-    targets: keepOne
-      ? memory.targets.filter((target) => !matchesRuntimeTargetId(target, requestedId)).slice(0, 1)
-      : memory.targets.filter((target) => !matchesRuntimeTargetId(target, requestedId)),
-    bindings: memory.bindings.filter((binding) => !matchesRuntimeTargetId(binding, requestedId)),
+    targets: boundedTargets,
+    bindings: memory.bindings.filter((binding) => boundedTargets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)),
   };
+}
+
+function shouldKeepTargetAfterDrop(target: RuntimeTarget, excludeId: number | undefined): boolean {
+  const effectiveExcludeId = excludeId ?? -1;
+  return effectiveExcludeId >= 0 && target.targetId === effectiveExcludeId;
 }
 
 export function hasRuntimeTarget(

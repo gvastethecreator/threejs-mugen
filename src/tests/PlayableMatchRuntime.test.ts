@@ -1906,7 +1906,7 @@ value = 500
 [State 200, Target Drop]
 type = TargetDrop
 trigger1 = Time = 1
-id = ${hitDefTargetId}
+excludeID = -1
 keepone = 0
 `
     : "";
