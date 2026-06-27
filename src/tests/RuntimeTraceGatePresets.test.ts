@@ -31,6 +31,7 @@ import {
   createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact,
   createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact,
   createSyntheticImportedExplodScaleTraceArtifact,
+  createSyntheticImportedExplodIgnoreHitPauseTraceArtifact,
   createSyntheticImportedExplodPauseMoveTimeTraceArtifact,
   createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
   createSyntheticImportedExplodVelocityTraceArtifact,
@@ -1684,6 +1685,62 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({
           type: "Pause",
+          actorId: "p1-explod-1",
+          actorKind: "explod",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime", "pos"]),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Explod ignorehitpause artifact with hitpause freeze and advance evidence", () => {
+    const artifact = createSyntheticImportedExplodIgnoreHitPauseTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-ignorehitpause-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-ignorehitpause-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", { type: "Explod", minCount: 2 }]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", { operation: "explod", minCount: 2 }]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([
+      { type: "HitPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 3 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      {
+        type: "HitPause",
+        actorId: "p1-explod-1",
+        actorKind: "explod",
+        ownerId: "p1",
+        minAdvancedFrames: 3,
+        minPreviousMoveTime: 1,
+      },
+    ]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "HitPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1" }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "HitPause",
           actorId: "p1-explod-1",
           actorKind: "explod",
           ownerId: "p1",

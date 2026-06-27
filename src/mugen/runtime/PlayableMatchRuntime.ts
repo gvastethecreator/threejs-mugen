@@ -2133,6 +2133,7 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
     parentId: fighter.id,
     source: fighter.definition.source ?? "demo",
     ...spriteOwnerSnapshot(fighter),
+    hitPause: fighter.hitPause,
     runtime: {
       ...structuredClone(fighter.runtime),
       targetCount: fighter.targets.length,

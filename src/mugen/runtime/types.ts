@@ -202,6 +202,7 @@ export type ActorSnapshot = RuntimeActorIdentity & {
   spriteOwnerId?: string;
   spriteOwnerDefinitionId?: string;
   spriteOwnerLabel?: string;
+  hitPause?: number;
   runtime: CharacterRuntimeState;
   frame?: MugenAnimationFrame;
   clsn1: CollisionBox[];

@@ -266,6 +266,11 @@ async function main() {
       artifact: presets.createSyntheticImportedExplodPauseMoveTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-explod-ignorehitpause",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodIgnoreHitPauseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
@@ -775,8 +780,8 @@ function validateTraceCoverage(coverage) {
     "damage-scale:defencemulset",
   ];
   const requiredEffectKinds = ["projectile", "helper", "explod"];
-  const requiredPauseAdvanceRoutes = ["Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
-  const requiredPauseFreezeRoutes = ["Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredArtifactNames = [
     "synthetic-imported-targetbind-pause",
     "synthetic-imported-superpause-projectile-freeze",
@@ -787,6 +792,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-explod-bind",
     "synthetic-imported-explod-scale",
     "synthetic-imported-explod-pausemovetime",
+    "synthetic-imported-explod-ignorehitpause",
     "synthetic-imported-explod-removeongethit",
     "synthetic-imported-explod-removeonprojectilehit",
     "synthetic-imported-explod-removeonprojectileguard",

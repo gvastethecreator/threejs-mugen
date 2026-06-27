@@ -48,6 +48,7 @@ export type RuntimeTraceActor = {
   vel: { x: number; y: number };
   renderScale?: { x: number; y: number };
   facing: 1 | -1;
+  hitPause: number;
   guarding: boolean;
   guardStun: number;
   guardSlideTime?: number;
@@ -223,8 +224,10 @@ export type RuntimeTraceEffectStoreRequirement = {
   includesProjectile?: string;
 };
 
+export type RuntimeTracePauseEvidenceType = RuntimeMatchPauseSnapshot["type"] | "HitPause";
+
 export type RuntimeTraceMatchPauseRequirement = {
-  type?: RuntimeMatchPauseSnapshot["type"];
+  type?: RuntimeTracePauseEvidenceType;
   actorId?: string;
   sourceStateNo?: number;
   darken?: boolean;
@@ -234,7 +237,7 @@ export type RuntimeTraceMatchPauseRequirement = {
 };
 
 export type RuntimeTraceMatchPauseFreezeRequirement = {
-  type?: RuntimeMatchPauseSnapshot["type"];
+  type?: RuntimeTracePauseEvidenceType;
   actorId?: string;
   actorKind?: RuntimeActorKind;
   ownerId?: string;
@@ -242,7 +245,7 @@ export type RuntimeTraceMatchPauseFreezeRequirement = {
 };
 
 export type RuntimeTraceMatchPauseAdvanceRequirement = {
-  type?: RuntimeMatchPauseSnapshot["type"];
+  type?: RuntimeTracePauseEvidenceType;
   actorId?: string;
   actorKind?: RuntimeActorKind;
   ownerId?: string;
@@ -260,7 +263,7 @@ export type RuntimeTraceGateEffectStoreEvidence = {
 };
 
 export type RuntimeTraceGateMatchPauseEvidence = {
-  type: RuntimeMatchPauseSnapshot["type"];
+  type: RuntimeTracePauseEvidenceType;
   actorId: string;
   sourceStateNo?: number;
   darken: boolean;
@@ -272,7 +275,7 @@ export type RuntimeTraceGateMatchPauseEvidence = {
 };
 
 export type RuntimeTraceGateMatchPauseFreezeEvidence = {
-  type: RuntimeMatchPauseSnapshot["type"];
+  type: RuntimeTracePauseEvidenceType;
   actorId: string;
   actorKind: RuntimeActorKind;
   ownerId: string;
@@ -283,7 +286,7 @@ export type RuntimeTraceGateMatchPauseFreezeEvidence = {
 };
 
 export type RuntimeTraceGateMatchPauseAdvanceEvidence = {
-  type: RuntimeMatchPauseSnapshot["type"];
+  type: RuntimeTracePauseEvidenceType;
   actorId: string;
   actorKind: RuntimeActorKind;
   ownerId: string;
@@ -818,6 +821,9 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
         );
       }
     }
+    if (previousFrame) {
+      collectHitPauseMotionEvidence(frame, previousFrame, matchPauseFreezes, matchPauseAdvances);
+    }
     for (const link of frame.world?.targetLinks ?? []) {
       const evidence = {
         ownerId: link.ownerId,
@@ -1116,7 +1122,79 @@ function traceActorChangedFields(previous: RuntimeTraceActor, current: RuntimeTr
   return fields;
 }
 
-function matchPauseFreezeEvidenceKey(type: RuntimeMatchPauseSnapshot["type"], actorId: string): string {
+function collectHitPauseMotionEvidence(
+  frame: Omit<RuntimeTraceFrame, "input" | "events"> | RuntimeTraceFrame,
+  previousFrame: Omit<RuntimeTraceFrame, "input" | "events"> | RuntimeTraceFrame,
+  matchPauseFreezes: Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>,
+  matchPauseAdvances: Map<string, RuntimeTraceGateMatchPauseAdvanceEvidence>,
+): void {
+  const currentFightersInHitPause = frame.actors.filter((actor) => actor.hitPause > 0);
+  if (currentFightersInHitPause.length === 0) {
+    return;
+  }
+  const maxPreviousHitPause = Math.max(0, ...previousFrame.actors.map((actor) => actor.hitPause));
+  const currentTraceActors = [...frame.actors, ...frame.effects];
+  const previousTraceActors = [...previousFrame.actors, ...previousFrame.effects];
+  for (const actor of currentTraceActors) {
+    const previousActor = previousTraceActors.find((candidate) => candidate.id === actor.id);
+    if (!previousActor) {
+      continue;
+    }
+    const changedFields = traceActorChangedFields(previousActor, actor);
+    if (changedFields.length > 0) {
+      const key = matchPauseAdvanceEvidenceKey("HitPause", actor.id);
+      const existing = matchPauseAdvances.get(key);
+      matchPauseAdvances.set(
+        key,
+        existing
+          ? {
+              ...existing,
+              firstTick: Math.min(existing.firstTick, frame.tick),
+              lastTick: Math.max(existing.lastTick, frame.tick),
+              advancedFrames: existing.advancedFrames + 1,
+              maxPreviousMoveTime: Math.max(existing.maxPreviousMoveTime, maxPreviousHitPause),
+              changedFields: sortStrings([...new Set([...existing.changedFields, ...changedFields])]),
+            }
+          : {
+              type: "HitPause",
+              actorId: actor.id,
+              actorKind: actor.actorKind,
+              ownerId: actor.ownerId,
+              firstTick: frame.tick,
+              lastTick: frame.tick,
+              advancedFrames: 1,
+              maxPreviousMoveTime: maxPreviousHitPause,
+              changedFields,
+            },
+      );
+      continue;
+    }
+    const key = matchPauseFreezeEvidenceKey("HitPause", actor.id);
+    const existing = matchPauseFreezes.get(key);
+    matchPauseFreezes.set(
+      key,
+      existing
+        ? {
+            ...existing,
+            firstTick: Math.min(existing.firstTick, frame.tick),
+            lastTick: Math.max(existing.lastTick, frame.tick),
+            frozenFrames: existing.frozenFrames + 1,
+          }
+        : {
+            type: "HitPause",
+            actorId: actor.id,
+            actorKind: actor.actorKind,
+            ownerId: actor.ownerId,
+            firstTick: frame.tick,
+            lastTick: frame.tick,
+            frozenFrames: 1,
+            comparedFields: [...TRACE_ACTOR_FREEZE_FIELDS],
+          },
+    );
+  }
+}
+
+function matchPauseFreezeEvidenceKey(type: RuntimeTracePauseEvidenceType, actorId: string): string {
   return `${type}:${actorId}`;
 }
 
@@ -1140,7 +1218,7 @@ function describeMatchPauseFreezeRequirement(requirement: RuntimeTraceMatchPause
     .join(", ");
 }
 
-function matchPauseAdvanceEvidenceKey(type: RuntimeMatchPauseSnapshot["type"], actorId: string): string {
+function matchPauseAdvanceEvidenceKey(type: RuntimeTracePauseEvidenceType, actorId: string): string {
   return `${type}:${actorId}`;
 }
 
@@ -1486,6 +1564,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
         }
       : undefined,
     facing: actor.runtime.facing,
+    hitPause: actor.hitPause ?? 0,
     guarding: actor.runtime.guarding ?? false,
     guardStun: actor.runtime.guardStun ?? 0,
     ...(actor.runtime.guardSlideTime ? { guardSlideTime: actor.runtime.guardSlideTime } : {}),
@@ -1497,8 +1576,8 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
   };
 }
 
-function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime"> {
-  const { animTime: _animTime, ...checksumActor } = actor;
+function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause"> {
+  const { animTime: _animTime, hitPause: _hitPause, ...checksumActor } = actor;
   return checksumActor;
 }
 

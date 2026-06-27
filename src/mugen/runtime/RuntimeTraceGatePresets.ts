@@ -2336,6 +2336,64 @@ export function createSyntheticImportedExplodPauseMoveTimeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedExplodIgnoreHitPauseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-ignorehitpause-attacker",
+    displayName: "Synthetic Imported Explod IgnoreHitPause Attacker",
+    withHitPauseExplods: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-ignorehitpause-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-ignorehitpause-golden",
+      label: "Synthetic imported Explod ignorehitpause route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod ignorehitpause trace proves one Explod freezes during hitpause while another continues through ignorehitpause = 1. It does not claim exact MUGEN/IKEMEN hitpause layering, helper-owned Explod, binding, or full pause controller parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-ignorehitpause-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "Explod", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", { operation: "explod", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minExplods: 2, minNextExplodSerial: 2 }],
+        requiredMatchPauseFreezes: [
+          { type: "HitPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 3 },
+        ],
+        requiredMatchPauseAdvances: [
+          {
+            type: "HitPause",
+            actorId: "p1-explod-1",
+            actorKind: "explod",
+            ownerId: "p1",
+            minAdvancedFrames: 3,
+            minPreviousMoveTime: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -3579,6 +3637,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
+  withHitPauseExplods?: boolean;
   withMovingExplod?: boolean;
   withBoundExplod?: boolean;
   withScaledExplod?: boolean;
@@ -3716,6 +3775,7 @@ ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42
 ${options.withExplod ? explodControllerBlock() : ""}
 ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
 ${options.withSuperMoveExplod ? superMoveExplodControllerBlock() : ""}
+${options.withHitPauseExplods ? hitPauseExplodsControllerBlock() : ""}
 ${options.withMovingExplod ? movingExplodControllerBlock() : ""}
 ${options.withBoundExplod ? boundExplodControllerBlock() : ""}
 ${options.withScaledExplod ? scaledExplodControllerBlock() : ""}
@@ -3806,6 +3866,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withSuperMoveExplod ? ([[935, explodTraceAction(935)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withHitPauseExplods ? ([[937, explodTraceAction(937)], [938, explodTraceAction(938)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withMovingExplod ? ([[931, explodTraceAction(931)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withBoundExplod ? ([[932, explodTraceAction(932)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withScaledExplod ? ([[933, explodTraceAction(933)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -4910,6 +4971,37 @@ facing = 1
 sprpriority = 7
 removetime = 30
 pausemovetime = 4
+trans = add
+`;
+}
+
+function hitPauseExplodsControllerBlock(): string {
+  return `
+[State 200, Frozen HitPause Visual Explod]
+type = Explod
+trigger1 = Time = 0
+id = 9007
+anim = 938
+pos = 42,-58
+postype = p1
+vel = 5,0
+facing = 1
+sprpriority = 6
+removetime = 30
+trans = add
+
+[State 200, IgnoreHitPause Visual Explod]
+type = Explod
+trigger1 = Time = 0
+id = 9008
+anim = 937
+pos = 42,-24
+postype = p1
+vel = 5,0
+facing = 1
+sprpriority = 7
+removetime = 30
+ignorehitpause = 1
 trans = add
 `;
 }
