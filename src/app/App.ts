@@ -226,6 +226,25 @@ function iconForAction(label: string, attribute: string): StudioIconName {
   return "tools";
 }
 
+function studioActionButton(
+  label: string,
+  attribute: string,
+  options: { primary?: boolean; fullWidth?: boolean; disabled?: boolean } = {},
+): string {
+  const classes = [
+    options.primary ? "primary-action" : "",
+    options.fullWidth ? "full-width-action" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return `
+    <button type="button" ${classes ? `class="${classes}"` : ""} ${attribute} ${options.disabled ? "disabled" : ""}>
+      ${tablerIcon(iconForAction(label, attribute), "ui-icon action-icon")}
+      <span class="action-label">${escapeHtml(label)}</span>
+    </button>
+  `;
+}
+
 type StudioEvidenceRecord = {
   id: string;
   label: string;
@@ -5224,16 +5243,16 @@ export class App {
       <div class="section">
         <h2>Build Outputs</h2>
         <div class="split-controls">
-          <button type="button" data-action="export-project">Export project.json</button>
-          <button type="button" data-action="export-runtime" ${compiled ? "" : "disabled"}>Export runtime</button>
+          ${studioActionButton("Export project.json", 'data-action="export-project"')}
+          ${studioActionButton("Export runtime", 'data-action="export-runtime"', { disabled: !compiled })}
         </div>
         <div class="split-controls">
-          <button type="button" data-action="compile-project">Compile runtime</button>
-          <button type="button" data-action="export-report">Export report</button>
+          ${studioActionButton("Compile runtime", 'data-action="compile-project"')}
+          ${studioActionButton("Export report", 'data-action="export-report"')}
         </div>
-        <button type="button" class="full-width-action" data-action="export-package">Export project package</button>
-        <button type="button" class="full-width-action" data-action="export-trace-artifact">Export trace artifact</button>
-        <button type="button" class="full-width-action" data-action="save-project-local">Save local project</button>
+        ${studioActionButton("Export project package", 'data-action="export-package"', { fullWidth: true })}
+        ${studioActionButton("Export trace artifact", 'data-action="export-trace-artifact"', { fullWidth: true })}
+        ${studioActionButton("Save local project", 'data-action="save-project-local"', { fullWidth: true })}
         <div class="badge-row">
           <span class="badge ${compiled ? "ok" : "warn"}">${compiled ? "runtime compiled" : "compile pending"}</span>
           <span class="badge ${bundle ? "ok" : "warn"}">${bundle ? "package exported" : "package pending"}</span>
@@ -5462,9 +5481,9 @@ export class App {
             <small>${escapeHtml(evidence.topImpact ?? "Capture a deterministic runtime trace before treating compatibility claims as evidence.")}</small>
           </div>
           <div class="command-action-column" aria-label="Evidence actions">
-            <button type="button" class="primary-action" data-action="export-trace-artifact">Export Trace</button>
-            <button type="button" data-action="compile-project">Compile Runtime</button>
-            <button type="button" data-action="export-report">Compatibility Report</button>
+            ${studioActionButton("Export Trace", 'data-action="export-trace-artifact"', { primary: true })}
+            ${studioActionButton("Compile Runtime", 'data-action="compile-project"')}
+            ${studioActionButton("Compatibility Report", 'data-action="export-report"')}
           </div>
         </div>
       </div>
@@ -5485,10 +5504,10 @@ export class App {
       <div class="section evidence-actions-section">
         <h2>Evidence Actions</h2>
         <div class="action-stack">
-          <button type="button" class="primary-action" data-action="export-trace-artifact">Export trace artifact</button>
-          <button type="button" data-action="export-report">Compatibility report</button>
-          <button type="button" data-action="compile-project">Compile runtime</button>
-          <button type="button" data-studio-tab="build">Build outputs</button>
+          ${studioActionButton("Export trace artifact", 'data-action="export-trace-artifact"', { primary: true })}
+          ${studioActionButton("Compatibility report", 'data-action="export-report"')}
+          ${studioActionButton("Compile runtime", 'data-action="compile-project"')}
+          ${studioActionButton("Build outputs", 'data-studio-tab="build"')}
         </div>
       </div>
       <div class="section">
