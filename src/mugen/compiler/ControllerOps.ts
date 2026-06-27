@@ -113,6 +113,7 @@ export type HelperControllerOp = {
   animNo?: number;
   pos?: [number, number];
   velocity?: [number, number];
+  scale?: [number, number];
   postype?: string;
   facing?: number;
   removeTime: number;
@@ -976,11 +977,22 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     animNo: firstNumber(findParam(controller, "anim")),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
     velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "velset") ?? findParam(controller, "vel") ?? findParam(controller, "velocity"))),
+    scale: scalePairWithDefaultOrUndefined(helperScalePair(controller)),
     postype: stripMugenString(findParam(controller, "postype")),
     facing: firstNumber(findParam(controller, "facing")),
     removeTime: firstNumber(findParam(controller, "removetime")) ?? 180,
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 3,
   });
+}
+
+function helperScalePair(controller: MugenStateController): [number, number?] | undefined {
+  const explicit = numberPair(findParam(controller, "scale"));
+  if (explicit) {
+    return explicit;
+  }
+  const x = firstNumber(findParam(controller, "size.xscale") ?? findParam(controller, "xscale"));
+  const y = firstNumber(findParam(controller, "size.yscale") ?? findParam(controller, "yscale"));
+  return x === undefined && y === undefined ? undefined : [x ?? 1, y ?? x ?? 1];
 }
 
 function compileExplodControllerOp(controller: MugenStateController): ExplodControllerOp {

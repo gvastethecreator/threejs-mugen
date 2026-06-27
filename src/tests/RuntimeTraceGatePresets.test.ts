@@ -38,6 +38,7 @@ import {
   createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
+  createSyntheticImportedHelperScaleTraceArtifact,
   createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
@@ -3265,6 +3266,43 @@ describe("RuntimeTraceGatePresets", () => {
         observedPosYAtMost: -36,
         minFrames: 2,
       },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper scale artifact with render-scale evidence", () => {
+    const artifact = createSyntheticImportedHelperScaleTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-scale-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-scale-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const scaledFrame = evidence?.actorFrames.find((frame) => frame.actorKind === "helper" && frame.animNo === 920);
+    expect(scaledFrame?.maxScale.x).toBeGreaterThanOrEqual(2);
+    expect(scaledFrame?.minScale.y).toBeLessThanOrEqual(0.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "helper",
+        ownerId: "p1",
+        animNo: 920,
+        observedScaleXAtLeast: 2,
+        observedScaleYAtMost: 0.5,
+        minFrames: 1,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, scaleX: 2, scaleY: 0.5 },
     ]);
   });
 

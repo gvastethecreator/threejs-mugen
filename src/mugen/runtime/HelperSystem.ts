@@ -21,6 +21,7 @@ export type RuntimeHelper = {
   animNo: number;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  scale: { x: number; y: number };
   facing: 1 | -1;
   frameIndex: number;
   frameElapsed: number;
@@ -63,6 +64,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     animNo: input.animNo,
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
+    scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     frameIndex: 0,
     frameElapsed: 0,
@@ -125,6 +127,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           age: helper.age,
           removeTime: helper.removeTime,
           spritePriority: helper.spritePriority,
+          scale: { ...helper.scale },
         },
         runtime: {
           pos: { ...helper.pos },
@@ -143,6 +146,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           physics: "N",
           vars: [],
           fvars: [],
+          ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
         },
         frame,
         clsn1: frame.clsn1.map(cloneBox),
@@ -183,6 +187,24 @@ function helperVelocity(controller: MugenStateController, operation: HelperContr
   };
 }
 
+function helperScale(controller: MugenStateController, operation: HelperControllerOp | undefined): { x: number; y: number } {
+  const scale = operation?.scale ?? helperScalePair(controller);
+  return {
+    x: clampHelperScale(scale?.[0] ?? 1),
+    y: clampHelperScale(scale?.[1] ?? 1),
+  };
+}
+
+function helperScalePair(controller: MugenStateController): [number, number] | undefined {
+  const explicit = numberPair(findControllerParam(controller, "scale"));
+  if (explicit) {
+    return explicit;
+  }
+  const x = firstNumber(findControllerParam(controller, "size.xscale") ?? findControllerParam(controller, "xscale"));
+  const y = firstNumber(findControllerParam(controller, "size.yscale") ?? findControllerParam(controller, "yscale"));
+  return x === undefined && y === undefined ? undefined : [x ?? 1, y ?? x ?? 1];
+}
+
 function numberPair(value: string | undefined): [number, number] | undefined {
   if (!value) {
     return undefined;
@@ -195,6 +217,14 @@ function numberPair(value: string | undefined): [number, number] | undefined {
 
 function clampHelperVelocity(value: number): number {
   return Math.max(-80, Math.min(80, value));
+}
+
+function clampHelperScale(value: number): number {
+  return Math.max(0.05, Math.min(8, value));
+}
+
+function isDefaultScale(scale: { x: number; y: number }): boolean {
+  return scale.x === 1 && scale.y === 1;
 }
 
 function clampHelperTime(value: number): number {

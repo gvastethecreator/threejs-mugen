@@ -4224,6 +4224,63 @@ export function createSyntheticImportedHelperVelocityTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHelperScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-scale-attacker",
+    displayName: "Synthetic Imported Helper Scale Attacker",
+    withHelper: true,
+    helperScale: [2, 0.5],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-scale-golden",
+      label: "Synthetic imported Helper scale route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper scale trace proves a bounded visual Helper can consume static scale params and expose render-scale trace evidence. It does not claim helper VM, palette ownership, helper collision scale parity, helper physics, or exact MUGEN/IKEMEN helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            animNo: 920,
+            observedScaleXAtLeast: 2,
+            observedScaleYAtMost: 0.5,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, scaleX: 2, scaleY: 0.5 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedExplodScript();
@@ -5162,6 +5219,7 @@ export type SyntheticImportedTraceFighterOptions = {
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   withHelper?: boolean;
   helperVelocity?: [number, number];
+  helperScale?: [number, number];
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -5380,7 +5438,7 @@ ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveRever
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
-${options.withHelper ? helperControllerBlock(options.helperVelocity) : ""}
+${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
 ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
@@ -7056,8 +7114,9 @@ ctrl = 0
 `;
 }
 
-function helperControllerBlock(velocity?: [number, number]): string {
+function helperControllerBlock(velocity?: [number, number], scale?: [number, number]): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
+  const scaleLine = scale === undefined ? "" : `scale = ${scale[0]},${scale[1]}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -7072,6 +7131,7 @@ facing = 1
 sprpriority = 8
 removetime = 30
 ${velocityLine}
+${scaleLine}
 `;
 }
 

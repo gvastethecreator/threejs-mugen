@@ -1342,6 +1342,7 @@ function matchesEffectPayloadRequirement(
     (requirement.maxAge === undefined || effect.age <= requirement.maxAge) &&
     (requirement.minRemoveTime === undefined || effect.removeTime >= requirement.minRemoveTime) &&
     (requirement.minSpritePriority === undefined || effect.spritePriority >= requirement.minSpritePriority) &&
+    matchesEffectScalePayloadRequirement(effect, requirement) &&
     matchesHelperPayloadRequirement(effect, requirement) &&
     matchesProjectilePayloadRequirement(effect, requirement) &&
     matchesExplodPayloadRequirement(effect, requirement)
@@ -1359,6 +1360,22 @@ function matchesHelperPayloadRequirement(
     effect.kind === "helper" &&
     (requirement.name === undefined || effect.name === requirement.name) &&
     (requirement.helperStateNo === undefined || effect.stateNo === requirement.helperStateNo)
+  );
+}
+
+function matchesEffectScalePayloadRequirement(
+  effect: RuntimeTraceEffectSummary,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  if (requirement.scaleX === undefined && requirement.scaleY === undefined) {
+    return true;
+  }
+  if (!("scale" in effect) || effect.scale === undefined) {
+    return false;
+  }
+  return (
+    (requirement.scaleX === undefined || sameTraceNumber(effect.scale.x, requirement.scaleX)) &&
+    (requirement.scaleY === undefined || sameTraceNumber(effect.scale.y, requirement.scaleY))
   );
 }
 
@@ -1401,9 +1418,7 @@ function matchesExplodPayloadRequirement(
     requirement.minPauseMoveTime !== undefined ||
     requirement.minSuperMoveTime !== undefined ||
     requirement.minBindRemaining !== undefined ||
-    requirement.maxBindRemaining !== undefined ||
-    requirement.scaleX !== undefined ||
-    requirement.scaleY !== undefined;
+    requirement.maxBindRemaining !== undefined;
   if (!hasExplodRequirement) {
     return true;
   }
@@ -1414,9 +1429,7 @@ function matchesExplodPayloadRequirement(
     (requirement.minPauseMoveTime === undefined || effect.pauseMoveTime >= requirement.minPauseMoveTime) &&
     (requirement.minSuperMoveTime === undefined || effect.superMoveTime >= requirement.minSuperMoveTime) &&
     (requirement.minBindRemaining === undefined || (effect.bindRemaining ?? -Infinity) >= requirement.minBindRemaining) &&
-    (requirement.maxBindRemaining === undefined || (effect.bindRemaining ?? Infinity) <= requirement.maxBindRemaining) &&
-    (requirement.scaleX === undefined || sameTraceNumber(effect.scale.x, requirement.scaleX)) &&
-    (requirement.scaleY === undefined || sameTraceNumber(effect.scale.y, requirement.scaleY))
+    (requirement.maxBindRemaining === undefined || (effect.bindRemaining ?? Infinity) <= requirement.maxBindRemaining)
   );
 }
 
@@ -2347,7 +2360,17 @@ function cloneTraceEffect(effect: RuntimeTraceEffectSummary): RuntimeTraceEffect
         : undefined,
     };
   }
-  return { ...effect };
+  if (effect.kind === "helper") {
+    return {
+      ...effect,
+      scale: {
+        x: roundTraceNumber(effect.scale.x),
+        y: roundTraceNumber(effect.scale.y),
+      },
+    };
+  }
+  const exhaustive: never = effect;
+  return exhaustive;
 }
 
 function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHitFallSummary {

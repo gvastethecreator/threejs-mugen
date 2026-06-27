@@ -75,6 +75,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     animNo: 6100,
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
+    scale: { x: 1, y: 1 },
     facing: 1,
     frameIndex: 0,
     frameElapsed: 0,
@@ -94,6 +95,8 @@ describe("HelperSystem", () => {
         name: '"spark helper"',
         facing: "-1",
         velset: "2,-1",
+        "size.xscale": "1.5",
+        "size.yscale": "0.75",
         removetime: "9999",
         sprpriority: "25",
       }),
@@ -122,6 +125,7 @@ describe("HelperSystem", () => {
       animNo: 6100,
       pos: { x: 24, y: -12 },
       vel: { x: 2, y: -1 },
+      scale: { x: 1.5, y: 0.75 },
       facing: -1,
       removeTime: 1200,
       spritePriority: 10,
@@ -137,6 +141,7 @@ describe("HelperSystem", () => {
       animNo: 6102,
       pos: [12, -4],
       velocity: [3, -2],
+      scale: [2, 0.5],
       postype: "p1",
       facing: 1,
       removeTime: 25,
@@ -168,6 +173,7 @@ describe("HelperSystem", () => {
       stateNo: 6101,
       animNo: 6102,
       vel: { x: 3, y: -2 },
+      scale: { x: 2, y: 0.5 },
       facing: 1,
       removeTime: 25,
       spritePriority: 6,
@@ -195,7 +201,7 @@ describe("HelperSystem", () => {
   });
 
   it("projects helpers into effect actor snapshots with cloned collision boxes", () => {
-    const [snapshot] = runtimeHelpersToSnapshots([helper({ frameIndex: 0 })], 100);
+    const [snapshot] = runtimeHelpersToSnapshots([helper({ frameIndex: 0, scale: { x: 2, y: 0.5 } })], 100);
 
     expect(snapshot).toMatchObject({
       id: "p1-helper-0",
@@ -216,6 +222,11 @@ describe("HelperSystem", () => {
         stateNo: 6000,
         animNo: 6100,
         frameIndex: 0,
+        renderScale: { x: 2, y: 0.5 },
+      },
+      effect: {
+        kind: "helper",
+        scale: { x: 2, y: 0.5 },
       },
       clsn1: [{ x1: 1, y1: 2, x2: 3, y2: 4 }],
       clsn2: [{ x1: -4, y1: -3, x2: 4, y2: 5 }],

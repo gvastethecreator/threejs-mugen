@@ -471,6 +471,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-explod",
       required: true,
       artifact: presets.createSyntheticImportedExplodTraceArtifact(),

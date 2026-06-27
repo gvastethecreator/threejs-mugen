@@ -224,6 +224,7 @@ export type ActorEffectSnapshot =
       age: number;
       removeTime: number;
       spritePriority: number;
+      scale: { x: number; y: number };
     }
   | {
       kind: "projectile";

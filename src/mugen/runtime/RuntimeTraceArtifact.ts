@@ -577,7 +577,14 @@ function cloneTraceEffect(effect: RuntimeTraceArtifactEffect): RuntimeTraceArtif
       scale: effect.scale ? { ...effect.scale } : undefined,
     };
   }
-  return { ...effect };
+  if (effect.kind === "helper") {
+    return {
+      ...effect,
+      scale: { ...effect.scale },
+    };
+  }
+  const exhaustive: never = effect;
+  return exhaustive;
 }
 
 function cloneTraceGateFinalActor(
