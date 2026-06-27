@@ -630,6 +630,38 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
   });
 
+  it("evaluates bounded MoveReversed after imported ReversalDef counter contact", () => {
+    const attacker = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      hitDefAttr: "S,NA",
+      moveReversedStateNo: 778,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const defender = createImportedFixture({
+      withStateMove: false,
+      passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
+
+    for (let frame = 0; frame < 8; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(778);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(778);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+  });
+
   it("uses simple HitDef p1stateno and p2stateno as a partial custom-state bridge", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1732,6 +1764,7 @@ function createImportedFixture(
     moveHitStateNo?: number;
     moveHitCounterStateNo?: number;
     hitCountStateNo?: number;
+    moveReversedStateNo?: number;
     moveGuardStateNo?: number;
     withMoveHitReset?: boolean;
     hitDefAttrStateNo?: number;
@@ -1804,6 +1837,7 @@ ctrl = 1
     ...(options.moveHitStateNo === undefined ? [] : [options.moveHitStateNo]),
     ...(options.moveHitCounterStateNo === undefined ? [] : [options.moveHitCounterStateNo]),
     ...(options.hitCountStateNo === undefined ? [] : [options.hitCountStateNo]),
+    ...(options.moveReversedStateNo === undefined ? [] : [options.moveReversedStateNo]),
     ...(options.moveGuardStateNo === undefined ? [] : [options.moveGuardStateNo]),
     ...(options.hitDefAttrStateNo === undefined ? [] : [options.hitDefAttrStateNo]),
     ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
@@ -2314,6 +2348,15 @@ type = ChangeState
 trigger1 = HitCount >= 1
 trigger1 = UniqHitCount >= 1
 value = ${options.hitCountStateNo}
+ctrl = 0
+`,
+    options.moveReversedStateNo === undefined
+      ? ""
+      : `
+[State 200, MoveReversed Branch]
+type = ChangeState
+trigger1 = MoveReversed >= 1
+value = ${options.moveReversedStateNo}
 ctrl = 0
 `,
     options.moveGuardStateNo === undefined

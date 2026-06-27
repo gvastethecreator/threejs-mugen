@@ -534,6 +534,7 @@ export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTra
     id: "synthetic-imported-reversal-attacker",
     displayName: "Synthetic Imported Reversal Attacker",
     hitDefAttr: "S,NA",
+    moveReversedStateNo: 778,
   });
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-reversal-defender",
@@ -552,7 +553,7 @@ export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTra
       label: "Synthetic imported ReversalDef route",
       source: "imported",
       notes: [
-        "Synthetic imported ReversalDef trace proves a defender-side Clsn1 counter can reverse a matching imported HitDef and route the defender into a known p1stateno state. It does not claim exact priority, guard, custom-state, or IKEMEN ReversalDef parity.",
+        "Synthetic imported ReversalDef trace proves a defender-side Clsn1 counter can reverse a matching imported HitDef, route the defender into a known p1stateno state, and let the attacker branch on bounded MoveReversed after hitpause. It does not claim exact priority, guard, custom-state, or IKEMEN ReversalDef parity.",
       ],
     },
     gates: [
@@ -561,7 +562,7 @@ export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTra
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, 777],
+        requiredExecutedStates: [200, 777, 778],
         requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
         requiredExecutedOperations: ["hitdef", "reversaldef"],
         requiredActiveCommands: ["x"],
@@ -4844,6 +4845,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveHitStateNo?: number;
   moveHitCounterStateNo?: number;
   hitCountStateNo?: number;
+  moveReversedStateNo?: number;
   moveGuardStateNo?: number;
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
@@ -5060,6 +5062,7 @@ ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContac
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
+${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
@@ -5160,6 +5163,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.moveReversedStateNo === undefined ? [] : ([[options.moveReversedStateNo, traceAction(options.moveReversedStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),

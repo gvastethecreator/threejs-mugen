@@ -104,6 +104,7 @@ const supportedExpressionIdentifiers = new Set([
   "movecontact",
   "moveguarded",
   "movehit",
+  "movereversed",
   "movetype",
   "numexplod",
   "numhelper",

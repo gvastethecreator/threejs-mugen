@@ -159,6 +159,8 @@ type FighterContactState = {
   moveHitCount?: number;
   moveUniqueHitCount?: number;
   moveHitTargetIds?: Set<string>;
+  moveReversedState?: number;
+  moveReversedTime?: number;
   projectileContactState?: number;
   projectileHitState?: number;
   projectileGuardState?: number;
@@ -1477,6 +1479,8 @@ function resetMoveContactState(fighter: FighterMatchState): void {
   delete fighter.contact.moveHitCount;
   delete fighter.contact.moveUniqueHitCount;
   delete fighter.contact.moveHitTargetIds;
+  delete fighter.contact.moveReversedState;
+  delete fighter.contact.moveReversedTime;
 }
 
 function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targetActorId?: string): void {
@@ -1502,6 +1506,11 @@ function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targ
   }
 }
 
+function markMoveReversed(fighter: FighterMatchState): void {
+  fighter.contact.moveReversedState = fighter.runtime.stateNo;
+  fighter.contact.moveReversedTime = 0;
+}
+
 function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
   fighter.contact.projectileContactState = fighter.runtime.stateNo;
   fighter.contact.projectileId = projectileId;
@@ -1524,6 +1533,9 @@ function advanceContactTimers(fighter: FighterMatchState): void {
   }
   if (fighter.contact.moveGuardTime !== undefined) {
     fighter.contact.moveGuardTime += 1;
+  }
+  if (fighter.contact.moveReversedTime !== undefined) {
+    fighter.contact.moveReversedTime += 1;
   }
   if (fighter.contact.projectileContactTime !== undefined) {
     fighter.contact.projectileContactTime += 1;
@@ -1551,6 +1563,10 @@ function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number 
     return 0;
   }
   return unique ? fighter.contact.moveUniqueHitCount ?? 0 : fighter.contact.moveHitCount ?? 0;
+}
+
+function moveReversedValue(fighter: FighterMatchState): number {
+  return fighter.contact.moveReversedState === fighter.runtime.stateNo ? fighter.contact.moveReversedTime ?? 0 : 0;
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
@@ -2172,6 +2188,7 @@ function applyReversal(
 ): void {
   reverser.hasHit = true;
   attacker.hasHit = true;
+  markMoveReversed(attacker);
   rememberTarget(reverser, attacker, reversal.targetId);
   reverser.hitPause = reversal.hitPause;
   attacker.hitPause = reversal.hitPause;
@@ -2688,6 +2705,7 @@ function resolveDispatchNumber(
     moveContact: () => moveContactValue(fighter, "contact"),
     moveHit: () => moveContactValue(fighter, "hit"),
     moveGuarded: () => moveContactValue(fighter, "guard"),
+    moveReversed: () => moveReversedValue(fighter),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
@@ -2742,6 +2760,7 @@ function evaluateRuntimeTrigger(
     moveContact: () => moveContactValue(fighter, "contact"),
     moveHit: () => moveContactValue(fighter, "hit"),
     moveGuarded: () => moveContactValue(fighter, "guard"),
+    moveReversed: () => moveReversedValue(fighter),
     numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
     numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
     numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),

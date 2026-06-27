@@ -18,6 +18,7 @@ export type ExpressionContext = {
   moveContact?: () => boolean | number;
   moveHit?: () => boolean | number;
   moveGuarded?: () => boolean | number;
+  moveReversed?: () => boolean | number;
   numExplod?: (explodId?: number) => number;
   numHelper?: (helperId?: number) => number;
   numProj?: (projectileId?: number) => number;
@@ -370,6 +371,9 @@ class ExpressionParser {
     }
     if (lower === "moveguarded") {
       return contactTriggerValue(this.context.moveGuarded?.());
+    }
+    if (lower === "movereversed") {
+      return contactTriggerValue(this.context.moveReversed?.());
     }
     if (lower === "numtarget") {
       return this.numTarget();

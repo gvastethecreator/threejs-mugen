@@ -553,7 +553,7 @@ describe("RuntimeTraceGatePresets", () => {
       ],
     });
     expect(artifact.gates[0]?.evidence.actorSources).toEqual(["imported"]);
-    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([200, 777]));
+    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([200, 777, 778]));
     expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);

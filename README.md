@@ -95,6 +95,8 @@ Current direct-contact cut: bounded `MoveContact`, `MoveHit`, and `MoveGuarded` 
 
 Current hit-count cut: bounded `HitCount` and `UniqHitCount` now work for direct `HitDef` hits in the current two-actor owner state. The required `synthetic-imported-hitcount.json` trace proves a `HitCount >= 1 && UniqHitCount >= 1` branch after direct imported contact. Guard/projectile counts, helpers, multi-target uniqueness, combo lifetime, and exact parity remain future work.
 
+Current reversal-trigger cut: bounded `MoveReversed` now works for the attacker state after a defender-side partial `ReversalDef` counters a matching direct `HitDef`. The required `synthetic-imported-reversal.json` trace proves the defender route into `777` and the attacker's delayed `MoveReversed >= 1` branch into `778` after hitpause. Exact reversal priority, projectile/helper/custom-state reversal behavior, trigger lifetime, and full MUGEN/IKEMEN parity remain future work.
+
 ## Controls
 
 ```txt
