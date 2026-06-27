@@ -588,6 +588,7 @@ export class App {
     return `
       <a class="skip-link" href="#stage">Skip to runtime viewport</a>
       <main class="app-shell mode-match" aria-label="MUGEN Web Sandbox workspace">
+        <section class="studio-chrome" id="studio-chrome" aria-label="Studio command bar"></section>
         <aside class="pane" id="left-pane" aria-label="Project navigation">
           <div class="section workspace-header">
             <div class="workspace-brand" id="workspace-brand"></div>
@@ -1488,6 +1489,7 @@ export class App {
     shell?.classList.toggle("mode-studio", this.mode === "studio");
     shell?.setAttribute("data-surface", this.mode);
     shell?.setAttribute("data-studio-tab", this.mode === "studio" ? this.studioTab : "");
+    this.setHtml("#studio-chrome", this.renderStudioChrome());
     this.setHtml("#workspace-brand", this.renderWorkspaceBrand());
     this.setHtml("#mode-controls", this.renderModeControls());
     this.setHtml("#workspace-summary", this.renderWorkspaceSummary());
@@ -1522,6 +1524,65 @@ export class App {
     }
     element.innerHTML = html;
     this.htmlCache.set(selector, html);
+  }
+
+  private renderStudioChrome(): string {
+    if (this.mode !== "studio") {
+      return "";
+    }
+    const summary = this.getStudioProjectSummary();
+    const activeTab = STUDIO_TABS.find((tab) => tab.id === this.studioTab);
+    const activeStatus = this.getStudioTabStatus(this.studioTab);
+    const gateIssues = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+    const p1 = this.findFighter(this.selectedP1);
+    const p2 = this.findFighter(this.selectedP2);
+    const stage = this.findStage(this.selectedStageId);
+    const buildLabel = this.lastCompiledProject ? "build ready" : "manifest pending";
+    return `
+      <div class="studio-chrome-brand">
+        ${tablerIcon("studio", "ui-icon studio-chrome-icon")}
+        <span>
+          <strong>${escapeHtml(activeTab?.label ?? "Studio")}</strong>
+          <small>${escapeHtml(activeStatus.label)}</small>
+        </span>
+      </div>
+      <div class="studio-chrome-readout" aria-label="Active studio context">
+        <span>
+          ${tablerIcon("match", "ui-icon")}
+          <b>${escapeHtml(p1?.displayName ?? "P1")}</b>
+          <small>vs ${escapeHtml(p2?.displayName ?? "CPU")}</small>
+        </span>
+        <span>
+          ${tablerIcon("stage", "ui-icon")}
+          <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
+          <small>${summary.stats.stages} stages</small>
+        </span>
+        <span class="${gateIssues ? "is-warn" : "is-ok"}">
+          ${tablerIcon(gateIssues ? "alert" : "check", "ui-icon")}
+          <b>${summary.gates.length - gateIssues}/${summary.gates.length}</b>
+          <small>gates</small>
+        </span>
+        <span class="${this.lastCompiledProject ? "is-ok" : "is-warn"}">
+          ${tablerIcon("build", "ui-icon")}
+          <b>${escapeHtml(buildLabel)}</b>
+          <small>${summary.stats.generatedAtlases} atlases</small>
+        </span>
+      </div>
+      <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
+        <button type="button" data-action="open-command-palette" aria-label="Open command palette">
+          ${tablerIcon("search", "ui-icon")}
+          <span>Command</span>
+        </button>
+        <button type="button" data-mode="match" aria-label="Open playable runtime">
+          ${tablerIcon("match", "ui-icon")}
+          <span>Playtest</span>
+        </button>
+        <button type="button" data-action="compile-project" aria-label="Compile runtime manifest">
+          ${tablerIcon("build", "ui-icon")}
+          <span>Compile</span>
+        </button>
+      </div>
+    `;
   }
 
   private renderNavigator(): string {

@@ -8630,3 +8630,206 @@ input {
     overflow: visible;
   }
 }
+
+.studio-chrome {
+  display: none;
+}
+
+.app-shell.mode-studio {
+  grid-template-rows: 38px minmax(0, 1fr) var(--console-reserved-height);
+}
+
+.app-shell.mode-studio .studio-chrome {
+  z-index: 8;
+  display: grid;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  grid-template-columns: minmax(210px, 0.55fr) minmax(0, 1.45fr) auto;
+  align-items: center;
+  min-width: 0;
+  min-height: 38px;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--editor-edge-dark);
+  background: var(--editor-header);
+  box-shadow: inset 0 -1px 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .pane,
+.app-shell.mode-studio .stage,
+.app-shell.mode-studio .pane-right {
+  grid-row: 2;
+}
+
+.app-shell.mode-studio .console {
+  grid-row: 3;
+}
+
+.studio-chrome-brand,
+.studio-chrome-readout,
+.studio-chrome-actions {
+  min-width: 0;
+}
+
+.studio-chrome-brand {
+  display: inline-grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+}
+
+.studio-chrome-icon {
+  color: var(--section-accent, var(--accent));
+}
+
+.studio-chrome-brand span,
+.studio-chrome-readout span {
+  min-width: 0;
+}
+
+.studio-chrome-brand strong,
+.studio-chrome-brand small,
+.studio-chrome-readout b,
+.studio-chrome-readout small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-chrome-brand strong,
+.studio-chrome-readout b {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.05;
+}
+
+.studio-chrome-brand small,
+.studio-chrome-readout small {
+  color: var(--subtle);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.studio-chrome-readout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.studio-chrome-readout > span {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 2px 6px;
+  min-height: 28px;
+  padding: 4px 7px;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+}
+
+.studio-chrome-readout > span:last-child {
+  border-right: 0;
+}
+
+.studio-chrome-readout .ui-icon {
+  grid-row: 1 / span 2;
+  width: 15px;
+  height: 15px;
+  color: color-mix(in srgb, var(--section-accent, var(--accent)) 72%, var(--muted));
+}
+
+.studio-chrome-readout .is-ok .ui-icon,
+.studio-chrome-readout .is-ok b {
+  color: var(--ok);
+}
+
+.studio-chrome-readout .is-warn .ui-icon,
+.studio-chrome-readout .is-warn b {
+  color: var(--warn);
+}
+
+.studio-chrome-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.studio-chrome-actions button {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.studio-chrome-actions .ui-icon {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 1160px) {
+  .app-shell.mode-studio {
+    grid-template-rows: auto auto auto auto minmax(92px, auto);
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    grid-column: 1;
+    grid-row: auto;
+    order: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 42px;
+  }
+
+  .app-shell.mode-studio .stage,
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right,
+  .app-shell.mode-studio .console {
+    grid-row: auto;
+  }
+
+  .studio-chrome-readout {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio .studio-chrome {
+    gap: 5px;
+    padding: 5px 6px;
+  }
+
+  .studio-chrome-brand {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+
+  .studio-chrome-readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .studio-chrome-readout > span:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .studio-chrome-readout > span:nth-child(n + 3) {
+    border-top: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  }
+
+  .studio-chrome-actions button {
+    min-width: 32px;
+    padding-inline: 7px;
+  }
+
+  .studio-chrome-actions button span {
+    display: none;
+  }
+}
