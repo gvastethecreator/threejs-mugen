@@ -15633,7 +15633,7 @@ input {
     grid-template-columns: 18px minmax(0, 1fr);
     gap: 7px;
     padding: 4px 8px;
-    border-left: 3px solid color-mix(in srgb, var(--section-accent) 64%, #11151a);
+    border-color: color-mix(in srgb, var(--section-accent) 24%, var(--editor-edge));
   }
 
   .app-shell.mode-studio .studio-chrome-brand .ui-icon,
@@ -15656,7 +15656,7 @@ input {
   .app-shell.mode-studio .studio-chrome-readout small {
     color: color-mix(in srgb, var(--muted) 82%, var(--subtle));
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.05;
   }
 
@@ -15776,7 +15776,7 @@ input {
   .app-shell.mode-studio .record-kicker,
   .app-shell.mode-studio .studio-kv dt {
     color: color-mix(in srgb, var(--section-accent) 46%, var(--subtle));
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
   }
 
@@ -15848,7 +15848,7 @@ input {
   .app-shell.mode-studio .workspace-action-grid small {
     color: color-mix(in srgb, var(--subtle) 88%, var(--muted));
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1;
   }
 
@@ -15893,7 +15893,7 @@ input {
 
   .app-shell.mode-studio .workspace-summary small {
     color: var(--subtle);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1;
   }
 

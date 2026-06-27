@@ -271,6 +271,10 @@ async function captureRuntime(page, baseUrl, options) {
         })),
         renderer: bridge?.renderer,
         runtimeRosterCount: bridge?.runtimeRoster?.length ?? 0,
+        selectedRosterAtlasStatuses:
+          bridge?.runtimeRoster
+            ?.filter((entry) => entry.selected)
+            .map((entry) => ({ id: entry.id, atlasStatus: entry.atlasStatus })) ?? [],
         atlasMotionQaCount: Object.keys(bridge?.atlasMotionQa ?? {}).length,
         canvasPixels,
       };
@@ -300,6 +304,10 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
       laneCount: document.querySelectorAll(".workbench-lane-strip > span").length,
       surfaceJumpCount: document.querySelectorAll(".surface-jump-button, .workbench-route-button").length,
       actionCount: document.querySelectorAll(".workbench-action-bar button").length,
+      selectedRosterAtlasStatuses:
+        bridge?.runtimeRoster
+          ?.filter((entry) => entry.selected)
+          .map((entry) => ({ id: entry.id, atlasStatus: entry.atlasStatus })) ?? [],
       shellWidth: shell?.width ?? 0,
       bodyScrollWidth: document.body.scrollWidth,
       innerWidth: window.innerWidth,
@@ -1344,6 +1352,12 @@ function assertSmoke(diagnostics) {
     if (runtime.actorRegistryEffectStores < 2 || !runtime.actorRegistryEffectStoreOwners.includes("p1")) {
       failures.push(`${runtime.label}: actor registry effect stores were missing`);
     }
+    const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
+      (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
+    );
+    if (unreadyVisibleAtlases.length) {
+      failures.push(`${runtime.label}: visible roster atlas was not ready (${unreadyVisibleAtlases.map((entry) => `${entry.id}:${entry.atlasStatus}`).join(", ")})`);
+    }
   }
   if (
     studioWorkbench.mode !== "studio" ||
@@ -1358,6 +1372,12 @@ function assertSmoke(diagnostics) {
     studioWorkbench.overflowX
   ) {
     failures.push("studio-workbench: Workbench command center was missing, incomplete, or horizontally overflowing");
+  }
+  const workbenchUnreadyAtlases = studioWorkbench.selectedRosterAtlasStatuses.filter(
+    (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
+  );
+  if (workbenchUnreadyAtlases.length) {
+    failures.push(`studio-workbench: visible roster atlas was not ready (${workbenchUnreadyAtlases.map((entry) => `${entry.id}:${entry.atlasStatus}`).join(", ")})`);
   }
   if (
     studioWorkbenchTablet.mode !== "studio" ||
