@@ -33,6 +33,10 @@ export type ExpressionContext = {
 
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
   const normalized = normalizeMugenExpression(expression);
+  const redirected = evaluateEnemyNearRedirect(normalized, context);
+  if (redirected !== undefined) {
+    return redirected;
+  }
   const commandMatch = /^command\s*(=|!=)\s*"([^"]+)"$/i.exec(normalized.trim());
   if (commandMatch) {
     const active = context.commandActive?.(commandMatch[2] ?? "") ? 1 : 0;
@@ -51,6 +55,27 @@ export function evaluateExpression(expression: string, context: ExpressionContex
 type ExpressionValue = boolean | number | string;
 
 const commandIdentifierMarker = "__mugen_command_identifier__";
+
+function evaluateEnemyNearRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
+  const redirect = /^enemynear(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  if (!redirect) {
+    return undefined;
+  }
+  const index = redirect[1]?.trim();
+  if (index && index !== "0") {
+    context.reportUnsupported?.("enemynear(index)");
+    return 0;
+  }
+  if (!context.opponent) {
+    context.reportUnsupported?.("enemynear");
+    return 0;
+  }
+  return evaluateExpression(redirect[2] ?? "", {
+    ...context,
+    self: context.opponent,
+    opponent: context.self,
+  });
+}
 
 type Token =
   | { type: "number"; value: string }

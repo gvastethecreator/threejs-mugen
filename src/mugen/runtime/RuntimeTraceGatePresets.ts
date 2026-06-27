@@ -4,7 +4,7 @@ import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { MatchWorld } from "./MatchWorld";
-import type { RuntimeTraceFinalActorRequirement, RuntimeTraceInputFrame } from "./RuntimeTrace";
+import type { RuntimeTraceFinalActorRequirement, RuntimeTraceGate, RuntimeTraceInputFrame } from "./RuntimeTrace";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "./RuntimeTrace";
 import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { createRuntimeTraceArtifact } from "./RuntimeTraceArtifact";
@@ -151,6 +151,29 @@ export function createSyntheticImportedPrevStateTraceArtifact(options: RuntimeTr
       requiredExecutedStates: [200, 267, 268],
       notes: [
         "Synthetic imported PrevStateNo trace proves the runtime records previous state number across ChangeState and can branch from an intermediate state using PrevStateNo = 200. Exact MUGEN/IKEMEN tick-order parity and every state-owner edge case remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedEnemyNearTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-enemynear",
+      displayName: "Synthetic Imported EnemyNear",
+      enemyNearStateEntry: { opponentStateNo: 0, stateNo: 269 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-enemynear-golden",
+      targetLabel: "Synthetic imported EnemyNear redirect route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [269],
+      requiredExecutedStates: [269],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported EnemyNear trace proves a bounded EnemyNear, StateNo redirect can evaluate against the current opponent in State -1 routing. EnemyNear(n), helpers, teams, redirects, and full MUGEN/IKEMEN redirect parity remain future work.",
       ],
     },
   );
@@ -356,7 +379,10 @@ export function createImportedXTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     requireHitEvent?: boolean;
+    requiredRoutedStates?: number[];
     requiredExecutedStates?: number[];
+    requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
+    requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
@@ -382,10 +408,10 @@ export function createImportedXTraceArtifact(
         label: "imported-x-golden",
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
-        requiredRoutedStates: [200],
+        requiredRoutedStates: options.requiredRoutedStates ?? [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),
         ...(options.requireHitEvent ? { requiredCombatReasons: ["hit" as const] } : {}),
@@ -4708,6 +4734,7 @@ export type SyntheticImportedTraceFighterOptions = {
   numTargetStateNo?: number;
   numHelperStateNo?: number;
   prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
+  enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -4838,6 +4865,7 @@ command = x+y
 time = 5
 `).commands;
   const stateEntryControllers = parseCns(`
+${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -4931,6 +4959,7 @@ ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
 ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
+${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -5017,6 +5046,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
             [options.prevStateRoute.intermediateStateNo, traceAction(options.prevStateRoute.intermediateStateNo)],
             [options.prevStateRoute.finalStateNo, traceAction(options.prevStateRoute.finalStateNo)],
           ] as Array<[number, MugenAnimationAction]>)),
+      ...(options.enemyNearStateEntry === undefined
+        ? []
+        : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6321,6 +6353,27 @@ movetype = I
 physics = S
 anim = ${route.finalStateNo}
 ctrl = 1
+`;
+}
+
+function enemyNearStateEntryBlock(route: { opponentStateNo: number; stateNo: number }): string {
+  return `
+[State -1, EnemyNear State Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = EnemyNear, StateNo = ${route.opponentStateNo}
+`;
+}
+
+function simpleStateBlock(stateNo: number, moveType: "I" | "A" | "H" = "I"): string {
+  return `
+[Statedef ${stateNo}]
+type = S
+movetype = ${moveType}
+physics = S
+anim = ${stateNo}
+ctrl = 0
 `;
 }
 

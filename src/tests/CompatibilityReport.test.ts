@@ -22,7 +22,7 @@ describe("createCompatibilityReport", () => {
       ],
       stateEntryControllers: [
         controller(-1, "ChangeState", ['command = "qcf_x"', "power >= 0"], { value: "1000" }),
-        controller(-1, "ChangeState", ["enemynear, stateno = 5000"], { value: "2000" }),
+        controller(-1, "ChangeState", ["enemynear(1), stateno = 5000"], { value: "2000" }),
       ],
       diagnostics: [],
       unsupported: [],
@@ -38,8 +38,8 @@ describe("createCompatibilityReport", () => {
     expect(report.triggers.total).toBe(5);
     expect(report.triggers.supported).toBe(4);
     expect(report.triggers.unsupported).toBe(1);
-    expect(report.triggers.unsupportedFeatures.enemynear).toBe(1);
-    expect(report.controllers.UnsupportedTrigger).toEqual({ enemynear: 1 });
+    expect(report.triggers.unsupportedFeatures["enemynear(index)"]).toBe(1);
+    expect(report.controllers.UnsupportedTrigger).toEqual({ "enemynear(index)": 1 });
   });
 
   it("treats supported MUGEN trigger syntax as trigger-clean", () => {
@@ -60,13 +60,15 @@ describe("createCompatibilityReport", () => {
           ]),
         ]),
       ],
-      stateEntryControllers: [controller(-1, "ChangeState", ['command = "axis"', "P2BodyDist X < 40"], { value: "300" })],
+      stateEntryControllers: [
+        controller(-1, "ChangeState", ['command = "axis"', "P2BodyDist X < 40", "EnemyNear, StateNo = 0"], { value: "300" }),
+      ],
       diagnostics: [],
       unsupported: [],
     });
 
-    expect(report.triggers.total).toBe(8);
-    expect(report.triggers.supported).toBe(8);
+    expect(report.triggers.total).toBe(9);
+    expect(report.triggers.supported).toBe(9);
     expect(report.triggers.unsupported).toBe(0);
     expect(report.triggers.unsupportedFeatures).toEqual({});
     expect(report.states.triggerSupported).toBe(1);
@@ -98,13 +100,13 @@ describe("createCompatibilityReport", () => {
     expect(isRuntimeSupportedController("ReversalDef")).toBe(true);
 
     const analysis = analyzeControllerTriggers(
-      controller(200, "HitDef", ["AnimElem = 3", "enemynear, stateno = 5000", "P2BodyDist X < 40"]),
+      controller(200, "HitDef", ["AnimElem = 3", "enemynear(1), stateno = 5000", "P2BodyDist X < 40"]),
     );
 
     expect(analysis.total).toBe(3);
     expect(analysis.supported).toBe(2);
     expect(analysis.unsupported).toBe(1);
-    expect(analysis.unsupportedFeatures.enemynear).toBe(1);
+    expect(analysis.unsupportedFeatures["enemynear(index)"]).toBe(1);
   });
 });
 

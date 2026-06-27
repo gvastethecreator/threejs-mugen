@@ -19,11 +19,15 @@ export function normalizeMugenExpression(expression: string): string {
 
 export function compileExpression(expression: string): ExpressionIr {
   const normalized = normalizeMugenExpression(expression);
-  const withoutStrings = stripRawFunctionArguments(normalized).replace(/"[^"]*"/g, "\"\"");
+  const redirect = expressionForSupportScan(normalized);
+  const withoutStrings = stripRawFunctionArguments(redirect.expression).replace(/"[^"]*"/g, "\"\"");
   const unsupportedFeatures = new Set<string>();
   const identifiers = new Set<string>();
   const functions = new Set<string>();
 
+  if (redirect.unsupportedFeature) {
+    unsupportedFeatures.add(redirect.unsupportedFeature);
+  }
   if (/[\[\]]/.test(withoutStrings)) {
     unsupportedFeatures.add("range syntax");
   }
@@ -62,6 +66,18 @@ export function expressionSupportLevel(expression: string): CompileSupportLevel 
 
 function stripRawFunctionArguments(expression: string): string {
   return expression.replace(/\b(const|const720p|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
+}
+
+function expressionForSupportScan(expression: string): { expression: string; unsupportedFeature?: string } {
+  const redirect = /^enemynear(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  if (!redirect) {
+    return { expression };
+  }
+  const index = redirect[1]?.trim();
+  if (index && index !== "0") {
+    return { expression: redirect[2] ?? "", unsupportedFeature: "enemynear(index)" };
+  }
+  return { expression: redirect[2] ?? "" };
 }
 
 const supportedExpressionIdentifiers = new Set([

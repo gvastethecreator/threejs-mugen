@@ -38,7 +38,8 @@ time = 20
     const contact = compileExpression("MoveGuarded || ProjHit(77) || ProjGuarded(77) || NumTarget(77) > 0");
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
-    const unsupported = compileExpression("enemynear, stateno = 5000");
+    const enemyNear = compileExpression("enemynear, stateno = 5000");
+    const unsupported = compileExpression("enemynear(1), stateno = 5000");
 
     expect(clean.normalized).toBe("p2bodydistx < 40 && SelfAnimExist(anim + 3)");
     expect(clean.supportLevel).toBe("executable");
@@ -51,8 +52,10 @@ time = 20
     expect(actorCounts.identifiers).toEqual(["NumProj"]);
     expect(hitDefAttr.supportLevel).toBe("executable");
     expect(hitDefAttr.identifiers).toEqual(["HitDefAttr"]);
+    expect(enemyNear.supportLevel).toBe("executable");
+    expect(enemyNear.identifiers).toEqual(["stateno"]);
     expect(unsupported.supportLevel).toBe("unsupported");
-    expect(unsupported.unsupportedFeatures).toEqual(["enemynear"]);
+    expect(unsupported.unsupportedFeatures).toEqual(["enemynear(index)"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {
@@ -62,7 +65,7 @@ time = 20
       states: [
         state(1000, 1000, [
           controller(1000, "VelSet", ["time = 0"], { x: "2" }),
-          controller(1000, "MysteryController", ["enemynear, stateno = 5000"]),
+          controller(1000, "MysteryController", ["enemynear(1), stateno = 5000"]),
         ]),
       ],
       stateEntryControllers: [controller(-1, "ChangeState", ['command = "qcf_x"', "ctrl"], { value: "1000" })],
@@ -73,7 +76,7 @@ time = 20
     expect(program.report.controllers.compiled).toBe(2);
     expect(program.report.controllers.unsupported).toBe(1);
     expect(program.report.controllers.unsupportedByType).toEqual({ MysteryController: 1 });
-    expect(program.report.triggers.unsupportedFeatures).toEqual({ enemynear: 1 });
+    expect(program.report.triggers.unsupportedFeatures).toEqual({ "enemynear(index)": 1 });
   });
 
   it("keeps controller support metadata in one registry", () => {
