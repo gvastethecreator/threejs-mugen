@@ -1,5 +1,6 @@
 import { compileControllerIr } from "../compiler/StateControllerCompiler";
 import type {
+  BoundsControllerOp,
   DamageScaleControllerOp,
   HitEligibilityControllerOp,
   HitFallControllerOp,
@@ -168,20 +169,22 @@ export function executeControllerIr(
   } else if (type === "remappal") {
     applyRemapPalController(next, controller);
   } else if (type === "posfreeze") {
-    const value = numberParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x");
-    const y = numberParam(controller, next, context, "y");
+    const operation = boundsOperation(controller, "posfreeze");
+    const value = operation ? undefined : numberParam(controller, next, context, "value");
+    const x = operation ? undefined : numberParam(controller, next, context, "x");
+    const y = operation ? undefined : numberParam(controller, next, context, "y");
     const freeze = value !== undefined ? value !== 0 : x === undefined && y === undefined;
     next.posFreeze = {
-      x: value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze,
-      y: value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze,
+      x: operation?.x ?? (value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze),
+      y: operation?.y ?? (value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze),
     };
   } else if (type === "screenbound") {
-    const camera = pairParam(controller, next, context, "movecamera");
+    const operation = boundsOperation(controller, "screenbound");
+    const camera = operation ? undefined : pairParam(controller, next, context, "movecamera");
     next.screenBound = {
-      bound: (numberParam(controller, next, context, "value") ?? 0) !== 0,
-      moveCameraX: (camera?.[0] ?? 0) !== 0,
-      moveCameraY: (camera?.[1] ?? 0) !== 0,
+      bound: operation?.bound ?? ((numberParam(controller, next, context, "value") ?? 0) !== 0),
+      moveCameraX: operation?.moveCameraX ?? ((camera?.[0] ?? 0) !== 0),
+      moveCameraY: operation?.moveCameraY ?? ((camera?.[1] ?? 0) !== 0),
     };
   } else if (type === "assertspecial") {
     applyAssertSpecialController(next, controller);
@@ -277,6 +280,15 @@ function resourceOperation<T extends ResourceControllerOp["controllerType"]>(
 ): Extract<ResourceControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "resource" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<ResourceControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function boundsOperation<T extends BoundsControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<BoundsControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "bounds" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<BoundsControllerOp, { controllerType: T }>)
     : undefined;
 }
 

@@ -255,14 +255,14 @@ describe("StateControllerExecutor", () => {
     });
     const unsupported: string[] = [];
     const compiledHitVelSet = compileControllerIr(controller("HitVelSet", { x: "1", y: "1" }));
+    const compiledPosFreeze = compileControllerIr(controller("PosFreeze", { x: "1", y: "0" }));
+    const compiledScreenBound = compileControllerIr(controller("ScreenBound", { value: "0", movecamera: "0,1" }));
 
     state = executeControllerIr(compiledHitVelSet, state, (item) => unsupported.push(item));
     state = executeStateController(controller("PlayerPush", { value: "0" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("Turn", {}), state, (item) => unsupported.push(item));
-    state = executeStateController(controller("PosFreeze", { x: "1", y: "0" }), state, (item) => unsupported.push(item));
-    state = executeStateController(controller("ScreenBound", { value: "0", movecamera: "0,1" }), state, (item) =>
-      unsupported.push(item),
-    );
+    state = executeControllerIr(compiledPosFreeze, state, (item) => unsupported.push(item));
+    state = executeControllerIr(compiledScreenBound, state, (item) => unsupported.push(item));
     const compiledNotHitBy = compileControllerIr(controller("NotHitBy", { value: "SCA", time: "12" }));
     const compiledHitOverride = compileControllerIr(
       controller("HitOverride", { attr: "S,NA", stateno: "777", slot: "1", time: "12", forceair: "1" }),
@@ -291,6 +291,14 @@ describe("StateControllerExecutor", () => {
     expect(state.facing).toBe(-1);
     expect(state.posFreeze).toEqual({ x: true, y: false });
     expect(state.screenBound).toEqual({ bound: false, moveCameraX: false, moveCameraY: true });
+    expect(compiledPosFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
+    expect(compiledScreenBound.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: false,
+      moveCameraY: true,
+    });
     expect(state.hitBy?.slot1).toEqual({ mode: "deny", attr: "SCA", remaining: 12 });
     expect(state.hitBy?.slot2).toEqual({ mode: "allow", attr: "S,NA", remaining: 8 });
     expect(compiledNotHitBy.operation).toMatchObject({ kind: "eligibility", controllerType: "nothitby" });

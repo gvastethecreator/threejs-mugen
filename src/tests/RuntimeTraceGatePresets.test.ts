@@ -41,6 +41,7 @@ import {
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
+  createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -424,6 +425,45 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported bounds artifact with typed PosFreeze and ScreenBound evidence", () => {
+    const artifact = createSyntheticImportedBoundsTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-bounds-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-bounds-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toContain("imported");
+    expect(evidence?.executedControllers.PosFreeze).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ScreenBound).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["bounds:posfreeze"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["bounds:screenbound"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          posFreezeX: true,
+          posFreezeY: false,
+          screenBound: false,
+          moveCameraX: false,
+          moveCameraY: true,
+        }),
+      ]),
     );
   });
 

@@ -49,6 +49,8 @@ export type RuntimeTraceActor = {
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   renderScale?: { x: number; y: number };
+  posFreeze?: { x: boolean; y: boolean };
+  screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   facing: 1 | -1;
   hitPause: number;
   guarding: boolean;
@@ -408,6 +410,11 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleXAtMost?: number;
   observedScaleYAtLeast?: number;
   observedScaleYAtMost?: number;
+  posFreezeX?: boolean;
+  posFreezeY?: boolean;
+  screenBound?: boolean;
+  moveCameraX?: boolean;
+  moveCameraY?: boolean;
 };
 
 export type RuntimeTraceGateActorFrameEvidence = {
@@ -427,6 +434,11 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxVel: { x: number; y: number };
   minScale: { x: number; y: number };
   maxScale: { x: number; y: number };
+  posFreezeX?: boolean;
+  posFreezeY?: boolean;
+  screenBound?: boolean;
+  moveCameraX?: boolean;
+  moveCameraY?: boolean;
   firstTick: number;
   lastTick: number;
   frames: number;
@@ -967,6 +979,11 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxVel: { ...actor.vel },
               minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              posFreezeX: actor.posFreeze?.x,
+              posFreezeY: actor.posFreeze?.y,
+              screenBound: actor.screenBound?.bound,
+              moveCameraX: actor.screenBound?.moveCameraX,
+              moveCameraY: actor.screenBound?.moveCameraY,
               firstTick: frame.tick,
               lastTick: frame.tick,
               frames: 1,
@@ -1582,6 +1599,11 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.moveType,
     actor.clsn1Count,
     actor.clsn2Count,
+    actor.posFreeze?.x === undefined ? "pfx*" : `pfx${actor.posFreeze.x ? 1 : 0}`,
+    actor.posFreeze?.y === undefined ? "pfy*" : `pfy${actor.posFreeze.y ? 1 : 0}`,
+    actor.screenBound?.bound === undefined ? "sb*" : `sb${actor.screenBound.bound ? 1 : 0}`,
+    actor.screenBound?.moveCameraX === undefined ? "mcx*" : `mcx${actor.screenBound.moveCameraX ? 1 : 0}`,
+    actor.screenBound?.moveCameraY === undefined ? "mcy*" : `mcy${actor.screenBound.moveCameraY ? 1 : 0}`,
   ].join(":");
 }
 
@@ -1596,6 +1618,11 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.moveType,
     actor.clsn1Count,
     actor.clsn2Count,
+    actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
+    actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
+    actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
+    actor.moveCameraX === undefined ? "mcx*" : `mcx${actor.moveCameraX ? 1 : 0}`,
+    actor.moveCameraY === undefined ? "mcy*" : `mcy${actor.moveCameraY ? 1 : 0}`,
   ].join(":");
 }
 
@@ -1625,7 +1652,12 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleXAtLeast === undefined || actor.maxScale.x >= requirement.observedScaleXAtLeast) &&
     (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
     (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
-    (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost)
+    (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
+    (requirement.posFreezeX === undefined || actor.posFreezeX === requirement.posFreezeX) &&
+    (requirement.posFreezeY === undefined || actor.posFreezeY === requirement.posFreezeY) &&
+    (requirement.screenBound === undefined || actor.screenBound === requirement.screenBound) &&
+    (requirement.moveCameraX === undefined || actor.moveCameraX === requirement.moveCameraX) &&
+    (requirement.moveCameraY === undefined || actor.moveCameraY === requirement.moveCameraY)
   );
 }
 
@@ -1853,6 +1885,8 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           y: roundTraceNumber(actor.runtime.renderScale.y),
         }
       : undefined,
+    posFreeze: actor.runtime.posFreeze ? { ...actor.runtime.posFreeze } : undefined,
+    screenBound: actor.runtime.screenBound ? { ...actor.runtime.screenBound } : undefined,
     facing: actor.runtime.facing,
     hitPause: actor.hitPause ?? 0,
     guarding: actor.runtime.guarding ?? false,
@@ -1868,8 +1902,18 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
   };
 }
 
-function summarizeActorForChecksum(actor: RuntimeTraceActor): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "targetCount" | "effect"> {
-  const { animTime: _animTime, hitPause: _hitPause, targetCount: _targetCount, effect: _effect, ...checksumActor } = actor;
+function summarizeActorForChecksum(
+  actor: RuntimeTraceActor,
+): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "targetCount" | "effect" | "posFreeze" | "screenBound"> {
+  const {
+    animTime: _animTime,
+    hitPause: _hitPause,
+    targetCount: _targetCount,
+    effect: _effect,
+    posFreeze: _posFreeze,
+    screenBound: _screenBound,
+    ...checksumActor
+  } = actor;
   return checksumActor;
 }
 

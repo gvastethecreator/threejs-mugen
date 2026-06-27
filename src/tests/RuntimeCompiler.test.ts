@@ -241,6 +241,24 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static bounds controllers into typed operations", () => {
+    const posFreeze = compileControllerIr(controller(200, "PosFreeze", [], { x: "1", y: "0" }));
+    const posFreezeDefault = compileControllerIr(controller(200, "PosFreeze", [], {}));
+    const screenBound = compileControllerIr(controller(200, "ScreenBound", [], { value: "0", movecamera: "0,1" }));
+    const dynamic = compileControllerIr(controller(200, "ScreenBound", [], { value: "Const(data.life)" }));
+
+    expect(posFreeze.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: false });
+    expect(posFreezeDefault.operation).toEqual({ kind: "bounds", controllerType: "posfreeze", x: true, y: true });
+    expect(screenBound.operation).toEqual({
+      kind: "bounds",
+      controllerType: "screenbound",
+      bound: false,
+      moveCameraX: false,
+      moveCameraY: true,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static resource and variable controllers into typed operations", () => {
     const ctrl = compileControllerIr(controller(200, "CtrlSet", [], { value: "1" }));
     const life = compileControllerIr(controller(200, "LifeAdd", [], { value: "-25", kill: "0" }));

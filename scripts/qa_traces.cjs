@@ -76,6 +76,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDamageScaleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-bounds",
+      required: true,
+      artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -833,6 +838,8 @@ function validateTraceCoverage(coverage) {
     "explod",
     "removeexplod",
     "kinematic:hitvelset",
+    "bounds:posfreeze",
+    "bounds:screenbound",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -865,6 +872,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-removeexplod",
     "synthetic-imported-reversal",
     "synthetic-imported-damage-scale",
+    "synthetic-imported-bounds",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

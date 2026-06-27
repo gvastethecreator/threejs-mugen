@@ -497,6 +497,58 @@ export function createSyntheticImportedDamageScaleTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedBoundsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bounds",
+    displayName: "Synthetic Imported Bounds",
+    withBoundsControllers: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-bounds-golden",
+      label: "Synthetic imported PosFreeze/ScreenBound route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported bounds trace proves static PosFreeze and ScreenBound lower into typed bounds operations and expose one-frame runtime clamp/camera flags. It does not claim exact MUGEN/IKEMEN camera, screen-edge, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-bounds-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "PosFreeze", "ScreenBound"],
+        requiredExecutedOperations: ["hitdef", "bounds:posfreeze", "bounds:screenbound"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            posFreezeX: true,
+            posFreezeY: false,
+            screenBound: false,
+            moveCameraX: false,
+            moveCameraY: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4068,6 +4120,7 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveRemoveOnGetHitExplod?: boolean;
   withInGuardDistGuardStart?: boolean;
   withAutoGuardStartStates?: boolean;
+  withBoundsControllers?: boolean;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4189,6 +4242,7 @@ ctrl = 0
 
 ${assertSpecialLine}
 ${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
+${options.withBoundsControllers ? boundsControllerBlock() : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4548,6 +4602,22 @@ function attackMultiplierController(value: number): string {
 type = AttackMulSet
 trigger1 = Time = 0
 value = ${value}
+`;
+}
+
+function boundsControllerBlock(): string {
+  return `
+[State 200, PosFreeze Bounds Probe]
+type = PosFreeze
+trigger1 = Time >= 0
+x = 1
+y = 0
+
+[State 200, ScreenBound Bounds Probe]
+type = ScreenBound
+trigger1 = Time >= 0
+value = 0
+movecamera = 0,1
 `;
 }
 

@@ -175,6 +175,21 @@ export type GravityKinematicControllerOp = {
 
 export type KinematicControllerOp = MovementKinematicControllerOp | GravityKinematicControllerOp;
 
+export type BoundsControllerOp =
+  | {
+      kind: "bounds";
+      controllerType: "posfreeze";
+      x: boolean;
+      y: boolean;
+    }
+  | {
+      kind: "bounds";
+      controllerType: "screenbound";
+      bound: boolean;
+      moveCameraX: boolean;
+      moveCameraY: boolean;
+    };
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
@@ -251,6 +266,7 @@ export type ControllerOp =
   | HitFallControllerOp
   | FallEnvShakeControllerOp
   | KinematicControllerOp
+  | BoundsControllerOp
   | ResourceControllerOp
   | VariableControllerOp
   | HitEligibilityControllerOp
@@ -262,6 +278,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   const type = controller.type.toLowerCase();
   if (isKinematicController(type)) {
     return compileKinematicControllerOp(controller, type);
+  }
+  if (type === "posfreeze" || type === "screenbound") {
+    return compileBoundsControllerOp(controller, type);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -338,6 +357,42 @@ function compileKinematicControllerOp(controller: MugenStateController, type: Ki
     y: firstNumber(findParam(controller, "y")) ?? pair?.[1],
   });
   return op.x === undefined && op.y === undefined ? undefined : op;
+}
+
+function compileBoundsControllerOp(controller: MugenStateController, type: BoundsControllerOp["controllerType"]): BoundsControllerOp | undefined {
+  if (type === "posfreeze") {
+    const valueRaw = findParam(controller, "value");
+    const xRaw = findParam(controller, "x");
+    const yRaw = findParam(controller, "y");
+    const value = optionalBooleanParam(valueRaw);
+    const x = optionalBooleanParam(xRaw);
+    const y = optionalBooleanParam(yRaw);
+    if (value === "invalid" || x === "invalid" || y === "invalid") {
+      return undefined;
+    }
+    const freeze = value === undefined ? x === undefined && y === undefined : value;
+    return {
+      kind: "bounds",
+      controllerType: "posfreeze",
+      x: value === undefined ? x ?? freeze : freeze,
+      y: value === undefined ? y ?? freeze : freeze,
+    };
+  }
+
+  const valueRaw = findParam(controller, "value");
+  const moveCameraRaw = findParam(controller, "movecamera");
+  const value = valueRaw === undefined ? 0 : firstNumber(valueRaw);
+  const moveCamera = moveCameraRaw === undefined ? undefined : strictNumberPair(moveCameraRaw);
+  if (value === undefined || (moveCameraRaw !== undefined && moveCamera === undefined)) {
+    return undefined;
+  }
+  return {
+    kind: "bounds",
+    controllerType: "screenbound",
+    bound: value !== 0,
+    moveCameraX: (moveCamera?.[0] ?? 0) !== 0,
+    moveCameraY: (moveCamera?.[1] ?? 0) !== 0,
+  };
 }
 
 function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
@@ -868,6 +923,13 @@ function stripMugenString(value: string | undefined): string | undefined {
 function booleanNumber(value: string | undefined): boolean | undefined {
   const numberValue = firstNumber(value);
   return numberValue === undefined ? undefined : numberValue !== 0;
+}
+
+function optionalBooleanParam(value: string | undefined): boolean | "invalid" | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  return booleanNumber(value) ?? "invalid";
 }
 
 function controllerDuration(value: number): number {

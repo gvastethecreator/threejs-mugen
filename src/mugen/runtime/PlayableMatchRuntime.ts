@@ -2424,6 +2424,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "kinematic") {
     return `kinematic:${operation.controllerType}`;
   }
+  if (operation.kind === "bounds") {
+    return `bounds:${operation.controllerType}`;
+  }
   if (operation.kind === "resource") {
     return `resource:${operation.controllerType}`;
   }
