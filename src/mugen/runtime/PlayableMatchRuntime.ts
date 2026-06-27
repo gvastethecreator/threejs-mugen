@@ -602,6 +602,7 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
   if (fighter.runtime.stateNo !== stateNo) {
     fighter.runtime.prevStateNo = fighter.runtime.stateNo;
+    fighter.runtime.prevStateType = currentStateType(fighter);
     fighter.runtime.prevMoveType = currentStateMoveType(fighter);
     fighter.runtime.stateNo = stateNo;
     if (options.resetElapsed) {
@@ -610,6 +611,14 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
     return;
   }
   fighter.runtime.stateNo = stateNo;
+}
+
+function currentStateType(fighter: FighterMatchState): CharacterRuntimeState["stateType"] {
+  const owner = fighter.stateOwner ?? fighter;
+  const state =
+    owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
+    owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
+  return state?.type ? normalizeStateType(state.type, fighter.runtime.stateType) : fighter.runtime.stateType;
 }
 
 function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState["moveType"] {

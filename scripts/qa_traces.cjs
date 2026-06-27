@@ -61,6 +61,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPrevMoveTypeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-prevstatetype",
+      required: true,
+      artifact: presets.createSyntheticImportedPrevStateTypeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-enemynear",
       required: true,
       artifact: presets.createSyntheticImportedEnemyNearTraceArtifact(),

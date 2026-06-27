@@ -73,7 +73,7 @@ describe("scanIkemenFeatures", () => {
     const files = new Map<string, string>([
       [
         "chars/neo/neo.cns",
-        "[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\nvalue = 210\n",
+        "[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\ntrigger3 = PrevAnim = 200\nvalue = 210\n",
       ],
     ]);
 
@@ -83,7 +83,8 @@ describe("scanIkemenFeatures", () => {
     });
 
     expect(report.features["IKEMEN extended trigger PrevMoveType"]).toBeUndefined();
-    expect(report.features["IKEMEN extended trigger PrevStateType"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger PrevStateType"]).toBeUndefined();
+    expect(report.features["IKEMEN extended trigger PrevAnim"]).toBe(1);
   });
 
   it("classifies screenpack DEF paths as report-only IKEMEN package signals", () => {

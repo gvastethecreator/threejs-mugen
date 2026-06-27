@@ -127,6 +127,7 @@ const supportedExpressionIdentifiers = new Set([
   "power",
   "prevmovetype",
   "prevstateno",
+  "prevstatetype",
   "projcontact",
   "projcontacttime",
   "projguarded",

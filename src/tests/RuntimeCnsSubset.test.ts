@@ -16,6 +16,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("3 + 4 * 2", { self: state })).toBe(11);
     expect(evaluateExpression("PrevStateNo = 100", { self: runtimeState({ prevStateNo: 100 }) })).toBe(1);
     expect(evaluateExpression("PrevStateNo = 100", { self: runtimeState() })).toBe(0);
+    expect(evaluateExpression("PrevStateType = A", { self: runtimeState({ prevStateType: "A" }) })).toBe(1);
+    expect(evaluateExpression("PrevStateType = A", { self: runtimeState() })).toBe(0);
     expect(evaluateExpression("PrevMoveType = A", { self: runtimeState({ prevMoveType: "A" }) })).toBe(1);
     expect(evaluateExpression("PrevMoveType = A", { self: runtimeState() })).toBe(0);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);

@@ -322,6 +322,24 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 269, 270]));
   });
 
+  it("tracks PrevStateType for imported state trigger routing", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      attackStateType: "A",
+      withPrevStateTypeBranch: { intermediateStateNo: 271, finalStateNo: 272 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(271);
+    expect(snapshot.actors[0]?.runtime.prevStateType).toBe("A");
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(272);
+    expect(snapshot.actors[0]?.runtime.prevStateType).toBe("S");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toEqual(expect.arrayContaining([200, 271, 272]));
+  });
+
   it("respects imported HitDef kill = 0 for direct hits", () => {
     const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 2000, hitDefKill: false });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
@@ -1726,6 +1744,7 @@ function createImportedFixture(
     hitDefDamage?: number;
     hitDefKill?: boolean;
     hitDefAttr?: string;
+    attackStateType?: "S" | "C" | "A" | "L";
     hitDefPriority?: number;
     hitDefTargetId?: number;
     hitDefP1StateNo?: number;
@@ -1788,6 +1807,7 @@ function createImportedFixture(
     projHitStateNo?: number;
     projGuardStateNo?: number;
     withPrevStateBranch?: { intermediateStateNo: number; finalStateNo: number };
+    withPrevStateTypeBranch?: { intermediateStateNo: number; finalStateNo: number };
     withPrevMoveTypeBranch?: { intermediateStateNo: number; finalStateNo: number };
   } = {},
 ): DemoFighterDefinition {
@@ -1863,6 +1883,9 @@ ctrl = 1
     ...(options.withPrevMoveTypeBranch === undefined
       ? []
       : [options.withPrevMoveTypeBranch.intermediateStateNo, options.withPrevMoveTypeBranch.finalStateNo]),
+    ...(options.withPrevStateTypeBranch === undefined
+      ? []
+      : [options.withPrevStateTypeBranch.intermediateStateNo, options.withPrevStateTypeBranch.finalStateNo]),
   ];
   const extraStates = [...new Set(extraStateNos)]
     .map(
@@ -2436,6 +2459,15 @@ value = ${options.withPrevMoveTypeBranch.intermediateStateNo}
 ctrl = 0
 `
     : "";
+  const prevStateTypeEntry = options.withPrevStateTypeBranch
+    ? `
+[State 200, PrevStateType Entry]
+type = ChangeState
+trigger1 = Time = 0
+value = ${options.withPrevStateTypeBranch.intermediateStateNo}
+ctrl = 0
+`
+    : "";
   const prevStateBranchStates = options.withPrevStateBranch
     ? `
 [Statedef ${options.withPrevStateBranch.intermediateStateNo}]
@@ -2479,6 +2511,29 @@ type = S
 movetype = I
 physics = S
 anim = ${options.withPrevMoveTypeBranch.finalStateNo}
+ctrl = 1
+`
+    : "";
+  const prevStateTypeBranchStates = options.withPrevStateTypeBranch
+    ? `
+[Statedef ${options.withPrevStateTypeBranch.intermediateStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevStateTypeBranch.intermediateStateNo}
+ctrl = 0
+
+[State ${options.withPrevStateTypeBranch.intermediateStateNo}, PrevStateType Branch]
+type = ChangeState
+trigger1 = PrevStateType = A
+value = ${options.withPrevStateTypeBranch.finalStateNo}
+ctrl = 1
+
+[Statedef ${options.withPrevStateTypeBranch.finalStateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${options.withPrevStateTypeBranch.finalStateNo}
 ctrl = 1
 `
     : "";
@@ -2548,7 +2603,7 @@ ctrl = 1
 ${passiveControllers}
 
 [Statedef 200]
-type = S
+type = ${options.attackStateType ?? "S"}
 movetype = A
 physics = S
 anim = 200
@@ -2563,6 +2618,7 @@ ctrl = 1
 
 ${prevStateEntry}
 ${prevMoveTypeEntry}
+${prevStateTypeEntry}
 [State 200, Runtime HitDef]
 type = HitDef
 trigger1 = Time = 0
@@ -2621,6 +2677,7 @@ ctrl = 0
 ${changeStateDef}
 ${prevStateBranchStates}
 ${prevMoveTypeBranchStates}
+${prevStateTypeBranchStates}
 
 ${options.hitDefP1StateNo !== undefined ? `
 [Statedef ${options.hitDefP1StateNo}]
@@ -2759,6 +2816,10 @@ ctrl = 0
   if (options.withPrevMoveTypeBranch) {
     animations.set(options.withPrevMoveTypeBranch.intermediateStateNo, fixtureAction(options.withPrevMoveTypeBranch.intermediateStateNo));
     animations.set(options.withPrevMoveTypeBranch.finalStateNo, fixtureAction(options.withPrevMoveTypeBranch.finalStateNo));
+  }
+  if (options.withPrevStateTypeBranch) {
+    animations.set(options.withPrevStateTypeBranch.intermediateStateNo, fixtureAction(options.withPrevStateTypeBranch.intermediateStateNo));
+    animations.set(options.withPrevStateTypeBranch.finalStateNo, fixtureAction(options.withPrevStateTypeBranch.finalStateNo));
   }
 
   return {
