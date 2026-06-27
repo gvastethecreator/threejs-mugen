@@ -3514,7 +3514,7 @@ export class App {
   private renderStudioHealthPanel(summary: StudioProjectSummary): string {
     const statusCounts = countBy(summary.gates, (gate) => this.statusClassName(gate.status));
     const primaryGate = this.getPrimaryStudioGate(summary);
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).slice(0, 4);
+    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).slice(0, 3);
     return `
       <div class="section section-emphasis studio-health-panel">
         <div class="section-heading-row">

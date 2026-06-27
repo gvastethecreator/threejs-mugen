@@ -11495,6 +11495,149 @@ input {
   line-height: 1.12;
 }
 
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-health-panel {
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+@media (min-width: 1100px) {
+  .app-shell.mode-studio[data-studio-tab="workbench"] {
+    grid-template-columns: minmax(284px, 306px) minmax(560px, 1fr) minmax(372px, 404px);
+  }
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid span {
+  min-height: 30px;
+  align-content: center;
+  padding-block: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-primary-next {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 38px;
+  gap: 7px;
+  padding: 7px 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-primary-next strong,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-primary-next small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue {
+  gap: 0;
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-row {
+  grid-template-columns: minmax(0, 1fr) minmax(86px, auto);
+  min-height: 34px;
+  gap: 4px 7px;
+  align-items: center;
+  padding: 5px 7px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-main {
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-main strong,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-main small,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-next {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-meta {
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: end;
+  gap: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-meta .status-badge {
+  min-height: 20px;
+  padding-block: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-queue-next {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .empty-state {
+  min-height: 0;
+  gap: 5px;
+  padding: 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .empty-state button {
+  min-height: 32px;
+  padding-block: 5px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-modules-panel {
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-table {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-row {
+  grid-template-columns: minmax(0, 1fr) minmax(72px, auto);
+  min-height: 42px;
+  gap: 2px 7px;
+  align-items: start;
+  padding: 5px 7px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-row-head {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-name {
+  grid-column: 1;
+  grid-row: 1;
+  gap: 1px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-row > span:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-name strong,
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-name small,
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-blocked {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-contracts {
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: auto auto auto auto;
+  justify-content: start;
+  gap: 3px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-module-blocked {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: end;
+  max-width: none;
+  text-align: right;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .engine-modules-panel .full-width-action {
+  min-height: 32px;
+  padding-block: 5px;
+}
+
 .app-shell.mode-studio .studio-chrome-brand strong,
 .app-shell.mode-studio .studio-chrome-brand small,
 .app-shell.mode-studio .studio-chrome-readout b,
