@@ -71,6 +71,41 @@ describe("TargetSystem", () => {
     expect(actor.runtime.targetCount).toBe(1);
     expect(snapshot.targets).toEqual([{ actorId: "p2", targetId: 77, age: 1 }]);
     expect(snapshot.bindings).toEqual([{ actorId: "p2", targetId: 77, remaining: 1, offset: { x: 10, y: -5 } }]);
+    expect(
+      world.snapshotLinks({
+        ownerId: actor.id,
+        targets: snapshot.targets,
+        bindings: snapshot.bindings,
+        bindToTarget: { actorId: "p2", targetId: 77, remaining: 1, offset: { x: 26, y: -80 } },
+      }),
+    ).toEqual([
+      {
+        ownerId: "p1",
+        actorId: "p2",
+        targetId: 77,
+        age: 1,
+        binding: { actorId: "p2", targetId: 77, remaining: 1, offset: { x: 10, y: -5 } },
+      },
+      {
+        ownerId: "p1",
+        actorId: "p2",
+        targetId: 77,
+        age: 1,
+        binding: { actorId: "p2", targetId: 77, remaining: 1, offset: { x: 26, y: -80 } },
+      },
+    ]);
+  });
+
+  it("builds unbound target-link snapshots from target memory snapshots", () => {
+    const world = new RuntimeTargetWorld();
+
+    expect(
+      world.snapshotLinks({
+        ownerId: "p1",
+        targets: [{ actorId: "p2", targetId: 77, age: 4 }],
+        bindings: [],
+      }),
+    ).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 77, age: 4 }]);
   });
 
   it("advances target memory and target bindings with expiry", () => {

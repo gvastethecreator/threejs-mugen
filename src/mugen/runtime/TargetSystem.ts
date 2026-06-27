@@ -26,6 +26,19 @@ export type RuntimeTargetMemorySnapshot = {
   bindings: RuntimeTargetBindingSnapshot[];
 };
 
+export type RuntimeTargetLinkSnapshot = {
+  ownerId: string;
+  actorId: string;
+  targetId?: number;
+  age: number;
+  binding?: RuntimeTargetBindingSnapshot;
+};
+
+export type RuntimeTargetLinkSource = RuntimeTargetMemorySnapshot & {
+  ownerId: string;
+  bindToTarget?: RuntimeTargetBindingSnapshot;
+};
+
 export type RuntimeTargetControllerActor = {
   id: string;
   runtime: CharacterRuntimeState;
@@ -69,6 +82,10 @@ export class RuntimeTargetWorld {
 
   snapshot(actor: RuntimeTargetControllerActor): RuntimeTargetMemorySnapshot {
     return snapshotRuntimeTargetMemory({ targets: actor.targets, bindings: actor.targetBindings });
+  }
+
+  snapshotLinks(source: RuntimeTargetLinkSource): RuntimeTargetLinkSnapshot[] {
+    return snapshotRuntimeTargetLinks(source);
   }
 
   count(actor: RuntimeTargetControllerActor, targetId?: number): number {
@@ -234,6 +251,37 @@ export function snapshotRuntimeTargetMemory(memory: RuntimeTargetMemory): Runtim
   };
 }
 
+export function snapshotRuntimeTargetLinks(source: RuntimeTargetLinkSource): RuntimeTargetLinkSnapshot[] {
+  const links: RuntimeTargetLinkSnapshot[] = [];
+  for (const target of source.targets) {
+    const bindings = [
+      ...source.bindings.filter((binding) => binding.actorId === target.actorId && binding.targetId === target.targetId),
+      ...(source.bindToTarget?.actorId === target.actorId && source.bindToTarget.targetId === target.targetId
+        ? [source.bindToTarget]
+        : []),
+    ];
+    if (bindings.length === 0) {
+      links.push({
+        ownerId: source.ownerId,
+        actorId: target.actorId,
+        targetId: target.targetId,
+        age: target.age,
+      });
+      continue;
+    }
+    for (const binding of bindings) {
+      links.push({
+        ownerId: source.ownerId,
+        actorId: target.actorId,
+        targetId: target.targetId,
+        age: target.age,
+        binding: cloneRuntimeTargetBindingSnapshot(binding),
+      });
+    }
+  }
+  return links;
+}
+
 export function dropRuntimeTargets(
   memory: RuntimeTargetMemory,
   excludeId: number | undefined,
@@ -334,6 +382,15 @@ export function clampRuntimeTargetDuration(value: number): number {
 
 function syncRuntimeTargetCount(actor: RuntimeTargetControllerActor): void {
   actor.runtime.targetCount = actor.targets.length;
+}
+
+function cloneRuntimeTargetBindingSnapshot(binding: RuntimeTargetBindingSnapshot): RuntimeTargetBindingSnapshot {
+  return {
+    actorId: binding.actorId,
+    targetId: binding.targetId,
+    remaining: binding.remaining,
+    offset: { ...binding.offset },
+  };
 }
 
 function findControllerParam(controller: MugenStateController, key: string): string | undefined {

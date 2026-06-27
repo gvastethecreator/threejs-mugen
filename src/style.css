@@ -21626,3 +21626,101 @@ input {
     box-shadow: none;
   }
 }
+
+/* Desktop viewport instrument strip: less card, more editor telemetry. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .stage-status {
+    left: 18px;
+    bottom: 10px;
+    width: min(440px, calc(100% - 36px));
+    max-height: 62px;
+  }
+
+  .app-shell.mode-studio .stage-status-card {
+    display: grid;
+    grid-template-columns: minmax(116px, 0.5fr) minmax(0, 1.5fr);
+    align-items: stretch;
+    gap: 0;
+    min-height: 52px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard) !important;
+    border-radius: 0;
+    background: rgba(2, 4, 6, 0.92) !important;
+    box-shadow:
+      inset 1px 1px 0 rgba(255, 255, 255, 0.05),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.88);
+  }
+
+  .app-shell.mode-studio .stage-status-main {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    gap: 3px;
+    padding: 6px 8px;
+    border-right: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+  }
+
+  .app-shell.mode-studio .stage-status-mode,
+  .app-shell.mode-studio .stage-status-main strong,
+  .app-shell.mode-studio .stage-status-main small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .stage-status-mode {
+    color: color-mix(in srgb, var(--section-accent) 56%, var(--subtle));
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .stage-status-main strong {
+    color: var(--text);
+    font-size: 12.5px;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio .stage-status-main small {
+    display: none;
+  }
+
+  .app-shell.mode-studio .stage-status-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-self: stretch;
+    border: 0;
+    background: var(--dcc-slot);
+  }
+
+  .app-shell.mode-studio .stage-status-metric {
+    min-height: 26px;
+    align-content: center;
+    padding: 4px 6px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio .stage-status-metric:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .stage-status-metric:nth-last-child(-n + 4) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .section > p {
+    margin: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-row);
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.2;
+  }
+}

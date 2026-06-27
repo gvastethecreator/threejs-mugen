@@ -240,6 +240,10 @@ function iconForStudioTab(tab: StudioTab): StudioIconName {
   return icons[tab];
 }
 
+function labelForStudioTab(tab: StudioTab): string {
+  return STUDIO_TABS.find((candidate) => candidate.id === tab)?.label ?? tab;
+}
+
 function iconForAction(label: string, attribute: string): StudioIconName {
   const key = `${label} ${attribute}`.toLowerCase();
   if (key.includes("playtest") || key.includes("match")) {
@@ -9621,8 +9625,8 @@ export class App {
         return `
           <div class="stage-status-card">
             <div class="stage-status-main">
-              <span class="stage-status-mode">Studio Mode</span>
-              <strong>Inspector preview</strong>
+              <span class="stage-status-mode">Viewport</span>
+              <strong>Inspector</strong>
               <small>Action ${renderSnapshot.selectedActionId ?? "-"} / frame ${actor?.runtime.frameIndex ?? "-"} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</small>
             </div>
             <div class="stage-status-grid" aria-label="Inspector collision summary">
@@ -9635,11 +9639,12 @@ export class App {
       const gateIssues = summary.gates.filter((gate) => gate.status === "warn" || gate.status === "fail" || gate.status === "pending").length;
       const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
       const compiled = this.lastCompiledProject;
+      const tabLabel = labelForStudioTab(this.studioTab);
       return `
         <div class="stage-status-card">
           <div class="stage-status-main">
-            <span class="stage-status-mode">Studio Mode</span>
-            <strong>${escapeHtml(this.studioTab)} deck</strong>
+            <span class="stage-status-mode">Viewport</span>
+            <strong>${escapeHtml(tabLabel)}</strong>
             <small>Playtest ${escapeHtml(actor?.label ?? "P1")} vs ${escapeHtml(opponent?.label ?? "CPU")}</small>
           </div>
           <div class="stage-status-grid" aria-label="Studio state summary">

@@ -11,7 +11,7 @@ import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
-import { RuntimeTargetWorld } from "./TargetSystem";
+import { RuntimeTargetWorld, type RuntimeTargetLinkSnapshot } from "./TargetSystem";
 import type {
   ActorSnapshot,
   MugenSnapshot,
@@ -48,13 +48,7 @@ export type MatchWorldActorRecord = {
   lifecycle: MatchWorldActorLifecycleRecord;
 };
 
-export type MatchWorldTargetLink = {
-  ownerId: string;
-  actorId: string;
-  targetId?: number;
-  age: number;
-  binding?: RuntimeTargetBindingSnapshot;
-};
+export type MatchWorldTargetLink = RuntimeTargetLinkSnapshot;
 
 export type MatchWorldActorLifecycleStatus = "spawned" | "active" | "removed";
 
@@ -171,7 +165,7 @@ export class MatchWorld {
     }
     const records = buildActorRecordBases(snapshot);
     const lifecycle = this.lifecycleTracker.update(snapshot.tick, records);
-    this.actorRegistry = buildMatchWorldActorRegistryFromRecords(records, lifecycle, effectStores);
+    this.actorRegistry = buildMatchWorldActorRegistryFromRecords(records, lifecycle, effectStores, this.targetWorld);
     this.registryKey = key;
     return this.actorRegistry;
   }
@@ -187,6 +181,7 @@ export function buildMatchWorldActorRegistry(snapshot: MugenSnapshot): MatchWorl
     records,
     createStatelessLifecycle(snapshot.tick, records),
     inferEffectStoresFromSnapshot(snapshot),
+    new RuntimeTargetWorld(),
   );
 }
 
@@ -194,6 +189,7 @@ function buildMatchWorldActorRegistryFromRecords(
   records: MatchWorldActorRecordBase[],
   lifecycle: MatchWorldActorLifecycleSummary,
   effectStores: RuntimeEffectActorStoreSummary[],
+  targetWorld: RuntimeTargetWorld,
 ): MatchWorldActorRegistrySnapshot {
   const actors = records.map((actor) => ({
     ...actor,
@@ -215,32 +211,14 @@ function buildMatchWorldActorRegistryFromRecords(
     } else {
       effects.push(actor.id);
     }
-    for (const target of actor.targets) {
-      const bindings = [
-        ...actor.targetBindings.filter((candidate) => candidate.actorId === target.actorId && candidate.targetId === target.targetId),
-        ...(actor.bindToTarget?.actorId === target.actorId && actor.bindToTarget.targetId === target.targetId
-          ? [actor.bindToTarget]
-          : []),
-      ];
-      if (bindings.length === 0) {
-        targetLinks.push({
-          ownerId: actor.id,
-          actorId: target.actorId,
-          targetId: target.targetId,
-          age: target.age,
-        });
-      } else {
-        for (const binding of bindings) {
-          targetLinks.push({
-            ownerId: actor.id,
-            actorId: target.actorId,
-            targetId: target.targetId,
-            age: target.age,
-            binding: cloneTargetBinding(binding),
-          });
-        }
-      }
-    }
+    targetLinks.push(
+      ...targetWorld.snapshotLinks({
+        ownerId: actor.id,
+        targets: actor.targets,
+        bindings: actor.targetBindings,
+        bindToTarget: actor.bindToTarget,
+      }),
+    );
   }
 
   return {
