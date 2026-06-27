@@ -211,13 +211,13 @@ function findFreePort(startPort) {
   });
 }
 
-async function evaluateWithStableBridge(page, callback) {
+async function evaluateWithStableBridge(page, callback, arg) {
   let lastError;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
       await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
       await waitForBridge(page);
-      return await page.evaluate(callback);
+      return await page.evaluate(callback, arg);
     } catch (error) {
       lastError = error;
       if (!String(error?.message ?? error).includes("Execution context was destroyed")) {
@@ -350,11 +350,25 @@ async function captureCommandPaletteA11y(page, baseUrl, outDir) {
   const openedProbe = await page.evaluate(() => {
     const shell = document.querySelector(".command-palette-shell");
     const active = document.activeElement;
+    const selected = document.querySelector('.command-result[aria-selected="true"]');
+    const input = document.querySelector("[data-command-palette-search]");
     return {
       opened: Boolean(shell),
       searchFocused: active?.matches("[data-command-palette-search]") ?? false,
       activeInsideShell: shell?.contains(active) ?? false,
       resultButtons: document.querySelectorAll(".command-result").length,
+      initialActiveResult: selected?.textContent?.trim() ?? "",
+      inputActiveDescendant: input?.getAttribute("aria-activedescendant") ?? "",
+    };
+  });
+
+  await page.keyboard.press("ArrowDown");
+  const arrowNavigationProbe = await page.evaluate(() => {
+    const selected = document.querySelector('.command-result[aria-selected="true"]');
+    const input = document.querySelector("[data-command-palette-search]");
+    return {
+      arrowChangedActiveResult: selected?.id === input?.getAttribute("aria-activedescendant") && selected?.id === "command-result-1",
+      activeResultLabel: selected?.textContent?.trim() ?? "",
     };
   });
 
@@ -380,11 +394,27 @@ async function captureCommandPaletteA11y(page, baseUrl, outDir) {
     focusRestoredToLauncher: document.activeElement?.matches('[data-action="open-command-palette"]') ?? false,
   }));
 
+  await page.keyboard.press("Control+K");
+  await page.waitForSelector("[data-command-palette-search]");
+  await page.locator("[data-command-palette-search]").fill("build surface");
+  await page.keyboard.press("Enter");
+  await page.waitForSelector(".command-palette-shell", { state: "detached" });
+  await page.waitForTimeout(120);
+  const enterProbe = await page.evaluate(() => {
+    const shell = document.querySelector(".app-shell");
+    return {
+      keyboardEnterExecutedBuild: shell?.getAttribute("data-studio-tab") === "build",
+      keyboardEnterClosedPalette: !document.querySelector(".command-palette-shell"),
+    };
+  });
+
   return {
     ...openedProbe,
+    ...arrowNavigationProbe,
     focusStayedInsideAfterShiftTab,
     focusStayedInsideAfterManyTabs,
     ...closedProbe,
+    ...enterProbe,
   };
 }
 
@@ -808,7 +838,7 @@ async function captureStudioBgCtrlStage(page, baseUrl, outDir) {
   await page.screenshot({ path: path.join(outDir, "studio-stage-bgctrl.png"), fullPage: true });
   const canvasPng = await page.locator("canvas").first().screenshot({ path: path.join(outDir, "studio-stage-bgctrl-canvas.png") });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
-  return page.evaluate((canvasPixels) => {
+  return evaluateWithStableBridge(page, (canvasPixels) => {
     const bridge = window.__MUGEN_WEB_SANDBOX__;
     const stage = bridge?.snapshot?.stage;
     const controllerGroups = stage?.bgControllers ?? [];
@@ -1338,12 +1368,17 @@ function assertSmoke(diagnostics) {
     !commandPaletteA11y.opened ||
     !commandPaletteA11y.searchFocused ||
     !commandPaletteA11y.activeInsideShell ||
+    !commandPaletteA11y.inputActiveDescendant ||
+    !commandPaletteA11y.initialActiveResult ||
+    !commandPaletteA11y.arrowChangedActiveResult ||
     !commandPaletteA11y.focusStayedInsideAfterShiftTab ||
     !commandPaletteA11y.focusStayedInsideAfterManyTabs ||
     !commandPaletteA11y.closedOnEscape ||
-    !commandPaletteA11y.focusRestoredToLauncher
+    !commandPaletteA11y.focusRestoredToLauncher ||
+    !commandPaletteA11y.keyboardEnterClosedPalette ||
+    !commandPaletteA11y.keyboardEnterExecutedBuild
   ) {
-    failures.push("command-palette: focus trap, initial focus, Escape close, or focus restore failed");
+    failures.push("command-palette: focus trap, active result navigation, Enter execution, Escape close, or focus restore failed");
   }
   if (studioBuild.mode !== "studio" || studioBuild.studioTab !== "build" || !studioBuild.bodyHasBuild) {
     failures.push("studio-build: Build surface did not render");
@@ -1761,6 +1796,8 @@ function summarizeDiagnostics(diagnostics) {
     commandPaletteA11y: {
       opened: diagnostics.checks.commandPaletteA11y.opened,
       searchFocused: diagnostics.checks.commandPaletteA11y.searchFocused,
+      arrowChangedActiveResult: diagnostics.checks.commandPaletteA11y.arrowChangedActiveResult,
+      keyboardEnterExecutedBuild: diagnostics.checks.commandPaletteA11y.keyboardEnterExecutedBuild,
       focusStayedInsideAfterShiftTab: diagnostics.checks.commandPaletteA11y.focusStayedInsideAfterShiftTab,
       focusStayedInsideAfterManyTabs: diagnostics.checks.commandPaletteA11y.focusStayedInsideAfterManyTabs,
       closedOnEscape: diagnostics.checks.commandPaletteA11y.closedOnEscape,
