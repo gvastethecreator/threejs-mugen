@@ -22251,24 +22251,37 @@ input {
   }
 }
 
-/* Desktop Studio specificity lock: command actions stay row-based on every Studio tab. */
+/* Desktop Studio command rows: detail-bearing rows use 3 columns; simple actions keep full label width. */
 @media (min-width: 1161px) {
   .app-shell.mode-studio[data-studio-tab] .workspace-action-grid,
   .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid,
   .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column,
   .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0 !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button,
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button.primary-action {
+    grid-template-columns: 18px minmax(0, 1fr) minmax(80px, max-content);
+    min-height: 34px;
+    border-right: 0;
+    border-bottom: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button.primary-action {
+    grid-template-columns: 18px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: 42px;
+  }
+
   .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button,
   .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button,
   .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack button {
-    grid-template-columns: 18px minmax(0, 1fr) minmax(80px, max-content) !important;
+    grid-template-columns: 18px minmax(0, 1fr);
     min-height: 34px;
-    border-right: 0 !important;
-    border-bottom: 1px solid var(--dcc-line) !important;
+    border-right: 0;
+    border-bottom: 1px solid var(--dcc-line);
   }
 
   .app-shell.mode-studio[data-studio-tab] .workspace-action-grid .primary-action,
@@ -22276,18 +22289,26 @@ input {
   .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .full-width-action,
   .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column .primary-action,
   .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack .primary-action {
-    grid-column: auto !important;
+    grid-column: auto;
   }
 
   .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button:last-child,
   .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button:last-child,
   .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button:last-child,
   .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack button:last-child {
-    border-bottom: 0 !important;
+    border-bottom: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
-    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button.primary-action small {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
   }
 
   .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .action-label,
