@@ -326,6 +326,29 @@ export function createSyntheticImportedSelfStateNoExistTraceArtifact(options: Ru
   );
 }
 
+export function createSyntheticImportedSelfCommandTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-selfcommand",
+      displayName: "Synthetic Imported SelfCommand",
+      selfCommandEntry: { commandName: "x", stateNo: 278 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-selfcommand-golden",
+      targetLabel: "Synthetic imported SelfCommand route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [278],
+      requiredExecutedStates: [278],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported SelfCommand trace proves State -1 routing can branch on the current owner command buffer through a bounded SelfCommand alias. Helper/team/redirect command ownership and exact IKEMEN/MUGEN command lookup parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4942,6 +4965,7 @@ export type SyntheticImportedTraceFighterOptions = {
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
+  selfCommandEntry?: { commandName: string; stateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -5075,6 +5099,7 @@ const stateEntryControllers = parseCns(`
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
 ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
+${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -5181,6 +5206,7 @@ ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) 
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
+${options.selfCommandEntry ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -5301,6 +5327,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
         : ([[options.selfStateNoExistEntry.stateNo, traceAction(options.selfStateNoExistEntry.stateNo)]] as Array<
             [number, MugenAnimationAction]
           >)),
+      ...(options.selfCommandEntry === undefined
+        ? []
+        : ([[options.selfCommandEntry.stateNo, traceAction(options.selfCommandEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6748,6 +6777,17 @@ triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = SelfStateNoExist(${route.existingStateNo})
 trigger1 = !SelfStateNoExist(${route.missingStateNo})
+`;
+}
+
+function selfCommandStateEntryBlock(route: { commandName: string; stateNo: number }): string {
+  return `
+[State -1, SelfCommand Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "${route.commandName}"
+trigger1 = ctrl
+trigger1 = SelfCommand = "${route.commandName}"
 `;
 }
 

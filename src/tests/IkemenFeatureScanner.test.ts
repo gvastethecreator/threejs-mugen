@@ -73,7 +73,7 @@ describe("scanIkemenFeatures", () => {
     const files = new Map<string, string>([
       [
         "chars/neo/neo.cns",
-        "[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\ntrigger3 = PrevAnim = 200\ntrigger4 = SelfStateNoExist(200)\ntrigger5 = ReceivedDamage > 0\nvalue = 210\n",
+        '[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\ntrigger3 = PrevAnim = 200\ntrigger4 = SelfStateNoExist(200)\ntrigger5 = SelfCommand = "x"\ntrigger6 = ReceivedDamage > 0\nvalue = 210\n',
       ],
     ]);
 
@@ -86,6 +86,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN extended trigger PrevStateType"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger PrevAnim"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger SelfStateNoExist"]).toBeUndefined();
+    expect(report.features["IKEMEN extended trigger SelfCommand"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger ReceivedDamage"]).toBe(1);
   });
 
@@ -134,7 +135,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN stage parameter verticalfollowzoomdelta"]).toBe(1);
     expect(report.features["IKEMEN controller Zoom"]).toBe(1);
     expect(report.features["IKEMEN extended trigger StageTime"]).toBe(1);
-    expect(report.features["IKEMEN extended trigger SelfCommand"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger SelfCommand"]).toBeUndefined();
   });
 
   it("recognizes ZSS fallback files, ZSS language blocks, screenpack menus, and controller parameters as report-only", () => {

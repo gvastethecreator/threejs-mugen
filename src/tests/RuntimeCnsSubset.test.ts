@@ -35,6 +35,9 @@ describe("ExpressionEvaluator", () => {
 
     expect(evaluateExpression('command = "hadouken"', { self: state, commandActive: (name) => name === "hadouken" })).toBe(1);
     expect(evaluateExpression('command("dash")', { self: state, commandActive: (name) => name === "dash" })).toBe(1);
+    expect(evaluateExpression('SelfCommand = "dash"', { self: state, commandActive: (name) => name === "dash" })).toBe(1);
+    expect(evaluateExpression('SelfCommand("dash")', { self: state, commandActive: (name) => name === "dash" })).toBe(1);
+    expect(evaluateExpression('SelfCommand != "dash"', { self: state, commandActive: () => false })).toBe(1);
     expect(evaluateExpression('151 + 2*(command = "holddown")', { self: state, commandActive: (name) => name === "holddown" })).toBe(153);
     expect(evaluateExpression('151 + 2*(command = "holddown")', { self: state, commandActive: (name) => name === "holdback" })).toBe(151);
     expect(evaluateExpression('statetype = S && command != "holddown"', { self: state, commandActive: (name) => name === "holdback" })).toBe(1);

@@ -44,7 +44,7 @@ export function evaluateExpression(expression: string, context: ExpressionContex
   if (redirected !== undefined) {
     return redirected;
   }
-  const commandMatch = /^command\s*(=|!=)\s*"([^"]+)"$/i.exec(normalized.trim());
+  const commandMatch = /^(?:command|selfcommand)\s*(=|!=)\s*"([^"]+)"$/i.exec(normalized.trim());
   if (commandMatch) {
     const active = context.commandActive?.(commandMatch[2] ?? "") ? 1 : 0;
     return commandMatch[1] === "!=" ? (active ? 0 : 1) : active;
@@ -364,7 +364,7 @@ class ExpressionParser {
     if (lower === "hitover") {
       return this.context.hitOver?.() ? 1 : 0;
     }
-    if (lower === "command") {
+    if (lower === "command" || lower === "selfcommand") {
       return commandIdentifierMarker;
     }
     if (lower === "backedgebodydist" || lower === "frontedgebodydist" || lower === "backedgedist" || lower === "frontedgedist") {
@@ -430,7 +430,7 @@ class ExpressionParser {
     if (lower === "abs") {
       return Math.abs(numeric(args[0] ?? 0));
     }
-    if (lower === "command") {
+    if (lower === "command" || lower === "selfcommand") {
       return this.context.commandActive?.(String(args[0] ?? "")) ? 1 : 0;
     }
     if (lower === "const" || lower === "const720p") {

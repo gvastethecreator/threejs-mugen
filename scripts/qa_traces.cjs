@@ -86,6 +86,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSelfStateNoExistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-selfcommand",
+      required: true,
+      artifact: presets.createSyntheticImportedSelfCommandTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
