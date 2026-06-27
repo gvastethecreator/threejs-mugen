@@ -24,6 +24,7 @@ import iconServer from "@tabler/icons/outline/server.svg?raw";
 import iconShield from "@tabler/icons/outline/shield.svg?raw";
 import iconTools from "@tabler/icons/outline/tools.svg?raw";
 import iconWand from "@tabler/icons/outline/wand.svg?raw";
+import iconX from "@tabler/icons/outline/x.svg?raw";
 import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
 import { KeyboardInputAdapter } from "../game/input/KeyboardInputAdapter";
 import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
@@ -101,6 +102,7 @@ type StudioIconName =
   | "bug"
   | "build"
   | "check"
+  | "close"
   | "data"
   | "debug"
   | "error"
@@ -129,6 +131,7 @@ const TABLER_ICONS: Record<StudioIconName, string> = {
   bug: iconBug,
   build: iconPackage,
   check: iconCircleCheck,
+  close: iconX,
   data: iconDatabase,
   debug: iconBug,
   error: iconCircleX,
@@ -1599,7 +1602,9 @@ export class App {
               <span class="panel-kicker">Workspace command</span>
               <h2 id="command-palette-title">Find action</h2>
             </div>
-            <button type="button" class="command-palette-close" data-action="close-command-palette" aria-label="Close command palette">Close</button>
+            <button type="button" class="command-palette-close" data-action="close-command-palette" aria-label="Close command palette" title="Close">
+              ${tablerIcon("close", "ui-icon")}
+            </button>
           </div>
           <label class="command-palette-search">
             <span>Search actions</span>
