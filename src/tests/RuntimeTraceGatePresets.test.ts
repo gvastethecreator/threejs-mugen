@@ -39,6 +39,8 @@ import {
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
+  createSyntheticImportedHelperIgnoreHitPauseTraceArtifact,
+  createSyntheticImportedHelperPauseMoveTimeTraceArtifact,
   createSyntheticImportedHelperSuperMoveTimeTraceArtifact,
   createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
@@ -3345,6 +3347,86 @@ describe("RuntimeTraceGatePresets", () => {
           changedFields: expect.arrayContaining(["animTime"]),
         }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper pausemovetime artifact with pause-budget advance evidence", () => {
+    const artifact = createSyntheticImportedHelperPauseMoveTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-pausemovetime-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-pausemovetime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minPauseMoveTime: 1 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "Pause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+    ]);
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "Pause",
+          actorKind: "helper",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime"]),
+        }),
+      ]),
+    );
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: "Pause", actorKind: "explod", ownerId: "p1" })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper ignorehitpause artifact with hitpause advance evidence", () => {
+    const artifact = createSyntheticImportedHelperIgnoreHitPauseTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-ignorehitpause-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-ignorehitpause-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, ignoreHitPause: true },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "HitPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 1 },
+    ]);
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "HitPause",
+          actorKind: "helper",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime"]),
+        }),
+      ]),
+    );
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: "HitPause", actorKind: "explod", ownerId: "p1" })]),
     );
   });
 

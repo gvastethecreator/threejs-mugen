@@ -481,6 +481,16 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperSuperMoveTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-pausemovetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperPauseMoveTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-ignorehitpause",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperIgnoreHitPauseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-explod",
       required: true,
       artifact: presets.createSyntheticImportedExplodTraceArtifact(),

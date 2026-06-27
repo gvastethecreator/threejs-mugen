@@ -4340,6 +4340,123 @@ export function createSyntheticImportedHelperSuperMoveTimeTraceArtifact(options:
   });
 }
 
+export function createSyntheticImportedHelperPauseMoveTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedPauseEffectScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-pausemovetime-attacker",
+    displayName: "Synthetic Imported Helper PauseMoveTime Attacker",
+    withPause: true,
+    withHelper: true,
+    helperPauseMoveTime: 4,
+    withExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-pausemovetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-pausemovetime-golden",
+      label: "Synthetic imported Helper pausemovetime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper pausemovetime trace proves one visual Helper continues through its own bounded pausemovetime budget after source Pause movetime expires. It does not claim helper VM, exact helper pause layering, helper combat, redirects, or full MUGEN/IKEMEN Helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-pausemovetime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Pause", "Helper", "Explod"],
+        requiredExecutedOperations: ["hitdef", "pause:pause", "helper", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minExplods: 1, minNextHelperSerial: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minPauseMoveTime: 1 },
+        ],
+        requiredMatchPauses: [{ type: "Pause", actorId: "p1", sourceStateNo: 200, darken: false, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [
+          { type: "Pause", actorKind: "player", ownerId: "p2", minFrozenFrames: 6 },
+          { type: "Pause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+        ],
+        requiredMatchPauseAdvances: [
+          { type: "Pause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperIgnoreHitPauseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-ignorehitpause-attacker",
+    displayName: "Synthetic Imported Helper IgnoreHitPause Attacker",
+    withHelper: true,
+    helperIgnoreHitPause: true,
+    helperTriggerTime: 0,
+    withHitPauseExplods: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-ignorehitpause-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-ignorehitpause-golden",
+      label: "Synthetic imported Helper ignorehitpause route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ignorehitpause trace proves one visual Helper advances through hitpause while a sibling visual Explod freezes. It does not claim helper VM, exact hitpause layering, helper combat, redirects, or full MUGEN/IKEMEN Helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-ignorehitpause-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", { type: "Explod", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", "helper", { operation: "explod", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 3, minHelpers: 1, minExplods: 2, minNextHelperSerial: 1, minNextExplodSerial: 2 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, ignoreHitPause: true },
+        ],
+        requiredMatchPauseFreezes: [
+          { type: "HitPause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 3 },
+        ],
+        requiredMatchPauseAdvances: [
+          { type: "HitPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedExplodScript();
@@ -5279,7 +5396,10 @@ export type SyntheticImportedTraceFighterOptions = {
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
+  helperPauseMoveTime?: number;
   helperSuperMoveTime?: number;
+  helperIgnoreHitPause?: boolean;
+  helperTriggerTime?: number;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -5498,7 +5618,12 @@ ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveRever
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
-${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, options.helperSuperMoveTime) : ""}
+${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
+  pauseMoveTime: options.helperPauseMoveTime,
+  superMoveTime: options.helperSuperMoveTime,
+  ignoreHitPause: options.helperIgnoreHitPause,
+  triggerTime: options.helperTriggerTime,
+}) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
 ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
@@ -7174,14 +7299,21 @@ ctrl = 0
 `;
 }
 
-function helperControllerBlock(velocity?: [number, number], scale?: [number, number], superMoveTime?: number): string {
+function helperControllerBlock(
+  velocity?: [number, number],
+  scale?: [number, number],
+  pause?: { pauseMoveTime?: number; superMoveTime?: number; ignoreHitPause?: boolean; triggerTime?: number },
+): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
   const scaleLine = scale === undefined ? "" : `scale = ${scale[0]},${scale[1]}`;
-  const superMoveTimeLine = superMoveTime === undefined ? "" : `supermovetime = ${superMoveTime}`;
+  const pauseMoveTimeLine = pause?.pauseMoveTime === undefined ? "" : `pausemovetime = ${pause.pauseMoveTime}`;
+  const superMoveTimeLine = pause?.superMoveTime === undefined ? "" : `supermovetime = ${pause.superMoveTime}`;
+  const ignoreHitPauseLine = pause?.ignoreHitPause ? "ignorehitpause = 1" : "";
+  const triggerTime = pause?.triggerTime ?? 2;
   return `
 [State 200, Visual Helper]
 type = Helper
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = 42
 name = "Buddy"
 stateno = 1200
@@ -7193,7 +7325,9 @@ sprpriority = 8
 removetime = 30
 ${velocityLine}
 ${scaleLine}
+${pauseMoveTimeLine}
 ${superMoveTimeLine}
+${ignoreHitPauseLine}
 `;
 }
 
