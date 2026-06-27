@@ -80,6 +80,11 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("abs(vel x) < Const(movement.stand.friction.threshold)", { self: state })).toBe(1);
     expect(evaluateExpression("P2BodyDist X < 50", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Dist Y = 8", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("Facing = 1", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("P2Facing = 1", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("P2Life = 1000", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("P2Power = 0", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("NumEnemy", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear, StateNo = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear(0), MoveType = H", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);

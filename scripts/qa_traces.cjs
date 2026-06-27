@@ -51,6 +51,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-p2metrics",
+      required: true,
+      artifact: presets.createSyntheticImportedP2MetricsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),

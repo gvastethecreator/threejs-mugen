@@ -179,6 +179,29 @@ export function createSyntheticImportedEnemyNearTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedP2MetricsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-p2metrics",
+      displayName: "Synthetic Imported P2 Metrics",
+      p2MetricsStateEntry: { stateNo: 275 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-p2metrics-golden",
+      targetLabel: "Synthetic imported P2 metric trigger route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [275],
+      requiredExecutedStates: [275],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported P2 metric trace proves bounded Facing, P2Facing, P2Life, P2Power, and NumEnemy trigger reads against the current two-actor opponent. Teams, helpers, simultaneous target selection, and full MUGEN/IKEMEN opponent-selection parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -4735,6 +4758,7 @@ export type SyntheticImportedTraceFighterOptions = {
   numHelperStateNo?: number;
   prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
+  p2MetricsStateEntry?: { stateNo: number };
   withHelper?: boolean;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
@@ -4866,6 +4890,7 @@ time = 5
 `).commands;
   const stateEntryControllers = parseCns(`
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
+${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -4960,6 +4985,7 @@ ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : "
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
 ${options.prevStateRoute ? prevStateRouteBlock(options.prevStateRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
+${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -5049,6 +5075,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.enemyNearStateEntry === undefined
         ? []
         : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.p2MetricsStateEntry === undefined
+        ? []
+        : ([[options.p2MetricsStateEntry.stateNo, traceAction(options.p2MetricsStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6363,6 +6392,20 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = EnemyNear, StateNo = ${route.opponentStateNo}
+`;
+}
+
+function p2MetricsStateEntryBlock(route: { stateNo: number }): string {
+  return `
+[State -1, P2 Metrics Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = NumEnemy
+trigger1 = Facing = 1
+trigger1 = P2Facing = -1
+trigger1 = P2Life = 1000
+trigger1 = P2Power = 0
 `;
 }
 

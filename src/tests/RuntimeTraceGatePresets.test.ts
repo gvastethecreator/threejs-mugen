@@ -78,6 +78,7 @@ import {
   createSyntheticImportedNumHelperTraceArtifact,
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
+  createSyntheticImportedP2MetricsTraceArtifact,
   createSyntheticImportedPrevStateTraceArtifact,
   createSyntheticImportedRemoveExplodTraceArtifact,
   createSyntheticImportedXTraceArtifact,
@@ -303,6 +304,31 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([269]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([269]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 269)).toBe(true);
+  });
+
+  it("creates a synthetic imported P2 metric artifact with trigger evidence", () => {
+    const artifact = createSyntheticImportedP2MetricsTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-p2metrics-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.routedStates).toContain(275);
+    expect(evidence?.executedStates).toContain(275);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([275]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([275]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 275)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {

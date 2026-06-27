@@ -257,6 +257,9 @@ class ExpressionParser {
     if (lower === "alive") {
       return this.context.self.life > 0 ? 1 : 0;
     }
+    if (lower === "facing") {
+      return this.context.self.facing;
+    }
     if (lower === "animelem") {
       return this.context.self.frameIndex + 1;
     }
@@ -304,6 +307,15 @@ class ExpressionParser {
     }
     if (lower === "p2movetype") {
       return this.context.opponent?.moveType ?? "I";
+    }
+    if (lower === "p2life") {
+      return this.context.opponent?.life ?? 0;
+    }
+    if (lower === "p2power") {
+      return this.context.opponent?.power ?? 0;
+    }
+    if (lower === "p2facing") {
+      return this.context.opponent?.facing ?? -this.context.self.facing;
     }
     if (lower === "prevstateno") {
       return this.context.self.prevStateNo ?? 0;
@@ -356,6 +368,9 @@ class ExpressionParser {
     }
     if (lower === "numhelper") {
       return this.numHelper();
+    }
+    if (lower === "numenemy") {
+      return this.context.opponent ? 1 : 0;
     }
     if (lower === "numproj" || lower === "numprojid") {
       return this.numProj();
