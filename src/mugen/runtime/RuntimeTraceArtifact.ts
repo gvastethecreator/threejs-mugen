@@ -58,6 +58,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   input: RuntimeTraceFrame["input"];
   actorCount: number;
   effectCount: number;
+  stage?: RuntimeTraceFrame["stage"];
   world?: RuntimeTraceFrame["world"];
   eventCategories: RuntimeTraceFrame["events"][number]["category"][];
   combatReasons: RuntimeTraceFrame["combatReasons"][number]["reason"][];
@@ -175,6 +176,12 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...link,
           bindingOffset: link.bindingOffset ? { ...link.bindingOffset } : undefined,
         })),
+        stageFrames: gate.evidence.stageFrames.map((stage) => ({
+          ...stage,
+          bounds: stage.bounds ? { ...stage.bounds } : undefined,
+          minCamera: { ...stage.minCamera },
+          maxCamera: { ...stage.maxCamera },
+        })),
         actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },
@@ -199,6 +206,7 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
     },
     actorCount: frame.actors.length,
     effectCount: frame.effects.length,
+    stage: frame.stage ? cloneTraceStage(frame.stage) : undefined,
     world: frame.world ? cloneTraceWorld(frame.world) : undefined,
     eventCategories: [...new Set(frame.events.map((event) => event.category))],
     combatReasons: [...new Set(frame.combatReasons.map((reason) => reason.reason))],
@@ -221,6 +229,22 @@ function summarizeArtifactFrameDelta(
     combatReasonCount: frame.combatReasons.length,
     actorChanges: summarizeActorDeltas(frame, previous),
     world: summarizeWorldDelta(frame.world, previous?.world),
+  };
+}
+
+function cloneTraceStage(stage: NonNullable<RuntimeTraceFrame["stage"]>): NonNullable<RuntimeTraceFrame["stage"]> {
+  return {
+    id: stage.id,
+    displayName: stage.displayName,
+    floorY: stage.floorY,
+    zOffset: stage.zOffset,
+    bounds: stage.bounds ? { ...stage.bounds } : undefined,
+    camera: {
+      x: stage.camera.x,
+      y: stage.camera.y,
+      zoom: stage.camera.zoom,
+      shake: stage.camera.shake ? { ...stage.camera.shake } : undefined,
+    },
   };
 }
 
@@ -511,6 +535,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredMatchPauseFreezes: gate.requiredMatchPauseFreezes?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseAdvances: gate.requiredMatchPauseAdvances?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
+    requiredStageFrames: gate.requiredStageFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredFinalActors: gate.requiredFinalActors?.map((actor) => ({
       ...actor,

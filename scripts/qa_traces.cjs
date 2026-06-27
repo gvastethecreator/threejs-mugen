@@ -81,6 +81,11 @@ async function main() {
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-screenbound-camera",
+      required: true,
+      artifact: presets.createSyntheticImportedScreenBoundCameraTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -873,6 +878,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-reversal",
     "synthetic-imported-damage-scale",
     "synthetic-imported-bounds",
+    "synthetic-imported-screenbound-camera",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

@@ -42,6 +42,7 @@ import {
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
+  createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -465,6 +466,53 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported ScreenBound camera artifact with clamp and camera evidence", () => {
+    const artifact = createSyntheticImportedScreenBoundCameraTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-screenbound-camera-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-screenbound-camera-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ScreenBound).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["bounds:screenbound"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.stageFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          stageId: "trace-screenbound-camera-grid",
+          bounds: { left: -320, right: 320 },
+          minCamera: expect.objectContaining({ x: 0 }),
+          maxCamera: expect.objectContaining({ x: 155 }),
+        }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          screenBound: false,
+          moveCameraX: false,
+          maxPos: expect.objectContaining({ x: 375 }),
+        }),
+      ]),
+    );
+    expect(artifact.trace.frames.some((frame) => frame.stage?.camera.x === 0)).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

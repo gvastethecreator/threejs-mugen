@@ -549,6 +549,66 @@ export function createSyntheticImportedBoundsTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedScreenBoundCameraTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? screenBoundCameraStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-screenbound-camera",
+    displayName: "Synthetic Imported ScreenBound Camera",
+    withScreenBoundCameraProbe: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-screenbound-camera-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-screenbound-camera-golden",
+      label: "Synthetic imported ScreenBound camera/clamp route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported ScreenBound camera trace proves the current bounded runtime can skip the X stage clamp and exclude the actor from X camera centering for the same tick. It does not claim exact MUGEN/IKEMEN camera, screen-edge, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-screenbound-camera-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "ScreenBound", "PosAdd"],
+        requiredExecutedOperations: ["bounds:screenbound", "kinematic:posadd"],
+        requiredActiveCommands: ["x"],
+        requiredStageFrames: [
+          {
+            stageId: "trace-screenbound-camera-grid",
+            boundRight: 320,
+            observedCameraXAtLeast: 150,
+            observedCameraXAtMost: 0,
+            minFrames: 3,
+          },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedPosXAtLeast: 321,
+            screenBound: false,
+            moveCameraX: false,
+            moveCameraY: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -3642,6 +3702,18 @@ export function closeCombatStage(): MugenStageDefinition {
   };
 }
 
+export function screenBoundCameraStage(): MugenStageDefinition {
+  return {
+    ...trainingStage,
+    id: "trace-screenbound-camera-grid",
+    displayName: "Trace ScreenBound Camera Grid",
+    playerStart: {
+      p1: { x: 310, y: 0, facing: -1 },
+      p2: { x: 0, y: 0, facing: 1 },
+    },
+  };
+}
+
 export function farCombatStage(): MugenStageDefinition {
   return {
     ...trainingStage,
@@ -4121,6 +4193,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withInGuardDistGuardStart?: boolean;
   withAutoGuardStartStates?: boolean;
   withBoundsControllers?: boolean;
+  withScreenBoundCameraProbe?: boolean;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4243,6 +4316,7 @@ ctrl = 0
 ${assertSpecialLine}
 ${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
+${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4618,6 +4692,22 @@ type = ScreenBound
 trigger1 = Time >= 0
 value = 0
 movecamera = 0,1
+`;
+}
+
+function screenBoundCameraProbeBlock(): string {
+  return `
+[State 200, ScreenBound Camera Probe]
+type = ScreenBound
+trigger1 = Time >= 0
+value = 0
+movecamera = 0,1
+
+[State 200, ScreenBound Offstage Probe]
+type = PosAdd
+trigger1 = Time = 0
+x = 65
+y = 0
 `;
 }
 

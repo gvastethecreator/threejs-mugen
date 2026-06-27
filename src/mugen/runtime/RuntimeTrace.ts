@@ -13,6 +13,7 @@ import type {
   RuntimeActorKind,
   RuntimeMatchPauseSnapshot,
   RoundSnapshot,
+  StageSnapshot,
 } from "./types";
 
 export type RuntimeTraceInputFrame = {
@@ -141,6 +142,7 @@ export type RuntimeTraceFrame = {
   };
   actors: RuntimeTraceActor[];
   effects: RuntimeTraceActor[];
+  stage?: RuntimeTraceStageSummary;
   round?: RoundSnapshot;
   matchPause?: RuntimeMatchPauseSnapshot;
   compatibility?: RuntimeTraceCompatibilityActor[];
@@ -148,6 +150,20 @@ export type RuntimeTraceFrame = {
   combatReasons: RuntimeTraceCombatReason[];
   world?: RuntimeTraceWorldSummary;
   checksum: string;
+};
+
+export type RuntimeTraceStageSummary = {
+  id?: string;
+  displayName?: string;
+  floorY: number;
+  zOffset?: number;
+  bounds?: StageSnapshot["bounds"];
+  camera: {
+    x: number;
+    y: number;
+    zoom: number;
+    shake?: StageSnapshot["camera"]["shake"];
+  };
 };
 
 export type RuntimeTraceWorldSummary = {
@@ -444,6 +460,30 @@ export type RuntimeTraceGateActorFrameEvidence = {
   frames: number;
 };
 
+export type RuntimeTraceStageFrameRequirement = {
+  stageId?: string;
+  minFrames?: number;
+  observedCameraXAtLeast?: number;
+  observedCameraXAtMost?: number;
+  observedCameraYAtLeast?: number;
+  observedCameraYAtMost?: number;
+  observedZoomAtLeast?: number;
+  observedZoomAtMost?: number;
+  boundLeft?: number;
+  boundRight?: number;
+};
+
+export type RuntimeTraceGateStageFrameEvidence = {
+  stageId?: string;
+  displayName?: string;
+  bounds?: StageSnapshot["bounds"];
+  minCamera: { x: number; y: number; zoom: number };
+  maxCamera: { x: number; y: number; zoom: number };
+  firstTick: number;
+  lastTick: number;
+  frames: number;
+};
+
 export type RuntimeTraceGateFinalActorEvidence = Pick<
   RuntimeTraceActor,
   | "id"
@@ -494,6 +534,7 @@ export type RuntimeTraceGate = {
   requiredMatchPauseFreezes?: RuntimeTraceMatchPauseFreezeRequirement[];
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
+  requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
   requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
 };
@@ -517,6 +558,7 @@ export type RuntimeTraceGateEvidence = {
   matchPauseFreezes: RuntimeTraceGateMatchPauseFreezeEvidence[];
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
+  stageFrames: RuntimeTraceGateStageFrameEvidence[];
   actorFrames: RuntimeTraceGateActorFrameEvidence[];
   finalActors: RuntimeTraceGateFinalActorEvidence[];
 };
@@ -689,6 +731,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing target link: ${describeTargetLinkRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredStageFrames ?? []) {
+    if (!evidence.stageFrames.some((stage) => matchesStageFrameRequirement(stage, requirement))) {
+      failures.push(`Missing stage frame: ${describeStageFrameRequirement(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredActorFrames ?? []) {
     if (!evidence.actorFrames.some((actor) => matchesActorFrameRequirement(actor, requirement))) {
       failures.push(`Missing actor frame: ${describeActorFrameRequirement(requirement)}`);
@@ -744,12 +791,18 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const matchPauseFreezes = new Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>();
   const matchPauseAdvances = new Map<string, RuntimeTraceGateMatchPauseAdvanceEvidence>();
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
+  const stageFrames = new Map<string, RuntimeTraceGateStageFrameEvidence>();
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
   const executedOperations: Record<string, number> = {};
 
   for (const [frameIndex, frame] of frames.entries()) {
     const allActors = [...frame.actors, ...frame.effects];
+    if (frame.stage) {
+      const key = stageFrameEvidenceKey(frame.stage);
+      const existing = stageFrames.get(key);
+      stageFrames.set(key, existing ? mergeStageFrameEvidence(existing, frame.stage, frame.tick) : summarizeStageFrameEvidence(frame.stage, frame.tick));
+    }
     for (const actor of frame.actors) {
       if (actor.source) {
         actorSources.add(actor.source);
@@ -1023,6 +1076,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       matchPauseAdvanceEvidenceKey(left.type, left.actorId).localeCompare(matchPauseAdvanceEvidenceKey(right.type, right.actorId)),
     ),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
+    stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
     finalActors: trace.final.actors.map(summarizeFinalActorEvidence),
   };
@@ -1588,6 +1642,81 @@ function describeTargetLinkRequirement(requirement: RuntimeTraceTargetLinkRequir
     .join(", ");
 }
 
+function summarizeStageFrameEvidence(stage: RuntimeTraceStageSummary, tick: number): RuntimeTraceGateStageFrameEvidence {
+  return {
+    stageId: stage.id,
+    displayName: stage.displayName,
+    bounds: stage.bounds ? { ...stage.bounds } : undefined,
+    minCamera: { x: stage.camera.x, y: stage.camera.y, zoom: stage.camera.zoom },
+    maxCamera: { x: stage.camera.x, y: stage.camera.y, zoom: stage.camera.zoom },
+    firstTick: tick,
+    lastTick: tick,
+    frames: 1,
+  };
+}
+
+function mergeStageFrameEvidence(
+  current: RuntimeTraceGateStageFrameEvidence,
+  stage: RuntimeTraceStageSummary,
+  tick: number,
+): RuntimeTraceGateStageFrameEvidence {
+  return {
+    ...current,
+    firstTick: Math.min(current.firstTick, tick),
+    lastTick: Math.max(current.lastTick, tick),
+    frames: current.frames + 1,
+    minCamera: {
+      x: Math.min(current.minCamera.x, stage.camera.x),
+      y: Math.min(current.minCamera.y, stage.camera.y),
+      zoom: Math.min(current.minCamera.zoom, stage.camera.zoom),
+    },
+    maxCamera: {
+      x: Math.max(current.maxCamera.x, stage.camera.x),
+      y: Math.max(current.maxCamera.y, stage.camera.y),
+      zoom: Math.max(current.maxCamera.zoom, stage.camera.zoom),
+    },
+  };
+}
+
+function stageFrameEvidenceKey(stage: RuntimeTraceStageSummary): string {
+  return [stage.id ?? "none", stage.bounds?.left ?? "*", stage.bounds?.right ?? "*", stage.camera.zoom].join(":");
+}
+
+function stageFrameGateEvidenceKey(stage: RuntimeTraceGateStageFrameEvidence): string {
+  return [
+    stage.stageId ?? "none",
+    stage.bounds?.left ?? "*",
+    stage.bounds?.right ?? "*",
+    stage.minCamera.zoom,
+    stage.maxCamera.zoom,
+  ].join(":");
+}
+
+function matchesStageFrameRequirement(
+  stage: RuntimeTraceGateStageFrameEvidence,
+  requirement: RuntimeTraceStageFrameRequirement,
+): boolean {
+  return (
+    (requirement.stageId === undefined || stage.stageId === requirement.stageId) &&
+    (requirement.minFrames === undefined || stage.frames >= requirement.minFrames) &&
+    (requirement.observedCameraXAtLeast === undefined || stage.maxCamera.x >= requirement.observedCameraXAtLeast) &&
+    (requirement.observedCameraXAtMost === undefined || stage.minCamera.x <= requirement.observedCameraXAtMost) &&
+    (requirement.observedCameraYAtLeast === undefined || stage.maxCamera.y >= requirement.observedCameraYAtLeast) &&
+    (requirement.observedCameraYAtMost === undefined || stage.minCamera.y <= requirement.observedCameraYAtMost) &&
+    (requirement.observedZoomAtLeast === undefined || stage.maxCamera.zoom >= requirement.observedZoomAtLeast) &&
+    (requirement.observedZoomAtMost === undefined || stage.minCamera.zoom <= requirement.observedZoomAtMost) &&
+    (requirement.boundLeft === undefined || sameTraceNumber(stage.bounds?.left ?? NaN, requirement.boundLeft)) &&
+    (requirement.boundRight === undefined || sameTraceNumber(stage.bounds?.right ?? NaN, requirement.boundRight))
+  );
+}
+
+function describeStageFrameRequirement(requirement: RuntimeTraceStageFrameRequirement): string {
+  return Object.entries(requirement)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
 function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
   return [
     actor.id,
@@ -1746,6 +1875,7 @@ function summarizeTraceSnapshot(
     },
     actors,
     effects: (snapshot.effects ?? []).map(summarizeActor),
+    stage: summarizeStage(snapshot.stage),
     round: snapshot.round,
     matchPause: snapshot.matchPause,
     compatibility: summarizeCompatibility(snapshot.compatibilitySession),
@@ -1767,6 +1897,34 @@ function summarizeTraceSnapshot(
     combatReasons: frame.combatReasons,
   });
   return frame;
+}
+
+function summarizeStage(stage: StageSnapshot): RuntimeTraceStageSummary {
+  return {
+    id: stage.id,
+    displayName: stage.displayName,
+    floorY: roundTraceNumber(stage.floorY),
+    zOffset: stage.zOffset === undefined ? undefined : roundTraceNumber(stage.zOffset),
+    bounds: stage.bounds
+      ? {
+          left: roundTraceNumber(stage.bounds.left),
+          right: roundTraceNumber(stage.bounds.right),
+        }
+      : undefined,
+    camera: {
+      x: roundTraceNumber(stage.camera.x),
+      y: roundTraceNumber(stage.camera.y),
+      zoom: roundTraceNumber(stage.camera.zoom),
+      shake: stage.camera.shake
+        ? {
+            x: roundTraceNumber(stage.camera.shake.x),
+            y: roundTraceNumber(stage.camera.shake.y),
+            remaining: stage.camera.shake.remaining,
+            amplitude: roundTraceNumber(stage.camera.shake.amplitude),
+          }
+        : undefined,
+    },
+  };
 }
 
 function readActorRegistry(runtime: RuntimeTraceRunner): MatchWorldActorRegistrySnapshot | undefined {
