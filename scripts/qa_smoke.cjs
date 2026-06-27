@@ -1188,6 +1188,8 @@ async function captureStudioDebugLens(page, filter, outDir) {
       effectStoreRows: panel?.querySelectorAll(".debug-effect-store-row").length ?? 0,
       eventRows: panel?.querySelectorAll(".debug-event-row").length ?? 0,
       worldEvidence: Boolean(panel?.querySelector(`[data-debug-world-evidence="${expected}"]`)),
+      targetGateEvidence: Boolean(panel?.querySelector('[data-debug-world-evidence="targets-gate"]')),
+      targetGateEvidenceRows: panel?.querySelectorAll("[data-debug-target-binding-evidence]").length ?? 0,
       worldFrameRows: panel?.querySelectorAll("[data-debug-world-evidence] .debug-world-frame-row").length ?? 0,
       worldFrameButtons: panel?.querySelectorAll("[data-debug-world-evidence] [data-trace-frame-index]").length ?? 0,
       compatRows: panel?.querySelectorAll(".compat-row").length ?? 0,
@@ -1197,6 +1199,7 @@ async function captureStudioDebugLens(page, filter, outDir) {
       hitPauseRows: panel?.querySelectorAll("[data-debug-hitpause-row]").length ?? 0,
       hitPauseCountText: panel?.querySelector("[data-debug-hitpause-count]")?.textContent?.trim() ?? "",
       bodyHasHitPauseCopy: panel?.textContent?.includes("HitPause") ?? false,
+      bodyHasTargetGateEvidenceCopy: panel?.textContent?.includes("Trace target gate evidence") ?? false,
       hasEmptyState: Boolean(panel?.querySelector(".empty-state")),
     };
   }, filter);
@@ -1653,9 +1656,11 @@ function assertSmoke(diagnostics) {
     studioDebug.debugLenses?.targets?.selectedButtonPressed !== "true" ||
     !studioDebug.debugLenses?.targets?.bodyHasPanel ||
     studioDebug.debugLenses?.targets?.targetRows < 1 ||
-    !studioDebug.debugLenses?.targets?.worldEvidence
+    !studioDebug.debugLenses?.targets?.worldEvidence ||
+    !studioDebug.debugLenses?.targets?.targetGateEvidence ||
+    !studioDebug.debugLenses?.targets?.bodyHasTargetGateEvidenceCopy
   ) {
-    failures.push("studio-debug: targets lens did not expose target-link rows and URL state");
+    failures.push("studio-debug: targets lens did not expose target-link rows, gate-evidence panel, and URL state");
   }
   if (
     studioDebug.debugLenses?.effects?.filter !== "effects" ||
@@ -1920,6 +1925,8 @@ function summarizeDiagnostics(diagnostics) {
         targets: {
           rows: diagnostics.checks.studioDebug.debugLenses?.targets?.targetRows,
           worldFrames: diagnostics.checks.studioDebug.debugLenses?.targets?.worldFrameRows,
+          gatePanel: diagnostics.checks.studioDebug.debugLenses?.targets?.targetGateEvidence,
+          gateRows: diagnostics.checks.studioDebug.debugLenses?.targets?.targetGateEvidenceRows,
         },
         effects: {
           stores: diagnostics.checks.studioDebug.debugLenses?.effects?.effectStoreRows,

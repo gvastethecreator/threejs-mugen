@@ -4421,6 +4421,7 @@ export class App {
             <small>${registry.players.length} player actors / ${registry.effects.length} effect actors</small>
           </div>
         </div>
+        ${this.renderStudioDebugTargetGateEvidence(selection)}
         ${this.renderStudioDebugTargetWorldEvidence(selection)}
         <div class="debug-evidence-block">
           <span class="panel-kicker">Selection links</span>
@@ -4430,6 +4431,53 @@ export class App {
           <span class="panel-kicker">All target links</span>
           <div class="compat-list">${allRows}</div>
         </div>
+      </div>
+    `;
+  }
+
+  private renderStudioDebugTargetGateEvidence(selection: StudioDebugSelectionSummary): string {
+    const artifact = this.getActiveTraceArtifact();
+    if (!artifact) {
+      return this.renderStudioDebugTargetGateEvidenceEmpty("Export a trace artifact from Build to compare target-link gate evidence.");
+    }
+    const rows = artifact.gates.flatMap((gate) =>
+      gate.evidence.targetLinks
+        .filter((link) => this.debugTargetLinkMatchesSelection(link, selection))
+        .map(
+          (link) => `
+            <div class="compat-row debug-world-frame-row" data-debug-target-binding-evidence>
+              <span class="badge ${gate.passed ? "ok" : "error"}">${escapeHtml(link.hasBinding ? "bind" : "target")}</span>
+              <span>
+                <span class="list-title">${escapeHtml(gate.label)} / ${escapeHtml(link.ownerId)} -> ${escapeHtml(link.actorId)}</span>
+                <span class="list-meta">${escapeHtml(this.formatStudioDebugTargetGateEvidence(link))}</span>
+              </span>
+              <span class="mono">${link.frames}f</span>
+            </div>
+          `,
+        ),
+    );
+    if (!rows.length) {
+      return this.renderStudioDebugTargetGateEvidenceEmpty("The latest trace has no target-link gate evidence for this actor.");
+    }
+    return `
+      <div class="debug-evidence-block" data-debug-world-evidence="targets-gate">
+        <div class="section-heading-row compact-heading">
+          <span class="panel-kicker">Trace target gate evidence</span>
+          <span class="badge ok">${rows.length} records</span>
+        </div>
+        <div class="compat-list">${rows.slice(0, 10).join("")}</div>
+      </div>
+    `;
+  }
+
+  private renderStudioDebugTargetGateEvidenceEmpty(message: string): string {
+    return `
+      <div class="debug-evidence-block" data-debug-world-evidence="targets-gate">
+        <div class="section-heading-row compact-heading">
+          <span class="panel-kicker">Trace target gate evidence</span>
+          <span class="badge warn">none</span>
+        </div>
+        <div class="empty-state compact">${escapeHtml(message)}</div>
       </div>
     `;
   }
@@ -4712,7 +4760,7 @@ export class App {
               <span class="list-title">tick ${frame.tick} / ${links.length} target link${links.length === 1 ? "" : "s"}</span>
               <span class="list-meta">${escapeHtml(
                 links
-                  .map((link) => `${link.ownerId}->${link.actorId} target ${link.targetId ?? "*"}${link.binding ? " bound" : ""}`)
+                  .map((link) => `${link.ownerId}->${link.actorId} ${this.formatStudioDebugWorldTargetLink(link)}`)
                   .join("; "),
               )}</span>
             </span>
@@ -4854,7 +4902,7 @@ export class App {
   }
 
   private debugTargetLinkMatchesSelection(
-    link: MatchWorldActorRegistrySnapshot["targetLinks"][number],
+    link: Pick<MatchWorldActorRegistrySnapshot["targetLinks"][number], "ownerId" | "actorId">,
     selection: StudioDebugSelectionSummary,
   ): boolean {
     const actorId = selection.selectedActorId;
@@ -4862,6 +4910,51 @@ export class App {
       return true;
     }
     return link.ownerId === actorId || link.actorId === actorId;
+  }
+
+  private formatStudioDebugTargetGateEvidence(
+    link: RuntimeTraceArtifact["gates"][number]["evidence"]["targetLinks"][number],
+  ): string {
+    const parts = [
+      `target ${link.targetId ?? "*"}`,
+      `ticks ${link.firstTick}-${link.lastTick}`,
+      `age ${link.minAge}-${link.maxAge}`,
+    ];
+    if (link.hasBinding) {
+      parts.push(
+        `bind ${this.formatTargetBindingRemaining(link.minBindingRemaining, link.maxBindingRemaining, link.bindingInfinite)}`,
+      );
+      if (link.bindingOffset) {
+        parts.push(`offset ${this.formatTargetOffset(link.bindingOffset)}`);
+      }
+    }
+    return parts.join(" / ");
+  }
+
+  private formatStudioDebugWorldTargetLink(link: MatchWorldActorRegistrySnapshot["targetLinks"][number]): string {
+    const parts = [`target ${link.targetId ?? "*"}`];
+    if (link.binding) {
+      parts.push(`bind ${link.binding.remaining}`, `offset ${this.formatTargetOffset(link.binding.offset)}`);
+    }
+    parts.push(`age ${link.age}f`);
+    return parts.join(" / ");
+  }
+
+  private formatTargetBindingRemaining(min: number | undefined, max: number | undefined, infinite?: boolean): string {
+    if (infinite) {
+      return "infinite";
+    }
+    if (min === undefined && max === undefined) {
+      return "-";
+    }
+    if (min === max) {
+      return String(min);
+    }
+    return `${min ?? "-"}-${max ?? "-"}`;
+  }
+
+  private formatTargetOffset(offset: { x: number; y: number }): string {
+    return `${offset.x.toFixed(1)},${offset.y.toFixed(1)}`;
   }
 
   private renderStudioDebugAudioLens(selection: StudioDebugSelectionSummary, snapshot: MugenSnapshot): string {
@@ -6086,7 +6179,7 @@ export class App {
             <span class="badge">${escapeHtml(link.ownerId)}</span>
             <span>
               <span class="list-title">${escapeHtml(link.ownerId)} -> ${escapeHtml(link.actorId)}</span>
-              <span class="list-meta">target ${escapeHtml(link.targetId === undefined ? "*" : String(link.targetId))}${link.binding ? ` / bind ${escapeHtml(String(link.binding.remaining))}` : ""}</span>
+              <span class="list-meta">${escapeHtml(this.formatStudioDebugWorldTargetLink(link))}</span>
             </span>
             <span class="mono">${link.age}f</span>
           </div>
