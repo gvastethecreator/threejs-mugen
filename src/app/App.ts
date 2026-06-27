@@ -5239,25 +5239,34 @@ export class App {
     const compiled = this.lastCompiledProject;
     const bundle = this.lastProjectBundle;
     const readiness = this.getBuildReadinessRecords(summary);
+    const blocked = readiness.filter((record) => record.state === "blocked").length;
+    const partial = readiness.filter((record) => record.state === "partial").length;
+    const exportable = readiness.filter((record) => record.state === "exportable").length;
     return `
-      <div class="section">
-        <h2>Build Outputs</h2>
-        <div class="split-controls">
-          ${studioActionButton("Export project.json", 'data-action="export-project"')}
-          ${studioActionButton("Export runtime", 'data-action="export-runtime"', { disabled: !compiled })}
+      <div class="section section-emphasis build-command-center">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Build desk</span>
+            <h2>Build Outputs</h2>
+          </div>
+          <span class="badge ${blocked ? "error" : partial ? "warn" : "ok"}">${blocked ? `${blocked} blocked` : partial ? `${partial} partial` : "ready"}</span>
         </div>
-        <div class="split-controls">
-          ${studioActionButton("Compile runtime", 'data-action="compile-project"')}
-          ${studioActionButton("Export report", 'data-action="export-report"')}
+        <div class="build-runway" aria-label="Build export runway">
+          <span class="${compiled ? "is-ok" : "is-warn"}"><b>${compiled ? "compiled" : "pending"}</b><small>runtime</small></span>
+          <span class="${bundle ? "is-ok" : "is-warn"}"><b>${bundle ? "exported" : "pending"}</b><small>package</small></span>
+          <span class="${exportable ? "is-ok" : "is-warn"}"><b>${exportable}</b><small>export</small></span>
+          <span class="${blocked ? "is-error" : "is-ok"}"><b>${blocked}</b><small>blocked</small></span>
         </div>
-        ${studioActionButton("Export project package", 'data-action="export-package"', { fullWidth: true })}
-        ${studioActionButton("Export trace artifact", 'data-action="export-trace-artifact"', { fullWidth: true })}
-        ${studioActionButton("Save local project", 'data-action="save-project-local"', { fullWidth: true })}
-        <div class="badge-row">
-          <span class="badge ${compiled ? "ok" : "warn"}">${compiled ? "runtime compiled" : "compile pending"}</span>
-          <span class="badge ${bundle ? "ok" : "warn"}">${bundle ? "package exported" : "package pending"}</span>
-          <span class="badge">${summary.gates.length} gates</span>
-          <span class="badge">${summary.assets.length} asset records</span>
+        <div class="build-action-grid" aria-label="Build actions">
+          ${studioActionButton(compiled ? "Export package ZIP" : "Compile runtime", compiled ? 'data-action="export-package"' : 'data-action="compile-project"', {
+            primary: true,
+            fullWidth: true,
+          })}
+          ${studioActionButton("Export trace artifact", 'data-action="export-trace-artifact"', { fullWidth: true })}
+          ${studioActionButton("Runtime manifest", 'data-action="export-runtime"', { disabled: !compiled })}
+          ${studioActionButton("Project JSON", 'data-action="export-project"')}
+          ${studioActionButton("Compatibility report", 'data-action="export-report"')}
+          ${studioActionButton("Save local project", 'data-action="save-project-local"')}
         </div>
       </div>
       <div class="section">
@@ -8641,7 +8650,7 @@ export class App {
     this.addJsonToZip(zip, "assets/package-assets.json", assetRecords);
     zip.file("README.txt", this.createProjectBundleReadme(manifest));
     const blob = await zip.generateAsync({ type: "blob" });
-    this.downloadBlob(blob, filename);
+    await this.downloadBlobAsDataUrl(blob, filename);
     this.log(`Exported project package ${filename}: ${manifest.files.length} files, ${bundledAssets.length} bundled assets, ${formatBytes(manifest.assets.binaryBytes)}`);
     this.updateUi();
   }
@@ -8919,6 +8928,22 @@ export class App {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  }
+
+  private async downloadBlobAsDataUrl(blob: Blob, filename: string): Promise<void> {
+    const url = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => resolve(String(reader.result)));
+      reader.addEventListener("error", () => reject(reader.error ?? new Error("Failed to prepare download")));
+      reader.readAsDataURL(blob);
+    });
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.style.display = "none";
+    document.body.append(link);
+    link.click();
+    link.remove();
   }
 
   private withSessionCompatibility(report: CompatibilityReport): CompatibilityReport {
