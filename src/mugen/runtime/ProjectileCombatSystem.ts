@@ -43,8 +43,10 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     log: (line: string) => void,
   ) => void;
   applyGuardHit?: (defender: TActor) => void;
+  applyHitState?: (defender: TActor) => void;
   markDefenderGotHit?: (defender: TActor) => void;
   recordProjectileContact?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
+  recordReceivedDamage?: (defender: TActor, damage: number) => void;
   removeProjectilesMarkedForRemoval: () => void;
 };
 
@@ -142,6 +144,8 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
     defender.runtime.guardSlideTime = 0;
     defender.runtime.guardControlTime = 0;
     defender.runtime.guarding = false;
+    input.applyHitState?.(defender);
+    input.recordReceivedDamage?.(defender, result.damage);
     log(
       `${attacker.label} projectile hit ${defender.label} for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
     );

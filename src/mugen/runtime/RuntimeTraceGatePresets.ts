@@ -3614,6 +3614,63 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedProjectileReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-receiveddamage-attacker",
+    displayName: "Synthetic Imported Projectile ReceivedDamage Attacker",
+    withProjectile: true,
+    projectileHitAnim: 911,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-receiveddamage-defender",
+    displayName: "Synthetic Imported Projectile ReceivedDamage Defender",
+    receivedDamageRoute: { sourceStateNo: 5000, finalStateNo: 280 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-receiveddamage-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-receiveddamage-golden",
+      label: "Synthetic imported Projectile ReceivedDamage route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ReceivedDamage trace proves a bounded projectile hit can route an imported defender into its default get-hit state, mark defender-local received damage and hits, then branch through ReceivedDamage > 0 and ReceivedHits >= 1. Projectile guard, target-controller damage, helpers, custom states, and exact timing parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-receiveddamage-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 280],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 280 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();

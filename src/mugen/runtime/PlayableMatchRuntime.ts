@@ -1665,8 +1665,10 @@ function resolveProjectileCombat(attacker: FighterMatchState, defender: FighterM
     rememberTarget,
     applyHitOverride,
     applyGuardHit: applyDefaultGuardHitState,
+    applyHitState: applyDefaultProjectileGetHitState,
     markDefenderGotHit: markFighterGotHit,
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
+    recordReceivedDamage: markReceivedDamage,
   });
 }
 
@@ -2293,6 +2295,17 @@ function applyDefaultGuardHitState(defender: FighterMatchState): void {
     return;
   }
   const stateNo = defaultGuardHitStateNo(defender);
+  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
+    return;
+  }
+  enterState(defender, stateNo, undefined, { clearStateOwner: true });
+}
+
+function applyDefaultProjectileGetHitState(defender: FighterMatchState): void {
+  if (defender.definition.source !== "imported") {
+    return;
+  }
+  const stateNo = defaultGetHitStateNo(defender);
   if (stateNo === undefined || !canEnterState(defender, stateNo)) {
     return;
   }

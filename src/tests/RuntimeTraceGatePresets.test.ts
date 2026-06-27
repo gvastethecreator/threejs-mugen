@@ -58,6 +58,7 @@ import {
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
@@ -2778,6 +2779,35 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
+  });
+
+  it("creates a synthetic imported Projectile ReceivedDamage artifact with defender-local branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileReceivedDamageTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-receiveddamage-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-receiveddamage-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 280]));
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 5000, 280]);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.targetLinks.some((link) => link.ownerId === "p1" && link.actorId === "p2" && link.targetId === 77)).toBe(true);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p2" && actor.stateNo === 280)).toBe(true);
   });
 
   it("creates a synthetic imported Projectile time artifact with ProjHitTime branch evidence", () => {
