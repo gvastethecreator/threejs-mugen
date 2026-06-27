@@ -51,6 +51,7 @@ import {
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedPalFxTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
+  createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -772,6 +773,50 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.paletteRemap?.source[0] === 1 && actor.paletteRemap.dest[1] === 3,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported AfterImage artifact with typed sprite-effect evidence", () => {
+    const artifact = createSyntheticImportedAfterImageTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-afterimage-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-afterimage-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AfterImage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AfterImageTime).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:afterimagetime"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          afterImageTime: 20,
+          afterImageLength: 4,
+          afterImageTimeGap: 2,
+          afterImageFrameGap: 1,
+          afterImageSampleCount: 1,
+          afterImageOpacity: 0.34,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) => actor.id === "p1" && actor.afterImage?.length === 4 && actor.afterImage.sampleCount >= 1,
       ),
     ).toBe(true);
   });

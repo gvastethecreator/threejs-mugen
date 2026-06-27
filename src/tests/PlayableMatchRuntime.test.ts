@@ -1125,6 +1125,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PalFX).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["sprite-effect:palfx"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.AfterImage).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["sprite-effect:afterimage"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Explod).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.explod).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PlaySnd).toBe(1);

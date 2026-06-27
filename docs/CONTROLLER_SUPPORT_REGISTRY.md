@@ -57,7 +57,7 @@ Every controller family should have:
 | `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet` | executed-partial | unit tests/runtime traces | Basic arithmetic; negative `LifeAdd` respects bounded `kill = 0` and defender-side `NoKO` clamps. Scaling, redirects, round-flow, and edge rules remain partial. |
 | `VarSet`, `VarAdd`, `VarRangeSet` | executed-partial | unit tests/runtime traces | Numeric vars/fvars are partial; typed/raw `VarSet` and `VarAdd` support `sysvar(n)` for bounded Common1 system-variable branches such as air guard landing. `VarRangeSet` stays limited to vars/fvars. |
 | `PlaySnd`, `StopSnd` | executed-partial | runtime events | Emits sound events; Web Audio/SND parity partial. |
-| `AfterImage`, `AfterImageTime` | executed-partial | runtime/session evidence | Rendering/effect parity partial. |
+| `AfterImage`, `AfterImageTime` | compiled, executed-partial | unit tests, `synthetic-imported-afterimage.json` | Static `AfterImage time/length/timegap/framegap/paladd/palmul/trans` and static `AfterImageTime time/value` params lower into typed `sprite-effect:afterimage` / `sprite-effect:afterimagetime` operation evidence and update bounded ghost-trail telemetry. Dynamic params, exact blend modes, palette/remap interaction, sampling cadence, persistence edge cases, and engine-perfect timing remain future work. |
 | `EnvShake` | executed-partial | runtime events | Presentation parity partial. |
 | `ForceFeedback`, `Null` | noop | compatibility reports | Accepted no-op; must be visible as such. |
 

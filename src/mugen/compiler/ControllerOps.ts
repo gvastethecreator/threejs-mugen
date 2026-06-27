@@ -236,6 +236,22 @@ export type SpriteEffectControllerOp =
       controllerType: "remappal";
       source: [number, number];
       dest: [number, number];
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "afterimage";
+      time: number;
+      length: number;
+      timeGap: number;
+      frameGap: number;
+      palAdd: [number, number, number];
+      palMul: [number, number, number];
+      opacity: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "afterimagetime";
+      time: number;
     };
 
 export type ResourceControllerOp =
@@ -354,6 +370,12 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "remappal") {
     return compileRemapPalControllerOp(controller);
+  }
+  if (type === "afterimage") {
+    return compileAfterImageControllerOp(controller);
+  }
+  if (type === "afterimagetime") {
+    return compileAfterImageTimeControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -560,6 +582,49 @@ function compileRemapPalControllerOp(controller: MugenStateController): SpriteEf
     controllerType: "remappal",
     source: [normalizePaletteNumber(source[0]), normalizePaletteNumber(source[1])],
     dest: [normalizePaletteNumber(dest[0]), normalizePaletteNumber(dest[1])],
+  };
+}
+
+function compileAfterImageControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const time = staticNumberParam(controller, "time", 20);
+  const length = staticNumberParam(controller, "length", 6);
+  const timeGap = staticNumberParam(controller, "timegap", 1);
+  const frameGap = staticNumberParam(controller, "framegap", 1);
+  const palAdd = strictNumberTripletOrDefault(findParam(controller, "paladd") ?? findParam(controller, "add"), [0, 0, 0], -255, 255);
+  const palMul = strictNumberTripletOrDefault(findParam(controller, "palmul") ?? findParam(controller, "mul"), [192, 192, 192], 0, 512);
+  if (
+    time === undefined ||
+    length === undefined ||
+    timeGap === undefined ||
+    frameGap === undefined ||
+    palAdd === undefined ||
+    palMul === undefined
+  ) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "afterimage",
+    time: clampAfterImageTime(time),
+    length: clampAfterImageLength(length),
+    timeGap: clampAfterImageGap(timeGap),
+    frameGap: clampAfterImageGap(frameGap),
+    palAdd,
+    palMul,
+    opacity: normalizeAfterImageOpacity(findParam(controller, "trans")),
+  };
+}
+
+function compileAfterImageTimeControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const raw = findParam(controller, "time") ?? findParam(controller, "value");
+  const time = raw === undefined ? 0 : firstNumber(raw);
+  if (time === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "afterimagetime",
+    time: clampAfterImageTime(time),
   };
 }
 
@@ -1156,6 +1221,32 @@ function clampPaletteFxTime(value: number): number {
 
 function clampPaletteFxColor(value: number): number {
   return Math.max(0, Math.min(256, Math.round(value)));
+}
+
+function clampAfterImageTime(value: number): number {
+  return Math.max(0, Math.min(600, Math.round(value)));
+}
+
+function clampAfterImageLength(value: number): number {
+  return Math.max(1, Math.min(24, Math.round(value)));
+}
+
+function clampAfterImageGap(value: number): number {
+  return Math.max(1, Math.min(30, Math.round(value)));
+}
+
+function normalizeAfterImageOpacity(value: string | undefined): number {
+  const normalized = stripMugenString(value)?.toLowerCase();
+  if (!normalized) {
+    return 0.42;
+  }
+  if (normalized.includes("add")) {
+    return 0.34;
+  }
+  if (normalized.includes("none")) {
+    return 0.25;
+  }
+  return 0.42;
 }
 
 function normalizePaletteNumber(value: number): number {

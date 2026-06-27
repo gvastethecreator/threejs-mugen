@@ -54,8 +54,9 @@ export function applyRuntimeAfterImageController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
   sampleFactory: RuntimeAfterImageSampleFactory,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
 ): void {
-  const time = clampAfterImageTime(firstNumber(findControllerParam(controller, "time")) ?? 20);
+  const time = operation?.time ?? clampAfterImageTime(firstNumber(findControllerParam(controller, "time")) ?? 20);
   if (time <= 0) {
     state.afterImage = undefined;
     return;
@@ -63,22 +64,26 @@ export function applyRuntimeAfterImageController(
   state.afterImage = {
     remaining: time,
     time,
-    length: clampAfterImageLength(firstNumber(findControllerParam(controller, "length")) ?? 6),
-    timeGap: clampAfterImageGap(firstNumber(findControllerParam(controller, "timegap")) ?? 1),
-    frameGap: clampAfterImageGap(firstNumber(findControllerParam(controller, "framegap")) ?? 1),
-    palAdd: colorTriplet(
-      findControllerParam(controller, "paladd") ?? findControllerParam(controller, "add"),
-      [0, 0, 0],
-      -255,
-      255,
-    ),
-    palMul: colorTriplet(
-      findControllerParam(controller, "palmul") ?? findControllerParam(controller, "mul"),
-      [192, 192, 192],
-      0,
-      512,
-    ),
-    opacity: parseAfterImageOpacity(findControllerParam(controller, "trans")),
+    length: operation?.length ?? clampAfterImageLength(firstNumber(findControllerParam(controller, "length")) ?? 6),
+    timeGap: operation?.timeGap ?? clampAfterImageGap(firstNumber(findControllerParam(controller, "timegap")) ?? 1),
+    frameGap: operation?.frameGap ?? clampAfterImageGap(firstNumber(findControllerParam(controller, "framegap")) ?? 1),
+    palAdd:
+      operation?.palAdd ??
+      colorTriplet(
+        findControllerParam(controller, "paladd") ?? findControllerParam(controller, "add"),
+        [0, 0, 0],
+        -255,
+        255,
+      ),
+    palMul:
+      operation?.palMul ??
+      colorTriplet(
+        findControllerParam(controller, "palmul") ?? findControllerParam(controller, "mul"),
+        [192, 192, 192],
+        0,
+        512,
+      ),
+    opacity: operation?.opacity ?? parseAfterImageOpacity(findControllerParam(controller, "trans")),
     elapsed: 0,
     samples: [],
   };
@@ -88,10 +93,13 @@ export function applyRuntimeAfterImageController(
 export function applyRuntimeAfterImageTimeController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
 ): void {
-  const time = clampAfterImageTime(
-    firstNumber(findControllerParam(controller, "time")) ?? firstNumber(findControllerParam(controller, "value")) ?? 0,
-  );
+  const time =
+    operation?.time ??
+    clampAfterImageTime(
+      firstNumber(findControllerParam(controller, "time")) ?? firstNumber(findControllerParam(controller, "value")) ?? 0,
+    );
   if (time <= 0) {
     state.afterImage = undefined;
     return;

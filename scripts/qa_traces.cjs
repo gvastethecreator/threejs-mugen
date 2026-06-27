@@ -121,6 +121,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-afterimage",
+      required: true,
+      artifact: presets.createSyntheticImportedAfterImageTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -892,6 +897,8 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:sprpriority",
     "sprite-effect:palfx",
     "sprite-effect:remappal",
+    "sprite-effect:afterimage",
+    "sprite-effect:afterimagetime",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -933,6 +940,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-sprpriority",
     "synthetic-imported-palfx",
     "synthetic-imported-remappal",
+    "synthetic-imported-afterimage",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

@@ -966,6 +966,68 @@ export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTra
   });
 }
 
+export function createSyntheticImportedAfterImageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-afterimage",
+    displayName: "Synthetic Imported AfterImage",
+    withAfterImage: {
+      time: 20,
+      length: 4,
+      timeGap: 2,
+      frameGap: 1,
+      palAdd: [0, 40, 90],
+      palMul: [160, 160, 256],
+      trans: "add",
+    },
+    withAfterImageTime: 11,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-afterimage-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-afterimage-golden",
+      label: "Synthetic imported AfterImage route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AfterImage trace proves static AfterImage and AfterImageTime lower into typed sprite-effect operation evidence and reach bounded ghost-trail telemetry. It does not claim exact MUGEN/IKEMEN trail blending, palette math, sampling cadence, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-afterimage-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AfterImage", "AfterImageTime", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:afterimage", "sprite-effect:afterimagetime", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            afterImageTime: 20,
+            afterImageLength: 4,
+            afterImageTimeGap: 2,
+            afterImageFrameGap: 1,
+            afterImageSampleCountAtLeast: 1,
+            afterImageOpacity: 0.34,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4625,6 +4687,16 @@ export type SyntheticImportedTraceFighterOptions = {
     source: [number, number];
     dest: [number, number];
   };
+  withAfterImage?: {
+    time?: number;
+    length?: number;
+    timeGap?: number;
+    frameGap?: number;
+    palAdd?: [number, number, number];
+    palMul?: [number, number, number];
+    trans?: string;
+  };
+  withAfterImageTime?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4755,6 +4827,8 @@ ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
+${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
+${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -5215,6 +5289,30 @@ type = RemapPal
 trigger1 = Time >= 0
 source = ${options.source.join(",")}
 dest = ${options.dest.join(",")}
+`;
+}
+
+function afterImageControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withAfterImage"]>): string {
+  return `
+[State 200, AfterImage Probe]
+type = AfterImage
+trigger1 = Time >= 0
+time = ${options.time ?? 20}
+length = ${options.length ?? 6}
+timegap = ${options.timeGap ?? 1}
+framegap = ${options.frameGap ?? 1}
+paladd = ${(options.palAdd ?? [0, 0, 0]).join(",")}
+palmul = ${(options.palMul ?? [192, 192, 192]).join(",")}
+trans = ${options.trans ?? "trans"}
+`;
+}
+
+function afterImageTimeControllerBlock(time: number): string {
+  return `
+[State 200, AfterImageTime Probe]
+type = AfterImageTime
+trigger1 = Time >= 0
+time = ${time}
 `;
 }
 

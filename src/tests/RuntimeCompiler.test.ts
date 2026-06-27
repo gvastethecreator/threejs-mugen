@@ -346,6 +346,56 @@ time = 20
     expect(missing.operation).toBeUndefined();
   });
 
+  it("compiles static AfterImage controllers into typed sprite-effect operations", () => {
+    const value = compileControllerIr(
+      controller(200, "AfterImage", [], {
+        time: "20",
+        length: "4",
+        timegap: "2",
+        framegap: "1",
+        paladd: "0,40,90",
+        palmul: "160,160,256",
+        trans: "add",
+      }),
+    );
+    const defaults = compileControllerIr(controller(200, "AfterImage", [], {}));
+    const dynamic = compileControllerIr(controller(200, "AfterImage", [], { time: "Const(data.life)" }));
+
+    expect(value.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "afterimage",
+      time: 20,
+      length: 4,
+      timeGap: 2,
+      frameGap: 1,
+      palAdd: [0, 40, 90],
+      palMul: [160, 160, 256],
+      opacity: 0.34,
+    });
+    expect(defaults.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "afterimage",
+      time: 20,
+      length: 6,
+      timeGap: 1,
+      frameGap: 1,
+      palAdd: [0, 0, 0],
+      palMul: [192, 192, 192],
+      opacity: 0.42,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static AfterImageTime controllers into typed sprite-effect operations", () => {
+    const time = compileControllerIr(controller(200, "AfterImageTime", [], { time: "11" }));
+    const value = compileControllerIr(controller(200, "AfterImageTime", [], { value: "999" }));
+    const dynamic = compileControllerIr(controller(200, "AfterImageTime", [], { value: "Const(data.life)" }));
+
+    expect(time.operation).toEqual({ kind: "sprite-effect", controllerType: "afterimagetime", time: 11 });
+    expect(value.operation).toEqual({ kind: "sprite-effect", controllerType: "afterimagetime", time: 600 });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

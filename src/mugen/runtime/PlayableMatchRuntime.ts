@@ -1004,10 +1004,24 @@ function runActiveStateControllers(
         applyPalFxController(fighter, rawController, operation);
       } else if (dispatch.effect === "afterimage") {
         recordControllerExecution(fighter, rawController);
-        applyAfterImageController(fighter, rawController);
+        const operation =
+          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimage"
+            ? controller.operation
+            : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applyAfterImageController(fighter, rawController, operation);
       } else if (dispatch.effect === "afterimagetime") {
         recordControllerExecution(fighter, rawController);
-        applyAfterImageTimeController(fighter, rawController);
+        const operation =
+          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimagetime"
+            ? controller.operation
+            : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applyAfterImageTimeController(fighter, rawController, operation);
       } else if (dispatch.effect === "explod") {
         recordControllerExecution(fighter, rawController);
         createExplod(fighter, opponent, rawController, controller.operation?.kind === "explod" ? controller.operation : undefined);
@@ -1113,12 +1127,20 @@ function resetAssertSpecial(state: CharacterRuntimeState): void {
   state.renderOpacity = undefined;
 }
 
-function applyAfterImageController(fighter: FighterMatchState, controller: MugenStateController): void {
-  applyRuntimeAfterImageController(fighter.runtime, controller, () => createAfterImageSample(fighter));
+function applyAfterImageController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
+): void {
+  applyRuntimeAfterImageController(fighter.runtime, controller, () => createAfterImageSample(fighter), operation);
 }
 
-function applyAfterImageTimeController(fighter: FighterMatchState, controller: MugenStateController): void {
-  applyRuntimeAfterImageTimeController(fighter.runtime, controller);
+function applyAfterImageTimeController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
+): void {
+  applyRuntimeAfterImageTimeController(fighter.runtime, controller, operation);
 }
 
 function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSample | undefined {

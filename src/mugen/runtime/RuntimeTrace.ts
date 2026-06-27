@@ -64,6 +64,17 @@ export type RuntimeTraceActor = {
     source: [number, number];
     dest: [number, number];
   };
+  afterImage?: {
+    remaining: number;
+    time: number;
+    length: number;
+    timeGap: number;
+    frameGap: number;
+    palAdd: [number, number, number];
+    palMul: [number, number, number];
+    opacity: number;
+    sampleCount: number;
+  };
   posFreeze?: { x: boolean; y: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   facing: 1 | -1;
@@ -460,6 +471,12 @@ export type RuntimeTraceActorFrameRequirement = {
   paletteRemapSourceIndex?: number;
   paletteRemapDestGroup?: number;
   paletteRemapDestIndex?: number;
+  afterImageTime?: number;
+  afterImageLength?: number;
+  afterImageTimeGap?: number;
+  afterImageFrameGap?: number;
+  afterImageSampleCountAtLeast?: number;
+  afterImageOpacity?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -504,6 +521,12 @@ export type RuntimeTraceGateActorFrameEvidence = {
   paletteRemapSourceIndex?: number;
   paletteRemapDestGroup?: number;
   paletteRemapDestIndex?: number;
+  afterImageTime?: number;
+  afterImageLength?: number;
+  afterImageTimeGap?: number;
+  afterImageFrameGap?: number;
+  afterImageSampleCount?: number;
+  afterImageOpacity?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -1106,6 +1129,12 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               paletteRemapSourceIndex: actor.paletteRemap?.source[1],
               paletteRemapDestGroup: actor.paletteRemap?.dest[0],
               paletteRemapDestIndex: actor.paletteRemap?.dest[1],
+              afterImageTime: actor.afterImage?.time,
+              afterImageLength: actor.afterImage?.length,
+              afterImageTimeGap: actor.afterImage?.timeGap,
+              afterImageFrameGap: actor.afterImage?.frameGap,
+              afterImageSampleCount: actor.afterImage?.sampleCount,
+              afterImageOpacity: actor.afterImage?.opacity,
               posFreezeX: actor.posFreeze?.x,
               posFreezeY: actor.posFreeze?.y,
               screenBound: actor.screenBound?.bound,
@@ -1813,6 +1842,9 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
       ? "pf*"
       : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
     actor.paletteRemap === undefined ? "pr*" : `pr${actor.paletteRemap.source.join(",")}:${actor.paletteRemap.dest.join(",")}`,
+    actor.afterImage === undefined
+      ? "ai*"
+      : `ai${actor.afterImage.time}:${actor.afterImage.length}:${actor.afterImage.timeGap}:${actor.afterImage.frameGap}:${actor.afterImage.sampleCount}:${actor.afterImage.opacity}`,
     actor.posFreeze?.x === undefined ? "pfx*" : `pfx${actor.posFreeze.x ? 1 : 0}`,
     actor.posFreeze?.y === undefined ? "pfy*" : `pfy${actor.posFreeze.y ? 1 : 0}`,
     actor.screenBound?.bound === undefined ? "sb*" : `sb${actor.screenBound.bound ? 1 : 0}`,
@@ -1845,6 +1877,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.paletteRemapSourceGroup === undefined
       ? "pr*"
       : `pr${actor.paletteRemapSourceGroup},${actor.paletteRemapSourceIndex}:${actor.paletteRemapDestGroup},${actor.paletteRemapDestIndex}`,
+    actor.afterImageTime === undefined
+      ? "ai*"
+      : `ai${actor.afterImageTime}:${actor.afterImageLength}:${actor.afterImageTimeGap}:${actor.afterImageFrameGap}:${actor.afterImageSampleCount}:${actor.afterImageOpacity}`,
     actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
     actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
     actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
@@ -1900,6 +1935,13 @@ function matchesActorFrameRequirement(
     (requirement.paletteRemapSourceIndex === undefined || actor.paletteRemapSourceIndex === requirement.paletteRemapSourceIndex) &&
     (requirement.paletteRemapDestGroup === undefined || actor.paletteRemapDestGroup === requirement.paletteRemapDestGroup) &&
     (requirement.paletteRemapDestIndex === undefined || actor.paletteRemapDestIndex === requirement.paletteRemapDestIndex) &&
+    (requirement.afterImageTime === undefined || actor.afterImageTime === requirement.afterImageTime) &&
+    (requirement.afterImageLength === undefined || actor.afterImageLength === requirement.afterImageLength) &&
+    (requirement.afterImageTimeGap === undefined || actor.afterImageTimeGap === requirement.afterImageTimeGap) &&
+    (requirement.afterImageFrameGap === undefined || actor.afterImageFrameGap === requirement.afterImageFrameGap) &&
+    (requirement.afterImageSampleCountAtLeast === undefined ||
+      (actor.afterImageSampleCount ?? 0) >= requirement.afterImageSampleCountAtLeast) &&
+    (requirement.afterImageOpacity === undefined || sameTraceNumber(actor.afterImageOpacity ?? NaN, requirement.afterImageOpacity)) &&
     (requirement.posFreezeX === undefined || actor.posFreezeX === requirement.posFreezeX) &&
     (requirement.posFreezeY === undefined || actor.posFreezeY === requirement.posFreezeY) &&
     (requirement.screenBound === undefined || actor.screenBound === requirement.screenBound) &&
@@ -2184,6 +2226,19 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           dest: [...actor.runtime.paletteRemap.dest],
         }
       : undefined,
+    afterImage: actor.runtime.afterImage
+      ? {
+          remaining: actor.runtime.afterImage.remaining,
+          time: actor.runtime.afterImage.time,
+          length: actor.runtime.afterImage.length,
+          timeGap: actor.runtime.afterImage.timeGap,
+          frameGap: actor.runtime.afterImage.frameGap,
+          palAdd: [...actor.runtime.afterImage.palAdd],
+          palMul: [...actor.runtime.afterImage.palMul],
+          opacity: roundTraceNumber(actor.runtime.afterImage.opacity),
+          sampleCount: actor.runtime.afterImage.samples.length,
+        }
+      : undefined,
     posFreeze: actor.runtime.posFreeze ? { ...actor.runtime.posFreeze } : undefined,
     screenBound: actor.runtime.screenBound ? { ...actor.runtime.screenBound } : undefined,
     facing: actor.runtime.facing,
@@ -2214,6 +2269,7 @@ function summarizeActorForChecksum(
   | "spritePriority"
   | "paletteFx"
   | "paletteRemap"
+  | "afterImage"
   | "posFreeze"
   | "screenBound"
 > {
@@ -2227,6 +2283,7 @@ function summarizeActorForChecksum(
     spritePriority: _spritePriority,
     paletteFx: _paletteFx,
     paletteRemap: _paletteRemap,
+    afterImage: _afterImage,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     ...checksumActor

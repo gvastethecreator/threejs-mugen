@@ -143,6 +143,54 @@ describe("SpriteEffectSystem", () => {
     applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { value: "0" }));
     expect(state.afterImage).toBeUndefined();
   });
+
+  it("applies typed AfterImage and AfterImageTime operations before raw params", () => {
+    const state = runtimeState();
+
+    applyRuntimeAfterImageController(
+      state,
+      controller("AfterImage", {
+        time: "1",
+        length: "1",
+        paladd: "0,0,0",
+      }),
+      () => sample(7),
+      {
+        kind: "sprite-effect",
+        controllerType: "afterimage",
+        time: 20,
+        length: 4,
+        timeGap: 2,
+        frameGap: 1,
+        palAdd: [0, 40, 90],
+        palMul: [160, 160, 256],
+        opacity: 0.34,
+      },
+    );
+
+    expect(state.afterImage).toMatchObject({
+      remaining: 20,
+      time: 20,
+      length: 4,
+      timeGap: 2,
+      frameGap: 1,
+      palAdd: [0, 40, 90],
+      palMul: [160, 160, 256],
+      opacity: 0.34,
+    });
+
+    applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { time: "0" }), {
+      kind: "sprite-effect",
+      controllerType: "afterimagetime",
+      time: 11,
+    });
+
+    expect(state.afterImage).toMatchObject({
+      remaining: 11,
+      time: 20,
+      length: 4,
+    });
+  });
 });
 
 function runtimeState(): CharacterRuntimeState {
