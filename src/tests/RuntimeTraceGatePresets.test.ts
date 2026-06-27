@@ -56,6 +56,7 @@ import {
   createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedBindToTargetHeadTraceArtifact,
   createSyntheticImportedBindToTargetMidTraceArtifact,
+  createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
   createSyntheticImportedNumExplodTraceArtifact,
@@ -1442,6 +1443,47 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
+  });
+
+  it("creates a synthetic imported TargetState artifact with owner-backed SelfState evidence", () => {
+    const artifact = createSyntheticImportedTargetStateCustomTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-targetstate-custom-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-targetstate-custom-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 889]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetstate"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 888, moveType: "H" }),
+        expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 889, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      customOwnerId: undefined,
+      stateNo: 0,
+      animNo: 0,
+      ctrl: true,
+      moveType: "I",
+    });
   });
 
   it("creates a synthetic imported BindToTarget Head artifact with parsed Size anchor evidence", () => {
