@@ -116,6 +116,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPalFxTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-remappal",
+      required: true,
+      artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -881,6 +886,7 @@ function validateTraceCoverage(coverage) {
     "orientation:turn",
     "sprite-effect:sprpriority",
     "sprite-effect:palfx",
+    "sprite-effect:remappal",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -921,6 +927,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-turn",
     "synthetic-imported-sprpriority",
     "synthetic-imported-palfx",
+    "synthetic-imported-remappal",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

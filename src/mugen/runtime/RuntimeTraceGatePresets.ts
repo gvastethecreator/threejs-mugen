@@ -912,6 +912,60 @@ export function createSyntheticImportedPalFxTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-remappal",
+    displayName: "Synthetic Imported RemapPal",
+    withRemapPal: {
+      source: [1, 1],
+      dest: [2, 3],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-remappal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-remappal-golden",
+      label: "Synthetic imported RemapPal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported RemapPal trace proves static RemapPal lowers into typed sprite-effect operation evidence and reaches bounded palette-remap telemetry. It does not claim ACT/SFF pixel remapping, palette application, PalFX interaction, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-remappal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "RemapPal", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:remappal", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            paletteRemapSourceGroup: 1,
+            paletteRemapSourceIndex: 1,
+            paletteRemapDestGroup: 2,
+            paletteRemapDestIndex: 3,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4509,6 +4563,10 @@ export type SyntheticImportedTraceFighterOptions = {
     color?: number;
     invert?: boolean;
   };
+  withRemapPal?: {
+    source: [number, number];
+    dest: [number, number];
+  };
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4638,6 +4696,7 @@ ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
+${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -5088,6 +5147,16 @@ add = ${(options.add ?? [0, 0, 0]).join(",")}
 mul = ${(options.mul ?? [256, 256, 256]).join(",")}
 color = ${options.color ?? 256}
 invertall = ${options.invert ? 1 : 0}
+`;
+}
+
+function remapPalControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withRemapPal"]>): string {
+  return `
+[State 200, RemapPal Probe]
+type = RemapPal
+trigger1 = Time >= 0
+source = ${options.source.join(",")}
+dest = ${options.dest.join(",")}
 `;
 }
 

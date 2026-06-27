@@ -230,6 +230,12 @@ export type SpriteEffectControllerOp =
       mul: [number, number, number];
       color: number;
       invert: boolean;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "remappal";
+      source: [number, number];
+      dest: [number, number];
     };
 
 export type ResourceControllerOp =
@@ -345,6 +351,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "palfx") {
     return compilePalFxControllerOp(controller);
+  }
+  if (type === "remappal") {
+    return compileRemapPalControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -537,6 +546,20 @@ function compilePalFxControllerOp(controller: MugenStateController): SpriteEffec
     mul,
     color: clampPaletteFxColor(color ?? 256),
     invert: invert ?? false,
+  };
+}
+
+function compileRemapPalControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const source = strictNumberPairExact(findParam(controller, "source"));
+  const dest = strictNumberPairExact(findParam(controller, "dest"));
+  if (!source || !dest) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "remappal",
+    source: [normalizePaletteNumber(source[0]), normalizePaletteNumber(source[1])],
+    dest: [normalizePaletteNumber(dest[0]), normalizePaletteNumber(dest[1])],
   };
 }
 
@@ -1045,6 +1068,17 @@ function strictNumberPair(value: string | undefined): [number, number?] | undefi
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
 }
 
+function strictNumberPairExact(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const values = value.split(",").map((part) => Number(part.trim()));
+  if (values.length < 2 || values.some((item) => !Number.isFinite(item))) {
+    return undefined;
+  }
+  return [values[0]!, values[1]!];
+}
+
 function strictNumberTripletOrDefault(
   value: string | undefined,
   fallback: [number, number, number],
@@ -1122,6 +1156,10 @@ function clampPaletteFxTime(value: number): number {
 
 function clampPaletteFxColor(value: number): number {
   return Math.max(0, Math.min(256, Math.round(value)));
+}
+
+function normalizePaletteNumber(value: number): number {
+  return Math.max(0, Math.round(value));
 }
 
 function clampNumber(value: number, min: number, max: number): number {

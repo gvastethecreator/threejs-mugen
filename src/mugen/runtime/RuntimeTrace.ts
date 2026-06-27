@@ -60,6 +60,10 @@ export type RuntimeTraceActor = {
     color: number;
     invert: boolean;
   };
+  paletteRemap?: {
+    source: [number, number];
+    dest: [number, number];
+  };
   posFreeze?: { x: boolean; y: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   facing: 1 | -1;
@@ -452,6 +456,10 @@ export type RuntimeTraceActorFrameRequirement = {
   paletteFxMulB?: number;
   paletteFxColor?: number;
   paletteFxInvert?: boolean;
+  paletteRemapSourceGroup?: number;
+  paletteRemapSourceIndex?: number;
+  paletteRemapDestGroup?: number;
+  paletteRemapDestIndex?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -492,6 +500,10 @@ export type RuntimeTraceGateActorFrameEvidence = {
   paletteFxMulB?: number;
   paletteFxColor?: number;
   paletteFxInvert?: boolean;
+  paletteRemapSourceGroup?: number;
+  paletteRemapSourceIndex?: number;
+  paletteRemapDestGroup?: number;
+  paletteRemapDestIndex?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -1090,6 +1102,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               paletteFxMulB: actor.paletteFx?.mul[2],
               paletteFxColor: actor.paletteFx?.color,
               paletteFxInvert: actor.paletteFx?.invert,
+              paletteRemapSourceGroup: actor.paletteRemap?.source[0],
+              paletteRemapSourceIndex: actor.paletteRemap?.source[1],
+              paletteRemapDestGroup: actor.paletteRemap?.dest[0],
+              paletteRemapDestIndex: actor.paletteRemap?.dest[1],
               posFreezeX: actor.posFreeze?.x,
               posFreezeY: actor.posFreeze?.y,
               screenBound: actor.screenBound?.bound,
@@ -1796,6 +1812,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.paletteFx === undefined
       ? "pf*"
       : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
+    actor.paletteRemap === undefined ? "pr*" : `pr${actor.paletteRemap.source.join(",")}:${actor.paletteRemap.dest.join(",")}`,
     actor.posFreeze?.x === undefined ? "pfx*" : `pfx${actor.posFreeze.x ? 1 : 0}`,
     actor.posFreeze?.y === undefined ? "pfy*" : `pfy${actor.posFreeze.y ? 1 : 0}`,
     actor.screenBound?.bound === undefined ? "sb*" : `sb${actor.screenBound.bound ? 1 : 0}`,
@@ -1825,6 +1842,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.paletteFxTime === undefined
       ? "pf*"
       : `pf${actor.paletteFxTime}:${actor.paletteFxAddR},${actor.paletteFxAddG},${actor.paletteFxAddB}:${actor.paletteFxMulR},${actor.paletteFxMulG},${actor.paletteFxMulB}:${actor.paletteFxColor}:${actor.paletteFxInvert ? 1 : 0}`,
+    actor.paletteRemapSourceGroup === undefined
+      ? "pr*"
+      : `pr${actor.paletteRemapSourceGroup},${actor.paletteRemapSourceIndex}:${actor.paletteRemapDestGroup},${actor.paletteRemapDestIndex}`,
     actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
     actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
     actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
@@ -1876,6 +1896,10 @@ function matchesActorFrameRequirement(
     (requirement.paletteFxMulB === undefined || actor.paletteFxMulB === requirement.paletteFxMulB) &&
     (requirement.paletteFxColor === undefined || actor.paletteFxColor === requirement.paletteFxColor) &&
     (requirement.paletteFxInvert === undefined || actor.paletteFxInvert === requirement.paletteFxInvert) &&
+    (requirement.paletteRemapSourceGroup === undefined || actor.paletteRemapSourceGroup === requirement.paletteRemapSourceGroup) &&
+    (requirement.paletteRemapSourceIndex === undefined || actor.paletteRemapSourceIndex === requirement.paletteRemapSourceIndex) &&
+    (requirement.paletteRemapDestGroup === undefined || actor.paletteRemapDestGroup === requirement.paletteRemapDestGroup) &&
+    (requirement.paletteRemapDestIndex === undefined || actor.paletteRemapDestIndex === requirement.paletteRemapDestIndex) &&
     (requirement.posFreezeX === undefined || actor.posFreezeX === requirement.posFreezeX) &&
     (requirement.posFreezeY === undefined || actor.posFreezeY === requirement.posFreezeY) &&
     (requirement.screenBound === undefined || actor.screenBound === requirement.screenBound) &&
@@ -2154,6 +2178,12 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           invert: actor.runtime.paletteFx.invert,
         }
       : undefined,
+    paletteRemap: actor.runtime.paletteRemap
+      ? {
+          source: [...actor.runtime.paletteRemap.source],
+          dest: [...actor.runtime.paletteRemap.dest],
+        }
+      : undefined,
     posFreeze: actor.runtime.posFreeze ? { ...actor.runtime.posFreeze } : undefined,
     screenBound: actor.runtime.screenBound ? { ...actor.runtime.screenBound } : undefined,
     facing: actor.runtime.facing,
@@ -2183,6 +2213,7 @@ function summarizeActorForChecksum(
   | "playerPush"
   | "spritePriority"
   | "paletteFx"
+  | "paletteRemap"
   | "posFreeze"
   | "screenBound"
 > {
@@ -2195,6 +2226,7 @@ function summarizeActorForChecksum(
     playerPush: _playerPush,
     spritePriority: _spritePriority,
     paletteFx: _paletteFx,
+    paletteRemap: _paletteRemap,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     ...checksumActor

@@ -11,6 +11,7 @@ import type {
   MovementKinematicControllerOp,
   OrientationControllerOp,
   ResourceControllerOp,
+  SpriteEffectControllerOp,
   VariableControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
@@ -176,7 +177,7 @@ export function executeControllerIr(
       next.attackMultiplier = Math.max(0, Math.min(10, value));
     }
   } else if (type === "remappal") {
-    applyRemapPalController(next, controller);
+    applyRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"));
   } else if (type === "posfreeze") {
     const operation = boundsOperation(controller, "posfreeze");
     const value = operation ? undefined : numberParam(controller, next, context, "value");
@@ -359,9 +360,22 @@ function damageScaleOperation<T extends DamageScaleControllerOp["controllerType"
     : undefined;
 }
 
-function applyRemapPalController(state: CharacterRuntimeState, controller: ControllerExecutionSource): void {
-  const source = pairParam(controller, state, "source");
-  const dest = pairParam(controller, state, "dest");
+function spriteEffectOperation<T extends SpriteEffectControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<SpriteEffectControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<SpriteEffectControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function applyRemapPalController(
+  state: CharacterRuntimeState,
+  controller: ControllerExecutionSource,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "remappal" }>,
+): void {
+  const source = operation?.source ?? pairParam(controller, state, "source");
+  const dest = operation?.dest ?? pairParam(controller, state, "dest");
   if (!source || !dest) {
     return;
   }

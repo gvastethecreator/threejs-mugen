@@ -331,6 +331,21 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static RemapPal controllers into typed sprite-effect operations", () => {
+    const value = compileControllerIr(controller(200, "RemapPal", [], { source: "-1,1.4", dest: "2,3" }));
+    const dynamic = compileControllerIr(controller(200, "RemapPal", [], { source: "Const(data.life),1", dest: "2,3" }));
+    const missing = compileControllerIr(controller(200, "RemapPal", [], { source: "1,1" }));
+
+    expect(value.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "remappal",
+      source: [0, 1],
+      dest: [2, 3],
+    });
+    expect(dynamic.operation).toBeUndefined();
+    expect(missing.operation).toBeUndefined();
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

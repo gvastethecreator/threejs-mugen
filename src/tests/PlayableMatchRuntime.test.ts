@@ -738,6 +738,7 @@ describe("PlayableMatchRuntime", () => {
 
     expect(snapshot.actors[0]?.runtime.paletteRemap).toEqual({ source: [1, 1], dest: [2, 3] });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.RemapPal).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["sprite-effect:remappal"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ForceFeedback).toBe(1);
   });
 
