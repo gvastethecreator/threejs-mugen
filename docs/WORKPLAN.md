@@ -287,7 +287,7 @@ These are the current mandatory cuts before the plan expands into larger Studio 
 
 11. **IKEMEN profile scanner**
    - Owner: Compatibility.
-   - Current cut: scanner/reporting detects ZSS files/references/fallback `.cns.zss`, ZSS syntax blocks and controller calls, Lua files/hooks including `hook.*`, IKEMEN config JSON, screenpack/select/menu/movelist signals, `IkemenVersion`, selected IKEMEN-only controllers, `RedirectID`, fightfx `F` action prefixes, selected extended triggers/`AssertSpecial` flags, model-stage assets, and named 3D/Z stage params. Results flow into `CompatibilityReport.profiles.ikemen`, unsupported features, exported compatibility JSON, DebugPanel, and Studio Evidence.
+   - Current cut: scanner/reporting detects ZSS files/references/fallback `.cns.zss`, ZSS syntax blocks and controller calls, Lua files/hooks including `hook.*`, IKEMEN config JSON, screenpack/select/menu/movelist signals, `IkemenVersion`, selected IKEMEN-only controllers, `RedirectID`, fightfx `F` action prefixes, selected extended triggers not covered by the current bounded runtime subset, selected `AssertSpecial` flags, model-stage assets, and named 3D/Z stage params. Results flow into `CompatibilityReport.profiles.ikemen`, unsupported features, exported compatibility JSON, DebugPanel, and Studio Evidence. `PrevMoveType` is now omitted from unsupported scanner findings because it has bounded runtime evidence.
    - Done: reports separate MUGEN 1.0, MUGEN 1.1, and IKEMEN-only scanner claims without attempting IKEMEN execution.
    - Next: add more package-level fixtures from real screenpacks/stages, keep mapping the official source trigger/controller tables, and keep ZSS/Lua execution blocked.
 

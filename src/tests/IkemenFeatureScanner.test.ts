@@ -69,6 +69,23 @@ describe("scanIkemenFeatures", () => {
     expect(report.findings).toEqual([]);
   });
 
+  it("does not report bounded-supported triggers as IKEMEN unsupported findings", () => {
+    const files = new Map<string, string>([
+      [
+        "chars/neo/neo.cns",
+        "[Statedef 200]\n[State 200, Branch]\ntype = ChangeState\ntrigger1 = PrevMoveType = A\ntrigger2 = PrevStateType = S\nvalue = 210\n",
+      ],
+    ]);
+
+    const report = scanIkemenFeatures({
+      paths: [...files.keys()],
+      readText: (path) => files.get(path),
+    });
+
+    expect(report.features["IKEMEN extended trigger PrevMoveType"]).toBeUndefined();
+    expect(report.features["IKEMEN extended trigger PrevStateType"]).toBe(1);
+  });
+
   it("classifies screenpack DEF paths as report-only IKEMEN package signals", () => {
     const files = new Map<string, string>([
       ["data/select.def", "[Characters]\nkfm, stages/kfm.def\n"],

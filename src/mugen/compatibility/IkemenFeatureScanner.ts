@@ -277,7 +277,7 @@ function findIkemenTriggers(value: string): string[] {
   const found = new Set<string>();
   for (const token of value.toLowerCase().match(/[a-z_][a-z0-9_.]*/g) ?? []) {
     const trigger = IKEMEN_TRIGGER_NAMES.get(token);
-    if (trigger) {
+    if (trigger && !BOUNDED_SUPPORTED_TRIGGER_NAMES.has(trigger)) {
       found.add(trigger);
     }
   }
@@ -566,6 +566,8 @@ const IKEMEN_TRIGGER_NAMES = new Map(
     "ZoomVar",
   ].map((name) => [name.toLowerCase(), name]),
 );
+
+const BOUNDED_SUPPORTED_TRIGGER_NAMES = new Set(["PrevMoveType"]);
 
 class FindingAccumulator {
   private readonly findings = new Map<string, IkemenScanFinding>();
