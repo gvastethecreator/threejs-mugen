@@ -2112,6 +2112,69 @@ export function createSyntheticImportedBindToTargetHeadTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedBindToTargetMidTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-mid-attacker",
+    displayName: "Synthetic Imported BindToTarget Mid Attacker",
+    withBindToTarget: true,
+    bindToTargetPostype: "Mid",
+  });
+  const target = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-bindtotarget-mid-target",
+    displayName: "Synthetic Imported BindToTarget Mid Target",
+    sizeConstants: {
+      midPos: [4, -42],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: target, stage }), script, {
+    label: "synthetic-imported-bindtotarget-mid-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-bindtotarget-mid-golden",
+      label: "Synthetic imported BindToTarget Mid anchor route",
+      source: "imported",
+      notes: [
+        "Synthetic imported BindToTarget trace proves parsed target [Size] mid.pos constants feed a bounded Mid owner-to-target bind and expose the resolved offset in world target-link evidence.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-bindtotarget-mid-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "BindToTarget"],
+        requiredExecutedOperations: ["hitdef", "bindtotarget"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77 },
+          {
+            ownerId: "p1",
+            actorId: "p2",
+            targetId: 77,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 24,
+            bindingOffsetY: -50,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetBindPauseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetBindPauseScript();

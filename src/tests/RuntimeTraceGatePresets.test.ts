@@ -54,6 +54,7 @@ import {
   createSyntheticImportedSuperPauseTraceArtifact,
   createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedBindToTargetHeadTraceArtifact,
+  createSyntheticImportedBindToTargetMidTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
   createSyntheticImportedNumExplodTraceArtifact,
@@ -1433,6 +1434,41 @@ describe("RuntimeTraceGatePresets", () => {
           minBindingRemaining: 1,
           maxBindingRemaining: 3,
           bindingOffset: { x: 26, y: -80 },
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported BindToTarget Mid artifact with parsed Size anchor evidence", () => {
+    const artifact = createSyntheticImportedBindToTargetMidTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-bindtotarget-mid-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-bindtotarget-mid-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.BindToTarget).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.bindtotarget).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          actorId: "p2",
+          targetId: 77,
+          hasBinding: true,
+          minBindingRemaining: 1,
+          maxBindingRemaining: 3,
+          bindingOffset: { x: 24, y: -50 },
         }),
       ]),
     );
