@@ -22250,3 +22250,52 @@ input {
     background: rgba(2, 4, 7, 0.94) !important;
   }
 }
+
+/* Desktop Studio specificity lock: command actions stay row-based on every Studio tab. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack button {
+    grid-template-columns: 18px minmax(0, 1fr) minmax(80px, max-content) !important;
+    min-height: 34px;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--dcc-line) !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid .primary-action,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .primary-action,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .full-width-action,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column .primary-action,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack .primary-action {
+    grid-column: auto !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab] .workspace-action-grid button:last-child,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button:last-child,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button:last-child,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack button:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .action-label,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column .action-label,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .action-stack .action-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
