@@ -19,6 +19,10 @@
   --surface-flat-recessed: #050608;
   --surface-selected: rgba(181, 150, 85, 0.08);
   --surface-row: #10151b;
+  --surface-chip: #0d1015;
+  --surface-meter: #0b0d11;
+  --scrollbar-track: #090a0d;
+  --text-warm: #fff9e8;
   --metal-top: #252b33;
   --metal-mid: #181d23;
   --metal-bottom: #0b0f14;
@@ -50,6 +54,7 @@
   --hitbox: #b96962;
   --hurtbox: #77889a;
   --ok: #9ca18f;
+  --power: #7e92ad;
   --shadow-panel: inset 0 1px 0 var(--bevel-light), inset 0 -1px 0 var(--bevel-dark);
   --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.045), inset 0 -1px 0 rgba(0, 0, 0, 0.52);
   --shadow-recessed: inset 0 1px 2px rgba(0, 0, 0, 0.72), inset 0 -1px 0 rgba(255, 255, 255, 0.045);
@@ -201,11 +206,11 @@ pre,
 }
 
 *::-webkit-scrollbar-track {
-  background: #090a0d;
+  background: var(--scrollbar-track);
 }
 
 *::-webkit-scrollbar-thumb {
-  border: 3px solid #090a0d;
+  border: 3px solid var(--scrollbar-track);
   border-radius: 999px;
   background-color: rgba(255, 255, 255, 0.2);
 }
@@ -404,7 +409,7 @@ pre,
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .stage-status-main strong,
@@ -582,7 +587,7 @@ pre,
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 4px;
-  background: #0c1016;
+  background: var(--surface-meter);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
@@ -622,7 +627,7 @@ pre,
 .round-state {
   min-height: 18px;
   color: var(--accent);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .round-state.ko,
@@ -781,7 +786,7 @@ pre,
   font-size: 12px;
   font-weight: 700;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -981,7 +986,7 @@ pre,
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .studio-command-decision strong {
@@ -1236,7 +1241,7 @@ pre,
   font-family: var(--mono);
   font-size: 12px;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -1348,7 +1353,7 @@ pre,
 }
 
 .primary-action .workspace-action-label {
-  color: #fff9e8;
+  color: var(--text-warm);
 }
 
 .primary-action:hover {
@@ -1888,7 +1893,7 @@ pre,
   font-family: var(--mono);
   font-size: 12px;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -1902,7 +1907,7 @@ pre,
   font-size: 12px;
   line-height: 1.2;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -2055,7 +2060,7 @@ button.studio-primary-next {
   overflow-wrap: anywhere;
   color: var(--subtle);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.1;
 }
 
@@ -2269,7 +2274,7 @@ button.studio-primary-next {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--panel-border) 74%, #000);
   border-radius: 5px;
-  background: #070b10;
+  background: var(--surface-flat-recessed);
 }
 
 .engine-module-row {
@@ -2292,8 +2297,8 @@ button.studio-primary-next {
   color: var(--subtle);
   background: var(--surface-flat);
   font-family: var(--mono);
-  font-size: 11px;
-  text-transform: uppercase;
+  font-size: 12px;
+  text-transform: none;
 }
 
 .engine-module-row:not(.engine-module-row-head).is-ok {
@@ -2347,7 +2352,7 @@ button.studio-primary-next {
 .engine-module-contracts small {
   color: var(--subtle);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.1;
 }
 
@@ -2981,7 +2986,7 @@ button.list-item:hover {
   color: var(--subtle);
   font-family: var(--mono);
   font-weight: 650;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .record-route span {
@@ -3097,7 +3102,7 @@ button.list-item:hover {
   font-size: 12px;
   line-height: 1;
   text-align: center;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .asset-row-export.is-ok {
@@ -3234,7 +3239,7 @@ button.list-item:hover {
   border: 1px solid var(--border);
   border-radius: 4px;
   color: var(--muted);
-  background: #0d1015;
+  background: var(--surface-chip);
   font-family: var(--mono);
   font-size: 12px;
   text-overflow: ellipsis;
@@ -3942,7 +3947,7 @@ button.controller-chip {
   border: 1px solid var(--panel-border);
   border-radius: 4px;
   color: var(--text);
-  background: #0d1015;
+  background: var(--surface-chip);
   font-family: var(--mono);
   font-size: 12px;
 }
@@ -4170,7 +4175,7 @@ button.controller-chip {
   font-family: var(--mono);
   font-size: 12px;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -4341,7 +4346,7 @@ button.controller-chip {
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 999px;
-  background: #0b0d11;
+  background: var(--surface-meter);
 }
 
 .meter span {
@@ -4358,7 +4363,7 @@ button.controller-chip {
 }
 
 .meter-power span {
-  background: #44c7b6;
+  background: var(--power);
 }
 
 .list-title {
@@ -5461,7 +5466,7 @@ button.debug-filter-button {
 
   .app-shell.mode-studio .round-state {
     min-height: 14px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .round-stage {
@@ -5476,7 +5481,7 @@ button.debug-filter-button {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 5px;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .hud-fighter-name {
@@ -5488,11 +5493,11 @@ button.debug-filter-button {
     color: var(--muted);
     font-family: var(--mono);
     font-weight: 700;
-    text-transform: uppercase;
+    text-transform: none;
   }
 
   .app-shell.mode-studio .hud-fighter-top span {
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .hud-meter {
@@ -5723,7 +5728,7 @@ button.debug-filter-button {
 
   .app-shell.mode-studio .studio-command-readouts b,
   .app-shell.mode-studio .studio-command-readouts small {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .studio-mission-strip {
@@ -6112,7 +6117,7 @@ button.debug-filter-button {
   font-family: var(--mono);
   font-size: 12px;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: none;
   white-space: nowrap;
 }
 
@@ -6234,7 +6239,7 @@ button.debug-filter-button {
 .acceptance-gate-action small {
   color: var(--subtle);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
@@ -6745,7 +6750,7 @@ button.list-item:hover,
   max-width: 100%;
   overflow: visible;
   color: color-mix(in srgb, var(--muted) 86%, var(--text));
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.08;
   text-overflow: clip;
   white-space: normal;
@@ -6754,7 +6759,7 @@ button.list-item:hover,
 .studio-tab-section.is-compact .tab-label,
 .app-shell.mode-studio .studio-tab-section.is-compact .tab-label {
   overflow: hidden;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.08;
   text-overflow: ellipsis;
 }
