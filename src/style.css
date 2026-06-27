@@ -10640,6 +10640,138 @@ input {
   background: color-mix(in srgb, var(--warn) 6%, var(--editor-row));
 }
 
+/* Workbench shell hardening: remove soft app-card residue from control room rows. */
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-tabs,
+.app-shell.mode-studio[data-studio-tab="workbench"] .tab-count,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state,
+.app-shell.mode-studio[data-studio-tab="workbench"] .badge,
+.app-shell.mode-studio[data-studio-tab="workbench"] .status-badge,
+.app-shell.mode-studio[data-studio-tab="workbench"] button {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts,
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat-grid {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts span,
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip span,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid span,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat {
+  min-height: 34px;
+  padding: 6px 7px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts span:last-child,
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip span:last-child,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid span:last-child,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts small,
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip em,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid small,
+.app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat span,
+.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state,
+.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state p {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  font-size: 12px;
+  line-height: 1.22;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-ok,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-ok {
+  color: var(--text);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-warn,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-warn {
+  color: var(--text);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-error,
+.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-error {
+  color: var(--text);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state {
+  min-height: 0;
+  padding: 8px 9px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+/* Module desk hardening: make contract readouts match inspector ledgers. */
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-tabs,
+.app-shell.mode-studio[data-studio-tab="modules"] .tab-count,
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="modules"] .badge,
+.app-shell.mode-studio[data-studio-tab="modules"] .status-badge,
+.app-shell.mode-studio[data-studio-tab="modules"] button {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat-grid {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat {
+  min-height: 34px;
+  padding: 6px 7px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:nth-child(4n),
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .studio-stat span,
+.app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card small,
+.app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name small,
+.app-shell.mode-studio[data-studio-tab="modules"] .engine-module-contracts small {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  font-size: 12px;
+  line-height: 1.22;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
 @media (max-width: 620px) {
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column,
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip,
