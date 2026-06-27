@@ -20110,7 +20110,7 @@ input {
   }
 
   .app-shell.mode-studio .pane {
-    border-right: 2px solid var(--dcc-line-hard);
+    border-right: 1px solid var(--dcc-line-hard);
   }
 
   .app-shell.mode-studio .pane-right {
