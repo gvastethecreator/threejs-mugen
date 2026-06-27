@@ -16436,6 +16436,8 @@ input {
 
   .app-shell.mode-studio[data-studio-tab="evidence"] {
     --section-accent: var(--trace-accent);
+    --evidence-warn: var(--warn);
+    --evidence-danger: var(--danger);
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] {
@@ -17921,7 +17923,7 @@ input {
   }
 
   .app-shell.mode-studio .pane {
-    border-right: 2px solid var(--dcc-line-hard);
+    border-right: 1px solid var(--dcc-line-hard);
   }
 
   .app-shell.mode-studio .pane-right {
@@ -19800,6 +19802,1002 @@ input {
   .app-shell.mode-studio:not([data-studio-tab="workbench"]) .studio-tab-section.is-compact .tab.is-active {
     background: color-mix(in srgb, var(--section-accent) 7%, var(--dcc-control));
     box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 42%, transparent);
+  }
+}
+
+/* Desktop Build/Evidence ledgers: keep review queues scannable before deep reading. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, max-content);
+    gap: 6px 8px;
+    padding: 7px 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record-main {
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title {
+    overflow: hidden;
+    font-size: 12.5px;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route span {
+    display: -webkit-box;
+    max-height: 33px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: color-mix(in srgb, var(--muted) 88%, var(--text));
+    line-height: 1.25;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 6px;
+    min-width: 0;
+    line-height: 1.2;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-evidence {
+    max-height: 22px;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-side {
+    min-width: 78px;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side .badge,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side .status-badge,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-side .badge,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-side .status-badge {
+    min-height: 20px;
+    padding: 3px 5px;
+  }
+}
+
+/* Desktop command-bay pass: neutral chassis, integrated viewport tools, tighter ledgers. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --console-reserved-height: 58px;
+    --dcc-bg: #020304;
+    --dcc-frame: #080a0d;
+    --dcc-rail: #0a0c10;
+    --dcc-rail-deep: #030405;
+    --dcc-panel: #0b0e12;
+    --dcc-panel-raised: #101419;
+    --dcc-control: #101419;
+    --dcc-control-hover: #171c22;
+    --dcc-row: #080b0f;
+    --dcc-row-alt: #0b0f13;
+    --dcc-row-hover: #12171d;
+    --dcc-field: #040609;
+    --dcc-slot: #05070a;
+    --dcc-line: rgba(221, 228, 236, 0.13);
+    --dcc-line-hard: rgba(230, 236, 244, 0.24);
+    --dcc-line-soft: rgba(221, 228, 236, 0.07);
+    --dcc-shadow-cut: rgba(0, 0, 0, 0.9);
+    --text: #eef1f3;
+    --muted: #b3bbc5;
+    --subtle: #858e99;
+    --ok: #86a082;
+    --warn: #b06f82;
+    --danger: #c85e70;
+    --pending: #8d99a6;
+    --workbench: #8f9daa;
+    --asset: #a08aa0;
+    --inspect: #8ca0aa;
+    --stage-accent: #8c9d90;
+    --debug-accent: #b0777d;
+    --trace-accent: #978caf;
+    --module-accent: #7f9d96;
+    --build-accent: #8799b0;
+    --section-accent: var(--workbench);
+    --surface-accent: var(--section-accent);
+    --accent: var(--section-accent);
+    grid-template-columns: minmax(316px, 338px) minmax(0, 1fr) minmax(392px, 420px);
+    grid-template-rows: 40px minmax(0, 1fr) var(--console-reserved-height);
+    background: var(--dcc-bg);
+    font-size: 13px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] {
+    --section-accent: var(--workbench);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] {
+    --section-accent: var(--asset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] {
+    --section-accent: var(--inspect);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="stage"] {
+    --section-accent: var(--stage-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] {
+    --section-accent: var(--debug-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] {
+    --section-accent: var(--trace-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] {
+    --section-accent: var(--module-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    --section-accent: var(--build-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"],
+  .app-shell.mode-studio[data-studio-tab="evidence"],
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    grid-template-columns: minmax(316px, 338px) minmax(0, 1fr) minmax(410px, 438px);
+  }
+
+  .app-shell.mode-studio *,
+  .app-shell.mode-studio *::before,
+  .app-shell.mode-studio *::after {
+    text-shadow: none !important;
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    grid-template-columns: minmax(222px, 292px) minmax(480px, 1fr) max-content;
+    gap: 0;
+    min-height: 40px;
+    padding: 0;
+    border-bottom: 1px solid var(--dcc-line-hard);
+    background: var(--dcc-frame);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.055),
+      inset 0 -1px 0 var(--dcc-shadow-cut);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand,
+  .app-shell.mode-studio .studio-chrome-readout,
+  .app-shell.mode-studio .studio-chrome-actions {
+    min-height: 40px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-rail-deep);
+    box-shadow: inset 0 -1px 0 var(--dcc-shadow-cut);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 8px;
+    padding: 4px 10px;
+    box-shadow:
+      inset 3px 0 0 color-mix(in srgb, var(--section-accent) 66%, transparent),
+      inset 0 -1px 0 var(--dcc-shadow-cut);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    background: var(--dcc-rail);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span {
+    grid-template-columns: 16px minmax(0, 1fr);
+    min-height: 39px;
+    gap: 1px 7px;
+    padding: 4px 10px;
+    border-right: 1px solid var(--dcc-line);
+    background: var(--dcc-rail);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(58px, max-content);
+    justify-content: end;
+    overflow: hidden;
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button {
+    grid-template-columns: 15px minmax(0, auto);
+    min-height: 39px;
+    gap: 5px;
+    padding: 4px 8px;
+    border-width: 0 0 0 1px;
+    border-color: var(--dcc-line);
+    background: var(--dcc-control);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button.is-active,
+  .app-shell.mode-studio .mode-switch button.is-active,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
+    background: color-mix(in srgb, var(--section-accent) 8%, var(--dcc-control));
+    box-shadow:
+      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 58%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand strong,
+  .app-shell.mode-studio .studio-chrome-readout b,
+  .app-shell.mode-studio .mode-label,
+  .app-shell.mode-studio .tab-label,
+  .app-shell.mode-studio .workspace-action-label,
+  .app-shell.mode-studio .list-title,
+  .app-shell.mode-studio .asset-row-title .list-title,
+  .app-shell.mode-studio .engine-module-name strong {
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand small,
+  .app-shell.mode-studio .studio-chrome-readout small,
+  .app-shell.mode-studio .mode-status,
+  .app-shell.mode-studio .tab-status,
+  .app-shell.mode-studio .workspace-action-grid small,
+  .app-shell.mode-studio .list-meta,
+  .app-shell.mode-studio .asset-row-detail,
+  .app-shell.mode-studio .studio-kv dt,
+  .app-shell.mode-studio .studio-kv dd {
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
+  .app-shell.mode-studio .studio-chrome-actions .ui-icon,
+  .app-shell.mode-studio .tab-icon,
+  .app-shell.mode-studio .mode-icon,
+  .app-shell.mode-studio .action-icon,
+  .app-shell.mode-studio .route-icon {
+    width: 15px;
+    height: 15px;
+    color: color-mix(in srgb, var(--section-accent) 58%, var(--muted));
+    stroke-width: 1.85;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(1) .ui-icon {
+    color: var(--inspect);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(2) .ui-icon {
+    color: var(--stage-accent);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
+    color: color-mix(in srgb, var(--ok) 86%, var(--text));
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
+    color: color-mix(in srgb, var(--pending) 86%, var(--text));
+  }
+
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right {
+    gap: 0;
+    padding: 0;
+    background: var(--dcc-rail-deep);
+    scrollbar-gutter: stable;
+  }
+
+  .app-shell.mode-studio .pane {
+    border-right: 2px solid var(--dcc-line-hard);
+  }
+
+  .app-shell.mode-studio .pane-right {
+    border-left: 1px solid var(--dcc-line-hard);
+  }
+
+  .app-shell.mode-studio .pane > .section,
+  .app-shell.mode-studio .pane-right > .section,
+  .app-shell.mode-studio .pane > .workbench-ops-section,
+  .app-shell.mode-studio .pane-right > .workbench-ops-section,
+  .app-shell.mode-studio details.section {
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .section-heading-row,
+  .app-shell.mode-studio .workbench-ops-head,
+  .app-shell.mode-studio .command-center-header,
+  .app-shell.mode-studio .build-readiness-header,
+  .app-shell.mode-studio .compact-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 24px;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 0 0 5px;
+    border-bottom: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio .section-heading-row h2,
+  .app-shell.mode-studio .workbench-ops-head h2,
+  .app-shell.mode-studio .command-center-header h2,
+  .app-shell.mode-studio .pane-right .section > h2,
+  .app-shell.mode-studio .pane .section > h2 {
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: 12.75px;
+    font-weight: 740;
+    line-height: 1.08;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .panel-kicker,
+  .app-shell.mode-studio .workspace-eyebrow,
+  .app-shell.mode-studio .gate-kicker,
+  .app-shell.mode-studio .record-kicker {
+    color: color-mix(in srgb, var(--section-accent) 42%, var(--subtle));
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .mode-switch,
+  .app-shell.mode-studio .workspace-summary,
+  .app-shell.mode-studio .workspace-action-grid,
+  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs,
+  .app-shell.mode-studio .studio-mission-strip,
+  .app-shell.mode-studio .workbench-surface-grid,
+  .app-shell.mode-studio .workbench-lane-strip,
+  .app-shell.mode-studio .command-meter-grid,
+  .app-shell.mode-studio .asset-lane-strip,
+  .app-shell.mode-studio .build-runway,
+  .app-shell.mode-studio .studio-kv,
+  .app-shell.mode-studio .list.compact-list,
+  .app-shell.mode-studio .engine-module-table,
+  .app-shell.mode-studio .pipeline-list,
+  .app-shell.mode-studio .debug-lens-grid,
+  .app-shell.mode-studio .debug-lens-stat-grid {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.024),
+      inset 0 -1px 0 var(--dcc-shadow-cut);
+  }
+
+  .app-shell.mode-studio .workspace-summary span,
+  .app-shell.mode-studio .command-meter-grid span,
+  .app-shell.mode-studio .asset-lane-strip span,
+  .app-shell.mode-studio .build-runway span,
+  .app-shell.mode-studio .studio-stat,
+  .app-shell.mode-studio .health-grid span {
+    display: grid;
+    grid-template-columns: minmax(34px, max-content) minmax(0, 1fr);
+    min-height: 28px;
+    align-items: baseline;
+    gap: 6px;
+    padding: 4px 7px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .command-meter-grid b,
+  .app-shell.mode-studio .asset-lane-strip b,
+  .app-shell.mode-studio .build-runway b,
+  .app-shell.mode-studio .studio-stat strong,
+  .app-shell.mode-studio .health-grid b {
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .workspace-summary small,
+  .app-shell.mode-studio .command-meter-grid small,
+  .app-shell.mode-studio .asset-lane-strip small,
+  .app-shell.mode-studio .asset-lane-strip em,
+  .app-shell.mode-studio .build-runway small,
+  .app-shell.mode-studio .studio-stat span,
+  .app-shell.mode-studio .health-grid small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-summary span,
+  .app-shell.mode-studio .command-meter-grid span,
+  .app-shell.mode-studio .build-runway span,
+  .app-shell.mode-studio .health-grid span,
+  .app-shell.mode-studio .studio-stat {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: center;
+    align-items: start;
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .workspace-summary small,
+  .app-shell.mode-studio .command-meter-grid b,
+  .app-shell.mode-studio .command-meter-grid small,
+  .app-shell.mode-studio .build-runway b,
+  .app-shell.mode-studio .build-runway small,
+  .app-shell.mode-studio .health-grid b,
+  .app-shell.mode-studio .health-grid small,
+  .app-shell.mode-studio .studio-stat strong,
+  .app-shell.mode-studio .studio-stat span {
+    display: block;
+    width: 100%;
+  }
+
+  .app-shell.mode-studio .mode-switch button,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab,
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .workbench-action-bar button,
+  .app-shell.mode-studio .command-action-column button,
+  .app-shell.mode-studio .action-stack button,
+  .app-shell.mode-studio .full-width-action,
+  .app-shell.mode-studio .primary-action {
+    min-height: 31px;
+    padding: 4px 7px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-control);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline,
+  .app-shell.mode-studio .mode-switch .mode-button-top {
+    grid-template-columns: 16px minmax(0, 1fr) 7px;
+    gap: 6px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status,
+  .app-shell.mode-studio .mode-status {
+    justify-self: end;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .tab-dot,
+  .app-shell.mode-studio .mode-dot,
+  .app-shell.mode-studio .studio-mission-node::after {
+    width: 5px;
+    height: 5px;
+    border-radius: 0;
+  }
+
+  .app-shell.mode-studio .tab-dot-warn,
+  .app-shell.mode-studio .mode-dot.is-warn,
+  .app-shell.mode-studio .is-warn::after,
+  .app-shell.mode-studio .is-pending::after,
+  .app-shell.mode-studio .is-planned::after {
+    background: var(--warn);
+  }
+
+  .app-shell.mode-studio .tab-dot-error,
+  .app-shell.mode-studio .is-error::after,
+  .app-shell.mode-studio .is-blocked::after {
+    background: var(--danger);
+  }
+
+  .app-shell.mode-studio .studio-command-deck::before,
+  .app-shell.mode-studio .studio-mission-node::after,
+  .app-shell.mode-studio .primary-action::before {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .primary-action .workspace-action-label {
+    color: var(--text);
+  }
+
+  .app-shell.mode-studio .badge,
+  .app-shell.mode-studio .status-badge,
+  .app-shell.mode-studio .tab-count,
+  .app-shell.mode-studio .asset-row-kind,
+  .app-shell.mode-studio .asset-row-action,
+  .app-shell.mode-studio .asset-row-export {
+    min-height: 19px;
+    padding: 2px 5px;
+    border: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-field);
+    color: color-mix(in srgb, var(--muted) 84%, var(--text));
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .badge.warn,
+  .app-shell.mode-studio .status-badge.warn,
+  .app-shell.mode-studio .status-badge.status-warn,
+  .app-shell.mode-studio .status-badge.status-pending,
+  .app-shell.mode-studio .status-badge.status-planned,
+  .app-shell.mode-studio .asset-row-export.is-warn {
+    border-color: color-mix(in srgb, var(--warn) 46%, var(--dcc-line));
+    background: color-mix(in srgb, var(--warn) 6%, var(--dcc-field));
+    color: color-mix(in srgb, var(--warn) 86%, var(--text));
+  }
+
+  .app-shell.mode-studio .badge.ok,
+  .app-shell.mode-studio .status-badge.ok,
+  .app-shell.mode-studio .status-badge.status-ok,
+  .app-shell.mode-studio .status-badge.status-active,
+  .app-shell.mode-studio .asset-row-export.is-ok {
+    border-color: color-mix(in srgb, var(--ok) 34%, var(--dcc-line));
+    background: color-mix(in srgb, var(--ok) 5%, var(--dcc-field));
+    color: color-mix(in srgb, var(--ok) 72%, var(--text));
+  }
+
+  .app-shell.mode-studio .badge.error,
+  .app-shell.mode-studio .status-badge.error,
+  .app-shell.mode-studio .status-badge.status-fail,
+  .app-shell.mode-studio .status-badge.status-blocked,
+  .app-shell.mode-studio .status-badge.status-unsupported {
+    border-color: color-mix(in srgb, var(--danger) 42%, var(--dcc-line));
+    background: color-mix(in srgb, var(--danger) 6%, var(--dcc-field));
+    color: color-mix(in srgb, var(--danger) 78%, var(--text));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .badge.warn,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.warn,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.status-warn,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.status-pending,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.status-planned {
+    border-color: color-mix(in srgb, var(--warn) 46%, var(--dcc-line));
+    background: color-mix(in srgb, var(--warn) 6%, var(--dcc-field));
+    color: color-mix(in srgb, var(--warn) 86%, var(--text));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn {
+    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--warn) 64%, transparent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn b,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn b {
+    color: color-mix(in srgb, var(--warn) 86%, var(--text));
+  }
+
+  .app-shell.mode-studio .file-loader-section {
+    padding-block: 6px;
+  }
+
+  .app-shell.mode-studio .drop-zone {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    min-height: 0;
+    padding: 7px 8px;
+    border: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row-alt);
+    box-shadow: inset 0 -1px 0 var(--dcc-shadow-cut);
+  }
+
+  .app-shell.mode-studio .drop-zone strong,
+  .app-shell.mode-studio .drop-zone p {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .drop-zone p {
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .file-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio .file-actions button {
+    min-height: 28px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-control);
+  }
+
+  .app-shell.mode-studio .file-actions button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .stage {
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+    background: #010203;
+    box-shadow:
+      inset 0 0 0 1px rgba(230, 236, 244, 0.08),
+      inset 0 20px 36px rgba(0, 0, 0, 0.34),
+      inset 0 -24px 36px rgba(0, 0, 0, 0.5);
+  }
+
+  .app-shell.mode-studio .round-hud {
+    top: 10px;
+    left: 18px;
+    right: 18px;
+  }
+
+  .app-shell.mode-studio .round-hud-panel,
+  .app-shell.mode-studio .stage-toolbar,
+  .app-shell.mode-studio .stage-status-card {
+    border: 1px solid var(--dcc-line-hard) !important;
+    border-radius: 0;
+    background: rgba(4, 6, 8, 0.94) !important;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.86);
+  }
+
+  .app-shell.mode-studio .round-hud-panel {
+    max-width: min(100%, 760px);
+    padding: 5px 8px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    top: 82px;
+    right: 18px;
+    left: 18px;
+    bottom: auto;
+    display: flex;
+    max-width: none;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-group {
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-group:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill,
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    min-height: 30px;
+    padding: 4px 8px;
+    border-width: 0 0 0 1px !important;
+    border-color: var(--dcc-line) !important;
+    border-radius: 0;
+    background: var(--dcc-control) !important;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-group > :first-child:not(.toolbar-label) {
+    border-left: 0 !important;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .runtime-control-icon {
+    color: color-mix(in srgb, var(--section-accent) 54%, var(--muted));
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    grid-template-columns: 14px auto 56px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control select {
+    min-height: 22px;
+    border-color: var(--dcc-line-hard);
+    background: var(--dcc-field);
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .stage-status {
+    left: 18px;
+    bottom: 12px;
+    width: min(364px, calc(50% - 24px));
+    max-height: 126px;
+  }
+
+  .app-shell.mode-studio .stage-status-card {
+    gap: 6px;
+    padding: 7px;
+  }
+
+  .app-shell.mode-studio .stage-status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-slot);
+  }
+
+  .app-shell.mode-studio .stage-status-metric {
+    min-height: 27px;
+    padding: 4px 5px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .stage-status-metric:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .stage-status-metric small,
+  .app-shell.mode-studio .stage-status-metric b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .console {
+    border-top: 1px solid var(--dcc-line-hard);
+    background: #010203;
+  }
+
+  .app-shell.mode-studio .console-toolbar {
+    min-height: 24px;
+    padding: 3px 8px;
+    border-bottom: 1px solid var(--dcc-line);
+    background: var(--dcc-frame);
+  }
+
+  .app-shell.mode-studio .console-list {
+    max-height: 34px;
+    padding: 2px 8px 5px;
+    background: #010203;
+  }
+
+  .app-shell.mode-studio .console-list > .log-line {
+    min-height: 18px;
+    grid-template-columns: 64px minmax(0, 1fr) minmax(110px, max-content);
+    gap: 9px;
+    padding: 1px 0;
+    border-bottom: 0;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .workbench-route-button,
+  .app-shell.mode-studio .asset-row,
+  .app-shell.mode-studio .evidence-record,
+  .app-shell.mode-studio .build-readiness-record,
+  .app-shell.mode-studio .source-package-row,
+  .app-shell.mode-studio .engine-module-row,
+  .app-shell.mode-studio .pipeline-step,
+  .app-shell.mode-studio .debug-lens-meter,
+  .app-shell.mode-studio .list-item {
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none !important;
+  }
+
+  .app-shell.mode-studio .workbench-route-button:nth-child(even),
+  .app-shell.mode-studio .asset-row:nth-child(even),
+  .app-shell.mode-studio .evidence-record:nth-child(even),
+  .app-shell.mode-studio .build-readiness-record:nth-child(even),
+  .app-shell.mode-studio .source-package-row:nth-child(even),
+  .app-shell.mode-studio .engine-module-row:nth-child(even),
+  .app-shell.mode-studio .list-item:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio .workbench-route-button:hover,
+  .app-shell.mode-studio .asset-row:hover,
+  .app-shell.mode-studio .evidence-record:hover,
+  .app-shell.mode-studio .build-readiness-record:hover,
+  .app-shell.mode-studio .source-package-row:hover,
+  .app-shell.mode-studio .engine-module-row:hover,
+  .app-shell.mode-studio .list-item:hover {
+    background: var(--dcc-row-hover);
+  }
+
+  .app-shell.mode-studio .build-readiness-record,
+  .app-shell.mode-studio .evidence-record,
+  .app-shell.mode-studio .source-package-row {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) minmax(78px, max-content);
+    gap: 5px 8px;
+    min-height: 0;
+    padding: 6px 7px 6px 10px;
+    border-bottom: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio .build-readiness-record::before,
+  .app-shell.mode-studio .evidence-record::before,
+  .app-shell.mode-studio .source-package-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2px;
+    background: color-mix(in srgb, var(--section-accent) 34%, transparent);
+  }
+
+  .app-shell.mode-studio .build-readiness-record.is-ok::before,
+  .app-shell.mode-studio .evidence-record.is-ok::before,
+  .app-shell.mode-studio .source-package-row.is-ok::before {
+    background: color-mix(in srgb, var(--ok) 58%, transparent);
+  }
+
+  .app-shell.mode-studio .build-readiness-record.is-warn::before,
+  .app-shell.mode-studio .build-readiness-record.is-planned::before,
+  .app-shell.mode-studio .build-readiness-record.is-partial::before,
+  .app-shell.mode-studio .evidence-record.is-warn::before,
+  .app-shell.mode-studio .evidence-record.is-planned::before,
+  .app-shell.mode-studio .evidence-record.is-partial::before,
+  .app-shell.mode-studio .source-package-row.is-warn::before {
+    background: color-mix(in srgb, var(--warn) 62%, transparent);
+  }
+
+  .app-shell.mode-studio .build-readiness-record.is-error::before,
+  .app-shell.mode-studio .evidence-record.is-error::before,
+  .app-shell.mode-studio .source-package-row.is-error::before {
+    background: color-mix(in srgb, var(--danger) 68%, transparent);
+  }
+
+  .app-shell.mode-studio .build-readiness-main,
+  .app-shell.mode-studio .evidence-record-main {
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .record-kicker {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .record-route {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 6px;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.14;
+  }
+
+  .app-shell.mode-studio .record-route b {
+    color: color-mix(in srgb, var(--subtle) 86%, var(--muted));
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route span {
+    display: block;
+    max-height: none;
+    overflow: hidden;
+    -webkit-box-orient: initial;
+    -webkit-line-clamp: initial;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-evidence {
+    display: none;
+  }
+
+  .app-shell.mode-studio .record-side {
+    align-self: start;
+    min-width: 76px;
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio .record-side .badge,
+  .app-shell.mode-studio .record-side .status-badge {
+    justify-self: end;
+    max-width: 100%;
+  }
+
+  .app-shell.mode-studio .studio-kv {
+    grid-template-columns: minmax(94px, 0.32fr) minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .studio-kv dt,
+  .app-shell.mode-studio .studio-kv dd {
+    min-height: 24px;
+    align-content: center;
+    padding: 4px 7px;
+    border-bottom: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio .studio-kv dt {
+    background: var(--dcc-control);
+  }
+
+  .app-shell.mode-studio .studio-kv dd {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio .empty-state {
+    min-height: 0;
+    padding: 8px;
+    border: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .app-shell.mode-studio button:focus-visible,
+  .app-shell.mode-studio [tabindex]:focus-visible,
+  .app-shell.mode-studio select:focus-visible,
+  .app-shell.mode-studio input:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--section-accent) 70%, white);
+    outline-offset: -2px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 48%, transparent);
   }
 }
 
