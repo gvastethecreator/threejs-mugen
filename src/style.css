@@ -4807,8 +4807,10 @@ button.controller-chip {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: center;
-  min-height: 58px;
+  align-items: start;
+  min-height: 66px;
+  height: auto;
+  overflow: visible;
   padding: 9px 10px;
   border-color: color-mix(in srgb, var(--panel-border) 82%, #000);
   background: var(--surface-flat);
@@ -4843,6 +4845,7 @@ button.controller-chip {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.35;
+  white-space: normal;
 }
 
 .command-result-meta {
@@ -9084,4 +9087,501 @@ input {
 
 .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
   background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center {
+  gap: 7px;
+  border-width: 1px 0;
+  border-inline: 0;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--editor-panel-pressed) 74%, transparent);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-center-header {
+  min-height: 26px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-center-main {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-action-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button,
+.app-shell.mode-studio[data-studio-tab="assets"] .primary-action {
+  min-height: 32px;
+  padding: 5px 7px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right {
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .section {
+  padding-block: 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .section-heading-row {
+  min-height: 25px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-triage-section {
+  gap: 7px;
+  background: color-mix(in srgb, var(--editor-panel-pressed) 72%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span {
+  min-height: 30px;
+  padding: 5px 6px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span:last-child,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .operator-callout,
+.app-shell.mode-studio[data-studio-tab="assets"] .selection-summary,
+.app-shell.mode-studio[data-studio-tab="assets"] .action-callout {
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 26%, var(--editor-edge));
+  border-radius: 3px;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .action-callout {
+  border-left: 2px solid var(--section-accent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv {
+  grid-template-columns: minmax(72px, 0.45fr) minmax(0, 1.55fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 68%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+  min-height: 25px;
+  padding: 5px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 58%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 84%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 40%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-flow,
+.app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph {
+  display: grid;
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-flow .list,
+.app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .compact-list {
+  gap: 0;
+  margin-top: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item,
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate {
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item:last-child,
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-map {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-branches {
+  display: grid;
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-branch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-connector {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node {
+  grid-template-columns: minmax(54px, 0.34fr) minmax(0, 1fr) auto;
+  gap: 6px 8px;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node small {
+  grid-column: 2 / -1;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node.is-root {
+  background: color-mix(in srgb, var(--section-accent) 7%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row {
+  grid-template-columns: minmax(0, 1fr) minmax(58px, auto);
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-side {
+  min-width: 58px;
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip,
+  .app-shell.mode-studio[data-studio-tab="assets"] .triage-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button,
+  .app-shell.mode-studio[data-studio-tab="assets"] .primary-action {
+    min-height: 36px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span {
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span:last-child,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 1160px) {
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+/* Studio productivity polish: keep chrome dense, but make controls scan- and touch-safe. */
+.app-shell.mode-studio {
+  grid-template-columns: minmax(280px, 304px) minmax(660px, 1fr) minmax(280px, 304px);
+  grid-template-rows: 48px minmax(0, 1fr) var(--console-reserved-height);
+}
+
+.app-shell.mode-studio .studio-chrome {
+  min-height: 48px;
+  grid-template-columns: minmax(214px, 0.5fr) minmax(0, 1.5fr) auto;
+  padding: 4px 8px;
+}
+
+.app-shell.mode-studio .studio-chrome-readout > span {
+  min-height: 38px;
+  padding-block: 5px;
+}
+
+.app-shell.mode-studio .studio-chrome-actions button,
+.app-shell.mode-studio .stage-toolbar button,
+.app-shell.mode-studio .stage-toolbar .toggle-pill,
+.app-shell.mode-studio .toolbar-group select,
+.app-shell.mode-studio .toggle-pill,
+.app-shell.mode-studio .mode-switch button,
+.app-shell.mode-studio .command-launcher,
+.app-shell.mode-studio .workspace-action-grid button,
+.app-shell.mode-studio .studio-tab-section.is-compact .tab,
+.app-shell.mode-studio .tab,
+.app-shell.mode-studio .full-width-action,
+.app-shell.mode-studio .command-action-column button {
+  min-height: 40px;
+}
+
+.app-shell.mode-studio .studio-chrome-actions button {
+  min-width: 40px;
+  justify-content: center;
+}
+
+.app-shell.mode-studio .stage-toolbar {
+  top: 92px;
+  right: 12px;
+  bottom: auto;
+  left: auto;
+  max-width: min(640px, calc(100% - 24px));
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+.app-shell.mode-studio .stage-status {
+  left: 12px;
+  right: auto;
+  bottom: 12px;
+  width: min(520px, calc(42% - 16px));
+}
+
+.app-shell.mode-studio .workspace-action-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell.mode-studio .workspace-action-grid button {
+  align-content: center;
+  padding-block: 7px;
+}
+
+.app-shell.mode-studio .studio-chrome-brand strong,
+.app-shell.mode-studio .studio-chrome-brand small,
+.app-shell.mode-studio .studio-chrome-readout b,
+.app-shell.mode-studio .studio-chrome-readout small,
+.app-shell.mode-studio .mode-label,
+.app-shell.mode-studio .mode-status,
+.app-shell.mode-studio .tab-label,
+.app-shell.mode-studio .tab-status,
+.app-shell.mode-studio .workspace-action-label,
+.app-shell.mode-studio .workspace-action-grid button small,
+.app-shell.mode-studio .asset-row-detail,
+.app-shell.mode-studio .list-meta {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell.mode-studio .studio-chrome-brand strong,
+.app-shell.mode-studio .studio-chrome-brand small,
+.app-shell.mode-studio .studio-chrome-readout b,
+.app-shell.mode-studio .studio-chrome-readout small {
+  line-height: 1.12;
+}
+
+.app-shell.mode-studio .toggle-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 10px;
+}
+
+.app-shell.mode-studio .toggle-pill input[type="checkbox"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: max(100%, 40px);
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.app-shell.mode-studio .toggle-pill::before {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border: 1px solid color-mix(in srgb, var(--section-accent, var(--accent)) 64%, var(--control-border));
+  border-radius: 3px;
+  background: var(--editor-panel-pressed, var(--surface-flat));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  content: "";
+}
+
+.app-shell.mode-studio .toggle-pill:has(input[type="checkbox"]:checked)::before {
+  background: color-mix(in srgb, var(--section-accent, var(--accent)) 72%, var(--editor-command, var(--surface-flat)));
+  box-shadow:
+    inset 0 0 0 3px var(--editor-panel-pressed, var(--surface-flat)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.app-shell.mode-studio .toggle-pill:has(input[type="checkbox"]:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--section-accent, var(--accent)) 78%, white);
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .action-callout {
+  border-left-width: 1px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 14%, transparent);
+}
+
+@media (max-width: 1240px) and (min-width: 981px) {
+  .app-shell.mode-studio {
+    grid-template-columns: minmax(260px, 0.8fr) minmax(560px, 1.4fr) minmax(260px, 0.8fr);
+  }
+}
+
+@media (max-width: 980px) {
+  .app-shell.mode-studio {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(92px, auto);
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    min-height: 50px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    max-width: none;
+  }
+
+  .app-shell.mode-studio .stage-status {
+    width: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio .studio-chrome {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 52px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions {
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button {
+    min-width: 40px;
+    min-height: 40px;
+    padding-inline: 8px;
+  }
+
+  .app-shell.mode-studio .stage {
+    min-height: min(420px, 54vh);
+  }
+
+  .app-shell.mode-studio .round-hud {
+    top: 58px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    top: 166px;
+    right: 8px;
+    bottom: auto;
+    left: 8px;
+    justify-content: stretch;
+  }
+
+  .app-shell.mode-studio .toolbar-group {
+    width: 100%;
+  }
+
+  .app-shell.mode-studio .toolbar-group select,
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .toggle-pill {
+    min-height: 40px;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .primary-action {
+    min-height: 40px;
+  }
+}
+
+/* Final responsive dock guard: tablet Studio must stack panels, not overlap them. */
+@media (max-width: 1160px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell.mode-studio {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto minmax(92px, auto);
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .app-shell.mode-studio .studio-chrome,
+  .app-shell.mode-studio .stage,
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right,
+  .app-shell.mode-studio .console {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    order: 0;
+  }
+
+  .app-shell.mode-studio .stage {
+    order: 1;
+    min-height: min(520px, 62vh);
+  }
+
+  .app-shell.mode-studio #left-pane {
+    order: 2;
+  }
+
+  .app-shell.mode-studio .pane-right {
+    order: 3;
+  }
+
+  .app-shell.mode-studio .console {
+    order: 4;
+  }
+
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
 }
