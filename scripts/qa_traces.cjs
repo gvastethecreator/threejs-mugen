@@ -674,6 +674,8 @@ function createTraceCoverage(entries, skipped) {
       worldLifecycleRoutes: 0,
       targetLinkRoutes: 0,
       effectStoreRoutes: 0,
+      effectPayloadKinds: 0,
+      effectPayloadDeltaRoutes: 0,
     },
     controllers: {},
     operations: {},
@@ -695,6 +697,8 @@ function createTraceCoverage(entries, skipped) {
       totalEvidenceRows: 0,
       owners: [],
     },
+    effectPayloads: {},
+    effectPayloadDeltas: {},
   };
 
   const effectStoreOwners = new Set();
@@ -746,6 +750,26 @@ function createTraceCoverage(entries, skipped) {
         }
       }
     }
+
+    for (const effect of artifact.trace?.finalEffects ?? []) {
+      if (effect.effect?.kind) {
+        addCoverageEntry(coverage.effectPayloads, effect.effect.kind, { name: entry.name, required: entry.required, gate: "finalEffects" });
+      }
+    }
+    for (const frame of artifact.trace?.frames ?? []) {
+      for (const change of frame.delta?.actorChanges ?? []) {
+        if (change.layer !== "effect") {
+          continue;
+        }
+        for (const field of effectDeltaFields(change.changes)) {
+          addCoverageEntry(coverage.effectPayloadDeltas, `${change.actorKind}:${field}`, {
+            name: entry.name,
+            required: entry.required,
+            gate: "frameDelta",
+          });
+        }
+      }
+    }
   }
 
   coverage.effectStores.owners = [...effectStoreOwners].sort();
@@ -760,6 +784,8 @@ function createTraceCoverage(entries, skipped) {
   coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
   coverage.summary.targetLinkRoutes = coverage.targetLinks.artifacts.length;
   coverage.summary.effectStoreRoutes = coverage.effectStores.artifacts.length;
+  coverage.summary.effectPayloadKinds = Object.keys(coverage.effectPayloads).length;
+  coverage.summary.effectPayloadDeltaRoutes = Object.keys(coverage.effectPayloadDeltas).length;
 
   return coverage;
 }
@@ -780,6 +806,8 @@ function validateTraceCoverage(coverage) {
     "damage-scale:defencemulset",
   ];
   const requiredEffectKinds = ["projectile", "helper", "explod"];
+  const requiredEffectPayloadKinds = ["projectile", "helper", "explod"];
+  const requiredEffectPayloadDeltas = ["projectile:hits", "projectile:removal", "projectile:terminal", "explod:bindRemaining"];
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredArtifactNames = [
@@ -811,6 +839,12 @@ function validateTraceCoverage(coverage) {
   }
   for (const key of requiredEffectKinds) {
     requireCoverageEntry(coverage.effectKinds, key, "effect kind", failures);
+  }
+  for (const key of requiredEffectPayloadKinds) {
+    requireCoverageEntry(coverage.effectPayloads, key, "effect payload kind", failures);
+  }
+  for (const key of requiredEffectPayloadDeltas) {
+    requireCoverageEntry(coverage.effectPayloadDeltas, key, "effect payload delta", failures);
   }
   for (const key of requiredPauseAdvanceRoutes) {
     requireCoverageEntry(coverage.matchPauseAdvances, key, "match-pause advance", failures);
@@ -849,6 +883,12 @@ function addArrayCoverage(target, values, context) {
   for (const value of values ?? []) {
     addCoverageEntry(target, String(value), context);
   }
+}
+
+function effectDeltaFields(changes) {
+  return (changes ?? [])
+    .map((change) => /^effect\s+([^\s]+)/.exec(String(change))?.[1])
+    .filter(Boolean);
 }
 
 function addCoverageEntry(target, key, context, values = {}) {
