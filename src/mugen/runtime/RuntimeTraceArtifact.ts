@@ -543,6 +543,13 @@ function cloneTraceEffect(effect: RuntimeTraceArtifactEffect): RuntimeTraceArtif
       bindOffset: effect.bindOffset ? { ...effect.bindOffset } : undefined,
     };
   }
+  if (effect.kind === "projectile") {
+    return {
+      ...effect,
+      accel: effect.accel ? { ...effect.accel } : undefined,
+      scale: effect.scale ? { ...effect.scale } : undefined,
+    };
+  }
   return { ...effect };
 }
 

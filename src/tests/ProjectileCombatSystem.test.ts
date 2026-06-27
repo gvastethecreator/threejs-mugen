@@ -163,6 +163,8 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     animNo: 910,
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
+    accel: { x: 0, y: 0 },
+    scale: { x: 1, y: 1 },
     facing: 1,
     frameIndex: 0,
     frameElapsed: 0,

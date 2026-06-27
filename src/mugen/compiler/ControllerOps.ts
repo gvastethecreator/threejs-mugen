@@ -76,6 +76,8 @@ export type ProjectileControllerOp = {
   pos?: [number, number];
   postype?: string;
   velocity: [number, number];
+  acceleration?: [number, number];
+  scale?: [number, number];
   facing?: number;
   hitAnim?: number;
   removeAnim?: number;
@@ -637,6 +639,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
     postype: stripMugenString(findParam(controller, "postype")),
     velocity: pairWithDefault(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
+    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
+    scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "projscale") ?? findParam(controller, "scale"))),
     facing: firstNumber(findParam(controller, "facing")),
     hitAnim: firstNumber(findParam(controller, "projhitanim")),
     removeAnim: firstNumber(findParam(controller, "projremanim")),

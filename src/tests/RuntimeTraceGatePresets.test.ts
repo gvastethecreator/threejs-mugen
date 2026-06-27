@@ -46,6 +46,7 @@ import {
   createSyntheticImportedHitDefKillTraceArtifact,
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
+  createSyntheticImportedProjectileMotionTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
@@ -92,6 +93,7 @@ import {
   importedProjectileRemoveOnGetHitExplodScript,
   importedHelperScript,
   importedProjectileClashScript,
+  importedProjectileMotionScript,
   importedProjectileMultiHitScript,
   importedProjectilePriorityCancelScript,
   importedProjectileScript,
@@ -1985,6 +1987,64 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Projectile motion artifact with accel and scale evidence", () => {
+    const artifact = createSyntheticImportedProjectileMotionTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-motion-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-motion-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "projectile",
+          ownerId: "p1",
+          animNo: 910,
+          maxVel: expect.objectContaining({ x: expect.any(Number) }),
+          minScale: { x: 1.75, y: 0.5 },
+          maxScale: { x: 1.75, y: 0.5 },
+        }),
+      ]),
+    );
+    const projectileFrame = evidence?.actorFrames.find(
+      (frame) => frame.source === "effect" && frame.actorKind === "projectile" && frame.ownerId === "p1" && frame.animNo === 910,
+    );
+    expect(projectileFrame?.maxVel.x).toBeGreaterThanOrEqual(5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "projectile",
+        ownerId: "p1",
+        animNo: 910,
+        moveType: "A",
+        minFrames: 3,
+        observedVelXAtLeast: 5,
+        observedScaleXAtLeast: 1.75,
+        observedScaleXAtMost: 1.75,
+        observedScaleYAtLeast: 0.5,
+        observedScaleYAtMost: 0.5,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "projectile", ownerId: "p1", effectId: 77, minAge: 2 },
+    ]);
+  });
+
   it("creates a synthetic imported Projectile contact artifact with ProjContact branch evidence", () => {
     const artifact = createSyntheticImportedProjectileContactTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
@@ -2666,6 +2726,10 @@ describe("RuntimeTraceGatePresets", () => {
       "superpause-effect-settle",
     ]);
     expect(importedProjectileScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-projectile-x", "projectile-settle"]);
+    expect(importedProjectileMotionScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-projectile-motion-x",
+      "projectile-motion-settle",
+    ]);
     expect(importedProjectileGuardScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-projectile-guard-x",
       "projectile-guard-settle",

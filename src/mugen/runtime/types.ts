@@ -248,6 +248,8 @@ export type ActorEffectSnapshot =
       hitAnimNo?: number;
       removeAnimNo?: number;
       cancelAnimNo?: number;
+      accel?: { x: number; y: number };
+      scale?: { x: number; y: number };
     };
 
 export type ActorSnapshot = RuntimeActorIdentity & {

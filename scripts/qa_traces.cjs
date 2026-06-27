@@ -296,6 +296,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-motion",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileMotionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-contact",
       required: true,
       artifact: presets.createSyntheticImportedProjectileContactTraceArtifact(),
@@ -839,6 +844,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-targetbind-pause",
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
+    "synthetic-imported-projectile-motion",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-explod-velocity",

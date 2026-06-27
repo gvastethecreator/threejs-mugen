@@ -1749,7 +1749,7 @@ export class App {
         <button type="button" class="command-launcher" data-action="open-command-palette" aria-keyshortcuts="Control+K Meta+K" aria-expanded="${this.commandPaletteOpen}">
           ${tablerIcon("search", "ui-icon command-launcher-icon")}
           <span>
-            <strong>Command Palette</strong>
+            <strong>Command</strong>
             <small>Modes, loaders, build</small>
           </span>
           <span class="badge">${this.getCommandPaletteActions().length}</span>
@@ -1770,15 +1770,15 @@ export class App {
         <div class="command-palette-panel">
           <div class="command-palette-header">
             <div>
-              <span class="panel-kicker">Workspace command</span>
-              <h2 id="command-palette-title">Find action</h2>
+              <span class="panel-kicker">Command center</span>
+              <h2 id="command-palette-title">Run action</h2>
             </div>
             <button type="button" class="command-palette-close" data-action="close-command-palette" aria-label="Close command palette" title="Close">
               ${tablerIcon("close", "ui-icon")}
             </button>
           </div>
           <label class="command-palette-search">
-            <span>Search actions</span>
+            <span>Action search</span>
             <input type="search" data-command-palette-search value="${escapeHtml(this.commandPaletteQuery)}" placeholder="mode, load, evidence, build..." autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="command-palette-results"${activeResultId ? ` aria-activedescendant="${activeResultId}"` : ""} />
           </label>
           <div id="command-palette-results" class="command-palette-results" role="listbox" aria-live="polite">
@@ -2820,14 +2820,14 @@ export class App {
       stage: "Stage",
       debug: "Debug",
       evidence: "Trace",
-      modules: "Mods",
+      modules: "Modules",
       build: "Build",
     };
     return `
       <div class="section studio-tab-section ${options.compact ? "is-compact" : ""}">
         <div class="section-heading-row">
           <div>
-            <span class="panel-kicker">Studio surface</span>
+            <span class="panel-kicker">Surface</span>
             <h2>${escapeHtml(activeTab?.label ?? "Studio")}</h2>
           </div>
           <span class="badge ${activeStatus.tone === "ok" ? "ok" : activeStatus.tone === "error" ? "error" : activeStatus.tone === "warn" ? "warn" : "active"}">${escapeHtml(activeStatus.label)}</span>
@@ -3033,13 +3033,13 @@ export class App {
     return `
       <div class="workbench-ops-section" role="region" aria-labelledby="workbench-ops-title">
         <header class="workbench-ops-head">
-          <span class="gate-kicker">Workbench command</span>
+          <span class="gate-kicker">Mission control</span>
           <h2 id="workbench-ops-title">${escapeHtml(summary.name)}</h2>
           <p>${escapeHtml(summary.entry.p1)} vs ${escapeHtml(summary.entry.p2)} on ${escapeHtml(summary.entry.stage)}</p>
           <span class="badge ${this.statusClassName(gateStatus)}">${attentionGates.length ? `${attentionGates.length} issues` : "steady"}</span>
         </header>
         <button type="button" class="workbench-directive is-${this.statusClassName(primaryGate?.status ?? "unknown")}" ${directiveAction}>
-          <span class="gate-kicker">Operator priority</span>
+          <span class="gate-kicker">Next gate</span>
           <strong>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</strong>
           <small>${escapeHtml(primaryGate?.impact ?? "No gate impact has been reported yet.")}</small>
           <span class="workbench-directive-metrics">

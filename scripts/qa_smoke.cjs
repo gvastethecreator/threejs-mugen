@@ -297,8 +297,8 @@ async function captureStudioWorkbench(page, baseUrl, outDir) {
     return {
       mode: bridge?.mode,
       studioTab: bridge?.studioTab,
-      bodyHasWorkbenchCommand: bodyTextLower.includes("workbench command"),
-      bodyHasOperatorPriority: bodyTextLower.includes("operator priority"),
+      bodyHasWorkbenchCommand: bodyTextLower.includes("mission control"),
+      bodyHasOperatorPriority: bodyTextLower.includes("next gate"),
       bodyHasLoadMugenZip: bodyText.includes("Load MUGEN ZIP"),
       bodyHasSurfaceJumps: bodyText.includes("Assets") && bodyText.includes("Evidence") && bodyText.includes("Build") && bodyText.includes("Debug"),
       laneCount: document.querySelectorAll(".workbench-lane-strip > span").length,

@@ -78,6 +78,8 @@ describe("ProjectileSystem", () => {
       controller: controller({
         projid: "77",
         velocity: "5,-1",
+        accel: "0.5,0.25",
+        projscale: "1.5,0.75",
         facing: "-1",
         projhitanim: "1200",
         projremanim: "1201",
@@ -122,6 +124,8 @@ describe("ProjectileSystem", () => {
       animNo: 1005,
       pos: { x: 12, y: -20 },
       vel: { x: -5, y: -1 },
+      accel: { x: -0.5, y: 0.25 },
+      scale: { x: 1.5, y: 0.75 },
       facing: -1,
       hitAnimNo: 1200,
       removeAnimNo: 1201,
@@ -156,6 +160,8 @@ describe("ProjectileSystem", () => {
       kind: "projectile",
       projectileId: 91,
       velocity: [7, -2],
+      acceleration: [1, 0.25],
+      scale: [2, 0.5],
       facing: 1,
       hitAnim: 1300,
       removeAnim: 1301,
@@ -207,6 +213,8 @@ describe("ProjectileSystem", () => {
     expect(projectile).toMatchObject({
       projectileId: 91,
       vel: { x: 7, y: -2 },
+      accel: { x: 1, y: 0.25 },
+      scale: { x: 2, y: 0.5 },
       facing: 1,
       hitAnimNo: 1300,
       removeAnimNo: 1301,
@@ -234,8 +242,14 @@ describe("ProjectileSystem", () => {
     });
   });
 
-  it("advances projectile movement, loops frames, and removes stale actors", () => {
-    const active = projectile({ serialId: "active", removeTime: 8, missTimeRemaining: 2, vel: { x: 4, y: -2 } });
+  it("advances projectile movement with acceleration, loops frames, and removes stale actors", () => {
+    const active = projectile({
+      serialId: "active",
+      removeTime: 8,
+      missTimeRemaining: 2,
+      vel: { x: 4, y: -2 },
+      accel: { x: 1, y: 0.5 },
+    });
     const expired = projectile({ serialId: "expired", age: 4, removeTime: 5, removeAnimNo: 1201 });
     const hit = projectile({ serialId: "hit", hasHit: true, removeOnHit: true });
     const outside = projectile({ serialId: "outside", pos: { x: 999, y: 0 }, removeAnimNo: 1201 });
@@ -251,6 +265,7 @@ describe("ProjectileSystem", () => {
       frameElapsed: 1,
       missTimeRemaining: 1,
       pos: { x: 4, y: -2 },
+      vel: { x: 5, y: -1.5 },
     });
 
     advanceRuntimeProjectiles([active], stage);
@@ -330,7 +345,7 @@ describe("ProjectileSystem", () => {
   });
 
   it("projects hitboxes and snapshots without sharing collision arrays", () => {
-    const shot = projectile({ frameIndex: 0, facing: -1, pos: { x: 100, y: 20 } });
+    const shot = projectile({ frameIndex: 0, facing: -1, pos: { x: 100, y: 20 }, scale: { x: 2, y: 0.5 } });
     const [snapshot] = runtimeProjectilesToSnapshots([shot], 1000);
 
     expect(getRuntimeProjectileHitboxes(shot)).toEqual([{ x1: 8, y1: -40, x2: 42, y2: -16 }]);
@@ -356,6 +371,10 @@ describe("ProjectileSystem", () => {
         animNo: 1005,
         moveType: "A",
         renderOpacity: 1,
+        renderScale: { x: 2, y: 0.5 },
+      },
+      effect: {
+        scale: { x: 2, y: 0.5 },
       },
       clsn1: [{ x1: 8, y1: -40, x2: 42, y2: -16 }],
       clsn2: [{ x1: -8, y1: -44, x2: 44, y2: -12 }],
@@ -386,6 +405,8 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     animNo: 1005,
     pos: { x: 0, y: 0 },
     vel: { x: 2, y: 0 },
+    accel: { x: 0, y: 0 },
+    scale: { x: 1, y: 1 },
     facing: 1,
     frameIndex: 0,
     frameElapsed: 0,

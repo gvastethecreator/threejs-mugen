@@ -2714,6 +2714,67 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedProjectileMotionTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileMotionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-motion-attacker",
+    displayName: "Synthetic Imported Projectile Motion Attacker",
+    withProjectile: true,
+    projectileOffset: [80, -45],
+    projectileVelocity: [2, -1],
+    projectileAccel: [1, 0.25],
+    projectileScale: [1.75, 0.5],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-motion-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-motion-golden",
+      label: "Synthetic imported Projectile motion route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile motion trace proves bounded Projectile accel plus projscale survive typed/raw controller paths into effect actor motion and render-scale evidence. It does not claim exact MUGEN/IKEMEN projectile velmul, remove bounds, contact timing, hitbox scaling, or full projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-motion-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "projectile", ownerId: "p1", effectId: 77, minAge: 2 }],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 910,
+            moveType: "A",
+            minFrames: 3,
+            observedVelXAtLeast: 5,
+            observedScaleXAtLeast: 1.75,
+            observedScaleXAtMost: 1.75,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -3694,6 +3755,13 @@ export function importedProjectileScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedProjectileMotionScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-projectile-motion-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "projectile-motion-settle", frames: 4, p1: [], p2: [] },
+  ]);
+}
+
 export function importedProjectileMultiHitScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-projectile-multihit-x", frames: 14, p1: ["x"], p2: [] },
@@ -3901,6 +3969,8 @@ export type SyntheticImportedTraceFighterOptions = {
   projectilePriority?: number;
   projectileOffset?: [number, number];
   projectileVelocity?: [number, number];
+  projectileAccel?: [number, number];
+  projectileScale?: [number, number];
   projectileGroundVelocity?: [number, number?];
   projectileHits?: number;
   projectileMissTime?: number;
@@ -4074,7 +4144,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileScale) : ""}
 ${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
 ${options.projContactStateNo === undefined ? "" : contactBranchBlock("ProjContact(77)", options.projContactStateNo, "ProjContact Branch")}
 ${options.projHitStateNo === undefined ? "" : contactBranchBlock("ProjHit(77)", options.projHitStateNo, "ProjHit Branch")}
@@ -5274,10 +5344,14 @@ function projectileControllerBlock(
   hitAnim?: number,
   removeAnim?: number,
   cancelAnim?: number,
+  accel?: [number, number],
+  scale?: [number, number],
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
   const cancelAnimLine = cancelAnim === undefined ? "" : `projcancelanim = ${cancelAnim}`;
+  const accelLine = accel === undefined ? "" : `accel = ${accel[0]},${accel[1]}`;
+  const scaleLine = scale === undefined ? "" : `projscale = ${scale[0]},${scale[1]}`;
   return `
 [State 200, Fast Projectile]
 type = Projectile
@@ -5292,6 +5366,8 @@ ${removeAnimLine}
 ${cancelAnimLine}
 offset = ${offset[0]},${offset[1]}
 velocity = ${velocity[0]},${velocity[1]}
+${accelLine}
+${scaleLine}
 projremovetime = 24
 damage = 31,4
 pausetime = 4,4

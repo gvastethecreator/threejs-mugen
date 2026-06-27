@@ -20,6 +20,8 @@ export type RuntimeProjectile = {
   animNo: number;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  accel: { x: number; y: number };
+  scale: { x: number; y: number };
   facing: 1 | -1;
   hitAnimNo?: number;
   removeAnimNo?: number;
@@ -96,6 +98,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const forcedFacing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const facing = forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing;
   const rawVelocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel")) ?? [0, 0];
+  const rawAcceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel")) ?? [0, 0];
+  const rawScale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale")) ?? [1, 1];
   const groundVelocity = normalizeOptionalVelocityPair(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
   const frame = input.action.frames[0];
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id"));
@@ -127,6 +131,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     animNo: input.animNo,
     pos: input.pos,
     vel: { x: rawVelocity[0] * facing, y: rawVelocity[1] },
+    accel: { x: rawAcceleration[0] * facing, y: rawAcceleration[1] },
+    scale: pairToScale(rawScale),
     facing,
     hitAnimNo: normalizeProjectileAnim(operation?.hitAnim ?? firstNumber(findControllerParam(input.controller, "projhitanim"))),
     removeAnimNo: normalizeProjectileAnim(operation?.removeAnim ?? firstNumber(findControllerParam(input.controller, "projremanim"))),
@@ -180,6 +186,8 @@ export function advanceRuntimeProjectiles(
     projectile.missTimeRemaining = Math.max(0, projectile.missTimeRemaining - 1);
     projectile.pos.x += projectile.vel.x;
     projectile.pos.y += projectile.vel.y;
+    projectile.vel.x += projectile.accel.x;
+    projectile.vel.y += projectile.accel.y;
     projectile.frameElapsed += 1;
     const frame = projectile.action.frames[projectile.frameIndex];
     if (frame && projectile.frameElapsed >= Math.max(1, frame.duration)) {
@@ -252,6 +260,8 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           hitAnimNo: projectile.hitAnimNo,
           removeAnimNo: projectile.removeAnimNo,
           cancelAnimNo: projectile.cancelAnimNo,
+          ...(isDefaultVector(projectile.accel) ? {} : { accel: { ...projectile.accel } }),
+          ...(isDefaultScale(projectile.scale) ? {} : { scale: { ...projectile.scale } }),
         },
         runtime: {
           pos: { ...projectile.pos },
@@ -271,6 +281,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           vars: [],
           fvars: [],
           renderOpacity: projectile.opacity,
+          ...(isDefaultScale(projectile.scale) ? {} : { renderScale: { ...projectile.scale } }),
         },
         frame,
         clsn1: projectile.terminalPlayback ? [] : getRuntimeProjectileHitboxes(projectile).map(cloneBox),
@@ -370,6 +381,7 @@ export function startRuntimeProjectileTerminalPlayback(projectile: RuntimeProjec
   projectile.frameElapsed = 0;
   projectile.age = 0;
   projectile.vel = { x: 0, y: 0 };
+  projectile.accel = { x: 0, y: 0 };
   projectile.terminalPlayback = {
     reason,
     duration: actionDuration(action),
@@ -465,6 +477,20 @@ function numberPair(value: string | undefined): [number, number] | undefined {
   return [numbers[0], numbers[1] ?? numbers[0]];
 }
 
+function scalePair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value
+    .split(",")
+    .map((part) => Number(part.trim()))
+    .filter((numberValue) => Number.isFinite(numberValue));
+  if (numbers.length === 0 || numbers[0] === undefined) {
+    return undefined;
+  }
+  return [numbers[0], numbers[1] ?? numbers[0]];
+}
+
 function velocityPair(value: string | undefined): [number, number] | undefined {
   if (!value) {
     return undefined;
@@ -477,6 +503,21 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
+}
+
+function pairToScale(value: [number, number] | undefined): { x: number; y: number } {
+  return {
+    x: clampProjectileScale(value?.[0] ?? 1),
+    y: clampProjectileScale(value?.[1] ?? value?.[0] ?? 1),
+  };
+}
+
+function isDefaultVector(value: { x: number; y: number }): boolean {
+  return value.x === 0 && value.y === 0;
+}
+
+function isDefaultScale(value: { x: number; y: number }): boolean {
+  return value.x === 1 && value.y === 1;
 }
 
 function normalizeOptionalVelocityPair(value: [number, number?] | undefined): [number, number] | undefined {
@@ -497,6 +538,13 @@ function clampProjectileHits(value: number): number {
 
 function clampProjectileMissTime(value: number): number {
   return Math.max(0, Math.min(120, Math.round(value)));
+}
+
+function clampProjectileScale(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(0.05, Math.min(8, value));
 }
 
 function normalizeProjectileAnim(value: number | undefined): number | undefined {

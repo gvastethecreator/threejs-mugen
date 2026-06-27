@@ -1890,6 +1890,23 @@ function cloneTraceEffect(effect: RuntimeTraceEffectSummary): RuntimeTraceEffect
         : undefined,
     };
   }
+  if (effect.kind === "projectile") {
+    return {
+      ...effect,
+      accel: effect.accel
+        ? {
+            x: roundTraceNumber(effect.accel.x),
+            y: roundTraceNumber(effect.accel.y),
+          }
+        : undefined,
+      scale: effect.scale
+        ? {
+            x: roundTraceNumber(effect.scale.x),
+            y: roundTraceNumber(effect.scale.y),
+          }
+        : undefined,
+    };
+  }
   return { ...effect };
 }
 
