@@ -22,6 +22,14 @@ describe("ProjectCompiler", () => {
     expect(runtimeManifest.modules.active.map((module) => module.id)).toEqual(["mugen-compat", "three-render", "studio-workspace"]);
     expect(runtimeManifest.modules.planned.map((module) => module.id)).toEqual(["asset-pipeline", "platformer-module"]);
     expect(runtimeManifest.modules.missing).toEqual([]);
+    expect(runtimeManifest.contracts.schemaVersion).toBe("mugen-web-sandbox/shared-engine-contracts/v0");
+    expect(runtimeManifest.contracts.sharedContracts).toEqual(["input/v0", "asset/v0", "snapshot/v0", "render/v0", "audio/v0", "debug/v0", "build/v0", "qa/v0"]);
+    expect(runtimeManifest.contracts.boundaries.sharedCoreForbidden).toEqual(
+      expect.arrayContaining(["CNS", "CMD", "HitDef", "round", "helper", "MUGEN command routing"]),
+    );
+    expect(runtimeManifest.modules.planned.find((module) => module.id === "platformer-module")?.forbiddenSharedCoreConcepts).toEqual(
+      expect.arrayContaining(["CNS", "HitDef", "round", "helper", "MUGEN command routing"]),
+    );
     expect(runtimeManifest.assets.characters).toEqual(["nova-boxer", "mira-volt", "rook-apprentice"]);
   });
 

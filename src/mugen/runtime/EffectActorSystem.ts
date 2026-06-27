@@ -2,9 +2,12 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import {
   advanceRuntimeExplods,
   createRuntimeExplod,
+  removeRuntimeExplodsOnGetHit,
   removeRuntimeExplods,
   runtimeExplodsToSnapshots,
   type RuntimeExplod,
+  type RuntimeExplodAdvanceOptions,
+  type RuntimeExplodBindAnchor,
   type RuntimeExplodSpawnInput,
 } from "./ExplodSystem";
 import {
@@ -18,6 +21,7 @@ import {
   advanceRuntimeProjectiles,
   createRuntimeProjectile,
   runtimeProjectilesToSnapshots,
+  shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
   type RuntimeProjectileSpawnInput,
 } from "./ProjectileSystem";
@@ -93,8 +97,12 @@ export class RuntimeEffectActorWorld {
     removeRuntimeExplodActors(this.getStore(ownerId), explodId);
   }
 
-  advanceExplods(ownerId: string): void {
-    advanceRuntimeExplodActors(this.getStore(ownerId));
+  removeExplodsOnGetHit(ownerId: string): void {
+    removeRuntimeExplodActorsOnGetHit(this.getStore(ownerId));
+  }
+
+  advanceExplods(ownerId: string, bindAnchor?: RuntimeExplodBindAnchor, options?: RuntimeExplodAdvanceOptions): void {
+    advanceRuntimeExplodActors(this.getStore(ownerId), bindAnchor, options);
   }
 
   advanceActiveEffects(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">): void {
@@ -102,12 +110,16 @@ export class RuntimeEffectActorWorld {
     this.advanceProjectiles(ownerId, stage);
   }
 
-  advancePresentationEffects(ownerId: string): void {
-    this.advanceExplods(ownerId);
+  advancePresentationEffects(ownerId: string, bindAnchor?: RuntimeExplodBindAnchor, options?: RuntimeExplodAdvanceOptions): void {
+    this.advanceExplods(ownerId, bindAnchor, options);
   }
 
   explodSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {
     return runtimeExplodActorsToSnapshots(this.getStore(ownerId), sourceStateNo);
+  }
+
+  countExplods(ownerId: string, explodId?: number): number {
+    return this.getStore(ownerId).explods.filter((explod) => explodId === undefined || explod.explodId === explodId).length;
   }
 
   spawnHelper(ownerId: string, input: Omit<RuntimeHelperSpawnInput, "serialId">): RuntimeHelper {
@@ -122,6 +134,10 @@ export class RuntimeEffectActorWorld {
     return runtimeHelperActorsToSnapshots(this.getStore(ownerId), sourceStateNo);
   }
 
+  countHelpers(ownerId: string, helperId?: number): number {
+    return this.getStore(ownerId).helpers.filter((helper) => helperId === undefined || helper.helperId === helperId).length;
+  }
+
   spawnProjectile(ownerId: string, input: Omit<RuntimeProjectileSpawnInput, "serialId">): RuntimeProjectile {
     return spawnRuntimeProjectileActor(this.getStore(ownerId), ownerId, input);
   }
@@ -132,6 +148,12 @@ export class RuntimeEffectActorWorld {
 
   projectiles(ownerId: string): RuntimeProjectile[] {
     return this.getStore(ownerId).projectiles;
+  }
+
+  countProjectiles(ownerId: string, projectileId?: number): number {
+    return this.projectiles(ownerId).filter(
+      (projectile) => !projectile.removalReason && (projectileId === undefined || projectile.projectileId === projectileId),
+    ).length;
   }
 
   removeProjectilesMarkedForRemoval(ownerId: string): void {
@@ -237,8 +259,16 @@ export function removeRuntimeExplodActors(store: RuntimeEffectActorStore, explod
   store.explods = removeRuntimeExplods(store.explods, explodId);
 }
 
-export function advanceRuntimeExplodActors(store: RuntimeEffectActorStore): void {
-  store.explods = advanceRuntimeExplods(store.explods);
+export function removeRuntimeExplodActorsOnGetHit(store: RuntimeEffectActorStore): void {
+  store.explods = removeRuntimeExplodsOnGetHit(store.explods);
+}
+
+export function advanceRuntimeExplodActors(
+  store: RuntimeEffectActorStore,
+  bindAnchor?: RuntimeExplodBindAnchor,
+  options?: RuntimeExplodAdvanceOptions,
+): void {
+  store.explods = advanceRuntimeExplods(store.explods, bindAnchor, options);
 }
 
 export function runtimeExplodActorsToSnapshots(store: RuntimeEffectActorStore, sourceStateNo: number): ActorSnapshot[] {
@@ -292,7 +322,7 @@ export function advanceRuntimeProjectileActors(
 }
 
 export function removeRuntimeProjectilesMarkedForRemoval(store: RuntimeEffectActorStore): void {
-  store.projectiles = store.projectiles.filter((projectile) => !projectile.hasHit || !projectile.removeOnHit);
+  store.projectiles = store.projectiles.filter(shouldKeepRuntimeProjectileAfterRemoval);
 }
 
 export function runtimeProjectileActorsToSnapshots(store: RuntimeEffectActorStore, sourceStateNo: number): ActorSnapshot[] {

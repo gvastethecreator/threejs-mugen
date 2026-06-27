@@ -35,11 +35,19 @@ time = 20
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
     const clean = compileExpression("P2BodyDist X < 40 && SelfAnimExist(anim + 3)");
+    const contact = compileExpression("MoveGuarded || ProjHit(77) || ProjGuarded(77) || NumTarget(77) > 0");
+    const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const unsupported = compileExpression("enemynear, stateno = 5000");
 
     expect(clean.normalized).toBe("p2bodydistx < 40 && SelfAnimExist(anim + 3)");
     expect(clean.supportLevel).toBe("executable");
     expect(clean.functions).toEqual(["SelfAnimExist"]);
+    expect(contact.supportLevel).toBe("executable");
+    expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit"]);
+    expect(contact.identifiers).toEqual(["MoveGuarded"]);
+    expect(actorCounts.supportLevel).toBe("executable");
+    expect(actorCounts.functions).toEqual(["NumExplod", "NumHelper", "NumProjID"]);
+    expect(actorCounts.identifiers).toEqual(["NumProj"]);
     expect(unsupported.supportLevel).toBe("unsupported");
     expect(unsupported.unsupportedFeatures).toEqual(["enemynear"]);
   });
@@ -79,6 +87,9 @@ time = 20
         id: "7",
         attr: "S, NA",
         damage: "42,5",
+        kill: "0",
+        "guard.kill": "0",
+        priority: "6, Hit",
         pausetime: "8,9",
         guardflag: "MA",
         "ground.hittime": "17",
@@ -93,6 +104,7 @@ time = 20
         p2stateno: "5100",
         p2getp1state: "0",
         fall: "1",
+        "fall.kill": "0",
         "fall.yvelocity": "-7",
         "fall.recover": "0",
         "fall.recovertime": "19",
@@ -107,6 +119,9 @@ time = 20
       attr: "S, NA",
       damage: 42,
       guardDamage: 5,
+      kill: false,
+      guardKill: false,
+      priority: 6,
       pauseTime: 8,
       groundHitTime: 17,
       groundVelocity: [-4, -6],
@@ -122,6 +137,7 @@ time = 20
       p2GetP1State: false,
       fall: {
         enabled: true,
+        kill: false,
         yVelocity: -7,
         recover: false,
         recoverTime: 19,
@@ -181,6 +197,136 @@ time = 20
     });
   });
 
+  it("compiles simple movement controllers into typed kinematic operations", () => {
+    const velSet = compileControllerIr(controller(200, "VelSet", [], { value: "4,-3" }));
+    const velAdd = compileControllerIr(controller(200, "VelAdd", [], { y: "0.5" }));
+    const posSet = compileControllerIr(controller(200, "PosSet", [], { x: "12", y: "-24" }));
+    const posAdd = compileControllerIr(controller(200, "PosAdd", [], { value: "8,-2" }));
+    const gravity = compileControllerIr(controller(200, "Gravity", [], {}));
+    const dynamic = compileControllerIr(controller(200, "VelAdd", [], { y: "Const(movement.yaccel)" }));
+
+    expect(velSet.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 4, y: -3 });
+    expect(velAdd.operation).toEqual({ kind: "kinematic", controllerType: "veladd", y: 0.5 });
+    expect(posSet.operation).toEqual({ kind: "kinematic", controllerType: "posset", x: 12, y: -24 });
+    expect(posAdd.operation).toEqual({ kind: "kinematic", controllerType: "posadd", x: 8, y: -2 });
+    expect(gravity.operation).toEqual({ kind: "kinematic", controllerType: "gravity", y: 0.55 });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static resource and variable controllers into typed operations", () => {
+    const ctrl = compileControllerIr(controller(200, "CtrlSet", [], { value: "1" }));
+    const life = compileControllerIr(controller(200, "LifeAdd", [], { value: "-25", kill: "0" }));
+    const power = compileControllerIr(controller(200, "PowerSet", [], { value: "1000" }));
+    const varSet = compileControllerIr(controller(200, "VarSet", [], { v: "3", value: "8" }));
+    const varAdd = compileControllerIr(controller(200, "VarAdd", [], { "var(1)": "7" }));
+    const fvarSet = compileControllerIr(controller(200, "VarSet", [], { fv: "2", value: "1.5" }));
+    const sysvarSet = compileControllerIr(controller(200, "VarSet", [], { "sysvar(0)": "1" }));
+    const sysvarAdd = compileControllerIr(controller(200, "VarAdd", [], { "sysvar(0)": "2" }));
+    const range = compileControllerIr(controller(200, "VarRangeSet", [], { first: "2", last: "4", value: "9" }));
+    const dynamic = compileControllerIr(controller(200, "PowerAdd", [], { value: "Const(data.power)" }));
+
+    expect(ctrl.operation).toEqual({ kind: "resource", controllerType: "ctrlset", value: true });
+    expect(life.operation).toEqual({ kind: "resource", controllerType: "lifeadd", value: -25, kill: false });
+    expect(power.operation).toEqual({ kind: "resource", controllerType: "powerset", value: 1000 });
+    expect(varSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "var", index: 3, value: 8 });
+    expect(varAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "var", index: 1, value: 7 });
+    expect(fvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "fvar", index: 2, value: 1.5 });
+    expect(sysvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "sysvar", index: 0, value: 1 });
+    expect(sysvarAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "sysvar", index: 0, value: 2 });
+    expect(range.operation).toEqual({ kind: "variable", controllerType: "varrangeset", variableType: "var", first: 2, last: 4, value: 9 });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static hit eligibility controllers into typed operations", () => {
+    const hitBy = compileControllerIr(controller(200, "HitBy", [], { value: "S,NA", value2: "A,SA", time: "8" }));
+    const notHitBy = compileControllerIr(controller(200, "NotHitBy", [], { value: "SCA", time: "12" }));
+    const override = compileControllerIr(
+      controller(200, "HitOverride", [], {
+        attr: "S,NA",
+        stateno: "777",
+        slot: "1",
+        time: "12",
+        forceair: "1",
+        forceguard: "0",
+        keepstate: "1",
+      }),
+    );
+    const dynamic = compileControllerIr(controller(200, "HitOverride", [], { attr: "S,NA", stateno: "Const(data.life)" }));
+
+    expect(hitBy.operation).toEqual({
+      kind: "eligibility",
+      controllerType: "hitby",
+      mode: "allow",
+      slots: [
+        { slot: 1, attr: "S,NA", remaining: 8 },
+        { slot: 2, attr: "A,SA", remaining: 8 },
+      ],
+    });
+    expect(notHitBy.operation).toEqual({
+      kind: "eligibility",
+      controllerType: "nothitby",
+      mode: "deny",
+      slots: [{ slot: 1, attr: "SCA", remaining: 12 }],
+    });
+    expect(override.operation).toEqual({
+      kind: "hitoverride",
+      slot: 1,
+      attr: "S,NA",
+      remaining: 12,
+      stateNo: 777,
+      forceAir: true,
+      forceGuard: false,
+      keepState: true,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static ReversalDef controllers into typed operations", () => {
+    const reversal = compileControllerIr(
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "SA,AA",
+        pausetime: "3,3",
+        p1stateno: "777",
+        p2stateno: "778",
+        id: "88",
+      }),
+    );
+    const dynamic = compileControllerIr(
+      controller(200, "ReversalDef", [], {
+        "reversal.attr": "SA,AA",
+        p1stateno: "Const(data.life)",
+      }),
+    );
+
+    expect(reversal.operation).toEqual({
+      kind: "reversaldef",
+      attr: "SA,AA",
+      hitPause: 3,
+      p1StateNo: 777,
+      p2StateNo: 778,
+      targetId: 88,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles static damage scale controllers into typed operations", () => {
+    const attack = compileControllerIr(controller(200, "AttackMulSet", [], { value: "1.5" }));
+    const defence = compileControllerIr(controller(0, "DefenceMulSet", [], { value: "0.5" }));
+    const dynamic = compileControllerIr(controller(200, "AttackMulSet", [], { value: "Const(data.attack)" }));
+
+    expect(attack.operation).toEqual({
+      kind: "damage-scale",
+      controllerType: "attackmulset",
+      multiplier: 1.5,
+    });
+    expect(defence.operation).toEqual({
+      kind: "damage-scale",
+      controllerType: "defencemulset",
+      multiplier: 0.5,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles Projectile controllers into typed projectile operations", () => {
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], {
@@ -190,7 +336,12 @@ time = 20
         postype: "p1",
         velocity: "12,0",
         facing: "-1",
+        projhitanim: "911",
+        projremanim: "912",
+        projcancelanim: "913",
         projremovetime: "60",
+        projhits: "2",
+        projmisstime: "3",
         damage: "31",
         attr: "S, SP",
         pausetime: "4,4",
@@ -210,7 +361,12 @@ time = 20
       postype: "p1",
       velocity: [12, 0],
       facing: -1,
+      hitAnim: 911,
+      removeAnim: 912,
+      cancelAnim: 913,
       removeTime: 60,
+      hitCount: 2,
+      missTime: 3,
       damage: 31,
       attr: "S, SP",
       hitPause: 4,
@@ -258,8 +414,16 @@ time = 20
         anim: "930",
         pos: "42,-58",
         postype: "p1",
+        bindtime: "12",
+        scale: "1.25,0.5",
+        vel: "3,-1",
+        accel: "0.5,0.25",
         facing: "-1",
         removetime: "18",
+        removeongethit: "1",
+        ignorehitpause: "1",
+        pausemovetime: "2",
+        supermovetime: "4",
         sprpriority: "6",
         trans: "add",
       }),
@@ -272,8 +436,16 @@ time = 20
       animNo: 930,
       pos: [42, -58],
       postype: "p1",
+      bindTime: 12,
+      scale: [1.25, 0.5],
+      velocity: [3, -1],
+      acceleration: [0.5, 0.25],
       facing: -1,
       removeTime: 18,
+      removeOnGetHit: true,
+      ignoreHitPause: true,
+      pauseMoveTime: 2,
+      superMoveTime: 4,
       spritePriority: 6,
       trans: "add",
     });

@@ -5,10 +5,14 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import {
   advanceRuntimeProjectiles,
+  canRuntimeProjectileContact,
   createRuntimeProjectile,
   getRuntimeProjectileHitboxes,
+  recordRuntimeProjectileContact,
   runtimeProjectileWorldBox,
   runtimeProjectilesToSnapshots,
+  describeRuntimeProjectileRemoval,
+  shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
 } from "../mugen/runtime/ProjectileSystem";
 
@@ -49,6 +53,24 @@ const action: MugenAnimationAction = {
   ],
 };
 
+const terminalAction: MugenAnimationAction = {
+  id: 1400,
+  rawLines: ["[Begin Action 1400]"],
+  frames: [
+    {
+      spriteGroup: 1400,
+      spriteIndex: 0,
+      offsetX: 0,
+      offsetY: 0,
+      duration: 2,
+      clsn1: [{ x1: 100, y1: 100, x2: 120, y2: 120 }],
+      clsn2: [{ x1: 90, y1: 90, x2: 130, y2: 130 }],
+      raw: "1400,0,0,0,2",
+      line: 1,
+    },
+  ],
+};
+
 describe("ProjectileSystem", () => {
   it("creates a bounded projectile actor from controller params", () => {
     const projectile = createRuntimeProjectile({
@@ -57,8 +79,13 @@ describe("ProjectileSystem", () => {
         projid: "77",
         velocity: "5,-1",
         facing: "-1",
+        projhitanim: "1200",
+        projremanim: "1201",
+        projcancelanim: "1202",
         projremovetime: "9999",
         projpriority: "12",
+        projhits: "3",
+        projmisstime: "4",
         sprpriority: "25",
         trans: "add",
         damage: "40",
@@ -96,8 +123,14 @@ describe("ProjectileSystem", () => {
       pos: { x: 12, y: -20 },
       vel: { x: -5, y: -1 },
       facing: -1,
+      hitAnimNo: 1200,
+      removeAnimNo: 1201,
+      cancelAnimNo: 1202,
       removeTime: 1200,
       priority: 10,
+      hitsRemaining: 3,
+      missTime: 4,
+      missTimeRemaining: 0,
       spritePriority: 10,
       opacity: 0.78,
       damage: 60,
@@ -124,8 +157,13 @@ describe("ProjectileSystem", () => {
       projectileId: 91,
       velocity: [7, -2],
       facing: 1,
+      hitAnim: 1300,
+      removeAnim: 1301,
+      cancelAnim: 1302,
       removeTime: 25,
       priority: 3,
+      hitCount: 2,
+      missTime: 5,
       spritePriority: 6,
       trans: "none",
       damage: 22,
@@ -170,8 +208,14 @@ describe("ProjectileSystem", () => {
       projectileId: 91,
       vel: { x: 7, y: -2 },
       facing: 1,
+      hitAnimNo: 1300,
+      removeAnimNo: 1301,
+      cancelAnimNo: 1302,
       removeTime: 25,
       priority: 3,
+      hitsRemaining: 2,
+      missTime: 5,
+      missTimeRemaining: 0,
       spritePriority: 6,
       opacity: 0.9,
       damage: 22,
@@ -191,17 +235,21 @@ describe("ProjectileSystem", () => {
   });
 
   it("advances projectile movement, loops frames, and removes stale actors", () => {
-    const active = projectile({ serialId: "active", removeTime: 8, vel: { x: 4, y: -2 } });
-    const expired = projectile({ serialId: "expired", age: 4, removeTime: 5 });
+    const active = projectile({ serialId: "active", removeTime: 8, missTimeRemaining: 2, vel: { x: 4, y: -2 } });
+    const expired = projectile({ serialId: "expired", age: 4, removeTime: 5, removeAnimNo: 1201 });
     const hit = projectile({ serialId: "hit", hasHit: true, removeOnHit: true });
-    const outside = projectile({ serialId: "outside", pos: { x: 999, y: 0 } });
+    const outside = projectile({ serialId: "outside", pos: { x: 999, y: 0 }, removeAnimNo: 1201 });
 
     const remaining = advanceRuntimeProjectiles([active, expired, hit, outside], stage);
     expect(remaining.map((entry) => entry.serialId)).toEqual(["active"]);
+    expect(expired).toMatchObject({ removalReason: "timeout", removalAnimNo: 1201 });
+    expect(outside).toMatchObject({ removalReason: "bounds", removalAnimNo: 1201 });
+    expect(hit).toMatchObject({ removalReason: "hit" });
     expect(active).toMatchObject({
       age: 1,
       frameIndex: 0,
       frameElapsed: 1,
+      missTimeRemaining: 1,
       pos: { x: 4, y: -2 },
     });
 
@@ -210,6 +258,75 @@ describe("ProjectileSystem", () => {
 
     advanceRuntimeProjectiles([active], stage);
     expect(active.frameIndex).toBe(0);
+  });
+
+  it("blocks further contact after projhits are exhausted even when projremove keeps the actor alive", () => {
+    const shot = projectile({ hitsRemaining: 1, removeOnHit: false });
+
+    expect(canRuntimeProjectileContact(shot)).toBe(true);
+
+    recordRuntimeProjectileContact(shot);
+
+    expect(shot).toMatchObject({ hitsRemaining: 0, hasHit: true, missTimeRemaining: 0, removeOnHit: false });
+    expect(canRuntimeProjectileContact(shot)).toBe(false);
+    expect(advanceRuntimeProjectiles([shot], stage)).toHaveLength(1);
+  });
+
+  it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {
+    const shot = projectile({
+      hitsRemaining: 1,
+      removeOnHit: true,
+      hitAnimNo: 1400,
+      removeAnimNo: 1401,
+      terminalActions: { hit: terminalAction },
+    });
+
+    recordRuntimeProjectileContact(shot);
+
+    expect(shot).toMatchObject({
+      hasHit: true,
+      removalReason: "hit",
+      removalAnimNo: 1400,
+    });
+    expect(describeRuntimeProjectileRemoval(shot)).toBe("hit removal anim 1400");
+    expect(shouldKeepRuntimeProjectileAfterRemoval(shot)).toBe(true);
+    expect(shot).toMatchObject({
+      animNo: 1400,
+      frameIndex: 0,
+      terminalPlayback: { reason: "hit", duration: 2, age: 0 },
+      vel: { x: 0, y: 0 },
+    });
+    expect(runtimeProjectilesToSnapshots([shot], 1000)[0]).toMatchObject({
+      actorKind: "projectile",
+      runtime: { animNo: 1400, moveType: "I" },
+      clsn1: [],
+      clsn2: [],
+    });
+
+    expect(advanceRuntimeProjectiles([shot], stage)).toEqual([shot]);
+    expect(shot.terminalPlayback?.age).toBe(1);
+    expect(advanceRuntimeProjectiles([shot], stage)).toEqual([]);
+  });
+
+  it("plays a bounded remove animation when projectile lifetime expires", () => {
+    const removeAction = { ...terminalAction, id: 1500 };
+    const shot = projectile({
+      age: 4,
+      removeTime: 5,
+      removeAnimNo: 1500,
+      terminalActions: { remove: removeAction },
+    });
+
+    expect(advanceRuntimeProjectiles([shot], stage)).toEqual([shot]);
+    expect(shot).toMatchObject({
+      removalReason: "timeout",
+      removalAnimNo: 1500,
+      animNo: 1500,
+      terminalPlayback: { reason: "timeout", duration: 2, age: 0 },
+    });
+
+    expect(advanceRuntimeProjectiles([shot], stage)).toEqual([shot]);
+    expect(advanceRuntimeProjectiles([shot], stage)).toEqual([]);
   });
 
   it("projects hitboxes and snapshots without sharing collision arrays", () => {
@@ -275,6 +392,9 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     age: 0,
     removeTime: 10,
     priority: 1,
+    hitsRemaining: 1,
+    missTime: 0,
+    missTimeRemaining: 0,
     spritePriority: 4,
     opacity: 1,
     damage: 30,
@@ -293,6 +413,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     removeOnHit: true,
     hasHit: false,
     ...overrides,
+    terminalActions: overrides.terminalActions ?? {},
   };
 }
 

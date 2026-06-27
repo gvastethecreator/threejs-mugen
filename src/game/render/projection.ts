@@ -18,24 +18,28 @@ export function projectSprite(actor: ActorSnapshot, sprite: MugenSprite): Projec
   const offsetX = frame?.offsetX ?? 0;
   const offsetY = frame?.offsetY ?? 0;
   const facing = actor.runtime.facing;
-  const centerX = actor.runtime.pos.x + facing * (offsetX + sprite.width / 2 - sprite.axisX);
-  const centerY = -actor.runtime.pos.y + sprite.axisY - sprite.height / 2 - offsetY;
+  const scale = actor.runtime.renderScale ?? { x: 1, y: 1 };
+  const width = sprite.width * scale.x;
+  const height = sprite.height * scale.y;
+  const centerX = actor.runtime.pos.x + facing * ((offsetX + sprite.width / 2 - sprite.axisX) * scale.x);
+  const centerY = -actor.runtime.pos.y + (sprite.axisY - sprite.height / 2 - offsetY) * scale.y;
 
   return {
     x: centerX,
     y: centerY,
-    width: sprite.width,
-    height: sprite.height,
+    width,
+    height,
     scaleX: facing,
   };
 }
 
 export function projectCollisionBox(actor: ActorSnapshot, box: CollisionBox): ProjectedRect {
   const facing = actor.runtime.facing;
-  const left = facing === 1 ? actor.runtime.pos.x + box.x1 : actor.runtime.pos.x - box.x2;
-  const right = facing === 1 ? actor.runtime.pos.x + box.x2 : actor.runtime.pos.x - box.x1;
-  const top = -actor.runtime.pos.y - box.y1;
-  const bottom = -actor.runtime.pos.y - box.y2;
+  const scale = actor.runtime.renderScale ?? { x: 1, y: 1 };
+  const left = facing === 1 ? actor.runtime.pos.x + box.x1 * scale.x : actor.runtime.pos.x - box.x2 * scale.x;
+  const right = facing === 1 ? actor.runtime.pos.x + box.x2 * scale.x : actor.runtime.pos.x - box.x1 * scale.x;
+  const top = -actor.runtime.pos.y - box.y1 * scale.y;
+  const bottom = -actor.runtime.pos.y - box.y2 * scale.y;
 
   const x = (left + right) / 2;
   const y = (top + bottom) / 2;

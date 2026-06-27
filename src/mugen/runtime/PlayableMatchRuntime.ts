@@ -8,6 +8,7 @@ import type {
   PauseControllerOp,
   ProjectileControllerOp,
   RemoveExplodControllerOp,
+  ReversalDefControllerOp,
   TargetControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
@@ -18,6 +19,8 @@ import type { MugenStateController } from "../model/MugenState";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
+  applyRuntimeDamage,
+  canRuntimeDamageKill,
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
   DEFAULT_RUNTIME_GUARD_DISTANCE,
@@ -37,12 +40,15 @@ import {
   createRuntimeFallEnvShakeEvent,
   pushRuntimeEnvShakeEvent,
 } from "./EnvShakeSystem";
+import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStores,
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
+import type { RuntimeExplodPauseKind } from "./ExplodSystem";
+import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
@@ -63,6 +69,7 @@ import {
 import {
   advanceRuntimeTargetMemory,
   applyRuntimeTargetController,
+  matchesRuntimeTargetId,
   rememberRuntimeTarget,
   resolveRuntimeTargetBindingPosition,
   snapshotRuntimeTargetMemory,
@@ -136,6 +143,17 @@ type FighterMatchState = {
   envShakeEvents: RuntimeEnvShakeEvent[];
   effectActorWorld: RuntimeEffectActorWorld;
   lastExecutedState?: number;
+  contact: FighterContactState;
+};
+
+type FighterContactState = {
+  moveContactState?: number;
+  moveHitState?: number;
+  moveGuardState?: number;
+  projectileContactState?: number;
+  projectileHitState?: number;
+  projectileGuardState?: number;
+  projectileId?: number;
 };
 
 type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
@@ -254,6 +272,8 @@ export class PlayableMatchRuntime {
     if (globalPause > 0) {
       this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
       this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
+      advancePausedPresentationEffects(this.p1, "hitpause");
+      advancePausedPresentationEffects(this.p2, "hitpause");
       this.p1.hitPause = Math.max(0, this.p1.hitPause - 1);
       this.p2.hitPause = Math.max(0, this.p2.hitPause - 1);
       return;
@@ -287,6 +307,7 @@ export class PlayableMatchRuntime {
     separateFighters(this.p1, this.p2);
     applyTargetBindings(this.p1, this.p2);
     applyTargetBindings(this.p2, this.p1);
+    resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
@@ -313,7 +334,8 @@ export class PlayableMatchRuntime {
     const actor = pause.actorId === this.p2.id ? this.p2 : this.p1;
     const opponent = actor === this.p1 ? this.p2 : this.p1;
     const actorInput = actor === this.p1 ? p1Input : p2Input;
-    if (canActorMoveDuringPause(pause, actor.id)) {
+    const actorMoved = canActorMoveDuringPause(pause, actor.id);
+    if (actorMoved) {
       if (actor === this.p1 || input.p2) {
         handlePlayerInput(actor, actorInput, opponent);
       } else {
@@ -323,11 +345,18 @@ export class PlayableMatchRuntime {
       advanceTargetMemory(actor);
       advanceActiveEffects(actor, this.stage);
       advancePresentationEffects(actor);
+      applyTargetBindings(actor, opponent);
       clampStage(actor, this.stage);
     }
 
     if (this.matchPause !== pause) {
       return;
+    }
+    if (!actorMoved || actor.id !== this.p1.id) {
+      advancePausedPresentationEffects(this.p1, pause.type);
+    }
+    if (!actorMoved || actor.id !== this.p2.id) {
+      advancePausedPresentationEffects(this.p2, pause.type);
     }
     this.matchPause = tickMatchPause(pause);
   }
@@ -526,6 +555,7 @@ function createFighterState(
     soundEvents: [],
     envShakeEvents: [],
     effectActorWorld,
+    contact: {},
   };
 }
 
@@ -565,7 +595,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     startMove(fighter, "kick");
     return;
   }
-  if (input.has("D") && fighter.runtime.stateType !== "A") {
+  if (hasRuntimeDirection(input, "D") && fighter.runtime.stateType !== "A") {
     changeAction(fighter, fighter.definition.crouchAction);
     fighter.runtime.stateNo = fighter.definition.crouchAction;
     fighter.runtime.stateType = "C";
@@ -573,7 +603,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     fighter.runtime.vel.x = 0;
     return;
   }
-  if (input.has("U") && fighter.runtime.stateType !== "A") {
+  if (hasRuntimeDirection(input, "U") && fighter.runtime.stateType !== "A") {
     fighter.runtime.vel.y = fighter.definition.jumpVelocity;
     fighter.runtime.stateType = "A";
     fighter.runtime.physics = "A";
@@ -582,7 +612,11 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
     return;
   }
 
-  const direction = input.has("F") ? 1 : input.has("B") ? -1 : 0;
+  const direction = hasRuntimeDirection(input, "F") ? 1 : hasRuntimeDirection(input, "B") ? -1 : 0;
+  if (direction !== 0 && fighter.runtime.stateType === "A" && !fighter.runtime.assertSpecial?.noWalk) {
+    fighter.runtime.vel.x = direction * fighter.runtime.facing * fighter.definition.speed;
+    return;
+  }
   if (direction !== 0 && !fighter.runtime.assertSpecial?.noWalk) {
     fighter.runtime.vel.x = direction * fighter.runtime.facing * fighter.definition.speed;
     fighter.runtime.stateType = "S";
@@ -808,6 +842,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
   fighter.runtime.stateNo = stateId;
   fighter.stateElapsed = -1;
   fighter.firedHitDefs.clear();
+  resetContactState(fighter);
   if (state?.type) {
     fighter.runtime.stateType = normalizeStateType(state.type, fighter.runtime.stateType);
   }
@@ -909,7 +944,7 @@ function runActiveStateControllers(
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         getConst: (name) => runtimeConst(owner.definition, name),
       });
-      if (controller.operation?.kind === "hitfall") {
+      if (controller.operation) {
         recordControllerOperation(fighter, controller.operation);
       }
       continue;
@@ -920,7 +955,11 @@ function runActiveStateControllers(
         activateHitDef(fighter, rawController, controller.operation?.kind === "hitdef" ? controller.operation : undefined);
       } else if (dispatch.effect === "reversaldef") {
         recordControllerExecution(fighter, rawController);
-        activateReversalDef(fighter, rawController);
+        const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        activateReversalDef(fighter, rawController, operation);
       } else if (dispatch.effect === "width") {
         recordControllerExecution(fighter, rawController);
         applyWidthController(fighter, rawController);
@@ -1073,7 +1112,8 @@ function createExplod(
     return;
   }
   const localPos = operation?.pos ?? numberPair(findParam(controller, "pos")) ?? [0, 0];
-  const worldPos = resolveExplodPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
+  const postype = operation?.postype ?? findParam(controller, "postype");
+  const worldPos = resolveExplodPosition(fighter, opponent, postype, localPos);
   fighter.effectActorWorld.spawnExplod(fighter.id, {
     controller,
     operation,
@@ -1086,6 +1126,7 @@ function createExplod(
     action,
     animNo,
     pos: worldPos,
+    bind: resolveExplodBind(postype, localPos),
     fallbackFacing: fighter.runtime.facing,
     defaultRemoveTime: actionDuration(action),
   });
@@ -1102,7 +1143,21 @@ function removeExplods(fighter: FighterMatchState, controller: MugenStateControl
 }
 
 function advancePresentationEffects(fighter: FighterMatchState): void {
-  fighter.effectActorWorld.advancePresentationEffects(fighter.id);
+  fighter.effectActorWorld.advancePresentationEffects(fighter.id, {
+    pos: fighter.runtime.pos,
+    facing: fighter.runtime.facing,
+  });
+}
+
+function advancePausedPresentationEffects(fighter: FighterMatchState, pauseKind: RuntimeExplodPauseKind): void {
+  fighter.effectActorWorld.advancePresentationEffects(
+    fighter.id,
+    {
+      pos: fighter.runtime.pos,
+      facing: fighter.runtime.facing,
+    },
+    { pauseKind },
+  );
 }
 
 function toExplodSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
@@ -1174,6 +1229,7 @@ function createProjectile(
     spriteOwnerLabel: owner.label,
     action,
     animNo,
+    terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
     pos: worldPos,
     fallbackFacing: fighter.runtime.facing,
     damageScale: fighter.runtime.attackMultiplier,
@@ -1181,6 +1237,21 @@ function createProjectile(
   if (operation) {
     recordControllerOperation(fighter, operation);
   }
+}
+
+function resolveProjectileTerminalActions(
+  owner: FighterMatchState,
+  controller: MugenStateController,
+  operation?: ProjectileControllerOp,
+): RuntimeProjectileSpawnInput["terminalActions"] {
+  const hitAnim = operation?.hitAnim ?? firstNumber(findParam(controller, "projhitanim"));
+  const removeAnim = operation?.removeAnim ?? firstNumber(findParam(controller, "projremanim"));
+  const cancelAnim = operation?.cancelAnim ?? firstNumber(findParam(controller, "projcancelanim"));
+  return {
+    hit: hitAnim === undefined ? undefined : owner.definition.animations.get(hitAnim),
+    remove: removeAnim === undefined ? undefined : owner.definition.animations.get(removeAnim),
+    cancel: cancelAnim === undefined ? undefined : owner.definition.animations.get(cancelAnim),
+  };
 }
 
 function applyTargetController(
@@ -1238,6 +1309,68 @@ function syncTargetCount(fighter: FighterMatchState): void {
   fighter.runtime.targetCount = fighter.targets.length;
 }
 
+function resetContactState(fighter: FighterMatchState): void {
+  fighter.contact = {};
+}
+
+function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard"): void {
+  fighter.contact.moveContactState = fighter.runtime.stateNo;
+  if (kind === "hit") {
+    fighter.contact.moveHitState = fighter.runtime.stateNo;
+  } else {
+    fighter.contact.moveGuardState = fighter.runtime.stateNo;
+  }
+}
+
+function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
+  fighter.contact.projectileContactState = fighter.runtime.stateNo;
+  fighter.contact.projectileId = projectileId;
+  if (kind === "hit") {
+    fighter.contact.projectileHitState = fighter.runtime.stateNo;
+  } else {
+    fighter.contact.projectileGuardState = fighter.runtime.stateNo;
+  }
+}
+
+function hasMoveContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): boolean {
+  if (kind === "hit") {
+    return fighter.contact.moveHitState === fighter.runtime.stateNo;
+  }
+  if (kind === "guard") {
+    return fighter.contact.moveGuardState === fighter.runtime.stateNo;
+  }
+  return fighter.contact.moveContactState === fighter.runtime.stateNo;
+}
+
+function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
+  if (projectileId !== undefined && fighter.contact.projectileId !== projectileId) {
+    return false;
+  }
+  if (kind === "hit") {
+    return fighter.contact.projectileHitState === fighter.runtime.stateNo;
+  }
+  if (kind === "guard") {
+    return fighter.contact.projectileGuardState === fighter.runtime.stateNo;
+  }
+  return fighter.contact.projectileContactState === fighter.runtime.stateNo;
+}
+
+function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {
+  return fighter.targets.filter((target) => matchesRuntimeTargetId(target, targetId)).length;
+}
+
+function countRuntimeExplods(fighter: FighterMatchState, explodId?: number): number {
+  return fighter.effectActorWorld.countExplods(fighter.id, explodId);
+}
+
+function countRuntimeHelpers(fighter: FighterMatchState, helperId?: number): number {
+  return fighter.effectActorWorld.countHelpers(fighter.id, helperId);
+}
+
+function countRuntimeProjectiles(fighter: FighterMatchState, projectileId?: number): number {
+  return fighter.effectActorWorld.countProjectiles(fighter.id, projectileId);
+}
+
 function advanceActiveEffects(fighter: FighterMatchState, stage: MugenStageDefinition): void {
   fighter.effectActorWorld.advanceActiveEffects(fighter.id, stage);
 }
@@ -1248,11 +1381,13 @@ function resolveProjectileCombat(attacker: FighterMatchState, defender: FighterM
     attacker,
     defender,
     hurtBoxes,
-    holdingBack: defender.currentInput.has("B"),
+    holdingBack: isRuntimeHoldingBack(defender.currentInput),
     log,
     rememberTarget,
     applyHitOverride,
     applyGuardHit: applyDefaultGuardHitState,
+    markDefenderGotHit: markFighterGotHit,
+    recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
   });
 }
 
@@ -1290,6 +1425,20 @@ function resolveExplodPosition(
   return { x: fighter.runtime.pos.x + localPos[0] * fighter.runtime.facing, y: fighter.runtime.pos.y + localPos[1] };
 }
 
+function resolveExplodBind(postype: string | undefined, localPos: [number, number]): { localOffset: { x: number; y: number } } | undefined {
+  const type = postype?.trim().toLowerCase() ?? "p1";
+  if (type === "front") {
+    return { localOffset: { x: localPos[0] + 48, y: localPos[1] } };
+  }
+  if (type === "back") {
+    return { localOffset: { x: localPos[0] - 48, y: localPos[1] } };
+  }
+  if (type === "p1") {
+    return { localOffset: { x: localPos[0], y: localPos[1] } };
+  }
+  return undefined;
+}
+
 function recordSoundEvent(
   fighter: FighterMatchState,
   controller: MugenStateController,
@@ -1322,8 +1471,11 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   const activeEnd = activeStart + Math.max(1, (frame?.duration ?? 1) - fighter.frameElapsed);
   const damage = operation?.damage ?? firstNumber(findParam(controller, "damage")) ?? existing?.damage ?? 45;
   const guardDamage = operation?.guardDamage ?? secondNumber(findParam(controller, "damage")) ?? existing?.guardDamage ?? 0;
+  const kill = operation?.kill ?? booleanHitDefParam(controller, "kill") ?? existing?.kill ?? true;
+  const guardKill = operation?.guardKill ?? booleanHitDefParam(controller, "guard.kill") ?? existing?.guardKill ?? true;
   const hitPause = operation?.pauseTime ?? firstNumber(findParam(controller, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
   const hitStun = operation?.groundHitTime ?? firstNumber(findParam(controller, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
+  const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(controller, "priority")) ?? existing?.priority ?? 4);
   const groundVelocity = operation?.groundVelocity ?? velocityPair(findParam(controller, "ground.velocity"));
   const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
   const guardPause =
@@ -1348,6 +1500,8 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     activeEnd,
     recovery: Math.max(existing?.recovery ?? 0, activeEnd + 12),
     damage,
+    kill,
+    priority,
     requiresHitDef: false,
     attr: operation?.attr ?? stripMugenString(findParam(controller, "attr")) ?? existing?.attr ?? "S,NA",
     targetId: operation?.id ?? firstNumber(findParam(controller, "id")) ?? existing?.targetId,
@@ -1358,6 +1512,7 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     guardDistance,
     guardFlag: operation?.guardFlag ?? stripMugenString(findParam(controller, "guardflag")) ?? existing?.guardFlag ?? "MA",
     guardDamage,
+    guardKill,
     guardPause,
     guardStun,
     guardSlideTime,
@@ -1377,8 +1532,46 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   fighter.runtime.ctrl = false;
 }
 
-function activateReversalDef(fighter: FighterMatchState, controller: MugenStateController): void {
-  const attr = stripMugenString(findParam(controller, "reversal.attr"))?.trim() ?? "";
+function resolveDirectHitDefPriority(left: FighterMatchState, right: FighterMatchState, log: (line: string) => void): void {
+  const leftMove = getActiveDirectHitDefMove(left);
+  const rightMove = getActiveDirectHitDefMove(right);
+  if (!leftMove || !rightMove) {
+    return;
+  }
+  const leftBox = runtimeWorldBox(left.runtime, leftMove.hitbox);
+  const rightBox = runtimeWorldBox(right.runtime, rightMove.hitbox);
+  if (!collisionBoxesIntersect(leftBox, rightBox)) {
+    return;
+  }
+  const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
+  const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
+  if (leftPriority === rightPriority) {
+    left.hasHit = true;
+    right.hasHit = true;
+    log(`HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`);
+    return;
+  }
+  const winner = leftPriority > rightPriority ? left : right;
+  const loser = winner === left ? right : left;
+  winner.hasHit = false;
+  loser.hasHit = true;
+  log(`HitDef priority clash: ${winner.label} priority ${Math.max(leftPriority, rightPriority)} beat ${loser.label} priority ${Math.min(leftPriority, rightPriority)}`);
+}
+
+function getActiveDirectHitDefMove(fighter: FighterMatchState): DemoMove | undefined {
+  const move = fighter.currentMove;
+  if (!move || fighter.hasHit || move.requiresHitDef || move.isReversal || !isMoveActive(move, fighter.moveTick)) {
+    return undefined;
+  }
+  return move;
+}
+
+function activateReversalDef(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: ReversalDefControllerOp,
+): void {
+  const attr = (operation?.attr ?? stripMugenString(findParam(controller, "reversal.attr")))?.trim() ?? "";
   if (!attr) {
     if (fighter.currentMove?.isReversal) {
       fighter.currentMove = undefined;
@@ -1397,10 +1590,10 @@ function activateReversalDef(fighter: FighterMatchState, controller: MugenStateC
     return;
   }
 
-  const hitPause = Math.max(0, Math.round(firstNumber(findParam(controller, "pausetime")) ?? 0));
-  const p1StateNo = firstNumber(findParam(controller, "p1stateno"));
-  const p2StateNo = firstNumber(findParam(controller, "p2stateno"));
-  const targetId = firstNumber(findParam(controller, "id"));
+  const hitPause = operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(controller, "pausetime")) ?? 0));
+  const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(controller, "p1stateno"));
+  const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(controller, "p2stateno"));
+  const targetId = operation?.targetId ?? firstNumber(findParam(controller, "id"));
   fighter.currentMove = {
     actionId: fighter.runtime.stateNo,
     startup: 0,
@@ -1472,22 +1665,24 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     attacker: attacker.runtime,
     defender: defender.runtime,
     attack: move,
-    holdingBack: defender.currentInput.has("B"),
+    holdingBack: isRuntimeHoldingBack(defender.currentInput),
   });
   if (result.kind === "guard") {
+    markMoveContact(attacker, "guard");
+    interruptCurrentMove(defender);
     attacker.hitPause = result.pause;
     defender.hitPause = result.pause;
     defender.runtime.guardStun = result.stun;
     defender.runtime.guardSlideTime = result.slideTime ?? 0;
     defender.runtime.guardControlTime = result.controlTime ?? 0;
     defender.runtime.guarding = true;
-    defender.runtime.life = Math.max(0, defender.runtime.life - result.damage);
+    defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
-    defender.runtime.moveType = "H";
+    markFighterGotHit(defender);
     defender.runtime.ctrl = false;
     attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
     applyDefaultGuardHitState(defender);
@@ -1495,25 +1690,39 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     return;
   }
 
+  markMoveContact(attacker, "hit");
   attacker.hitPause = result.pause;
+  interruptCurrentMove(defender);
   defender.hitPause = result.pause;
   defender.hitStun = result.stun;
   defender.runtime.guardStun = 0;
   defender.runtime.guardSlideTime = 0;
   defender.runtime.guardControlTime = 0;
   defender.runtime.guarding = false;
-  defender.runtime.life = Math.max(0, defender.runtime.life - result.damage);
+  defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
   defender.runtime.vel.x = attacker.runtime.facing * result.push;
   defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
   defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
   if (result.hitVelocityY !== undefined) {
     defender.runtime.vel.y = result.hitVelocityY;
   }
-  defender.runtime.moveType = "H";
+  markFighterGotHit(defender);
   attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
   applyHitStateTransitions(attacker, defender, move);
   applyDefaultGetHitState(defender, move);
   log(`${attacker.label} hit ${defender.label} for ${result.damage}`);
+}
+
+function interruptCurrentMove(fighter: FighterMatchState): void {
+  fighter.currentMove = undefined;
+  fighter.currentMoveLabel = undefined;
+  fighter.moveTick = 0;
+  fighter.hasHit = false;
+}
+
+function markFighterGotHit(fighter: FighterMatchState): void {
+  fighter.runtime.moveType = "H";
+  fighter.effectActorWorld.removeExplodsOnGetHit(fighter.id);
 }
 
 function recordFallEnvShakeEvent(
@@ -1543,6 +1752,7 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
     firstNumber(findParam(controller, "air.fall")) ??
     firstNumber(findParam(controller, "ground.fall"));
   const damage = operation?.fall.damage ?? firstNumber(findParam(controller, "fall.damage")) ?? existing?.fall?.damage;
+  const kill = operation?.fall.kill ?? booleanHitDefParam(controller, "fall.kill") ?? existing?.fall?.kill ?? true;
   const xVelocity = operation?.fall.xVelocity ?? firstNumber(findParam(controller, "fall.xvelocity")) ?? existing?.fall?.velocity?.x;
   const yVelocity = operation?.fall.yVelocity ?? firstNumber(findParam(controller, "fall.yvelocity")) ?? existing?.fall?.velocity?.y;
   const envShakeTime = operation?.fall.envShakeTime ?? firstNumber(findParam(controller, "fall.envshake.time")) ?? existing?.fall?.envShake?.time;
@@ -1558,6 +1768,8 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   const hasAny =
     enabled !== undefined ||
     damage !== undefined ||
+    operation?.fall.kill !== undefined ||
+    findParam(controller, "fall.kill") !== undefined ||
     xVelocity !== undefined ||
     yVelocity !== undefined ||
     envShakeTime !== undefined ||
@@ -1571,6 +1783,7 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   return {
     enabled: enabled !== undefined ? enabled !== 0 : existing?.fall?.enabled ?? false,
     damage,
+    kill,
     velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : existing?.fall?.velocity,
     recover: recover !== undefined ? recover !== 0 : existing?.fall?.recover,
     recoverTime,
@@ -1597,6 +1810,7 @@ function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): Charact
   return {
     falling: fall.enabled,
     damage: Math.max(0, fall.damage ?? 0),
+    kill: fall.kill,
     recover: fall.recover,
     recoverTime: fall.recoverTime,
     downRecover: fall.downRecover ?? true,
@@ -1695,7 +1909,7 @@ function applyHitOverride(
   defender.runtime.guardControlTime = 0;
   defender.runtime.guarding = override.forceGuard ?? false;
   if (override.forceGuard) {
-    defender.runtime.moveType = "H";
+    markFighterGotHit(defender);
   }
   if (override.forceAir) {
     defender.runtime.stateType = "A";
@@ -1745,7 +1959,7 @@ function applyReversal(
   attacker.runtime.guardSlideTime = 0;
   attacker.runtime.guardControlTime = 0;
   attacker.runtime.guarding = false;
-  attacker.runtime.moveType = "H";
+  markFighterGotHit(attacker);
   reverser.runtime.power = Math.min(3000, reverser.runtime.power + 25);
 
   const p1StateNo = reversal.p1StateNo;
@@ -1808,7 +2022,7 @@ function applyAutoGuardStart(defender: FighterMatchState, attacker: FighterMatch
   if (defender.definition.source !== "imported") {
     return;
   }
-  if (!defender.currentInput.has("B") || defender.currentMove || defender.hitPause > 0 || defender.hitStun > 0 || (defender.runtime.guardStun ?? 0) > 0) {
+  if (!isRuntimeHoldingBack(defender.currentInput) || defender.currentMove || defender.hitPause > 0 || defender.hitStun > 0 || (defender.runtime.guardStun ?? 0) > 0) {
     return;
   }
   if (!defender.runtime.ctrl || defender.runtime.moveType === "H" || isGuardState(defender.runtime.stateNo)) {
@@ -2101,6 +2315,21 @@ function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "hitfall") {
     return `hitfall:${operation.controllerType}`;
   }
+  if (operation.kind === "kinematic") {
+    return `kinematic:${operation.controllerType}`;
+  }
+  if (operation.kind === "resource") {
+    return `resource:${operation.controllerType}`;
+  }
+  if (operation.kind === "variable") {
+    return `variable:${operation.controllerType}`;
+  }
+  if (operation.kind === "eligibility") {
+    return `eligibility:${operation.controllerType}`;
+  }
+  if (operation.kind === "damage-scale") {
+    return `damage-scale:${operation.controllerType}`;
+  }
   return operation.kind;
 }
 
@@ -2204,6 +2433,16 @@ function resolveDispatchNumber(
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
+    moveContact: () => hasMoveContact(fighter, "contact"),
+    moveHit: () => hasMoveContact(fighter, "hit"),
+    moveGuarded: () => hasMoveContact(fighter, "guard"),
+    numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
+    numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
+    numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
+    numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
+    projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
+    projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
+    projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
   });
   const numberValue = Number(evaluated);
   return Number.isFinite(numberValue) ? Math.trunc(numberValue) : undefined;
@@ -2242,6 +2481,16 @@ function evaluateRuntimeTrigger(
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
+    moveContact: () => hasMoveContact(fighter, "contact"),
+    moveHit: () => hasMoveContact(fighter, "hit"),
+    moveGuarded: () => hasMoveContact(fighter, "guard"),
+    numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
+    numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
+    numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
+    numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
+    projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
+    projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
+    projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
   });
 }
 
@@ -2256,6 +2505,9 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
   }
   if (key === "fall.damage") {
     return state.hitFall?.damage ?? 0;
+  }
+  if (key === "fall.kill") {
+    return state.hitFall?.kill === false ? 0 : 1;
   }
   if (key === "fall.xvel" || key === "fall.xvelocity") {
     return state.hitFall?.velocity.x ?? 0;
@@ -2356,6 +2608,11 @@ function secondNumber(value: string | undefined): number | undefined {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
+function booleanHitDefParam(controller: { params: Record<string, string> }, key: string): boolean | undefined {
+  const value = firstNumber(findParam(controller, key));
+  return value === undefined ? undefined : value !== 0;
+}
+
 function numberPair(value: string | undefined): [number, number] | undefined {
   if (!value) {
     return undefined;
@@ -2386,6 +2643,10 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
 
 function clampBodyWidth(value: number): number {
   return Math.max(1, Math.min(160, Math.abs(Math.round(value))));
+}
+
+function clampHitDefPriority(value: number): number {
+  return Math.max(0, Math.min(10, Math.round(value)));
 }
 
 function actionDuration(action: MugenAnimationAction): number {

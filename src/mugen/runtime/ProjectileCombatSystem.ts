@@ -1,12 +1,22 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import {
+  applyRuntimeDamage,
+  canRuntimeDamageKill,
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
   findRuntimeHitOverride,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
 } from "./CombatResolver";
-import { getRuntimeProjectileHitboxes, runtimeProjectileWorldBox, type RuntimeProjectile } from "./ProjectileSystem";
+import {
+  canRuntimeProjectileContact,
+  describeRuntimeProjectileRemoval,
+  getRuntimeProjectileHitboxes,
+  markRuntimeProjectileForRemoval,
+  recordRuntimeProjectileContact,
+  runtimeProjectileWorldBox,
+  type RuntimeProjectile,
+} from "./ProjectileSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 
 export type RuntimeProjectileCombatActor = {
@@ -33,6 +43,8 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     log: (line: string) => void,
   ) => void;
   applyGuardHit?: (defender: TActor) => void;
+  markDefenderGotHit?: (defender: TActor) => void;
+  recordProjectileContact?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
   removeProjectilesMarkedForRemoval: () => void;
 };
 
@@ -50,7 +62,7 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
 ): void {
   const { attacker, defender, hurtBoxes, log } = input;
   for (const projectile of input.projectiles) {
-    if (projectile.hasHit) {
+    if (!canRuntimeProjectileContact(projectile)) {
       continue;
     }
     const hitBoxes = getRuntimeProjectileHitboxes(projectile);
@@ -68,12 +80,12 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
     }
     const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP");
     if (override) {
-      projectile.hasHit = true;
+      recordRuntimeProjectileContact(projectile);
       input.rememberTarget(attacker, defender, projectile.targetId);
       input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
       continue;
     }
-    projectile.hasHit = true;
+    recordRuntimeProjectileContact(projectile);
     input.rememberTarget(attacker, defender, projectile.targetId);
     const result = resolveRuntimeCombatHit({
       attacker: attacker.runtime,
@@ -99,30 +111,40 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
     });
     attacker.hitPause = result.pause;
     defender.hitPause = result.pause;
-    defender.runtime.life = Math.max(0, defender.runtime.life - result.damage);
+    defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = projectile.facing * result.push;
     defender.runtime.hitVelocity = { x: projectile.facing * result.push, y: result.hitVelocityY ?? 0 };
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
-    defender.runtime.moveType = "H";
+    if (input.markDefenderGotHit) {
+      input.markDefenderGotHit(defender);
+    } else {
+      defender.runtime.moveType = "H";
+    }
     attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
     if (result.kind === "guard") {
+      input.recordProjectileContact?.(attacker, defender, projectile, "guard");
       defender.runtime.guardStun = result.stun;
       defender.runtime.guardSlideTime = result.slideTime ?? 0;
       defender.runtime.guardControlTime = result.controlTime ?? 0;
       defender.runtime.guarding = true;
       defender.runtime.ctrl = false;
       input.applyGuardHit?.(defender);
-      log(`${defender.label} guarded ${attacker.label} projectile for ${result.damage}`);
+      log(
+        `${defender.label} guarded ${attacker.label} projectile for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
+      );
       continue;
     }
+    input.recordProjectileContact?.(attacker, defender, projectile, "hit");
     defender.hitStun = result.stun;
     defender.runtime.guardStun = 0;
     defender.runtime.guardSlideTime = 0;
     defender.runtime.guardControlTime = 0;
     defender.runtime.guarding = false;
-    log(`${attacker.label} projectile hit ${defender.label} for ${result.damage}`);
+    log(
+      `${attacker.label} projectile hit ${defender.label} for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
+    );
   }
   input.removeProjectilesMarkedForRemoval();
 }
@@ -130,34 +152,44 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
 export function resolveRuntimeProjectileClashes(input: RuntimeProjectileClashInput): void {
   const { leftLabel, rightLabel, log } = input;
   for (const left of input.leftProjectiles) {
-    if (left.hasHit) {
+    if (!canRuntimeProjectileContact(left)) {
       continue;
     }
     for (const right of input.rightProjectiles) {
-      if (left.hasHit || right.hasHit) {
+      if (!canRuntimeProjectileContact(left) || !canRuntimeProjectileContact(right)) {
         continue;
       }
       if (!projectilesIntersect(left, right)) {
         continue;
       }
       if (left.priority === right.priority) {
-        left.hasHit = true;
-        right.hasHit = true;
-        log(`Projectile clash: ${leftLabel} ${left.serialId} traded with ${rightLabel} ${right.serialId} at priority ${left.priority}`);
-      } else if (left.priority > right.priority) {
-        right.hasHit = true;
+        markRuntimeProjectileForRemoval(left, "cancel");
+        markRuntimeProjectileForRemoval(right, "cancel");
         log(
-          `Projectile clash: ${leftLabel} ${left.serialId} canceled ${rightLabel} ${right.serialId} by priority ${left.priority} > ${right.priority}`,
+          `Projectile clash: ${leftLabel} ${left.serialId} traded with ${rightLabel} ${right.serialId} at priority ${left.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
+        );
+      } else if (left.priority > right.priority) {
+        const previousPriority = left.priority;
+        left.priority = decrementProjectilePriority(left.priority);
+        markRuntimeProjectileForRemoval(right, "cancel");
+        log(
+          `Projectile clash: ${leftLabel} ${left.serialId} canceled ${rightLabel} ${right.serialId} by priority ${previousPriority} > ${right.priority}; winner priority ${previousPriority} -> ${left.priority}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
         );
       } else {
-        left.hasHit = true;
+        const previousPriority = right.priority;
+        right.priority = decrementProjectilePriority(right.priority);
+        markRuntimeProjectileForRemoval(left, "cancel");
         log(
-          `Projectile clash: ${rightLabel} ${right.serialId} canceled ${leftLabel} ${left.serialId} by priority ${right.priority} > ${left.priority}`,
+          `Projectile clash: ${rightLabel} ${right.serialId} canceled ${leftLabel} ${left.serialId} by priority ${previousPriority} > ${left.priority}; winner priority ${previousPriority} -> ${right.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}`,
         );
       }
     }
   }
   input.removeProjectilesMarkedForRemoval();
+}
+
+function decrementProjectilePriority(priority: number): number {
+  return Math.max(0, priority - 1);
 }
 
 function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {

@@ -3,6 +3,7 @@ import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, Run
 
 export type RuntimeCombatAttack = {
   damage: number;
+  kill?: boolean;
   attr?: string;
   hitPause: number;
   hitStun: number;
@@ -11,6 +12,7 @@ export type RuntimeCombatAttack = {
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
+  guardKill?: boolean;
   guardPause?: number;
   guardStun?: number;
   guardSlideTime?: number;
@@ -23,6 +25,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "guard";
       damage: number;
+      kill: boolean;
       pause: number;
       stun: number;
       slideTime?: number;
@@ -34,6 +37,7 @@ export type RuntimeCombatHitResult =
   | {
       kind: "hit";
       damage: number;
+      kill: boolean;
       pause: number;
       stun: number;
       push: number;
@@ -132,6 +136,7 @@ export function resolveRuntimeCombatHit(input: {
         input.defender,
         scaleRuntimeOutgoingDamage(input.attacker, input.attack.guardDamage ?? 0),
       ),
+      kill: input.attack.guardKill ?? true,
       pause,
       stun,
       slideTime: input.attack.guardSlideTime,
@@ -145,12 +150,28 @@ export function resolveRuntimeCombatHit(input: {
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
+    kill: input.attack.kill ?? true,
     pause: input.attack.hitPause,
     stun: input.attack.hitStun,
     push: input.attack.push,
     hitVelocityY: input.attack.hitVelocityY,
     powerGain: 35,
   };
+}
+
+export function applyRuntimeDamage(life: number, damage: number, canKill = true): number {
+  if (life <= 0) {
+    return 0;
+  }
+  const floor = canKill ? 0 : 1;
+  return Math.max(floor, life - Math.max(0, damage));
+}
+
+export function canRuntimeDamageKill(
+  target: Pick<CharacterRuntimeState, "assertSpecial">,
+  canKill = true,
+): boolean {
+  return canKill && target.assertSpecial?.noKo !== true;
 }
 
 export function isRuntimeGuarding(

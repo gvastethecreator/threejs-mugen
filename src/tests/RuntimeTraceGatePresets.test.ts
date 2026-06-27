@@ -18,20 +18,46 @@ import {
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
+  createSyntheticImportedAssertSpecialNoKoTraceArtifact,
+  createSyntheticImportedAirGuardStateTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
   createSyntheticImportedStateExitTraceArtifact,
   createSyntheticImportedCrouchGuardStateTraceArtifact,
+  createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
   createSyntheticImportedGuardTraceArtifact,
   createSyntheticImportedDefaultGuardStateTraceArtifact,
+  createSyntheticImportedExplodBindTraceArtifact,
+  createSyntheticImportedExplodRemoveOnGetHitTraceArtifact,
+  createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact,
+  createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact,
+  createSyntheticImportedExplodScaleTraceArtifact,
+  createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
+  createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
+  createSyntheticImportedReversalTraceArtifact,
+  createSyntheticImportedDamageScaleTraceArtifact,
+  createSyntheticImportedHitDefPriorityTraceArtifact,
+  createSyntheticImportedHitDefGuardKillTraceArtifact,
+  createSyntheticImportedHitDefKillTraceArtifact,
   createSyntheticImportedProjectileClashTraceArtifact,
+  createSyntheticImportedProjectileContactTraceArtifact,
+  createSyntheticImportedProjectileMultiHitTraceArtifact,
+  createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
   createSyntheticImportedProjectileTraceArtifact,
+  createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseTraceArtifact,
+  createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
+  createSyntheticImportedMoveContactTraceArtifact,
+  createSyntheticImportedNumExplodTraceArtifact,
+  createSyntheticImportedNumHelperTraceArtifact,
+  createSyntheticImportedNumProjTraceArtifact,
+  createSyntheticImportedNumTargetTraceArtifact,
+  createSyntheticImportedRemoveExplodTraceArtifact,
   createSyntheticImportedXTraceArtifact,
   createSyntheticImportedTraceFighter,
   importedGuardScript,
@@ -44,18 +70,29 @@ import {
   importedDefaultFallOfficialRecoveryScript,
   importedDefaultFallRecoveryScript,
   importedDefaultCrouchGuardStateScript,
+  importedDefaultDiagonalCrouchGuardStateScript,
   importedDefaultGuardStateScript,
   importedDefaultGetHitProgressionScript,
+  importedHitDefGuardKillScript,
+  importedHitDefKillScript,
+  importedHitDefPriorityScript,
   importedAutoGuardEndScript,
   importedAutoGuardStartScript,
   importedInGuardDistScript,
   importedExplodScript,
+  importedRemoveOnGetHitExplodScript,
+  importedProjectileGuardRemoveOnGetHitExplodScript,
+  importedProjectileRemoveOnGetHitExplodScript,
   importedHelperScript,
   importedProjectileClashScript,
+  importedProjectileMultiHitScript,
+  importedProjectilePriorityCancelScript,
   importedProjectileScript,
   importedProjectileGuardScript,
+  importedSuperPauseEffectScript,
   importedSuperPauseProjectileScript,
   importedSuperPauseScript,
+  importedTargetBindPauseScript,
   importedXHitstunScript,
   importedXStateExitScript,
   importedTargetScript,
@@ -133,11 +170,164 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.actorSources).toEqual(["demo", "imported"]);
     expect(artifact.gates[0]?.evidence.routedStates).toContain(200);
     expect(artifact.gates[0]?.evidence.executedStates).toContain(200);
+    expect(artifact.gates[0]?.evidence.executedStates).toContain(261);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 261]);
     expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.activeCommands).toContain("x");
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported MoveContact artifact with contact branch evidence", () => {
+    const artifact = createSyntheticImportedMoveContactTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-movecontact-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(262);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 262]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {
+    const artifact = createSyntheticImportedNumTargetTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-numtarget-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(263);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 263]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported NumHelper artifact with helper-count branch evidence", () => {
+    const artifact = createSyntheticImportedNumHelperTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-numhelper-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-numhelper-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(264);
+    expect(evidence?.effectKinds).toContain("helper");
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 264]);
+  });
+
+  it("creates a synthetic imported NumProj artifact with projectile-count branch evidence", () => {
+    const artifact = createSyntheticImportedNumProjTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-numproj-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-numproj-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(273);
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 273]);
+  });
+
+  it("creates a synthetic imported NumExplod artifact with explod-count branch evidence", () => {
+    const artifact = createSyntheticImportedNumExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-numexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-numexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(274);
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 274]);
+  });
+
+  it("creates a synthetic imported RemoveExplod artifact with explod remove evidence", () => {
+    const artifact = createSyntheticImportedRemoveExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-removeexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-removeexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.RemoveExplod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.removeexplod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents.some((event) => event.kind === "explod" && event.type === "remove")).toBe(true);
+    const finalStore = artifact.trace.frames.at(-1)?.world?.effectStores.find((store) => store.ownerId === "p1");
+    expect(finalStore?.explods).toEqual([]);
   });
 
   it("creates a synthetic imported reject artifact with HitBy/NotHitBy reason evidence", () => {
@@ -161,8 +351,155 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedControllers.NotHitBy).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["eligibility:nothitby"]).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("reject");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reject");
+  });
+
+  it("creates a synthetic imported ReversalDef artifact with counter reason evidence", () => {
+    const artifact = createSyntheticImportedReversalTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(artifact.gates[0]?.evidence.actorSources).toEqual(["imported"]);
+    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([200, 777]));
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed"))).toBe(true);
+  });
+
+  it("creates a synthetic imported damage-scale artifact with typed multiplier evidence", () => {
+    const artifact = createSyntheticImportedDamageScaleTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-damage-scale-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-damage-scale-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedControllers.AttackMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.DefenceMulSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["damage-scale:attackmulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["damage-scale:defencemulset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {
+    const artifact = createSyntheticImportedHitDefPriorityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-priority-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-priority-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toEqual(expect.arrayContaining(["hit", "runtime"]));
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.eventLines.some((line) => line.includes("HitDef priority clash") && line.includes("priority 6 beat"))).toBe(true);
+    expect(evidence?.eventLines.some((line) => line.includes("hit Synthetic Imported HitDef Priority P2 for 31"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", source: "imported", life: 1000 }),
+        expect.objectContaining({ id: "p2", source: "imported", life: 969, moveType: "H" }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef kill artifact with nonlethal final-life evidence", () => {
+    const artifact = createSyntheticImportedHitDefKillTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-kill-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-kill-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.eventLines.some((line) => line.includes("hit Mira Volt for 2000"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef guard.kill artifact with nonlethal guard evidence", () => {
+    const artifact = createSyntheticImportedHitDefGuardKillTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-guard-kill-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-guard-kill-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported HitDef Guard Kill Attacker for 2000"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1 })]),
+    );
   });
 
   it("creates a synthetic imported guard artifact with held-back guard reason evidence", () => {
@@ -187,6 +524,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.actorSources).toEqual(["demo", "imported"]);
     expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedStates).toContain(260);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 260]);
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("guard");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("guard");
     expect(artifact.trace.events.some((event) => event.category === "guard" && event.line.includes("guarded"))).toBe(true);
@@ -254,6 +593,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 
+  it("creates a synthetic imported AssertSpecial NoKO artifact with nonlethal hit evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialNoKoTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-noko-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-noko-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventLines.some((line) => line.includes("hit Synthetic Imported AssertSpecial NoKO Defender for 2000"))).toBe(
+      true,
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")?.life).toBe(1);
+  });
+
   it("creates a synthetic imported default Common1 guard-state artifact", () => {
     const artifact = createSyntheticImportedDefaultGuardStateTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",
@@ -278,6 +645,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
@@ -320,6 +688,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([150, 151]));
     expect(artifact.gates[0]?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
   });
 
   it("creates a synthetic imported crouch guard-state artifact from command expressions", () => {
@@ -346,6 +715,74 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
+  });
+
+  it("creates a synthetic imported atomic DB crouch guard-state artifact", () => {
+    const artifact = createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-diagonal-crouch-guard-state-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-diagonal-crouch-guard-state-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "holddown", "x"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
+    expect(evidence?.eventCategories).toContain("guard");
+  });
+
+  it("creates a synthetic imported air guard-state artifact", () => {
+    const artifact = createSyntheticImportedAirGuardStateTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-air-guard-state-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-air-guard-state-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(
+      expect.arrayContaining(["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({
+        actorId: "p2",
+        source: "imported",
+        life: 995,
+        ctrl: true,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+      }),
+    ]);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([154, 155, 200]));
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
   });
 
   it("creates a synthetic imported InGuardDist artifact without contact", () => {
@@ -955,6 +1392,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
   });
 
+  it("creates a synthetic imported TargetBind pause artifact with movetime evidence", () => {
+    const artifact = createSyntheticImportedTargetBindPauseTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-targetbind-pause-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-targetbind-pause-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.TargetBind).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetbind"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true })]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: "SuperPause", actorId: "p1" })]),
+    );
+  });
+
   it("creates a synthetic imported SuperPause artifact with typed pause operation evidence", () => {
     const artifact = createSyntheticImportedSuperPauseTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
@@ -1065,6 +1535,110 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.matchPauseAdvances.find((advance) => advance.actorKind === "projectile" && advance.ownerId === "p1")?.advancedFrames).toBeGreaterThanOrEqual(1);
   });
 
+  it("creates a synthetic imported SuperPause artifact that proves helper and explod freeze evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseEffectFreezeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-effect-freeze-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-effect-freeze-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredEffectKinds).toEqual(["helper", "explod"]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([
+      { type: "SuperPause", actorKind: "player", ownerId: "p2", minFrozenFrames: 6 },
+      { type: "SuperPause", actorKind: "helper", ownerId: "p1", minFrozenFrames: 5 },
+      { type: "SuperPause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "SuperPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+      { type: "SuperPause", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+    ]);
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "explod"]));
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "SuperPause", actorKind: "helper", ownerId: "p1" }),
+        expect.objectContaining({ type: "SuperPause", actorKind: "explod", ownerId: "p1" }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorKind: "helper",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime"]),
+        }),
+        expect.objectContaining({
+          type: "SuperPause",
+          actorKind: "explod",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime"]),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Explod supermovetime artifact with freeze and advance evidence", () => {
+    const artifact = createSyntheticImportedExplodSuperMoveTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-supermovetime-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-supermovetime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "SuperPause", { type: "Explod", minCount: 2 }]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([
+      { type: "SuperPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "SuperPause", actorId: "p1-explod-1", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+    ]);
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(2);
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "SuperPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1" }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorId: "p1-explod-1",
+          actorKind: "explod",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime", "pos"]),
+        }),
+      ]),
+    );
+  });
+
   it("creates a synthetic imported Projectile artifact with typed projectile operation evidence", () => {
     const artifact = createSyntheticImportedProjectileTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
@@ -1084,9 +1658,19 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toContain(270);
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 270]);
     expect(evidence?.worldLifecycleEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
@@ -1104,6 +1688,77 @@ describe("RuntimeTraceGatePresets", () => {
           projectiles: [expect.stringContaining("projectile")],
           nextSerials: expect.objectContaining({ projectile: 1 }),
         }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile contact artifact with ProjContact branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileContactTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-contact-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-contact-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toContain(272);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 272]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile multi-hit artifact with projhits and projmisstime evidence", () => {
+    const artifact = createSyntheticImportedProjectileMultiHitTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-multihit-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-multihit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.eventLines.filter((line) => line.includes("projectile hit") && line.includes("Mira Volt"))).toHaveLength(2);
+    expect(evidence?.eventLines.some((line) => line.includes("hits remaining 1") && line.includes("miss 3"))).toBe(true);
+    expect(evidence?.eventLines.some((line) => line.includes("hits remaining 0") && line.includes("miss 0"))).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "projectile hit",
+      "hits remaining 1",
+      "miss 3",
+      "hits remaining 0",
+    ]);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
       ]),
     );
     expect(evidence?.targetLinks).toEqual(
@@ -1132,6 +1787,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.effectKinds).toContain("projectile");
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedStates).toContain(271);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 271]);
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.targetLinks).toEqual(
@@ -1163,13 +1820,93 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("runtime");
     expect(evidence?.eventLines.some((line) => line.includes("Projectile clash"))).toBe(true);
-    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual(["Projectile clash"]);
+    expect(evidence?.eventLines.some((line) => line.includes("p1-projectile-0 cancel removal anim 913"))).toBe(true);
+    expect(evidence?.eventLines.some((line) => line.includes("p2-projectile-0 cancel removal anim 914"))).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "Projectile clash",
+      "p1-projectile-0 cancel removal anim 913",
+      "p2-projectile-0 cancel removal anim 914",
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 913, moveType: "I", clsn1Count: 0 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 914, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
     expect(evidence?.worldLifecycleEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
         expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
         expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
         expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile priority-cancel artifact with winner-store evidence", () => {
+    const artifact = createSyntheticImportedProjectilePriorityCancelTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-priority-cancel-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-priority-cancel-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("runtime");
+    expect(
+      evidence?.eventLines.some(
+        (line) =>
+          line.includes("canceled") &&
+          line.includes("3 > 1") &&
+          line.includes("winner priority 3 -> 2") &&
+          line.includes("p2-projectile-0 cancel removal anim 915"),
+      ),
+    ).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "Projectile clash",
+      "canceled",
+      "3 > 1",
+      "winner priority 3 -> 2",
+      "p2-projectile-0 cancel removal anim 915",
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 915, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.effectStores).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          total: expect.any(Number),
+          projectiles: expect.arrayContaining([expect.stringContaining("p1-projectile")]),
+        }),
+        expect.objectContaining({
+          ownerId: "p2",
+          nextSerials: expect.objectContaining({ projectile: 1 }),
+        }),
       ]),
     );
   });
@@ -1310,6 +2047,236 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("creates a synthetic imported moving Explod artifact with velocity evidence", () => {
+    const artifact = createSyntheticImportedExplodVelocityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-velocity-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-velocity-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    const movingFrame = evidence?.actorFrames.find((frame) => frame.actorKind === "explod" && frame.animNo === 931);
+    expect(movingFrame?.minPos.x).toBeLessThanOrEqual(-110);
+    expect(movingFrame?.maxPos.x).toBeGreaterThanOrEqual(-60);
+    expect(movingFrame?.maxVel.x).toBeGreaterThanOrEqual(7);
+    expect(movingFrame?.maxVel.y).toBeGreaterThanOrEqual(0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorKind: "explod",
+        ownerId: "p1",
+        animNo: 931,
+        minFrames: 3,
+        observedPosXAtMost: -110,
+        observedPosXAtLeast: -60,
+        observedVelXAtLeast: 7,
+        observedVelYAtLeast: 0,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported bound Explod artifact with owner movement evidence", () => {
+    const artifact = createSyntheticImportedExplodBindTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-bind-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-bind-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
+    const boundFrame = evidence?.actorFrames.find((frame) => frame.actorKind === "explod" && frame.animNo === 932);
+    expect(boundFrame?.minPos.x).toBeLessThanOrEqual(-120);
+    expect(boundFrame?.maxPos.x).toBeGreaterThanOrEqual(-80);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorKind: "explod",
+        ownerId: "p1",
+        animNo: 932,
+        minFrames: 3,
+        observedPosXAtMost: -120,
+        observedPosXAtLeast: -80,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported scaled Explod artifact with renderer scale evidence", () => {
+    const artifact = createSyntheticImportedExplodScaleTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-scale-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-scale-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    const scaledFrame = evidence?.actorFrames.find((frame) => frame.actorKind === "explod" && frame.animNo === 933);
+    expect(scaledFrame?.maxScale.x).toBeGreaterThanOrEqual(2);
+    expect(scaledFrame?.minScale.y).toBeLessThanOrEqual(0.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorKind: "explod",
+        ownerId: "p1",
+        animNo: 933,
+        minFrames: 3,
+        observedScaleXAtLeast: 2,
+        observedScaleYAtMost: 0.5,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported Explod removeongethit artifact with lifecycle evidence", () => {
+    const artifact = createSyntheticImportedExplodRemoveOnGetHitTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-removeongethit-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-removeongethit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("explod");
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "explod", ownerId: "p2" }),
+      ]),
+    );
+    expect(evidence?.effectStores).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p2", explods: ["p2-explod-0"], nextSerials: { explod: 1, helper: 0, projectile: 0 } })]),
+    );
+  });
+
+  it("creates a synthetic imported Explod projectile removeongethit artifact with lifecycle evidence", () => {
+    const artifact = createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-removeonprojectilehit-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-removeonprojectilehit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["projectile", "explod"]));
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "explod", ownerId: "p2" }),
+      ]),
+    );
+    expect(evidence?.effectStores).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", projectiles: ["p1-projectile-0"], nextSerials: { explod: 0, helper: 0, projectile: 1 } }),
+        expect.objectContaining({ ownerId: "p2", explods: ["p2-explod-0"], nextSerials: { explod: 1, helper: 0, projectile: 0 } }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Explod projectile guard removeongethit artifact with lifecycle evidence", () => {
+    const artifact = createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-explod-removeonprojectileguard-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-explod-removeonprojectileguard-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["projectile", "explod"]));
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.explod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "explod", ownerId: "p2" }),
+      ]),
+    );
+    expect(evidence?.effectStores).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", projectiles: ["p1-projectile-0"], nextSerials: { explod: 0, helper: 0, projectile: 1 } }),
+        expect.objectContaining({ ownerId: "p2", explods: ["p2-explod-0"], nextSerials: { explod: 1, helper: 0, projectile: 0 } }),
+      ]),
+    );
+  });
+
   it("keeps golden trace scripts explicit and labeled", () => {
     expect(nativeHitScript().at(0)?.label).toBe("native-hold-punch");
     expect(nativeWhiffScript().at(0)?.label).toBe("native-whiff-punch");
@@ -1321,6 +2288,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(importedDefaultCrouchGuardStateScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-default-crouch-guard-state-x",
       "default-crouch-guard-state-settle",
+    ]);
+    expect(importedDefaultDiagonalCrouchGuardStateScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-default-diagonal-crouch-guard-state-x",
+      "default-diagonal-crouch-guard-state-settle",
     ]);
     expect(importedInGuardDistScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-inguarddist-near-x",
@@ -1377,23 +2348,63 @@ describe("RuntimeTraceGatePresets", () => {
       "imported-state-exit-x",
       "state-exit-settle",
     ]);
+    expect(importedHitDefPriorityScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-hitdef-priority-x",
+      "hitdef-priority-settle",
+    ]);
+    expect(importedHitDefKillScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-hitdef-kill-x"]);
+    expect(importedHitDefGuardKillScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-hitdef-guard-kill-x",
+      "hitdef-guard-kill-settle",
+    ]);
     expect(importedTargetScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-target-x", "target-settle"]);
+    expect(importedTargetBindPauseScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-targetbind-pause-x",
+      "targetbind-pause-settle",
+    ]);
     expect(importedSuperPauseScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-superpause-x", "superpause-settle"]);
     expect(importedSuperPauseProjectileScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-superpause-projectile-x",
       "superpause-projectile-settle",
+    ]);
+    expect(importedSuperPauseEffectScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-superpause-effect-x",
+      "superpause-effect-settle",
     ]);
     expect(importedProjectileScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-projectile-x", "projectile-settle"]);
     expect(importedProjectileGuardScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-projectile-guard-x",
       "projectile-guard-settle",
     ]);
+    expect(importedProjectileMultiHitScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-projectile-multihit-x",
+      "projectile-multihit-settle",
+    ]);
     expect(importedProjectileClashScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-projectile-clash-x",
       "projectile-clash-settle",
     ]);
+    expect(importedProjectilePriorityCancelScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-projectile-priority-cancel-x",
+      "projectile-priority-cancel-settle",
+    ]);
     expect(importedHelperScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-helper-x", "helper-settle"]);
     expect(importedExplodScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-explod-x", "explod-settle"]);
+    expect(importedRemoveOnGetHitExplodScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "seed-removeongethit-explod",
+      "hit-removeongethit-owner",
+      "removeongethit-settle",
+    ]);
+    expect(importedProjectileRemoveOnGetHitExplodScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "seed-projectile-removeongethit-explod",
+      "projectile-hit-removeongethit-owner",
+      "projectile-removeongethit-settle",
+    ]);
+    expect(importedProjectileGuardRemoveOnGetHitExplodScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "seed-projectile-guard-removeongethit-explod",
+      "projectile-guard-removeongethit-owner",
+      "projectile-guard-removeongethit-settle",
+    ]);
     expect(qcfXScript().map((frame) => frame.label).filter(Boolean)).toEqual(["qcf-d", "qcf-df", "qcf-f", "qcf-x", "settle"]);
   });
 });

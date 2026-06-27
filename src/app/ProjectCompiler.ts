@@ -1,4 +1,11 @@
 import type { GameProjectManifest, StudioGateRecord, StudioProjectSummary } from "./StudioModel";
+import {
+  buildSharedEngineContractReport,
+  getEngineModuleContract,
+  type EngineModuleRole,
+  type SharedEngineContractId,
+  type SharedEngineContractReport,
+} from "../engine/ModuleContracts";
 
 export type RuntimeModuleStatus = "active" | "planned" | "missing";
 
@@ -6,8 +13,13 @@ export type RuntimeModuleRecord = {
   id: string;
   label: string;
   status: RuntimeModuleStatus;
-  role: "simulation" | "render" | "pipeline" | "studio" | "genre";
+  role: EngineModuleRole;
   detail: string;
+  consumes: SharedEngineContractId[];
+  provides: SharedEngineContractId[];
+  forbiddenSharedCoreConcepts: string[];
+  claimAllowed: string;
+  claimBlocked: string;
 };
 
 export type CompiledRuntimeManifest = {
@@ -30,6 +42,7 @@ export type CompiledRuntimeManifest = {
     planned: RuntimeModuleRecord[];
     missing: RuntimeModuleRecord[];
   };
+  contracts: SharedEngineContractReport;
   assets: GameProjectManifest["assets"] & {
     records: GameProjectManifest["assetRecords"];
   };
@@ -41,39 +54,6 @@ export type CompiledRuntimeManifest = {
     warnings: string[];
     errors: string[];
   };
-};
-
-const KNOWN_MODULES: Record<string, Omit<RuntimeModuleRecord, "id">> = {
-  "mugen-compat": {
-    label: "MUGEN/Ikemen Fighting Module",
-    status: "active",
-    role: "simulation",
-    detail: "Loads the current fighting runtime, command buffer, state subset, hit boxes, and match loop.",
-  },
-  "three-render": {
-    label: "Three.js Render Adapter",
-    status: "active",
-    role: "render",
-    detail: "Consumes runtime snapshots through an orthographic Three.js scene adapter.",
-  },
-  "studio-workspace": {
-    label: "Studio Workspace",
-    status: "active",
-    role: "studio",
-    detail: "Provides project metadata, browser-local storage, diagnostics, and build/export entry points.",
-  },
-  "asset-pipeline": {
-    label: "Generated Asset Pipeline",
-    status: "planned",
-    role: "pipeline",
-    detail: "Atlas assets are loadable today, but project-scoped source/generated/runtime compilation is still partial.",
-  },
-  "platformer-module": {
-    label: "Platformer Module",
-    status: "planned",
-    role: "genre",
-    detail: "Future module target; not executable by the current fighting runtime.",
-  },
 };
 
 export function compileGameProjectManifest(
@@ -88,7 +68,7 @@ export function compileGameProjectManifest(
   const missing: RuntimeModuleRecord[] = [];
 
   for (const moduleId of requested) {
-    const known = KNOWN_MODULES[moduleId];
+    const known = getEngineModuleContract(moduleId);
     if (!known) {
       const record: RuntimeModuleRecord = {
         id: moduleId,
@@ -96,13 +76,29 @@ export function compileGameProjectManifest(
         status: "missing",
         role: "genre",
         detail: "No compiler/runtime adapter is registered for this module id.",
+        consumes: [],
+        provides: [],
+        forbiddenSharedCoreConcepts: [],
+        claimAllowed: "Unknown module ids can be kept in project files for future migration.",
+        claimBlocked: "No runtime, renderer, build, or QA contract is registered for this module.",
       };
       missing.push(record);
       warnings.push(`Module '${moduleId}' is not registered in the runtime compiler`);
       continue;
     }
 
-    const record = { id: moduleId, ...known };
+    const record: RuntimeModuleRecord = {
+      id: moduleId,
+      label: known.label,
+      status: known.status,
+      role: known.role,
+      detail: known.detail,
+      consumes: known.consumes,
+      provides: known.provides,
+      forbiddenSharedCoreConcepts: known.forbiddenSharedCoreConcepts,
+      claimAllowed: known.claimAllowed,
+      claimBlocked: known.claimBlocked,
+    };
     if (record.status === "planned") {
       planned.push(record);
       warnings.push(`Module '${moduleId}' is tracked but not runtime-executable yet`);
@@ -140,6 +136,7 @@ export function compileGameProjectManifest(
       planned,
       missing,
     },
+    contracts: buildSharedEngineContractReport(requested),
     assets: {
       characters: uniqueStrings(manifest.assets.characters),
       stages: uniqueStrings(manifest.assets.stages),

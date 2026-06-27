@@ -110,6 +110,7 @@ describe("CombatResolver", () => {
       push: 12,
       hitVelocityY: -2,
       powerGain: 35,
+      kill: true,
     });
 
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: true })).toEqual({
@@ -122,6 +123,7 @@ describe("CombatResolver", () => {
       push: 5,
       hitVelocityY: -1,
       powerGain: 12,
+      kill: true,
     });
   });
 

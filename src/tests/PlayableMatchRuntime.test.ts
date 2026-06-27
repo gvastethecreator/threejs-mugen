@@ -54,6 +54,19 @@ describe("PlayableMatchRuntime", () => {
     expect(walk.actors[0]?.runtime.vel.x).toBeCloseTo(1.08);
   });
 
+  it("keeps airborne movement inputs from collapsing into the walk state", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
+
+    runtime.step({ p1: new Set(["U"]), p2: new Set() });
+    const airBack = runtime.step({ p1: new Set(["B"]), p2: new Set() });
+
+    expect(airBack.actors[0]?.runtime.stateNo).toBe(40);
+    expect(airBack.actors[0]?.runtime.animNo).toBe(40);
+    expect(airBack.actors[0]?.runtime.stateType).toBe("A");
+    expect(airBack.actors[0]?.runtime.physics).toBe("A");
+    expect(airBack.actors[0]?.runtime.vel.x).toBeCloseTo(-1.08);
+  });
+
   it("lets P1 close distance and damage the opponent with a basic attack", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     let snapshot = runtime.getSnapshot();
@@ -140,6 +153,71 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[1]?.runtime.hitVelocity).toEqual({ x: 4, y: 0 });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+  });
+
+  it("evaluates bounded MoveHit triggers after direct imported HitDef contact", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      moveHitStateNo: 260,
+      multiFrameAction: { id: 200, durations: [30] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
+
+    for (let frame = 0; frame < 10; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(260);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(260);
+  });
+
+  it("respects imported HitDef kill = 0 for direct hits", () => {
+    const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 2000, hitDefKill: false });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 2000"))).toBe(true);
+  });
+
+  it("respects defender AssertSpecial NoKO for imported direct hits", () => {
+    const attacker = createImportedFixture({ withStateMove: false, hitDefDamage: 2000 });
+    const defender = createImportedFixture({
+      id: "noko-defender",
+      displayName: "NoKO Defender",
+      passiveAssertSpecialFlags: ["NoKO"],
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    const defenderSession = snapshot.compatibilitySession?.actors.find((actor) => actor.actorId === "p2");
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(1);
+    expect(snapshot.actors[1]?.runtime.assertSpecial?.noKo).toBe(true);
+    expect(defenderSession?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
   });
 
   it("routes imported defenders into default Common1 get-hit states when HitDef has no p2stateno", () => {
@@ -254,6 +332,51 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 5"))).toBe(true);
   });
 
+  it("respects imported HitDef guard.kill = 0 on guarded hits", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      guardDamage: 2000,
+      guardFlag: "MA",
+      guardKill: false,
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(1);
+    expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 2000"))).toBe(true);
+  });
+
+  it("treats atomic down-back input as a crouch guard direction", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 37,
+      guardDamage: 5,
+      guardFlag: "MA",
+    });
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, closeStage);
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["DB"]) });
+
+    expect(snapshot.actors[1]?.runtime.life).toBe(995);
+    expect(snapshot.actors[1]?.runtime.guarding).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Mira Volt guarded Imported Fixture for 5"))).toBe(true);
+  });
+
   it("does not guard a HitDef when guardflag does not allow the defender statetype", () => {
     const imported = createImportedFixture({ withStateMove: false, hitDefDamage: 37, guardDamage: 5, guardFlag: "A" });
     const closeStage = {
@@ -327,6 +450,7 @@ describe("PlayableMatchRuntime", () => {
     expect(scaledSnapshot.actors[1]?.runtime.life).toBe(981);
     expect(scaledSnapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
     expect(scaledSnapshot.compatibilitySession?.actors[1]?.executedControllers.DefenceMulSet).toBe(1);
+    expect(scaledSnapshot.compatibilitySession?.actors[1]?.executedOperations["damage-scale:defencemulset"]).toBe(1);
     expect(scaledSnapshot.logs.some((line) => line.includes("Imported Fixture hit Imported Fixture for 19"))).toBe(true);
   });
 
@@ -378,6 +502,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[0]?.runtime.moveType).toBe("H");
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.HitDef).toBe(1);
     expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.ReversalDef).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedOperations.reversaldef).toBe(1);
     expect(snapshot.logs.some((line) => line.includes("reversed"))).toBe(true);
   });
 
@@ -570,7 +695,39 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[0]?.runtime.attackMultiplier).toBe(1.5);
     expect(snapshot.actors[1]?.runtime.life).toBe(940);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.AttackMulSet).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["damage-scale:attackmulset"]).toBe(1);
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 60"))).toBe(true);
+  });
+
+  it("uses bounded imported HitDef priority to suppress a lower-priority direct attack", () => {
+    const highPriority = createImportedFixture({
+      id: "high-priority-fixture",
+      displayName: "High Priority Fixture",
+      withStateMove: false,
+      hitDefDamage: 31,
+      hitDefPriority: 6,
+    });
+    const lowPriority = createImportedFixture({
+      id: "low-priority-fixture",
+      displayName: "Low Priority Fixture",
+      withStateMove: false,
+      hitDefDamage: 31,
+      hitDefPriority: 3,
+    });
+    const runtime = new PlayableMatchRuntime(highPriority, lowPriority, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["x"]) });
+
+    expect(snapshot.actors[0]?.runtime.life).toBe(1000);
+    expect(snapshot.actors[1]?.runtime.life).toBe(969);
+    expect(snapshot.logs.some((line) => line.includes("HitDef priority clash") && line.includes("6 beat"))).toBe(true);
+    expect(snapshot.logs.some((line) => line.includes("Low Priority Fixture hit High Priority Fixture"))).toBe(false);
   });
 
   it("records imported RemapPal telemetry and ForceFeedback as a browser no-op", () => {
@@ -629,6 +786,44 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetFacing).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetBind).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetState).toBe(1);
+  });
+
+  it("keeps TargetBind offsets applied while the owner advances during SuperPause movetime", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 10,
+      hitDefTargetId: 77,
+      multiFrameAction: { id: 200, durations: [20, 20] },
+      withPrePauseTargetBind: true,
+      withDelayedSuperPause: true,
+      pauseMovePosAdd: { x: 8, y: -2, time: 2 },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 12 && !snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.matchPause?.type).toBe("SuperPause");
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PosAdd).toBe(1);
+    expect(snapshot.actors[0]?.runtime.pos.y).toBe(-2);
+    expect(snapshot.actors[1]?.runtime.pos).toEqual({
+      x: snapshot.actors[0]!.runtime.pos.x + 36,
+      y: snapshot.actors[0]!.runtime.pos.y - 12,
+    });
+    expect(snapshot.actors[0]?.runtime.targetBindings).toEqual([
+      { actorId: "p2", targetId: 77, remaining: 3, offset: { x: 36, y: -12 } },
+    ]);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.SuperPause).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetBind).toBe(1);
   });
 
   it("executes imported TargetDrop against the latest hit target", () => {
@@ -768,6 +963,31 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.matchPause).toMatchObject({ type: "SuperPause", remaining: 6, moveTime: 0 });
     expect(snapshot.actors[0]!.runtime.animTime).toBeGreaterThan(p1AnimTimeBefore);
     expect(snapshot.actors[1]!.runtime.animTime).toBe(p2AnimTimeBefore);
+  });
+
+  it("advances imported Explods with supermovetime during SuperPause after source movetime expires", () => {
+    const imported = createImportedFixture({ withStateMove: false, withSuperPause: true, withPauseExplods: true });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -100, y: 0, facing: 1 as const },
+        p2: { x: 220, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.matchPause?.type).toBe("SuperPause");
+    expect(snapshot.effects?.some((effect) => effect.label === "Explod 9100")).toBe(true);
+    expect(snapshot.effects?.some((effect) => effect.label === "Explod 9101")).toBe(true);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    const frozenAfterMovetime = effectX(snapshot, "Explod 9100");
+    const movingAfterMovetime = effectX(snapshot, "Explod 9101");
+    expect(snapshot.matchPause).toMatchObject({ type: "SuperPause", moveTime: 0 });
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(effectX(snapshot, "Explod 9100")).toBe(frozenAfterMovetime);
+    expect(effectX(snapshot, "Explod 9101")).toBeGreaterThan(movingAfterMovetime);
   });
 
   it("applies imported Width, SprPriority, PalFX, AfterImage, sound, and EnvShake hook controllers", () => {
@@ -1044,6 +1264,33 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Mira Volt for 31"))).toBe(true);
   });
 
+  it("evaluates bounded ProjHit triggers after imported Projectile contact", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      withProjectile: true,
+      projHitStateNo: 270,
+      multiFrameAction: { id: 200, durations: [40] },
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.some((effect) => effect.label === "Projectile 77")).toBe(true);
+
+    for (let frame = 0; frame < 14; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture projectile hit Mira Volt for 31"))).toBe(true);
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(270);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedStates).toContain(270);
+  });
+
   it("spawns imported Helper controllers as visible AIR-backed effect actors", () => {
     const imported = createImportedFixture({ withStateMove: false, withHelper: true });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!);
@@ -1059,6 +1306,124 @@ describe("PlayableMatchRuntime", () => {
     expect(helper?.clsn2).toEqual([{ x1: -18, y1: -64, x2: 18, y2: 0 }]);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Helper).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.helper).toBe(1);
+  });
+
+  it("removes imported Explods flagged with removeongethit when the owner is hit", () => {
+    const defender = createImportedFixture({
+      id: "removeongethit-defender",
+      displayName: "RemoveOnGetHit Defender",
+      withStateMove: false,
+      passiveRemoveOnGetHitExplod: true,
+    });
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(true);
+
+    for (let frame = 0; frame < 18; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(["a"]), p2: new Set() });
+    }
+
+    expect(snapshot.actors[1]?.runtime.moveType).toBe("H");
+    expect(snapshot.logs.some((line) => line.includes("Nova Boxer hit RemoveOnGetHit Defender"))).toBe(true);
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(false);
+    expect(runtime.getEffectActorStores()[1]).toMatchObject({
+      ownerId: "p2",
+      total: 0,
+      explods: [],
+      nextSerials: { explod: 1 },
+    });
+  });
+
+  it("removes imported Explods flagged with removeongethit when the owner is hit by a projectile", () => {
+    const attacker = createImportedFixture({
+      id: "projectile-removeongethit-attacker",
+      displayName: "Projectile RemoveOnGetHit Attacker",
+      withStateMove: false,
+      withProjectile: true,
+    });
+    const defender = createImportedFixture({
+      id: "projectile-removeongethit-defender",
+      displayName: "Projectile RemoveOnGetHit Defender",
+      withStateMove: false,
+      passiveRemoveOnGetHitExplod: true,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(true);
+
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p1" && effect.label === "Projectile 77")).toBe(true);
+
+    for (let frame = 0; frame < 12; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.logs.some((line) => line.includes("Projectile RemoveOnGetHit Attacker projectile hit Projectile RemoveOnGetHit Defender"))).toBe(true);
+    expect(snapshot.actors[1]?.runtime.moveType).toBe("H");
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(false);
+    expect(runtime.getEffectActorStores()[1]).toMatchObject({
+      ownerId: "p2",
+      total: 0,
+      explods: [],
+      nextSerials: { explod: 1 },
+    });
+  });
+
+  it("removes imported Explods flagged with removeongethit when the owner guards a projectile", () => {
+    const attacker = createImportedFixture({
+      id: "projectile-guard-removeongethit-attacker",
+      displayName: "Projectile Guard RemoveOnGetHit Attacker",
+      withStateMove: false,
+      withProjectile: true,
+    });
+    const defender = createImportedFixture({
+      id: "projectile-guard-removeongethit-defender",
+      displayName: "Projectile Guard RemoveOnGetHit Defender",
+      withStateMove: false,
+      passiveRemoveOnGetHitExplod: true,
+    });
+    const runtime = new PlayableMatchRuntime(attacker, defender, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -35, y: 0, facing: 1 as const },
+        p2: { x: 130, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(true);
+
+    snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set(["B"]) });
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p1" && effect.label === "Projectile 77")).toBe(true);
+
+    for (let frame = 0; frame < 12; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set(["B"]) });
+    }
+
+    expect(snapshot.logs.some((line) => line.includes("Projectile Guard RemoveOnGetHit Defender guarded Projectile Guard RemoveOnGetHit Attacker projectile"))).toBe(true);
+    expect(snapshot.actors[1]?.runtime.moveType).toBe("H");
+    expect(snapshot.actors[1]?.runtime.guarding).toBe(true);
+    expect(snapshot.effects?.some((effect) => effect.ownerId === "p2" && effect.label === "Explod 9004")).toBe(false);
+    expect(runtime.getEffectActorStores()[1]).toMatchObject({
+      ownerId: "p2",
+      total: 0,
+      explods: [],
+      nextSerials: { explod: 1 },
+    });
   });
 
   it("can use externally owned effect actor stores and reset them in place", () => {
@@ -1086,6 +1451,12 @@ describe("PlayableMatchRuntime", () => {
   });
 });
 
+function effectX(snapshot: ReturnType<PlayableMatchRuntime["getSnapshot"]>, label: string): number {
+  const effect = snapshot.effects?.find((candidate) => candidate.label === label);
+  expect(effect).toBeDefined();
+  return effect!.runtime.pos.x;
+}
+
 function createImportedFixture(
   options: {
     id?: string;
@@ -1094,7 +1465,9 @@ function createImportedFixture(
     multiFrameAction?: { id: number; durations: number[] };
     withStateMove?: boolean;
     hitDefDamage?: number;
+    hitDefKill?: boolean;
     hitDefAttr?: string;
+    hitDefPriority?: number;
     hitDefTargetId?: number;
     hitDefP1StateNo?: number;
     hitDefP2StateNo?: number;
@@ -1106,6 +1479,7 @@ function createImportedFixture(
     hitDefP2ChangeAnim2After?: number;
     extraStateNos?: number[];
     guardDamage?: number;
+    guardKill?: boolean;
     guardFlag?: string;
     guardSlideTime?: number;
     guardControlTime?: number;
@@ -1113,10 +1487,12 @@ function createImportedFixture(
     passiveHitBy?: string;
     passiveHitOverride?: { attr: string; stateNo: number; forceAir?: boolean };
     passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number };
+    passiveAssertSpecialFlags?: string[];
     defenseMultiplier?: number;
     attackMultiplier?: number;
     withPaletteUtilities?: boolean;
     withSideEffects?: boolean;
+    passiveRemoveOnGetHitExplod?: boolean;
     withRuntimeFlags?: boolean;
     withPosFreeze?: boolean;
     withScreenBoundOff?: boolean;
@@ -1125,22 +1501,32 @@ function createImportedFixture(
     withHelper?: boolean;
     withTargetControllers?: boolean;
     withTargetDrop?: boolean;
+    withPrePauseTargetBind?: boolean;
     withPause?: boolean;
     withSuperPause?: boolean;
+    withDelayedSuperPause?: boolean;
+    pauseMovePosAdd?: { x: number; y: number; time?: number };
+    withPauseExplods?: boolean;
     withAssertSpecial?: boolean;
     withChangeAnim2?: boolean;
     withChangeAnimElem?: { animNo: number; elem: number; elemTime?: number };
     withChangeState?: { stateNo: number; controllerAnimNo?: number; stateAnimNo?: number | null };
     withAnimElemTimeVars?: boolean;
     withFallHitDef?: boolean;
+    fallKill?: boolean;
     downRecoverTime?: number;
     dataLiedownTime?: number;
     defaultGetHitStateNo?: number;
+    moveHitStateNo?: number;
+    moveGuardStateNo?: number;
+    projHitStateNo?: number;
+    projGuardStateNo?: number;
   } = {},
 ): DemoFighterDefinition {
   const withStateMove = options.withStateMove ?? true;
   const hitDefDamage = options.hitDefDamage ?? 23;
   const hitDefAttr = options.hitDefAttr ?? "S,NA";
+  const hitDefPriority = options.hitDefPriority ?? 4;
   const hitDefTargetId = options.hitDefTargetId ?? 7;
   const fixtureAction = (
     id: number,
@@ -1155,10 +1541,12 @@ ${options.hitDefP2StateNo !== undefined ? `p2getp1state = ${options.hitDefP2GetP
 `
       : "";
   const damageLine = options.guardDamage !== undefined ? `${hitDefDamage},${options.guardDamage}` : `${hitDefDamage}`;
+  const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
   const guardLine =
     options.guardFlag !== undefined
       ? `
 guardflag = ${options.guardFlag}
+${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
 guard.pausetime = 4,4
 guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
@@ -1194,7 +1582,14 @@ value = 0
 ctrl = 1
 `
       : "";
-  const extraStates = [...new Set(options.extraStateNos ?? [])]
+  const extraStateNos = [
+    ...(options.extraStateNos ?? []),
+    ...(options.moveHitStateNo === undefined ? [] : [options.moveHitStateNo]),
+    ...(options.moveGuardStateNo === undefined ? [] : [options.moveGuardStateNo]),
+    ...(options.projHitStateNo === undefined ? [] : [options.projHitStateNo]),
+    ...(options.projGuardStateNo === undefined ? [] : [options.projGuardStateNo]),
+  ];
+  const extraStates = [...new Set(extraStateNos)]
     .map(
       (stateNo) => `
 [Statedef ${stateNo}]
@@ -1220,6 +1615,7 @@ ctrl = 0
     ? `
 fall = 1
 fall.damage = 70
+${options.fallKill === undefined ? "" : `fall.kill = ${options.fallKill ? 1 : 0}`}
 fall.xvelocity = -3
 fall.yvelocity = -6
 fall.recover = 0
@@ -1279,6 +1675,29 @@ reversal.attr = ${options.passiveReversalDef.attr}
 pausetime = ${options.passiveReversalDef.hitPause ?? 0},${options.passiveReversalDef.hitPause ?? 0}
 p1stateno = ${options.passiveReversalDef.p1StateNo}
 ${options.passiveReversalDef.p2StateNo !== undefined ? `p2stateno = ${options.passiveReversalDef.p2StateNo}` : ""}
+`
+      : "",
+    options.passiveAssertSpecialFlags?.length
+      ? `
+[State 0, Passive AssertSpecial]
+type = AssertSpecial
+trigger1 = 1
+flag = ${options.passiveAssertSpecialFlags.join(", ")}
+`
+      : "",
+    options.passiveRemoveOnGetHitExplod
+      ? `
+[State 0, Passive RemoveOnGetHit Explod]
+type = Explod
+trigger1 = Time = 0
+id = 9004
+anim = 900
+pos = 18,-54
+postype = p1
+removetime = -1
+removeongethit = 1
+sprpriority = 6
+trans = add
 `
       : "",
   ].join("");
@@ -1491,6 +1910,16 @@ id = ${hitDefTargetId}
 keepone = 0
 `
     : "";
+  const prePauseTargetBind = options.withPrePauseTargetBind
+    ? `
+[State 200, Target Bind Before Pause]
+type = TargetBind
+trigger1 = Time = 2
+id = ${hitDefTargetId}
+pos = 36,-12
+time = 4
+`
+    : "";
   const pauseControllers = [
     options.withPause
       ? `
@@ -1512,7 +1941,53 @@ darken = 1
 poweradd = 100
 `
       : "",
+    options.withDelayedSuperPause
+      ? `
+[State 200, Delayed Super Pause]
+type = SuperPause
+trigger1 = Time = 1
+time = 7
+movetime = 1
+darken = 1
+poweradd = 100
+`
+      : "",
   ].join("");
+  const pauseMovePosAdd = options.pauseMovePosAdd
+    ? `
+[State 200, Move During Pause]
+type = PosAdd
+trigger1 = Time = ${options.pauseMovePosAdd.time ?? 1}
+x = ${options.pauseMovePosAdd.x}
+y = ${options.pauseMovePosAdd.y}
+`
+    : "";
+  const pauseExplods = options.withPauseExplods
+    ? `
+[State 200, Frozen Pause Spark]
+type = Explod
+trigger1 = Time = 0
+id = 9100
+anim = 900
+pos = 42,-58
+postype = p1
+vel = 2,0
+removetime = 30
+sprpriority = 6
+
+[State 200, SuperMove Pause Spark]
+type = Explod
+trigger1 = Time = 0
+id = 9101
+anim = 900
+pos = 42,-46
+postype = p1
+vel = 4,0
+removetime = 30
+supermovetime = 4
+sprpriority = 7
+`
+    : "";
   const assertSpecial = options.withAssertSpecial
     ? `
 [State 200, Assert Runtime Flags]
@@ -1568,6 +2043,44 @@ trigger1 = AnimElemTime(2) = 2
 var(9) = 90
 `
     : "";
+  const contactTriggerBranches = [
+    options.moveHitStateNo === undefined
+      ? ""
+      : `
+[State 200, MoveHit Branch]
+type = ChangeState
+trigger1 = MoveHit
+value = ${options.moveHitStateNo}
+ctrl = 0
+`,
+    options.moveGuardStateNo === undefined
+      ? ""
+      : `
+[State 200, MoveGuarded Branch]
+type = ChangeState
+trigger1 = MoveGuarded
+value = ${options.moveGuardStateNo}
+ctrl = 0
+`,
+    options.projHitStateNo === undefined
+      ? ""
+      : `
+[State 200, ProjHit Branch]
+type = ChangeState
+trigger1 = ProjHit(77)
+value = ${options.projHitStateNo}
+ctrl = 0
+`,
+    options.projGuardStateNo === undefined
+      ? ""
+      : `
+[State 200, ProjGuarded Branch]
+type = ChangeState
+trigger1 = ProjGuarded(77)
+value = ${options.projGuardStateNo}
+ctrl = 0
+`,
+  ].join("");
   const changeStateDef = options.withChangeState
     ? `
 [Statedef ${options.withChangeState.stateNo}]
@@ -1653,6 +2166,8 @@ trigger1 = Time = 0
 id = ${hitDefTargetId}
 attr = ${hitDefAttr}
 damage = ${damageLine}
+${hitDefKillLine}
+priority = ${hitDefPriority}, Hit
 ${guardLine}
 ${hitDefCustomStateLines}
 pausetime = 8,8
@@ -1666,13 +2181,17 @@ ${sideEffects}
 ${runtimeFlags}
 ${posFreeze}
 ${screenBound}
+${prePauseTargetBind}
 ${pauseControllers}
+${pauseMovePosAdd}
+${pauseExplods}
 ${assertSpecial}
 ${changeAnim2}
 ${changeAnimElem}
 ${changeState}
 ${animElemTimeVars}
 ${projectile}
+${contactTriggerBranches}
 ${helper}
 ${targetControllers}
 ${targetDrop}
@@ -1761,10 +2280,26 @@ ctrl = 0
     activeStart: 1,
     activeEnd: 4,
     recovery: 60,
-    damage: 23,
+    damage: hitDefDamage,
+    kill: options.hitDefKill,
+    attr: hitDefAttr,
+    priority: hitDefPriority,
     hitPause: 8,
     hitStun: 11,
     push: 4,
+    guardKill: options.guardKill,
+    fall: options.withFallHitDef
+      ? {
+          enabled: true,
+          damage: 70,
+          kill: options.fallKill,
+          velocity: { x: -3, y: -6 },
+          recover: false,
+          recoverTime: 30,
+          ...(options.downRecoverTime === undefined ? {} : { downRecoverTime: options.downRecoverTime }),
+          envShake: { time: 15, freq: 178, ampl: 6, phase: 0 },
+        }
+      : undefined,
     hitbox: { x1: 12, y1: -70, x2: 76, y2: -35 },
   };
   const animations = new Map([
@@ -1805,7 +2340,7 @@ ctrl = 0
   if (options.multiFrameAction) {
     animations.set(options.multiFrameAction.id, fixtureAction(options.multiFrameAction.id, { durations: options.multiFrameAction.durations }));
   }
-  for (const stateNo of options.extraStateNos ?? []) {
+  for (const stateNo of extraStateNos) {
     animations.set(stateNo, fixtureAction(stateNo));
   }
   if (options.defaultGetHitStateNo !== undefined) {

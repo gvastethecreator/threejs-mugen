@@ -30,9 +30,9 @@ Any change to this order can affect compatibility. It needs a trace gate when be
 | 2. Command buffer | CMD/input runtime | Updates directional/button history and command activation. |
 | 3. State -1 routing | compatibility runtime | Evaluates commands/triggers that can change current state. |
 | 4. State controller pass | runtime/controller systems | Executes supported controllers and records executed controllers/typed ops. |
-| 5. Pause/hitpause pass | pause system | Handles player pause, hit pause, superpause, and frame-step constraints. |
+| 5. Pause/hitpause pass | pause system | Handles player pause, hit pause, superpause, and frame-step constraints. When a source actor is allowed to advance during `movetime`, active target bindings are re-applied after that actor's movement/presentation pass so the bound target follows the source offset in the bounded two-actor path. |
 | 6. Physics pass | physics system | Applies velocities, gravity, floor/bounds, and partial Common1 behavior. |
-| 7. Collision/combat pass | combat system | Resolves bounded projectile-vs-projectile `projpriority` clash after projectile advance, then Clsn1/Clsn2 contact, HitDef, guard/reject/override/reversal. |
+| 7. Collision/combat pass | combat system | Resolves bounded projectile-vs-projectile `projpriority` trade/cancel after projectile advance, including winner-priority decrement before later same-tick projectile clashes, then Clsn1/Clsn2 contact, HitDef, guard/reject/override/reversal; direct/projectile contact can set bounded state-local `Move*`/`Proj*` trigger markers, and projectile contact also respects the bounded `projmisstime` cooldown set after each `projhits` contact. |
 | 8. Get-hit/state transition pass | state/runtime systems | Applies target state routing, custom-state ownership, Common1 entries. |
 | 9. Animation pass | animation runtime | Advances anim time/frame unless paused/frozen. |
 | 10. Effects/audio pass | world/effect/audio systems | Ticks projectile/helper/explod/afterimage/palfx/sound/envshake records. |
@@ -56,6 +56,10 @@ Current behavior is partial. The desired contract is:
 - command buffer history should remain explicit in traces
 - attack/contact freeze should not hide final state transitions
 - hitpause behavior must be fixture-gated before parity is claimed
+
+## Target Bind During Pause
+
+Current behavior is bounded and synthetic-gated. If `SuperPause` leaves the source actor in `movetime`, the source can still execute movement controllers such as `PosAdd`; active `TargetBind` offsets are then applied again before the paused snapshot is emitted. The required `synthetic-imported-targetbind-pause.json` artifact proves a real `HitDef` target record, typed `TargetBind`, typed `SuperPause`, source `matchPauseAdvances`, and world-visible bound `targetLinks` for this path.
 
 ## Common1 / Get-Hit Order
 

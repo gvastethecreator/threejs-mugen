@@ -388,6 +388,28 @@ async function captureCommandPaletteA11y(page, baseUrl, outDir) {
   };
 }
 
+async function downloadFromButton(page, button, label, options = {}) {
+  const attempts = options.attempts ?? 3;
+  const timeout = options.timeout ?? 45000;
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    await button.scrollIntoViewIfNeeded();
+    try {
+      const [download] = await Promise.all([
+        page.waitForEvent("download", { timeout }),
+        button.click(),
+      ]);
+      return download;
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        await page.waitForTimeout(750);
+      }
+    }
+  }
+  throw new Error(`${label} download did not start after ${attempts} attempt(s): ${lastError?.message ?? lastError}`);
+}
+
 async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(`${baseUrl}${studioBuildRoute}`, { waitUntil: "networkidle" });
@@ -406,21 +428,13 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   }
   await page.locator('[data-action="compile-project"]').first().click();
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.compiledProject));
-  const exportTraceButton = page.locator('#left-pane .full-width-action[data-action="export-trace-artifact"]').first();
-  await exportTraceButton.scrollIntoViewIfNeeded();
-  const [download] = await Promise.all([
-    page.waitForEvent("download", { timeout: 90000 }),
-    exportTraceButton.click(),
-  ]);
+  const exportTraceButton = page.locator('button[data-action="export-trace-artifact"]:visible').filter({ hasText: /trace/i }).first();
+  const download = await downloadFromButton(page, exportTraceButton, "trace artifact", { timeout: 90000, attempts: 2 });
   const tracePath = path.join(outDir, "trace-artifact.json");
   await download.saveAs(tracePath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.traceArtifact));
-  const exportPackageButton = page.locator('#left-pane .full-width-action[data-action="export-package"]').first();
-  await exportPackageButton.scrollIntoViewIfNeeded();
-  const [packageDownload] = await Promise.all([
-    page.waitForEvent("download", { timeout: 90000 }),
-    exportPackageButton.click(),
-  ]);
+  const exportPackageButton = page.locator('button[data-action="export-package"]:visible').filter({ hasText: /package/i }).first();
+  const packageDownload = await downloadFromButton(page, exportPackageButton, "project package", { timeout: 90000, attempts: 3 });
   const packagePath = path.join(outDir, "project-package.zip");
   await packageDownload.saveAs(packagePath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle));

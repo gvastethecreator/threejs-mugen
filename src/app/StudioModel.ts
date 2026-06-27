@@ -2,6 +2,12 @@ import type { StageCompatibilityReport } from "../mugen/compatibility/StageCompa
 import type { MugenCharacter } from "../mugen/model/MugenCharacter";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import type { DemoFighterDefinition } from "../mugen/runtime/demoFighters";
+import {
+  getEngineModuleContract,
+  type EngineModuleRole,
+  type EngineModuleStatus,
+  type SharedEngineContractId,
+} from "../engine/ModuleContracts";
 
 export type StudioStatus = "ok" | "warn" | "fail" | "pending" | "partial" | "planned" | "active" | "blocked" | "unsupported" | "unknown";
 export type StudioSeverity = "info" | "notice" | "warning" | "error";
@@ -50,9 +56,21 @@ export type StudioModuleRecord = {
   id: string;
   label: string;
   status: StudioStatus;
+  contractStatus?: EngineModuleStatus;
+  role?: EngineModuleRole;
   detail: string;
   next: string;
+  consumes: SharedEngineContractId[];
+  provides: SharedEngineContractId[];
+  forbiddenSharedCoreConcepts: string[];
+  claimAllowed: string;
+  claimBlocked: string;
 };
+
+type StudioModuleRecordBase = Omit<
+  StudioModuleRecord,
+  "contractStatus" | "role" | "consumes" | "provides" | "forbiddenSharedCoreConcepts" | "claimAllowed" | "claimBlocked"
+>;
 
 export type StudioGateRecord = {
   id: string;
@@ -812,7 +830,7 @@ function sourcePathMatches(sourcePathSet: Set<string>, sourcePaths: string[], re
 }
 
 function buildModules(character: MugenCharacter | undefined): StudioModuleRecord[] {
-  return [
+  const modules: StudioModuleRecordBase[] = [
     {
       id: "mugen-compat",
       label: "MUGEN/Ikemen Compatibility",
@@ -851,6 +869,21 @@ function buildModules(character: MugenCharacter | undefined): StudioModuleRecord
       next: "Define tile collision, camera, hazards, checkpoints, and shared asset contract",
     },
   ];
+  return modules.map(withModuleContract);
+}
+
+function withModuleContract(module: StudioModuleRecordBase): StudioModuleRecord {
+  const contract = getEngineModuleContract(module.id);
+  return {
+    ...module,
+    contractStatus: contract?.status,
+    role: contract?.role,
+    consumes: contract ? [...contract.consumes] : [],
+    provides: contract ? [...contract.provides] : [],
+    forbiddenSharedCoreConcepts: contract ? [...contract.forbiddenSharedCoreConcepts] : [],
+    claimAllowed: contract?.claimAllowed ?? "No shared engine contract is registered for this module.",
+    claimBlocked: contract?.claimBlocked ?? "This module cannot be compiled or exported as a known runtime boundary yet.",
+  };
 }
 
 function buildGates(
@@ -947,6 +980,19 @@ function buildGates(
       nextAction: stageReports.length
         ? { kind: "open-stage-preview", label: "Open stage evidence", targetId: "stage-import" }
         : { kind: "open-stage-preview", label: "Review native stage", targetId: "stage-import" },
+    }),
+    withActionableFields({
+      id: "architecture-boundaries",
+      label: "Architecture Boundaries",
+      status: "ok",
+      detail: "shared engine, MUGEN compatibility, renderer, Studio, and future modules are guarded by import-boundary tests",
+    }, {
+      affectedSystem: "module",
+      impact: "The project has a visible contract that keeps renderer-independent engine code separate from MUGEN parsers/runtime and Studio UI.",
+      evidenceIds: ["test:architecture-boundaries", "module-contracts"],
+      blockedBy: [],
+      canExport: true,
+      nextAction: { kind: "open-build", label: "Review module boundaries", targetId: "architecture-boundaries" },
     }),
     withActionableFields({
       id: "visual-qa",

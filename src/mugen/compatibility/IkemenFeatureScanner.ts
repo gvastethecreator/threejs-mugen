@@ -57,6 +57,12 @@ export function scanIkemenFeatures(input: {
   const findings = new FindingAccumulator();
   const files = createEmptyIkemenScanReport().files;
   const sortedPaths = [...input.paths].sort((a, b) => a.localeCompare(b));
+  const zssFallbackTargets = new Set(
+    sortedPaths
+      .map((path) => normalize(path).toLowerCase())
+      .filter((path) => path.endsWith(".zss"))
+      .map((path) => path.slice(0, -4)),
+  );
 
   for (const path of sortedPaths) {
     scanPath(path, files, findings);
@@ -67,7 +73,7 @@ export function scanIkemenFeatures(input: {
     if (text === undefined) {
       continue;
     }
-    scanText(path, text, findings);
+    scanText(path, text, findings, zssFallbackTargets);
   }
 
   const list = findings.list();
@@ -121,11 +127,13 @@ function scanPath(
   }
 }
 
-function scanText(path: string, text: string, findings: FindingAccumulator): void {
+function scanText(path: string, text: string, findings: FindingAccumulator, zssFallbackTargets: Set<string>): void {
   const lines = text.split(/\r?\n/);
+  const normalizedPath = normalize(path).toLowerCase();
+  const isZss = normalizedPath.endsWith(".zss");
   for (let index = 0; index < lines.length; index += 1) {
     const raw = lines[index] ?? "";
-    const line = stripComment(raw).trim();
+    const line = (isZss ? stripZssComment(raw) : stripComment(raw)).trim();
     if (!line) {
       continue;
     }
@@ -139,14 +147,34 @@ function scanText(path: string, text: string, findings: FindingAccumulator): voi
     if (assignment && (/(^|\/).+\.zss\b/.test(assignment.value) || assignment.key === "zss")) {
       findings.add("reference", "ZSS state/script reference", location, raw, "ZSS state code is not compiled or executed.");
     }
+    if (assignment && isZssFallbackReference(path, assignment.value, zssFallbackTargets)) {
+      findings.add("reference", "ZSS fallback file for CNS reference", location, raw, "A matching .zss file is recognized but not compiled.");
+    }
+    if (assignment && /^movelist\d*$/.test(assignment.key)) {
+      findings.add("screenpack", "IKEMEN movelist reference", location, raw, "Pause/menu movelist metadata is report-only in the browser Studio.");
+    }
     if (assignment && (assignment.key === "lua" || assignment.key === "luafile" || assignment.key === "luacode" || /\b[\w./-]+\.lua\b/.test(assignment.value))) {
       findings.add("reference", "Lua script hook", location, raw, "Lua hooks are not executed by the browser runtime.");
+    }
+    if (assignment?.key === "redirectid") {
+      findings.add("controller", "IKEMEN RedirectID controller parameter", location, raw, "Controller redirection is recognized but not executed by the partial runtime.");
+    }
+    if (assignment && FIGHTFX_ACTION_PARAM_NAMES.has(assignment.key) && /^f\s+[-+]?\d+/i.test(unquote(assignment.value))) {
+      findings.add("controller", "IKEMEN fightfx action prefix", location, raw, "fightfx.air animation routing is recognized but not executed.");
     }
     if (assignment?.key === "unlock") {
       findings.add("screenpack", "IKEMEN Lua unlock expression", location, raw, "Select/stage/story unlock Lua is reported but not executed.");
     }
     if (assignment?.key === "commandlist") {
       findings.add("screenpack", "IKEMEN command list reference", location, raw, "Command-list UI metadata is report-only in the browser Studio.");
+    }
+    if (assignment?.key.startsWith("menu.itemname.")) {
+      findings.add("screenpack", "IKEMEN screenpack menu item", location, raw, "Dynamic screenpack menu entries are report-only and are not rendered by the browser runtime.");
+      const menuKeyParts = assignment.key.split(".");
+      const item = menuKeyParts[menuKeyParts.length - 1];
+      if (item && IKEMEN_EXTRA_MENU_ITEMS.has(item)) {
+        findings.add("screenpack", `IKEMEN extra menu mode ${item}`, location, raw, "IKEMEN-only menu modes are recognized as metadata only.");
+      }
     }
     if (assignment?.key === "type") {
       const controller = canonicalIkemenController(assignment.value);
@@ -160,9 +188,11 @@ function scanText(path: string, text: string, findings: FindingAccumulator): voi
         findings.add("controller", `IKEMEN AssertSpecial flag ${flag}`, location, raw, "AssertSpecial flag is reported; only the current bounded flag subset can affect runtime.");
       }
     }
-    const zssController = path.toLowerCase().endsWith(".zss") ? canonicalIkemenZssController(line) : undefined;
-    if (zssController) {
-      findings.add("controller", `IKEMEN controller ${zssController}`, location, raw, "ZSS controller syntax is recognized but not compiled.");
+    if (isZss) {
+      scanZssSyntaxLine(line, location, raw, findings);
+      for (const zssController of findIkemenZssControllers(line)) {
+        findings.add("controller", `IKEMEN controller ${zssController}`, location, raw, "ZSS controller syntax is recognized but not compiled.");
+      }
     }
     if (assignment && IKEMEN_STAGE_PARAM_NAMES.has(assignment.key)) {
       findings.add("stage", `IKEMEN stage parameter ${assignment.key}`, location, raw, "3D/Z or extended stage metadata is reported; renderer falls back to the 2D stage path.");
@@ -190,6 +220,10 @@ function stripComment(line: string): string {
   return comment >= 0 ? line.slice(0, comment) : line;
 }
 
+function stripZssComment(line: string): string {
+  return line.trimStart().startsWith("#") ? "" : line;
+}
+
 function parseAssignment(line: string): { key: string; value: string } | undefined {
   const index = line.indexOf("=");
   if (index < 0) {
@@ -204,6 +238,10 @@ function normalize(path: string): string {
   return path.replace(/\\/g, "/");
 }
 
+function unquote(value: string): string {
+  return value.trim().replace(/^["']|["']$/g, "");
+}
+
 function addUnique(values: string[], value: string): void {
   if (!values.includes(value)) {
     values.push(value);
@@ -215,9 +253,19 @@ function canonicalIkemenController(value: string): string | undefined {
   return IKEMEN_CONTROLLER_NAMES.get(key);
 }
 
-function canonicalIkemenZssController(value: string): string | undefined {
-  const key = value.trim().match(/^([a-z][a-z0-9_]*)\s*\{/i)?.[1]?.toLowerCase();
-  return key ? IKEMEN_CONTROLLER_NAMES.get(key) : undefined;
+function findIkemenZssControllers(value: string): string[] {
+  const found = new Set<string>();
+  for (const match of value.matchAll(/\b([a-z][a-z0-9_]*)\s*\{/gi)) {
+    const key = match[1]?.toLowerCase();
+    if (!key || ZSS_CONTROL_KEYWORDS.has(key)) {
+      continue;
+    }
+    const controller = IKEMEN_CONTROLLER_NAMES.get(key);
+    if (controller) {
+      found.add(controller);
+    }
+  }
+  return [...found].sort((a, b) => a.localeCompare(b));
 }
 
 function canonicalIkemenAssertFlag(value: string): string | undefined {
@@ -236,22 +284,108 @@ function findIkemenTriggers(value: string): string[] {
   return [...found].sort((a, b) => a.localeCompare(b));
 }
 
+function scanZssSyntaxLine(line: string, location: string, raw: string, findings: FindingAccumulator): void {
+  if (/^\[function\b/i.test(line)) {
+    findings.add("controller", "ZSS function definition", location, raw, "ZSS functions are recognized as scanner-only code structure.");
+  }
+  if (/\blet\s+[a-z_][a-z0-9_]*\s*=/i.test(line)) {
+    findings.add("controller", "ZSS local variable", location, raw, "ZSS local variables are not compiled by the browser runtime.");
+  }
+  if (/\b(for|while)\b/i.test(line)) {
+    findings.add("controller", "ZSS loop statement", location, raw, "ZSS loops are scanner-only and are not executed.");
+  }
+  if (/\bignorehitpause\b/i.test(line)) {
+    findings.add("controller", "ZSS ignoreHitPause block", location, raw, "ZSS ignoreHitPause blocks are not executed by the partial runtime.");
+  }
+  if (/\bpersistent\s*\(/i.test(line)) {
+    findings.add("controller", "ZSS persistent block", location, raw, "ZSS persistent blocks are not executed by the partial runtime.");
+  }
+  if (/^\s*(if|else\s+if|while|switch)\b/i.test(line)) {
+    for (const trigger of findIkemenTriggers(line)) {
+      findings.add("trigger", `IKEMEN extended trigger ${trigger}`, location, raw, "Extended trigger is not part of the current expression subset.");
+    }
+  }
+}
+
+function isZssFallbackReference(path: string, value: string, zssFallbackTargets: Set<string>): boolean {
+  const reference = normalize(unquote(value)).toLowerCase();
+  if (!reference || reference.endsWith(".zss") || !/\.(cns|st|txt|ini)$/i.test(reference)) {
+    return false;
+  }
+  const directory = normalize(path).toLowerCase().split("/").slice(0, -1).join("/");
+  const candidates = new Set([reference]);
+  if (directory && !reference.includes("/")) {
+    candidates.add(`${directory}/${reference}`);
+  }
+  for (const target of zssFallbackTargets) {
+    for (const candidate of candidates) {
+      if (target === candidate || target.endsWith(`/${candidate}`)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+const FIGHTFX_ACTION_PARAM_NAMES = new Set(["anim", "projanim", "projhitanim", "projremanim", "projcancelanim"]);
+
+const ZSS_CONTROL_KEYWORDS = new Set(["if", "else", "switch", "for", "while", "persistent", "ignorehitpause"]);
+
+const IKEMEN_EXTRA_MENU_ITEMS = new Set([
+  "bonusgames",
+  "bossrush",
+  "freebattle",
+  "joinadd",
+  "netplayteamcoop",
+  "netplayversus",
+  "netplaysurvivalcoop",
+  "randomtest",
+  "replay",
+  "scorechallenge",
+  "server",
+  "serverhost",
+  "serverjoin",
+  "storymode",
+  "timeattack",
+  "timechallenge",
+  "versuscoop",
+  "vs100kumite",
+]);
+
 const IKEMEN_CONTROLLER_NAMES = new Map(
   [
     "AssertAnalogVector",
     "AssertCommand",
     "AssertInput",
+    "Camera",
     "CameraCtrl",
+    "ChangeMovelist",
+    "Depth",
     "Dialogue",
+    "DizzyPointsAdd",
+    "DizzyPointsSet",
+    "DizzySet",
+    "GetHitVarSet",
     "GroundLevelOffset",
+    "GuardBreakSet",
+    "GuardPointsAdd",
+    "GuardPointsSet",
+    "Height",
     "LifeBarAction",
+    "LoadFile",
     "MapAdd",
     "MapReset",
     "MapSet",
+    "MatchRestart",
     "ModifyBGCtrl",
     "ModifyBGCtrl3D",
     "ModifyBGM",
+    "ModifyHitDef",
     "ModifyPlayer",
+    "ModifyProjectile",
+    "ModifyReflection",
+    "ModifyReversalDef",
+    "ModifyShadow",
     "ModifySnd",
     "ModifyStageBG",
     "ModifyStageVar",
@@ -302,6 +436,7 @@ const IKEMEN_STAGE_PARAM_NAMES = new Set([
   "model",
   "modelfile",
   "modelscale",
+  "attachedchar",
   "fov",
   "near",
   "far",

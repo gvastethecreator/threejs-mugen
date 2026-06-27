@@ -5271,6 +5271,10 @@ export class App {
       </div>
       <div class="section">
         <h2>Build Readiness</h2>
+        <div class="build-readiness-header" aria-hidden="true">
+          <span>Record</span>
+          <span>Gate</span>
+        </div>
         <div class="list compact-list">
           ${readiness.map((record) => this.renderBuildReadinessRecord(record)).join("")}
         </div>
@@ -5405,6 +5409,10 @@ export class App {
           <span class="badge warn">partial ${stateCounts.get("partial") ?? 0}</span>
           <span class="badge error">blocked ${stateCounts.get("blocked") ?? 0}</span>
           <span class="badge ok">exportable ${stateCounts.get("exportable") ?? 0}</span>
+        </div>
+        <div class="build-readiness-header" aria-hidden="true">
+          <span>Record</span>
+          <span>Gate</span>
         </div>
         <div class="list compact-list">
           ${readiness.map((record) => this.renderBuildReadinessRecord(record)).join("")}

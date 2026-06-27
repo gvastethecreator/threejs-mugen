@@ -17,13 +17,41 @@ export type RuntimeExplod = {
   action: MugenAnimationAction;
   animNo: number;
   pos: { x: number; y: number };
+  vel: { x: number; y: number };
+  accel: { x: number; y: number };
+  scale: { x: number; y: number };
+  bind?: RuntimeExplodBind;
   facing: 1 | -1;
   frameIndex: number;
   frameElapsed: number;
   age: number;
   removeTime: number;
+  removeOnGetHit: boolean;
+  ignoreHitPause: boolean;
+  pauseMoveTime: number;
+  superMoveTime: number;
   spritePriority: number;
   opacity: number;
+};
+
+export type RuntimeExplodBind = {
+  localOffset: { x: number; y: number };
+  remaining: number;
+};
+
+export type RuntimeExplodBindInput = {
+  localOffset: { x: number; y: number };
+};
+
+export type RuntimeExplodBindAnchor = {
+  pos: { x: number; y: number };
+  facing: 1 | -1;
+};
+
+export type RuntimeExplodPauseKind = "hitpause" | "Pause" | "SuperPause";
+
+export type RuntimeExplodAdvanceOptions = {
+  pauseKind?: RuntimeExplodPauseKind;
 };
 
 export type RuntimeExplodSpawnInput = {
@@ -39,6 +67,7 @@ export type RuntimeExplodSpawnInput = {
   action: MugenAnimationAction;
   animNo: number;
   pos: { x: number; y: number };
+  bind?: RuntimeExplodBindInput;
   fallbackFacing: 1 | -1;
   defaultRemoveTime: number;
 };
@@ -46,6 +75,7 @@ export type RuntimeExplodSpawnInput = {
 export function createRuntimeExplod(input: RuntimeExplodSpawnInput): RuntimeExplod {
   const forcedFacing = input.operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const identity = resolveActorIdentity(input);
+  const bindTime = clampExplodBindTime(input.operation?.bindTime ?? firstNumber(findControllerParam(input.controller, "bindtime")) ?? 0);
   return {
     serialId: input.serialId,
     explodId: input.operation?.explodId ?? firstNumber(findControllerParam(input.controller, "id")),
@@ -56,12 +86,30 @@ export function createRuntimeExplod(input: RuntimeExplodSpawnInput): RuntimeExpl
     action: input.action,
     animNo: input.animNo,
     pos: input.pos,
+    vel: pairToVector(
+      input.operation?.velocity ?? numberPair(findControllerParam(input.controller, "vel") ?? findControllerParam(input.controller, "velocity")),
+    ),
+    accel: pairToVector(input.operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel"))),
+    scale: pairToScale(input.operation?.scale ?? scalePair(findControllerParam(input.controller, "scale"))),
+    bind:
+      input.bind && bindTime !== 0
+        ? {
+            localOffset: { ...input.bind.localOffset },
+            remaining: bindTime,
+          }
+        : undefined,
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
     removeTime: clampExplodTime(
       input.operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime")) ?? input.defaultRemoveTime,
+    ),
+    removeOnGetHit: input.operation?.removeOnGetHit ?? booleanNumber(findControllerParam(input.controller, "removeongethit")) ?? false,
+    ignoreHitPause: input.operation?.ignoreHitPause ?? booleanNumber(findControllerParam(input.controller, "ignorehitpause")) ?? false,
+    pauseMoveTime: clampExplodMoveTime(input.operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime")) ?? 0),
+    superMoveTime: clampExplodMoveTime(
+      input.operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime")) ?? 0,
     ),
     spritePriority: Math.max(
       -5,
@@ -78,18 +126,76 @@ export function removeRuntimeExplods(explods: RuntimeExplod[], explodId: number 
   return explods.filter((explod) => explod.explodId !== explodId);
 }
 
-export function advanceRuntimeExplods(explods: RuntimeExplod[]): RuntimeExplod[] {
+export function removeRuntimeExplodsOnGetHit(explods: RuntimeExplod[]): RuntimeExplod[] {
+  return explods.filter((explod) => !explod.removeOnGetHit);
+}
+
+export function advanceRuntimeExplods(
+  explods: RuntimeExplod[],
+  bindAnchor?: RuntimeExplodBindAnchor,
+  options: RuntimeExplodAdvanceOptions = {},
+): RuntimeExplod[] {
   for (const explod of explods) {
-    explod.age += 1;
-    explod.frameElapsed += 1;
-    const frame = explod.action.frames[explod.frameIndex];
-    if (frame && explod.frameElapsed >= Math.max(1, frame.duration)) {
-      explod.frameElapsed = 0;
-      const next = explod.frameIndex + 1;
-      explod.frameIndex = next < explod.action.frames.length ? next : explod.action.loopStart ?? explod.action.frames.length - 1;
+    if (shouldAdvanceRuntimeExplod(explod, options.pauseKind)) {
+      advanceRuntimeExplod(explod, bindAnchor);
+      consumeRuntimeExplodPauseMoveTime(explod, options.pauseKind);
     }
   }
   return explods.filter((explod) => explod.removeTime < 0 || explod.age < explod.removeTime);
+}
+
+function advanceRuntimeExplod(explod: RuntimeExplod, bindAnchor?: RuntimeExplodBindAnchor): void {
+  explod.age += 1;
+  if (!applyRuntimeExplodBind(explod, bindAnchor)) {
+    explod.pos.x += explod.vel.x;
+    explod.pos.y += explod.vel.y;
+    explod.vel.x += explod.accel.x;
+    explod.vel.y += explod.accel.y;
+  }
+  explod.frameElapsed += 1;
+  const frame = explod.action.frames[explod.frameIndex];
+  if (frame && explod.frameElapsed >= Math.max(1, frame.duration)) {
+    explod.frameElapsed = 0;
+    const next = explod.frameIndex + 1;
+    explod.frameIndex = next < explod.action.frames.length ? next : explod.action.loopStart ?? explod.action.frames.length - 1;
+  }
+}
+
+function shouldAdvanceRuntimeExplod(explod: RuntimeExplod, pauseKind: RuntimeExplodPauseKind | undefined): boolean {
+  if (!pauseKind) {
+    return true;
+  }
+  if (pauseKind === "hitpause") {
+    return explod.ignoreHitPause;
+  }
+  const moveTime = pauseKind === "SuperPause" ? explod.superMoveTime : explod.pauseMoveTime;
+  return moveTime < 0 || moveTime > 0;
+}
+
+function consumeRuntimeExplodPauseMoveTime(explod: RuntimeExplod, pauseKind: RuntimeExplodPauseKind | undefined): void {
+  if (pauseKind === "Pause" && explod.pauseMoveTime > 0) {
+    explod.pauseMoveTime -= 1;
+  }
+  if (pauseKind === "SuperPause" && explod.superMoveTime > 0) {
+    explod.superMoveTime -= 1;
+  }
+}
+
+function applyRuntimeExplodBind(explod: RuntimeExplod, bindAnchor: RuntimeExplodBindAnchor | undefined): boolean {
+  if (!explod.bind || !bindAnchor) {
+    return false;
+  }
+  explod.pos = {
+    x: bindAnchor.pos.x + explod.bind.localOffset.x * bindAnchor.facing,
+    y: bindAnchor.pos.y + explod.bind.localOffset.y,
+  };
+  if (explod.bind.remaining > 0) {
+    explod.bind.remaining -= 1;
+    if (explod.bind.remaining === 0) {
+      explod.bind = undefined;
+    }
+  }
+  return true;
 }
 
 export function runtimeExplodsToSnapshots(explods: RuntimeExplod[], sourceStateNo: number): ActorSnapshot[] {
@@ -112,7 +218,7 @@ export function runtimeExplodsToSnapshots(explods: RuntimeExplod[], sourceStateN
         spriteOwnerLabel: explod.spriteOwnerLabel,
         runtime: {
           pos: { ...explod.pos },
-          vel: { x: 0, y: 0 },
+          vel: { ...explod.vel },
           facing: explod.facing,
           spritePriority: explod.spritePriority,
           stateNo: sourceStateNo,
@@ -128,6 +234,7 @@ export function runtimeExplodsToSnapshots(explods: RuntimeExplod[], sourceStateN
           vars: [],
           fvars: [],
           renderOpacity: explod.opacity,
+          ...(isDefaultScale(explod.scale) ? {} : { renderScale: { ...explod.scale } }),
           paletteFx: {
             remaining: Math.max(1, explod.removeTime - explod.age),
             time: Math.max(1, explod.removeTime),
@@ -164,8 +271,66 @@ function firstNumber(value: string | undefined): number | undefined {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
+function booleanNumber(value: string | undefined): boolean | undefined {
+  const numberValue = firstNumber(value);
+  return numberValue === undefined ? undefined : numberValue !== 0;
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const values = value
+    .split(",")
+    .map((part) => Number(part.trim()))
+    .filter(Number.isFinite);
+  if (values[0] === undefined) {
+    return undefined;
+  }
+  return [values[0], values[1] ?? 0];
+}
+
+function pairToVector(value: [number, number] | undefined): { x: number; y: number } {
+  return {
+    x: clampMotionValue(value?.[0] ?? 0),
+    y: clampMotionValue(value?.[1] ?? 0),
+  };
+}
+
+function scalePair(value: string | undefined): [number, number] | undefined {
+  const pair = numberPair(value);
+  return pair === undefined ? undefined : [pair[0], pair[1] ?? pair[0]];
+}
+
+function pairToScale(value: [number, number] | undefined): { x: number; y: number } {
+  return {
+    x: clampScaleValue(value?.[0] ?? 1),
+    y: clampScaleValue(value?.[1] ?? value?.[0] ?? 1),
+  };
+}
+
+function clampMotionValue(value: number): number {
+  return Math.max(-80, Math.min(80, value));
+}
+
+function clampScaleValue(value: number): number {
+  return Math.max(0.05, Math.min(8, Math.abs(value)));
+}
+
+function isDefaultScale(scale: { x: number; y: number }): boolean {
+  return scale.x === 1 && scale.y === 1;
+}
+
 function clampExplodTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(600, Math.round(value)));
+}
+
+function clampExplodBindTime(value: number): number {
+  return value < 0 ? -1 : Math.max(0, Math.min(600, Math.round(value)));
+}
+
+function clampExplodMoveTime(value: number): number {
+  return value < 0 ? -1 : Math.max(0, Math.min(600, Math.round(value)));
 }
 
 function parseExplodOpacity(value: string | undefined): number {

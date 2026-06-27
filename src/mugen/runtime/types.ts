@@ -47,6 +47,7 @@ export type CharacterRuntimeState = {
     samples: RuntimeAfterImageSample[];
   };
   renderOpacity?: number;
+  renderScale?: { x: number; y: number };
   animationSource?: "self" | "state-owner";
   customState?: RuntimeCustomState;
   assertSpecial?: RuntimeAssertSpecial;
@@ -65,6 +66,7 @@ export type CharacterRuntimeState = {
   moveType: "I" | "A" | "H";
   physics: "S" | "C" | "A" | "N";
   vars: number[];
+  sysvars?: number[];
   fvars: number[];
 };
 
@@ -118,6 +120,7 @@ export type RuntimeCustomState = {
 export type RuntimeHitFall = {
   falling: boolean;
   damage: number;
+  kill?: boolean;
   velocity: {
     x?: number;
     y: number;

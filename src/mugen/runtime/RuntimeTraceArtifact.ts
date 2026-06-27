@@ -165,6 +165,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           changedFields: [...advance.changedFields],
         })),
         targetLinks: gate.evidence.targetLinks.map((link) => ({ ...link })),
+        actorFrames: gate.evidence.actorFrames.map((actor) => ({ ...actor })),
         finalActors: gate.evidence.finalActors.map(cloneTraceGateFinalActor),
       },
     })),
@@ -395,6 +396,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredMatchPauseFreezes: gate.requiredMatchPauseFreezes?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseAdvances: gate.requiredMatchPauseAdvances?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
+    requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredFinalActors: gate.requiredFinalActors?.map((actor) => ({
       ...actor,
       hitFall: actor.hitFall ? { ...actor.hitFall } : undefined,

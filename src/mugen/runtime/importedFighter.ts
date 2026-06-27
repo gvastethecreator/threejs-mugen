@@ -79,6 +79,7 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
       state.id,
       buildMove(animations.get(actionId), state.id, numberParam(hitDef.params.damage, 45), fallbackHitbox, {
         attr: hitDef.params.attr,
+        kill: boolParam(hitDef.params.kill),
         targetId: firstNumber(hitDef.params.id) ?? undefined,
         hitPause: firstNumber(hitDef.params.pausetime) ?? undefined,
         hitStun: firstNumber(hitDef.params["ground.hittime"]) ?? undefined,
@@ -87,6 +88,7 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
         guardFlag: hitDef.params.guardflag,
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
+        guardKill: boolParam(hitDef.params["guard.kill"]),
         guardPause: firstNumber(hitDef.params["guard.pausetime"]) ?? undefined,
         guardStun: firstNumber(hitDef.params["guard.hittime"]) ?? undefined,
         guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]) ?? undefined,
@@ -155,6 +157,7 @@ function buildMove(
     Pick<
       DemoMove,
       | "attr"
+      | "kill"
       | "targetId"
       | "requiresHitDef"
       | "hitPause"
@@ -164,6 +167,7 @@ function buildMove(
       | "guardDistance"
       | "guardFlag"
       | "guardDamage"
+      | "guardKill"
       | "guardPause"
       | "guardStun"
       | "guardSlideTime"
@@ -192,6 +196,7 @@ function buildMove(
     recovery,
     damage,
     attr: overrides.attr,
+    kill: overrides.kill,
     targetId: overrides.targetId,
     requiresHitDef: overrides.requiresHitDef,
     hitPause: overrides.hitPause ?? (damage >= 60 ? 9 : 7),
@@ -201,6 +206,7 @@ function buildMove(
     guardDistance: overrides.guardDistance,
     guardFlag: overrides.guardFlag,
     guardDamage: overrides.guardDamage,
+    guardKill: overrides.guardKill,
     guardPause: overrides.guardPause,
     guardStun: overrides.guardStun,
     guardSlideTime: overrides.guardSlideTime,
@@ -215,6 +221,7 @@ function buildMove(
 function buildFallData(params: Record<string, string>): DemoMove["fall"] | undefined {
   const enabled = firstNumber(params.fall) ?? firstNumber(params["air.fall"]) ?? firstNumber(params["ground.fall"]);
   const damage = firstNumber(params["fall.damage"]);
+  const kill = boolParam(params["fall.kill"]);
   const xVelocity = firstNumber(params["fall.xvelocity"]);
   const yVelocity = firstNumber(params["fall.yvelocity"]);
   const recover = firstNumber(params["fall.recover"]);
@@ -228,6 +235,7 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   const hasAny =
     enabled !== undefined ||
     damage !== undefined ||
+    kill !== undefined ||
     xVelocity !== undefined ||
     yVelocity !== undefined ||
     recover !== undefined ||
@@ -241,6 +249,7 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   return {
     enabled: enabled !== undefined ? enabled !== 0 : false,
     damage,
+    kill,
     velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : undefined,
     recover: recover !== undefined ? recover !== 0 : undefined,
     recoverTime,
@@ -256,6 +265,11 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
           }
         : undefined,
   };
+}
+
+function boolParam(value: string | undefined): boolean | undefined {
+  const numberValue = firstNumber(value);
+  return numberValue === undefined ? undefined : numberValue !== 0;
 }
 
 function numberParam(value: string | undefined, fallback: number): number {

@@ -11,7 +11,9 @@ export type DemoMove = {
   activeEnd: number;
   recovery: number;
   damage: number;
+  kill?: boolean;
   attr?: string;
+  priority?: number;
   targetId?: number;
   requiresHitDef?: boolean;
   isReversal?: boolean;
@@ -27,6 +29,7 @@ export type DemoMove = {
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
+  guardKill?: boolean;
   guardPause?: number;
   guardStun?: number;
   guardSlideTime?: number;
@@ -36,6 +39,7 @@ export type DemoMove = {
   fall?: {
     enabled: boolean;
     damage?: number;
+    kill?: boolean;
     velocity?: {
       x?: number;
       y?: number;

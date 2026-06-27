@@ -13,6 +13,16 @@ export type ExpressionContext = {
   hitOver?: () => boolean;
   hitShakeOver?: () => boolean;
   inGuardDist?: () => boolean;
+  moveContact?: () => boolean;
+  moveHit?: () => boolean;
+  moveGuarded?: () => boolean;
+  numExplod?: (explodId?: number) => number;
+  numHelper?: (helperId?: number) => number;
+  numProj?: (projectileId?: number) => number;
+  numTarget?: (targetId?: number) => number;
+  projContact?: (projectileId?: number) => boolean;
+  projHit?: (projectileId?: number) => boolean;
+  projGuarded?: (projectileId?: number) => boolean;
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
@@ -295,8 +305,35 @@ class ExpressionParser {
     if (lower === "inguarddist") {
       return this.context.inGuardDist?.() ? 1 : 0;
     }
-    if (lower === "movecontact" || lower === "movehit") {
-      return 0;
+    if (lower === "movecontact") {
+      return this.context.moveContact?.() ? 1 : 0;
+    }
+    if (lower === "movehit") {
+      return this.context.moveHit?.() ? 1 : 0;
+    }
+    if (lower === "moveguarded") {
+      return this.context.moveGuarded?.() ? 1 : 0;
+    }
+    if (lower === "numtarget") {
+      return this.numTarget();
+    }
+    if (lower === "numexplod") {
+      return this.numExplod();
+    }
+    if (lower === "numhelper") {
+      return this.numHelper();
+    }
+    if (lower === "numproj" || lower === "numprojid") {
+      return this.numProj();
+    }
+    if (lower === "projcontact") {
+      return this.context.projContact?.() ? 1 : 0;
+    }
+    if (lower === "projhit") {
+      return this.context.projHit?.() ? 1 : 0;
+    }
+    if (lower === "projguarded") {
+      return this.context.projGuarded?.() ? 1 : 0;
     }
     if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
       return identifier.toUpperCase();
@@ -326,7 +363,7 @@ class ExpressionParser {
       return this.context.animExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
     }
     if (lower === "sysvar") {
-      return 0;
+      return this.context.self.sysvars?.[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
     }
     if (lower === "var") {
       return this.context.self.vars[Math.max(0, Math.floor(numeric(args[0] ?? 0)))] ?? 0;
@@ -348,6 +385,27 @@ class ExpressionParser {
     }
     if (lower === "hitdefattr") {
       return 0;
+    }
+    if (lower === "numtarget") {
+      return this.numTarget(optionalPositiveInteger(args[0]));
+    }
+    if (lower === "numexplod") {
+      return this.numExplod(optionalPositiveInteger(args[0]));
+    }
+    if (lower === "numhelper") {
+      return this.numHelper(optionalPositiveInteger(args[0]));
+    }
+    if (lower === "numproj" || lower === "numprojid") {
+      return this.numProj(optionalPositiveInteger(args[0]));
+    }
+    if (lower === "projcontact") {
+      return this.context.projContact?.(optionalProjectileId(args[0])) ? 1 : 0;
+    }
+    if (lower === "projhit") {
+      return this.context.projHit?.(optionalProjectileId(args[0])) ? 1 : 0;
+    }
+    if (lower === "projguarded") {
+      return this.context.projGuarded?.(optionalProjectileId(args[0])) ? 1 : 0;
     }
     this.context.reportUnsupported?.(identifier);
     return 0;
@@ -398,6 +456,30 @@ class ExpressionParser {
       return opponent.pos.y - this.context.self.pos.y;
     }
     return Math.max(0, Math.abs(opponent.pos.x - this.context.self.pos.x) - 48);
+  }
+
+  private numTarget(targetId?: number): number {
+    const runtimeValue = this.context.numTarget?.(targetId);
+    if (runtimeValue !== undefined) {
+      return runtimeValue;
+    }
+    const refs = this.context.self.targetRefs;
+    if (refs) {
+      return targetId === undefined ? refs.length : refs.filter((target) => target.targetId === targetId).length;
+    }
+    return targetId === undefined ? this.context.self.targetCount ?? 0 : 0;
+  }
+
+  private numExplod(explodId?: number): number {
+    return this.context.numExplod?.(explodId) ?? 0;
+  }
+
+  private numHelper(helperId?: number): number {
+    return this.context.numHelper?.(helperId) ?? 0;
+  }
+
+  private numProj(projectileId?: number): number {
+    return this.context.numProj?.(projectileId) ?? 0;
   }
 
   private p2Dist(axis: "x" | "y"): number {
@@ -532,6 +614,7 @@ function defaultHitVar(name: string): number {
     ctrltime: 0,
     fall: 0,
     "fall.damage": 0,
+    "fall.kill": 1,
     "fall.envshake.ampl": 0,
     "fall.envshake.freq": 60,
     "fall.envshake.phase": 0,
@@ -563,6 +646,18 @@ function truthy(value: ExpressionValue): boolean {
     return value;
   }
   return value.length > 0;
+}
+
+function optionalProjectileId(value: ExpressionValue | undefined): number | undefined {
+  return optionalPositiveInteger(value);
+}
+
+function optionalPositiveInteger(value: ExpressionValue | undefined): number | undefined {
+  if (value === undefined || value === "") {
+    return undefined;
+  }
+  const numberValue = numeric(value);
+  return Number.isFinite(numberValue) ? Math.max(0, Math.trunc(numberValue)) : undefined;
 }
 
 function numeric(value: ExpressionValue): number {

@@ -1,7 +1,17 @@
 import { compileControllerIr } from "../compiler/StateControllerCompiler";
-import type { HitFallControllerOp } from "../compiler/ControllerOps";
+import type {
+  DamageScaleControllerOp,
+  HitEligibilityControllerOp,
+  HitFallControllerOp,
+  HitOverrideControllerOp,
+  KinematicControllerOp,
+  MovementKinematicControllerOp,
+  ResourceControllerOp,
+  VariableControllerOp,
+} from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
+import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -47,19 +57,22 @@ export function executeControllerIr(
       changeAnim(next, value, type === "changeanim2" ? "state-owner" : "self");
     }
   } else if (type === "velset") {
+    const operation = kinematicOperation(controller, "velset");
     const pair = pairParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x") ?? pair?.[0];
-    const y = numberParam(controller, next, context, "y") ?? pair?.[1];
+    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0];
+    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1];
     next.vel = { x: x ?? next.vel.x, y: y ?? next.vel.y };
   } else if (type === "veladd") {
+    const operation = kinematicOperation(controller, "veladd");
     const pair = pairParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
-    const y = numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
+    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
+    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
     next.vel = { x: next.vel.x + x, y: next.vel.y + y };
   } else if (type === "velmul") {
+    const operation = kinematicOperation(controller, "velmul");
     const pair = pairParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x") ?? pair?.[0] ?? 1;
-    const y = numberParam(controller, next, context, "y") ?? pair?.[1] ?? 1;
+    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 1;
+    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 1;
     next.vel = { x: next.vel.x * x, y: next.vel.y * y };
   } else if (type === "hitvelset") {
     const xFlag = numberParam(controller, next, context, "x") ?? 0;
@@ -79,60 +92,75 @@ export function executeControllerIr(
     }
   } else if (type === "hitfalldamage") {
     if (next.moveType === "H" && next.hitFall && next.hitFall.damage > 0) {
-      next.life = Math.max(0, next.life - next.hitFall.damage);
+      next.life = applyRuntimeDamage(next.life, next.hitFall.damage, canRuntimeDamageKill(next, next.hitFall.kill ?? true));
       next.hitFall = { ...next.hitFall, damage: 0 };
     }
   } else if (type === "hitfallset") {
     applyHitFallSet(next, controller, hitFallOperation(controller, "hitfallset"), context);
   } else if (type === "posset") {
+    const operation = kinematicOperation(controller, "posset");
     const pair = pairParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x") ?? pair?.[0];
-    const y = numberParam(controller, next, context, "y") ?? pair?.[1];
+    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0];
+    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1];
     next.pos = { x: x ?? next.pos.x, y: y ?? next.pos.y };
   } else if (type === "posadd") {
+    const operation = kinematicOperation(controller, "posadd");
     const pair = pairParam(controller, next, context, "value");
-    const x = numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
-    const y = numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
+    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
+    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
     next.pos = { x: next.pos.x + x, y: next.pos.y + y };
   } else if (type === "gravity") {
-    next.vel = { ...next.vel, y: next.vel.y + 0.55 };
+    const operation = kinematicOperation(controller, "gravity");
+    next.vel = { ...next.vel, y: next.vel.y + (operation?.y ?? 0.55) };
   } else if (type === "ctrlset") {
-    next.ctrl = (numberParam(controller, next, context, "value") ?? 0) !== 0;
+    const operation = resourceOperation(controller, "ctrlset");
+    next.ctrl = operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0;
   } else if (type === "statetypeset") {
     applyStateTypeSet(next, controller);
   } else if (type === "lifeadd") {
-    next.life = Math.max(0, next.life + (numberParam(controller, next, context, "value") ?? 0));
+    const operation = resourceOperation(controller, "lifeadd");
+    const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
+    const kill = operation?.kill ?? ((numberParam(controller, next, context, "kill") ?? 1) !== 0);
+    next.life =
+      value < 0
+        ? applyRuntimeDamage(next.life, Math.abs(value), canRuntimeDamageKill(next, kill))
+        : Math.max(0, next.life + value);
   } else if (type === "lifeset") {
-    const value = numberParam(controller, next, context, "value");
+    const operation = resourceOperation(controller, "lifeset");
+    const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       next.life = Math.max(0, value);
     }
   } else if (type === "poweradd") {
-    next.power = Math.max(0, next.power + (numberParam(controller, next, context, "value") ?? 0));
+    const operation = resourceOperation(controller, "poweradd");
+    next.power = Math.max(0, next.power + (operation?.value ?? numberParam(controller, next, context, "value") ?? 0));
   } else if (type === "powerset") {
-    const value = numberParam(controller, next, context, "value");
+    const operation = resourceOperation(controller, "powerset");
+    const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       next.power = Math.max(0, value);
     }
   } else if (type === "varset" || type === "varadd") {
-    applyVariableController(next, controller, context, type === "varadd");
+    applyVariableController(next, controller, context, type === "varadd", variableOperation(controller, type));
   } else if (type === "varrangeset") {
-    applyVariableRangeSet(next, controller, context);
+    applyVariableRangeSet(next, controller, context, variableOperation(controller, "varrangeset"));
   } else if (type === "playerpush") {
     next.playerPush = (numberParam(controller, next, context, "value") ?? 1) !== 0;
   } else if (type === "turn") {
     next.facing = next.facing === 1 ? -1 : 1;
   } else if (type === "hitby" || type === "nothitby") {
-    applyHitByController(next, controller, type === "hitby" ? "allow" : "deny");
+    applyHitByController(next, controller, type === "hitby" ? "allow" : "deny", hitEligibilityOperation(controller, type));
   } else if (type === "hitoverride") {
-    applyHitOverrideController(next, controller);
+    applyHitOverrideController(next, controller, hitOverrideOperation(controller));
   } else if (type === "defencemulset") {
-    const value = numberParam(controller, next, context, "value");
+    const operation = damageScaleOperation(controller, "defencemulset");
+    const value = operation?.multiplier ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       next.defenseMultiplier = Math.max(0, Math.min(10, value));
     }
   } else if (type === "attackmulset") {
-    const value = numberParam(controller, next, context, "value");
+    const operation = damageScaleOperation(controller, "attackmulset");
+    const value = operation?.multiplier ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
       next.attackMultiplier = Math.max(0, Math.min(10, value));
     }
@@ -228,6 +256,60 @@ function hitFallOperation(
     : undefined;
 }
 
+function kinematicOperation(
+  controller: ControllerIr,
+  controllerType: MovementKinematicControllerOp["controllerType"],
+): MovementKinematicControllerOp | undefined;
+function kinematicOperation(controller: ControllerIr, controllerType: "gravity"): Extract<KinematicControllerOp, { controllerType: "gravity" }> | undefined;
+function kinematicOperation(
+  controller: ControllerIr,
+  controllerType: KinematicControllerOp["controllerType"],
+): KinematicControllerOp | undefined {
+  return controller.operation?.kind === "kinematic" && controller.operation.controllerType === controllerType
+    ? controller.operation
+    : undefined;
+}
+
+function resourceOperation<T extends ResourceControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<ResourceControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "resource" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<ResourceControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function variableOperation<T extends VariableControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<VariableControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "variable" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<VariableControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function hitEligibilityOperation<T extends HitEligibilityControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<HitEligibilityControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "eligibility" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<HitEligibilityControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function hitOverrideOperation(controller: ControllerIr): HitOverrideControllerOp | undefined {
+  return controller.operation?.kind === "hitoverride" ? controller.operation : undefined;
+}
+
+function damageScaleOperation<T extends DamageScaleControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): DamageScaleControllerOp | undefined {
+  return controller.operation?.kind === "damage-scale" && controller.operation.controllerType === controllerType
+    ? controller.operation
+    : undefined;
+}
+
 function applyRemapPalController(state: CharacterRuntimeState, controller: ControllerExecutionSource): void {
   const source = pairParam(controller, state, "source");
   const dest = pairParam(controller, state, "dest");
@@ -295,9 +377,20 @@ function applyVariableController(
   controller: ControllerExecutionSource,
   context: RuntimeControllerEvaluationContext,
   additive: boolean,
+  operation?: Extract<VariableControllerOp, { controllerType: "varset" | "varadd" }>,
 ): void {
-  const assignment = variableAssignmentParam(controller, state, context);
-  const target = assignment?.kind === "fvar" || findParam(controller, "fv") !== undefined ? state.fvars : state.vars;
+  const assignment = operation
+    ? { kind: operation.variableType, index: operation.index, value: operation.value }
+    : variableAssignmentParam(controller, state, context);
+  const target =
+    assignment?.kind === "sysvar"
+      ? (state.sysvars ??= [])
+      : assignment?.kind === "fvar" ||
+          operation?.variableType === "fvar" ||
+          findParam(controller, "fv") !== undefined ||
+          findParam(controller, "fvar") !== undefined
+        ? state.fvars
+        : state.vars;
   const index = assignment?.index ?? numberParam(controller, state, context, "v", "var", "fv", "fvar");
   const value = assignment?.value ?? numberParam(controller, state, context, "value");
   if (index === undefined || value === undefined || index < 0) {
@@ -311,16 +404,17 @@ function applyVariableRangeSet(
   state: CharacterRuntimeState,
   controller: ControllerExecutionSource,
   context: RuntimeControllerEvaluationContext,
+  operation?: Extract<VariableControllerOp, { controllerType: "varrangeset" }>,
 ): void {
-  const isFloat = findParam(controller, "fvalue") !== undefined;
+  const isFloat = operation?.variableType === "fvar" || findParam(controller, "fvalue") !== undefined;
   const target = isFloat ? state.fvars : state.vars;
-  const value = numberParam(controller, state, context, isFloat ? "fvalue" : "value");
+  const value = operation?.value ?? numberParam(controller, state, context, isFloat ? "fvalue" : "value");
   if (value === undefined) {
     return;
   }
   const maxIndex = isFloat ? 39 : 59;
-  const first = clampIndex(Math.round(numberParam(controller, state, context, "first") ?? 0), maxIndex);
-  const last = clampIndex(Math.round(numberParam(controller, state, context, "last") ?? maxIndex), maxIndex);
+  const first = clampIndex(Math.round(operation?.first ?? numberParam(controller, state, context, "first") ?? 0), maxIndex);
+  const last = clampIndex(Math.round(operation?.last ?? numberParam(controller, state, context, "last") ?? maxIndex), maxIndex);
   const start = Math.min(first, last);
   const end = Math.max(first, last);
   for (let index = start; index <= end; index += 1) {
@@ -332,9 +426,21 @@ function applyHitByController(
   state: CharacterRuntimeState,
   controller: ControllerExecutionSource,
   mode: RuntimeHitBySlot["mode"],
+  operation?: HitEligibilityControllerOp,
 ): void {
-  const time = controllerDuration(numberParam(controller, state, "time") ?? 1);
   const hitBy = { ...(state.hitBy ?? {}) };
+  if (operation) {
+    for (const slot of operation.slots) {
+      if (slot.slot === 1) {
+        hitBy.slot1 = { mode: operation.mode, attr: slot.attr, remaining: slot.remaining };
+      } else {
+        hitBy.slot2 = { mode: operation.mode, attr: slot.attr, remaining: slot.remaining };
+      }
+    }
+    state.hitBy = hitBy;
+    return;
+  }
+  const time = controllerDuration(numberParam(controller, state, "time") ?? 1);
   const value = findParam(controller, "value");
   const value2 = findParam(controller, "value2");
   if (value !== undefined) {
@@ -346,10 +452,14 @@ function applyHitByController(
   state.hitBy = hitBy;
 }
 
-function applyHitOverrideController(state: CharacterRuntimeState, controller: ControllerExecutionSource): void {
-  const slot = clampIndex(Math.round(numberParam(controller, state, "slot") ?? 0), 7);
-  const attr = findParam(controller, "attr")?.trim() ?? "";
-  const remaining = controllerDuration(numberParam(controller, state, "time") ?? 1);
+function applyHitOverrideController(
+  state: CharacterRuntimeState,
+  controller: ControllerExecutionSource,
+  operation?: HitOverrideControllerOp,
+): void {
+  const slot = operation?.slot ?? clampIndex(Math.round(numberParam(controller, state, "slot") ?? 0), 7);
+  const attr = operation?.attr ?? findParam(controller, "attr")?.trim() ?? "";
+  const remaining = operation?.remaining ?? controllerDuration(numberParam(controller, state, "time") ?? 1);
   const overrides = (state.hitOverrides ?? []).filter((entry) => entry.slot !== slot);
 
   if (!attr || remaining <= 0) {
@@ -362,12 +472,13 @@ function applyHitOverrideController(state: CharacterRuntimeState, controller: Co
     slot,
     attr,
     remaining,
-    forceAir: (numberParam(controller, state, "forceair") ?? 0) !== 0,
-    forceGuard: (numberParam(controller, state, "forceguard") ?? 0) !== 0,
-    keepState: (numberParam(controller, state, "keepstate") ?? 0) !== 0,
+    forceAir: operation?.forceAir ?? ((numberParam(controller, state, "forceair") ?? 0) !== 0),
+    forceGuard: operation?.forceGuard ?? ((numberParam(controller, state, "forceguard") ?? 0) !== 0),
+    keepState: operation?.keepState ?? ((numberParam(controller, state, "keepstate") ?? 0) !== 0),
   };
-  if (stateNo !== undefined && stateNo >= 0) {
-    next.stateNo = stateNo;
+  const targetStateNo = operation?.stateNo ?? stateNo;
+  if (targetStateNo !== undefined && targetStateNo >= 0) {
+    next.stateNo = targetStateNo;
   }
 
   state.hitOverrides = [...overrides, next].sort((a, b) => a.slot - b.slot);
@@ -459,9 +570,9 @@ function variableAssignmentParam(
   controller: ControllerExecutionSource,
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext,
-): { kind: "var" | "fvar"; index: number; value: number } | undefined {
+): { kind: "var" | "fvar" | "sysvar"; index: number; value: number } | undefined {
   for (const [key, rawValue] of Object.entries(controller.params)) {
-    const match = /^(f?var)\((\d+)\)$/i.exec(key.trim());
+    const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
     if (!match) {
       continue;
     }
@@ -470,7 +581,7 @@ function variableAssignmentParam(
       continue;
     }
     return {
-      kind: match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
+      kind: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
       index: Number(match[2]),
       value,
     };

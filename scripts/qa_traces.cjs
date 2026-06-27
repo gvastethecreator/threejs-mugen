@@ -31,9 +31,64 @@ async function main() {
       artifact: presets.createSyntheticImportedXTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-movecontact",
+      required: true,
+      artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-numtarget",
+      required: true,
+      artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-numhelper",
+      required: true,
+      artifact: presets.createSyntheticImportedNumHelperTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-numproj",
+      required: true,
+      artifact: presets.createSyntheticImportedNumProjTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-numexplod",
+      required: true,
+      artifact: presets.createSyntheticImportedNumExplodTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-removeexplod",
+      required: true,
+      artifact: presets.createSyntheticImportedRemoveExplodTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reject",
       required: true,
       artifact: presets.createSyntheticImportedRejectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedReversalTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-damage-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedDamageScaleTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGuardKillTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-guard",
@@ -46,6 +101,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialUnguardableTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-noko",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialNoKoTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-guard-state",
       required: true,
       artifact: presets.createSyntheticImportedDefaultGuardStateTraceArtifact(),
@@ -54,6 +114,16 @@ async function main() {
       name: "synthetic-imported-crouch-guard-state",
       required: true,
       artifact: presets.createSyntheticImportedCrouchGuardStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-diagonal-crouch-guard-state",
+      required: true,
+      artifact: presets.createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-air-guard-state",
+      required: true,
+      artifact: presets.createSyntheticImportedAirGuardStateTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-inguarddist",
@@ -166,6 +236,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-targetbind-pause",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetBindPauseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-superpause",
       required: true,
       artifact: presets.createSyntheticImportedSuperPauseTraceArtifact(),
@@ -176,9 +251,24 @@ async function main() {
       artifact: presets.createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-superpause-effect-freeze",
+      required: true,
+      artifact: presets.createSyntheticImportedSuperPauseEffectFreezeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-supermovetime",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodSuperMoveTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-contact",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileContactTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-guard",
@@ -186,9 +276,19 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-multihit",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileMultiHitTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-clash",
       required: true,
       artifact: presets.createSyntheticImportedProjectileClashTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-priority-cancel",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectilePriorityCancelTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper",
@@ -199,6 +299,36 @@ async function main() {
       name: "synthetic-imported-explod",
       required: true,
       artifact: presets.createSyntheticImportedExplodTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodVelocityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-bind",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodBindTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodScaleTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-removeongethit",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodRemoveOnGetHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-removeonprojectilehit",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-explod-removeonprojectileguard",
+      required: true,
+      artifact: presets.createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact(),
     });
 
     const kfmFixturePath = path.resolve(process.cwd(), process.env.KFM_FIXTURE_PATH ?? DEFAULT_KFM_FIXTURE);
@@ -259,6 +389,41 @@ async function main() {
           targetLabel: "Official KFM Common1 crouch guard-hit route",
           notes: [
             `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can evaluate Common1 command expressions and enter crouch guard-hit state 153 after blocking a HitDef while holding down-back. Guard-distance, guard-start, guard-end, sparks, sounds, and exact crouch/air guard parity remain future work.`,
+          ],
+        }),
+      });
+      artifacts.push({
+        name: "kfm-official-default-air-guard-state",
+        required: false,
+        artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
+          attacker: presets.createSyntheticImportedTraceFighter({
+            id: "kfm-official-default-air-guard-attacker",
+            displayName: "Official KFM Air Guard Hit Probe",
+            guardDamage: 5,
+            guardFlag: "A",
+            guardSlideTime: 5,
+            guardControlTime: 7,
+          }),
+          script: presets.importedDefaultAirGuardStateScript(),
+          requiredExecutedStates: [200, 154, 155, 52],
+          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VarSet", "VelAdd"],
+          requiredActiveCommands: ["holdback", "x"],
+          requiredFinalActors: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              life: 995,
+              ctrl: true,
+              stateType: "S",
+              moveType: "I",
+              physics: "S",
+            },
+          ],
+          targetId: "kfm-official-default-air-guard-state-golden",
+          targetLabel: "Official KFM Common1 air guard-hit route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 air guard-hit states 154 and 155 after blocking an A-guardable HitDef while airborne and holding back. Exact air guard physics, landing, guard-distance, guard-start, guard-end, sparks, sounds, and IKEMEN parity remain future work.`,
           ],
         }),
       });
@@ -418,8 +583,14 @@ async function main() {
         failures: entry.artifact.gates.flatMap((gate) => gate.failures),
         path: path.join(outDir, `${entry.name}.json`),
       })),
+      coverage: createTraceCoverage(artifacts, skipped),
       skipped,
     };
+    const coverageFailures = validateTraceCoverage(diagnostics.coverage);
+    if (coverageFailures.length) {
+      diagnostics.coverage.failures = coverageFailures;
+      failures.push(...coverageFailures.map((failure) => `coverage: ${failure}`));
+    }
     fs.writeFileSync(path.join(outDir, "diagnostics.json"), `${JSON.stringify(diagnostics, null, 2)}\n`);
 
     if (failures.length) {
@@ -438,6 +609,7 @@ async function main() {
             checksum: artifact.checksum,
             gates: artifact.gateLabels,
           })),
+          coverage: diagnostics.coverage.summary,
           skipped,
         },
         null,
@@ -473,6 +645,226 @@ async function loadImportedFighter(vite, fixturePath) {
     throw new Error(`Fixture did not produce an imported runtime fighter: ${fixturePath}`);
   }
   return imported;
+}
+
+function createTraceCoverage(entries, skipped) {
+  const coverage = {
+    summary: {
+      totalArtifacts: entries.length,
+      requiredArtifacts: entries.filter((entry) => entry.required).length,
+      optionalArtifacts: entries.filter((entry) => !entry.required).length,
+      passedArtifacts: entries.filter((entry) => entry.artifact.status === "passed").length,
+      failedArtifacts: entries.filter((entry) => entry.artifact.status !== "passed").length,
+      skippedOptionalFixtures: skipped.length,
+      controllerFamilies: 0,
+      operationFamilies: 0,
+      effectKinds: 0,
+      combatReasons: 0,
+      matchPauseRoutes: 0,
+      worldLifecycleRoutes: 0,
+      targetLinkRoutes: 0,
+      effectStoreRoutes: 0,
+    },
+    controllers: {},
+    operations: {},
+    effectKinds: {},
+    combatReasons: {},
+    eventCategories: {},
+    matchPauses: {},
+    matchPauseFreezes: {},
+    matchPauseAdvances: {},
+    worldLifecycle: {},
+    targetLinks: {
+      artifacts: [],
+      requiredArtifacts: [],
+      totalEvidenceRows: 0,
+    },
+    effectStores: {
+      artifacts: [],
+      requiredArtifacts: [],
+      totalEvidenceRows: 0,
+      owners: [],
+    },
+  };
+
+  const effectStoreOwners = new Set();
+
+  for (const entry of entries) {
+    const artifact = entry.artifact;
+    for (const gate of artifact.gates ?? []) {
+      const evidence = gate.evidence ?? {};
+      const context = { name: entry.name, required: entry.required, gate: gate.label };
+
+      addCountRecordCoverage(coverage.controllers, evidence.executedControllers, context);
+      addCountRecordCoverage(coverage.operations, evidence.executedOperations, context);
+      addArrayCoverage(coverage.effectKinds, evidence.effectKinds, context);
+      addArrayCoverage(coverage.combatReasons, evidence.combatReasons, context);
+      addArrayCoverage(coverage.eventCategories, evidence.eventCategories, context);
+
+      for (const pause of evidence.matchPauses ?? []) {
+        addCoverageEntry(coverage.matchPauses, pause.type, context, { frames: pause.frames });
+      }
+      for (const freeze of evidence.matchPauseFreezes ?? []) {
+        addCoverageEntry(coverage.matchPauseFreezes, `${freeze.type}:${freeze.actorKind ?? freeze.actorId ?? "actor"}`, context, {
+          frames: freeze.frozenFrames,
+        });
+      }
+      for (const advance of evidence.matchPauseAdvances ?? []) {
+        addCoverageEntry(coverage.matchPauseAdvances, `${advance.type}:${advance.actorKind ?? advance.actorId ?? "actor"}`, context, {
+          frames: advance.advancedFrames,
+        });
+      }
+      for (const event of evidence.worldLifecycleEvents ?? []) {
+        addCoverageEntry(coverage.worldLifecycle, `${event.kind}:${event.type}`, context);
+      }
+
+      if (evidence.targetLinks?.length) {
+        addArtifactName(coverage.targetLinks.artifacts, entry.name);
+        if (entry.required) {
+          addArtifactName(coverage.targetLinks.requiredArtifacts, entry.name);
+        }
+        coverage.targetLinks.totalEvidenceRows += evidence.targetLinks.length;
+      }
+      if (evidence.effectStores?.length) {
+        addArtifactName(coverage.effectStores.artifacts, entry.name);
+        if (entry.required) {
+          addArtifactName(coverage.effectStores.requiredArtifacts, entry.name);
+        }
+        coverage.effectStores.totalEvidenceRows += evidence.effectStores.length;
+        for (const store of evidence.effectStores) {
+          effectStoreOwners.add(store.ownerId);
+        }
+      }
+    }
+  }
+
+  coverage.effectStores.owners = [...effectStoreOwners].sort();
+  coverage.summary.controllerFamilies = Object.keys(coverage.controllers).length;
+  coverage.summary.operationFamilies = Object.keys(coverage.operations).length;
+  coverage.summary.effectKinds = Object.keys(coverage.effectKinds).length;
+  coverage.summary.combatReasons = Object.keys(coverage.combatReasons).length;
+  coverage.summary.matchPauseRoutes =
+    Object.keys(coverage.matchPauses).length +
+    Object.keys(coverage.matchPauseFreezes).length +
+    Object.keys(coverage.matchPauseAdvances).length;
+  coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
+  coverage.summary.targetLinkRoutes = coverage.targetLinks.artifacts.length;
+  coverage.summary.effectStoreRoutes = coverage.effectStores.artifacts.length;
+
+  return coverage;
+}
+
+function validateTraceCoverage(coverage) {
+  const failures = [];
+  const requiredOperations = [
+    "hitdef",
+    "target:targetbind",
+    "pause:superpause",
+    "projectile",
+    "helper",
+    "explod",
+    "removeexplod",
+    "reversaldef",
+    "damage-scale:attackmulset",
+    "damage-scale:defencemulset",
+  ];
+  const requiredEffectKinds = ["projectile", "helper", "explod"];
+  const requiredPauseAdvanceRoutes = ["SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredPauseFreezeRoutes = ["SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredArtifactNames = [
+    "synthetic-imported-targetbind-pause",
+    "synthetic-imported-superpause-projectile-freeze",
+    "synthetic-imported-superpause-effect-freeze",
+    "synthetic-imported-projectile-multihit",
+    "synthetic-imported-projectile-priority-cancel",
+    "synthetic-imported-explod-velocity",
+    "synthetic-imported-explod-bind",
+    "synthetic-imported-explod-scale",
+    "synthetic-imported-explod-removeongethit",
+    "synthetic-imported-explod-removeonprojectilehit",
+    "synthetic-imported-explod-removeonprojectileguard",
+    "synthetic-imported-removeexplod",
+    "synthetic-imported-reversal",
+    "synthetic-imported-damage-scale",
+    "synthetic-imported-hitdef-priority",
+    "synthetic-imported-hitdef-kill",
+    "synthetic-imported-hitdef-guard-kill",
+    "synthetic-imported-assertspecial-noko",
+    "synthetic-imported-air-guard-state",
+  ];
+
+  for (const key of requiredOperations) {
+    requireCoverageEntry(coverage.operations, key, "operation", failures);
+  }
+  for (const key of requiredEffectKinds) {
+    requireCoverageEntry(coverage.effectKinds, key, "effect kind", failures);
+  }
+  for (const key of requiredPauseAdvanceRoutes) {
+    requireCoverageEntry(coverage.matchPauseAdvances, key, "match-pause advance", failures);
+  }
+  for (const key of requiredPauseFreezeRoutes) {
+    requireCoverageEntry(coverage.matchPauseFreezes, key, "match-pause freeze", failures);
+  }
+  for (const name of requiredArtifactNames) {
+    const hasArtifact =
+      Object.values(coverage.operations).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.matchPauseFreezes).some((entry) => entry.requiredArtifacts.includes(name));
+    if (!hasArtifact) {
+      failures.push(`missing required coverage artifact ${name}`);
+    }
+  }
+
+  return failures;
+}
+
+function requireCoverageEntry(table, key, label, failures) {
+  const entry = table[key];
+  if (!entry || entry.requiredArtifacts.length === 0 || entry.totalCount <= 0) {
+    failures.push(`missing required ${label} coverage for ${key}`);
+  }
+}
+
+function addCountRecordCoverage(target, record, context) {
+  for (const [key, count] of Object.entries(record ?? {})) {
+    addCoverageEntry(target, key, context, { count: Number(count) || 0 });
+  }
+}
+
+function addArrayCoverage(target, values, context) {
+  for (const value of values ?? []) {
+    addCoverageEntry(target, String(value), context);
+  }
+}
+
+function addCoverageEntry(target, key, context, values = {}) {
+  if (!key) {
+    return;
+  }
+  const item =
+    target[key] ??
+    (target[key] = {
+      artifacts: [],
+      requiredArtifacts: [],
+      gateLabels: [],
+      totalCount: 0,
+      maxFrames: 0,
+    });
+  addArtifactName(item.artifacts, context.name);
+  addArtifactName(item.gateLabels, context.gate);
+  if (context.required) {
+    addArtifactName(item.requiredArtifacts, context.name);
+  }
+  item.totalCount += values.count ?? 1;
+  item.maxFrames = Math.max(item.maxFrames, values.frames ?? 0);
+}
+
+function addArtifactName(target, name) {
+  if (name && !target.includes(name)) {
+    target.push(name);
+    target.sort();
+  }
 }
 
 main().catch((error) => {

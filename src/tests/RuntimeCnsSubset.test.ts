@@ -14,6 +14,7 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("!ctrl", { self: state })).toBe(0);
     expect(evaluateExpression("3 + 4 * 2", { self: state })).toBe(11);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);
+    expect(evaluateExpression("sysvar(0)", { self: runtimeState({ sysvars: [1] }) })).toBe(1);
     expect(evaluateExpression("power >= 1000", { self: runtimeState({ power: 0 }) })).toBe(0);
     expect(evaluateExpression("power >= 1000", { self: runtimeState({ power: 1200 }) })).toBe(1);
     expect(evaluateExpression("!alive", { self: runtimeState({ life: 1000 }) })).toBe(0);
@@ -46,6 +47,21 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("HitShakeOver", { self: state, hitShakeOver: () => false })).toBe(0);
     expect(evaluateExpression("HitOver", { self: state, hitOver: () => true })).toBe(1);
     expect(evaluateExpression("!HitOver", { self: state, hitOver: () => false })).toBe(1);
+    expect(evaluateExpression("MoveContact && MoveHit", { self: state, moveContact: () => true, moveHit: () => true })).toBe(1);
+    expect(evaluateExpression("MoveGuarded", { self: state, moveGuarded: () => true })).toBe(1);
+    expect(evaluateExpression("ProjHit(77)", { self: state, projHit: (id) => id === 77 })).toBe(1);
+    expect(evaluateExpression("ProjContact && !ProjGuarded(77)", { self: state, projContact: () => true, projGuarded: () => false })).toBe(1);
+    expect(evaluateExpression("NumTarget > 0", { self: runtimeState({ targetCount: 1 }) })).toBe(1);
+    expect(evaluateExpression("NumTarget(77) = 1", { self: state, numTarget: (id) => (id === 77 ? 1 : 0) })).toBe(1);
+    expect(
+      evaluateExpression("NumTarget(77) = 1", {
+        self: runtimeState({ targetRefs: [{ actorId: "p2", targetId: 77, age: 0 }] }),
+      }),
+    ).toBe(1);
+    expect(evaluateExpression("NumExplod(9000) = 1", { self: state, numExplod: (id) => (id === 9000 ? 1 : 0) })).toBe(1);
+    expect(evaluateExpression("NumHelper(42) = 1", { self: state, numHelper: (id) => (id === 42 ? 1 : 0) })).toBe(1);
+    expect(evaluateExpression("NumProj > 0", { self: state, numProj: () => 1 })).toBe(1);
+    expect(evaluateExpression("NumProjID(77) = 1", { self: state, numProj: (id) => (id === 77 ? 1 : 0) })).toBe(1);
   });
 
   it("evaluates common MUGEN axis, range, const, and hitvar trigger syntax", () => {
@@ -76,6 +92,7 @@ describe("ExpressionEvaluator", () => {
         velocity: { x: -3, y: -6 },
         recover: true,
         recoverTime: 30,
+        kill: false,
         envShake: { time: 15, freq: 178, ampl: 6, phase: 0 },
       },
     });
@@ -88,6 +105,12 @@ describe("ExpressionEvaluator", () => {
       evaluateExpression("GetHitVar(fall.damage) = 70", {
         self: state,
         getHitVar: (name) => (name.toLowerCase() === "fall.damage" ? state.hitFall?.damage : undefined),
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("GetHitVar(fall.kill) = 0", {
+        self: state,
+        getHitVar: (name) => (name.toLowerCase() === "fall.kill" ? (state.hitFall?.kill === false ? 0 : 1) : undefined),
       }),
     ).toBe(1);
     state.hitFall = {
@@ -112,9 +135,11 @@ describe("ExpressionEvaluator", () => {
 describe("StateControllerExecutor", () => {
   it("executes the same simple controller behavior through ControllerIr", () => {
     const parsedController = controller("VelSet", { value: "4,-3" });
+    const compiled = compileControllerIr(parsedController);
     const parsedResult = executeStateController(parsedController, runtimeState(), () => undefined);
-    const irResult = executeControllerIr(compileControllerIr(parsedController), runtimeState(), () => undefined);
+    const irResult = executeControllerIr(compiled, runtimeState(), () => undefined);
 
+    expect(compiled.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 4, y: -3 });
     expect(irResult.vel).toEqual(parsedResult.vel);
     expect(irResult.vel).toEqual({ x: 4, y: -3 });
   });
@@ -148,6 +173,7 @@ describe("StateControllerExecutor", () => {
     );
 
     expect(state.pos.y).toBe(24);
+    expect(compileControllerIr(controller("PosSet", { y: "Const(movement.down.bounce.offset.y)" })).operation).toBeUndefined();
   });
 
   it("executes additional simple CNS controllers and expression params", () => {
@@ -177,17 +203,44 @@ describe("StateControllerExecutor", () => {
 
   it("executes life, power, and variable controllers", () => {
     let state = runtimeState({ life: 900, power: 100 });
+    const compiledLife = compileControllerIr(controller("LifeAdd", { value: "-50" }));
+    const compiledSysvarSet = compileControllerIr(controller("VarSet", { "sysvar(0)": "1" }));
+    const compiledSysvarAdd = compileControllerIr(controller("VarAdd", { "sysvar(0)": "2" }));
 
-    state = executeStateController(controller("LifeAdd", { value: "-50" }), state, () => undefined);
+    state = executeControllerIr(compiledLife, state, () => undefined);
     state = executeStateController(controller("PowerAdd", { value: "75" }), state, () => undefined);
     state = executeStateController(controller("VarSet", { v: "3", value: "8" }), state, () => undefined);
     state = executeStateController(controller("VarAdd", { v: "3", value: "2" }), state, () => undefined);
     state = executeStateController(controller("VarSet", { "var(1)": "7" }), state, () => undefined);
+    state = executeControllerIr(compiledSysvarSet, state, () => undefined);
+    state = executeControllerIr(compiledSysvarAdd, state, () => undefined);
+    state = executeStateController(controller("VarSet", { "sysvar(1)": "4" }), state, () => undefined);
+    state = executeStateController(controller("VarSet", { fv: "2", value: "1.5" }), state, () => undefined);
 
+    expect(compiledLife.operation).toEqual({ kind: "resource", controllerType: "lifeadd", value: -50 });
+    expect(compiledSysvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "sysvar", index: 0, value: 1 });
+    expect(compiledSysvarAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "sysvar", index: 0, value: 2 });
     expect(state.life).toBe(850);
     expect(state.power).toBe(175);
     expect(state.vars[3]).toBe(10);
     expect(state.vars[1]).toBe(7);
+    expect(state.sysvars?.[0]).toBe(3);
+    expect(state.sysvars?.[1]).toBe(4);
+    expect(state.fvars[2]).toBe(1.5);
+  });
+
+  it("respects LifeAdd kill = 0 and AssertSpecial NoKO clamps", () => {
+    let state = runtimeState({ life: 25 });
+
+    state = executeControllerIr(compileControllerIr(controller("LifeAdd", { value: "-80", kill: "0" })), state, () => undefined);
+    expect(state.life).toBe(1);
+
+    state = runtimeState({
+      life: 25,
+      assertSpecial: { flags: ["noko"], globalFlags: [], noKo: true },
+    });
+    state = executeControllerIr(compileControllerIr(controller("LifeAdd", { value: "-80" })), state, () => undefined);
+    expect(state.life).toBe(1);
   });
 
   it("executes compatibility movement and meter controllers used by common CNS files", () => {
@@ -209,17 +262,15 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("ScreenBound", { value: "0", movecamera: "0,1" }), state, (item) =>
       unsupported.push(item),
     );
-    state = executeStateController(controller("NotHitBy", { value: "SCA", time: "12" }), state, (item) =>
-      unsupported.push(item),
+    const compiledNotHitBy = compileControllerIr(controller("NotHitBy", { value: "SCA", time: "12" }));
+    const compiledHitOverride = compileControllerIr(
+      controller("HitOverride", { attr: "S,NA", stateno: "777", slot: "1", time: "12", forceair: "1" }),
     );
+    state = executeControllerIr(compiledNotHitBy, state, (item) => unsupported.push(item));
     state = executeStateController(controller("HitBy", { value2: "S,NA", time: "8" }), state, (item) =>
       unsupported.push(item),
     );
-    state = executeStateController(
-      controller("HitOverride", { attr: "S,NA", stateno: "777", slot: "1", time: "12", forceair: "1" }),
-      state,
-      (item) => unsupported.push(item),
-    );
+    state = executeControllerIr(compiledHitOverride, state, (item) => unsupported.push(item));
     state = executeStateController(controller("DefenceMulSet", { value: "0.5" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("AttackMulSet", { value: "1.5" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("RemapPal", { source: "1,1", dest: "2,3" }), state, (item) => unsupported.push(item));
@@ -240,6 +291,8 @@ describe("StateControllerExecutor", () => {
     expect(state.screenBound).toEqual({ bound: false, moveCameraX: false, moveCameraY: true });
     expect(state.hitBy?.slot1).toEqual({ mode: "deny", attr: "SCA", remaining: 12 });
     expect(state.hitBy?.slot2).toEqual({ mode: "allow", attr: "S,NA", remaining: 8 });
+    expect(compiledNotHitBy.operation).toMatchObject({ kind: "eligibility", controllerType: "nothitby" });
+    expect(compiledHitOverride.operation).toMatchObject({ kind: "hitoverride", stateNo: 777, forceAir: true });
     expect(state.hitOverrides).toEqual([
       { slot: 1, attr: "S,NA", stateNo: 777, remaining: 12, forceAir: true, forceGuard: false, keepState: false },
     ]);
@@ -291,6 +344,43 @@ describe("StateControllerExecutor", () => {
     });
     expect(unsupported).toEqual([]);
   });
+
+  it("respects fall.kill = 0 when HitFallDamage applies stored damage", () => {
+    const state = runtimeState({
+      moveType: "H",
+      life: 30,
+      hitFall: {
+        falling: true,
+        damage: 70,
+        kill: false,
+        velocity: { y: -6 },
+      },
+    });
+
+    const result = executeStateController(controller("HitFallDamage", {}), state, () => undefined);
+
+    expect(result.life).toBe(1);
+    expect(result.hitFall).toMatchObject({ damage: 0, kill: false });
+  });
+
+  it("respects AssertSpecial NoKO when HitFallDamage applies stored damage", () => {
+    const state = runtimeState({
+      life: 30,
+      moveType: "H",
+      assertSpecial: { flags: ["noko"], globalFlags: [], noKo: true },
+      hitFall: {
+        falling: true,
+        damage: 70,
+        kill: true,
+        velocity: { y: -6 },
+      },
+    });
+
+    const result = executeStateController(controller("HitFallDamage", {}), state, () => undefined);
+
+    expect(result.life).toBe(1);
+    expect(result.hitFall).toMatchObject({ damage: 0, kill: true });
+  });
 });
 
 function controller(type: string, params: Record<string, string>): MugenStateController {
@@ -321,6 +411,7 @@ function runtimeState(overrides: Partial<CharacterRuntimeState> = {}): Character
     physics: "S",
     vars: [],
     fvars: [],
+    sysvars: [],
     ...overrides,
   };
 }

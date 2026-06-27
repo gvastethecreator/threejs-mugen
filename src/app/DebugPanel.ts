@@ -27,13 +27,13 @@ export function renderDebugPanel(
     return `
       <div class="section">
         <h2>Character Info</h2>
-        <p>Load a local character ZIP or folder to inspect DEF, AIR, CMD, CNS/ST, SFF metadata, and compatibility diagnostics.</p>
+        <p>Load a local character ZIP or folder to inspect DEF paths, AIR timelines, CMD/CNS routes, SFF metadata, and compatibility diagnostics.</p>
       </div>
       <div class="section">
         <h2>Compatibility Report</h2>
         <div class="badge-row">
-          <span class="badge active">Waiting for character</span>
-          <span class="badge warn">No MUGEN files loaded</span>
+          <span class="badge active">Ready for intake</span>
+          <span class="badge warn">No character package loaded</span>
         </div>
       </div>
     `;
@@ -42,8 +42,15 @@ export function renderDebugPanel(
   const frame = actor?.frame;
   const runtime = actor?.runtime;
   return `
-    <div class="section">
-      <h2>${mode === "match" ? "Match Info" : "Character Info"}</h2>
+    <div class="section ${mode === "match" ? "runtime-overview-panel" : ""}">
+      <div class="section-heading-row">
+        <h2>${mode === "match" ? "Match Info" : "Character Info"}</h2>
+        ${
+          mode === "match"
+            ? `<span class="badge active">${escapeHtml(snapshot.round?.message ?? "Fight")} ${snapshot.round?.timer ?? 99}</span>`
+            : ""
+        }
+      </div>
       ${
         mode === "match"
           ? renderMatchInfo(snapshot)
@@ -63,12 +70,15 @@ export function renderDebugPanel(
               <dt>CMD defaults</dt><dd class="mono">${escapeHtml(formatCommandDefaults(character))}</dd>
               <dt>SND sounds</dt><dd class="mono">${formatSndDecoded(character)}</dd>
             </dl>`
-          : `<p>Load a local character ZIP or folder to inspect real DEF/AIR/CMD/CNS data.</p>`
+          : `<p>Load a local character ZIP or folder to inspect real DEF, AIR, CMD, CNS/ST, SFF, and compatibility data.</p>`
       }
     </div>
-    <div class="section">
-      <h2>${mode === "match" ? "Runtime Debugger" : "Playback Inspector"}</h2>
-      <dl class="kv">
+    <div class="section runtime-debug-panel">
+      <div class="section-heading-row">
+        <h2>${mode === "match" ? "Runtime Debugger" : "Playback Inspector"}</h2>
+        <span class="badge">${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "mock"}</span>
+      </div>
+      <dl class="kv telemetry-kv">
         <dt>Tick</dt><dd class="mono">${snapshot.tick}</dd>
         <dt>Action</dt><dd class="mono">${snapshot.selectedActionId ?? "none"}</dd>
         <dt>Anim Src</dt><dd class="mono">${runtime?.animationSource ?? "self"}</dd>
@@ -268,20 +278,32 @@ function renderLifecycleEvents(registry: MatchWorldActorRegistrySnapshot): strin
 }
 
 function renderMatchInfo(snapshot: MugenSnapshot): string {
+  const p1 = snapshot.actors[0];
+  const p2 = snapshot.actors[1];
   return `
-    <div class="fighter-bars">
+    <div class="runtime-versus-card">
+      <div>
+        <span class="panel-kicker">P1</span>
+        <strong>${escapeHtml(p1?.label ?? "P1")}</strong>
+        <small class="mono">state ${p1?.runtime.stateNo ?? "-"} / anim ${p1?.runtime.animNo ?? "-"}</small>
+      </div>
+      <span class="versus">VS</span>
+      <div>
+        <span class="panel-kicker">CPU</span>
+        <strong>${escapeHtml(p2?.label ?? "CPU")}</strong>
+        <small class="mono">state ${p2?.runtime.stateNo ?? "-"} / anim ${p2?.runtime.animNo ?? "-"}</small>
+      </div>
+    </div>
+    <div class="fighter-bars runtime-fighter-bars">
       ${snapshot.actors.map(renderLifeBar).join("")}
     </div>
-    <dl class="kv" style="margin-top: 12px">
-      <dt>Mode</dt><dd>Playable Runtime</dd>
-      <dt>Renderer</dt><dd>Three.js orthographic 2.5D</dd>
-      <dt>Stage</dt><dd>${escapeHtml(snapshot.stage.displayName ?? "Stage")}</dd>
-      <dt>Round</dt><dd>${escapeHtml(snapshot.round?.message ?? "Fight")} / ${snapshot.round?.timer ?? 99}</dd>
-      <dt>Round Tick</dt><dd class="mono">${snapshot.tick}</dd>
-      <dt>Pause</dt><dd class="mono">${formatMatchPause(snapshot.matchPause)}</dd>
-      <dt>Shake</dt><dd class="mono">${formatStageShake(snapshot.stage.camera.shake)}</dd>
-      <dt>Effects</dt><dd class="mono">${snapshot.effects?.length ?? 0}</dd>
-    </dl>
+    <div class="runtime-metric-strip">
+      <span><b>${escapeHtml(snapshot.stage.displayName ?? "Stage")}</b><small>stage</small></span>
+      <span><b>${snapshot.tick}</b><small>tick</small></span>
+      <span><b>${escapeHtml(formatMatchPause(snapshot.matchPause))}</b><small>pause</small></span>
+      <span><b>${escapeHtml(formatStageShake(snapshot.stage.camera.shake))}</b><small>shake</small></span>
+      <span><b>${snapshot.effects?.length ?? 0}</b><small>effects</small></span>
+    </div>
   `;
 }
 

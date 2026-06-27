@@ -46,6 +46,7 @@ export type RuntimeTraceActor = {
   physics: string;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  renderScale?: { x: number; y: number };
   facing: 1 | -1;
   guarding: boolean;
   guardStun: number;
@@ -91,6 +92,7 @@ export type RuntimeTraceCombatReason = {
 export type RuntimeTraceHitFallSummary = {
   falling: boolean;
   damage: number;
+  kill?: boolean;
   velocity: {
     x?: number;
     y: number;
@@ -110,6 +112,7 @@ export type RuntimeTraceHitFallSummary = {
 export type RuntimeTraceHitFallRequirement = {
   falling?: boolean;
   damage?: number;
+  kill?: boolean;
   velocityX?: number;
   velocityY?: number;
   recover?: boolean;
@@ -304,12 +307,58 @@ export type RuntimeTraceFinalActorRequirement = {
   actorKind?: RuntimeActorKind;
   stateNo?: number;
   animNo?: number;
+  life?: number;
   ctrl?: boolean;
   stateType?: string;
   moveType?: string;
   physics?: string;
   guarding?: boolean;
   hitFall?: RuntimeTraceHitFallRequirement;
+};
+
+export type RuntimeTraceActorFrameRequirement = {
+  actorId?: string;
+  source?: NonNullable<ActorSnapshot["source"]>;
+  actorKind?: RuntimeActorKind;
+  ownerId?: string;
+  animNo?: number;
+  moveType?: string;
+  clsn1Count?: number;
+  clsn2Count?: number;
+  minFrames?: number;
+  observedPosXAtLeast?: number;
+  observedPosXAtMost?: number;
+  observedPosYAtLeast?: number;
+  observedPosYAtMost?: number;
+  observedVelXAtLeast?: number;
+  observedVelXAtMost?: number;
+  observedVelYAtLeast?: number;
+  observedVelYAtMost?: number;
+  observedScaleXAtLeast?: number;
+  observedScaleXAtMost?: number;
+  observedScaleYAtLeast?: number;
+  observedScaleYAtMost?: number;
+};
+
+export type RuntimeTraceGateActorFrameEvidence = {
+  actorId: string;
+  label: string;
+  source?: ActorSnapshot["source"];
+  actorKind: RuntimeActorKind;
+  ownerId: string;
+  animNo: number;
+  moveType: string;
+  clsn1Count: number;
+  clsn2Count: number;
+  minPos: { x: number; y: number };
+  maxPos: { x: number; y: number };
+  minVel: { x: number; y: number };
+  maxVel: { x: number; y: number };
+  minScale: { x: number; y: number };
+  maxScale: { x: number; y: number };
+  firstTick: number;
+  lastTick: number;
+  frames: number;
 };
 
 export type RuntimeTraceGateFinalActorEvidence = Pick<
@@ -320,6 +369,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "source"
   | "stateNo"
   | "animNo"
+  | "life"
   | "ctrl"
   | "stateType"
   | "moveType"
@@ -358,6 +408,7 @@ export type RuntimeTraceGate = {
   requiredMatchPauseFreezes?: RuntimeTraceMatchPauseFreezeRequirement[];
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
+  requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
   requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
 };
 
@@ -379,6 +430,7 @@ export type RuntimeTraceGateEvidence = {
   matchPauseFreezes: RuntimeTraceGateMatchPauseFreezeEvidence[];
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
+  actorFrames: RuntimeTraceGateActorFrameEvidence[];
   finalActors: RuntimeTraceGateFinalActorEvidence[];
 };
 
@@ -545,6 +597,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing target link: ${describeTargetLinkRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredActorFrames ?? []) {
+    if (!evidence.actorFrames.some((actor) => matchesActorFrameRequirement(actor, requirement))) {
+      failures.push(`Missing actor frame: ${describeActorFrameRequirement(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredFinalActors ?? []) {
     const actor = findRequiredFinalActor(evidence.finalActors, requirement);
     if (!actor) {
@@ -594,10 +651,12 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const matchPauseFreezes = new Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>();
   const matchPauseAdvances = new Map<string, RuntimeTraceGateMatchPauseAdvanceEvidence>();
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
+  const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
   const executedOperations: Record<string, number> = {};
 
   for (const [frameIndex, frame] of frames.entries()) {
+    const allActors = [...frame.actors, ...frame.effects];
     for (const actor of frame.actors) {
       if (actor.source) {
         actorSources.add(actor.source);
@@ -768,6 +827,64 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       };
       targetLinks.set(targetLinkEvidenceKey(evidence), evidence);
     }
+    for (const actor of allActors) {
+      const key = actorFrameEvidenceKey(actor);
+      const existing = actorFrames.get(key);
+      actorFrames.set(
+        key,
+        existing
+          ? {
+              ...existing,
+              firstTick: Math.min(existing.firstTick, frame.tick),
+              lastTick: Math.max(existing.lastTick, frame.tick),
+              frames: existing.frames + 1,
+              minPos: {
+                x: Math.min(existing.minPos.x, actor.pos.x),
+                y: Math.min(existing.minPos.y, actor.pos.y),
+              },
+              maxPos: {
+                x: Math.max(existing.maxPos.x, actor.pos.x),
+                y: Math.max(existing.maxPos.y, actor.pos.y),
+              },
+              minVel: {
+                x: Math.min(existing.minVel.x, actor.vel.x),
+                y: Math.min(existing.minVel.y, actor.vel.y),
+              },
+              maxVel: {
+                x: Math.max(existing.maxVel.x, actor.vel.x),
+                y: Math.max(existing.maxVel.y, actor.vel.y),
+              },
+              minScale: {
+                x: Math.min(existing.minScale.x, actor.renderScale?.x ?? 1),
+                y: Math.min(existing.minScale.y, actor.renderScale?.y ?? 1),
+              },
+              maxScale: {
+                x: Math.max(existing.maxScale.x, actor.renderScale?.x ?? 1),
+                y: Math.max(existing.maxScale.y, actor.renderScale?.y ?? 1),
+              },
+            }
+          : {
+              actorId: actor.id,
+              label: actor.label,
+              source: actor.source,
+              actorKind: actor.actorKind,
+              ownerId: actor.ownerId,
+              animNo: actor.animNo,
+              moveType: actor.moveType,
+              clsn1Count: actor.clsn1Count,
+              clsn2Count: actor.clsn2Count,
+              minPos: { ...actor.pos },
+              maxPos: { ...actor.pos },
+              minVel: { ...actor.vel },
+              maxVel: { ...actor.vel },
+              minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              firstTick: frame.tick,
+              lastTick: frame.tick,
+              frames: 1,
+            },
+      );
+    }
   }
   for (const event of trace.events) {
     eventCategories.add(event.category);
@@ -800,6 +917,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       matchPauseAdvanceEvidenceKey(left.type, left.actorId).localeCompare(matchPauseAdvanceEvidenceKey(right.type, right.actorId)),
     ),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
+    actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
     finalActors: trace.final.actors.map(summarizeFinalActorEvidence),
   };
 }
@@ -1055,6 +1173,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     source: actor.source,
     stateNo: actor.stateNo,
     animNo: actor.animNo,
+    life: actor.life,
     ctrl: actor.ctrl,
     stateType: actor.stateType,
     moveType: actor.moveType,
@@ -1087,6 +1206,68 @@ function describeTargetLinkRequirement(requirement: RuntimeTraceTargetLinkRequir
     .join(", ");
 }
 
+function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
+  return [
+    actor.id,
+    actor.source ?? "none",
+    actor.actorKind,
+    actor.ownerId,
+    actor.animNo,
+    actor.moveType,
+    actor.clsn1Count,
+    actor.clsn2Count,
+  ].join(":");
+}
+
+function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): string {
+  return [
+    actor.actorId,
+    actor.source ?? "none",
+    actor.actorKind,
+    actor.ownerId,
+    actor.animNo,
+    actor.moveType,
+    actor.clsn1Count,
+    actor.clsn2Count,
+  ].join(":");
+}
+
+function matchesActorFrameRequirement(
+  actor: RuntimeTraceGateActorFrameEvidence,
+  requirement: RuntimeTraceActorFrameRequirement,
+): boolean {
+  return (
+    (requirement.actorId === undefined || actor.actorId === requirement.actorId) &&
+    (requirement.source === undefined || actor.source === requirement.source) &&
+    (requirement.actorKind === undefined || actor.actorKind === requirement.actorKind) &&
+    (requirement.ownerId === undefined || actor.ownerId === requirement.ownerId) &&
+    (requirement.animNo === undefined || actor.animNo === requirement.animNo) &&
+    (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
+    (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&
+    (requirement.clsn2Count === undefined || actor.clsn2Count === requirement.clsn2Count) &&
+    (requirement.minFrames === undefined || actor.frames >= requirement.minFrames) &&
+    (requirement.observedPosXAtLeast === undefined || actor.maxPos.x >= requirement.observedPosXAtLeast) &&
+    (requirement.observedPosXAtMost === undefined || actor.minPos.x <= requirement.observedPosXAtMost) &&
+    (requirement.observedPosYAtLeast === undefined || actor.maxPos.y >= requirement.observedPosYAtLeast) &&
+    (requirement.observedPosYAtMost === undefined || actor.minPos.y <= requirement.observedPosYAtMost) &&
+    (requirement.observedVelXAtLeast === undefined || actor.maxVel.x >= requirement.observedVelXAtLeast) &&
+    (requirement.observedVelXAtMost === undefined || actor.minVel.x <= requirement.observedVelXAtMost) &&
+    (requirement.observedVelYAtLeast === undefined || actor.maxVel.y >= requirement.observedVelYAtLeast) &&
+    (requirement.observedVelYAtMost === undefined || actor.minVel.y <= requirement.observedVelYAtMost) &&
+    (requirement.observedScaleXAtLeast === undefined || actor.maxScale.x >= requirement.observedScaleXAtLeast) &&
+    (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
+    (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
+    (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost)
+  );
+}
+
+function describeActorFrameRequirement(requirement: RuntimeTraceActorFrameRequirement): string {
+  return Object.entries(requirement)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
 function compareHitFallRequirement(
   actor: RuntimeTraceGateFinalActorEvidence,
   requirement: RuntimeTraceHitFallRequirement,
@@ -1100,6 +1281,7 @@ function compareHitFallRequirement(
   const comparisons: Array<[string, number | boolean | undefined, number | boolean | undefined]> = [
     ["hitFall.falling", requirement.falling, hitFall.falling],
     ["hitFall.damage", requirement.damage, hitFall.damage],
+    ["hitFall.kill", requirement.kill, hitFall.kill],
     ["hitFall.velocity.x", requirement.velocityX, hitFall.velocity.x],
     ["hitFall.velocity.y", requirement.velocityY, hitFall.velocity.y],
     ["hitFall.recover", requirement.recover, hitFall.recover],
@@ -1297,6 +1479,12 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
       x: roundTraceNumber(actor.runtime.vel.x),
       y: roundTraceNumber(actor.runtime.vel.y),
     },
+    renderScale: actor.runtime.renderScale
+      ? {
+          x: roundTraceNumber(actor.runtime.renderScale.x),
+          y: roundTraceNumber(actor.runtime.renderScale.y),
+        }
+      : undefined,
     facing: actor.runtime.facing,
     guarding: actor.runtime.guarding ?? false,
     guardStun: actor.runtime.guardStun ?? 0,
@@ -1318,6 +1506,7 @@ function cloneTraceHitFall(hitFall: RuntimeTraceHitFallSummary): RuntimeTraceHit
   return {
     falling: hitFall.falling,
     damage: roundTraceNumber(hitFall.damage),
+    kill: hitFall.kill,
     velocity: {
       ...(hitFall.velocity.x === undefined ? {} : { x: roundTraceNumber(hitFall.velocity.x) }),
       y: roundTraceNumber(hitFall.velocity.y),

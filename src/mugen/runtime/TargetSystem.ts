@@ -1,5 +1,6 @@
 import type { TargetControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
+import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
 
 export type RuntimeTarget = {
@@ -81,8 +82,10 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       const kill = typed?.kill ?? (firstNumber(findControllerParam(options.controller, "kill")) ?? 1) !== 0;
       const scaledDamage = options.scaleIncomingDamage ?? ((_runtime, damage) => Math.round(damage));
       const delta = value < 0 && !absolute ? -scaledDamage(target.runtime, Math.abs(value)) : Math.round(value);
-      const nextLife = target.runtime.life + delta;
-      target.runtime.life = kill ? Math.max(0, nextLife) : Math.max(1, nextLife);
+      target.runtime.life =
+        delta < 0
+          ? applyRuntimeDamage(target.runtime.life, Math.abs(delta), canRuntimeDamageKill(target.runtime, kill))
+          : Math.max(0, target.runtime.life + delta);
     } else if (type === "targetpoweradd") {
       const value =
         options.operation?.controllerType === "targetpoweradd"

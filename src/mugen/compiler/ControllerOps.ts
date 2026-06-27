@@ -6,6 +6,9 @@ export type HitDefControllerOp = {
   attr?: string;
   damage?: number;
   guardDamage?: number;
+  kill?: boolean;
+  guardKill?: boolean;
+  priority?: number;
   pauseTime?: number;
   groundHitTime?: number;
   groundVelocity?: [number, number?];
@@ -27,6 +30,7 @@ export type HitDefFallOp = {
   xVelocity?: number;
   yVelocity?: number;
   damage?: number;
+  kill?: boolean;
   recover?: boolean;
   recoverTime?: number;
   downRecover?: boolean;
@@ -65,9 +69,14 @@ export type ProjectileControllerOp = {
   postype?: string;
   velocity: [number, number];
   facing?: number;
+  hitAnim?: number;
+  removeAnim?: number;
+  cancelAnim?: number;
   removeTime: number;
   spritePriority: number;
   priority: number;
+  hitCount: number;
+  missTime: number;
   trans?: string;
   damage: number;
   attr?: string;
@@ -104,8 +113,16 @@ export type ExplodControllerOp = {
   animNo?: number;
   pos?: [number, number];
   postype?: string;
+  bindTime?: number;
+  scale?: [number, number];
+  velocity?: [number, number];
+  acceleration?: [number, number];
   facing?: number;
   removeTime?: number;
+  removeOnGetHit: boolean;
+  ignoreHitPause: boolean;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
   spritePriority: number;
   trans?: string;
 };
@@ -132,6 +149,85 @@ export type FallEnvShakeControllerOp = {
   kind: "fallenvshake";
 };
 
+export type MovementKinematicControllerOp = {
+  kind: "kinematic";
+  controllerType: "velset" | "veladd" | "velmul" | "posset" | "posadd";
+  x?: number;
+  y?: number;
+};
+
+export type GravityKinematicControllerOp = {
+  kind: "kinematic";
+  controllerType: "gravity";
+  y: number;
+};
+
+export type KinematicControllerOp = MovementKinematicControllerOp | GravityKinematicControllerOp;
+
+export type ResourceControllerOp =
+  | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
+  | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
+  | { kind: "resource"; controllerType: "lifeset"; value: number }
+  | { kind: "resource"; controllerType: "poweradd"; value: number }
+  | { kind: "resource"; controllerType: "powerset"; value: number };
+
+export type VariableControllerOp =
+  | {
+      kind: "variable";
+      controllerType: "varset";
+      variableType: "var" | "fvar" | "sysvar";
+      index: number;
+      value: number;
+    }
+  | {
+      kind: "variable";
+      controllerType: "varadd";
+      variableType: "var" | "fvar" | "sysvar";
+      index: number;
+      value: number;
+    }
+  | {
+      kind: "variable";
+      controllerType: "varrangeset";
+      variableType: "var" | "fvar";
+      first: number;
+      last: number;
+      value: number;
+    };
+
+export type HitEligibilityControllerOp = {
+  kind: "eligibility";
+  controllerType: "hitby" | "nothitby";
+  mode: "allow" | "deny";
+  slots: Array<{ slot: 1 | 2; attr: string; remaining: number }>;
+};
+
+export type HitOverrideControllerOp = {
+  kind: "hitoverride";
+  slot: number;
+  attr: string;
+  remaining: number;
+  stateNo?: number;
+  forceAir: boolean;
+  forceGuard: boolean;
+  keepState: boolean;
+};
+
+export type ReversalDefControllerOp = {
+  kind: "reversaldef";
+  attr: string;
+  hitPause: number;
+  p1StateNo?: number;
+  p2StateNo?: number;
+  targetId?: number;
+};
+
+export type DamageScaleControllerOp = {
+  kind: "damage-scale";
+  controllerType: "attackmulset" | "defencemulset";
+  multiplier: number;
+};
+
 export type ControllerOp =
   | HitDefControllerOp
   | TargetControllerOp
@@ -141,10 +237,38 @@ export type ControllerOp =
   | ExplodControllerOp
   | RemoveExplodControllerOp
   | HitFallControllerOp
-  | FallEnvShakeControllerOp;
+  | FallEnvShakeControllerOp
+  | KinematicControllerOp
+  | ResourceControllerOp
+  | VariableControllerOp
+  | HitEligibilityControllerOp
+  | HitOverrideControllerOp
+  | ReversalDefControllerOp
+  | DamageScaleControllerOp;
 
 export function compileControllerOp(controller: MugenStateController): ControllerOp | undefined {
   const type = controller.type.toLowerCase();
+  if (isKinematicController(type)) {
+    return compileKinematicControllerOp(controller, type);
+  }
+  if (isResourceController(type)) {
+    return compileResourceControllerOp(controller, type);
+  }
+  if (isVariableController(type)) {
+    return compileVariableControllerOp(controller, type);
+  }
+  if (type === "hitby" || type === "nothitby") {
+    return compileHitEligibilityControllerOp(controller, type);
+  }
+  if (type === "hitoverride") {
+    return compileHitOverrideControllerOp(controller);
+  }
+  if (type === "reversaldef") {
+    return compileReversalDefControllerOp(controller);
+  }
+  if (type === "attackmulset" || type === "defencemulset") {
+    return compileDamageScaleControllerOp(controller, type);
+  }
   if (type === "hitdef") {
     return compileHitDefControllerOp(controller);
   }
@@ -175,6 +299,196 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   return undefined;
 }
 
+function isKinematicController(type: string): type is KinematicControllerOp["controllerType"] {
+  return type === "velset" || type === "veladd" || type === "velmul" || type === "posset" || type === "posadd" || type === "gravity";
+}
+
+function compileKinematicControllerOp(controller: MugenStateController, type: KinematicControllerOp["controllerType"]): KinematicControllerOp | undefined {
+  if (type === "gravity") {
+    return { kind: "kinematic", controllerType: "gravity", y: 0.55 };
+  }
+  const pair = strictNumberPair(findParam(controller, "value"));
+  const op = definedObject({
+    kind: "kinematic" as const,
+    controllerType: type,
+    x: firstNumber(findParam(controller, "x")) ?? pair?.[0],
+    y: firstNumber(findParam(controller, "y")) ?? pair?.[1],
+  });
+  return op.x === undefined && op.y === undefined ? undefined : op;
+}
+
+function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
+  return type === "ctrlset" || type === "lifeadd" || type === "lifeset" || type === "poweradd" || type === "powerset";
+}
+
+function compileResourceControllerOp(controller: MugenStateController, type: ResourceControllerOp["controllerType"]): ResourceControllerOp | undefined {
+  const value = firstNumber(findParam(controller, "value"));
+  if (value === undefined) {
+    return undefined;
+  }
+  if (type === "ctrlset") {
+    return { kind: "resource", controllerType: "ctrlset", value: value !== 0 };
+  }
+  if (type === "lifeadd") {
+    return definedObject({
+      kind: "resource" as const,
+      controllerType: "lifeadd" as const,
+      value,
+      kill: booleanNumber(findParam(controller, "kill")),
+    });
+  }
+  return { kind: "resource", controllerType: type, value };
+}
+
+function isVariableController(type: string): type is VariableControllerOp["controllerType"] {
+  return type === "varset" || type === "varadd" || type === "varrangeset";
+}
+
+function compileVariableControllerOp(controller: MugenStateController, type: VariableControllerOp["controllerType"]): VariableControllerOp | undefined {
+  if (type === "varrangeset") {
+    const isFloat = findParam(controller, "fvalue") !== undefined;
+    const value = firstNumber(findParam(controller, isFloat ? "fvalue" : "value"));
+    if (value === undefined) {
+      return undefined;
+    }
+    return {
+      kind: "variable",
+      controllerType: "varrangeset",
+      variableType: isFloat ? "fvar" : "var",
+      first: Math.max(0, Math.round(firstNumber(findParam(controller, "first")) ?? 0)),
+      last: Math.max(0, Math.round(firstNumber(findParam(controller, "last")) ?? (isFloat ? 39 : 59))),
+      value,
+    };
+  }
+
+  const assignment = staticVariableAssignmentParam(controller);
+  const variableType = assignment?.variableType ?? (findParam(controller, "fv") !== undefined || findParam(controller, "fvar") !== undefined ? "fvar" : "var");
+  const index = assignment?.index ?? firstNumber(findParam(controller, variableType === "fvar" ? "fv" : "v") ?? findParam(controller, variableType));
+  const value = assignment?.value ?? firstNumber(findParam(controller, "value"));
+  if (index === undefined || value === undefined || index < 0) {
+    return undefined;
+  }
+  return {
+    kind: "variable",
+    controllerType: type,
+    variableType,
+    index: Math.round(index),
+    value,
+  };
+}
+
+function staticVariableAssignmentParam(controller: MugenStateController): { variableType: "var" | "fvar" | "sysvar"; index: number; value: number } | undefined {
+  for (const [key, rawValue] of Object.entries(controller.params)) {
+    const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
+    if (!match) {
+      continue;
+    }
+    const value = firstNumber(rawValue);
+    if (value === undefined) {
+      continue;
+    }
+    return {
+      variableType: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
+      index: Number(match[2]),
+      value,
+    };
+  }
+  return undefined;
+}
+
+function compileHitEligibilityControllerOp(
+  controller: MugenStateController,
+  type: "hitby" | "nothitby",
+): HitEligibilityControllerOp | undefined {
+  const remaining = staticDurationParam(controller, "time", 1);
+  if (remaining === undefined) {
+    return undefined;
+  }
+  const value = stripMugenString(findParam(controller, "value"));
+  const value2 = stripMugenString(findParam(controller, "value2"));
+  const slots: HitEligibilityControllerOp["slots"] = [];
+  if (value) {
+    slots.push({ slot: 1, attr: value, remaining });
+  }
+  if (value2) {
+    slots.push({ slot: 2, attr: value2, remaining });
+  }
+  if (slots.length === 0) {
+    return undefined;
+  }
+  return {
+    kind: "eligibility",
+    controllerType: type,
+    mode: type === "hitby" ? "allow" : "deny",
+    slots,
+  };
+}
+
+function compileHitOverrideControllerOp(controller: MugenStateController): HitOverrideControllerOp | undefined {
+  const attr = stripMugenString(findParam(controller, "attr"));
+  if (!attr) {
+    return undefined;
+  }
+  const slot = staticNumberParam(controller, "slot", 0);
+  const remaining = staticDurationParam(controller, "time", 1);
+  const stateNo = staticOptionalNumberParam(controller, "stateno", "value");
+  const forceAir = staticOptionalBooleanParam(controller, "forceair") ?? false;
+  const forceGuard = staticOptionalBooleanParam(controller, "forceguard") ?? false;
+  const keepState = staticOptionalBooleanParam(controller, "keepstate") ?? false;
+  if (slot === undefined || remaining === undefined || stateNo === false || forceAir === undefined || forceGuard === undefined || keepState === undefined) {
+    return undefined;
+  }
+  const operation = definedObject({
+    kind: "hitoverride" as const,
+    slot: clampIndex(Math.round(slot), 7),
+    attr,
+    remaining,
+    stateNo: stateNo === true ? undefined : Math.max(0, Math.round(stateNo)),
+    forceAir,
+    forceGuard,
+    keepState,
+  });
+  return operation as HitOverrideControllerOp;
+}
+
+function compileReversalDefControllerOp(controller: MugenStateController): ReversalDefControllerOp | undefined {
+  const attr = stripMugenString(findParam(controller, "reversal.attr"));
+  if (!attr) {
+    return undefined;
+  }
+  const hitPause = staticNumberParam(controller, "pausetime", 0);
+  const p1StateNo = staticOptionalNumberParam(controller, "p1stateno");
+  const p2StateNo = staticOptionalNumberParam(controller, "p2stateno");
+  const targetId = staticOptionalNumberParam(controller, "id");
+  if (hitPause === undefined || p1StateNo === false || p2StateNo === false || targetId === false) {
+    return undefined;
+  }
+  const operation = definedObject({
+    kind: "reversaldef" as const,
+    attr,
+    hitPause: Math.max(0, Math.round(hitPause)),
+    p1StateNo: p1StateNo === true ? undefined : Math.max(0, Math.round(p1StateNo)),
+    p2StateNo: p2StateNo === true ? undefined : Math.max(0, Math.round(p2StateNo)),
+    targetId: targetId === true ? undefined : Math.max(0, Math.round(targetId)),
+  });
+  return operation as ReversalDefControllerOp;
+}
+
+function compileDamageScaleControllerOp(
+  controller: MugenStateController,
+  type: DamageScaleControllerOp["controllerType"],
+): DamageScaleControllerOp | undefined {
+  const value = staticOptionalNumberParam(controller, "value");
+  if (value === true || value === false) {
+    return undefined;
+  }
+  return {
+    kind: "damage-scale",
+    controllerType: type,
+    multiplier: Math.max(0, Math.min(10, value)),
+  };
+}
+
 function compileHitDefControllerOp(controller: MugenStateController): HitDefControllerOp {
   const damage = numberPair(findParam(controller, "damage"));
   const groundVelocity = numberPair(findParam(controller, "ground.velocity"));
@@ -186,6 +500,9 @@ function compileHitDefControllerOp(controller: MugenStateController): HitDefCont
     attr: stripMugenString(findParam(controller, "attr")),
     damage: damage?.[0],
     guardDamage: damage?.[1],
+    kill: booleanNumber(findParam(controller, "kill")),
+    guardKill: booleanNumber(findParam(controller, "guard.kill")),
+    priority: firstNumber(findParam(controller, "priority")),
     pauseTime: firstNumber(findParam(controller, "pausetime")),
     groundHitTime: firstNumber(findParam(controller, "ground.hittime")),
     groundVelocity,
@@ -209,6 +526,7 @@ function compileHitDefFallOp(controller: MugenStateController): HitDefFallOp {
     xVelocity: firstNumber(findParam(controller, "fall.xvelocity")),
     yVelocity: firstNumber(findParam(controller, "fall.yvelocity")),
     damage: firstNumber(findParam(controller, "fall.damage")),
+    kill: booleanNumber(findParam(controller, "fall.kill")),
     recover: booleanNumber(findParam(controller, "fall.recover")),
     recoverTime: firstNumber(findParam(controller, "fall.recovertime")),
     downRecover: booleanNumber(findParam(controller, "down.recover")),
@@ -296,9 +614,14 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     postype: stripMugenString(findParam(controller, "postype")),
     velocity: pairWithDefault(numberPair(findParam(controller, "velocity") ?? findParam(controller, "vel"))),
     facing: firstNumber(findParam(controller, "facing")),
+    hitAnim: firstNumber(findParam(controller, "projhitanim")),
+    removeAnim: firstNumber(findParam(controller, "projremanim")),
+    cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 4,
     priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")) ?? 1,
+    hitCount: firstNumber(findParam(controller, "projhits")) ?? 1,
+    missTime: firstNumber(findParam(controller, "projmisstime")) ?? 0,
     trans: stripMugenString(findParam(controller, "trans")),
     damage: firstNumber(findParam(controller, "damage")) ?? 30,
     attr: stripMugenString(findParam(controller, "attr")),
@@ -339,8 +662,16 @@ function compileExplodControllerOp(controller: MugenStateController): ExplodCont
     animNo: firstNumber(findParam(controller, "anim")),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),
     postype: stripMugenString(findParam(controller, "postype")),
+    bindTime: firstNumber(findParam(controller, "bindtime")),
+    scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "scale"))),
+    velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "vel") ?? findParam(controller, "velocity"))),
+    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
     facing: firstNumber(findParam(controller, "facing")),
     removeTime: firstNumber(findParam(controller, "removetime")),
+    removeOnGetHit: booleanNumber(findParam(controller, "removeongethit")) ?? false,
+    ignoreHitPause: booleanNumber(findParam(controller, "ignorehitpause")) ?? false,
+    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
+    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 3,
     trans: stripMugenString(findParam(controller, "trans")),
   });
@@ -383,6 +714,39 @@ function firstNumber(value: string | undefined): number | undefined {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
+function staticNumberParam(controller: MugenStateController, key: string, fallback: number): number | undefined {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return fallback;
+  }
+  return firstNumber(raw);
+}
+
+function staticOptionalNumberParam(controller: MugenStateController, ...keys: string[]): number | true | false {
+  for (const key of keys) {
+    const raw = findParam(controller, key);
+    if (raw === undefined) {
+      continue;
+    }
+    const value = firstNumber(raw);
+    return value === undefined ? false : value;
+  }
+  return true;
+}
+
+function staticOptionalBooleanParam(controller: MugenStateController, key: string): boolean | undefined {
+  const raw = findParam(controller, key);
+  if (raw === undefined) {
+    return false;
+  }
+  return booleanNumber(raw);
+}
+
+function staticDurationParam(controller: MugenStateController, key: string, fallback: number): number | undefined {
+  const value = staticNumberParam(controller, key, fallback);
+  return value === undefined ? undefined : controllerDuration(value);
+}
+
 function secondNumber(value: string | undefined): number | undefined {
   const raw = value?.split(",")[1]?.trim();
   if (!raw) {
@@ -406,12 +770,28 @@ function numberPair(value: string | undefined): [number, number?] | undefined {
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
 }
 
+function strictNumberPair(value: string | undefined): [number, number?] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const rawParts = value.split(",").map((part) => part.trim());
+  const values = rawParts.map((part) => Number(part));
+  if (values.length === 0 || values.some((item) => !Number.isFinite(item)) || values[0] === undefined) {
+    return undefined;
+  }
+  return values.length > 1 ? [values[0], values[1]] : [values[0]];
+}
+
 function pairWithDefault(value: [number, number?] | undefined): [number, number] {
   return [value?.[0] ?? 0, value?.[1] ?? 0];
 }
 
 function pairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {
   return value ? pairWithDefault(value) : undefined;
+}
+
+function scalePairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {
+  return value ? [value[0], value[1] ?? value[0]] : undefined;
 }
 
 function stripMugenString(value: string | undefined): string | undefined {
@@ -425,6 +805,17 @@ function stripMugenString(value: string | undefined): string | undefined {
 function booleanNumber(value: string | undefined): boolean | undefined {
   const numberValue = firstNumber(value);
   return numberValue === undefined ? undefined : numberValue !== 0;
+}
+
+function controllerDuration(value: number): number {
+  if (value < 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Math.max(0, Math.min(3600, Math.round(value)));
+}
+
+function clampIndex(value: number, max: number): number {
+  return Math.max(0, Math.min(max, value));
 }
 
 function definedObject<T extends Record<string, unknown>>(value: T): T {

@@ -9,6 +9,7 @@ import { TextureStore } from "./TextureStore";
 import type { MugenRenderer } from "./types";
 
 export class ThreeMugenRenderer implements MugenRenderer {
+  private static readonly minimumWorldHeight = 888;
   private readonly scene = new THREE.Scene();
   private readonly camera = new THREE.OrthographicCamera(-320, 320, 180, -180, -100, 100);
   private readonly renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
@@ -25,6 +26,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   });
   private readonly pauseOverlay = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.pauseOverlayMaterial);
   private target?: HTMLElement;
+  private resizeObserver?: ResizeObserver;
   private size = { width: 640, height: 360 };
 
   constructor(spriteProvider: SpriteProvider) {
@@ -44,10 +46,15 @@ export class ThreeMugenRenderer implements MugenRenderer {
   }
 
   mount(target: HTMLElement): void {
+    this.resizeObserver?.disconnect();
     this.target = target;
     this.renderer.domElement.className = "stage-canvas";
     target.appendChild(this.renderer.domElement);
     this.resize();
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(() => this.resize());
+      this.resizeObserver.observe(target);
+    }
   }
 
   async render(snapshot: MugenSnapshot): Promise<void> {
@@ -90,8 +97,11 @@ export class ThreeMugenRenderer implements MugenRenderer {
       width: Math.max(1, rect.width),
       height: Math.max(1, rect.height),
     };
-    const halfWidth = this.size.width / 2;
-    const halfHeight = this.size.height / 2;
+    const aspect = this.size.width / this.size.height;
+    const worldHeight = Math.max(this.size.height, ThreeMugenRenderer.minimumWorldHeight);
+    const worldWidth = Math.max(this.size.width, worldHeight * aspect);
+    const halfWidth = worldWidth / 2;
+    const halfHeight = worldHeight / 2;
     this.camera.left = -halfWidth;
     this.camera.right = halfWidth;
     this.camera.top = halfHeight;
@@ -123,6 +133,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   }
 
   dispose(): void {
+    this.resizeObserver?.disconnect();
     this.axis.dispose();
     this.boxes.dispose();
     this.characters.dispose();

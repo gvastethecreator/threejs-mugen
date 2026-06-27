@@ -7,6 +7,7 @@ import {
   advanceRuntimeHelperActors,
   createRuntimeEffectActorStore,
   removeRuntimeExplodActors,
+  removeRuntimeExplodActorsOnGetHit,
   removeRuntimeProjectilesMarkedForRemoval,
   RuntimeEffectActorWorld,
   runtimeExplodActorsToSnapshots,
@@ -17,6 +18,7 @@ import {
   spawnRuntimeProjectileActor,
   summarizeRuntimeEffectActorStore,
 } from "../mugen/runtime/EffectActorSystem";
+import { markRuntimeProjectileForRemoval } from "../mugen/runtime/ProjectileSystem";
 
 describe("EffectActorSystem", () => {
   it("owns effect actor serials, bounded stores, and renderer snapshots", () => {
@@ -73,12 +75,23 @@ describe("EffectActorSystem", () => {
 
     advanceRuntimeExplodActors(store);
     advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
-    store.projectiles[0]!.hasHit = true;
+    markRuntimeProjectileForRemoval(store.projectiles[0]!, "hit");
     removeRuntimeProjectilesMarkedForRemoval(store);
 
     expect(store.explods.map((actor) => actor.explodId)).toEqual([11]);
     expect(store.helpers).toEqual([]);
     expect(store.projectiles).toEqual([]);
+  });
+
+  it("removes owner explods flagged with removeongethit", () => {
+    const store = createRuntimeEffectActorStore();
+
+    spawnRuntimeExplodActor(store, "p1", explodInput({ id: "10", removeongethit: "1" }));
+    spawnRuntimeExplodActor(store, "p1", explodInput({ id: "11" }));
+
+    removeRuntimeExplodActorsOnGetHit(store);
+
+    expect(store.explods.map((actor) => actor.explodId)).toEqual([11]);
   });
 
   it("wraps per-fighter effect stores behind a runtime world contract", () => {
@@ -87,7 +100,7 @@ describe("EffectActorSystem", () => {
 
     world.spawnHelper("p1", helperInput({ id: "20", name: '"Buddy"' }));
     world.spawnProjectile("p1", projectileInput({ projid: "30", projanim: "900", projremove: "1" }));
-    world.projectiles("p1")[0]!.hasHit = true;
+    markRuntimeProjectileForRemoval(world.projectiles("p1")[0]!, "hit");
 
     expect(world.getStore("p1")).toBe(p1Store);
     expect(world.summarize()[0]).toMatchObject({
@@ -98,6 +111,10 @@ describe("EffectActorSystem", () => {
       nextSerials: { helper: 1, projectile: 1 },
     });
     expect(world.helperSnapshots("p1", 200)[0]).toMatchObject({ id: "p1-helper-0", actorKind: "helper" });
+
+    world.spawnExplod("p1", explodInput({ id: "10", removeongethit: "1" }));
+    world.removeExplodsOnGetHit("p1");
+    expect(world.getStore("p1").explods).toEqual([]);
 
     world.removeProjectilesMarkedForRemoval("p1");
     expect(world.projectiles("p1")).toEqual([]);
@@ -157,7 +174,48 @@ describe("EffectActorSystem", () => {
     expect(defender.runtime.moveType).toBe("H");
     expect(attacker.runtime.power).toBe(35);
     expect(targets).toEqual(["p2:none"]);
-    expect(logs).toEqual(["Attacker projectile hit Defender for 40"]);
+    expect(logs).toEqual(["Attacker projectile hit Defender for 40; hits remaining 0, miss 0; hit removal anim none"]);
+    expect(world.projectiles("p1")).toEqual([]);
+  });
+
+  it("keeps projectile terminal playback visible after hit removal when an AIR action exists", () => {
+    const world = new RuntimeEffectActorWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { life: 1000 });
+
+    world.spawnProjectile("p1", {
+      ...projectileInput({ projremove: "1", damage: "40", projhitanim: "901" }),
+      terminalActions: { hit: action(901, 2) },
+    });
+    world.resolveProjectileCombat("p1", {
+      attacker,
+      defender,
+      hurtBoxes: [{ x1: 0, y1: -10, x2: 20, y2: 0 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => {
+        throw new Error("unexpected hit override");
+      },
+    });
+
+    expect(world.projectiles("p1")).toHaveLength(1);
+    expect(world.projectiles("p1")[0]).toMatchObject({
+      animNo: 901,
+      terminalPlayback: { reason: "hit", duration: 2, age: 0 },
+      removalReason: "hit",
+      removalAnimNo: 901,
+    });
+    expect(world.projectileSnapshots("p1", 200)[0]).toMatchObject({
+      actorKind: "projectile",
+      runtime: { animNo: 901, moveType: "I" },
+      clsn1: [],
+      clsn2: [],
+    });
+
+    world.advanceActiveEffects("p1", { bounds: { left: -160, right: 160 } });
+    expect(world.projectiles("p1")).toHaveLength(1);
+    world.advanceActiveEffects("p1", { bounds: { left: -160, right: 160 } });
     expect(world.projectiles("p1")).toEqual([]);
   });
 
@@ -202,7 +260,65 @@ describe("EffectActorSystem", () => {
     expect(defender.runtime.vel).toEqual({ x: 4, y: -1 });
     expect(attacker.runtime.power).toBe(12);
     expect(guardHitApplied).toBe(true);
-    expect(logs).toEqual(["Defender guarded Attacker projectile for 6"]);
+    expect(logs).toEqual(["Defender guarded Attacker projectile for 6; hits remaining 0, miss 0; hit removal anim none"]);
+    expect(world.projectiles("p1")).toEqual([]);
+  });
+
+  it("keeps multi-hit projectiles alive until projhits are exhausted after projmisstime", () => {
+    const world = new RuntimeEffectActorWorld();
+    const attacker = actor("p1", "Attacker");
+    const defender = actor("p2", "Defender", { life: 1000 });
+    const logs: string[] = [];
+
+    world.spawnProjectile(
+      "p1",
+      projectileInput({
+        projremove: "1",
+        projhits: "2",
+        projmisstime: "2",
+        damage: "40",
+        velocity: "0,0",
+      }),
+    );
+    const combatInput = {
+      attacker,
+      defender,
+      hurtBoxes: [{ x1: 0, y1: -10, x2: 20, y2: 0 }],
+      holdingBack: false,
+      log: (line: string) => logs.push(line),
+      rememberTarget: () => undefined,
+      applyHitOverride: () => {
+        throw new Error("unexpected hit override");
+      },
+    };
+
+    world.resolveProjectileCombat("p1", combatInput);
+
+    expect(defender.runtime.life).toBe(960);
+    expect(world.projectiles("p1")).toHaveLength(1);
+    expect(world.projectiles("p1")[0]).toMatchObject({
+      hitsRemaining: 1,
+      missTime: 2,
+      missTimeRemaining: 2,
+      hasHit: false,
+    });
+
+    world.resolveProjectileCombat("p1", combatInput);
+    expect(defender.runtime.life).toBe(960);
+    expect(logs).toEqual(["Attacker projectile hit Defender for 40; hits remaining 1, miss 2; removal pending none"]);
+
+    world.advanceActiveEffects("p1", { bounds: { left: -160, right: 160 } });
+    expect(world.projectiles("p1")[0]?.missTimeRemaining).toBe(1);
+    world.advanceActiveEffects("p1", { bounds: { left: -160, right: 160 } });
+    expect(world.projectiles("p1")[0]?.missTimeRemaining).toBe(0);
+
+    world.resolveProjectileCombat("p1", combatInput);
+
+    expect(defender.runtime.life).toBe(920);
+    expect(logs).toEqual([
+      "Attacker projectile hit Defender for 40; hits remaining 1, miss 2; removal pending none",
+      "Attacker projectile hit Defender for 40; hits remaining 0, miss 0; hit removal anim none",
+    ]);
     expect(world.projectiles("p1")).toEqual([]);
   });
 
@@ -223,7 +339,9 @@ describe("EffectActorSystem", () => {
       log: (line) => logs.push(line),
     });
 
-    expect(logs).toEqual(["Projectile clash: P1 p1-projectile-0 traded with P2 p2-projectile-0 at priority 2"]);
+    expect(logs).toEqual([
+      "Projectile clash: P1 p1-projectile-0 traded with P2 p2-projectile-0 at priority 2; p1-projectile-0 cancel removal anim none; p2-projectile-0 cancel removal anim none",
+    ]);
     expect(world.projectiles("p1")).toEqual([]);
     expect(world.projectiles("p2")).toEqual([]);
   });
@@ -245,9 +363,12 @@ describe("EffectActorSystem", () => {
       log: (line) => logs.push(line),
     });
 
-    expect(logs).toEqual(["Projectile clash: P1 p1-projectile-0 canceled P2 p2-projectile-0 by priority 3 > 1"]);
+    expect(logs).toEqual([
+      "Projectile clash: P1 p1-projectile-0 canceled P2 p2-projectile-0 by priority 3 > 1; winner priority 3 -> 2; p2-projectile-0 cancel removal anim none",
+    ]);
     expect(world.projectiles("p1").map((projectile) => projectile.serialId)).toEqual(["p1-projectile-0"]);
     expect(world.projectiles("p1")[0]?.hasHit).toBe(false);
+    expect(world.projectiles("p1")[0]?.priority).toBe(2);
     expect(world.projectiles("p2")).toEqual([]);
   });
 });
@@ -304,21 +425,21 @@ function controller(type: string, params: Record<string, string>): MugenStateCon
   };
 }
 
-function action(): MugenAnimationAction {
+function action(id = 900, duration = 2): MugenAnimationAction {
   return {
-    id: 900,
+    id,
     loopStart: 0,
     rawLines: [],
     frames: [
       {
-        spriteGroup: 900,
+        spriteGroup: id,
         spriteIndex: 0,
         offsetX: 0,
         offsetY: 0,
-        duration: 2,
+        duration,
         clsn1: [{ x1: 1, y1: -8, x2: 16, y2: -1 }],
         clsn2: [{ x1: -8, y1: -16, x2: 8, y2: 0 }],
-        raw: "900,0,0,0,2",
+        raw: `${id},0,0,0,${duration}`,
         line: 1,
       },
     ],

@@ -58,4 +58,34 @@ describe("projection", () => {
     expect(sprite.y).toBe(40);
     expect(sprite.scaleX).toBe(1);
   });
+
+  it("applies runtime render scale around the sprite axis and collision boxes", () => {
+    const scaledActor: ActorSnapshot = {
+      ...actor,
+      runtime: {
+        ...actor.runtime,
+        renderScale: { x: 2, y: 0.5 },
+      },
+      frame: {
+        spriteGroup: 0,
+        spriteIndex: 0,
+        offsetX: 4,
+        offsetY: 2,
+        duration: 5,
+        clsn1: [],
+        clsn2: [],
+        raw: "",
+        line: 1,
+      },
+    };
+
+    const sprite = projectSprite(scaledActor, { group: 0, index: 0, width: 60, height: 100, axisX: 30, axisY: 92 });
+    expect(sprite).toMatchObject({ x: 108, y: 20, width: 120, height: 50 });
+    expect(projectCollisionBox(scaledActor, { x1: -20, y1: -80, x2: 20, y2: 0 })).toEqual({
+      x: 100,
+      y: 20,
+      width: 80,
+      height: 40,
+    });
+  });
 });

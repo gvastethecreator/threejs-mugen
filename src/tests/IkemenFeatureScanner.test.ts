@@ -85,6 +85,89 @@ describe("scanIkemenFeatures", () => {
     expect(report.findings[0]?.fallback).toContain("report-only");
   });
 
+  it("covers Windows-style IKEMEN package paths, nested config, and 3D stage metadata", () => {
+    const files = new Map<string, string>([
+      ["data\\save\\config.json", "{\"Difficulty\": 8}\n"],
+      ["data\\fight.def", "[Files]\nfont1 = f-4x6.fnt\n"],
+      [
+        "stages\\tower.def",
+        "[Camera]\nstagecamera.z = 32\nzoffsetlink = 1\nstartz = -16\nverticalfollowzoomdelta = 0.25\n[State 0, Zoom]\ntype = Zoom\ntrigger1 = StageTime > 20 && SelfCommand = \"zoom\"\n",
+      ],
+      ["stages\\tower.obj", ""],
+    ]);
+
+    const report = scanIkemenFeatures({
+      paths: [...files.keys()],
+      readText: (path) => files.get(path),
+    });
+
+    expect(report.detected).toBe(true);
+    expect(report.files.config).toEqual(["data\\save\\config.json"]);
+    expect(report.files.screenpack).toEqual(["data\\fight.def"]);
+    expect(report.files.model).toEqual(["stages\\tower.obj"]);
+    expect(report.features["IKEMEN config JSON"]).toBe(1);
+    expect(report.features["IKEMEN screenpack DEF"]).toBe(1);
+    expect(report.features["IKEMEN model stage asset"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter stagecamera.z"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter zoffsetlink"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter startz"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter verticalfollowzoomdelta"]).toBe(1);
+    expect(report.features["IKEMEN controller Zoom"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger StageTime"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger SelfCommand"]).toBe(1);
+  });
+
+  it("recognizes ZSS fallback files, ZSS language blocks, screenpack menus, and controller parameters as report-only", () => {
+    const files = new Map<string, string>([
+      [
+        "chars/neo/neo.def",
+        "[Files]\nst1 = neo.cns\nmovelist = data/neo-movelist.dat\n",
+      ],
+      [
+        "chars/neo/neo.cns",
+        "[Statedef 900]\nanim = F 300\n[State 900, Redirected]\ntype = LifeAdd\nRedirectID = PlayerID(4)\nvalue = -1\n",
+      ],
+      [
+        "chars/neo/neo.cns.zss",
+        '[Function test]\nlet localCounter = 0\nif StageTime > 20 { assertInput{flag: "x"} camera{view: "Follow"} changeMovelist{value: 1} depth{value: 4} }\nignoreHitPause persistent(3) { getHitVarSet{fall: 1} }\nfor i := 0; i < 2; i++ { mapSet{map: "rounds"; value: i} }\n',
+      ],
+      [
+        "data/system.def",
+        "menu.itemname.freebattle = Quick Battle\nmenu.itemname.extras.storymode = Story Mode\nmenu.itemname.menugame = Arcade\n",
+      ],
+    ]);
+
+    const report = scanIkemenFeatures({
+      paths: [...files.keys()],
+      readText: (path) => files.get(path),
+    });
+
+    expect(report.detected).toBe(true);
+    expect(report.files.zss).toEqual(["chars/neo/neo.cns.zss"]);
+    expect(report.files.screenpack).toEqual(["data/system.def"]);
+    expect(report.features["ZSS fallback file for CNS reference"]).toBe(1);
+    expect(report.features["IKEMEN movelist reference"]).toBe(1);
+    expect(report.features["IKEMEN RedirectID controller parameter"]).toBe(1);
+    expect(report.features["IKEMEN fightfx action prefix"]).toBe(1);
+    expect(report.features["ZSS function definition"]).toBe(1);
+    expect(report.features["ZSS local variable"]).toBe(1);
+    expect(report.features["ZSS ignoreHitPause block"]).toBe(1);
+    expect(report.features["ZSS persistent block"]).toBe(1);
+    expect(report.features["ZSS loop statement"]).toBe(1);
+    expect(report.features["IKEMEN controller AssertInput"]).toBe(1);
+    expect(report.features["IKEMEN controller Camera"]).toBe(1);
+    expect(report.features["IKEMEN controller ChangeMovelist"]).toBe(1);
+    expect(report.features["IKEMEN controller Depth"]).toBe(1);
+    expect(report.features["IKEMEN controller GetHitVarSet"]).toBe(1);
+    expect(report.features["IKEMEN controller MapSet"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger StageTime"]).toBe(1);
+    expect(report.features["IKEMEN screenpack menu item"]).toBe(3);
+    expect(report.features["IKEMEN extra menu mode freebattle"]).toBe(1);
+    expect(report.features["IKEMEN extra menu mode storymode"]).toBe(1);
+    expect(report.claimAllowed).toContain("not executed");
+    expect(report.claimBlocked).toContain("ZSS/Lua execution");
+  });
+
   it("surfaces IKEMEN scanner findings through loaded character compatibility reports", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile(

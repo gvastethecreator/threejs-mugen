@@ -21,12 +21,22 @@ export type RuntimeProjectile = {
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   facing: 1 | -1;
+  hitAnimNo?: number;
+  removeAnimNo?: number;
+  cancelAnimNo?: number;
+  removalReason?: RuntimeProjectileRemovalReason;
+  removalAnimNo?: number;
+  terminalActions: RuntimeProjectileTerminalActions;
+  terminalPlayback?: RuntimeProjectileTerminalPlayback;
   frameIndex: number;
   frameElapsed: number;
   age: number;
   removeTime: number;
   spritePriority: number;
   priority: number;
+  hitsRemaining: number;
+  missTime: number;
+  missTimeRemaining: number;
   opacity: number;
   damage: number;
   attr?: string;
@@ -49,6 +59,20 @@ export type RuntimeProjectile = {
   hasHit: boolean;
 };
 
+export type RuntimeProjectileRemovalReason = "hit" | "timeout" | "bounds" | "cancel";
+
+export type RuntimeProjectileTerminalActions = {
+  hit?: MugenAnimationAction;
+  remove?: MugenAnimationAction;
+  cancel?: MugenAnimationAction;
+};
+
+export type RuntimeProjectileTerminalPlayback = {
+  reason: RuntimeProjectileRemovalReason;
+  duration: number;
+  age: number;
+};
+
 export type RuntimeProjectileSpawnInput = {
   serialId: string;
   controller: MugenStateController;
@@ -61,6 +85,7 @@ export type RuntimeProjectileSpawnInput = {
   spriteOwnerLabel: string;
   action: MugenAnimationAction;
   animNo: number;
+  terminalActions?: RuntimeProjectileTerminalActions;
   pos: { x: number; y: number };
   fallbackFacing: 1 | -1;
   damageScale?: number;
@@ -103,12 +128,19 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     pos: input.pos,
     vel: { x: rawVelocity[0] * facing, y: rawVelocity[1] },
     facing,
+    hitAnimNo: normalizeProjectileAnim(operation?.hitAnim ?? firstNumber(findControllerParam(input.controller, "projhitanim"))),
+    removeAnimNo: normalizeProjectileAnim(operation?.removeAnim ?? firstNumber(findControllerParam(input.controller, "projremanim"))),
+    cancelAnimNo: normalizeProjectileAnim(operation?.cancelAnim ?? firstNumber(findControllerParam(input.controller, "projcancelanim"))),
+    terminalActions: input.terminalActions ?? {},
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
+    hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
+    missTime: clampProjectileMissTime(operation?.missTime ?? firstNumber(findControllerParam(input.controller, "projmisstime")) ?? 0),
+    missTimeRemaining: 0,
     opacity: parseProjectileOpacity(operation?.trans ?? findControllerParam(input.controller, "trans")),
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
     attr: operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP",
@@ -137,7 +169,15 @@ export function advanceRuntimeProjectiles(
   stage: Pick<MugenStageDefinition, "bounds">,
 ): RuntimeProjectile[] {
   for (const projectile of projectiles) {
+    if (projectile.terminalPlayback) {
+      advanceRuntimeProjectileTerminalPlayback(projectile);
+      continue;
+    }
+    if (projectile.removalReason) {
+      continue;
+    }
     projectile.age += 1;
+    projectile.missTimeRemaining = Math.max(0, projectile.missTimeRemaining - 1);
     projectile.pos.x += projectile.vel.x;
     projectile.pos.y += projectile.vel.y;
     projectile.frameElapsed += 1;
@@ -152,17 +192,18 @@ export function advanceRuntimeProjectiles(
   const margin = 240;
   return projectiles.filter((projectile) => {
     if (projectile.hasHit && projectile.removeOnHit) {
-      return false;
+      markRuntimeProjectileForRemoval(projectile, "hit");
+    } else if (projectile.removeTime >= 0 && projectile.age >= projectile.removeTime) {
+      markRuntimeProjectileForRemoval(projectile, "timeout");
+    } else if (
+      projectile.pos.x < stage.bounds.left - margin ||
+      projectile.pos.x > stage.bounds.right + margin ||
+      projectile.pos.y < -360 ||
+      projectile.pos.y > 180
+    ) {
+      markRuntimeProjectileForRemoval(projectile, "bounds");
     }
-    if (projectile.removeTime >= 0 && projectile.age >= projectile.removeTime) {
-      return false;
-    }
-    return (
-      projectile.pos.x >= stage.bounds.left - margin &&
-      projectile.pos.x <= stage.bounds.right + margin &&
-      projectile.pos.y >= -360 &&
-      projectile.pos.y <= 180
-    );
+    return shouldKeepRuntimeProjectileAfterRemoval(projectile);
   });
 }
 
@@ -197,15 +238,15 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           power: 0,
           ctrl: false,
           stateType: "S",
-          moveType: "A",
+          moveType: projectile.terminalPlayback ? "I" : "A",
           physics: "N",
           vars: [],
           fvars: [],
           renderOpacity: projectile.opacity,
         },
         frame,
-        clsn1: getRuntimeProjectileHitboxes(projectile).map(cloneBox),
-        clsn2: frame.clsn2.map(cloneBox),
+        clsn1: projectile.terminalPlayback ? [] : getRuntimeProjectileHitboxes(projectile).map(cloneBox),
+        clsn2: projectile.terminalPlayback ? [] : frame.clsn2.map(cloneBox),
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
@@ -241,6 +282,123 @@ export function runtimeProjectileWorldBox(projectile: RuntimeProjectile, box: Co
 export function getRuntimeProjectileHitboxes(projectile: RuntimeProjectile): CollisionBox[] {
   const frame = projectile.action.frames[projectile.frameIndex];
   return frame?.clsn1.length ? frame.clsn1 : [projectile.hitbox];
+}
+
+export function canRuntimeProjectileContact(projectile: RuntimeProjectile): boolean {
+  return !projectile.removalReason && !projectile.terminalPlayback && !projectile.hasHit && projectile.hitsRemaining > 0 && projectile.missTimeRemaining <= 0;
+}
+
+export function recordRuntimeProjectileContact(projectile: RuntimeProjectile): void {
+  projectile.hitsRemaining = Math.max(0, projectile.hitsRemaining - 1);
+  if (projectile.hitsRemaining <= 0) {
+    projectile.hasHit = true;
+    projectile.missTimeRemaining = 0;
+    if (projectile.removeOnHit) {
+      markRuntimeProjectileForRemoval(projectile, "hit");
+    }
+    return;
+  }
+  projectile.missTimeRemaining = projectile.missTime;
+}
+
+export function markRuntimeProjectileForRemoval(
+  projectile: RuntimeProjectile,
+  reason: RuntimeProjectileRemovalReason,
+): void {
+  if (projectile.removalReason) {
+    return;
+  }
+  projectile.removalReason = reason;
+  projectile.removalAnimNo = resolveProjectileRemovalAnim(projectile, reason);
+  projectile.hasHit = projectile.hasHit || reason === "hit" || reason === "cancel";
+}
+
+export function isRuntimeProjectileMarkedForRemoval(projectile: RuntimeProjectile): boolean {
+  return projectile.removalReason !== undefined;
+}
+
+export function shouldKeepRuntimeProjectileAfterRemoval(projectile: RuntimeProjectile): boolean {
+  if (!projectile.removalReason) {
+    return true;
+  }
+  if (!projectile.terminalPlayback) {
+    startRuntimeProjectileTerminalPlayback(projectile);
+  }
+  return projectile.terminalPlayback !== undefined && projectile.terminalPlayback.age < projectile.terminalPlayback.duration;
+}
+
+export function startRuntimeProjectileTerminalPlayback(projectile: RuntimeProjectile): boolean {
+  const reason = projectile.removalReason;
+  if (!reason || projectile.terminalPlayback) {
+    return projectile.terminalPlayback !== undefined;
+  }
+  const action = resolveProjectileRemovalAction(projectile, reason);
+  if (!action || action.frames.length === 0) {
+    return false;
+  }
+  projectile.action = action;
+  projectile.animNo = action.id;
+  projectile.frameIndex = 0;
+  projectile.frameElapsed = 0;
+  projectile.age = 0;
+  projectile.vel = { x: 0, y: 0 };
+  projectile.terminalPlayback = {
+    reason,
+    duration: actionDuration(action),
+    age: 0,
+  };
+  return true;
+}
+
+export function describeRuntimeProjectileRemoval(projectile: RuntimeProjectile): string {
+  if (!projectile.removalReason) {
+    return "removal pending none";
+  }
+  return `${projectile.removalReason} removal anim ${projectile.removalAnimNo ?? "none"}`;
+}
+
+function resolveProjectileRemovalAnim(projectile: RuntimeProjectile, reason: RuntimeProjectileRemovalReason): number | undefined {
+  if (reason === "cancel") {
+    return projectile.cancelAnimNo ?? projectile.removeAnimNo ?? projectile.hitAnimNo;
+  }
+  if (reason === "timeout" || reason === "bounds") {
+    return projectile.removeAnimNo ?? projectile.hitAnimNo;
+  }
+  return projectile.hitAnimNo;
+}
+
+function resolveProjectileRemovalAction(
+  projectile: RuntimeProjectile,
+  reason: RuntimeProjectileRemovalReason,
+): MugenAnimationAction | undefined {
+  if (reason === "cancel") {
+    return projectile.terminalActions.cancel ?? projectile.terminalActions.remove ?? projectile.terminalActions.hit;
+  }
+  if (reason === "timeout" || reason === "bounds") {
+    return projectile.terminalActions.remove ?? projectile.terminalActions.hit;
+  }
+  return projectile.terminalActions.hit;
+}
+
+function advanceRuntimeProjectileTerminalPlayback(projectile: RuntimeProjectile): void {
+  const terminal = projectile.terminalPlayback;
+  if (!terminal) {
+    return;
+  }
+  terminal.age += 1;
+  projectile.age = terminal.age;
+  projectile.frameElapsed += 1;
+  const frame = projectile.action.frames[projectile.frameIndex];
+  if (frame && projectile.frameElapsed >= Math.max(1, frame.duration)) {
+    projectile.frameElapsed = 0;
+    const next = projectile.frameIndex + 1;
+    projectile.frameIndex = next < projectile.action.frames.length ? next : projectile.action.frames.length - 1;
+  }
+}
+
+function actionDuration(action: MugenAnimationAction): number {
+  const duration = action.frames.reduce((sum, frame) => sum + Math.max(1, frame.duration), 0);
+  return Math.max(1, Math.min(600, duration));
 }
 
 function cloneBox(box: CollisionBox): CollisionBox {
@@ -303,6 +461,21 @@ function clampProjectileTime(value: number): number {
 
 function clampProjectilePriority(value: number): number {
   return Math.max(0, Math.min(10, Math.round(value)));
+}
+
+function clampProjectileHits(value: number): number {
+  return Math.max(1, Math.min(16, Math.round(value)));
+}
+
+function clampProjectileMissTime(value: number): number {
+  return Math.max(0, Math.min(120, Math.round(value)));
+}
+
+function normalizeProjectileAnim(value: number | undefined): number | undefined {
+  if (value === undefined || !Number.isFinite(value) || value < 0) {
+    return undefined;
+  }
+  return Math.round(value);
 }
 
 function parseProjectileOpacity(value: string | undefined): number {

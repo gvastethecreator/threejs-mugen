@@ -38,9 +38,19 @@ describe("StudioModel", () => {
     expect(summary.assets.some((asset) => asset.tags.includes("sprite-atlas-builder"))).toBe(true);
     expect(summary.assets.every((asset) => asset.impact.length > 0 && asset.nextAction.label.length > 0)).toBe(true);
     expect(summary.modules.map((module) => module.id)).toContain("studio-workspace");
+    expect(summary.modules.every((module) => module.consumes.length > 0 || module.provides.length > 0)).toBe(true);
+    expect(summary.modules.find((module) => module.id === "three-render")?.forbiddenSharedCoreConcepts).toEqual(
+      expect.arrayContaining(["CNS", "CMD", "HitDef", "MUGEN command routing"]),
+    );
+    expect(summary.modules.find((module) => module.id === "platformer-module")?.claimBlocked).toContain("HitDef");
+    expect(summary.modules.find((module) => module.id === "platformer-module")?.consumes).toEqual(["input/v0", "asset/v0", "build/v0", "qa/v0"]);
     expect(summary.gates.find((gate) => gate.id === "playtest")?.status).toBe("ok");
     expect(summary.gates.find((gate) => gate.id === "mugen-import")?.status).toBe("pending");
     expect(summary.gates.find((gate) => gate.id === "mugen-import")?.blockedBy).toContain("missing-imported-character");
+    const architectureGate = summary.gates.find((gate) => gate.id === "architecture-boundaries");
+    expect(architectureGate?.status).toBe("ok");
+    expect(architectureGate?.affectedSystem).toBe("module");
+    expect(architectureGate?.evidenceIds).toEqual(expect.arrayContaining(["test:architecture-boundaries", "module-contracts"]));
     expect(summary.gates.every((gate) => gate.impact.length > 0 && gate.nextAction.label.length > 0)).toBe(true);
   });
 

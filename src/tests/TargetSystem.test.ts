@@ -170,6 +170,25 @@ describe("TargetSystem", () => {
     expect(actor.targetBindings).toMatchObject([{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } }]);
   });
 
+  it("respects target NoKO when TargetLifeAdd would kill", () => {
+    const actor = targetActor("p1", { targets: [{ actorId: "p2", targetId: 77, age: 0 }] });
+    const target = targetActor("p2", {
+      runtime: {
+        life: 12,
+        assertSpecial: { flags: ["noko"], globalFlags: [], noKo: true },
+      },
+    });
+
+    applyRuntimeTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("TargetLifeAdd", { id: "77", value: "-40" }),
+      operation: { kind: "target", controllerType: "targetlifeadd", requestedId: 77, value: -40, absolute: false, kill: true },
+    });
+
+    expect(target.runtime.life).toBe(1);
+  });
+
   it("routes TargetState through a callback and TargetDrop through target memory", () => {
     const actor = targetActor("p1", {
       targets: [

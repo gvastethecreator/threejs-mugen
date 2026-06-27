@@ -4,7 +4,7 @@ import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { MatchWorld } from "./MatchWorld";
-import type { RuntimeTraceInputFrame } from "./RuntimeTrace";
+import type { RuntimeTraceFinalActorRequirement, RuntimeTraceInputFrame } from "./RuntimeTrace";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "./RuntimeTrace";
 import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { createRuntimeTraceArtifact } from "./RuntimeTraceArtifact";
@@ -83,20 +83,240 @@ export function createNativeWhiffTraceArtifact(options: RuntimeTraceGatePresetOp
 }
 
 export function createSyntheticImportedXTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
-  return createImportedXTraceArtifact(createSyntheticImportedTraceFighter(), {
+  return createImportedXTraceArtifact(createSyntheticImportedTraceFighter({ moveHitStateNo: 261 }), {
     ...options,
     targetId: "synthetic-imported-x-golden",
     targetLabel: "Synthetic imported CMD/CNS x route",
     requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
     notes: [
-      "Synthetic imported golden trace proves CMD State -1 routing, CNS state execution, HitDef execution, active command evidence, and hit event evidence without depending on private external fixtures.",
+      "Synthetic imported golden trace proves CMD State -1 routing, CNS state execution, HitDef execution, active command evidence, hit event evidence, and a bounded MoveHit branch back in the owner state without depending on private external fixtures.",
+    ],
+  });
+}
+
+export function createSyntheticImportedMoveContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-movecontact",
+      displayName: "Synthetic Imported MoveContact",
+      moveContactStateNo: 262,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-movecontact-golden",
+      targetLabel: "Synthetic imported MoveContact route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 262],
+      notes: [
+        "Synthetic imported MoveContact trace proves a direct HitDef contact can evaluate a bounded MoveContact branch back in the owner state without depending on private external fixtures. Exact first-tick timing and trigger lifetime remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-numtarget",
+      displayName: "Synthetic Imported NumTarget",
+      action200Duration: 30,
+      numTargetStateNo: 263,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-numtarget-golden",
+      targetLabel: "Synthetic imported NumTarget route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 263],
+      notes: [
+        "Synthetic imported NumTarget trace proves a direct HitDef target-memory record can evaluate a bounded NumTarget(77) branch back in the owner state. Exact redirect, helper ownership, multi-target teams, and target persistence parity remain future work.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedNumHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-numhelper",
+    displayName: "Synthetic Imported NumHelper",
+    withHelper: true,
+    numHelperStateNo: 264,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-numhelper-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-numhelper-golden",
+      label: "Synthetic imported NumHelper route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported NumHelper trace proves a bounded Helper actor can be counted by NumHelper(42) and branch back in the owner state. It does not claim full Helper VM, redirects, parent/root ownership, or helper combat parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-numhelper-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 264],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedNumProjTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-numproj",
+    displayName: "Synthetic Imported NumProj",
+    withProjectile: true,
+    numProjStateNo: 273,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-numproj-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-numproj-golden",
+      label: "Synthetic imported NumProj route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported NumProj trace proves a bounded Projectile actor can be counted by NumProjID(77) and branch back in the owner state. It does not claim exact projectile lifetime, helper-owned projectiles, redirect ownership, or full projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-numproj-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 273],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-numexplod",
+    displayName: "Synthetic Imported NumExplod",
+    withExplod: true,
+    numExplodStateNo: 274,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-numexplod-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-numexplod-golden",
+      label: "Synthetic imported NumExplod route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported NumExplod trace proves a bounded Explod actor can be counted by NumExplod(9000) and branch back in the owner state. It does not claim exact Explod binding, remove-trigger, FightFX/common animation, or exact lifetime parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-numexplod-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 274],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod"],
+        requiredExecutedOperations: ["hitdef", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedRemoveExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-removeexplod",
+    displayName: "Synthetic Imported RemoveExplod",
+    withExplod: true,
+    withRemoveExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-removeexplod-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-removeexplod-golden",
+      label: "Synthetic imported RemoveExplod route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported RemoveExplod trace proves a bounded visual Explod actor can be spawned, removed by id, and reported through MatchWorld lifecycle evidence. It does not claim remove triggers, exact binding parity, FightFX/common animation, or exact lifetime parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-removeexplod-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod", "RemoveExplod"],
+        requiredExecutedOperations: ["hitdef", "explod", "removeexplod"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minNextExplodSerial: 1 }],
+      },
     ],
   });
 }
 
 export function createImportedXTraceArtifact(
   imported: DemoFighterDefinition,
-  options: RuntimeTraceGatePresetOptions & { targetId?: string; targetLabel?: string; notes?: string[]; requireHitEvent?: boolean } = {},
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    requireHitEvent?: boolean;
+    requiredExecutedStates?: number[];
+  } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -121,7 +341,7 @@ export function createImportedXTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200],
+        requiredExecutedStates: options.requiredExecutedStates ?? [200],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
         requiredActiveCommands: ["x"],
@@ -167,10 +387,331 @@ export function createSyntheticImportedRejectTraceArtifact(options: RuntimeTrace
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "HitDef", "NotHitBy"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedOperations: ["hitdef", "eligibility:nothitby"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["reject"],
         requiredCombatReasons: ["reject"],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-reversal-attacker",
+    displayName: "Synthetic Imported Reversal Attacker",
+    hitDefAttr: "S,NA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-reversal-defender",
+    displayName: "Synthetic Imported Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, hitPause: 3 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-reversal-golden",
+      label: "Synthetic imported ReversalDef route",
+      source: "imported",
+      notes: [
+        "Synthetic imported ReversalDef trace proves a defender-side Clsn1 counter can reverse a matching imported HitDef and route the defender into a known p1stateno state. It does not claim exact priority, guard, custom-state, or IKEMEN ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-damage-scale-attacker",
+    displayName: "Synthetic Imported Damage Scale Attacker",
+    hitDefDamage: 40,
+    attackMultiplier: 1.5,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-damage-scale-defender",
+    displayName: "Synthetic Imported Damage Scale Defender",
+    defenseMultiplier: 0.5,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-damage-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-damage-scale-golden",
+      label: "Synthetic imported AttackMulSet/DefenceMulSet route",
+      source: "imported",
+      notes: [
+        "Synthetic imported damage-scale trace proves typed AttackMulSet and DefenceMulSet operations feed bounded outgoing and incoming HitDef damage scaling. It does not claim exact MUGEN/IKEMEN scaling order for helpers, projectiles, custom states, guards, or round edge cases.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-damage-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AttackMulSet", "DefenceMulSet", "HitDef"],
+        requiredExecutedOperations: ["damage-scale:attackmulset", "damage-scale:defencemulset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["for 30"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 970,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefPriorityScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-priority-p1",
+    displayName: "Synthetic Imported HitDef Priority P1",
+    hitDefDamage: 31,
+    hitDefPriority: 6,
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-priority-p2",
+    displayName: "Synthetic Imported HitDef Priority P2",
+    hitDefDamage: 31,
+    hitDefPriority: 3,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
+    label: "synthetic-imported-hitdef-priority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-priority-golden",
+      label: "Synthetic imported HitDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported HitDef priority trace proves a bounded direct-attack clash where a higher numeric priority suppresses the lower-priority direct hit before normal hit resolution. It does not claim exact MUGEN/IKEMEN priority classes, reversal priority, projectiles, multi-hit, or pause-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-priority-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["runtime", "hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["HitDef priority clash", "priority 6 beat", "hit Synthetic Imported HitDef Priority P2 for 31"],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            life: 1000,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 969,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefKillTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefKillScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-kill-attacker",
+    displayName: "Synthetic Imported HitDef Kill Attacker",
+    hitDefDamage: 2000,
+    hitDefKill: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-kill-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-kill-golden",
+      label: "Synthetic imported HitDef kill route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported HitDef kill trace proves a bounded direct hit with kill = 0 can reduce the defender to 1 life without KO. It does not claim exact round/KO, red-life, guard, projectile, helper, or custom-state kill semantics.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-kill-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["hit Mira Volt for 2000"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 1,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefGuardKillTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefGuardKillScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-guard-kill-attacker",
+    displayName: "Synthetic Imported HitDef Guard Kill Attacker",
+    guardDamage: 2000,
+    guardFlag: "MA",
+    guardKill: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-guard-kill-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-guard-kill-golden",
+      label: "Synthetic imported HitDef guard.kill route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported HitDef guard.kill trace proves a bounded guarded hit with guard.kill = 0 can reduce the defender to 1 life without KO. It does not claim exact guard KO, chip KO, projectiles, helpers, or full MUGEN/IKEMEN guard semantics.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-guard-kill-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported HitDef Guard Kill Attacker for 2000"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedAssertSpecialNoKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefKillScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-noko-attacker",
+    displayName: "Synthetic Imported AssertSpecial NoKO Attacker",
+    hitDefDamage: 2000,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-noko-defender",
+    displayName: "Synthetic Imported AssertSpecial NoKO Defender",
+    passiveAssertSpecialFlags: ["NoKO"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-assertspecial-noko-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-noko-golden",
+      label: "Synthetic imported AssertSpecial NoKO route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AssertSpecial NoKO trace proves a bounded defender-side NoKO flag can clamp lethal direct HitDef damage to 1 life. It does not claim exact global NoKO, round-flow, helper, projectile, custom-state, or IKEMEN/MUGEN KO parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-noko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["hit Synthetic Imported AssertSpecial NoKO Defender for 2000"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 1,
+            moveType: "H",
+          },
+        ],
       },
     ],
   });
@@ -182,13 +723,15 @@ export function createSyntheticImportedGuardTraceArtifact(options: RuntimeTraceG
     displayName: "Synthetic Imported Guard Attacker",
     guardDamage: 5,
     guardFlag: "MA",
+    moveGuardStateNo: 260,
   });
   return createImportedGuardTraceArtifact(attacker, {
     ...options,
     targetId: "synthetic-imported-guard-golden",
     targetLabel: "Synthetic imported guard route",
+    requiredExecutedStates: [200, 260],
     notes: [
-      "Synthetic imported guard trace proves held-back defender input can turn a real imported HitDef contact into guard evidence.",
+      "Synthetic imported guard trace proves held-back defender input can turn a real imported HitDef contact into guard evidence and evaluate a bounded MoveGuarded branch back in the owner state.",
     ],
   });
 }
@@ -277,6 +820,74 @@ export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: Ru
     targetLabel: "Synthetic imported Common1 crouch guard-hit route",
     notes: [
       "Synthetic imported crouch guard-state trace proves a held-down-back defender can evaluate a Common1-style command expression and branch from guard-hit state 152 into 153. It does not claim full proximity guard, guard-start, guard-end, sparks, or exact crouch/air guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-diagonal-crouch-guard-state",
+    displayName: "Synthetic Imported Diagonal Crouch Guard State",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, crouchShakeStateNo: 152, crouchSlideStateNo: 153, guardStateNo: 130 },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    script: importedDefaultDiagonalCrouchGuardStateScript(),
+    requiredExecutedStates: [200, 152, 153],
+    requiredActiveCommands: ["holdback", "holddown", "x"],
+    targetId: "synthetic-imported-diagonal-crouch-guard-state-golden",
+    targetLabel: "Synthetic imported atomic DB crouch guard-hit route",
+    notes: [
+      "Synthetic imported atomic DB crouch guard-state trace proves a diagonal down-back input can satisfy both bounded held-back guard detection and Common1-style holdback/holddown command checks. It does not claim full proximity guard, guard-start, guard-end, sparks, or exact crouch/air guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedAirGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-state",
+    displayName: "Synthetic Imported Air Guard State",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-state-attacker",
+    displayName: "Synthetic Imported Air Guard State Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        life: 995,
+        ctrl: true,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+      },
+    ],
+    targetId: "synthetic-imported-air-guard-state-golden",
+    targetLabel: "Synthetic imported Common1 air guard-hit route",
+    notes: [
+      "Synthetic imported air guard-state trace proves an airborne held-back defender can block an A-guardable HitDef and route through Common1-style air guard states 154 and 155. It does not claim exact MUGEN/IKEMEN air guard physics, landing, sparks, sounds, or guard-end parity.",
     ],
   });
 }
@@ -1133,7 +1744,12 @@ export function createImportedStateExitTraceArtifact(
 
 export function createImportedGuardTraceArtifact(
   imported: DemoFighterDefinition,
-  options: RuntimeTraceGatePresetOptions & { targetId?: string; targetLabel?: string; notes?: string[] } = {},
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    requiredExecutedStates?: number[];
+  } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedGuardScript();
@@ -1158,7 +1774,7 @@ export function createImportedGuardTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200],
+        requiredExecutedStates: options.requiredExecutedStates ?? [200],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
         requiredActiveCommands: ["x"],
@@ -1178,7 +1794,10 @@ export function createImportedDefaultGuardStateTraceArtifact(
     attacker?: DemoFighterDefinition;
     script?: RuntimeTraceInputFrame[];
     requiredExecutedStates?: number[];
+    requiredExecutedControllers?: string[];
+    requiredExecutedOperations?: string[];
     requiredActiveCommands?: string[];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -1213,11 +1832,12 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 150, 151],
-        requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef", "HitVelSet"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "resource:ctrlset"],
         requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        requiredFinalActors: options.requiredFinalActors,
       },
     ],
   });
@@ -1415,6 +2035,52 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedTargetBindPauseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetBindPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-targetbind-pause-attacker",
+    displayName: "Synthetic Imported TargetBind Pause Attacker",
+    withPrePauseTargetBind: true,
+    withDelayedSuperPause: true,
+    pauseMovePosAdd: { x: 8, y: -2, time: 2 },
+    action200Duration: 20,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-targetbind-pause-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-targetbind-pause-golden",
+      label: "Synthetic imported TargetBind during SuperPause route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported TargetBind pause trace proves a bound target remains linked while the source actor advances during SuperPause movetime. It does not claim full MUGEN/IKEMEN target ownership, throws, helper-owned targets, or pause-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-targetbind-pause-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "TargetBind", "SuperPause", { type: "PosAdd", minCount: 1 }],
+        requiredExecutedOperations: ["hitdef", "target:targetbind", "pause:superpause", "kinematic:posadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "pause"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: true }],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 6, minMoveTime: 0 }],
+        requiredMatchPauseAdvances: [{ type: "SuperPause", actorId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedSuperPauseScript();
@@ -1509,6 +2175,116 @@ export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseEffectFreezeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedSuperPauseEffectScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-effect-attacker",
+    displayName: "Synthetic Imported SuperPause Effect Attacker",
+    withSuperPause: true,
+    withHelper: true,
+    withExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-effect-freeze-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-effect-freeze-golden",
+      label: "Synthetic imported SuperPause helper/explod freeze route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause helper/explod trace proves visual effect actors participate in bounded source-movetime advance and freeze evidence. It does not claim full Helper VM, exact Explod binding parity, pause layering, or IKEMEN/MUGEN effect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-effect-freeze-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause", "Helper", "Explod"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause", "helper", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minExplods: 1, minNextHelperSerial: 1, minNextExplodSerial: 1 }],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [
+          { type: "SuperPause", actorKind: "player", ownerId: "p2", minFrozenFrames: 6 },
+          { type: "SuperPause", actorKind: "helper", ownerId: "p1", minFrozenFrames: 5 },
+          { type: "SuperPause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+        ],
+        requiredMatchPauseAdvances: [
+          { type: "SuperPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+          { type: "SuperPause", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodSuperMoveTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedSuperPauseEffectScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-supermovetime-attacker",
+    displayName: "Synthetic Imported Explod SuperMoveTime Attacker",
+    withSuperPause: true,
+    withExplod: true,
+    withSuperMoveExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-supermovetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-supermovetime-golden",
+      label: "Synthetic imported Explod supermovetime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod supermovetime trace proves one Explod freezes during SuperPause while another continues through its own supermovetime budget. It does not claim full pausemovetime, helper-owned Explod, binding, or IKEMEN pause layering parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-supermovetime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause", { type: "Explod", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", "pause:superpause", { operation: "explod", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minExplods: 2, minNextExplodSerial: 2 }],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p1-explod-0", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 }],
+        requiredMatchPauseAdvances: [
+          { type: "SuperPause", actorId: "p1-explod-1", actorKind: "explod", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -1516,6 +2292,8 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
     id: "synthetic-imported-projectile-attacker",
     displayName: "Synthetic Imported Projectile Attacker",
     withProjectile: true,
+    projectileHitAnim: 911,
+    projHitStateNo: 270,
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-projectile-golden",
@@ -1529,7 +2307,7 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
       label: "Synthetic imported Projectile route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile trace proves Projectile controllers compile into typed projectile operations and spawn bounded colliding effect actors. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact priority classes, cancel animations, and remove animation parity remain future work.",
+        "Synthetic imported Projectile trace proves Projectile controllers compile into typed projectile operations, spawn bounded colliding effect actors, evaluate a bounded ProjHit(77) branch back in the owner state, and play a bounded visible hit terminal animation when projhitanim resolves to an AIR action. Projectile-vs-projectile trade/cancel is covered by separate bounded clash gates; exact priority classes, exact trigger timing, exact terminal animation timing, and remove/cancel playback parity remain future work.",
       ],
     },
     gates: [
@@ -1539,7 +2317,57 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200],
+        requiredExecutedStates: [200, 270],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-contact-attacker",
+    displayName: "Synthetic Imported Projectile Contact Attacker",
+    withProjectile: true,
+    projectileHitAnim: 911,
+    projContactStateNo: 272,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-contact-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-contact-golden",
+      label: "Synthetic imported Projectile contact route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile contact trace proves a bounded Projectile contact can evaluate a ProjContact(77) branch back in the owner state. Exact trigger timing, multi-target lifetime, helper ownership, and IKEMEN projectile parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-contact-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 272],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
         requiredExecutedOperations: ["hitdef", "projectile"],
         requiredActiveCommands: ["x"],
@@ -1547,9 +2375,64 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
         requiredCombatReasons: ["hit"],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
-        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileMultiHitTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileMultiHitScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-multihit-attacker",
+    displayName: "Synthetic Imported Projectile Multi-Hit Attacker",
+    withProjectile: true,
+    projectileOffset: [300, -45],
+    projectileVelocity: [0, 0],
+    projectileGroundVelocity: [0],
+    projectileHits: 2,
+    projectileMissTime: 3,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-multihit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-multihit-golden",
+      label: "Synthetic imported Projectile multi-hit route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile multi-hit trace verifies the bounded projhits/projmisstime path where one projectile can hit twice with a cooldown before removal. It does not claim exact MUGEN/IKEMEN projectile hitpause layering, cancel/remove animations, helper-owned projectiles, or full multi-target projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-multihit-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredEventSubstrings: ["projectile hit", "hits remaining 1", "miss 3", "hits remaining 0"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
         requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
       },
     ],
@@ -1563,6 +2446,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
     id: "synthetic-imported-projectile-guard-attacker",
     displayName: "Synthetic Imported Projectile Guard Attacker",
     withProjectile: true,
+    projGuardStateNo: 271,
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-projectile-guard-golden",
@@ -1576,7 +2460,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
       label: "Synthetic imported Projectile guard route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params and resolve a held-back projectile block through the shared partial hit/guard combat path. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact guard-state timing, sparks, sounds, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
+        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params, resolve a held-back projectile block through the shared partial hit/guard combat path, and evaluate a bounded ProjGuarded(77) branch back in the owner state. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact trigger timing, guard-state timing, sparks, sounds, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
       ],
     },
     gates: [
@@ -1586,7 +2470,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200],
+        requiredExecutedStates: [200, 271],
         requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
         requiredExecutedOperations: ["hitdef", "projectile"],
         requiredActiveCommands: ["x"],
@@ -1612,6 +2496,7 @@ export function createSyntheticImportedProjectileClashTraceArtifact(options: Run
     withProjectile: true,
     projectilePriority: 1,
     projectileOffset: [100, -45],
+    projectileCancelAnim: 913,
   });
   const p2 = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-projectile-clash-p2",
@@ -1619,6 +2504,7 @@ export function createSyntheticImportedProjectileClashTraceArtifact(options: Run
     withProjectile: true,
     projectilePriority: 1,
     projectileOffset: [100, -45],
+    projectileCancelAnim: 914,
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
     label: "synthetic-imported-projectile-clash-golden",
@@ -1632,7 +2518,7 @@ export function createSyntheticImportedProjectileClashTraceArtifact(options: Run
       label: "Synthetic imported Projectile clash route",
       source: "imported",
       notes: [
-        "Synthetic imported Projectile clash trace verifies the bounded partial projectile-vs-projectile path: equal projpriority projectiles trade and are removed through the effect actor world. It does not claim exact MUGEN/IKEMEN projectile priority classes, cancel animations, remove animations, helpers, or projectile owner binding parity.",
+        "Synthetic imported Projectile clash trace verifies the bounded partial projectile-vs-projectile path: equal projpriority projectiles trade, preserve projcancelanim metadata in runtime removal evidence, play bounded visible cancel terminal animations when the actions exist, and are removed through the effect actor world. It does not claim exact MUGEN/IKEMEN projectile priority classes, exact cancel timing, remove animations, helpers, or projectile owner binding parity.",
       ],
     },
     gates: [
@@ -1647,7 +2533,11 @@ export function createSyntheticImportedProjectileClashTraceArtifact(options: Run
         requiredExecutedOperations: ["hitdef", "projectile"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["runtime"],
-        requiredEventSubstrings: ["Projectile clash"],
+        requiredEventSubstrings: ["Projectile clash", "p1-projectile-0 cancel removal anim 913", "p2-projectile-0 cancel removal anim 914"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 913, moveType: "I", clsn1Count: 0 },
+          { source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 914, moveType: "I", clsn1Count: 0 },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
@@ -1656,6 +2546,70 @@ export function createSyntheticImportedProjectileClashTraceArtifact(options: Run
         ],
         requiredEffectStores: [
           { ownerId: "p1", minNextProjectileSerial: 1 },
+          { ownerId: "p2", minNextProjectileSerial: 1 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectilePriorityCancelTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileClashStage();
+  const script = importedProjectilePriorityCancelScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-priority-cancel-p1",
+    displayName: "Synthetic Imported Projectile Priority P1",
+    withProjectile: true,
+    projectilePriority: 3,
+    projectileOffset: [100, -45],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-priority-cancel-p2",
+    displayName: "Synthetic Imported Projectile Priority P2",
+    withProjectile: true,
+    projectilePriority: 1,
+    projectileOffset: [100, -45],
+    projectileCancelAnim: 915,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
+    label: "synthetic-imported-projectile-priority-cancel-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-priority-cancel-golden",
+      label: "Synthetic imported Projectile priority cancel route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile priority trace verifies the bounded partial projectile-vs-projectile path where the higher projpriority projectile cancels the lower priority projectile, preserves the loser's projcancelanim metadata in runtime removal evidence, plays bounded visible loser cancel terminal animation when the action exists, decrements the winner's remaining priority by 1, and keeps the winner in the effect store. It does not claim exact MUGEN/IKEMEN projectile priority classes, exact cancel timing, remove animations, helper-owned projectiles, or full timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-priority-cancel-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["runtime"],
+        requiredEventSubstrings: ["Projectile clash", "canceled", "3 > 1", "winner priority 3 -> 2", "p2-projectile-0 cancel removal anim 915"],
+        requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 915, moveType: "I", clsn1Count: 0 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
           { ownerId: "p2", minNextProjectileSerial: 1 },
         ],
       },
@@ -1727,7 +2681,7 @@ export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTrace
       label: "Synthetic imported Explod route",
       source: "mixed",
       notes: [
-        "Synthetic imported Explod trace proves Explod controllers compile into typed explod operations and spawn bounded visual effect actors. It does not claim bind, velocity, scale, ownpal, FightFX/common animation, or remove-trigger parity.",
+        "Synthetic imported Explod trace proves Explod controllers compile into typed explod operations and spawn bounded visual effect actors. It does not claim exact binding, exact velocity, exact scaling parity, ownpal, FightFX/common animation, or remove-trigger parity; separate Explod bind, velocity, and scale traces cover bounded owner-side bindtime, vel/accel movement, and static render scale.",
       ],
     },
     gates: [
@@ -1746,6 +2700,338 @@ export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTrace
           { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodVelocityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-velocity",
+    displayName: "Synthetic Imported Explod Velocity",
+    withMovingExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-velocity-golden",
+      label: "Synthetic imported Explod velocity route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod velocity trace proves bounded visual Explod actors consume vel/accel params and expose moving positions/velocity in trace evidence. It does not claim exact bindtime parity, removetime parity, exact scaling parity, ownpal, or exact MUGEN/IKEMEN Explod physics.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-velocity-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod"],
+        requiredExecutedOperations: ["hitdef", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredActorFrames: [
+          {
+            actorKind: "explod",
+            ownerId: "p1",
+            animNo: 931,
+            minFrames: 3,
+            observedPosXAtMost: -110,
+            observedPosXAtLeast: -60,
+            observedVelXAtLeast: 7,
+            observedVelYAtLeast: 0,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodBindTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-bind",
+    displayName: "Synthetic Imported Explod Bind",
+    withBoundExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-bind-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-bind-golden",
+      label: "Synthetic imported Explod bindtime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod bind trace proves bounded owner-side bindtime follows p1/front/back anchors while the owner moves. It does not claim p2 binding, exact bind tick order, remove-trigger parity, exact scaling parity, ownpal, or FightFX/common animation routing.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-bind-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod", "PosAdd"],
+        requiredExecutedOperations: ["hitdef", "explod", "kinematic:posadd"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredActorFrames: [
+          {
+            actorKind: "explod",
+            ownerId: "p1",
+            animNo: 932,
+            minFrames: 3,
+            observedPosXAtMost: -120,
+            observedPosXAtLeast: -80,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-scale",
+    displayName: "Synthetic Imported Explod Scale",
+    withScaledExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-explod-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-scale-golden",
+      label: "Synthetic imported Explod scale route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod scale trace proves bounded visual Explod actors consume static scale params and expose renderer snapshot scale evidence. It does not claim exact MUGEN/IKEMEN Explod scaling parity, scale tick order, palette ownership, FightFX/common animation routing, or helper/projectile scaling behavior.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod"],
+        requiredExecutedOperations: ["hitdef", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredActorFrames: [
+          {
+            actorKind: "explod",
+            ownerId: "p1",
+            animNo: 933,
+            minFrames: 3,
+            observedScaleXAtLeast: 2,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodRemoveOnGetHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedRemoveOnGetHitExplodScript();
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-removeongethit",
+    displayName: "Synthetic Imported Explod RemoveOnGetHit",
+    passiveRemoveOnGetHitExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: demoFighters[0]!, p2: defender, stage }), script, {
+    label: "synthetic-imported-explod-removeongethit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-removeongethit-golden",
+      label: "Synthetic imported Explod removeongethit route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Explod removeongethit trace proves a bounded owner-side Explod flagged removeongethit = 1 is removed when that owner enters the current direct get-hit route. It does not claim exact MUGEN/IKEMEN tick order, helper-owned Explods, or custom-state edge cases.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-removeongethit-golden",
+        requiredActorSources: ["demo", "imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredExecutedControllers: ["Explod"],
+        requiredExecutedOperations: ["explod"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+        ],
+        requiredEffectStores: [{ ownerId: "p2", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredActorFrames: [{ actorKind: "explod", ownerId: "p2", animNo: 934, minFrames: 1 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodRemoveOnProjectileHitTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileRemoveOnGetHitExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-removeonprojectilehit-attacker",
+    displayName: "Synthetic Imported RemoveOnProjectileHit Attacker",
+    withProjectile: true,
+    projectileHitAnim: 911,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-removeonprojectilehit-defender",
+    displayName: "Synthetic Imported RemoveOnProjectileHit Defender",
+    passiveRemoveOnGetHitExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-explod-removeonprojectilehit-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-removeonprojectilehit-golden",
+      label: "Synthetic imported Explod projectile removeongethit route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Explod projectile removeongethit trace proves a bounded P2 owner-side Explod flagged removeongethit = 1 is removed when P2 enters the current projectile get-hit route. It does not claim exact MUGEN/IKEMEN projectile hitpause order, helper-owned Explods, projectile custom states, or full remove-trigger semantics.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-removeonprojectilehit-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile", "explod"],
+        requiredExecutedControllers: ["Projectile", "Explod"],
+        requiredExecutedOperations: ["projectile", "explod"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 },
+        ],
+        requiredActorFrames: [
+          { actorKind: "projectile", ownerId: "p1", animNo: 911, minFrames: 1 },
+          { actorKind: "explod", ownerId: "p2", animNo: 934, minFrames: 1 },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardRemoveOnGetHitExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-removeonprojectileguard-attacker",
+    displayName: "Synthetic Imported RemoveOnProjectileGuard Attacker",
+    withProjectile: true,
+    projectileHitAnim: 911,
+    projGuardStateNo: 271,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-explod-removeonprojectileguard-defender",
+    displayName: "Synthetic Imported RemoveOnProjectileGuard Defender",
+    passiveRemoveOnGetHitExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-explod-removeonprojectileguard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-explod-removeonprojectileguard-golden",
+      label: "Synthetic imported Explod projectile guard removeongethit route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Explod projectile guard removeongethit trace proves a bounded P2 owner-side Explod flagged removeongethit = 1 is removed when P2 blocks the current projectile route. It does not claim exact MUGEN/IKEMEN projectile guard hitpause order, guard-state tick timing, helper-owned Explods, projectile custom states, or full remove-trigger semantics.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-explod-removeonprojectileguard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile", "explod"],
+        requiredExecutedControllers: ["Projectile", "Explod"],
+        requiredExecutedOperations: ["projectile", "explod"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "explod", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          { actorKind: "projectile", ownerId: "p1", animNo: 911, minFrames: 1 },
+          { actorKind: "explod", ownerId: "p2", animNo: 934, minFrames: 1 },
+        ],
       },
     ],
   });
@@ -1873,6 +3159,24 @@ export function importedXScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedHitDefPriorityScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-hitdef-priority-x", frames: 8, p1: ["x"], p2: ["x"] },
+    { label: "hitdef-priority-settle", frames: 1, p1: [], p2: [] },
+  ]);
+}
+
+export function importedHitDefKillScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([{ label: "imported-hitdef-kill-x", frames: 8, p1: ["x"], p2: [] }]);
+}
+
+export function importedHitDefGuardKillScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-hitdef-guard-kill-x", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "hitdef-guard-kill-settle", frames: 1, p1: [], p2: ["B"] },
+  ]);
+}
+
 export function importedXStateExitScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-state-exit-x", frames: 12, p1: ["x"], p2: [] },
@@ -1957,6 +3261,13 @@ export function importedTargetScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedTargetBindPauseScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-targetbind-pause-x", frames: 12, p1: ["x"], p2: [] },
+    { label: "targetbind-pause-settle", frames: 3, p1: [], p2: [] },
+  ]);
+}
+
 export function importedSuperPauseScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-superpause-x", frames: 8, p1: ["x"], p2: [] },
@@ -1971,10 +3282,24 @@ export function importedSuperPauseProjectileScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedSuperPauseEffectScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-superpause-effect-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "superpause-effect-settle", frames: 3, p1: [], p2: [] },
+  ]);
+}
+
 export function importedProjectileScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
-    { label: "imported-projectile-x", frames: 12, p1: ["x"], p2: [] },
-    { label: "projectile-settle", frames: 2, p1: [], p2: [] },
+    { label: "imported-projectile-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-settle", frames: 6, p1: [], p2: [] },
+  ]);
+}
+
+export function importedProjectileMultiHitScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-projectile-multihit-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-multihit-settle", frames: 2, p1: [], p2: [] },
   ]);
 }
 
@@ -1992,6 +3317,13 @@ export function importedProjectileClashScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedProjectilePriorityCancelScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-projectile-priority-cancel-x", frames: 8, p1: ["x"], p2: ["x"] },
+    { label: "projectile-priority-cancel-settle", frames: 1, p1: [], p2: [] },
+  ]);
+}
+
 export function importedHelperScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-helper-x", frames: 8, p1: ["x"], p2: [] },
@@ -2003,6 +3335,30 @@ export function importedExplodScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-explod-x", frames: 8, p1: ["x"], p2: [] },
     { label: "explod-settle", frames: 2, p1: [], p2: [] },
+  ]);
+}
+
+export function importedRemoveOnGetHitExplodScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "seed-removeongethit-explod", frames: 2, p1: [], p2: [] },
+    { label: "hit-removeongethit-owner", frames: 18, p1: ["a"], p2: [] },
+    { label: "removeongethit-settle", frames: 2, p1: [], p2: [] },
+  ]);
+}
+
+export function importedProjectileRemoveOnGetHitExplodScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "seed-projectile-removeongethit-explod", frames: 2, p1: [], p2: [] },
+    { label: "projectile-hit-removeongethit-owner", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-removeongethit-settle", frames: 2, p1: [], p2: [] },
+  ]);
+}
+
+export function importedProjectileGuardRemoveOnGetHitExplodScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "seed-projectile-guard-removeongethit-explod", frames: 2, p1: [], p2: [] },
+    { label: "projectile-guard-removeongethit-owner", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "projectile-guard-removeongethit-settle", frames: 4, p1: [], p2: ["B"] },
   ]);
 }
 
@@ -2024,6 +3380,21 @@ export function importedDefaultCrouchGuardStateScript(): RuntimeTraceInputFrame[
   return expandRuntimeTraceScript([
     { label: "imported-default-crouch-guard-state-x", frames: 14, p1: ["x"], p2: ["B", "D"] },
     { label: "default-crouch-guard-state-settle", frames: 36, p1: [], p2: ["B", "D"] },
+  ]);
+}
+
+export function importedDefaultDiagonalCrouchGuardStateScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-diagonal-crouch-guard-state-x", frames: 14, p1: ["x"], p2: ["DB"] },
+    { label: "default-diagonal-crouch-guard-state-settle", frames: 36, p1: [], p2: ["DB"] },
+  ]);
+}
+
+export function importedDefaultAirGuardStateScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-air-guard-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "imported-default-air-guard-state-x", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "default-air-guard-state-settle", frames: 36, p1: [], p2: ["B"] },
   ]);
 }
 
@@ -2059,9 +3430,16 @@ export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
   hitDefAttr?: string;
+  hitDefDamage?: number;
+  hitDefKill?: boolean;
+  hitDefPriority?: number;
   passiveNotHitBy?: string;
   passiveHitBy?: string;
+  passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number; targetId?: number };
+  defenseMultiplier?: number;
+  attackMultiplier?: number;
   guardDamage?: number;
+  guardKill?: boolean;
   guardFlag?: string;
   guardDistance?: number;
   guardSlideTime?: number;
@@ -2076,6 +3454,8 @@ export type SyntheticImportedTraceFighterOptions = {
     slideStateNo?: number;
     crouchShakeStateNo?: number;
     crouchSlideStateNo?: number;
+    airShakeStateNo?: number;
+    airSlideStateNo?: number;
     guardStateNo?: number;
     shakeAnimNo?: number;
     guardAnimNo?: number;
@@ -2111,29 +3491,61 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withTargetControllers?: boolean;
   withTargetDrop?: boolean;
+  withPrePauseTargetBind?: boolean;
+  withDelayedSuperPause?: boolean;
+  pauseMovePosAdd?: { x: number; y: number; time?: number };
+  action200Duration?: number;
   withSuperPause?: boolean;
   withProjectile?: boolean;
   projectilePriority?: number;
   projectileOffset?: [number, number];
+  projectileVelocity?: [number, number];
+  projectileGroundVelocity?: [number, number?];
+  projectileHits?: number;
+  projectileMissTime?: number;
+  projectileHitAnim?: number;
+  projectileRemoveAnim?: number;
+  projectileCancelAnim?: number;
+  projContactStateNo?: number;
+  projHitStateNo?: number;
+  projGuardStateNo?: number;
+  numProjStateNo?: number;
+  numExplodStateNo?: number;
+  moveContactStateNo?: number;
+  moveHitStateNo?: number;
+  moveGuardStateNo?: number;
+  numTargetStateNo?: number;
+  numHelperStateNo?: number;
   withHelper?: boolean;
   withExplod?: boolean;
+  withSuperMoveExplod?: boolean;
+  withMovingExplod?: boolean;
+  withBoundExplod?: boolean;
+  withScaledExplod?: boolean;
+  withRemoveExplod?: boolean;
+  passiveRemoveOnGetHitExplod?: boolean;
   withInGuardDistGuardStart?: boolean;
   withAutoGuardStartStates?: boolean;
   assertSpecialFlags?: string[];
+  passiveAssertSpecialFlags?: string[];
 };
 
 export function createSyntheticImportedTraceFighter(options: SyntheticImportedTraceFighterOptions = {}): DemoFighterDefinition {
   const hitDefAttr = options.hitDefAttr ?? "S,NA";
-  const damageLine = options.guardDamage === undefined ? "37" : `37,${options.guardDamage}`;
+  const hitDefDamage = options.hitDefDamage ?? 37;
+  const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
+  const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
   const groundVelocity = options.groundVelocity ?? [-3];
   const guardLine =
     options.guardDamage === undefined &&
     options.guardFlag === undefined &&
+    options.guardKill === undefined &&
     options.guardSlideTime === undefined &&
     options.guardControlTime === undefined
       ? ""
       : `
 guardflag = ${options.guardFlag ?? "MA"}
+${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
 guard.pausetime = 4,4
 guard.hittime = 9
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
@@ -2194,6 +3606,10 @@ ctrl = 1
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
 ${options.passiveHitBy ? passiveHitByController("HitBy", "Allow Attrs", options.passiveHitBy) : ""}
+${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
+${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags) : ""}
+${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
+${options.passiveRemoveOnGetHitExplod ? passiveRemoveOnGetHitExplodControllerBlock() : ""}
 
 [Statedef 200]
 type = S
@@ -2203,25 +3619,46 @@ anim = 200
 ctrl = 0
 
 ${assertSpecialLine}
+${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
 attr = ${hitDefAttr}
 damage = ${damageLine}
+${hitDefKillLine}
 pausetime = 4,4
 ground.hittime = 9
 ground.velocity = ${groundVelocity.join(",")}
 id = 77
+priority = ${options.hitDefPriority ?? 4}, Hit
 ${guardLine}
 ${guardDistanceLine}
 ${fallLine}
 ${getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
 ${options.withTargetDrop ? targetDropBlock(77) : ""}
+${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset) : ""}
+${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
+${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim) : ""}
+${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
+${options.projContactStateNo === undefined ? "" : contactBranchBlock("ProjContact(77)", options.projContactStateNo, "ProjContact Branch")}
+${options.projHitStateNo === undefined ? "" : contactBranchBlock("ProjHit(77)", options.projHitStateNo, "ProjHit Branch")}
+${options.projGuardStateNo === undefined ? "" : contactBranchBlock("ProjGuarded(77)", options.projGuardStateNo, "ProjGuarded Branch")}
+${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContact", options.moveContactStateNo, "MoveContact Branch")}
+${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
+${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
+${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
 ${options.withHelper ? helperControllerBlock() : ""}
+${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
+${options.withSuperMoveExplod ? superMoveExplodControllerBlock() : ""}
+${options.withMovingExplod ? movingExplodControllerBlock() : ""}
+${options.withBoundExplod ? boundExplodControllerBlock() : ""}
+${options.withScaledExplod ? scaledExplodControllerBlock() : ""}
+${options.withRemoveExplod ? removeExplodControllerBlock() : ""}
+${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(9000) > 0", options.numExplodStateNo, "NumExplod Branch")}
 
 ${options.getHitState ? getHitStateBlock(options.getHitState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
@@ -2230,6 +3667,7 @@ ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
+${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -2237,7 +3675,9 @@ ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) 
     activeStart: 1,
     activeEnd: 4,
     recovery: 18,
-    damage: 37,
+    damage: hitDefDamage,
+    kill: options.hitDefKill,
+    priority: options.hitDefPriority ?? 4,
     attr: hitDefAttr,
     targetId: 77,
     requiresHitDef: true,
@@ -2248,6 +3688,7 @@ ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) 
     guardFlag: options.guardFlag,
     guardDistance: options.guardDistance,
     guardDamage: options.guardDamage,
+    guardKill: options.guardKill,
     guardPause: options.guardDamage === undefined && options.guardFlag === undefined ? undefined : 4,
     guardStun: options.guardDamage === undefined && options.guardFlag === undefined ? undefined : 9,
     guardSlideTime: options.guardSlideTime,
@@ -2276,20 +3717,47 @@ ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) 
     stateEntryControllers,
     commands,
     animations: new Map([
-      [0, traceAction(0)],
+      [0, options.passiveReversalDef ? reversalTraceAction(0) : traceAction(0)],
       [10, traceAction(10)],
       [20, traceAction(20)],
       [40, traceAction(40)],
-      [200, traceAction(200)],
+      [200, traceAction(200, options.action200Duration)],
       [230, traceAction(230)],
       [500, traceAction(500)],
       ...(options.withInGuardDistGuardStart ? ([[130, traceAction(130)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withAutoGuardStartStates
         ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
         : []),
-      ...(options.withProjectile ? ([[910, projectileTraceAction(910)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withProjectile
+        ? ([[910, projectileTraceAction(910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
+        : []),
+      ...(options.projHitStateNo === undefined ? [] : ([[options.projHitStateNo, traceAction(options.projHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.projGuardStateNo === undefined ? [] : ([[options.projGuardStateNo, traceAction(options.projGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.projContactStateNo === undefined ? [] : ([[options.projContactStateNo, traceAction(options.projContactStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.numProjStateNo === undefined ? [] : ([[options.numProjStateNo, traceAction(options.numProjStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.moveContactStateNo === undefined ? [] : ([[options.moveContactStateNo, traceAction(options.moveContactStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withSuperMoveExplod ? ([[935, explodTraceAction(935)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withMovingExplod ? ([[931, explodTraceAction(931)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withBoundExplod ? ([[932, explodTraceAction(932)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withScaledExplod ? ([[933, explodTraceAction(933)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.passiveRemoveOnGetHitExplod ? ([[934, explodTraceAction(934)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.numExplodStateNo === undefined ? [] : ([[options.numExplodStateNo, traceAction(options.numExplodStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.passiveReversalDef
+        ? ([
+            [options.passiveReversalDef.p1StateNo, traceAction(options.passiveReversalDef.p1StateNo)],
+            ...(options.passiveReversalDef.p2StateNo === undefined
+              ? []
+              : ([[options.passiveReversalDef.p2StateNo, traceAction(options.passiveReversalDef.p2StateNo)]] as Array<
+                  [number, MugenAnimationAction]
+                >)),
+          ] as Array<[number, MugenAnimationAction]>)
+        : []),
       ...(options.getHitState?.stateNo === undefined ? [] : ([[options.getHitState.stateNo, traceAction(options.getHitState.animNo ?? options.getHitState.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.defaultGetHitState?.stateNo === undefined
         ? []
@@ -2412,6 +3880,67 @@ time = 12
 `;
 }
 
+function passiveReversalDefController(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>): string {
+  const hitPause = config.hitPause ?? 0;
+  return `
+[State 0, Passive ReversalDef]
+type = ReversalDef
+trigger1 = 1
+reversal.attr = ${config.attr}
+pausetime = ${hitPause},${hitPause}
+p1stateno = ${config.p1StateNo}
+${config.p2StateNo === undefined ? "" : `p2stateno = ${config.p2StateNo}`}
+${config.targetId === undefined ? "" : `id = ${config.targetId}`}
+`;
+}
+
+function passiveReversalStateBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>): string {
+  const p2State = config.p2StateNo;
+  return `
+[Statedef ${config.p1StateNo}]
+type = A
+movetype = H
+physics = N
+anim = ${config.p1StateNo}
+ctrl = 0
+${p2State === undefined ? "" : `
+[Statedef ${p2State}]
+type = A
+movetype = H
+physics = N
+anim = ${p2State}
+ctrl = 0
+`}
+`;
+}
+
+function passiveAssertSpecialController(flags: string[]): string {
+  return `
+[State 0, Passive AssertSpecial]
+type = AssertSpecial
+trigger1 = 1
+flag = ${flags.join(", ")}
+`;
+}
+
+function defenseMultiplierController(value: number): string {
+  return `
+[State 0, Defence Scale]
+type = DefenceMulSet
+trigger1 = 1
+value = ${value}
+`;
+}
+
+function attackMultiplierController(value: number): string {
+  return `
+[State 200, Attack Scale]
+type = AttackMulSet
+trigger1 = Time = 0
+value = ${value}
+`;
+}
+
 function targetControllerBlock(targetId: number): string {
   return `
 [State 200, Target Damage]
@@ -2459,6 +3988,7 @@ function fallHitDefBlock(fall: NonNullable<DemoMove["fall"]>): string {
   return `
 fall = ${fall.enabled ? 1 : 0}
 ${fall.damage === undefined ? "" : `fall.damage = ${fall.damage}`}
+${fall.kill === undefined ? "" : `fall.kill = ${fall.kill ? 1 : 0}`}
 ${fall.velocity?.x === undefined ? "" : `fall.xvelocity = ${fall.velocity.x}`}
 ${fall.velocity?.y === undefined ? "" : `fall.yvelocity = ${fall.velocity.y}`}
 ${fall.recover === undefined ? "" : `fall.recover = ${fall.recover ? 1 : 0}`}
@@ -2613,6 +4143,8 @@ function defaultGuardHitBlock(state: {
   slideStateNo?: number;
   crouchShakeStateNo?: number;
   crouchSlideStateNo?: number;
+  airShakeStateNo?: number;
+  airSlideStateNo?: number;
   guardStateNo?: number;
   shakeAnimNo?: number;
   guardAnimNo?: number;
@@ -2621,6 +4153,8 @@ function defaultGuardHitBlock(state: {
   const slideStateNo = state.slideStateNo ?? 151;
   const crouchShakeStateNo = state.crouchShakeStateNo ?? 152;
   const crouchSlideStateNo = state.crouchSlideStateNo ?? 153;
+  const airShakeStateNo = state.airShakeStateNo ?? 154;
+  const airSlideStateNo = state.airSlideStateNo ?? 155;
   const guardStateNo = state.guardStateNo ?? 130;
   const shakeAnimNo = state.shakeAnimNo ?? shakeStateNo;
   const guardAnimNo = state.guardAnimNo ?? guardStateNo;
@@ -2713,6 +4247,52 @@ trigger1 = Time = GetHitVar(ctrltime)
 value = 1
 
 [State ${crouchSlideStateNo}, Crouch Guard Hit Over]
+type = ChangeState
+trigger1 = HitOver
+value = ${guardStateNo}
+ctrl = 1
+
+[Statedef ${airShakeStateNo}]
+type = A
+movetype = H
+physics = N
+velset = 0,0
+ctrl = 0
+
+[State ${airShakeStateNo}, Air Guard Shake Anim]
+type = ChangeAnim
+trigger1 = 1
+value = ${shakeAnimNo}
+
+[State ${airShakeStateNo}, Air Guard Shake Over]
+type = ChangeState
+trigger1 = HitShakeOver
+value = ${airSlideStateNo}
+
+[Statedef ${airSlideStateNo}]
+type = A
+movetype = H
+physics = N
+anim = ${shakeAnimNo}
+ctrl = 0
+
+[State ${airSlideStateNo}, Apply Air Guard Velocity]
+type = HitVelSet
+trigger1 = Time = 0
+x = 1
+y = 1
+
+[State ${airSlideStateNo}, Apply Air Guard Gravity]
+type = VelAdd
+trigger1 = 1
+y = Const(movement.yaccel)
+
+[State ${airSlideStateNo}, Regain Air Guard Control]
+type = CtrlSet
+trigger1 = Time = GetHitVar(ctrltime)
+value = 1
+
+[State ${airSlideStateNo}, Air Guard Hit Over]
 type = ChangeState
 trigger1 = HitOver
 value = ${guardStateNo}
@@ -3095,6 +4675,17 @@ keepone = 0
 `;
 }
 
+function prePauseTargetBindBlock(targetId: number): string {
+  return `
+[State 200, Target Bind Before Pause]
+type = TargetBind
+trigger1 = Time = 2
+id = ${targetId}
+pos = 36,-12
+time = 4
+`;
+}
+
 function superPauseControllerBlock(): string {
   return `
 [State 200, Super Pause]
@@ -3107,27 +4698,77 @@ poweradd = 100
 `;
 }
 
-function projectileControllerBlock(priority = 1, offset: [number, number] = [62, -45]): string {
+function delayedSuperPauseControllerBlock(): string {
+  return `
+[State 200, Delayed Super Pause]
+type = SuperPause
+trigger1 = Time = 1
+time = 7
+movetime = 1
+darken = 1
+poweradd = 100
+`;
+}
+
+function pauseMovePosAddBlock(input: { x: number; y: number; time?: number }): string {
+  return `
+[State 200, Move During Pause]
+type = PosAdd
+trigger1 = Time = ${input.time ?? 1}
+x = ${input.x}
+y = ${input.y}
+`;
+}
+
+function projectileControllerBlock(
+  priority = 1,
+  offset: [number, number] = [62, -45],
+  velocity: [number, number] = [36, 0],
+  groundVelocity: [number, number?] = [-5],
+  hits = 1,
+  missTime = 0,
+  hitAnim?: number,
+  removeAnim?: number,
+  cancelAnim?: number,
+): string {
+  const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
+  const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
+  const cancelAnimLine = cancelAnim === undefined ? "" : `projcancelanim = ${cancelAnim}`;
   return `
 [State 200, Fast Projectile]
 type = Projectile
 trigger1 = Time = 2
 projid = 77
 projpriority = ${priority}
+projhits = ${hits}
+projmisstime = ${missTime}
 projanim = 910
+${hitAnimLine}
+${removeAnimLine}
+${cancelAnimLine}
 offset = ${offset[0]},${offset[1]}
-velocity = 36,0
+velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 24
 damage = 31,4
 pausetime = 4,4
 ground.hittime = 13
-ground.velocity = -5
+ground.velocity = ${groundVelocity.join(",")}
 guardflag = MA
 guard.pausetime = 3,3
 guard.hittime = 8
 guard.velocity = -2
 guard.dist = 120
 sprpriority = 7
+`;
+}
+
+function contactBranchBlock(trigger: string, stateNo: number, label: string): string {
+  return `
+[State 200, ${label}]
+type = ChangeState
+trigger1 = ${trigger}
+value = ${stateNo}
+ctrl = 0
 `;
 }
 
@@ -3164,6 +4805,108 @@ trans = add
 `;
 }
 
+function superMoveExplodControllerBlock(): string {
+  return `
+[State 200, SuperMove Visual Explod]
+type = Explod
+trigger1 = Time = 2
+id = 9005
+anim = 935
+pos = 42,-42
+postype = p1
+vel = 5,0
+facing = 1
+sprpriority = 7
+removetime = 30
+supermovetime = 4
+trans = add
+`;
+}
+
+function movingExplodControllerBlock(): string {
+  return `
+[State 200, Moving Visual Explod]
+type = Explod
+trigger1 = Time = 2
+id = 9001
+anim = 931
+pos = 42,-58
+postype = p1
+vel = 4,-2
+accel = 1,0.5
+facing = 1
+sprpriority = 6
+removetime = 30
+trans = add
+`;
+}
+
+function boundExplodControllerBlock(): string {
+  return `
+[State 200, Bound Visual Explod]
+type = Explod
+trigger1 = Time = 2
+id = 9002
+anim = 932
+pos = 32,-54
+postype = p1
+bindtime = 8
+facing = 1
+sprpriority = 6
+removetime = 30
+trans = add
+
+[State 200, Move During Bound Explod]
+type = PosAdd
+trigger1 = Time >= 3
+x = 8
+y = 0
+`;
+}
+
+function scaledExplodControllerBlock(): string {
+  return `
+[State 200, Scaled Visual Explod]
+type = Explod
+trigger1 = Time = 2
+id = 9003
+anim = 933
+pos = 42,-58
+postype = p1
+scale = 2,0.5
+facing = 1
+sprpriority = 6
+removetime = 30
+trans = add
+`;
+}
+
+function passiveRemoveOnGetHitExplodControllerBlock(): string {
+  return `
+[State 0, Passive RemoveOnGetHit Explod]
+type = Explod
+trigger1 = Time = 0
+id = 9004
+anim = 934
+pos = 18,-54
+postype = p1
+facing = 1
+sprpriority = 6
+removetime = -1
+removeongethit = 1
+trans = add
+`;
+}
+
+function removeExplodControllerBlock(): string {
+  return `
+[State 200, Remove Visual Explod]
+type = RemoveExplod
+trigger1 = Time = 4
+id = 9000
+`;
+}
+
 function projectileTraceAction(id: number): MugenAnimationAction {
   return {
     id,
@@ -3178,6 +4921,33 @@ function projectileTraceAction(id: number): MugenAnimationAction {
         clsn1: [{ x1: 6, y1: -18, x2: 34, y2: 6 }],
         clsn2: [{ x1: -8, y1: -24, x2: 36, y2: 8 }],
         raw: `${id},0,0,0,4`,
+        line: 1,
+      },
+    ],
+  };
+}
+
+function projectileTerminalTraceActions(options: SyntheticImportedTraceFighterOptions): Array<[number, MugenAnimationAction]> {
+  return [options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim]
+    .filter((id): id is number => id !== undefined)
+    .filter((id, index, ids) => ids.indexOf(id) === index)
+    .map((id): [number, MugenAnimationAction] => [id, projectileTerminalTraceAction(id)]);
+}
+
+function projectileTerminalTraceAction(id: number): MugenAnimationAction {
+  return {
+    id,
+    rawLines: [`[Begin Action ${id}]`],
+    frames: [
+      {
+        spriteGroup: id,
+        spriteIndex: 0,
+        offsetX: 0,
+        offsetY: 0,
+        duration: 2,
+        clsn1: [],
+        clsn2: [],
+        raw: `${id},0,0,0,2`,
         line: 1,
       },
     ],
@@ -3224,7 +4994,7 @@ function helperTraceAction(id: number): MugenAnimationAction {
   };
 }
 
-function traceAction(id: number): MugenAnimationAction {
+function traceAction(id: number, duration = 4): MugenAnimationAction {
   return {
     id,
     rawLines: [`[Begin Action ${id}]`],
@@ -3234,12 +5004,21 @@ function traceAction(id: number): MugenAnimationAction {
         spriteIndex: 0,
         offsetX: 0,
         offsetY: 0,
-        duration: 4,
+        duration,
         clsn1: id === 200 ? [{ x1: 12, y1: -70, x2: 76, y2: -35 }] : [],
         clsn2: [{ x1: -20, y1: -80, x2: 20, y2: 0 }],
-        raw: `${id},0,0,0,4`,
+        raw: `${id},0,0,0,${duration}`,
         line: 1,
       },
     ],
   };
+}
+
+function reversalTraceAction(id: number, duration = 4): MugenAnimationAction {
+  const action = traceAction(id, duration);
+  const frame = action.frames[0];
+  if (frame) {
+    frame.clsn1 = [{ x1: 10, y1: -45, x2: 36, y2: -18 }];
+  }
+  return action;
 }
