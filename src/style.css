@@ -17779,7 +17779,9 @@ input {
 
   .app-shell.mode-studio .command-result.is-active {
     background: color-mix(in srgb, var(--section-accent) 10%, var(--dcc-row-hover));
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--section-accent) 76%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 48%, transparent);
   }
 }
 
@@ -17853,7 +17855,7 @@ input {
     padding: 5px 10px;
     border-right: 1px solid var(--dcc-line);
     box-shadow:
-      inset 3px 0 0 color-mix(in srgb, var(--section-accent) 68%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--section-accent) 22%, transparent),
       inset 0 -1px 0 var(--dcc-shadow-cut);
   }
 
@@ -17907,9 +17909,8 @@ input {
   .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
     background: color-mix(in srgb, var(--section-accent) 8%, var(--dcc-control));
     box-shadow:
-      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 72%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.045),
-      inset 0 -1px 0 var(--dcc-shadow-cut);
+      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 46%, transparent);
   }
 
   .app-shell.mode-studio .pane,
@@ -17925,7 +17926,7 @@ input {
   }
 
   .app-shell.mode-studio .pane-right {
-    border-left: 2px solid var(--dcc-line-hard);
+    border-left: 1px solid var(--dcc-line-hard);
   }
 
   .app-shell.mode-studio .pane > .section,
@@ -18049,14 +18050,14 @@ input {
   .app-shell.mode-studio .workspace-summary .is-ok,
   .app-shell.mode-studio .asset-lane-strip .is-ok,
   .app-shell.mode-studio .health-grid .is-ok {
-    border-left: 2px solid color-mix(in srgb, var(--ok) 78%, transparent);
+    border-color: color-mix(in srgb, var(--ok) 34%, var(--dcc-line));
     background: color-mix(in srgb, var(--ok) 5%, var(--dcc-row));
   }
 
   .app-shell.mode-studio .workspace-summary .is-warn,
   .app-shell.mode-studio .asset-lane-strip .is-warn,
   .app-shell.mode-studio .health-grid .is-warn {
-    border-left: 2px solid color-mix(in srgb, var(--warn) 78%, transparent);
+    border-color: color-mix(in srgb, var(--warn) 34%, var(--dcc-line));
     background: color-mix(in srgb, var(--warn) 5%, var(--dcc-row));
   }
 
@@ -18137,7 +18138,6 @@ input {
     border: 1px solid var(--dcc-line);
     background: var(--dcc-row-alt);
     box-shadow:
-      inset 3px 0 0 color-mix(in srgb, var(--section-accent) 68%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       inset 0 -1px 0 var(--dcc-shadow-cut);
   }
@@ -18848,9 +18848,8 @@ input {
     border-right: 0;
     background: color-mix(in srgb, var(--section-accent) 6%, var(--dcc-control));
     box-shadow:
-      inset 3px 0 0 color-mix(in srgb, var(--section-accent) 82%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.052),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.82);
+      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 46%, transparent);
   }
 
   .app-shell.mode-studio .workspace-action-grid button:nth-child(2n + 1) {
@@ -18900,7 +18899,7 @@ input {
     width: 100%;
     color: color-mix(in srgb, var(--subtle) 86%, var(--muted));
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.05;
     opacity: 0.9;
     position: static;
