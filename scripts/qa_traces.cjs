@@ -371,6 +371,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-time",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-motion",
       required: true,
       artifact: presets.createSyntheticImportedProjectileMotionTraceArtifact(),

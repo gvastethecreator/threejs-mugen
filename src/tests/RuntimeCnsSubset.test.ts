@@ -58,6 +58,9 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("HitDefAttr(A, NT)", { self: state, hitDefAttr: (filter) => hitAttributeMatches(filter, "S,NA") })).toBe(0);
     expect(evaluateExpression("ProjHit(77)", { self: state, projHit: (id) => id === 77 })).toBe(1);
     expect(evaluateExpression("ProjContact && !ProjGuarded(77)", { self: state, projContact: () => true, projGuarded: () => false })).toBe(1);
+    expect(evaluateExpression("ProjHitTime(77) >= 2", { self: state, projHitTime: (id) => (id === 77 ? 2 : -1) })).toBe(1);
+    expect(evaluateExpression("ProjContactTime(0) = 3", { self: state, projContactTime: (id) => (id === undefined ? 3 : -1) })).toBe(1);
+    expect(evaluateExpression("ProjGuardedTime(77) < 0", { self: state, projGuardedTime: () => -1 })).toBe(1);
     expect(evaluateExpression("NumTarget > 0", { self: runtimeState({ targetCount: 1 }) })).toBe(1);
     expect(evaluateExpression("NumTarget(77) = 1", { self: state, numTarget: (id) => (id === 77 ? 1 : 0) })).toBe(1);
     expect(

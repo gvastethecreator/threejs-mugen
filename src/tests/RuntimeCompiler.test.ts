@@ -35,7 +35,7 @@ time = 20
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
     const clean = compileExpression("P2BodyDist X < 40 && SelfAnimExist(anim + 3)");
-    const contact = compileExpression("MoveGuarded || ProjHit(77) || ProjGuarded(77) || NumTarget(77) > 0");
+    const contact = compileExpression("MoveGuarded || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0");
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
@@ -46,7 +46,7 @@ time = 20
     expect(clean.supportLevel).toBe("executable");
     expect(clean.functions).toEqual(["SelfAnimExist"]);
     expect(contact.supportLevel).toBe("executable");
-    expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit"]);
+    expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit", "ProjHitTime"]);
     expect(contact.identifiers).toEqual(["MoveGuarded"]);
     expect(actorCounts.supportLevel).toBe("executable");
     expect(actorCounts.functions).toEqual(["NumExplod", "NumHelper", "NumProjID"]);

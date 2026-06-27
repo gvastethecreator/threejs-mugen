@@ -58,6 +58,7 @@ import {
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
@@ -2522,6 +2523,36 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile time artifact with ProjHitTime branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-time-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-time-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toContain(276);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 276]);
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );

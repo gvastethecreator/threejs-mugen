@@ -157,6 +157,9 @@ type FighterContactState = {
   projectileHitState?: number;
   projectileGuardState?: number;
   projectileId?: number;
+  projectileContactTime?: number;
+  projectileHitTime?: number;
+  projectileGuardTime?: number;
 };
 
 type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
@@ -696,6 +699,7 @@ function advanceFighter(
   tickRuntimeAfterImage(fighter.runtime, () => createAfterImageSample(fighter));
   tickHitBySlots(fighter.runtime);
   tickHitOverrideSlots(fighter.runtime);
+  advanceContactTimers(fighter);
   resetAssertSpecial(fighter.runtime);
   fighter.stateElapsed += 1;
   fighter.runtime.playerPush = true;
@@ -1466,10 +1470,25 @@ function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard"): voi
 function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
   fighter.contact.projectileContactState = fighter.runtime.stateNo;
   fighter.contact.projectileId = projectileId;
+  fighter.contact.projectileContactTime = 0;
   if (kind === "hit") {
     fighter.contact.projectileHitState = fighter.runtime.stateNo;
+    fighter.contact.projectileHitTime = 0;
   } else {
     fighter.contact.projectileGuardState = fighter.runtime.stateNo;
+    fighter.contact.projectileGuardTime = 0;
+  }
+}
+
+function advanceContactTimers(fighter: FighterMatchState): void {
+  if (fighter.contact.projectileContactTime !== undefined) {
+    fighter.contact.projectileContactTime += 1;
+  }
+  if (fighter.contact.projectileHitTime !== undefined) {
+    fighter.contact.projectileHitTime += 1;
+  }
+  if (fighter.contact.projectileGuardTime !== undefined) {
+    fighter.contact.projectileGuardTime += 1;
   }
 }
 
@@ -1494,6 +1513,19 @@ function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit
     return fighter.contact.projectileGuardState === fighter.runtime.stateNo;
   }
   return fighter.contact.projectileContactState === fighter.runtime.stateNo;
+}
+
+function projectileContactTime(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): number {
+  if (projectileId !== undefined && fighter.contact.projectileId !== projectileId) {
+    return -1;
+  }
+  if (kind === "hit") {
+    return fighter.contact.projectileHitState === fighter.runtime.stateNo ? fighter.contact.projectileHitTime ?? 0 : -1;
+  }
+  if (kind === "guard") {
+    return fighter.contact.projectileGuardState === fighter.runtime.stateNo ? fighter.contact.projectileGuardTime ?? 0 : -1;
+  }
+  return fighter.contact.projectileContactState === fighter.runtime.stateNo ? fighter.contact.projectileContactTime ?? 0 : -1;
 }
 
 function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {
@@ -2611,6 +2643,9 @@ function resolveDispatchNumber(
     projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
     projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
     projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
+    projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
+    projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
+    projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
   });
   const numberValue = Number(evaluated);
   return Number.isFinite(numberValue) ? Math.trunc(numberValue) : undefined;
@@ -2660,6 +2695,9 @@ function evaluateRuntimeTrigger(
     projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
     projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
     projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
+    projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
+    projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
+    projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
   });
 }
 

@@ -24,6 +24,9 @@ export type ExpressionContext = {
   projContact?: (projectileId?: number) => boolean;
   projHit?: (projectileId?: number) => boolean;
   projGuarded?: (projectileId?: number) => boolean;
+  projContactTime?: (projectileId?: number) => number;
+  projHitTime?: (projectileId?: number) => number;
+  projGuardedTime?: (projectileId?: number) => number;
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
@@ -384,6 +387,15 @@ class ExpressionParser {
     if (lower === "projguarded") {
       return this.context.projGuarded?.() ? 1 : 0;
     }
+    if (lower === "projcontacttime") {
+      return this.context.projContactTime?.() ?? -1;
+    }
+    if (lower === "projhittime") {
+      return this.context.projHitTime?.() ?? -1;
+    }
+    if (lower === "projguardedtime") {
+      return this.context.projGuardedTime?.() ?? -1;
+    }
     if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
       return identifier.toUpperCase();
     }
@@ -455,6 +467,15 @@ class ExpressionParser {
     }
     if (lower === "projguarded") {
       return this.context.projGuarded?.(optionalProjectileId(args[0])) ? 1 : 0;
+    }
+    if (lower === "projcontacttime") {
+      return this.context.projContactTime?.(optionalProjectileTimeId(args[0])) ?? -1;
+    }
+    if (lower === "projhittime") {
+      return this.context.projHitTime?.(optionalProjectileTimeId(args[0])) ?? -1;
+    }
+    if (lower === "projguardedtime") {
+      return this.context.projGuardedTime?.(optionalProjectileTimeId(args[0])) ?? -1;
     }
     this.context.reportUnsupported?.(identifier);
     return 0;
@@ -699,6 +720,11 @@ function truthy(value: ExpressionValue): boolean {
 
 function optionalProjectileId(value: ExpressionValue | undefined): number | undefined {
   return optionalPositiveInteger(value);
+}
+
+function optionalProjectileTimeId(value: ExpressionValue | undefined): number | undefined {
+  const id = optionalPositiveInteger(value);
+  return id === 0 ? undefined : id;
 }
 
 function optionalPositiveInteger(value: ExpressionValue | undefined): number | undefined {

@@ -3398,6 +3398,55 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedProjectileTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-time-attacker",
+    displayName: "Synthetic Imported Projectile Time Attacker",
+    withProjectile: true,
+    projectileHitAnim: 911,
+    projHitTimeStateNo: 276,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-time-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-time-golden",
+      label: "Synthetic imported Projectile time trigger route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile time trace proves bounded ProjHitTime(77) can branch after the current owner records a projectile hit. It does not claim exact MUGEN/IKEMEN pause/tick-order, multi-projectile, helper-owned projectile, or target-selection parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-time-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 276],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minNextProjectileSerial: 1 }],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileMotionTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? effectPauseStage();
   const script = importedProjectileMotionScript();
@@ -4747,6 +4796,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileCancelAnim?: number;
   projContactStateNo?: number;
   projHitStateNo?: number;
+  projHitTimeStateNo?: number;
   projGuardStateNo?: number;
   numProjStateNo?: number;
   numExplodStateNo?: number;
@@ -4962,6 +5012,7 @@ ${options.withProjectile ? projectileControllerBlock(options.projectilePriority,
 ${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
 ${options.projContactStateNo === undefined ? "" : contactBranchBlock("ProjContact(77)", options.projContactStateNo, "ProjContact Branch")}
 ${options.projHitStateNo === undefined ? "" : contactBranchBlock("ProjHit(77)", options.projHitStateNo, "ProjHit Branch")}
+${options.projHitTimeStateNo === undefined ? "" : contactBranchBlock("ProjHitTime(77) >= 1", options.projHitTimeStateNo, "ProjHitTime Branch")}
 ${options.projGuardStateNo === undefined ? "" : contactBranchBlock("ProjGuarded(77)", options.projGuardStateNo, "ProjGuarded Branch")}
 ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContact", options.moveContactStateNo, "MoveContact Branch")}
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
@@ -5057,6 +5108,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
         ? ([[910, projectileTraceAction(910)], ...projectileTerminalTraceActions(options)] as Array<[number, MugenAnimationAction]>)
         : []),
       ...(options.projHitStateNo === undefined ? [] : ([[options.projHitStateNo, traceAction(options.projHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.projHitTimeStateNo === undefined ? [] : ([[options.projHitTimeStateNo, traceAction(options.projHitTimeStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projGuardStateNo === undefined ? [] : ([[options.projGuardStateNo, traceAction(options.projGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.projContactStateNo === undefined ? [] : ([[options.projContactStateNo, traceAction(options.projContactStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numProjStateNo === undefined ? [] : ([[options.numProjStateNo, traceAction(options.numProjStateNo)]] as Array<[number, MugenAnimationAction]>)),
