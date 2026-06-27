@@ -416,8 +416,9 @@ pre,
 .stage-status-main small {
   min-width: 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .stage-status-main strong {
@@ -454,8 +455,9 @@ pre,
 .stage-status-metric b {
   min-width: 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .stage-status-metric small {
@@ -526,7 +528,7 @@ pre,
   grid-template-columns: minmax(120px, 1fr) auto minmax(120px, 1fr);
   gap: 12px;
   align-items: start;
-  max-width: 760px;
+  max-width: min(100%, 47.5rem);
   margin: 0 auto;
   padding: 6px 8px;
   border: 1px solid color-mix(in srgb, var(--panel-border) 86%, #000);
@@ -541,7 +543,7 @@ pre,
 .round-hud-panel.inspector {
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  max-width: 560px;
+  max-width: min(100%, 35rem);
   color: var(--muted);
   font-family: var(--mono);
   font-size: 12px;
@@ -574,8 +576,9 @@ pre,
 .hud-fighter-top span {
   min-width: 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .hud-fighter-role {
@@ -666,7 +669,8 @@ pre,
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .app-shell.mode-studio .toolbar-label {
@@ -684,7 +688,9 @@ pre,
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .toggle-pill {
@@ -781,13 +787,14 @@ pre,
   width: fit-content;
   max-width: 100%;
   overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--surface-accent);
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 700;
   text-overflow: ellipsis;
   text-transform: none;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workspace-summary {
@@ -815,23 +822,25 @@ pre,
 .workspace-summary b {
   min-width: 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--text);
   font-family: var(--mono);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.05;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workspace-summary small {
   min-width: 0;
   overflow: hidden;
+  overflow-wrap: anywhere;
   color: var(--subtle);
   font-size: 12px;
   line-height: 1.15;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .workspace-summary .is-ok b {
@@ -5164,7 +5173,7 @@ input[type="number"] {
 }
 
 .round-hud-panel {
-  max-width: 800px;
+  max-width: min(100%, 50rem);
 }
 
 .list {
@@ -5259,11 +5268,11 @@ button.debug-filter-button {
 
 @media (max-width: 1240px) and (min-width: 981px) {
   .app-shell {
-    grid-template-columns: minmax(248px, 0.74fr) minmax(460px, 1.26fr) minmax(258px, 0.8fr);
+    grid-template-columns: minmax(15.5rem, 0.74fr) minmax(28.75rem, 1.26fr) minmax(16.125rem, 0.8fr);
   }
 
   .app-shell.mode-studio {
-    grid-template-columns: minmax(270px, 0.82fr) minmax(450px, 1.18fr) minmax(270px, 0.86fr);
+    grid-template-columns: minmax(16.875rem, 0.82fr) minmax(28.125rem, 1.18fr) minmax(16.875rem, 0.86fr);
   }
 
   .app-shell.mode-studio .stage-toolbar {
