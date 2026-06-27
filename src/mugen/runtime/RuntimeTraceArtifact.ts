@@ -547,6 +547,7 @@ function cloneTraceEffect(effect: RuntimeTraceArtifactEffect): RuntimeTraceArtif
     return {
       ...effect,
       accel: effect.accel ? { ...effect.accel } : undefined,
+      velMul: effect.velMul ? { ...effect.velMul } : undefined,
       scale: effect.scale ? { ...effect.scale } : undefined,
     };
   }

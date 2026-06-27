@@ -1899,6 +1899,12 @@ function cloneTraceEffect(effect: RuntimeTraceEffectSummary): RuntimeTraceEffect
             y: roundTraceNumber(effect.accel.y),
           }
         : undefined,
+      velMul: effect.velMul
+        ? {
+            x: roundTraceNumber(effect.velMul.x),
+            y: roundTraceNumber(effect.velMul.y),
+          }
+        : undefined,
       scale: effect.scale
         ? {
             x: roundTraceNumber(effect.scale.x),

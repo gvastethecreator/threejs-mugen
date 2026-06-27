@@ -164,6 +164,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
     accel: { x: 0, y: 0 },
+    velMul: { x: 1, y: 1 },
     scale: { x: 1, y: 1 },
     facing: 1,
     frameIndex: 0,

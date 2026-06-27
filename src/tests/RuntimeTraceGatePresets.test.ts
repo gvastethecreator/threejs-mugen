@@ -47,6 +47,7 @@ import {
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
@@ -94,6 +95,7 @@ import {
   importedHelperScript,
   importedProjectileClashScript,
   importedProjectileMotionScript,
+  importedProjectileVelMulScript,
   importedProjectileMultiHitScript,
   importedProjectilePriorityCancelScript,
   importedProjectileScript,
@@ -2045,6 +2047,43 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
+  it("creates a synthetic imported Projectile velmul artifact with velocity decay evidence", () => {
+    const artifact = createSyntheticImportedProjectileVelMulTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-velmul-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-velmul-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const projectileFrame = evidence?.actorFrames.find(
+      (frame) => frame.source === "effect" && frame.actorKind === "projectile" && frame.ownerId === "p1" && frame.animNo === 910,
+    );
+    expect(projectileFrame?.maxVel.x).toBeGreaterThanOrEqual(8);
+    expect(projectileFrame?.minVel.x).toBeLessThanOrEqual(2);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "projectile",
+        ownerId: "p1",
+        animNo: 910,
+        moveType: "A",
+        minFrames: 3,
+        observedVelXAtLeast: 8,
+        observedVelXAtMost: 2,
+      },
+    ]);
+  });
+
   it("creates a synthetic imported Projectile contact artifact with ProjContact branch evidence", () => {
     const artifact = createSyntheticImportedProjectileContactTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
@@ -2729,6 +2768,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(importedProjectileMotionScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-projectile-motion-x",
       "projectile-motion-settle",
+    ]);
+    expect(importedProjectileVelMulScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-projectile-velmul-x",
+      "projectile-velmul-settle",
     ]);
     expect(importedProjectileGuardScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-projectile-guard-x",

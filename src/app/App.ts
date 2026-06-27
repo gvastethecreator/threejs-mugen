@@ -211,6 +211,12 @@ function iconForAction(label: string, attribute: string): StudioIconName {
   if (key.includes("asset") || key.includes("sprite")) {
     return "assets";
   }
+  if (key.includes("module") || key.includes("architecture") || key.includes("boundary")) {
+    return "modules";
+  }
+  if (key.includes("workbench") || key.includes("project") || key.includes("health")) {
+    return "workbench";
+  }
   if (key.includes("debug")) {
     return "debug";
   }
@@ -1816,8 +1822,10 @@ export class App {
       .map(
         (action, index) => {
           const selected = index === Math.min(this.commandPaletteActiveIndex, actions.length - 1);
+          const iconName = iconForAction(action.label, [action.id, action.group, ...action.keywords].join(" "));
           return `
           <button type="button" id="command-result-${index}" role="option" aria-selected="${selected}" class="command-result ${selected ? "is-active" : ""}" data-command-id="${escapeHtml(action.id)}" ${action.disabled ? "disabled" : ""}>
+            <span class="command-result-icon">${tablerIcon(iconName, "ui-icon")}</span>
             <span class="command-result-main">
               <strong>${escapeHtml(action.label)}</strong>
               <small>${escapeHtml(action.detail)}</small>

@@ -249,6 +249,7 @@ export type ActorEffectSnapshot =
       removeAnimNo?: number;
       cancelAnimNo?: number;
       accel?: { x: number; y: number };
+      velMul?: { x: number; y: number };
       scale?: { x: number; y: number };
     };
 

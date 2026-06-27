@@ -4814,7 +4814,7 @@ button.controller-chip {
 
 .command-result {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: start;
   min-height: 66px;
@@ -4825,6 +4825,20 @@ button.controller-chip {
   background: var(--surface-flat);
   box-shadow: var(--shadow-panel);
   text-align: left;
+}
+
+.command-result-icon {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  color: color-mix(in srgb, var(--surface-accent) 62%, var(--muted));
+}
+
+.command-result-icon .ui-icon {
+  width: 15px;
+  height: 15px;
+  stroke-width: 1.9;
 }
 
 .command-result:hover,
@@ -17721,6 +17735,46 @@ input {
     width: min(640px, calc(100vw - 56px));
     border-radius: 2px;
     background: var(--dcc-panel);
+  }
+
+  .app-shell.mode-studio .command-result {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    min-height: 46px;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+  }
+
+  .app-shell.mode-studio .command-result::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  .app-shell.mode-studio .command-result-icon {
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+    color: color-mix(in srgb, var(--section-accent) 64%, var(--muted));
+  }
+
+  .app-shell.mode-studio .command-result-main {
+    gap: 1px;
+  }
+
+  .app-shell.mode-studio .command-result-main strong {
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio .command-result-main small {
+    color: var(--subtle);
+    font-size: 12.5px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio .command-result-meta {
+    align-self: center;
   }
 
   .app-shell.mode-studio .command-result.is-active {

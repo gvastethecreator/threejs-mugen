@@ -79,6 +79,7 @@ describe("ProjectileSystem", () => {
         projid: "77",
         velocity: "5,-1",
         accel: "0.5,0.25",
+        velmul: "0.5,1.5",
         projscale: "1.5,0.75",
         facing: "-1",
         projhitanim: "1200",
@@ -125,6 +126,7 @@ describe("ProjectileSystem", () => {
       pos: { x: 12, y: -20 },
       vel: { x: -5, y: -1 },
       accel: { x: -0.5, y: 0.25 },
+      velMul: { x: 0.5, y: 1.5 },
       scale: { x: 1.5, y: 0.75 },
       facing: -1,
       hitAnimNo: 1200,
@@ -161,6 +163,7 @@ describe("ProjectileSystem", () => {
       projectileId: 91,
       velocity: [7, -2],
       acceleration: [1, 0.25],
+      velocityMultiplier: [0.5, 2],
       scale: [2, 0.5],
       facing: 1,
       hitAnim: 1300,
@@ -214,6 +217,7 @@ describe("ProjectileSystem", () => {
       projectileId: 91,
       vel: { x: 7, y: -2 },
       accel: { x: 1, y: 0.25 },
+      velMul: { x: 0.5, y: 2 },
       scale: { x: 2, y: 0.5 },
       facing: 1,
       hitAnimNo: 1300,
@@ -285,6 +289,27 @@ describe("ProjectileSystem", () => {
     expect(shot).toMatchObject({ hitsRemaining: 0, hasHit: true, missTimeRemaining: 0, removeOnHit: false });
     expect(canRuntimeProjectileContact(shot)).toBe(false);
     expect(advanceRuntimeProjectiles([shot], stage)).toHaveLength(1);
+  });
+
+  it("applies bounded projectile velocity multipliers after acceleration", () => {
+    const shot = projectile({
+      vel: { x: 8, y: -2 },
+      accel: { x: 2, y: 1 },
+      velMul: { x: 0.5, y: 2 },
+    });
+
+    advanceRuntimeProjectiles([shot], stage);
+
+    expect(shot).toMatchObject({
+      pos: { x: 8, y: -2 },
+      vel: { x: 5, y: -2 },
+    });
+    expect(runtimeProjectilesToSnapshots([shot], 1000)[0]).toMatchObject({
+      effect: {
+        accel: { x: 2, y: 1 },
+        velMul: { x: 0.5, y: 2 },
+      },
+    });
   });
 
   it("plays a bounded terminal animation when hit removal metadata resolves to an AIR action", () => {
@@ -406,6 +431,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     pos: { x: 0, y: 0 },
     vel: { x: 2, y: 0 },
     accel: { x: 0, y: 0 },
+    velMul: { x: 1, y: 1 },
     scale: { x: 1, y: 1 },
     facing: 1,
     frameIndex: 0,

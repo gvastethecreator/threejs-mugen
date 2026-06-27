@@ -21,6 +21,7 @@ export type RuntimeProjectile = {
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   accel: { x: number; y: number };
+  velMul: { x: number; y: number };
   scale: { x: number; y: number };
   facing: 1 | -1;
   hitAnimNo?: number;
@@ -99,6 +100,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const facing = forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing;
   const rawVelocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "velocity") ?? findControllerParam(input.controller, "vel")) ?? [0, 0];
   const rawAcceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel")) ?? [0, 0];
+  const rawVelocityMultiplier = operation?.velocityMultiplier ?? scalePair(findControllerParam(input.controller, "velmul")) ?? [1, 1];
   const rawScale = operation?.scale ?? scalePair(findControllerParam(input.controller, "projscale") ?? findControllerParam(input.controller, "scale")) ?? [1, 1];
   const groundVelocity = normalizeOptionalVelocityPair(operation?.groundVelocity) ?? velocityPair(findControllerParam(input.controller, "ground.velocity"));
   const frame = input.action.frames[0];
@@ -132,6 +134,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     pos: input.pos,
     vel: { x: rawVelocity[0] * facing, y: rawVelocity[1] },
     accel: { x: rawAcceleration[0] * facing, y: rawAcceleration[1] },
+    velMul: pairToVelocityMultiplier(rawVelocityMultiplier),
     scale: pairToScale(rawScale),
     facing,
     hitAnimNo: normalizeProjectileAnim(operation?.hitAnim ?? firstNumber(findControllerParam(input.controller, "projhitanim"))),
@@ -188,6 +191,8 @@ export function advanceRuntimeProjectiles(
     projectile.pos.y += projectile.vel.y;
     projectile.vel.x += projectile.accel.x;
     projectile.vel.y += projectile.accel.y;
+    projectile.vel.x *= projectile.velMul.x;
+    projectile.vel.y *= projectile.velMul.y;
     projectile.frameElapsed += 1;
     const frame = projectile.action.frames[projectile.frameIndex];
     if (frame && projectile.frameElapsed >= Math.max(1, frame.duration)) {
@@ -261,6 +266,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           removeAnimNo: projectile.removeAnimNo,
           cancelAnimNo: projectile.cancelAnimNo,
           ...(isDefaultVector(projectile.accel) ? {} : { accel: { ...projectile.accel } }),
+          ...(isDefaultVelocityMultiplier(projectile.velMul) ? {} : { velMul: { ...projectile.velMul } }),
           ...(isDefaultScale(projectile.scale) ? {} : { scale: { ...projectile.scale } }),
         },
         runtime: {
@@ -382,6 +388,7 @@ export function startRuntimeProjectileTerminalPlayback(projectile: RuntimeProjec
   projectile.age = 0;
   projectile.vel = { x: 0, y: 0 };
   projectile.accel = { x: 0, y: 0 };
+  projectile.velMul = { x: 1, y: 1 };
   projectile.terminalPlayback = {
     reason,
     duration: actionDuration(action),
@@ -512,8 +519,19 @@ function pairToScale(value: [number, number] | undefined): { x: number; y: numbe
   };
 }
 
+function pairToVelocityMultiplier(value: [number, number] | undefined): { x: number; y: number } {
+  return {
+    x: clampProjectileVelocityMultiplier(value?.[0] ?? 1),
+    y: clampProjectileVelocityMultiplier(value?.[1] ?? value?.[0] ?? 1),
+  };
+}
+
 function isDefaultVector(value: { x: number; y: number }): boolean {
   return value.x === 0 && value.y === 0;
+}
+
+function isDefaultVelocityMultiplier(value: { x: number; y: number }): boolean {
+  return value.x === 1 && value.y === 1;
 }
 
 function isDefaultScale(value: { x: number; y: number }): boolean {
@@ -545,6 +563,13 @@ function clampProjectileScale(value: number): number {
     return 1;
   }
   return Math.max(0.05, Math.min(8, value));
+}
+
+function clampProjectileVelocityMultiplier(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(-4, Math.min(4, value));
 }
 
 function normalizeProjectileAnim(value: number | undefined): number | undefined {

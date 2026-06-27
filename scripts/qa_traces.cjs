@@ -301,6 +301,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileMotionTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-velmul",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileVelMulTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-contact",
       required: true,
       artifact: presets.createSyntheticImportedProjectileContactTraceArtifact(),
@@ -845,6 +850,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-projectile-motion",
+    "synthetic-imported-projectile-velmul",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-explod-velocity",
