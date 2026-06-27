@@ -21809,3 +21809,444 @@ input {
     white-space: normal;
   }
 }
+
+/* Desktop Studio hard-surface pass: neutral DCC shell, thin section rails, aligned command rows. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --text: #d5dbe2;
+    --muted: #9aa5af;
+    --subtle: #747f8b;
+    --ok: #8a9d8a;
+    --warn: #b17380;
+    --danger: #c76372;
+    --pending: #838d98;
+    --workbench: #8794a1;
+    --asset: #9b8fa2;
+    --inspect: #81979f;
+    --stage-accent: #879887;
+    --debug-accent: #aa737c;
+    --trace-accent: #9089a4;
+    --module-accent: #7c9793;
+    --build-accent: #8194a9;
+    --dcc-frame: #06080b;
+    --dcc-panel: #080b0f;
+    --dcc-rail: #070a0e;
+    --dcc-rail-deep: #05070a;
+    --dcc-slot: #030509;
+    --dcc-field: #020407;
+    --dcc-row: #0a0e13;
+    --dcc-row-alt: #080b10;
+    --dcc-row-hover: #11171f;
+    --dcc-control: #0b0f15;
+    --dcc-control-hover: #141a22;
+    --dcc-line: rgba(142, 154, 166, 0.18);
+    --dcc-line-hard: rgba(156, 168, 181, 0.28);
+    --dcc-raise:
+      inset 1px 1px 0 rgba(255, 255, 255, 0.035),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.78);
+    --dcc-inset:
+      inset 1px 1px 0 rgba(0, 0, 0, 0.76),
+      inset -1px -1px 0 rgba(255, 255, 255, 0.025);
+  }
+
+  .app-shell.mode-studio .pane > .section,
+  .app-shell.mode-studio .pane-right > .section,
+  .app-shell.mode-studio .pane > .workbench-ops-section,
+  .app-shell.mode-studio .pane-right > .workbench-ops-section,
+  .app-shell.mode-studio details.section {
+    position: relative;
+    padding: 7px 8px 8px 10px;
+    background: var(--dcc-panel);
+  }
+
+  .app-shell.mode-studio .pane > .section::before,
+  .app-shell.mode-studio .pane-right > .section::before,
+  .app-shell.mode-studio .pane > .workbench-ops-section::before,
+  .app-shell.mode-studio .pane-right > .workbench-ops-section::before,
+  .app-shell.mode-studio details.section::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: color-mix(in srgb, var(--section-accent) 62%, transparent);
+    content: "";
+    opacity: 0.72;
+  }
+
+  .app-shell.mode-studio .file-loader-section {
+    --section-accent: var(--inspect);
+  }
+
+  .app-shell.mode-studio .studio-tab-section {
+    --section-accent: var(--pending);
+  }
+
+  .app-shell.mode-studio .build-command-center,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-action-grid,
+  .app-shell.mode-studio[data-studio-tab="build"] .build-readiness-header {
+    --section-accent: var(--build-accent);
+  }
+
+  .app-shell.mode-studio .evidence-command-center,
+  .app-shell.mode-studio .evidence-actions-section,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .tabs.studio-tabs {
+    --section-accent: var(--trace-accent);
+  }
+
+  .app-shell.mode-studio .section-heading-row,
+  .app-shell.mode-studio .workbench-ops-head,
+  .app-shell.mode-studio .command-center-header,
+  .app-shell.mode-studio .build-readiness-header,
+  .app-shell.mode-studio .compact-heading {
+    min-height: 25px;
+    padding-bottom: 5px;
+    border-bottom-color: var(--dcc-line-hard);
+  }
+
+  .app-shell.mode-studio .section-heading-row > div,
+  .app-shell.mode-studio .command-center-header > div {
+    display: grid;
+    grid-template-columns: minmax(64px, max-content) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .panel-kicker,
+  .app-shell.mode-studio .workspace-eyebrow,
+  .app-shell.mode-studio .gate-kicker,
+  .app-shell.mode-studio .record-kicker {
+    color: color-mix(in srgb, var(--section-accent) 36%, var(--subtle));
+    font-size: 11.5px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .section-heading-row h2,
+  .app-shell.mode-studio .workbench-ops-head h2,
+  .app-shell.mode-studio .command-center-header h2,
+  .app-shell.mode-studio .pane-right .section > h2,
+  .app-shell.mode-studio .pane .section > h2 {
+    color: color-mix(in srgb, var(--text) 92%, var(--muted));
+    font-size: 12.35px;
+    font-weight: 680;
+  }
+
+  .app-shell.mode-studio .workspace-summary,
+  .app-shell.mode-studio .mode-switch,
+  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs,
+  .app-shell.mode-studio .workspace-action-grid,
+  .app-shell.mode-studio .studio-mission-strip,
+  .app-shell.mode-studio .build-runway,
+  .app-shell.mode-studio .build-action-grid,
+  .app-shell.mode-studio .command-meter-grid,
+  .app-shell.mode-studio .evidence-lane-strip,
+  .app-shell.mode-studio .action-stack,
+  .app-shell.mode-studio .command-action-column,
+  .app-shell.mode-studio .studio-kv,
+  .app-shell.mode-studio .list.compact-list {
+    border-color: var(--dcc-line-hard);
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio .workspace-summary span,
+  .app-shell.mode-studio .command-meter-grid span,
+  .app-shell.mode-studio .build-runway span,
+  .app-shell.mode-studio .studio-stat,
+  .app-shell.mode-studio .stage-status-metric {
+    min-height: 29px;
+    padding: 5px 7px;
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .command-meter-grid b,
+  .app-shell.mode-studio .build-runway b,
+  .app-shell.mode-studio .studio-stat strong,
+  .app-shell.mode-studio .stage-status-metric b {
+    color: color-mix(in srgb, var(--text) 90%, var(--muted));
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .app-shell.mode-studio .workspace-summary small,
+  .app-shell.mode-studio .command-meter-grid small,
+  .app-shell.mode-studio .build-runway small,
+  .app-shell.mode-studio .studio-stat span,
+  .app-shell.mode-studio .stage-status-metric small {
+    color: var(--subtle);
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio .workspace-summary .is-ok b,
+  .app-shell.mode-studio .command-meter-grid .is-ok b,
+  .app-shell.mode-studio .build-runway .is-ok b,
+  .app-shell.mode-studio .evidence-lane-strip .is-ok b {
+    color: color-mix(in srgb, var(--ok) 72%, var(--text));
+  }
+
+  .app-shell.mode-studio .workspace-summary .is-warn b,
+  .app-shell.mode-studio .command-meter-grid .is-warn b,
+  .app-shell.mode-studio .build-runway .is-warn b,
+  .app-shell.mode-studio .evidence-lane-strip .is-warn b {
+    color: color-mix(in srgb, var(--warn) 66%, var(--text));
+  }
+
+  .app-shell.mode-studio .mode-switch button,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab,
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .action-stack button,
+  .app-shell.mode-studio .command-action-column button,
+  .app-shell.mode-studio .build-action-grid button,
+  .app-shell.mode-studio .full-width-action {
+    border-color: var(--dcc-line);
+    background: var(--dcc-control);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch button:hover,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:hover,
+  .app-shell.mode-studio .workspace-action-grid button:hover,
+  .app-shell.mode-studio .action-stack button:hover,
+  .app-shell.mode-studio .command-action-column button:hover,
+  .app-shell.mode-studio .build-action-grid button:hover,
+  .app-shell.mode-studio .full-width-action:hover {
+    background: var(--dcc-control-hover);
+  }
+
+  .app-shell.mode-studio .mode-switch button.is-active,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active,
+  .app-shell.mode-studio .workspace-action-grid .primary-action,
+  .app-shell.mode-studio .action-stack .primary-action,
+  .app-shell.mode-studio .command-action-column .primary-action,
+  .app-shell.mode-studio .build-action-grid .primary-action,
+  .app-shell.mode-studio .primary-action {
+    background: var(--dcc-control);
+    box-shadow:
+      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 62%, transparent),
+      var(--dcc-raise);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .action-stack button,
+  .app-shell.mode-studio .command-action-column button,
+  .app-shell.mode-studio .build-action-grid button,
+  .app-shell.mode-studio .full-width-action {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) minmax(78px, max-content);
+    grid-template-rows: auto;
+    min-height: 34px;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .primary-action,
+  .app-shell.mode-studio .build-action-grid .primary-action,
+  .app-shell.mode-studio .build-action-grid .full-width-action {
+    grid-column: auto;
+    min-height: 36px;
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:last-child,
+  .app-shell.mode-studio .action-stack button:last-child,
+  .app-shell.mode-studio .command-action-column button:last-child,
+  .app-shell.mode-studio .build-action-grid button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .action-icon,
+  .app-shell.mode-studio .action-stack .action-icon,
+  .app-shell.mode-studio .command-action-column .action-icon,
+  .app-shell.mode-studio .build-action-grid .action-icon,
+  .app-shell.mode-studio .full-width-action .action-icon {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: center;
+    color: color-mix(in srgb, var(--section-accent) 58%, var(--muted));
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
+  .app-shell.mode-studio .workspace-action-grid button small,
+  .app-shell.mode-studio .action-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
+  .app-shell.mode-studio .action-label {
+    grid-column: 2;
+    grid-row: 1;
+    color: color-mix(in srgb, var(--text) 88%, var(--muted));
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button small {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    max-width: 96px;
+    color: var(--subtle);
+    font-size: 11.5px;
+    line-height: 1.05;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .studio-mission-node {
+    grid-template-columns: 30px minmax(70px, 0.38fr) minmax(0, 1fr);
+    min-height: 35px;
+    gap: 6px;
+    padding: 5px 10px 5px 6px;
+  }
+
+  .app-shell.mode-studio .studio-mission-step {
+    width: 22px;
+    min-height: 18px;
+    color: color-mix(in srgb, var(--section-accent) 44%, var(--subtle));
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong,
+  .app-shell.mode-studio .operator-callout strong,
+  .app-shell.mode-studio .list-title,
+  .app-shell.mode-studio .asset-row-title strong,
+  .app-shell.mode-studio .engine-module-name strong {
+    color: color-mix(in srgb, var(--text) 90%, var(--muted));
+    font-size: 12px;
+    font-weight: 650;
+  }
+
+  .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-detail,
+  .app-shell.mode-studio .operator-callout small,
+  .app-shell.mode-studio .list-meta {
+    color: var(--subtle);
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio .studio-mission-node::after {
+    right: 0;
+    width: 2px;
+    opacity: 0.86;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok::after {
+    background: color-mix(in srgb, var(--ok) 62%, transparent);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn::after,
+  .app-shell.mode-studio .studio-mission-node.is-pending::after,
+  .app-shell.mode-studio .studio-mission-node.is-planned::after,
+  .app-shell.mode-studio .studio-mission-node.is-partial::after {
+    background: color-mix(in srgb, var(--warn) 56%, transparent);
+  }
+
+  .app-shell.mode-studio .build-action-grid,
+  .app-shell.mode-studio .action-stack,
+  .app-shell.mode-studio .command-action-column {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+
+  .app-shell.mode-studio .command-center-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    background: var(--dcc-slot);
+  }
+
+  .app-shell.mode-studio .operator-callout {
+    padding: 7px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .operator-callout .panel-kicker {
+    color: color-mix(in srgb, var(--section-accent) 44%, var(--subtle));
+  }
+
+  .app-shell.mode-studio .evidence-lane-strip span {
+    min-height: 36px;
+    padding: 5px 7px;
+    border-color: var(--dcc-line);
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio .evidence-lane-strip small,
+  .app-shell.mode-studio .evidence-lane-strip b,
+  .app-shell.mode-studio .evidence-lane-strip em {
+    font-size: 11.5px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .studio-kv {
+    grid-template-columns: minmax(92px, 0.32fr) minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .studio-kv dt {
+    justify-content: end;
+    padding-right: 9px;
+    border-right: 1px solid var(--dcc-line);
+    color: var(--subtle);
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .studio-kv dd {
+    padding-left: 9px;
+    color: color-mix(in srgb, var(--text) 88%, var(--muted));
+  }
+
+  .app-shell.mode-studio .badge.warn,
+  .app-shell.mode-studio .status-badge.warn,
+  .app-shell.mode-studio .status-badge.status-warn,
+  .app-shell.mode-studio .status-badge.status-pending,
+  .app-shell.mode-studio .status-badge.status-planned,
+  .app-shell.mode-studio .asset-row-export.is-warn {
+    border-color: color-mix(in srgb, var(--warn) 36%, var(--dcc-line));
+    background: var(--dcc-field);
+    color: color-mix(in srgb, var(--warn) 74%, var(--text));
+  }
+
+  .app-shell.mode-studio .badge.ok,
+  .app-shell.mode-studio .status-badge.ok,
+  .app-shell.mode-studio .status-badge.status-ok,
+  .app-shell.mode-studio .status-badge.status-active,
+  .app-shell.mode-studio .asset-row-export.is-ok {
+    border-color: color-mix(in srgb, var(--ok) 30%, var(--dcc-line));
+    background: var(--dcc-field);
+    color: color-mix(in srgb, var(--ok) 68%, var(--text));
+  }
+
+  .app-shell.mode-studio .badge.error,
+  .app-shell.mode-studio .status-badge.error,
+  .app-shell.mode-studio .status-badge.status-fail,
+  .app-shell.mode-studio .status-badge.status-blocked,
+  .app-shell.mode-studio .status-badge.status-unsupported {
+    border-color: color-mix(in srgb, var(--danger) 38%, var(--dcc-line));
+    background: var(--dcc-field);
+    color: color-mix(in srgb, var(--danger) 76%, var(--text));
+  }
+
+  .app-shell.mode-studio .stage-status-card {
+    background: rgba(2, 4, 7, 0.94) !important;
+  }
+}
