@@ -22,6 +22,7 @@ import {
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
+  createSyntheticImportedInGuardDistFarTraceArtifact,
   createSyntheticImportedStateExitTraceArtifact,
   createSyntheticImportedCrouchGuardStateTraceArtifact,
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
@@ -1177,6 +1178,40 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 130,
       animNo: 130,
       ctrl: false,
+      source: "imported",
+    });
+  });
+
+  it("creates a synthetic imported InGuardDist far artifact that stays idle", () => {
+    const artifact = createSyntheticImportedInGuardDistFarTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-inguarddist-far-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-inguarddist-far-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200]));
+    expect(evidence?.executedStates).not.toContain(130);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.combatReasons).toContain("whiff");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 0,
+      animNo: 0,
+      ctrl: true,
       source: "imported",
     });
   });

@@ -176,6 +176,11 @@ async function main() {
       artifact: presets.createSyntheticImportedInGuardDistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-inguarddist-far",
+      required: true,
+      artifact: presets.createSyntheticImportedInGuardDistFarTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-auto-guard-start",
       required: true,
       artifact: presets.createSyntheticImportedAutoGuardStartTraceArtifact(),
@@ -933,6 +938,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-guard-kill",
     "synthetic-imported-assertspecial-noko",
     "synthetic-imported-air-guard-state",
+    "synthetic-imported-inguarddist-far",
   ];
 
   for (const key of requiredOperations) {

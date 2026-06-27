@@ -1423,6 +1423,64 @@ export function createSyntheticImportedInGuardDistTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedInGuardDistFarTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-inguarddist-far-attacker",
+    displayName: "Synthetic Imported InGuardDist Far Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardDistance: 1,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-inguarddist-far-defender",
+    displayName: "Synthetic Imported InGuardDist Far Defender",
+    withInGuardDistGuardStart: true,
+  });
+  const stage = options.stage ?? guardDistanceOnlyStage();
+  const script = importedInGuardDistScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-inguarddist-far-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-inguarddist-far-golden",
+      label: "Synthetic imported InGuardDist far reject route",
+      source: "imported",
+      notes: [
+        "Synthetic imported InGuardDist far trace proves a whiff outside static guard.dist does not route the defender into the guard-start state. It does not claim exact MUGEN/IKEMEN proximity guard boxes, push timing, or guard-end parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-inguarddist-far-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredCombatReasons: ["whiff"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            ctrl: true,
+            stateType: "S",
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAutoGuardStartTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-auto-guard-start-attacker",
