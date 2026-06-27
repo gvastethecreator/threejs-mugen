@@ -55,6 +55,7 @@ import {
   createSyntheticImportedTurnTraceArtifact,
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedPalFxTraceArtifact,
+  createSyntheticImportedTransTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
@@ -1101,6 +1102,38 @@ describe("RuntimeTraceGatePresets", () => {
         (actor) => actor.id === "p1" && actor.paletteFx?.time === 18 && actor.paletteFx.add[2] === 255 && actor.paletteFx.invert,
       ),
     ).toBe(true);
+  });
+
+  it("creates a synthetic imported Trans artifact with typed sprite opacity evidence", () => {
+    const artifact = createSyntheticImportedTransTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-trans-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-trans-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Trans).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:trans"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        animNo: 200,
+        observedOpacityAtMost: 0.5,
+        minFrames: 1,
+      },
+    ]);
   });
 
   it("creates a synthetic imported RemapPal artifact with typed sprite-effect evidence", () => {

@@ -272,6 +272,12 @@ export type SpriteEffectControllerOp =
       kind: "sprite-effect";
       controllerType: "afterimagetime";
       time: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "trans";
+      trans: string;
+      opacity: number;
     };
 
 export type ResourceControllerOp =
@@ -397,6 +403,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "afterimagetime") {
     return compileAfterImageTimeControllerOp(controller);
+  }
+  if (type === "trans") {
+    return compileTransControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -649,6 +658,16 @@ function compileAfterImageTimeControllerOp(controller: MugenStateController): Sp
     kind: "sprite-effect",
     controllerType: "afterimagetime",
     time: clampAfterImageTime(time),
+  };
+}
+
+function compileTransControllerOp(controller: MugenStateController): SpriteEffectControllerOp {
+  const trans = stripMugenString(findParam(controller, "trans") ?? findParam(controller, "value")) ?? "default";
+  return {
+    kind: "sprite-effect",
+    controllerType: "trans",
+    trans,
+    opacity: normalizeTransOpacity(trans),
   };
 }
 
@@ -1303,6 +1322,32 @@ function normalizeAfterImageOpacity(value: string | undefined): number {
     return 0.25;
   }
   return 0.42;
+}
+
+function normalizeTransOpacity(value: string): number {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized || normalized === "default") {
+    return 1;
+  }
+  if (normalized === "none") {
+    return 1;
+  }
+  if (normalized.includes("addalpha") || normalized.includes("alpha")) {
+    const numbers = normalized
+      .split(/[^0-9.-]+/)
+      .filter((part) => part.length > 0)
+      .map((part) => Number(part))
+      .filter(Number.isFinite);
+    const source = numbers[0];
+    return source === undefined ? 0.5 : Math.max(0, Math.min(1, source / 256));
+  }
+  if (normalized.includes("add")) {
+    return 0.78;
+  }
+  if (normalized.includes("sub")) {
+    return 0.65;
+  }
+  return 1;
 }
 
 function normalizePaletteNumber(value: number): number {

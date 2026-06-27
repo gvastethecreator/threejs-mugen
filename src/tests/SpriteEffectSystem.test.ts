@@ -5,6 +5,7 @@ import {
   applyRuntimeAfterImageTimeController,
   applyRuntimePaletteFxController,
   applyRuntimeSpritePriorityController,
+  applyRuntimeTransController,
   tickRuntimeAfterImage,
   tickRuntimePaletteFx,
 } from "../mugen/runtime/SpriteEffectSystem";
@@ -142,6 +143,24 @@ describe("SpriteEffectSystem", () => {
 
     applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { value: "0" }));
     expect(state.afterImage).toBeUndefined();
+  });
+
+  it("applies bounded Trans opacity from raw and typed params", () => {
+    const state = runtimeState();
+
+    applyRuntimeTransController(state, controller("Trans", { trans: "addalpha,128,128" }));
+    expect(state.renderOpacity).toBe(0.5);
+
+    applyRuntimeTransController(state, controller("Trans", { value: "add" }));
+    expect(state.renderOpacity).toBe(0.78);
+
+    applyRuntimeTransController(state, controller("Trans", { trans: "add" }), {
+      kind: "sprite-effect",
+      controllerType: "trans",
+      trans: "sub",
+      opacity: 0.65,
+    });
+    expect(state.renderOpacity).toBe(0.65);
   });
 
   it("applies typed AfterImage and AfterImageTime operations before raw params", () => {

@@ -122,6 +122,15 @@ export function applyRuntimeAfterImageTimeController(
   state.afterImage.time = Math.max(state.afterImage.time, time);
 }
 
+export function applyRuntimeTransController(
+  state: CharacterRuntimeState,
+  controller: { params: Record<string, string> },
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "trans" }>,
+): void {
+  const trans = operation?.trans ?? stripMugenString(findControllerParam(controller, "trans") ?? findControllerParam(controller, "value")) ?? "default";
+  state.renderOpacity = operation?.opacity ?? parseTransOpacity(trans);
+}
+
 export function tickRuntimeAfterImage(
   state: CharacterRuntimeState,
   sampleFactory: RuntimeAfterImageSampleFactory,
@@ -218,6 +227,37 @@ function parseAfterImageOpacity(value: string | undefined): number {
     return 0.25;
   }
   return 0.42;
+}
+
+function parseTransOpacity(value: string): number {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized || normalized === "default" || normalized === "none") {
+    return 1;
+  }
+  if (normalized.includes("addalpha") || normalized.includes("alpha")) {
+    const numbers = normalized
+      .split(/[^0-9.-]+/)
+      .filter((part) => part.length > 0)
+      .map((part) => Number(part))
+      .filter(Number.isFinite);
+    const source = numbers[0];
+    return source === undefined ? 0.5 : clampNumber(source / 256, 0, 1);
+  }
+  if (normalized.includes("add")) {
+    return 0.78;
+  }
+  if (normalized.includes("sub")) {
+    return 0.65;
+  }
+  return 1;
+}
+
+function stripMugenString(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  return trimmed.replace(/^"|"$/g, "");
 }
 
 function clampNumber(value: number, min: number, max: number): number {

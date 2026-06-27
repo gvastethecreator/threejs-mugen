@@ -73,6 +73,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   defencemulset: partial("damage scaling"),
   attackmulset: partial("damage scaling"),
   remappal: partial("palette telemetry"),
+  trans: partial("sprite transparency"),
   forcefeedback: noop("browser no-op"),
   turn: partial("facing"),
   null: noop("true no-op"),

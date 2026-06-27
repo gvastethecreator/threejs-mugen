@@ -18,6 +18,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import { evaluateExpression } from "./ExpressionEvaluator";
+import { applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -183,6 +184,8 @@ export function executeControllerIr(
     }
   } else if (type === "remappal") {
     applyRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"));
+  } else if (type === "trans") {
+    applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"));
   } else if (type === "posfreeze") {
     const operation = boundsOperation(controller, "posfreeze");
     const value = operation ? undefined : numberParam(controller, next, context, "value");

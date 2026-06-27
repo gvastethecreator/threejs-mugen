@@ -181,6 +181,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPalFxTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-trans",
+      required: true,
+      artifact: presets.createSyntheticImportedTransTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
@@ -1002,6 +1007,7 @@ function validateTraceCoverage(coverage) {
     "orientation:turn",
     "sprite-effect:sprpriority",
     "sprite-effect:palfx",
+    "sprite-effect:trans",
     "sprite-effect:remappal",
     "sprite-effect:afterimage",
     "sprite-effect:afterimagetime",
@@ -1046,6 +1052,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-turn",
     "synthetic-imported-sprpriority",
     "synthetic-imported-palfx",
+    "synthetic-imported-trans",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-hitdefattr",

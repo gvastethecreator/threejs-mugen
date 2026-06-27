@@ -53,6 +53,7 @@ export type RuntimeTraceActor = {
   physics: string;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  renderOpacity?: number;
   renderScale?: { x: number; y: number };
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
@@ -458,6 +459,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleXAtMost?: number;
   observedScaleYAtLeast?: number;
   observedScaleYAtMost?: number;
+  observedOpacityAtLeast?: number;
+  observedOpacityAtMost?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -508,6 +511,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxVel: { x: number; y: number };
   minScale: { x: number; y: number };
   maxScale: { x: number; y: number };
+  minOpacity: number;
+  maxOpacity: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -1095,6 +1100,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 x: Math.max(existing.maxScale.x, actor.renderScale?.x ?? 1),
                 y: Math.max(existing.maxScale.y, actor.renderScale?.y ?? 1),
               },
+              minOpacity: Math.min(existing.minOpacity, actor.renderOpacity ?? 1),
+              maxOpacity: Math.max(existing.maxOpacity, actor.renderOpacity ?? 1),
             }
           : {
               actorId: actor.id,
@@ -1116,6 +1123,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxVel: { ...actor.vel },
               minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              minOpacity: actor.renderOpacity ?? 1,
+              maxOpacity: actor.renderOpacity ?? 1,
               bodyWidthFront: actor.bodyWidth?.front,
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
@@ -1871,6 +1880,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.bodyWidth?.back === undefined ? "wb*" : `wb${actor.bodyWidth.back}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
+    actor.renderOpacity === undefined ? "op*" : `op${actor.renderOpacity}`,
     actor.paletteFx === undefined
       ? "pf*"
       : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
@@ -1904,6 +1914,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
+    `op${actor.minOpacity}:${actor.maxOpacity}`,
     actor.paletteFxTime === undefined
       ? "pf*"
       : `pf${actor.paletteFxTime}:${actor.paletteFxAddR},${actor.paletteFxAddG},${actor.paletteFxAddB}:${actor.paletteFxMulR},${actor.paletteFxMulG},${actor.paletteFxMulB}:${actor.paletteFxColor}:${actor.paletteFxInvert ? 1 : 0}`,
@@ -1951,6 +1962,8 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
     (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
     (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
+    (requirement.observedOpacityAtLeast === undefined || actor.maxOpacity >= requirement.observedOpacityAtLeast) &&
+    (requirement.observedOpacityAtMost === undefined || actor.minOpacity <= requirement.observedOpacityAtMost) &&
     (requirement.bodyWidthFront === undefined || sameTraceNumber(actor.bodyWidthFront ?? NaN, requirement.bodyWidthFront)) &&
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&
@@ -2240,6 +2253,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           y: roundTraceNumber(actor.runtime.renderScale.y),
         }
       : undefined,
+    renderOpacity: actor.runtime.renderOpacity === undefined ? undefined : roundTraceNumber(actor.runtime.renderOpacity),
     bodyWidth: actor.runtime.bodyWidth
       ? {
           front: roundTraceNumber(actor.runtime.bodyWidth.front),

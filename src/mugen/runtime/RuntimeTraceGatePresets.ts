@@ -1219,6 +1219,54 @@ export function createSyntheticImportedPalFxTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedTransTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-trans",
+    displayName: "Synthetic Imported Trans",
+    withTrans: "addalpha,128,128",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-trans-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-trans-golden",
+      label: "Synthetic imported Trans route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Trans trace proves static Trans lowers into typed sprite-effect operation evidence and reaches bounded render opacity telemetry consumed by Three.js materials. It does not claim exact MUGEN/IKEMEN alpha blending modes, add/sub math, palette interaction, or draw-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-trans-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Trans", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:trans", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedOpacityAtMost: 0.5,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -5506,6 +5554,7 @@ export type SyntheticImportedTraceFighterOptions = {
     color?: number;
     invert?: boolean;
   };
+  withTrans?: string;
   withRemapPal?: {
     source: [number, number];
     dest: [number, number];
@@ -5654,6 +5703,7 @@ ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
+${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
@@ -6195,6 +6245,15 @@ add = ${(options.add ?? [0, 0, 0]).join(",")}
 mul = ${(options.mul ?? [256, 256, 256]).join(",")}
 color = ${options.color ?? 256}
 invertall = ${options.invert ? 1 : 0}
+`;
+}
+
+function transControllerBlock(trans: string): string {
+  return `
+[State 200, Trans Probe]
+type = Trans
+trigger1 = Time >= 0
+trans = ${trans}
 `;
 }
 

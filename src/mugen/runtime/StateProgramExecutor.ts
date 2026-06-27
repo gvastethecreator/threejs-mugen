@@ -109,6 +109,7 @@ const runtimeControllers = new Set([
   "defencemulset",
   "attackmulset",
   "remappal",
+  "trans",
   "posfreeze",
   "screenbound",
   "forcefeedback",

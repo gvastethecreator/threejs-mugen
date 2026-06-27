@@ -103,8 +103,8 @@ time = 20
     expect(getControllerSupport("MoveHitReset").runtimeLabel).toBe("contact memory");
     expect(isRuntimeExecutableController("ForceFeedback")).toBe(true);
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
-    expect(isRuntimeExecutableController("Trans")).toBe(false);
-    expect(getControllerSupport("Trans").level).toBe("unsupported");
+    expect(isRuntimeExecutableController("Trans")).toBe(true);
+    expect(getControllerSupport("Trans").level).toBe("partial");
   });
 
   it("compiles HitDef params into a typed controller operation", () => {
@@ -550,6 +550,17 @@ time = 20
       multiplier: 0.5,
     });
     expect(dynamic.operation).toBeUndefined();
+  });
+
+  it("compiles Trans controllers into typed sprite opacity operations", () => {
+    const trans = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha,128,128" }));
+
+    expect(trans.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "trans",
+      trans: "addalpha,128,128",
+      opacity: 0.5,
+    });
   });
 
   it("compiles Projectile controllers into typed projectile operations", () => {
