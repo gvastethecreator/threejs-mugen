@@ -45,6 +45,7 @@ import {
   createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
+  createSyntheticImportedPlayerPushTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -586,6 +587,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some((actor) => actor.stateType === "C" && actor.moveType === "A" && actor.physics === "N"),
     ).toBe(true);
+  });
+
+  it("creates a synthetic imported PlayerPush artifact with typed collision evidence", () => {
+    const artifact = createSyntheticImportedPlayerPushTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-playerpush-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-playerpush-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.PlayerPush).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["collision:playerpush"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          playerPush: false,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.playerPush === false)).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

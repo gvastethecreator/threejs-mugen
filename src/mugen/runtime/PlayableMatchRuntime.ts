@@ -1025,7 +1025,11 @@ function runActiveStateControllers(
   }
 }
 
-function applyWidthController(fighter: FighterMatchState, controller: MugenStateController, operation?: CollisionControllerOp): void {
+function applyWidthController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
+): void {
   const pair = operation ? undefined : numberPair(findParam(controller, "player") ?? findParam(controller, "value"));
   const front = operation?.front ?? pair?.[0];
   if (front === undefined) {

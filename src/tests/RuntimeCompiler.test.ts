@@ -269,6 +269,18 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static PlayerPush controllers into typed collision operations", () => {
+    const disabled = compileControllerIr(controller(200, "PlayerPush", [], { value: "0" }));
+    const enabled = compileControllerIr(controller(200, "PlayerPush", [], { value: "1" }));
+    const defaultEnabled = compileControllerIr(controller(200, "PlayerPush", [], {}));
+    const dynamic = compileControllerIr(controller(200, "PlayerPush", [], { value: "Const(data.life)" }));
+
+    expect(disabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: false });
+    expect(enabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: true });
+    expect(defaultEnabled.operation).toEqual({ kind: "collision", controllerType: "playerpush", enabled: true });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

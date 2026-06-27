@@ -1,6 +1,7 @@
 import { compileControllerIr } from "../compiler/StateControllerCompiler";
 import type {
   BoundsControllerOp,
+  CollisionControllerOp,
   DamageScaleControllerOp,
   HitEligibilityControllerOp,
   HitFallControllerOp,
@@ -148,7 +149,8 @@ export function executeControllerIr(
   } else if (type === "varrangeset") {
     applyVariableRangeSet(next, controller, context, variableOperation(controller, "varrangeset"));
   } else if (type === "playerpush") {
-    next.playerPush = (numberParam(controller, next, context, "value") ?? 1) !== 0;
+    const operation = collisionOperation(controller, "playerpush");
+    next.playerPush = operation?.enabled ?? (numberParam(controller, next, context, "value") ?? 1) !== 0;
   } else if (type === "turn") {
     next.facing = next.facing === 1 ? -1 : 1;
   } else if (type === "hitby" || type === "nothitby") {
@@ -290,6 +292,15 @@ function boundsOperation<T extends BoundsControllerOp["controllerType"]>(
 ): Extract<BoundsControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "bounds" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<BoundsControllerOp, { controllerType: T }>)
+    : undefined;
+}
+
+function collisionOperation<T extends CollisionControllerOp["controllerType"]>(
+  controller: ControllerIr,
+  controllerType: T,
+): Extract<CollisionControllerOp, { controllerType: T }> | undefined {
+  return controller.operation?.kind === "collision" && controller.operation.controllerType === controllerType
+    ? (controller.operation as Extract<CollisionControllerOp, { controllerType: T }>)
     : undefined;
 }
 

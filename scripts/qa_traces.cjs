@@ -96,6 +96,11 @@ async function main() {
       artifact: presets.createSyntheticImportedStateTypeSetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-playerpush",
+      required: true,
+      artifact: presets.createSyntheticImportedPlayerPushTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -856,6 +861,7 @@ function validateTraceCoverage(coverage) {
     "bounds:posfreeze",
     "bounds:screenbound",
     "collision:width",
+    "collision:playerpush",
     "metadata:statetypeset",
     "reversaldef",
     "damage-scale:attackmulset",
@@ -893,6 +899,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-width",
     "synthetic-imported-statetypeset",
+    "synthetic-imported-playerpush",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

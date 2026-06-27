@@ -708,6 +708,54 @@ export function createSyntheticImportedStateTypeSetTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedPlayerPushTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-playerpush",
+    displayName: "Synthetic Imported PlayerPush",
+    withPlayerPush: false,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-playerpush-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-playerpush-golden",
+      label: "Synthetic imported PlayerPush route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported PlayerPush trace proves static PlayerPush value lowers into typed collision operation evidence and disables bounded body push for the current runtime snapshot. It does not claim exact MUGEN/IKEMEN push overlap, team, helper, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-playerpush-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "PlayerPush", "HitDef"],
+        requiredExecutedOperations: ["collision:playerpush", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            playerPush: false,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4295,6 +4343,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withScreenBoundCameraProbe?: boolean;
   withWidthController?: [number, number?];
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
+  withPlayerPush?: boolean;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4420,6 +4469,7 @@ ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
+${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4831,6 +4881,15 @@ trigger1 = Time >= 0
 ${config.stateType ? `statetype = ${config.stateType}` : ""}
 ${config.moveType ? `movetype = ${config.moveType}` : ""}
 ${config.physics ? `physics = ${config.physics}` : ""}
+`;
+}
+
+function playerPushControllerBlock(enabled: boolean): string {
+  return `
+[State 200, PlayerPush Probe]
+type = PlayerPush
+trigger1 = Time >= 0
+value = ${enabled ? 1 : 0}
 `;
 }
 

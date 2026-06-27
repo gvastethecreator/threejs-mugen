@@ -190,12 +190,18 @@ export type BoundsControllerOp =
       moveCameraY: boolean;
     };
 
-export type CollisionControllerOp = {
-  kind: "collision";
-  controllerType: "width";
-  front: number;
-  back: number;
-};
+export type CollisionControllerOp =
+  | {
+      kind: "collision";
+      controllerType: "width";
+      front: number;
+      back: number;
+    }
+  | {
+      kind: "collision";
+      controllerType: "playerpush";
+      enabled: boolean;
+    };
 
 export type MetadataControllerOp = {
   kind: "metadata";
@@ -301,6 +307,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "width") {
     return compileWidthControllerOp(controller);
+  }
+  if (type === "playerpush") {
+    return compilePlayerPushControllerOp(controller);
   }
   if (type === "statetypeset") {
     return compileStateTypeSetControllerOp(controller);
@@ -428,6 +437,19 @@ function compileWidthControllerOp(controller: MugenStateController): CollisionCo
     controllerType: "width",
     front: clampStaticBodyWidth(pair[0]),
     back: clampStaticBodyWidth(pair[1] ?? pair[0]),
+  };
+}
+
+function compilePlayerPushControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
+  const raw = findParam(controller, "value");
+  const enabled = raw === undefined ? true : booleanNumber(raw);
+  if (enabled === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "collision",
+    controllerType: "playerpush",
+    enabled,
   };
 }
 
