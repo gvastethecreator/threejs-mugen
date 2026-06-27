@@ -53,6 +53,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   targetveladd: partial("target memory"),
   targetvelset: partial("target memory"),
   targetbind: partial("target memory"),
+  bindtotarget: partial("target memory"),
   pause: partial("pause"),
   superpause: partial("pause"),
   sprpriority: partial("render priority"),

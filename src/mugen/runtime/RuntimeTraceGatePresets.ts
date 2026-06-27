@@ -1978,6 +1978,7 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
     id: "synthetic-imported-target-attacker",
     displayName: "Synthetic Imported Target Attacker",
     withTargetControllers: true,
+    withBindToTarget: true,
     withTargetDrop: true,
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
@@ -2011,6 +2012,7 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
           "TargetVelAdd",
           "TargetFacing",
           "TargetBind",
+          "BindToTarget",
           "TargetDrop",
         ],
         requiredExecutedOperations: [
@@ -2021,6 +2023,7 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
           "target:targetveladd",
           "target:targetfacing",
           "target:targetbind",
+          "bindtotarget",
           "target:targetdrop",
         ],
         requiredActiveCommands: ["x"],
@@ -3638,6 +3641,7 @@ export type SyntheticImportedTraceFighterOptions = {
     includeGroundRecovery?: boolean;
   };
   withTargetControllers?: boolean;
+  withBindToTarget?: boolean;
   withTargetDrop?: boolean;
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
@@ -3787,6 +3791,7 @@ ${guardDistanceLine}
 ${fallLine}
 ${getHitStateLine}
 ${options.withTargetControllers ? targetControllerBlock(77) : ""}
+${options.withBindToTarget ? bindToTargetBlock(77) : ""}
 ${options.withTargetDrop ? targetDropBlock() : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
@@ -4136,6 +4141,17 @@ type = TargetBind
 trigger1 = Time = 2
 id = ${targetId}
 pos = 36,-12
+time = 4
+`;
+}
+
+function bindToTargetBlock(targetId: number): string {
+  return `
+[State 200, Bind Owner To Target]
+type = BindToTarget
+trigger1 = Time = 2
+id = ${targetId}
+pos = 20,-8,Foot
 time = 4
 `;
 }

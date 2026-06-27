@@ -826,6 +826,40 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.TargetBind).toBe(1);
   });
 
+  it("executes imported BindToTarget against the latest hit target", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 10,
+      hitDefTargetId: 77,
+      withBindToTarget: true,
+    });
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && !snapshot.compatibilitySession?.actors[0]?.executedControllers.BindToTarget; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.bindToTarget).toEqual({
+      actorId: "p2",
+      targetId: 77,
+      remaining: 3,
+      offset: { x: 20, y: -8 },
+    });
+    expect(snapshot.actors[0]?.runtime.pos).toEqual({
+      x: snapshot.actors[1]!.runtime.pos.x - 20,
+      y: snapshot.actors[1]!.runtime.pos.y - 8,
+    });
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.BindToTarget).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.bindtotarget).toBe(1);
+  });
+
   it("executes imported TargetDrop against the latest hit target", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1500,6 +1534,7 @@ function createImportedFixture(
     withProjectile?: boolean;
     withHelper?: boolean;
     withTargetControllers?: boolean;
+    withBindToTarget?: boolean;
     withTargetDrop?: boolean;
     withPrePauseTargetBind?: boolean;
     withPause?: boolean;
@@ -1910,6 +1945,16 @@ excludeID = -1
 keepone = 0
 `
     : "";
+  const bindToTarget = options.withBindToTarget
+    ? `
+[State 200, Bind Owner To Target]
+type = BindToTarget
+trigger1 = Time = 1
+id = ${hitDefTargetId}
+pos = 20,-8,Foot
+time = 4
+`
+    : "";
   const prePauseTargetBind = options.withPrePauseTargetBind
     ? `
 [State 200, Target Bind Before Pause]
@@ -2194,6 +2239,7 @@ ${projectile}
 ${contactTriggerBranches}
 ${helper}
 ${targetControllers}
+${bindToTarget}
 ${targetDrop}
 
 ${options.passiveHitOverride ? `

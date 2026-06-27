@@ -1,5 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
+  BindToTargetControllerOp,
   ControllerOp,
   ExplodControllerOp,
   FallEnvShakeControllerOp,
@@ -69,6 +70,7 @@ import {
 import {
   advanceRuntimeTargetMemory,
   applyRuntimeTargetController,
+  createRuntimeTargetBinding,
   matchesRuntimeTargetId,
   rememberRuntimeTarget,
   resolveRuntimeTargetBindingPosition,
@@ -130,6 +132,7 @@ type FighterMatchState = {
   hasHit: boolean;
   targets: RuntimeTarget[];
   targetBindings: RuntimeTargetBinding[];
+  bindToTarget?: RuntimeTargetBinding;
   currentInput: Set<string>;
   aiCooldown: number;
   executedStateIds: Set<number>;
@@ -307,6 +310,8 @@ export class PlayableMatchRuntime {
     separateFighters(this.p1, this.p2);
     applyTargetBindings(this.p1, this.p2);
     applyTargetBindings(this.p2, this.p1);
+    applyBindToTarget(this.p1, this.p2);
+    applyBindToTarget(this.p2, this.p1);
     resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
@@ -346,6 +351,7 @@ export class PlayableMatchRuntime {
       advanceActiveEffects(actor, this.stage);
       advancePresentationEffects(actor);
       applyTargetBindings(actor, opponent);
+      applyBindToTarget(actor, opponent);
       clampStage(actor, this.stage);
     }
 
@@ -997,6 +1003,9 @@ function runActiveStateControllers(
       } else if (dispatch.effect === "target") {
         recordControllerExecution(fighter, rawController);
         applyTargetController(fighter, opponent, rawController, controller.operation?.kind === "target" ? controller.operation : undefined);
+      } else if (dispatch.effect === "bindtotarget") {
+        recordControllerExecution(fighter, rawController);
+        applyBindToTargetController(fighter, opponent, rawController, controller.operation?.kind === "bindtotarget" ? controller.operation : undefined);
       } else if (dispatch.effect === "pause") {
         recordControllerExecution(fighter, rawController);
         onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
@@ -1276,6 +1285,31 @@ function applyTargetController(
   });
 }
 
+function applyBindToTargetController(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  controller: MugenStateController,
+  operation?: BindToTargetControllerOp,
+): void {
+  const requestedId = operation?.requestedId ?? firstNumber(findParam(controller, "id")) ?? -1;
+  const target = fighter.targets.find((candidate) => candidate.actorId === opponent.id && matchesRuntimeTargetId(candidate, requestedId));
+  if (!target) {
+    return;
+  }
+  const bindParams = operation ? { pos: operation.pos, postype: operation.postype } : bindToTargetParams(controller);
+  if (bindParams.postype !== "foot") {
+    return;
+  }
+  fighter.bindToTarget = createRuntimeTargetBinding({
+    actorId: opponent.id,
+    targetId: target.targetId,
+    remaining: operation?.time ?? firstNumber(findParam(controller, "time")) ?? 1,
+    offset: { x: bindParams.pos[0], y: bindParams.pos[1] },
+  });
+  recordControllerOperation(fighter, operation ?? { kind: "bindtotarget", requestedId, pos: bindParams.pos, postype: bindParams.postype, time: fighter.bindToTarget.remaining });
+  applyBindToTarget(fighter, opponent);
+}
+
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
   return Boolean(
     owner.runtimeProgram?.states.some((state) => state.id === stateId) ||
@@ -1288,6 +1322,7 @@ function advanceTargetMemory(fighter: FighterMatchState): void {
   const next = advanceRuntimeTargetMemory({ targets: fighter.targets, bindings: fighter.targetBindings });
   fighter.targets = next.targets;
   fighter.targetBindings = next.bindings;
+  fighter.bindToTarget = tickBindToTarget(fighter.bindToTarget, fighter.targets);
   syncTargetCount(fighter);
 }
 
@@ -1298,6 +1333,46 @@ function applyTargetBindings(fighter: FighterMatchState, opponent: FighterMatchS
     }
     opponent.runtime.pos = resolveRuntimeTargetBindingPosition(fighter.runtime.pos, fighter.runtime.facing, binding);
   }
+}
+
+function applyBindToTarget(fighter: FighterMatchState, opponent: FighterMatchState): void {
+  const binding = fighter.bindToTarget;
+  if (!binding || binding.actorId !== opponent.id) {
+    return;
+  }
+  fighter.runtime.pos = resolveRuntimeTargetBindingPosition(opponent.runtime.pos, opponent.runtime.facing, binding);
+}
+
+function bindToTargetParams(controller: MugenStateController): { pos: [number, number]; postype: "foot" | "mid" | "head" } {
+  const raw = findParam(controller, "pos");
+  if (!raw) {
+    return { pos: [0, 0], postype: "foot" };
+  }
+  const parts = raw.split(",").map((part) => part.trim());
+  const pair = numberPair(raw) ?? [0, 0];
+  return {
+    pos: [pair[0], pair[1] ?? 0],
+    postype: normalizeBindToTargetPostype(parts[2]),
+  };
+}
+
+function normalizeBindToTargetPostype(value: string | undefined): "foot" | "mid" | "head" {
+  const normalized = value?.replace(/^"|"$/g, "").trim().toLowerCase();
+  return normalized === "mid" || normalized === "head" ? normalized : "foot";
+}
+
+function tickBindToTarget(
+  binding: RuntimeTargetBinding | undefined,
+  targets: RuntimeTarget[],
+): RuntimeTargetBinding | undefined {
+  if (!binding || !targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
+    return undefined;
+  }
+  if (binding.remaining === Number.POSITIVE_INFINITY) {
+    return binding;
+  }
+  const remaining = binding.remaining - 1;
+  return remaining > 0 ? { ...binding, remaining } : undefined;
 }
 
 function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {
@@ -2139,6 +2214,16 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
       targetCount: fighter.targets.length,
       targetRefs: targetSnapshot.targets,
       targetBindings: targetSnapshot.bindings,
+      ...(fighter.bindToTarget
+        ? {
+            bindToTarget: {
+              actorId: fighter.bindToTarget.actorId,
+              targetId: fighter.bindToTarget.targetId,
+              remaining: fighter.bindToTarget.remaining === Number.POSITIVE_INFINITY ? "infinite" : fighter.bindToTarget.remaining,
+              offset: { ...fighter.bindToTarget.offset },
+            },
+          }
+        : {}),
     },
     frame,
     clsn1: activeHitbox.map((box) => ({ ...box })),
@@ -2309,6 +2394,9 @@ function recordControllerOperation(fighter: FighterMatchState, operation: Contro
 function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "target") {
     return `target:${operation.controllerType}`;
+  }
+  if (operation.kind === "bindtotarget") {
+    return "bindtotarget";
   }
   if (operation.kind === "pause") {
     return `pause:${operation.controllerType}`;

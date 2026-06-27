@@ -16,6 +16,7 @@ export type CharacterRuntimeState = {
   targetCount?: number;
   targetRefs?: RuntimeTargetSnapshot[];
   targetBindings?: RuntimeTargetBindingSnapshot[];
+  bindToTarget?: RuntimeTargetBindingSnapshot;
   hitBy?: {
     slot1?: RuntimeHitBySlot;
     slot2?: RuntimeHitBySlot;

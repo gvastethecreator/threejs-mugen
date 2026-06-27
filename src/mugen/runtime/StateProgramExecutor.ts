@@ -14,6 +14,7 @@ export type StateProgramSideEffect =
   | "helper"
   | "projectile"
   | "target"
+  | "bindtotarget"
   | "pause"
   | "sound"
   | "envshake";
@@ -68,6 +69,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   removeexplod: "removeexplod",
   helper: "helper",
   projectile: "projectile",
+  bindtotarget: "bindtotarget",
   pause: "pause",
   superpause: "pause",
   playsnd: "sound",

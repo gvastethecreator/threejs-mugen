@@ -51,6 +51,14 @@ export type TargetControllerOp =
   | { kind: "target"; controllerType: "targetbind"; requestedId?: number; pos: [number, number]; time: number }
   | { kind: "target"; controllerType: "targetstate"; requestedId?: number; stateNo?: number };
 
+export type BindToTargetControllerOp = {
+  kind: "bindtotarget";
+  requestedId?: number;
+  pos: [number, number];
+  postype: "foot" | "mid" | "head";
+  time: number;
+};
+
 export type PauseControllerOp = {
   kind: "pause";
   controllerType: "pause" | "superpause";
@@ -231,6 +239,7 @@ export type DamageScaleControllerOp = {
 export type ControllerOp =
   | HitDefControllerOp
   | TargetControllerOp
+  | BindToTargetControllerOp
   | PauseControllerOp
   | ProjectileControllerOp
   | HelperControllerOp
@@ -274,6 +283,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type.startsWith("target")) {
     return compileTargetControllerOp(controller);
+  }
+  if (type === "bindtotarget") {
+    return compileBindToTargetControllerOp(controller);
   }
   if (type === "pause" || type === "superpause") {
     return compilePauseControllerOp(controller, type);
@@ -594,6 +606,17 @@ function compileTargetControllerOp(controller: MugenStateController): TargetCont
   return undefined;
 }
 
+function compileBindToTargetControllerOp(controller: MugenStateController): BindToTargetControllerOp {
+  const pos = posWithPostype(findParam(controller, "pos"));
+  return {
+    kind: "bindtotarget",
+    requestedId: firstNumber(findParam(controller, "id")),
+    pos: pos?.pos ?? [0, 0],
+    postype: pos?.postype ?? "foot",
+    time: firstNumber(findParam(controller, "time")) ?? 1,
+  };
+}
+
 function compilePauseControllerOp(controller: MugenStateController, type: "pause" | "superpause"): PauseControllerOp {
   return {
     kind: "pause",
@@ -769,6 +792,31 @@ function numberPair(value: string | undefined): [number, number?] | undefined {
     return undefined;
   }
   return values.length > 1 ? [values[0], values[1]] : [values[0]];
+}
+
+function posWithPostype(value: string | undefined): { pos: [number, number]; postype?: "foot" | "mid" | "head" } | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const [xRaw, yRaw, postypeRaw] = value.split(",").map((part) => part.trim());
+  const x = Number(xRaw);
+  const y = Number(yRaw);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return undefined;
+  }
+  const postype = normalizeBindPostype(postypeRaw);
+  return {
+    pos: [x, y],
+    ...(postype ? { postype } : {}),
+  };
+}
+
+function normalizeBindPostype(value: string | undefined): "foot" | "mid" | "head" | undefined {
+  const normalized = value?.replace(/^"|"$/g, "").trim().toLowerCase();
+  if (normalized === "foot" || normalized === "mid" || normalized === "head") {
+    return normalized;
+  }
+  return undefined;
 }
 
 function strictNumberPair(value: string | undefined): [number, number?] | undefined {

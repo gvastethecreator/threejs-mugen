@@ -795,6 +795,7 @@ function validateTraceCoverage(coverage) {
   const requiredOperations = [
     "hitdef",
     "target:targetbind",
+    "bindtotarget",
     "pause:pause",
     "pause:superpause",
     "projectile",
