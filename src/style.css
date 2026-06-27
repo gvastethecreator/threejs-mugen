@@ -8929,3 +8929,159 @@ input {
     top: 64px;
   }
 }
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right {
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section {
+  padding-block: 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row {
+  min-height: 25px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-section {
+  background: color-mix(in srgb, var(--editor-panel-pressed) 76%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-stat-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid {
+  margin-block: 6px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter {
+  gap: 2px;
+  min-height: 54px;
+  padding: 7px 8px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid {
+  gap: 0;
+  margin-top: 7px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid .debug-evidence-block {
+  margin-top: 0;
+  padding: 8px;
+  border-top: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid .debug-evidence-block:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block {
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block > .panel-kicker {
+  display: block;
+  min-height: 16px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .section-heading-row.compact-heading {
+  padding-bottom: 2px;
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .compat-list,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-link-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-input-history,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-trace-frame-list,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-list {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-link-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-trace-frame-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-link-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-trace-frame-button {
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-link-button:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-trace-frame-button:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row.has-input {
+  background: color-mix(in srgb, var(--section-accent) 5%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row .section-heading-row.compact-heading {
+  min-height: 24px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv {
+  grid-template-columns: minmax(76px, 0.48fr) minmax(0, 1.52fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 68%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+  min-height: 26px;
+  padding: 5px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 58%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 82%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 42%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+  background: var(--editor-row);
+}
