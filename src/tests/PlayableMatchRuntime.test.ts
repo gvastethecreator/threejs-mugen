@@ -860,6 +860,46 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.bindtotarget).toBe(1);
   });
 
+  it("resolves imported BindToTarget Head anchors from target Size constants", () => {
+    const imported = createImportedFixture({
+      withStateMove: false,
+      hitDefDamage: 10,
+      hitDefTargetId: 77,
+      withBindToTarget: true,
+      bindToTargetPostype: "Head",
+    });
+    const target: DemoFighterDefinition = {
+      ...demoFighters[1]!,
+      constants: {
+        "size.head.pos.x": 6,
+        "size.head.pos.y": -72,
+      },
+    };
+    const runtime = new PlayableMatchRuntime(imported, target, {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    });
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 20 && !snapshot.compatibilitySession?.actors[0]?.executedControllers.BindToTarget; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.bindToTarget).toEqual({
+      actorId: "p2",
+      targetId: 77,
+      remaining: 3,
+      offset: { x: 26, y: -80 },
+    });
+    expect(snapshot.actors[0]?.runtime.pos).toEqual({
+      x: snapshot.actors[1]!.runtime.pos.x - 26,
+      y: snapshot.actors[1]!.runtime.pos.y - 80,
+    });
+  });
+
   it("executes imported TargetDrop against the latest hit target", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1535,6 +1575,7 @@ function createImportedFixture(
     withHelper?: boolean;
     withTargetControllers?: boolean;
     withBindToTarget?: boolean;
+    bindToTargetPostype?: "Foot" | "Mid" | "Head";
     withTargetDrop?: boolean;
     withPrePauseTargetBind?: boolean;
     withPause?: boolean;
@@ -1951,7 +1992,7 @@ keepone = 0
 type = BindToTarget
 trigger1 = Time = 1
 id = ${hitDefTargetId}
-pos = 20,-8,Foot
+pos = 20,-8,${options.bindToTargetPostype ?? "Foot"}
 time = 4
 `
     : "";

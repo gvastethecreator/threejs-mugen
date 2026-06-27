@@ -176,6 +176,10 @@ time = 20
       postype: "foot",
       time: 6,
     });
+    expect(compileControllerIr(controller(200, "BindToTarget", [], { id: "3", pos: "12,-8,Head", time: "6" })).operation).toMatchObject({
+      kind: "bindtotarget",
+      postype: "head",
+    });
     expect(state.operation).toMatchObject({
       kind: "target",
       controllerType: "targetstate",

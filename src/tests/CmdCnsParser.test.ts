@@ -176,7 +176,7 @@ damage = 30
     expect(parsed.controllers[0]?.triggers[0]?.expression).toBe("AnimElem = 3");
   });
 
-  it("indexes Data, Movement, and Velocity constants for runtime Const lookups", () => {
+  it("indexes Data, Movement, Velocity, and Size constants for runtime Const lookups", () => {
     const parsed = parseCns(`
 [Data]
 life = 1000
@@ -190,6 +190,10 @@ down.bounce.groundlevel = 12
 
 [Velocity]
 air.gethit.groundrecover = -.15,-3.5
+
+[Size]
+head.pos = 5,-120
+mid.pos = 2,-64
 `);
 
     expect(parsed.constants["data.life"]).toBe(1000);
@@ -201,6 +205,10 @@ air.gethit.groundrecover = -.15,-3.5
     expect(parsed.constants["movement.down.bounce.groundlevel"]).toBe(12);
     expect(parsed.constants["velocity.air.gethit.groundrecover.x"]).toBe(-0.15);
     expect(parsed.constants["velocity.air.gethit.groundrecover.y"]).toBe(-3.5);
+    expect(parsed.constants["size.head.pos.x"]).toBe(5);
+    expect(parsed.constants["size.head.pos.y"]).toBe(-120);
+    expect(parsed.constants["size.mid.pos.x"]).toBe(2);
+    expect(parsed.constants["size.mid.pos.y"]).toBe(-64);
   });
 
   it("indexes triggerall in command state-entry controllers", () => {
