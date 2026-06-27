@@ -11,6 +11,7 @@ import type {
   ProjectileControllerOp,
   RemoveExplodControllerOp,
   ReversalDefControllerOp,
+  SpriteEffectControllerOp,
   TargetControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
@@ -983,7 +984,14 @@ function runActiveStateControllers(
         );
       } else if (dispatch.effect === "sprpriority") {
         recordControllerExecution(fighter, rawController);
-        applySprPriorityController(fighter, rawController);
+        const operation =
+          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "sprpriority"
+            ? controller.operation
+            : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applySprPriorityController(fighter, rawController, operation);
       } else if (dispatch.effect === "palfx") {
         recordControllerExecution(fighter, rawController);
         applyPalFxController(fighter, rawController);
@@ -1041,8 +1049,12 @@ function applyWidthController(
   };
 }
 
-function applySprPriorityController(fighter: FighterMatchState, controller: MugenStateController): void {
-  applyRuntimeSpritePriorityController(fighter.runtime, controller);
+function applySprPriorityController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
+): void {
+  applyRuntimeSpritePriorityController(fighter.runtime, controller, operation);
 }
 
 function applyPalFxController(fighter: FighterMatchState, controller: MugenStateController): void {
@@ -2445,6 +2457,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   }
   if (operation.kind === "orientation") {
     return `orientation:${operation.controllerType}`;
+  }
+  if (operation.kind === "sprite-effect") {
+    return `sprite-effect:${operation.controllerType}`;
   }
   if (operation.kind === "resource") {
     return `resource:${operation.controllerType}`;

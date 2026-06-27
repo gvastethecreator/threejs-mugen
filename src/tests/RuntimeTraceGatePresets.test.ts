@@ -47,6 +47,7 @@ import {
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
   createSyntheticImportedTurnTraceArtifact,
+  createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -654,6 +655,39 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.facing === -1)).toBe(true);
+  });
+
+  it("creates a synthetic imported SprPriority artifact with typed sprite-effect evidence", () => {
+    const artifact = createSyntheticImportedSprPriorityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-sprpriority-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-sprpriority-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.SprPriority).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:sprpriority"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          spritePriority: 5,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.spritePriority === 5)).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

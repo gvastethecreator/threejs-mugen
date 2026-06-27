@@ -804,6 +804,54 @@ export function createSyntheticImportedTurnTraceArtifact(options: RuntimeTraceGa
   });
 }
 
+export function createSyntheticImportedSprPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-sprpriority",
+    displayName: "Synthetic Imported SprPriority",
+    withSprPriority: 5,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-sprpriority-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-sprpriority-golden",
+      label: "Synthetic imported SprPriority route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SprPriority trace proves static SprPriority lowers into typed sprite-effect operation evidence and updates bounded renderer ordering telemetry. It does not claim exact MUGEN/IKEMEN layer, shadow, helper, Explod, or draw-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-sprpriority-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "SprPriority", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:sprpriority", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            spritePriority: 5,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4393,6 +4441,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
   withTurn?: boolean;
+  withSprPriority?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4520,6 +4569,7 @@ ${options.withWidthController ? widthControllerBlock(options.withWidthController
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
+${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4948,6 +4998,15 @@ function turnControllerBlock(): string {
 [State 200, Turn Probe]
 type = Turn
 trigger1 = Time >= 0
+`;
+}
+
+function sprPriorityControllerBlock(priority: number): string {
+  return `
+[State 200, SprPriority Probe]
+type = SprPriority
+trigger1 = Time >= 0
+value = ${priority}
 `;
 }
 

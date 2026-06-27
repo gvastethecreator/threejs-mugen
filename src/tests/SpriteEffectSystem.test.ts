@@ -17,6 +17,14 @@ describe("SpriteEffectSystem", () => {
     applyRuntimeSpritePriorityController(state, controller("SprPriority", { value: "99" }));
 
     expect(state.spritePriority).toBe(10);
+
+    applyRuntimeSpritePriorityController(state, controller("SprPriority", { value: "0" }), {
+      kind: "sprite-effect",
+      controllerType: "sprpriority",
+      priority: -3,
+    });
+
+    expect(state.spritePriority).toBe(-3);
   });
 
   it("applies and ticks PalFX material telemetry", () => {

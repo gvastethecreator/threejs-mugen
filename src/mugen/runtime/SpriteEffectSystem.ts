@@ -1,3 +1,4 @@
+import type { SpriteEffectControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeAfterImageSample } from "./types";
@@ -7,8 +8,9 @@ export type RuntimeAfterImageSampleFactory = () => RuntimeAfterImageSample | und
 export function applyRuntimeSpritePriorityController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
 ): void {
-  const priority = firstNumber(findControllerParam(controller, "value") ?? findControllerParam(controller, "priority"));
+  const priority = operation?.priority ?? firstNumber(findControllerParam(controller, "value") ?? findControllerParam(controller, "priority"));
   if (priority === undefined) {
     return;
   }

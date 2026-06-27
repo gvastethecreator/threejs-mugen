@@ -287,6 +287,16 @@ time = 20
     expect(turn.operation).toEqual({ kind: "orientation", controllerType: "turn" });
   });
 
+  it("compiles static SprPriority controllers into typed sprite-effect operations", () => {
+    const value = compileControllerIr(controller(200, "SprPriority", [], { value: "5" }));
+    const priority = compileControllerIr(controller(200, "SprPriority", [], { priority: "99" }));
+    const dynamic = compileControllerIr(controller(200, "SprPriority", [], { value: "Const(data.life)" }));
+
+    expect(value.operation).toEqual({ kind: "sprite-effect", controllerType: "sprpriority", priority: 5 });
+    expect(priority.operation).toEqual({ kind: "sprite-effect", controllerType: "sprpriority", priority: 10 });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles static StateTypeSet controllers into typed metadata operations", () => {
     const stateTypeSet = compileControllerIr(controller(200, "StateTypeSet", [], { statetype: "C", movetype: "A", physics: "N" }));
     const partial = compileControllerIr(controller(200, "StateTypeSet", [], { movetype: "I" }));

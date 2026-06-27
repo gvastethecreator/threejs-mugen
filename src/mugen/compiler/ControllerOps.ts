@@ -216,6 +216,12 @@ export type OrientationControllerOp = {
   controllerType: "turn";
 };
 
+export type SpriteEffectControllerOp = {
+  kind: "sprite-effect";
+  controllerType: "sprpriority";
+  priority: number;
+};
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
@@ -296,6 +302,7 @@ export type ControllerOp =
   | CollisionControllerOp
   | MetadataControllerOp
   | OrientationControllerOp
+  | SpriteEffectControllerOp
   | ResourceControllerOp
   | VariableControllerOp
   | HitEligibilityControllerOp
@@ -322,6 +329,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "turn") {
     return { kind: "orientation", controllerType: "turn" };
+  }
+  if (type === "sprpriority") {
+    return compileSprPriorityControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -476,6 +486,18 @@ function compileStateTypeSetControllerOp(controller: MugenStateController): Meta
     moveType,
     physics,
   });
+}
+
+function compileSprPriorityControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const priority = firstNumber(findParam(controller, "value") ?? findParam(controller, "priority"));
+  if (priority === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "sprpriority",
+    priority: clampSpritePriority(priority),
+  };
 }
 
 function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
@@ -1032,6 +1054,10 @@ function optionalBooleanParam(value: string | undefined): boolean | "invalid" | 
 
 function clampStaticBodyWidth(value: number): number {
   return Math.max(1, Math.min(160, Math.abs(Math.round(value))));
+}
+
+function clampSpritePriority(value: number): number {
+  return Math.max(-5, Math.min(10, Math.round(value)));
 }
 
 function controllerDuration(value: number): number {
