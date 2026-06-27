@@ -18101,7 +18101,7 @@ input {
     justify-self: end;
     color: var(--subtle);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
   }
 
@@ -18764,10 +18764,64 @@ input {
   }
 }
 
-/* Studio command rail: prevent broken right-edge ellipsis on primary next action. */
+/* Desktop Studio command rail: colder signal palette and launcher-grade actions. */
 @media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --warn: #aa7378;
+    --pending: #8f9ca8;
+    --asset: #9b8ea3;
+    --build-accent: #8498b3;
+    --section-accent: #909da9;
+    --surface-accent: var(--section-accent);
+    --accent: #909aa4;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] {
+    --section-accent: #8fa1b6;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] {
+    --section-accent: #a092ad;
+    --asset: #a092ad;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] {
+    --section-accent: #8d9ca8;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="stage"] {
+    --section-accent: #8fa28f;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] {
+    --section-accent: #b4777c;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] {
+    --section-accent: #948ab2;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] {
+    --section-accent: #7d9b97;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    --section-accent: #8498b3;
+    --build-accent: #8498b3;
+  }
+
+  .app-shell.mode-studio .workspace-actions {
+    gap: 6px;
+  }
+
   .app-shell.mode-studio .workspace-action-grid {
+    gap: 0;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    border-color: var(--dcc-line-hard);
+    background: var(--dcc-field);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.028),
+      inset 0 -1px 0 var(--dcc-shadow-cut);
   }
 
   .app-shell.mode-studio .workspace-action-grid button {
@@ -18775,24 +18829,56 @@ input {
     grid-template-columns: 18px minmax(0, 1fr);
     grid-template-rows: auto auto;
     align-content: center;
+    align-items: center;
     gap: 2px 7px;
-    min-height: 41px;
-    padding: 6px 8px;
+    min-height: 44px;
+    padding: 6px 8px 7px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
   }
 
   .app-shell.mode-studio .workspace-action-grid .primary-action {
     grid-column: 1 / -1;
-    min-height: 46px;
+    min-height: 54px;
+    padding-block: 7px 8px;
+    border-right: 0;
+    background: color-mix(in srgb, var(--section-accent) 6%, var(--dcc-control));
+    box-shadow:
+      inset 3px 0 0 color-mix(in srgb, var(--section-accent) 82%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.052),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.82);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:nth-child(2n + 1) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:hover {
+    background: var(--dcc-row-hover);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .primary-action:hover {
+    background: color-mix(in srgb, var(--section-accent) 9%, var(--dcc-control-hover));
   }
 
   .app-shell.mode-studio .workspace-action-grid .action-icon {
     grid-column: 1;
     grid-row: 1 / span 2;
     align-self: center;
+    color: color-mix(in srgb, var(--section-accent) 72%, var(--muted));
   }
 
   .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
   .app-shell.mode-studio .workspace-action-grid button small {
+    display: block !important;
     grid-column: 2;
     justify-self: start;
     max-width: 100%;
@@ -18804,11 +18890,44 @@ input {
 
   .app-shell.mode-studio .workspace-action-grid .workspace-action-label {
     grid-row: 1;
+    color: color-mix(in srgb, var(--text) 96%, var(--muted));
+    font-size: 12.25px;
+    line-height: 1.05;
   }
 
   .app-shell.mode-studio .workspace-action-grid button small {
     grid-row: 2;
-    color: var(--subtle);
-    font-size: 11.5px;
+    width: 100%;
+    color: color-mix(in srgb, var(--subtle) 86%, var(--muted));
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.05;
+    opacity: 0.9;
+    position: static;
+    visibility: visible;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .primary-action .workspace-action-label {
+    font-size: 12.75px;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .primary-action small {
+    color: color-mix(in srgb, var(--section-accent) 44%, var(--muted));
+  }
+
+  .app-shell.mode-studio .workspace-summary span,
+  .app-shell.mode-studio .mode-switch button,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
+    align-content: center;
+  }
+
+  .app-shell.mode-studio .mode-status,
+  .app-shell.mode-studio .tab-status {
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline,
+  .app-shell.mode-studio .mode-switch .mode-button-top {
+    grid-template-columns: 16px minmax(0, 1fr) minmax(6px, auto);
   }
 }
