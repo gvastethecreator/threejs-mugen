@@ -10163,12 +10163,51 @@ input {
   gap: 6px;
 }
 
+.app-shell.mode-studio .asset-row {
+  min-height: 44px;
+}
+
+.app-shell.mode-studio .asset-row-main {
+  gap: 4px;
+}
+
+.app-shell.mode-studio .asset-row-title {
+  gap: 2px;
+}
+
+.app-shell.mode-studio .asset-row-kind,
+.app-shell.mode-studio .asset-row-action {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.18;
+}
+
+.app-shell.mode-studio .asset-row-action {
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+}
+
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail {
   display: none;
 }
 
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-side {
   min-width: 58px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-row-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-row-action,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node strong,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node small {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind {
+  line-height: 1.15;
 }
 
 @media (max-width: 620px) {
