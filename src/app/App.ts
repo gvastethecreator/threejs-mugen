@@ -608,8 +608,8 @@ export class App {
     this.installEvents();
     this.installAudioUnlock();
     this.updateUi();
-    void this.installRuntimeAtlases();
     this.loop.start();
+    void this.installRuntimeAtlases();
   }
 
   private template(): string {
@@ -1081,7 +1081,9 @@ export class App {
       { fighterId: "mira-volt", label: "Mira Volt", path: "mira-volt", minGroup: 11000, maxGroup: 11999 },
       { fighterId: "rook-apprentice", label: "Rook Apprentice", path: "rook-apprentice", minGroup: 14000, maxGroup: 14999 },
     ];
+    await this.waitForAtlasLoadSlot();
     for (const route of atlasRoutes) {
+      await this.waitForAtlasLoadSlot();
       try {
         const provider = await AtlasSpriteProvider.fromUrls(
           `/characters/${route.path}/sprite-sheet-alpha.png?v=${atlasVersion}`,
@@ -1106,8 +1108,19 @@ export class App {
         });
         this.log(`${route.label} atlas failed; using mock fallback: ${message}`);
       }
+      this.updateUi();
     }
-    this.updateUi();
+  }
+
+  private waitForAtlasLoadSlot(): Promise<void> {
+    return new Promise((resolve) => {
+      const idleCallback = window.requestIdleCallback;
+      if (idleCallback) {
+        idleCallback(() => resolve(), { timeout: 700 });
+        return;
+      }
+      window.setTimeout(resolve, 120);
+    });
   }
 
   private async loadAtlasMotionQa(path: string, atlasVersion: string): Promise<AtlasMotionQa> {

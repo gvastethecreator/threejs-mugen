@@ -117,7 +117,15 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
+    image.decoding = "async";
+    image.onload = () => {
+      const decode = image.decode?.();
+      if (!decode) {
+        resolve(image);
+        return;
+      }
+      decode.then(() => resolve(image)).catch(() => resolve(image));
+    };
     image.onerror = () => reject(new Error(`Unable to load atlas image: ${src}`));
     image.src = src;
   });
