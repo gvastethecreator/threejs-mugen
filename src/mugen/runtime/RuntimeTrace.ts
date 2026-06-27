@@ -1343,6 +1343,7 @@ function matchesEffectPayloadRequirement(
     (requirement.minRemoveTime === undefined || effect.removeTime >= requirement.minRemoveTime) &&
     (requirement.minSpritePriority === undefined || effect.spritePriority >= requirement.minSpritePriority) &&
     matchesEffectScalePayloadRequirement(effect, requirement) &&
+    matchesEffectPausePayloadRequirement(effect, requirement) &&
     matchesHelperPayloadRequirement(effect, requirement) &&
     matchesProjectilePayloadRequirement(effect, requirement) &&
     matchesExplodPayloadRequirement(effect, requirement)
@@ -1376,6 +1377,27 @@ function matchesEffectScalePayloadRequirement(
   return (
     (requirement.scaleX === undefined || sameTraceNumber(effect.scale.x, requirement.scaleX)) &&
     (requirement.scaleY === undefined || sameTraceNumber(effect.scale.y, requirement.scaleY))
+  );
+}
+
+function matchesEffectPausePayloadRequirement(
+  effect: RuntimeTraceEffectSummary,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  const hasPauseRequirement =
+    requirement.ignoreHitPause !== undefined ||
+    requirement.minPauseMoveTime !== undefined ||
+    requirement.minSuperMoveTime !== undefined;
+  if (!hasPauseRequirement) {
+    return true;
+  }
+  if (!("ignoreHitPause" in effect) || !("pauseMoveTime" in effect) || !("superMoveTime" in effect)) {
+    return false;
+  }
+  return (
+    (requirement.ignoreHitPause === undefined || effect.ignoreHitPause === requirement.ignoreHitPause) &&
+    (requirement.minPauseMoveTime === undefined || effect.pauseMoveTime >= requirement.minPauseMoveTime) &&
+    (requirement.minSuperMoveTime === undefined || effect.superMoveTime >= requirement.minSuperMoveTime)
   );
 }
 
@@ -1413,10 +1435,7 @@ function matchesExplodPayloadRequirement(
   requirement: RuntimeTraceEffectPayloadRequirement,
 ): boolean {
   const hasExplodRequirement =
-    requirement.ignoreHitPause !== undefined ||
     requirement.removeOnGetHit !== undefined ||
-    requirement.minPauseMoveTime !== undefined ||
-    requirement.minSuperMoveTime !== undefined ||
     requirement.minBindRemaining !== undefined ||
     requirement.maxBindRemaining !== undefined;
   if (!hasExplodRequirement) {
@@ -1424,10 +1443,7 @@ function matchesExplodPayloadRequirement(
   }
   return (
     effect.kind === "explod" &&
-    (requirement.ignoreHitPause === undefined || effect.ignoreHitPause === requirement.ignoreHitPause) &&
     (requirement.removeOnGetHit === undefined || effect.removeOnGetHit === requirement.removeOnGetHit) &&
-    (requirement.minPauseMoveTime === undefined || effect.pauseMoveTime >= requirement.minPauseMoveTime) &&
-    (requirement.minSuperMoveTime === undefined || effect.superMoveTime >= requirement.minSuperMoveTime) &&
     (requirement.minBindRemaining === undefined || (effect.bindRemaining ?? -Infinity) >= requirement.minBindRemaining) &&
     (requirement.maxBindRemaining === undefined || (effect.bindRemaining ?? Infinity) <= requirement.maxBindRemaining)
   );

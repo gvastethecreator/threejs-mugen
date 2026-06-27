@@ -81,6 +81,9 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     frameElapsed: 0,
     age: 0,
     removeTime: 10,
+    ignoreHitPause: false,
+    pauseMoveTime: 0,
+    superMoveTime: 0,
     spritePriority: 3,
     ...overrides,
   };
@@ -97,6 +100,9 @@ describe("HelperSystem", () => {
         velset: "2,-1",
         "size.xscale": "1.5",
         "size.yscale": "0.75",
+        ignorehitpause: "1",
+        pausemovetime: "2",
+        supermovetime: "3",
         removetime: "9999",
         sprpriority: "25",
       }),
@@ -126,6 +132,9 @@ describe("HelperSystem", () => {
       pos: { x: 24, y: -12 },
       vel: { x: 2, y: -1 },
       scale: { x: 1.5, y: 0.75 },
+      ignoreHitPause: true,
+      pauseMoveTime: 2,
+      superMoveTime: 3,
       facing: -1,
       removeTime: 1200,
       spritePriority: 10,
@@ -142,6 +151,9 @@ describe("HelperSystem", () => {
       pos: [12, -4],
       velocity: [3, -2],
       scale: [2, 0.5],
+      ignoreHitPause: true,
+      pauseMoveTime: 4,
+      superMoveTime: 5,
       postype: "p1",
       facing: 1,
       removeTime: 25,
@@ -174,6 +186,9 @@ describe("HelperSystem", () => {
       animNo: 6102,
       vel: { x: 3, y: -2 },
       scale: { x: 2, y: 0.5 },
+      ignoreHitPause: true,
+      pauseMoveTime: 4,
+      superMoveTime: 5,
       facing: 1,
       removeTime: 25,
       spritePriority: 6,
@@ -198,6 +213,30 @@ describe("HelperSystem", () => {
 
     advanceRuntimeHelpers([active], stage);
     expect(active.frameIndex).toBe(0);
+  });
+
+  it("honors bounded helper pause movement flags", () => {
+    const frozen = helper({ serialId: "frozen", vel: { x: 3, y: 0 } });
+    const hitPauseImmune = helper({ serialId: "hitpause-immune", vel: { x: 4, y: 0 }, ignoreHitPause: true });
+    const pauseMover = helper({ serialId: "pause-mover", vel: { x: 5, y: 0 }, pauseMoveTime: 2 });
+    const superMover = helper({ serialId: "super-mover", vel: { x: 6, y: 0 }, superMoveTime: 2 });
+
+    advanceRuntimeHelpers([frozen, hitPauseImmune, pauseMover, superMover], stage, { pauseKind: "hitpause" });
+    expect(frozen).toMatchObject({ age: 0, pos: { x: 0, y: 0 } });
+    expect(hitPauseImmune).toMatchObject({ age: 1, pos: { x: 4, y: 0 } });
+    expect(pauseMover).toMatchObject({ age: 0, pos: { x: 0, y: 0 }, pauseMoveTime: 2 });
+
+    advanceRuntimeHelpers([frozen, pauseMover, superMover], stage, { pauseKind: "Pause" });
+    advanceRuntimeHelpers([frozen, pauseMover, superMover], stage, { pauseKind: "Pause" });
+    advanceRuntimeHelpers([frozen, pauseMover, superMover], stage, { pauseKind: "Pause" });
+    expect(pauseMover).toMatchObject({ age: 2, pos: { x: 10, y: 0 }, pauseMoveTime: 0 });
+    expect(superMover).toMatchObject({ age: 0, pos: { x: 0, y: 0 }, superMoveTime: 2 });
+
+    advanceRuntimeHelpers([frozen, superMover], stage, { pauseKind: "SuperPause" });
+    advanceRuntimeHelpers([frozen, superMover], stage, { pauseKind: "SuperPause" });
+    advanceRuntimeHelpers([frozen, superMover], stage, { pauseKind: "SuperPause" });
+    expect(superMover).toMatchObject({ age: 2, pos: { x: 12, y: 0 }, superMoveTime: 0 });
+    expect(frozen).toMatchObject({ age: 0, pos: { x: 0, y: 0 } });
   });
 
   it("projects helpers into effect actor snapshots with cloned collision boxes", () => {
@@ -226,8 +265,11 @@ describe("HelperSystem", () => {
       },
       effect: {
         kind: "helper",
-        scale: { x: 2, y: 0.5 },
-      },
+          scale: { x: 2, y: 0.5 },
+          ignoreHitPause: false,
+          pauseMoveTime: 0,
+          superMoveTime: 0,
+        },
       clsn1: [{ x1: 1, y1: 2, x2: 3, y2: 4 }],
       clsn2: [{ x1: -4, y1: -3, x2: 4, y2: 5 }],
     });

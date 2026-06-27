@@ -4281,6 +4281,65 @@ export function createSyntheticImportedHelperScaleTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedHelperSuperMoveTimeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedSuperPauseEffectScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-supermovetime-attacker",
+    displayName: "Synthetic Imported Helper SuperMoveTime Attacker",
+    withSuperPause: true,
+    withHelper: true,
+    helperSuperMoveTime: 4,
+    withExplod: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-supermovetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-supermovetime-golden",
+      label: "Synthetic imported Helper supermovetime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper supermovetime trace proves one visual Helper continues through its own bounded supermovetime budget after source SuperPause movetime expires. It does not claim helper VM, exact helper pause layering, helper combat, redirects, or full MUGEN/IKEMEN Helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-supermovetime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause", "Helper", "Explod"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause", "helper", "explod"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minExplods: 1, minNextHelperSerial: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minSuperMoveTime: 1 },
+        ],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [
+          { type: "SuperPause", actorKind: "player", ownerId: "p2", minFrozenFrames: 6 },
+          { type: "SuperPause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+        ],
+        requiredMatchPauseAdvances: [
+          { type: "SuperPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedExplodScript();
@@ -5220,6 +5279,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
+  helperSuperMoveTime?: number;
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -5438,7 +5498,7 @@ ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveRever
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
-${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale) : ""}
+${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, options.helperSuperMoveTime) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
 ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
@@ -7114,9 +7174,10 @@ ctrl = 0
 `;
 }
 
-function helperControllerBlock(velocity?: [number, number], scale?: [number, number]): string {
+function helperControllerBlock(velocity?: [number, number], scale?: [number, number], superMoveTime?: number): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
   const scaleLine = scale === undefined ? "" : `scale = ${scale[0]},${scale[1]}`;
+  const superMoveTimeLine = superMoveTime === undefined ? "" : `supermovetime = ${superMoveTime}`;
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -7132,6 +7193,7 @@ sprpriority = 8
 removetime = 30
 ${velocityLine}
 ${scaleLine}
+${superMoveTimeLine}
 `;
 }
 

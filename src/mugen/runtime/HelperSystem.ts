@@ -27,7 +27,16 @@ export type RuntimeHelper = {
   frameElapsed: number;
   age: number;
   removeTime: number;
+  ignoreHitPause: boolean;
+  pauseMoveTime: number;
+  superMoveTime: number;
   spritePriority: number;
+};
+
+export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
+
+export type RuntimeHelperAdvanceOptions = {
+  pauseKind?: RuntimeHelperPauseKind;
 };
 
 export type RuntimeHelperSpawnInput = {
@@ -70,21 +79,22 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     frameElapsed: 0,
     age: 0,
     removeTime: clampHelperTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime")) ?? 180),
+    ignoreHitPause: operation?.ignoreHitPause ?? booleanNumber(findControllerParam(input.controller, "ignorehitpause")) ?? false,
+    pauseMoveTime: clampHelperMoveTime(operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime")) ?? 0),
+    superMoveTime: clampHelperMoveTime(operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime")) ?? 0),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 3))),
   };
 }
 
-export function advanceRuntimeHelpers(helpers: RuntimeHelper[], stage: Pick<MugenStageDefinition, "bounds">): RuntimeHelper[] {
+export function advanceRuntimeHelpers(
+  helpers: RuntimeHelper[],
+  stage: Pick<MugenStageDefinition, "bounds">,
+  options: RuntimeHelperAdvanceOptions = {},
+): RuntimeHelper[] {
   for (const helper of helpers) {
-    helper.age += 1;
-    helper.pos.x += helper.vel.x;
-    helper.pos.y += helper.vel.y;
-    helper.frameElapsed += 1;
-    const frame = helper.action.frames[helper.frameIndex];
-    if (frame && helper.frameElapsed >= Math.max(1, frame.duration)) {
-      helper.frameElapsed = 0;
-      const next = helper.frameIndex + 1;
-      helper.frameIndex = next < helper.action.frames.length ? next : helper.action.loopStart ?? helper.action.frames.length - 1;
+    if (shouldAdvanceRuntimeHelper(helper, options.pauseKind)) {
+      advanceRuntimeHelper(helper);
+      consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
     }
   }
   const margin = 240;
@@ -128,6 +138,9 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           removeTime: helper.removeTime,
           spritePriority: helper.spritePriority,
           scale: { ...helper.scale },
+          ignoreHitPause: helper.ignoreHitPause,
+          pauseMoveTime: helper.pauseMoveTime,
+          superMoveTime: helper.superMoveTime,
         },
         runtime: {
           pos: { ...helper.pos },
@@ -154,6 +167,39 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
+}
+
+function advanceRuntimeHelper(helper: RuntimeHelper): void {
+  helper.age += 1;
+  helper.pos.x += helper.vel.x;
+  helper.pos.y += helper.vel.y;
+  helper.frameElapsed += 1;
+  const frame = helper.action.frames[helper.frameIndex];
+  if (frame && helper.frameElapsed >= Math.max(1, frame.duration)) {
+    helper.frameElapsed = 0;
+    const next = helper.frameIndex + 1;
+    helper.frameIndex = next < helper.action.frames.length ? next : helper.action.loopStart ?? helper.action.frames.length - 1;
+  }
+}
+
+function shouldAdvanceRuntimeHelper(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): boolean {
+  if (!pauseKind) {
+    return true;
+  }
+  if (pauseKind === "hitpause") {
+    return helper.ignoreHitPause;
+  }
+  const moveTime = pauseKind === "SuperPause" ? helper.superMoveTime : helper.pauseMoveTime;
+  return moveTime < 0 || moveTime > 0;
+}
+
+function consumeRuntimeHelperPauseMoveTime(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): void {
+  if (pauseKind === "Pause" && helper.pauseMoveTime > 0) {
+    helper.pauseMoveTime -= 1;
+  }
+  if (pauseKind === "SuperPause" && helper.superMoveTime > 0) {
+    helper.superMoveTime -= 1;
+  }
 }
 
 function resolveActorIdentity(input: RuntimeHelperSpawnInput): Pick<
@@ -219,6 +265,10 @@ function clampHelperVelocity(value: number): number {
   return Math.max(-80, Math.min(80, value));
 }
 
+function clampHelperMoveTime(value: number): number {
+  return value < 0 ? -1 : Math.max(0, Math.min(600, Math.round(value)));
+}
+
 function clampHelperScale(value: number): number {
   return Math.max(0.05, Math.min(8, value));
 }
@@ -229,6 +279,14 @@ function isDefaultScale(scale: { x: number; y: number }): boolean {
 
 function clampHelperTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(1200, Math.round(value)));
+}
+
+function booleanNumber(value: string | undefined): boolean | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const parsed = firstNumber(value);
+  return parsed === undefined ? undefined : parsed !== 0;
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

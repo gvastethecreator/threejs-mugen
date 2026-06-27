@@ -39,6 +39,7 @@ import {
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
+  createSyntheticImportedHelperSuperMoveTimeTraceArtifact,
   createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
@@ -3304,6 +3305,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, scaleX: 2, scaleY: 0.5 },
     ]);
+  });
+
+  it("creates a synthetic imported Helper supermovetime artifact with pause-budget advance evidence", () => {
+    const artifact = createSyntheticImportedHelperSuperMoveTimeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-supermovetime-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-supermovetime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1200, minSuperMoveTime: 1 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([
+      { type: "SuperPause", actorKind: "player", ownerId: "p2", minFrozenFrames: 6 },
+      { type: "SuperPause", actorKind: "explod", ownerId: "p1", minFrozenFrames: 5 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "SuperPause", actorKind: "helper", ownerId: "p1", minAdvancedFrames: 3, minPreviousMoveTime: 0 },
+    ]);
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorKind: "helper",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["animTime"]),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Explod artifact with typed explod operation evidence", () => {

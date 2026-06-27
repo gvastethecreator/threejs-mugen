@@ -476,6 +476,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-supermovetime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperSuperMoveTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-explod",
       required: true,
       artifact: presets.createSyntheticImportedExplodTraceArtifact(),

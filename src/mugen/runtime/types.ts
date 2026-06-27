@@ -225,6 +225,9 @@ export type ActorEffectSnapshot =
       removeTime: number;
       spritePriority: number;
       scale: { x: number; y: number };
+      ignoreHitPause: boolean;
+      pauseMoveTime: number;
+      superMoveTime: number;
     }
   | {
       kind: "projectile";

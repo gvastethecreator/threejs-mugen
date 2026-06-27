@@ -117,6 +117,9 @@ export type HelperControllerOp = {
   postype?: string;
   facing?: number;
   removeTime: number;
+  ignoreHitPause: boolean;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
   spritePriority: number;
 };
 
@@ -981,6 +984,9 @@ function compileHelperControllerOp(controller: MugenStateController): HelperCont
     postype: stripMugenString(findParam(controller, "postype")),
     facing: firstNumber(findParam(controller, "facing")),
     removeTime: firstNumber(findParam(controller, "removetime")) ?? 180,
+    ignoreHitPause: booleanNumber(findParam(controller, "ignorehitpause")) ?? false,
+    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
+    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 3,
   });
 }

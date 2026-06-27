@@ -15,6 +15,7 @@ import {
   createRuntimeHelper,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
+  type RuntimeHelperAdvanceOptions,
   type RuntimeHelperSpawnInput,
 } from "./HelperSystem";
 import {
@@ -60,6 +61,10 @@ export type RuntimeEffectActorStoreSummary = {
     helper: number;
     projectile: number;
   };
+};
+
+export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions & {
+  stage?: Pick<MugenStageDefinition, "bounds">;
 };
 
 export class RuntimeEffectActorWorld {
@@ -110,7 +115,10 @@ export class RuntimeEffectActorWorld {
     this.advanceProjectiles(ownerId, stage);
   }
 
-  advancePresentationEffects(ownerId: string, bindAnchor?: RuntimeExplodBindAnchor, options?: RuntimeExplodAdvanceOptions): void {
+  advancePresentationEffects(ownerId: string, bindAnchor?: RuntimeExplodBindAnchor, options?: RuntimeEffectPresentationAdvanceOptions): void {
+    if (options?.pauseKind && options.stage) {
+      this.advanceHelpers(ownerId, options.stage, options);
+    }
     this.advanceExplods(ownerId, bindAnchor, options);
   }
 
@@ -126,8 +134,8 @@ export class RuntimeEffectActorWorld {
     return spawnRuntimeHelperActor(this.getStore(ownerId), ownerId, input);
   }
 
-  advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">): void {
-    advanceRuntimeHelperActors(this.getStore(ownerId), stage);
+  advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
+    advanceRuntimeHelperActors(this.getStore(ownerId), stage, options);
   }
 
   helperSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {
@@ -292,8 +300,9 @@ export function spawnRuntimeHelperActor(
 export function advanceRuntimeHelperActors(
   store: RuntimeEffectActorStore,
   stage: Pick<MugenStageDefinition, "bounds">,
+  options?: RuntimeHelperAdvanceOptions,
 ): void {
-  store.helpers = advanceRuntimeHelpers(store.helpers, stage);
+  store.helpers = advanceRuntimeHelpers(store.helpers, stage, options);
 }
 
 export function runtimeHelperActorsToSnapshots(store: RuntimeEffectActorStore, sourceStateNo: number): ActorSnapshot[] {

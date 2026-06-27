@@ -63,7 +63,7 @@ describe("EffectActorSystem", () => {
       id: "p1-helper-0",
       actorKind: "helper",
       ownerId: "p1",
-      effect: { kind: "helper", id: 20, name: "Buddy", scale: { x: 1, y: 1 } },
+      effect: { kind: "helper", id: 20, name: "Buddy", scale: { x: 1, y: 1 }, ignoreHitPause: false, pauseMoveTime: 0, superMoveTime: 0 },
     });
     expect(runtimeProjectileActorsToSnapshots(store, 200)[0]).toMatchObject({
       id: "p1-projectile-0",

@@ -294,8 +294,8 @@ export class PlayableMatchRuntime {
     if (globalPause > 0) {
       this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
       this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
-      advancePausedPresentationEffects(this.p1, "hitpause");
-      advancePausedPresentationEffects(this.p2, "hitpause");
+      advancePausedPresentationEffects(this.p1, "hitpause", this.stage);
+      advancePausedPresentationEffects(this.p2, "hitpause", this.stage);
       this.p1.hitPause = Math.max(0, this.p1.hitPause - 1);
       this.p2.hitPause = Math.max(0, this.p2.hitPause - 1);
       return;
@@ -378,10 +378,10 @@ export class PlayableMatchRuntime {
       return;
     }
     if (!actorMoved || actor.id !== this.p1.id) {
-      advancePausedPresentationEffects(this.p1, pause.type);
+      advancePausedPresentationEffects(this.p1, pause.type, this.stage);
     }
     if (!actorMoved || actor.id !== this.p2.id) {
-      advancePausedPresentationEffects(this.p2, pause.type);
+      advancePausedPresentationEffects(this.p2, pause.type, this.stage);
     }
     this.matchPause = tickMatchPause(pause);
   }
@@ -1269,14 +1269,18 @@ function advancePresentationEffects(fighter: FighterMatchState): void {
   });
 }
 
-function advancePausedPresentationEffects(fighter: FighterMatchState, pauseKind: RuntimeExplodPauseKind): void {
+function advancePausedPresentationEffects(
+  fighter: FighterMatchState,
+  pauseKind: RuntimeExplodPauseKind,
+  stage: Pick<MugenStageDefinition, "bounds">,
+): void {
   fighter.effectActorWorld.advancePresentationEffects(
     fighter.id,
     {
       pos: fighter.runtime.pos,
       facing: fighter.runtime.facing,
     },
-    { pauseKind },
+    { pauseKind, stage },
   );
 }
 
