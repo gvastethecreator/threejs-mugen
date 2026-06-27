@@ -609,6 +609,55 @@ export function createSyntheticImportedScreenBoundCameraTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-width",
+    displayName: "Synthetic Imported Width",
+    withWidthController: [18, 44],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-width-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-width-golden",
+      label: "Synthetic imported Width route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Width trace proves static Width lowers into typed collision operation evidence and updates the current runtime body width used by bounded push/separation. It does not claim exact MUGEN/IKEMEN Width edge/player semantics or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-width-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Width", "HitDef"],
+        requiredExecutedOperations: ["collision:width", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            bodyWidthFront: 18,
+            bodyWidthBack: 44,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -4194,6 +4243,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withAutoGuardStartStates?: boolean;
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
+  withWidthController?: [number, number?];
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   sizeConstants?: {
@@ -4317,6 +4367,7 @@ ${assertSpecialLine}
 ${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
+${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 [State 200, HitDef]
 type = HitDef
 trigger1 = Time = 1
@@ -4708,6 +4759,15 @@ type = PosAdd
 trigger1 = Time = 0
 x = 65
 y = 0
+`;
+}
+
+function widthControllerBlock(width: [number, number?]): string {
+  return `
+[State 200, Width Probe]
+type = Width
+trigger1 = Time >= 0
+player = ${width[0]},${width[1] ?? width[0]}
 `;
 }
 

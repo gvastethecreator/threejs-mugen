@@ -549,6 +549,7 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     ...actor,
     pos: { ...actor.pos },
     vel: { ...actor.vel },
+    bodyWidth: actor.bodyWidth ? { ...actor.bodyWidth } : undefined,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     hitFall: actor.hitFall
       ? {

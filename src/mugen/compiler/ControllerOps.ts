@@ -190,6 +190,13 @@ export type BoundsControllerOp =
       moveCameraY: boolean;
     };
 
+export type CollisionControllerOp = {
+  kind: "collision";
+  controllerType: "width";
+  front: number;
+  back: number;
+};
+
 export type ResourceControllerOp =
   | { kind: "resource"; controllerType: "ctrlset"; value: boolean }
   | { kind: "resource"; controllerType: "lifeadd"; value: number; kill?: boolean }
@@ -267,6 +274,7 @@ export type ControllerOp =
   | FallEnvShakeControllerOp
   | KinematicControllerOp
   | BoundsControllerOp
+  | CollisionControllerOp
   | ResourceControllerOp
   | VariableControllerOp
   | HitEligibilityControllerOp
@@ -281,6 +289,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "posfreeze" || type === "screenbound") {
     return compileBoundsControllerOp(controller, type);
+  }
+  if (type === "width") {
+    return compileWidthControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -392,6 +403,19 @@ function compileBoundsControllerOp(controller: MugenStateController, type: Bound
     bound: value !== 0,
     moveCameraX: (moveCamera?.[0] ?? 0) !== 0,
     moveCameraY: (moveCamera?.[1] ?? 0) !== 0,
+  };
+}
+
+function compileWidthControllerOp(controller: MugenStateController): CollisionControllerOp | undefined {
+  const pair = strictNumberPair(findParam(controller, "player") ?? findParam(controller, "value"));
+  if (!pair) {
+    return undefined;
+  }
+  return {
+    kind: "collision",
+    controllerType: "width",
+    front: clampStaticBodyWidth(pair[0]),
+    back: clampStaticBodyWidth(pair[1] ?? pair[0]),
   };
 }
 
@@ -930,6 +954,10 @@ function optionalBooleanParam(value: string | undefined): boolean | "invalid" | 
     return undefined;
   }
   return booleanNumber(value) ?? "invalid";
+}
+
+function clampStaticBodyWidth(value: number): number {
+  return Math.max(1, Math.min(160, Math.abs(Math.round(value))));
 }
 
 function controllerDuration(value: number): number {

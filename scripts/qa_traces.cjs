@@ -86,6 +86,11 @@ async function main() {
       artifact: presets.createSyntheticImportedScreenBoundCameraTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-width",
+      required: true,
+      artifact: presets.createSyntheticImportedWidthTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -845,6 +850,7 @@ function validateTraceCoverage(coverage) {
     "kinematic:hitvelset",
     "bounds:posfreeze",
     "bounds:screenbound",
+    "collision:width",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -879,6 +885,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-damage-scale",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
+    "synthetic-imported-width",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",

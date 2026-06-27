@@ -1118,6 +1118,7 @@ describe("PlayableMatchRuntime", () => {
       amplitude: -6,
     });
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.Width).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["collision:width"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.SprPriority).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PalFX).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.AfterImage).toBe(1);

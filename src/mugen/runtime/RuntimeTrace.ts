@@ -50,6 +50,7 @@ export type RuntimeTraceActor = {
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   renderScale?: { x: number; y: number };
+  bodyWidth?: { front: number; back: number };
   posFreeze?: { x: boolean; y: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   facing: 1 | -1;
@@ -426,6 +427,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleXAtMost?: number;
   observedScaleYAtLeast?: number;
   observedScaleYAtMost?: number;
+  bodyWidthFront?: number;
+  bodyWidthBack?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -450,6 +453,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxVel: { x: number; y: number };
   minScale: { x: number; y: number };
   maxScale: { x: number; y: number };
+  bodyWidthFront?: number;
+  bodyWidthBack?: number;
   posFreezeX?: boolean;
   posFreezeY?: boolean;
   screenBound?: boolean;
@@ -1032,6 +1037,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxVel: { ...actor.vel },
               minScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
+              bodyWidthFront: actor.bodyWidth?.front,
+              bodyWidthBack: actor.bodyWidth?.back,
               posFreezeX: actor.posFreeze?.x,
               posFreezeY: actor.posFreeze?.y,
               screenBound: actor.screenBound?.bound,
@@ -1728,6 +1735,8 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.moveType,
     actor.clsn1Count,
     actor.clsn2Count,
+    actor.bodyWidth?.front === undefined ? "wf*" : `wf${actor.bodyWidth.front}`,
+    actor.bodyWidth?.back === undefined ? "wb*" : `wb${actor.bodyWidth.back}`,
     actor.posFreeze?.x === undefined ? "pfx*" : `pfx${actor.posFreeze.x ? 1 : 0}`,
     actor.posFreeze?.y === undefined ? "pfy*" : `pfy${actor.posFreeze.y ? 1 : 0}`,
     actor.screenBound?.bound === undefined ? "sb*" : `sb${actor.screenBound.bound ? 1 : 0}`,
@@ -1747,6 +1756,8 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.moveType,
     actor.clsn1Count,
     actor.clsn2Count,
+    actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
+    actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
     actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
     actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
@@ -1782,6 +1793,8 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleXAtMost === undefined || actor.minScale.x <= requirement.observedScaleXAtMost) &&
     (requirement.observedScaleYAtLeast === undefined || actor.maxScale.y >= requirement.observedScaleYAtLeast) &&
     (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
+    (requirement.bodyWidthFront === undefined || sameTraceNumber(actor.bodyWidthFront ?? NaN, requirement.bodyWidthFront)) &&
+    (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.posFreezeX === undefined || actor.posFreezeX === requirement.posFreezeX) &&
     (requirement.posFreezeY === undefined || actor.posFreezeY === requirement.posFreezeY) &&
     (requirement.screenBound === undefined || actor.screenBound === requirement.screenBound) &&
@@ -2043,6 +2056,12 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
           y: roundTraceNumber(actor.runtime.renderScale.y),
         }
       : undefined,
+    bodyWidth: actor.runtime.bodyWidth
+      ? {
+          front: roundTraceNumber(actor.runtime.bodyWidth.front),
+          back: roundTraceNumber(actor.runtime.bodyWidth.back),
+        }
+      : undefined,
     posFreeze: actor.runtime.posFreeze ? { ...actor.runtime.posFreeze } : undefined,
     screenBound: actor.runtime.screenBound ? { ...actor.runtime.screenBound } : undefined,
     facing: actor.runtime.facing,
@@ -2062,12 +2081,13 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
 
 function summarizeActorForChecksum(
   actor: RuntimeTraceActor,
-): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "targetCount" | "effect" | "posFreeze" | "screenBound"> {
+): Omit<RuntimeTraceActor, "animTime" | "hitPause" | "targetCount" | "effect" | "bodyWidth" | "posFreeze" | "screenBound"> {
   const {
     animTime: _animTime,
     hitPause: _hitPause,
     targetCount: _targetCount,
     effect: _effect,
+    bodyWidth: _bodyWidth,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     ...checksumActor

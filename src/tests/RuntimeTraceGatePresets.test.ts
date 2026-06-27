@@ -43,6 +43,7 @@ import {
   createSyntheticImportedDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
+  createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -513,6 +514,40 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.frames.some((frame) => frame.stage?.camera.x === 0)).toBe(true);
+  });
+
+  it("creates a synthetic imported Width artifact with typed collision evidence", () => {
+    const artifact = createSyntheticImportedWidthTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-width-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-width-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Width).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["collision:width"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          bodyWidthFront: 18,
+          bodyWidthBack: 44,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.bodyWidth?.front === 18 && actor.bodyWidth.back === 44)).toBe(true);
   });
 
   it("creates a synthetic imported HitDef priority artifact with bounded direct-clash evidence", () => {

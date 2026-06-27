@@ -1,6 +1,7 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   BindToTargetControllerOp,
+  CollisionControllerOp,
   ControllerOp,
   ExplodControllerOp,
   FallEnvShakeControllerOp,
@@ -968,7 +969,11 @@ function runActiveStateControllers(
         activateReversalDef(fighter, rawController, operation);
       } else if (dispatch.effect === "width") {
         recordControllerExecution(fighter, rawController);
-        applyWidthController(fighter, rawController);
+        const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "width" ? controller.operation : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applyWidthController(fighter, rawController, operation);
       } else if (dispatch.effect === "fallenvshake") {
         recordControllerExecution(fighter, rawController);
         recordFallEnvShakeEvent(
@@ -1020,14 +1025,15 @@ function runActiveStateControllers(
   }
 }
 
-function applyWidthController(fighter: FighterMatchState, controller: MugenStateController): void {
-  const pair = numberPair(findParam(controller, "player") ?? findParam(controller, "value"));
-  if (!pair) {
+function applyWidthController(fighter: FighterMatchState, controller: MugenStateController, operation?: CollisionControllerOp): void {
+  const pair = operation ? undefined : numberPair(findParam(controller, "player") ?? findParam(controller, "value"));
+  const front = operation?.front ?? pair?.[0];
+  if (front === undefined) {
     return;
   }
   fighter.runtime.bodyWidth = {
-    front: clampBodyWidth(pair[0]),
-    back: clampBodyWidth(pair[1] ?? pair[0]),
+    front: clampBodyWidth(front),
+    back: clampBodyWidth(operation?.back ?? pair?.[1] ?? front),
   };
 }
 
@@ -2426,6 +2432,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   }
   if (operation.kind === "bounds") {
     return `bounds:${operation.controllerType}`;
+  }
+  if (operation.kind === "collision") {
+    return `collision:${operation.controllerType}`;
   }
   if (operation.kind === "resource") {
     return `resource:${operation.controllerType}`;
