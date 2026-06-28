@@ -1,0 +1,215 @@
+import { describe, expect, it } from "vitest";
+import type { DemoMove } from "../mugen/runtime/demoFighters";
+import {
+  createRuntimeContactMemory,
+  runtimeMoveContactValue,
+  runtimeMoveHitCountValue,
+  runtimeReceivedDamageValue,
+} from "../mugen/runtime/ContactMemorySystem";
+import {
+  RuntimeDirectCombatWorld,
+  type RuntimeDirectCombatActor,
+  type RuntimeDirectCombatHooks,
+} from "../mugen/runtime/DirectCombatSystem";
+import type { CharacterRuntimeState } from "../mugen/runtime/types";
+
+describe("DirectCombatSystem", () => {
+  it("applies bounded guard results behind RuntimeDirectCombatWorld", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
+    const defender = actor("p2", "Defender", {
+      life: 8,
+      currentMove: move(),
+      moveTick: 9,
+      hasHit: true,
+      guardStun: 99,
+      guarding: false,
+      stateNo: 130,
+    });
+    let guardHookCount = 0;
+
+    const outcome = world.applyResolvedHit(attacker, defender, move(), {
+      kind: "guard",
+      damage: 11,
+      kill: false,
+      pause: 4,
+      stun: 7,
+      slideTime: 5,
+      controlTime: 6,
+      push: 3,
+      hitVelocityY: -1,
+      powerGain: 12,
+    }, hooks({ applyGuardHit: () => { guardHookCount += 1; } }));
+
+    expect(outcome).toEqual({ kind: "guard", damage: 11, message: "Defender guarded Attacker for 11" });
+    expect(attacker.hasHit).toBe(true);
+    expect(attacker.hitPause).toBe(4);
+    expect(attacker.runtime.power).toBe(24);
+    expect(defender.hitPause).toBe(4);
+    expect(defender.currentMove).toBeUndefined();
+    expect(defender.moveTick).toBe(0);
+    expect(defender.hasHit).toBe(false);
+    expect(defender.runtime.life).toBe(1);
+    expect(defender.runtime.guardStun).toBe(7);
+    expect(defender.runtime.guardSlideTime).toBe(5);
+    expect(defender.runtime.guardControlTime).toBe(6);
+    expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.ctrl).toBe(false);
+    expect(defender.runtime.vel).toEqual({ x: 3, y: -1 });
+    expect(defender.runtime.hitVelocity).toEqual({ x: 3, y: -1 });
+    expect(defender.runtime.hitVars).toEqual({ animType: 0, groundType: 1, airType: 1, isBound: false });
+    expect(defender.runtime.moveType).toBe("H");
+    expect(guardHookCount).toBe(1);
+    expect(attacker.removedExplodsOnGetHit).toBe(0);
+    expect(defender.removedExplodsOnGetHit).toBe(1);
+    expect(attacker.contact).toMatchObject({ moveContactState: 200, moveGuardState: 200, moveGuardTime: 0 });
+    expect(runtimeMoveContactValue(attacker.contact, 200, "guard")).toBe(0);
+    expect(runtimeReceivedDamageValue(defender.contact, 130)).toBe(0);
+  });
+
+  it("applies bounded hit results, hitFall metadata, and received damage", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210 });
+    const defender = actor("p2", "Defender", {
+      life: 80,
+      currentMove: move(),
+      guardStun: 9,
+      guardSlideTime: 4,
+      guardControlTime: 6,
+      guarding: true,
+      stateNo: 5000,
+    });
+    const transitions: string[] = [];
+    const combatMove = move({
+      hitVars: { animType: 3, groundType: 2, airType: 4 },
+      fall: {
+        enabled: true,
+        damage: 7,
+        defenceUp: 50,
+        kill: false,
+        recover: true,
+        recoverTime: 20,
+        velocity: { x: 5, y: -7 },
+      },
+    });
+
+    const outcome = world.applyResolvedHit(attacker, defender, combatMove, {
+      kind: "hit",
+      damage: 30,
+      kill: true,
+      pause: 6,
+      stun: 13,
+      push: 4,
+      hitVelocityY: -2,
+      powerGain: 35,
+    }, hooks({
+      applyHitStateTransitions: () => transitions.push("state-transition"),
+      applyDefaultGetHit: () => transitions.push("default-gethit"),
+    }));
+
+    expect(outcome).toEqual({ kind: "hit", damage: 30, message: "Attacker hit Defender for 30" });
+    expect(attacker.hasHit).toBe(true);
+    expect(attacker.hitPause).toBe(6);
+    expect(attacker.runtime.power).toBe(55);
+    expect(defender.hitPause).toBe(6);
+    expect(defender.hitStun).toBe(13);
+    expect(defender.runtime.life).toBe(50);
+    expect(defender.runtime.guardStun).toBe(0);
+    expect(defender.runtime.guardSlideTime).toBe(0);
+    expect(defender.runtime.guardControlTime).toBe(0);
+    expect(defender.runtime.guarding).toBe(false);
+    expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
+    expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });
+    expect(defender.runtime.hitVars).toEqual({ animType: 3, groundType: 2, airType: 4, isBound: false });
+    expect(defender.runtime.hitFall).toMatchObject({
+      falling: true,
+      damage: 7,
+      defenceUp: 50,
+      kill: false,
+      recover: true,
+      recoverTime: 20,
+      downRecover: true,
+      velocity: { x: -5, y: -7 },
+    });
+    expect(transitions).toEqual(["state-transition", "default-gethit"]);
+    expect(defender.removedExplodsOnGetHit).toBe(1);
+    expect(attacker.contact).toMatchObject({ moveContactState: 210, moveHitState: 210, moveHitTime: 0 });
+    expect(runtimeMoveContactValue(attacker.contact, 210, "hit")).toBe(0);
+    expect(runtimeMoveHitCountValue(attacker.contact, 210, false)).toBe(1);
+    expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(30);
+  });
+});
+
+type ActorOverrides = Partial<CharacterRuntimeState> &
+  Partial<Pick<RuntimeDirectCombatActor, "currentMove" | "moveTick" | "hasHit" | "hitPause" | "hitStun">>;
+
+function actor(id: string, label: string, overrides: ActorOverrides = {}): RuntimeDirectCombatActor & { removedExplodsOnGetHit: number } {
+  const state = runtimeState(overrides);
+  let removedExplodsOnGetHit = 0;
+  return {
+    id,
+    label,
+    definition: { constants: {} },
+    runtime: state,
+    currentMove: overrides.currentMove,
+    moveTick: overrides.moveTick ?? 0,
+    hitStun: overrides.hitStun ?? 0,
+    hitPause: overrides.hitPause ?? 0,
+    hasHit: overrides.hasHit ?? false,
+    contact: createRuntimeContactMemory(),
+    get removedExplodsOnGetHit() {
+      return removedExplodsOnGetHit;
+    },
+    effectActorWorld: {
+      removeExplodsOnGetHit: () => {
+        removedExplodsOnGetHit += 1;
+      },
+    },
+  };
+}
+
+function runtimeState(overrides: Partial<CharacterRuntimeState>): CharacterRuntimeState {
+  return {
+    pos: { x: 0, y: 0 },
+    vel: { x: 0, y: 0 },
+    facing: 1,
+    stateNo: 0,
+    animNo: 0,
+    animTime: 0,
+    frameIndex: 0,
+    life: 100,
+    power: 0,
+    ctrl: true,
+    stateType: "S",
+    moveType: "I",
+    physics: "S",
+    vars: [],
+    fvars: [],
+    ...overrides,
+  };
+}
+
+function move(overrides: Partial<DemoMove> = {}): DemoMove {
+  return {
+    actionId: 200,
+    startup: 0,
+    activeStart: 0,
+    activeEnd: 3,
+    recovery: 4,
+    damage: 30,
+    hitPause: 6,
+    hitStun: 12,
+    push: 5,
+    hitbox: { x1: 0, y1: -40, x2: 40, y2: -10 },
+    ...overrides,
+  };
+}
+
+function hooks(overrides: Partial<RuntimeDirectCombatHooks> = {}): RuntimeDirectCombatHooks {
+  return {
+    applyGuardHit: () => undefined,
+    applyHitStateTransitions: () => undefined,
+    applyDefaultGetHit: () => undefined,
+    ...overrides,
+  };
+}

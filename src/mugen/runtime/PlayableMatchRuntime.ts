@@ -29,7 +29,6 @@ import {
   applyRuntimeHitAdd,
   createRuntimeContactMemory,
   hasRuntimeProjectileContact,
-  markRuntimeMoveContact,
   markRuntimeMoveReversed,
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
@@ -44,8 +43,6 @@ import {
 } from "./ContactMemorySystem";
 import { RuntimeEnvColorWorld } from "./EnvColorSystem";
 import {
-  applyRuntimeDamage,
-  canRuntimeDamageKill,
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
   DEFAULT_RUNTIME_GUARD_DISTANCE,
@@ -59,6 +56,7 @@ import {
   scaleRuntimeIncomingDamage,
 } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
+import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
@@ -196,6 +194,7 @@ export class PlayableMatchRuntime {
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
+  private readonly directCombatWorld = new RuntimeDirectCombatWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -349,8 +348,8 @@ export class PlayableMatchRuntime {
     applyBindToTarget(this.p1, this.p2);
     applyBindToTarget(this.p2, this.p1);
     resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
-    resolveCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
-    resolveCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
+    resolveCombat(this.p1, this.p2, this.directCombatWorld, (line) => this.logs.unshift(line));
+    resolveCombat(this.p2, this.p1, this.directCombatWorld, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
@@ -1591,10 +1590,6 @@ function applyHitAddController(
   applyRuntimeHitAdd(fighter.contact, fighter.runtime.stateNo, value);
 }
 
-function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targetActorId?: string): void {
-  markRuntimeMoveContact(fighter.contact, fighter.runtime.stateNo, kind, targetActorId);
-}
-
 function markMoveReversed(fighter: FighterMatchState): void {
   markRuntimeMoveReversed(fighter.contact, fighter.runtime.stateNo);
 }
@@ -1914,7 +1909,12 @@ function activateReversalDef(
   };
 }
 
-function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState, log: (line: string) => void): void {
+function resolveCombat(
+  attacker: FighterMatchState,
+  defender: FighterMatchState,
+  directCombatWorld: RuntimeDirectCombatWorld,
+  log: (line: string) => void,
+): void {
   if (!attacker.currentMove || attacker.hasHit) {
     return;
   }
@@ -1959,60 +1959,12 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     attack: move,
     holdingBack: isRuntimeHoldingBack(defender.currentInput),
   });
-  if (result.kind === "guard") {
-    markMoveContact(attacker, "guard", defender.id);
-    interruptCurrentMove(defender);
-    attacker.hitPause = result.pause;
-    defender.hitPause = result.pause;
-    defender.runtime.guardStun = result.stun;
-    defender.runtime.guardSlideTime = result.slideTime ?? 0;
-    defender.runtime.guardControlTime = result.controlTime ?? 0;
-    defender.runtime.guarding = true;
-    defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
-    defender.runtime.vel.x = attacker.runtime.facing * result.push;
-    defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
-    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
-    if (result.hitVelocityY !== undefined) {
-      defender.runtime.vel.y = result.hitVelocityY;
-    }
-    markFighterGotHit(defender);
-    defender.runtime.ctrl = false;
-    attacker.runtime.power = Math.min(runtimePowerMax(attacker.definition), attacker.runtime.power + result.powerGain);
-    applyDefaultGuardHitState(defender);
-    log(`${defender.label} guarded ${attacker.label} for ${result.damage}`);
-    return;
-  }
-
-  markMoveContact(attacker, "hit", defender.id);
-  attacker.hitPause = result.pause;
-  interruptCurrentMove(defender);
-  defender.hitPause = result.pause;
-  defender.hitStun = result.stun;
-  defender.runtime.guardStun = 0;
-  defender.runtime.guardSlideTime = 0;
-  defender.runtime.guardControlTime = 0;
-  defender.runtime.guarding = false;
-  defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
-  defender.runtime.vel.x = attacker.runtime.facing * result.push;
-  defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
-  defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
-  defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
-  if (result.hitVelocityY !== undefined) {
-    defender.runtime.vel.y = result.hitVelocityY;
-  }
-  markFighterGotHit(defender);
-  attacker.runtime.power = Math.min(runtimePowerMax(attacker.definition), attacker.runtime.power + result.powerGain);
-  applyHitStateTransitions(attacker, defender, move);
-  applyDefaultGetHitState(defender, move);
-  markReceivedDamage(defender, result.damage);
-  log(`${attacker.label} hit ${defender.label} for ${result.damage}`);
-}
-
-function interruptCurrentMove(fighter: FighterMatchState): void {
-  fighter.currentMove = undefined;
-  fighter.currentMoveLabel = undefined;
-  fighter.moveTick = 0;
-  fighter.hasHit = false;
+  const outcome = directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
+    applyGuardHit: applyDefaultGuardHitState,
+    applyHitStateTransitions,
+    applyDefaultGetHit: applyDefaultGetHitState,
+  });
+  log(outcome.message);
 }
 
 function markFighterGotHit(fighter: FighterMatchState): void {
@@ -2095,38 +2047,6 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
             phase: envShakePhase ?? 0,
           }
         : existing?.fall?.envShake,
-  };
-}
-
-function runtimeGetHitVarsFromMove(move: DemoMove): CharacterRuntimeState["hitVars"] {
-  return {
-    animType: move.hitVars?.animType ?? 0,
-    groundType: move.hitVars?.groundType ?? 1,
-    airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,
-    isBound: false,
-  };
-}
-
-function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): CharacterRuntimeState["hitFall"] | undefined {
-  const fall = move.fall;
-  if (!fall) {
-    return undefined;
-  }
-  const xVelocity = fall.velocity?.x;
-  return {
-    falling: fall.enabled,
-    damage: Math.max(0, fall.damage ?? 0),
-    defenceUp: fall.defenceUp,
-    kill: fall.kill,
-    recover: fall.recover,
-    recoverTime: fall.recoverTime,
-    downRecover: fall.downRecover ?? true,
-    downRecoverTime: fall.downRecoverTime,
-    velocity: {
-      x: xVelocity !== undefined ? attackerFacing * Math.abs(xVelocity) : undefined,
-      y: fall.velocity?.y ?? move.hitVelocityY ?? -4.5,
-    },
-    envShake: fall.envShake,
   };
 }
 
