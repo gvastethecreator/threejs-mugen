@@ -103,6 +103,8 @@ Current variable-controller cut: `synthetic-imported-variable.json` checksum `a7
 
 Current resource-controller cut: `synthetic-imported-resource.json` checksum `7bbcb2e4` proves imported static `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` execute through typed `resource:*` operations, mutate owner-local life/power, and route through later `Life` / `Power` triggers into state `289`. Exact resource scaling, helper/parent/root redirects, team modes, round/KO flow, dynamic lowering, and full VM parity remain future work.
 
+Current control-controller cut: `synthetic-imported-control.json` checksum `80c4c446` proves imported static `CtrlSet` executes through typed `resource:ctrlset` operation evidence and can restore owner control in state `200`. Dynamic expressions, helper/redirect ownership, exact state-entry control timing, and full MUGEN/IKEMEN control semantics remain future work.
+
 Current Gravity cut: `synthetic-imported-gravity.json` checksum `92161764` proves imported airborne state `200` can execute the real `Gravity` controller through typed `kinematic:gravity` evidence and expose vertical velocity telemetry. Exact `yaccel` constants, floor snap, pause/tick order, and full MUGEN/IKEMEN air-physics parity remain future work.
 
 Current kinematic-controller cut: `synthetic-imported-kinematic.json` checksum `92804390` proves imported state `200` can execute static `VelSet`, `VelAdd`, `VelMul`, `PosSet`, and `PosAdd` through typed `kinematic:*` operation evidence and expose bounded position/velocity telemetry. Dynamic expressions, exact physics/tick order, floor snapping, helper/custom-state ownership, and full MUGEN/IKEMEN movement parity remain future work.

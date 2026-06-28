@@ -81,6 +81,7 @@ import {
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
+  createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedResourceMaxTraceArtifact,
   createSyntheticImportedSoundTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
@@ -456,6 +457,50 @@ describe("RuntimeTraceGatePresets", () => {
       life: 750,
       power: 900,
     });
+  });
+
+  it("creates a synthetic imported control artifact with typed CtrlSet operation evidence", () => {
+    const artifact = createSyntheticImportedControlTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-control-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 200,
+      animNo: 200,
+      ctrl: true,
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(
+      expect.arrayContaining([{ type: "CtrlSet", minCount: 2 }]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(
+      expect.arrayContaining([{ operation: "resource:ctrlset", minCount: 2 }]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredFinalActors).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 200,
+        animNo: 200,
+        ctrl: true,
+      },
+    ]);
   });
 
   it("creates a synthetic imported sound artifact with PlaySnd and StopSnd event evidence", () => {

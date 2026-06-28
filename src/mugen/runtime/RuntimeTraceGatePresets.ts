@@ -253,6 +253,31 @@ export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedControlTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-control",
+      displayName: "Synthetic Imported Control Ops",
+      action200Duration: 30,
+      withControlOps: true,
+    }),
+    {
+      ...options,
+      script: importedOneShotXScript(),
+      targetId: "synthetic-imported-control-golden",
+      targetLabel: "Synthetic imported CtrlSet route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", { type: "CtrlSet", minCount: 2 }],
+      requiredExecutedOperations: ["hitdef", { operation: "resource:ctrlset", minCount: 2 }],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200, ctrl: true }],
+      notes: [
+        "Synthetic imported control trace proves bounded static CtrlSet can execute as typed resource:ctrlset operation evidence and restore owner control in an imported state. Dynamic expressions, helper/redirect ownership, exact state-entry control timing, and full MUGEN/IKEMEN control semantics remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -6332,6 +6357,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitCountStateNo?: number;
   withHitAdd?: number;
   hitAddStateNo?: number;
+  withControlOps?: boolean;
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
   withSoundControllers?: boolean;
@@ -6628,6 +6654,7 @@ ${options.withMoveHitReset ? moveHitResetControllerBlock() : ""}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
+${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
@@ -8407,6 +8434,20 @@ trigger1 = Life = 750
 trigger1 = Power = 900
 value = ${stateNo}
 ctrl = 0
+`;
+}
+
+function controlControllerBlock(): string {
+  return `
+[State 200, Ctrl Off Probe]
+type = CtrlSet
+trigger1 = Time = 0
+value = 0
+
+[State 200, Ctrl On Probe]
+type = CtrlSet
+trigger1 = Time = 2
+value = 1
 `;
 }
 

@@ -66,6 +66,11 @@ async function main() {
       artifact: presets.createSyntheticImportedResourceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-control",
+      required: true,
+      artifact: presets.createSyntheticImportedControlTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-sound",
       required: true,
       artifact: presets.createSyntheticImportedSoundTraceArtifact(),
@@ -1139,6 +1144,7 @@ function validateTraceCoverage(coverage) {
     "damage-scale:defencemulset",
     "contact:movehitreset",
     "contact:hitadd",
+    "resource:ctrlset",
     "resource:lifeadd",
     "resource:lifeset",
     "resource:poweradd",
@@ -1203,6 +1209,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",
     "synthetic-imported-resource",
+    "synthetic-imported-control",
     "synthetic-imported-sound",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
