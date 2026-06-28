@@ -130,7 +130,7 @@ export class MatchWorld {
     if (resetLifecycle) {
       this.lifecycleTracker.reset();
     }
-    const records = buildActorRecordBases(snapshot);
+    const records = buildActorRecordBases(snapshot, this.targetWorld);
     const lifecycle = this.lifecycleTracker.update(snapshot.tick, records);
     this.actorRegistry = buildMatchWorldActorRegistryFromRecords(records, lifecycle, effectStores, this.targetWorld);
     this.registryKey = key;
@@ -143,7 +143,7 @@ export class MatchWorld {
 }
 
 export function buildMatchWorldActorRegistry(snapshot: MugenSnapshot): MatchWorldActorRegistrySnapshot {
-  const records = buildActorRecordBases(snapshot);
+  const records = buildActorRecordBases(snapshot, new RuntimeTargetWorld());
   return buildMatchWorldActorRegistryFromRecords(
     records,
     createStatelessLifecycle(snapshot.tick, records),
@@ -203,14 +203,19 @@ function buildMatchWorldActorRegistryFromRecords(
 
 type MatchWorldActorRecordBase = Omit<MatchWorldActorRecord, "lifecycle">;
 
-function buildActorRecordBases(snapshot: MugenSnapshot): MatchWorldActorRecordBase[] {
+function buildActorRecordBases(snapshot: MugenSnapshot, targetWorld: RuntimeTargetWorld): MatchWorldActorRecordBase[] {
   return [
-    ...snapshot.actors.map((actor) => toActorRecordBase(actor, "actor")),
-    ...(snapshot.effects ?? []).map((actor) => toActorRecordBase(actor, "effect")),
+    ...snapshot.actors.map((actor) => toActorRecordBase(actor, "actor", targetWorld)),
+    ...(snapshot.effects ?? []).map((actor) => toActorRecordBase(actor, "effect", targetWorld)),
   ];
 }
 
-function toActorRecordBase(actor: ActorSnapshot, layer: MatchWorldActorRecord["layer"]): MatchWorldActorRecordBase {
+function toActorRecordBase(
+  actor: ActorSnapshot,
+  layer: MatchWorldActorRecord["layer"],
+  targetWorld: RuntimeTargetWorld,
+): MatchWorldActorRecordBase {
+  const targets = targetWorld.snapshotRuntimeState(actor.runtime);
   return {
     id: actor.id,
     label: actor.label,
@@ -226,10 +231,10 @@ function toActorRecordBase(actor: ActorSnapshot, layer: MatchWorldActorRecord["l
     animNo: actor.runtime.animNo,
     life: actor.runtime.life,
     power: actor.runtime.power,
-    targetCount: actor.runtime.targetCount ?? 0,
-    targets: actor.runtime.targetRefs?.map((target) => ({ ...target })) ?? [],
-    targetBindings: actor.runtime.targetBindings?.map(cloneTargetBinding) ?? [],
-    bindToTarget: actor.runtime.bindToTarget ? cloneTargetBinding(actor.runtime.bindToTarget) : undefined,
+    targetCount: targets.targetCount,
+    targets: targets.targets,
+    targetBindings: targets.bindings,
+    bindToTarget: targets.bindToTarget,
   };
 }
 
@@ -308,15 +313,6 @@ function cloneEffectStoreSummaries(effectStores: RuntimeEffectActorStoreSummary[
     projectiles: [...store.projectiles],
     nextSerials: { ...store.nextSerials },
   }));
-}
-
-function cloneTargetBinding(binding: RuntimeTargetBindingSnapshot): RuntimeTargetBindingSnapshot {
-  return {
-    actorId: binding.actorId,
-    targetId: binding.targetId,
-    remaining: binding.remaining,
-    offset: { ...binding.offset },
-  };
 }
 
 function emptyKindIndex(): Record<RuntimeActorKind, string[]> {

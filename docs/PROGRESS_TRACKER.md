@@ -49,6 +49,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Current proof added: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message snapshot wording, and reset behavior with focused unit coverage. This is sandbox round-state ownership, not MUGEN/IKEMEN round/lifebar/team/screenpack parity.
    - Current proof added: required `synthetic-imported-round-ko.json` checksum `bfd5f073` gates `RoundSnapshot` KO/winner/message/timer evidence through `RuntimeTraceGate.requiredRoundFrames`, plus final P2 life `0`. This proves trace visibility for bounded sandbox KO state, not exact MUGEN/IKEMEN round flow.
    - Current proof added: required `synthetic-imported-round-timeover.json` checksum `7d9f7907` gates `RoundSnapshot` `timeover` draw/winner/message/timer evidence with a short `roundTimerFrames` fixture. This proves bounded time-over trace visibility, not exact timer or round-transition parity.
+   - Current proof added: `RuntimeTargetWorld.snapshotRuntimeState` now owns cloned target-memory snapshots consumed by `MatchWorld` actor records. Focused tests prove target refs, TargetBind bindings, `BindToTarget`, and DebugPanel registry rendering remain stable. This is ownership cleanup, not broader target redirect/team/helper parity.
 
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.

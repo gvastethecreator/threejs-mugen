@@ -10,7 +10,8 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 recovery precision, R2 MatchWorld ownership deepening.
-- Latest completed R2 cut: required `synthetic-imported-round-timeover.json` checksum `7d9f7907` uses a short `roundTimerFrames` fixture to gate bounded `RoundSnapshot` `timeover` draw/winner/message/timer evidence through `RuntimeTraceGate.requiredRoundFrames`. Current aggregate: 145/145 artifacts passed, 128 required and 17 optional.
+- Latest completed R2 cut: `RuntimeTargetWorld.snapshotRuntimeState` now owns cloned target-memory snapshots consumed by `MatchWorld` actor records, with focused `TargetSystem` / `MatchWorld` / `DebugPanel` tests proving target refs, TargetBind bindings, and `BindToTarget` snapshots still render through the registry.
+- Previous completed R2 cut: required `synthetic-imported-round-timeover.json` checksum `7d9f7907` uses a short `roundTimerFrames` fixture to gate bounded `RoundSnapshot` `timeover` draw/winner/message/timer evidence through `RuntimeTraceGate.requiredRoundFrames`. Current aggregate: 145/145 artifacts passed, 128 required and 17 optional.
 - Previous completed R2 cut: required `synthetic-imported-round-ko.json` checksum `bfd5f073` uses `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO state, winner, message, timer evidence, and final P2 life `0`.
 - Previous completed R2 cut: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish decision, winner/message snapshot projection, and reset behavior with focused unit coverage. This is ownership cleanup only; no MUGEN/IKEMEN round parity claim.
 - Latest completed cut: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates ordered actor-frame evidence for `5050` with positive `hitFall.recoverTime` before `5210` with `recoverTime = 0` on the bounded recovery-input route.
@@ -44,3 +45,4 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 - Exact tick order beyond the bounded actor-frame sequence without fixture-backed evidence.
 - Full round/lifebar/team/screenpack parity from the bounded `RuntimeRoundSystem` ownership cut.
 - Exact KO slowdown, time-over duration, intro/winpose, round transition, lifebar, team, simul/tag/turns, and screenpack parity from the bounded `synthetic-imported-round-ko` / `synthetic-imported-round-timeover` trace gates.
+- Full target redirect/team/helper ownership or exact MUGEN/IKEMEN target semantics from the `RuntimeTargetWorld.snapshotRuntimeState` ownership cut.

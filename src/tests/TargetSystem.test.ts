@@ -108,6 +108,25 @@ describe("TargetSystem", () => {
     ).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 77, age: 4 }]);
   });
 
+  it("snapshots target refs from runtime state without leaking mutable arrays", () => {
+    const world = new RuntimeTargetWorld();
+    const state = runtime({
+      targetRefs: [{ actorId: "p2", targetId: 77, age: 4 }],
+      targetBindings: [{ actorId: "p2", targetId: 77, remaining: 6, offset: { x: 12, y: -4 } }],
+      bindToTarget: { actorId: "p2", targetId: 77, remaining: 3, offset: { x: 26, y: -80 } },
+    });
+
+    const snapshot = world.snapshotRuntimeState(state);
+    state.targetRefs![0]!.age = 99;
+    state.targetBindings![0]!.offset.x = 999;
+    state.bindToTarget!.offset.y = -999;
+
+    expect(snapshot.targetCount).toBe(1);
+    expect(snapshot.targets).toEqual([{ actorId: "p2", targetId: 77, age: 4 }]);
+    expect(snapshot.bindings).toEqual([{ actorId: "p2", targetId: 77, remaining: 6, offset: { x: 12, y: -4 } }]);
+    expect(snapshot.bindToTarget).toEqual({ actorId: "p2", targetId: 77, remaining: 3, offset: { x: 26, y: -80 } });
+  });
+
   it("advances target memory and target bindings with expiry", () => {
     const finiteBinding = binding({ actorId: "p2", targetId: 1, remaining: 1 });
     const infiniteBinding = binding({ actorId: "helper", targetId: 2, remaining: Number.POSITIVE_INFINITY });

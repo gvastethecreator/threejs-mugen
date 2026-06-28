@@ -26,6 +26,11 @@ export type RuntimeTargetMemorySnapshot = {
   bindings: RuntimeTargetBindingSnapshot[];
 };
 
+export type RuntimeTargetRuntimeSnapshot = RuntimeTargetMemorySnapshot & {
+  targetCount: number;
+  bindToTarget?: RuntimeTargetBindingSnapshot;
+};
+
 export type RuntimeTargetLinkSnapshot = {
   ownerId: string;
   actorId: string;
@@ -82,6 +87,10 @@ export class RuntimeTargetWorld {
 
   snapshot(actor: RuntimeTargetControllerActor): RuntimeTargetMemorySnapshot {
     return snapshotRuntimeTargetMemory({ targets: actor.targets, bindings: actor.targetBindings });
+  }
+
+  snapshotRuntimeState(runtime: CharacterRuntimeState): RuntimeTargetRuntimeSnapshot {
+    return snapshotRuntimeTargetRuntimeState(runtime);
   }
 
   snapshotLinks(source: RuntimeTargetLinkSource): RuntimeTargetLinkSnapshot[] {
@@ -251,6 +260,17 @@ export function snapshotRuntimeTargetMemory(memory: RuntimeTargetMemory): Runtim
   };
 }
 
+export function snapshotRuntimeTargetRuntimeState(runtime: CharacterRuntimeState): RuntimeTargetRuntimeSnapshot {
+  const targets = runtime.targetRefs?.map(cloneRuntimeTargetSnapshot) ?? [];
+  const bindings = runtime.targetBindings?.map(cloneRuntimeTargetBindingSnapshot) ?? [];
+  return {
+    targetCount: runtime.targetCount ?? targets.length,
+    targets,
+    bindings,
+    ...(runtime.bindToTarget ? { bindToTarget: cloneRuntimeTargetBindingSnapshot(runtime.bindToTarget) } : {}),
+  };
+}
+
 export function snapshotRuntimeTargetLinks(source: RuntimeTargetLinkSource): RuntimeTargetLinkSnapshot[] {
   const links: RuntimeTargetLinkSnapshot[] = [];
   for (const target of source.targets) {
@@ -382,6 +402,14 @@ export function clampRuntimeTargetDuration(value: number): number {
 
 function syncRuntimeTargetCount(actor: RuntimeTargetControllerActor): void {
   actor.runtime.targetCount = actor.targets.length;
+}
+
+function cloneRuntimeTargetSnapshot(target: RuntimeTargetSnapshot): RuntimeTargetSnapshot {
+  return {
+    actorId: target.actorId,
+    targetId: target.targetId,
+    age: target.age,
+  };
 }
 
 function cloneRuntimeTargetBindingSnapshot(binding: RuntimeTargetBindingSnapshot): RuntimeTargetBindingSnapshot {
