@@ -32,14 +32,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Current R1 HitDef hit-sound slice completed:
+Current R1 custom-state ownership slice completed:
 
 ```txt
-R1 HitDef effect oracle
-  -> required synthetic-imported-hitdef-hit-sound.json
-  -> checksum 6fc00d8a
-  -> proves hitsound = S5,0 emits attacker-side PlaySnd telemetry after direct hit
-  -> qa:trace aggregate 155/155, 137 required, 18 optional
+R1 target-owned custom-state oracle
+  -> required synthetic-imported-target-owned-custom-state.json
+  -> checksum 410fb8c0
+  -> proves HitDef p2stateno with p2getp1state = 0 routes P2 through defender-owned state data
+  -> qa:trace aggregate 156/156, 138 required, 18 optional
 ```
 
 Default next implementation slice after this cut:

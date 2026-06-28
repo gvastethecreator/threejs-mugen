@@ -42,7 +42,7 @@ Docs/setup work in this round does not change scores. It improves project-contro
 
 | Slot | Cut | Done when |
 | --- | --- | --- |
-| 1 | R1 runtime compatibility gate | Default next slice: required `HitBy` mismatch-reject trace, unless already closed by newer code. |
+| 1 | R1 runtime compatibility gate | Default next slice: Common1/FightFX precision or another custom-state/ownership route with required trace evidence. |
 | 2 | R2 MatchWorld ownership | One mutable behavior moves behind a named system with focused coverage and no hidden checksum drift. |
 | 3 | S1 Studio trust chain | Evidence and Build show one shared truthful status/next action, visually verified. |
 | 4 | A1 generated asset QA/provenance | One generated/native fighter or asset record links source prompt, sheet, atlas, QA, collisions, and playtest result. |
@@ -55,7 +55,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
-| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest runtime aggregate: 155/155 artifacts passed, 137 required and 18 optional. Latest new required oracle: `synthetic-imported-hitdef-hit-sound.json` checksum `6fc00d8a`, proving bounded `HitDef hitsound = S5,0` attacker-side `PlaySnd` telemetry after direct imported hit contact. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, full guard/fall/recovery semantics and exact FightFX/sound timing. |
+| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest runtime aggregate: 156/156 artifacts passed, 138 required and 18 optional. Latest new required oracle: `synthetic-imported-target-owned-custom-state.json` checksum `410fb8c0`, proving bounded `HitDef p2stateno` with `p2getp1state = 0` routes P2 through defender-owned state data without attacker `customOwnerId`. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, full guard/fall/recovery semantics and exact FightFX/sound timing. |
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks, including active desktop/mobile diagnostics for `HitSparkRenderer` resolving `S`-prefixed player AIR spark frames into sprites when available, plus bounded common/FightFX system lookup-frame and package-frame handoff unit/runtime coverage with 180-frame fallback geometry when AIR/sprite lookup fails. | Pixel-perfect MUGEN render parity, real fight.def/FightFX/common AIR/SFF loading, decoded system-SFF provider registration, full spark animation timing, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
@@ -65,10 +65,10 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 
 ## Next Required Cuts
 
-0. **HitDef hit-sound required trace gate**
-   - Current proof added: required `synthetic-imported-hitdef-hit-sound.json` checksum `6fc00d8a` emits attacker-side `PlaySnd` telemetry for `hitsound = S5,0` after a direct imported HitDef hit.
-   - The gate requires imported `HitDef` execution, hit event/combat evidence, and a parsed sound event on P1 state `200`.
-   - This complements `synthetic-imported-hitdef-guard-sound.json` without claiming exact SND playback, FightFX/common sound fallback, channel priority, or audio timing/mixing parity.
+0. **Target-owned custom-state required trace gate**
+   - Current proof added: required `synthetic-imported-target-owned-custom-state.json` checksum `410fb8c0` gates imported direct `HitDef p2stateno = 888` with `p2getp1state = 0`, routes P2 through its own state/action `888`, proves actor-frame `customOwnerId` stays absent, then returns P2 to state `0`/control.
+   - The gate requires imported `HitDef`, `SelfState`, typed `hitdef`, hit event/combat evidence, P2 state/action `888` frame evidence, and final P2 idle/control evidence.
+   - This complements owner-backed `synthetic-imported-custom-state.json` without claiming throws, helpers/root/parent redirects, teams, exact bind/tick order, or full MUGEN/IKEMEN custom-state parity.
 
 1. **MatchWorld ownership**
    - Move more lifecycle/combat/pause/target behavior behind named systems.
@@ -127,7 +127,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
-| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, bounded named controller/operation order, bounded air/ground velocity telemetry, optional KFM auto guard-start/end order, optional KFM guard-hit frame physics, required hit/guard sound plus hit/guard spark telemetry, and smoke-gated player AIR plus bounded common/FightFX system/package-frame spark metadata into deeper VM loop order, real fight.def/FightFX/common AIR/SFF loading with provider registration/binding/layering/timing, or broader Common1 parity. |
+| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, bounded named controller/operation order, bounded air/ground velocity telemetry, target-owned custom-state ownership, optional KFM auto guard-start/end order, optional KFM guard-hit frame physics, required hit/guard sound plus hit/guard spark telemetry, and smoke-gated player AIR plus bounded common/FightFX system/package-frame spark metadata into deeper VM loop order, real fight.def/FightFX/common AIR/SFF loading with provider registration/binding/layering/timing, or broader Common1 parity. |
 | R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/sprite-effect/actor-constraint/direct-combat/direct-priority/hitoverride/reversal/projectile-combat/effect-spawn/effect-lifecycle ownership; next proof should target helper VM boundaries, combat/effect ordering, deeper presentation semantics, target ownership, or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |

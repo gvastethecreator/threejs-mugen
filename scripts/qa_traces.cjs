@@ -561,6 +561,11 @@ async function main() {
       artifact: presets.createSyntheticImportedCustomStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-owned-custom-state",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetOwnedCustomStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-targetstate-custom",
       required: true,
       artifact: presets.createSyntheticImportedTargetStateCustomTraceArtifact(),
@@ -1361,6 +1366,7 @@ function validateTraceCoverage(coverage) {
   const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
+    "synthetic-imported-target-owned-custom-state",
     "synthetic-imported-targetstate-custom",
     "synthetic-imported-bindtotarget-head",
     "synthetic-imported-bindtotarget-mid",

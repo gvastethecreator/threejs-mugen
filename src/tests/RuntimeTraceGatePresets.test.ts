@@ -4,6 +4,7 @@ import {
   createNativeWhiffTraceArtifact,
   createSyntheticImportedCommonGetHitTraceArtifact,
   createSyntheticImportedCustomStateTraceArtifact,
+  createSyntheticImportedTargetOwnedCustomStateTraceArtifact,
   createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact,
   createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
@@ -3479,6 +3480,42 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 888, moveType: "H" }),
         expect.objectContaining({ actorId: "p2", customOwnerId: "p1", animNo: 889, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      customOwnerId: undefined,
+      stateNo: 0,
+      animNo: 0,
+      ctrl: true,
+      moveType: "I",
+    });
+  });
+
+  it("creates a synthetic imported target-owned custom-state artifact for p2getp1state zero", () => {
+    const artifact = createSyntheticImportedTargetOwnedCustomStateTraceArtifact({ generatedAt: "2026-06-28T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-target-owned-custom-state-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-target-owned-custom-state-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", customOwnerId: undefined, stateNo: 888, animNo: 888, moveType: "H" }),
       ]),
     );
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({

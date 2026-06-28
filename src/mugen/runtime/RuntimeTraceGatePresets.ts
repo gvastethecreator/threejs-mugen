@@ -3915,6 +3915,63 @@ export function createSyntheticImportedCustomStateTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedTargetOwnedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCustomStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-owned-custom-state-attacker",
+    displayName: "Synthetic Imported Target-Owned Custom State Attacker",
+    customStateRoute: {
+      startStateNo: 888,
+      p2GetP1State: false,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-owned-custom-state-defender",
+    displayName: "Synthetic Imported Target-Owned Custom State Defender",
+    customStateRoute: {
+      startStateNo: 888,
+      animNo: 888,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-target-owned-custom-state-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-owned-custom-state-golden",
+      label: "Synthetic imported target-owned custom-state route",
+      source: "imported",
+      notes: [
+        "Synthetic imported target-owned custom-state trace proves HitDef p2stateno with p2getp1state = 0 routes an imported defender into its own state data instead of attacker-owned state data. It does not claim full throw, redirect, helper/root/parent, target binding, or exact MUGEN/IKEMEN custom-state parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-owned-custom-state-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888],
+        requiredExecutedControllers: ["HitDef", "SelfState"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, moveType: "I" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createImportedDefaultGetHitTraceArtifact(
   imported: DemoFighterDefinition,
   options: RuntimeTraceGatePresetOptions & {
@@ -8235,6 +8292,7 @@ export type SyntheticImportedTraceFighterOptions = {
     selfStateAfter?: number;
     animNo?: number;
     chainAnimNo?: number;
+    p2GetP1State?: boolean;
   };
   targetStateRoute?: {
     startStateNo: number;
@@ -8279,7 +8337,7 @@ guard.velocity = -2
   const customStateLine = options.customStateRoute
     ? `
 p2stateno = ${options.customStateRoute.startStateNo}
-p2getp1state = 1
+p2getp1state = ${options.customStateRoute.p2GetP1State === false ? 0 : 1}
 `
     : "";
   const getHitStateLine = options.getHitState
