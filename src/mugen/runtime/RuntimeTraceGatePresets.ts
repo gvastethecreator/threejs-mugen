@@ -820,6 +820,62 @@ export function createSyntheticImportedRejectTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedHitOverrideTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-attacker",
+    displayName: "Synthetic Imported HitOverride Attacker",
+    hitDefAttr: "S,NA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-defender",
+    displayName: "Synthetic Imported HitOverride Defender",
+    passiveHitOverride: { attr: "S,NA", stateNo: 777, slot: 1, time: 30 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitoverride-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitoverride-golden",
+      label: "Synthetic imported HitOverride route",
+      source: "imported",
+      notes: [
+        "Synthetic imported HitOverride trace proves a defender-side typed HitOverride slot can redirect a matching incoming HitDef into a known defender state without normal damage. It does not claim exact slot priority, helper/projectile/custom-state redirects, or full MUGEN/IKEMEN HitOverride parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitoverride-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitOverride"],
+        requiredExecutedOperations: ["hitdef", "hitoverride"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredCombatReasons: ["override"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 777,
+            animNo: 777,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -5947,6 +6003,7 @@ export type SyntheticImportedTraceFighterOptions = {
   fallAnimType?: string;
   passiveNotHitBy?: string;
   passiveHitBy?: string;
+  passiveHitOverride?: { attr: string; stateNo: number; slot?: number; time?: number; forceAir?: boolean; forceGuard?: boolean; keepState?: boolean };
   passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number; targetId?: number };
   defenseMultiplier?: number;
   attackMultiplier?: number;
@@ -6248,6 +6305,7 @@ ctrl = 1
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
 ${options.passiveHitBy ? passiveHitByController("HitBy", "Allow Attrs", options.passiveHitBy) : ""}
+${options.passiveHitOverride ? passiveHitOverrideController(options.passiveHitOverride) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags) : ""}
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
@@ -6374,6 +6432,7 @@ ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
+${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -6431,6 +6490,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       [230, traceAction(230)],
       [500, traceAction(500)],
       ...(options.withInGuardDistGuardStart ? ([[130, traceAction(130)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.passiveHitOverride === undefined
+        ? []
+        : ([[options.passiveHitOverride.stateNo, traceAction(options.passiveHitOverride.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withAutoGuardStartStates
         ? ([[120, traceAction(120)], [130, traceAction(130)], [140, traceAction(140)]] as Array<[number, MugenAnimationAction]>)
         : []),
@@ -6725,6 +6787,21 @@ type = ${type}
 trigger1 = 1
 value = ${attr}
 time = 12
+`;
+}
+
+function passiveHitOverrideController(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveHitOverride"]>): string {
+  return `
+[State 0, Hit Override]
+type = HitOverride
+trigger1 = Time >= 0
+slot = ${config.slot ?? 1}
+attr = ${config.attr}
+stateno = ${config.stateNo}
+time = ${config.time ?? 30}
+forceair = ${config.forceAir ? 1 : 0}
+forceguard = ${config.forceGuard ? 1 : 0}
+keepstate = ${config.keepState ? 1 : 0}
 `;
 }
 

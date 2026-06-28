@@ -35,7 +35,7 @@ This document is the compact truth board for progress. It does not replace detai
 
 3. **Compatibility trace coverage**
    - Add missing required traces for controller families currently covered only by unit/runtime tests.
-   - Near-term candidate: dedicated `HitOverride` trace artifact.
+   - Current proof added: dedicated `synthetic-imported-hitoverride.json` trace artifact for bounded direct-hit redirect evidence.
 
 4. **Studio trust workflow**
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.

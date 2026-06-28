@@ -49,6 +49,7 @@ import {
   createSyntheticImportedHelperSuperMoveTimeTraceArtifact,
   createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedExplodTraceArtifact,
+  createSyntheticImportedHitOverrideTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
@@ -888,6 +889,48 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedOperations["eligibility:nothitby"]).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("reject");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reject");
+  });
+
+  it("creates a synthetic imported HitOverride artifact with redirect reason evidence", () => {
+    const artifact = createSyntheticImportedHitOverrideTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitoverride-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitoverride-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "HitOverride"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "hitoverride"]);
+    expect(artifact.gates[0]?.requirements.requiredFinalActors).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 777,
+        animNo: 777,
+        life: 1000,
+        moveType: "I",
+      },
+    ]);
+    expect(artifact.gates[0]?.evidence.actorSources).toEqual(["imported"]);
+    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([200, 777]));
+    expect(artifact.gates[0]?.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitOverride).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations.hitoverride).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("override");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("override");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({ stateNo: 777, life: 1000 });
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 1"))).toBe(true);
   });
 
   it("creates a synthetic imported ReversalDef artifact with counter reason evidence", () => {

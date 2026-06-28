@@ -103,6 +103,7 @@ Latest runtime evidence cut:
 - Global tick lookup now has a bounded `StageTime` cut: `synthetic-imported-stagetime.json` gates a State -1 route where `StageTime >= 3` routes into state `279`. Stage scripting, pause/replay/rollback accounting, round-system edges, and exact IKEMEN/MUGEN timing parity remain blocked.
 - Fall-defense hit-var lookup now has a bounded `GetHitVar(fall.defence_up)` cut: `synthetic-imported-gethitvar-fall-defence-up.json` gates an owner-backed get-hit route where stored `fall.defence_up = 150` branches into state `286`. Exact lifetime/stacking, redirects, helper/projectile/custom-state inheritance, and tick-order parity remain blocked.
 - Get-hit classification lookup now has a bounded cut: `synthetic-imported-gethitvar-animtype.json` gates an owner-backed get-hit route where `fall.animtype = Up`, `ground.type = Low`, `air.type = Trip`, and `!GetHitVar(isbound)` branch into state `287`. Exact Common1 animation selection, binding lifetime, redirects, helper/projectile inheritance, and tick-order parity remain blocked.
+- HitOverride redirect now has dedicated trace evidence: `synthetic-imported-hitoverride.json` checksum `dff6a468` gates a defender-side `HitOverride` slot redirecting a matching direct `HitDef` into state `777` with no normal damage. Exact slot priority, attr grammar, helper/projectile/custom-state redirects, and IKEMEN parity remain blocked.
 
 ## Construction Review Addendum
 

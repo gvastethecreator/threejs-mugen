@@ -156,6 +156,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRejectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitoverride",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),
@@ -1075,6 +1080,7 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:remappal",
     "sprite-effect:afterimage",
     "sprite-effect:afterimagetime",
+    "hitoverride",
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
@@ -1108,6 +1114,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-explod-removeonprojectileguard",
     "synthetic-imported-removeexplod",
     "synthetic-imported-reversal",
+    "synthetic-imported-hitoverride",
     "synthetic-imported-damage-scale",
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",
