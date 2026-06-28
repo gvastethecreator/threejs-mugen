@@ -24589,3 +24589,193 @@ input {
     font-size: 11px;
   }
 }
+
+/* Desktop Modules: architecture contracts read as hard boundary ledgers. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="modules"] {
+    --section-accent: #78918e;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right {
+    gap: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right > .section {
+    gap: 7px;
+    padding: 8px 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv {
+    grid-template-columns: minmax(94px, 0.32fr) minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dd {
+    min-height: 25px;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--dcc-line);
+    font-size: 12px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dt {
+    border-right: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+    color: var(--subtle);
+    text-align: right;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dd {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--dcc-row);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dt:nth-last-child(-n + 2),
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dd:nth-last-child(-n + 1) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .contract-pill-row {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row .badge,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .contract-pill-row .badge {
+    min-height: 23px;
+    min-width: 0;
+    justify-content: center;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row .badge:nth-child(4n),
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row .badge:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .contract-pill-row .badge:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .compact-list,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-table {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row {
+    min-height: 38px;
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item > span {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(72px, max-content);
+    grid-template-rows: auto auto;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    gap: 2px 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item .list-title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item .list-meta {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item .badge-row {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    justify-self: end;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item .badge-row .badge {
+    border: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-item:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(74px, max-content) minmax(64px, max-content) minmax(86px, 0.24fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row-head {
+    min-height: 28px;
+    background: var(--dcc-field);
+    color: var(--subtle);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-icon {
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name small,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-contracts,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-blocked,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-title,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list-meta {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .full-width-action {
+    min-height: 30px;
+    border-radius: 0;
+  }
+}
