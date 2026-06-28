@@ -125,8 +125,8 @@ describe("RuntimeTrace", () => {
           actorId: "p1",
           allowSameTick: true,
           steps: [
-            { controller: "ChangeState" },
-            { stateNo: 200, controller: "HitDef" },
+            { controller: "ChangeState", name: "Stand Light Punch" },
+            { stateNo: 200, controller: "HitDef", name: "HitDef" },
             { stateNo: 200, operation: "hitdef" },
           ],
         },

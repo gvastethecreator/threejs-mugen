@@ -47,11 +47,11 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 Build next:
 
 - Current proof: required `synthetic-imported-default-fall-recovery-threshold.json` checksum `7bb15a5f` observes imported defender actor-frame `5050` with positive `hitFall.recoverTime`, then `5210` with `recoverTime = 0` after `CanRecover` plus `command = "recovery"` routes.
-- Current proof: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates summarized actor-frame order where `5050` with positive recover time appears before `5210` recovery evidence, and now also gates a bounded controller-event sequence from `5050` `VelAdd` before recovery `ChangeState` into `5210` `VelSet` / `HitFallSet` / `ChangeState`.
+- Current proof: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates summarized actor-frame order where `5050` with positive recover time appears before `5210` recovery evidence, and now also gates a bounded named controller/operation sequence from `5050` `VelAdd` `Gravity` before recovery `ChangeState` into `5210` `VelSet` / `kinematic:velset` / `HitFallSet` / `hitfall:hitfallset` / `ChangeState`.
 - Current proof: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Current proof: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity telemetry for synthetic ground-recovery constants.
 - Current optional fixture proof: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 reaches state `5050` while `hitFall.recoverTime` is still positive, then accepts recovery into the ground branch `5200 -> 5201 -> 52 -> 0` when the private fixture is present; the gate now also requires ordered actor-frame evidence where the positive `5050` observation precedes `5200` with `recoverTime = 0`.
-- Build next recovery proof not already covered by threshold/actor-frame tick-order/controller-event order/early-reject/positive/air-velocity/ground-selection/official ordered-threshold routes: broader recovery parity, deeper VM tick-order coverage, or guard/Common1 confirmation.
+- Build next recovery proof not already covered by threshold/actor-frame tick-order/named controller-operation order/early-reject/positive/air-velocity/ground-selection/official ordered-threshold routes: broader recovery parity, deeper VM tick-order coverage, or guard/Common1 confirmation.
 
 Acceptance:
 

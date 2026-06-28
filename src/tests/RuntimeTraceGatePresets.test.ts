@@ -3294,15 +3294,17 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       {
-        label: "5050 recovery controller order into 5210 settle",
+        label: "5050 named recovery controller and typed operation order into 5210 settle",
         actorId: "p2",
         allowSameTick: true,
         steps: [
-          { stateNo: 5050, controller: "VelAdd" },
-          { stateNo: 5050, controller: "ChangeState" },
-          { stateNo: 5210, controller: "VelSet" },
-          { stateNo: 5210, controller: "HitFallSet" },
-          { stateNo: 5210, controller: "ChangeState" },
+          { stateNo: 5050, controller: "VelAdd", name: "Gravity" },
+          { stateNo: 5050, controller: "ChangeState", name: "Recovery Input" },
+          { stateNo: 5210, controller: "VelSet", name: "Air Recovery Velocity" },
+          { stateNo: 5210, operation: "kinematic:velset" },
+          { stateNo: 5210, controller: "HitFallSet", name: "Fall Recovery Settled" },
+          { stateNo: 5210, operation: "hitfall:hitfallset" },
+          { stateNo: 5210, controller: "ChangeState", name: "Stand" },
         ],
       },
     ]);

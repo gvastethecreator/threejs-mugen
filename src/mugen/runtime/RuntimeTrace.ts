@@ -791,6 +791,7 @@ export type RuntimeTraceControllerEventRequirement = {
   actorId?: string;
   stateNo?: number;
   controller?: string;
+  name?: string;
   operation?: string;
 };
 
@@ -3059,6 +3060,7 @@ function matchesControllerEventRequirement(
     (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
     (requirement.controller === undefined || event.controller === requirement.controller) &&
+    (requirement.name === undefined || event.name === requirement.name) &&
     (requirement.operation === undefined || event.operation === requirement.operation)
   );
 }
