@@ -101,6 +101,8 @@ time = 20
     expect(isRuntimeExecutableController("HitDef")).toBe(true);
     expect(isRuntimeExecutableController("MoveHitReset")).toBe(true);
     expect(getControllerSupport("MoveHitReset").runtimeLabel).toBe("contact memory");
+    expect(isRuntimeExecutableController("HitAdd")).toBe(true);
+    expect(getControllerSupport("HitAdd").runtimeLabel).toBe("contact memory");
     expect(isRuntimeExecutableController("ForceFeedback")).toBe(true);
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
     expect(isRuntimeExecutableController("Trans")).toBe(true);
@@ -109,6 +111,19 @@ time = 20
     expect(getControllerSupport("EnvColor").level).toBe("partial");
     expect(isRuntimeExecutableController("AngleDraw")).toBe(true);
     expect(getControllerSupport("AngleDraw").runtimeLabel).toBe("sprite rotation");
+  });
+
+  it("compiles contact-memory controllers into typed operations", () => {
+    expect(compileControllerIr(controller(200, "MoveHitReset", [], {})).operation).toEqual({
+      kind: "contact",
+      controllerType: "movehitreset",
+    });
+    expect(compileControllerIr(controller(200, "HitAdd", [], { value: "2" })).operation).toEqual({
+      kind: "contact",
+      controllerType: "hitadd",
+      value: 2,
+    });
+    expect(compileControllerIr(controller(200, "HitAdd", [], { value: "Const(data.life)" })).operation).toBeUndefined();
   });
 
   it("compiles HitDef params into a typed controller operation", () => {

@@ -2,6 +2,7 @@ import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   BindToTargetControllerOp,
   CollisionControllerOp,
+  ContactControllerOp,
   ControllerOp,
   ExplodControllerOp,
   EnvColorControllerOp,
@@ -1171,7 +1172,15 @@ function runActiveStateControllers(
         recordEnvShakeEvent(fighter, rawController, tick);
       } else if (dispatch.effect === "contact") {
         recordControllerExecution(fighter, rawController);
-        resetMoveContactState(fighter);
+        const operation = controller.operation?.kind === "contact" ? controller.operation : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        if (rawController.type.toLowerCase() === "hitadd") {
+          applyHitAddController(fighter, rawController, operation?.controllerType === "hitadd" ? operation : undefined);
+        } else {
+          resetMoveContactState(fighter);
+        }
       }
     }
   }
@@ -1598,6 +1607,21 @@ function resetMoveContactState(fighter: FighterMatchState): void {
   delete fighter.contact.moveHitTargetIds;
   delete fighter.contact.moveReversedState;
   delete fighter.contact.moveReversedTime;
+}
+
+function applyHitAddController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: Extract<ContactControllerOp, { controllerType: "hitadd" }>,
+): void {
+  const value = operation?.value ?? firstNumber(findParam(controller, "value"));
+  if (value === undefined) {
+    return;
+  }
+  const current = fighter.contact.moveHitState === fighter.runtime.stateNo ? fighter.contact.moveHitCount ?? 0 : 0;
+  fighter.contact.moveHitState = fighter.runtime.stateNo;
+  fighter.contact.moveHitTime = fighter.contact.moveHitTime ?? 0;
+  fighter.contact.moveHitCount = clampHitCount(current + value);
 }
 
 function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targetActorId?: string): void {
@@ -2743,6 +2767,9 @@ function controllerOperationKey(operation: ControllerOp): string {
   if (operation.kind === "damage-scale") {
     return `damage-scale:${operation.controllerType}`;
   }
+  if (operation.kind === "contact") {
+    return `contact:${operation.controllerType}`;
+  }
   return operation.kind;
 }
 
@@ -3095,6 +3122,10 @@ function clampBodyWidth(value: number): number {
 
 function clampHitDefPriority(value: number): number {
   return Math.max(0, Math.min(10, Math.round(value)));
+}
+
+function clampHitCount(value: number): number {
+  return Math.max(0, Math.min(999, Math.round(value)));
 }
 
 function actionDuration(action: MugenAnimationAction): number {

@@ -46,6 +46,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitCountTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitadd",
+      required: true,
+      artifact: presets.createSyntheticImportedHitAddTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),
@@ -1028,6 +1033,7 @@ function validateTraceCoverage(coverage) {
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
+    "contact:hitadd",
   ];
   const requiredEffectKinds = ["projectile", "helper", "explod"];
   const requiredEffectPayloadKinds = ["projectile", "helper", "explod"];
@@ -1071,6 +1077,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-envcolor",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
+    "synthetic-imported-hitadd",
     "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",

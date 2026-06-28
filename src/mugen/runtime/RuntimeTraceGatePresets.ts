@@ -155,6 +155,29 @@ export function createSyntheticImportedHitCountTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedHitAddTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitadd",
+      displayName: "Synthetic Imported HitAdd",
+      withHitAdd: 2,
+      hitAddStateNo: 265,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitadd-golden",
+      targetLabel: "Synthetic imported HitAdd route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 265],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitAdd"],
+      requiredExecutedOperations: ["hitdef", "contact:hitadd"],
+      notes: [
+        "Synthetic imported HitAdd trace proves static HitAdd can add bounded current-state direct HitCount after HitDef contact without changing UniqHitCount. Combo lifetime, helper/projectile/guard counts, redirects, teams, and exact parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -5612,6 +5635,8 @@ export type SyntheticImportedTraceFighterOptions = {
   moveHitStateNo?: number;
   moveHitCounterStateNo?: number;
   hitCountStateNo?: number;
+  withHitAdd?: number;
+  hitAddStateNo?: number;
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
@@ -5863,6 +5888,7 @@ ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   hits: options.modifyProjectileHits,
   missTime: options.modifyProjectileMissTime,
 }) : ""}
+${options.withHitAdd === undefined ? "" : hitAddControllerBlock(options.withHitAdd)}
 ${options.numProjStateNo === undefined ? "" : contactBranchBlock("NumProjID(77) > 0", options.numProjStateNo, "NumProj Branch")}
 ${options.projContactStateNo === undefined ? "" : contactBranchBlock("ProjContact(77)", options.projContactStateNo, "ProjContact Branch")}
 ${options.projHitStateNo === undefined ? "" : contactBranchBlock("ProjHit(77)", options.projHitStateNo, "ProjHit Branch")}
@@ -5872,6 +5898,7 @@ ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContac
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
+${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
@@ -5985,6 +6012,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.hitAddStateNo === undefined ? [] : ([[options.hitAddStateNo, traceAction(options.hitAddStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
         ? []
         : ([
@@ -7382,6 +7410,15 @@ type = ChangeState
 trigger1 = ${trigger}
 value = ${stateNo}
 ctrl = 0
+`;
+}
+
+function hitAddControllerBlock(value: number): string {
+  return `
+[State 200, HitAdd Probe]
+type = HitAdd
+trigger1 = MoveHit
+value = ${value}
 `;
 }
 

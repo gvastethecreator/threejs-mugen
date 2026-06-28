@@ -83,6 +83,7 @@ import {
   createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
+  createSyntheticImportedHitAddTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
@@ -294,6 +295,32 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedStates).toContain(264);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 264]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported HitAdd artifact with bounded hit-count evidence", () => {
+    const artifact = createSyntheticImportedHitAddTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitadd-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(265);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 265]);
+    expect(evidence?.executedControllers.HitAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["contact:hitadd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
   });

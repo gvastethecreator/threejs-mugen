@@ -365,6 +365,10 @@ export type DamageScaleControllerOp = {
   multiplier: number;
 };
 
+export type ContactControllerOp =
+  | { kind: "contact"; controllerType: "movehitreset" }
+  | { kind: "contact"; controllerType: "hitadd"; value: number };
+
 export type ControllerOp =
   | HitDefControllerOp
   | TargetControllerOp
@@ -389,7 +393,8 @@ export type ControllerOp =
   | HitEligibilityControllerOp
   | HitOverrideControllerOp
   | ReversalDefControllerOp
-  | DamageScaleControllerOp;
+  | DamageScaleControllerOp
+  | ContactControllerOp;
 
 export function compileControllerOp(controller: MugenStateController): ControllerOp | undefined {
   const type = controller.type.toLowerCase();
@@ -455,6 +460,12 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "attackmulset" || type === "defencemulset") {
     return compileDamageScaleControllerOp(controller, type);
+  }
+  if (type === "movehitreset") {
+    return { kind: "contact", controllerType: "movehitreset" };
+  }
+  if (type === "hitadd") {
+    return compileHitAddControllerOp(controller);
   }
   if (type === "hitdef") {
     return compileHitDefControllerOp(controller);
@@ -950,6 +961,14 @@ function compileHitDefFallOp(controller: MugenStateController): HitDefFallOp {
   });
 }
 
+function compileHitAddControllerOp(controller: MugenStateController): ContactControllerOp | undefined {
+  const value = firstNumber(findParam(controller, "value"));
+  if (value === undefined) {
+    return undefined;
+  }
+  return { kind: "contact", controllerType: "hitadd", value: clampHitAdd(value) };
+}
+
 function compileTargetControllerOp(controller: MugenStateController): TargetControllerOp | undefined {
   const type = controller.type.toLowerCase();
   const requestedId = firstNumber(findParam(controller, "id"));
@@ -1379,6 +1398,10 @@ function clampAfterImageGap(value: number): number {
 
 function clampRenderAngle(value: number): number {
   return Math.max(-720, Math.min(720, Math.round(value * 1000) / 1000));
+}
+
+function clampHitAdd(value: number): number {
+  return clampNumber(Math.round(value), -999, 999);
 }
 
 function normalizeAfterImageOpacity(value: string | undefined): number {

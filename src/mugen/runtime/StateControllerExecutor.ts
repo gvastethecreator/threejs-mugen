@@ -229,6 +229,8 @@ export function executeControllerIr(
     type === "sprpriority" ||
     type === "pause" ||
     type === "superpause" ||
+    type === "movehitreset" ||
+    type === "hitadd" ||
     type === "null"
   ) {
     return next;

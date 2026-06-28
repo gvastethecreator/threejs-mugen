@@ -57,6 +57,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   targetbind: partial("target memory"),
   bindtotarget: partial("target memory"),
   movehitreset: partial("contact memory"),
+  hitadd: partial("contact memory"),
   pause: partial("pause"),
   superpause: partial("pause"),
   sprpriority: partial("render priority"),

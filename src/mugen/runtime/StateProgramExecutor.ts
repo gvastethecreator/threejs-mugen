@@ -85,6 +85,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   envcolor: "envcolor",
   envshake: "envshake",
   movehitreset: "contact",
+  hitadd: "contact",
 };
 
 const runtimeControllers = new Set([
