@@ -8,6 +8,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 
 - `CONTEXT.md`
 - `README.md`
+- `docs/ROADMAP_EXECUTION_BOARD.md`
 - `docs/PORT_COMPLETION_SCORECARD.md`
 - `docs/WORKPLAN.md`
 - `docs/PROGRESS_TRACKER.md`

@@ -8,6 +8,7 @@ Authoritative horizon docs:
 - `HORIZON_IMPLEMENTATION_BLUEPRINT.md`: cross-cutting orchestration blueprint for building every accepted idea through one evidence chain.
 - `MASTER_CONSTRUCTION_PLAN.md`: broad release train.
 - `CONSTRUCTION_WAVES.md`: practical wave plan with build packages, dependencies, acceptance gates, anti-claims, and next rounds.
+- `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.
 - `ARCHITECTURE_DECISIONS.md`: decisions that constrain implementation.
 - `COMPATIBILITY_PROFILES.md`: normative profile split for native runtime, MUGEN 1.0/1.1, IKEMEN scan-only, and future modules.
@@ -43,6 +44,12 @@ Construction lock for the expanded horizon:
 - Studio work is allowed when it reveals real assets, traces, reports, build status, or runtime state.
 - Generated assets are native/authored pipeline proof and must never inflate imported MUGEN compatibility.
 - Modular-engine work remains planned until fighting runtime contracts are clean enough to extract.
+
+Operational queue lock:
+
+- Use `docs/ROADMAP_EXECUTION_BOARD.md` to pick the next focused package.
+- Do not start a package unless its linked `.scratch/roadmap/issues/` file has acceptance and blocked claims.
+- Docs-only roadmap passes may improve handoff clarity, but they do not raise progress scores.
 
 ## 2026-06-25 Construction Consensus
 

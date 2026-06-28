@@ -9,10 +9,12 @@ Prepare the project to become a reusable browser game engine without extracting 
 
 ## Next Useful Cuts
 
+- Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: M1 Shared contract readiness.
 - Keep parser/runtime/render/audio/UI boundaries clean.
 - Identify shared candidates only after MatchWorld, Build, Evidence, input, snapshots, and asset contracts stabilize.
 - Keep MUGEN-specific concepts out of future shared core interfaces.
 - Plan platformer/other genre slices as contract consumers, not forks.
+- Record any candidate shared contract with an explicit "no CNS/CMD/HitDef/round/helper/target leakage" check.
 
 ## Acceptance
 

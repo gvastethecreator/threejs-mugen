@@ -9,10 +9,12 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 
 ## Next Useful Cuts
 
+- Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: I1 IKEMEN reference expansion.
 - Keep full IKEMEN-GO-class port score separate from MUGEN MVP score in `docs/PORT_COMPLETION_SCORECARD.md`.
 - Expand scanner signals for ZSS, Lua hooks, screenpacks, select/system files, model stages, and IKEMEN-only controllers/triggers.
 - Link adopted behavior to source/documentation notes before implementing runtime semantics.
 - Keep IKEMEN-only findings in compatibility reports as recognized/unsupported unless executed by a real gate.
+- Prefer scanner/report tests before runtime work. Runtime execution requires a new explicit issue and trace gate.
 
 ## Acceptance
 

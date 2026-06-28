@@ -29,13 +29,14 @@ Near-term language must stay honest: this is **partial MUGEN compatibility with 
 Read in this order for broad work:
 
 1. `AGENTS.md` - local working rules, verification rules, and skill setup.
-2. `docs/PROGRESS_TRACKER.md` - compact score, evidence snapshot, next cuts.
-3. `docs/WORKPLAN.md` - current execution authority.
-4. `docs/BUILD_EXECUTION_BACKLOG.md` - append-only implementation history and backlog.
-5. `docs/ENGINE_PORT_ARCHITECTURE.md` - parser/compiler/runtime/render/audio/debug boundaries.
-6. `docs/CONTROLLER_SUPPORT_REGISTRY.md` - controller support levels and evidence requirements.
-7. `docs/SUPPORTED_FEATURES.md` - supported/partial/unsupported feature matrix.
-8. `docs/QA_AND_ACCEPTANCE_GATES.md` - closeout gates, trace rules, fixture rules, visual QA rules.
+2. `docs/ROADMAP_EXECUTION_BOARD.md` - current queue, package acceptance, and handoff map.
+3. `docs/PROGRESS_TRACKER.md` - compact score, evidence snapshot, next cuts.
+4. `docs/WORKPLAN.md` - current execution authority.
+5. `docs/BUILD_EXECUTION_BACKLOG.md` - append-only implementation history and backlog.
+6. `docs/ENGINE_PORT_ARCHITECTURE.md` - parser/compiler/runtime/render/audio/debug boundaries.
+7. `docs/CONTROLLER_SUPPORT_REGISTRY.md` - controller support levels and evidence requirements.
+8. `docs/SUPPORTED_FEATURES.md` - supported/partial/unsupported feature matrix.
+9. `docs/QA_AND_ACCEPTANCE_GATES.md` - closeout gates, trace rules, fixture rules, visual QA rules.
 
 Use roadmap/vision docs when scope decisions are needed:
 

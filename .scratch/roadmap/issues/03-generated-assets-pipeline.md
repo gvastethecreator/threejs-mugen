@@ -9,10 +9,12 @@ Make imagegen and sprite-atlas-builder output repeatable, inspectable, and playa
 
 ## Next Useful Cuts
 
+- Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: A1 Generated asset provenance and QA.
 - Store prompt/source provenance for each generated character or stage.
 - Validate walk cycles by motion, scale, foot placement, baseline, and frame ordering.
 - Regenerate bad source sheets instead of fixing bad locomotion by atlas cropping.
 - Connect generated assets to Studio evidence and Build readiness.
+- Add a single record shape that links prompt, source sheet, atlas manifest, QA report, collisions, runtime manifest entry, and trace/smoke evidence.
 
 ## Acceptance
 

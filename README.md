@@ -37,6 +37,7 @@ HitPause/Pause/SuperPause trace coverage now includes separate bounded TargetBin
 ## Current Milestone
 
 - Port horizon:
+  - `docs/ROADMAP_EXECUTION_BOARD.md`: shortest current queue and handoff board for R1/R2/S1/A1/I1/M1 work packages.
   - `docs/ENGINE_STUDIO_ROADMAP.md`: concise construction roadmap across MUGEN/IKEMEN compatibility, Three.js runtime/rendering, Creator Studio, package/evidence QA, and future modular-engine modules.
   - `docs/HORIZON_IMPLEMENTATION_BLUEPRINT.md`: orchestration blueprint for building all approved ideas together: runtime, Studio, generated assets, IKEMEN scanner, modular engine, and platformer horizon.
   - `docs/MASTER_CONSTRUCTION_PLAN.md`: single construction map for the MUGEN/IKEMEN port, playable runtime, Creator Studio, generated assets, QA evidence, IKEMEN profile work, and future modular-engine slice.

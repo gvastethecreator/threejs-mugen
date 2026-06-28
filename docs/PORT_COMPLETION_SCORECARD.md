@@ -47,7 +47,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |
-| Project control | 80 | `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `.scratch/roadmap/*`, this scorecard. | Keep docs synchronized after each gate. |
+| Project control | 80 | `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `.scratch/roadmap/*`, this scorecard. | Keep docs synchronized after each gate. |
 | Native runtime | 65 | Local roster, Rooftop Dojo, HUD, controls, debug, smoke QA. | Gameplay depth, polish, broader move/system coverage. |
 | File loading/parsers | 55 | ZIP/folder loader, DEF/AIR/CMD/CNS/ST/SFF/SND partial parsers. | More corpus coverage, exact raw preservation, edge formats. |
 | SFF/render import | 40 | SFF v1 PCX and current SFF v2 RAW/RLE/LZ paths render current fixtures. | Palette parity, v2 edge formats, sprite/group fallback policy. |
@@ -71,6 +71,17 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 8. Studio Build/Evidence as single trust source: stale fixture, blocked export, next-action workflow.
 9. IKEMEN reference expansion: map ZSS/Lua/screenpack findings to scanner tests and blocked runtime claims.
 10. ChangeAnim2 depth slice: missing-action fallback, redirects, helper/custom-state ownership, and multi-import SFF namespace behavior.
+
+## Score Movement Rules
+
+Docs-only roadmap/setup work can improve handoff quality but does not raise compatibility or port scores. Scores move only when one of these changes:
+
+- Required runtime trace or focused test proves new behavior.
+- Browser visual QA proves a visible runtime/Studio/render workflow.
+- Fixture evidence proves a local imported package route.
+- Package/build evidence proves a new export or persistence capability.
+
+When a score changes, update this file, `docs/PROGRESS_TRACKER.md`, and `docs/ROADMAP_EXECUTION_BOARD.md` in the same round.
 
 ## Claim Rules
 

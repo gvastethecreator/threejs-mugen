@@ -214,17 +214,18 @@ Use this as the next implementation order:
 3. Done third refreshed runtime cut: `Explod` now has typed `explod` operation evidence and a required trace gate; `RemoveExplod` also compiles into typed operation data.
 4. Done fourth refreshed runtime cut: `HitFallVel`, `HitFallDamage`, `HitFallSet`, and `FallEnvShake` now have typed operation evidence in the required common get-hit trace.
 5. Done fifth refreshed runtime cut: `HitDef` without `p2stateno` can route imported defenders into known defender-owned Common1-style state `5000`, with required synthetic and optional official KFM trace artifacts.
-6. Choose the next runtime spine cut: either move helper/projectile/explod lifecycle further behind a runtime/world system boundary without checksum drift, or expand real KFM/Common1 get-hit/fall gates.
-7. Expand trace gates beyond hit/guard/partial guard-hit/partial-hitstun/fall-metadata/custom-get-hit/default-get-hit/default stand progression/default fall branch/bounded synthetic fall recovery/bounded synthetic recovery input/synthetic plus official too-early recovery rejection/official KFM lie-down/get-up recovery/official KFM air recovery-input/official KFM ground recovery-input/state-exit into exact tick-order parity, exact recovery thresholds/velocities, broader recovery parity, and exact guard-rule evidence.
-8. Expand Studio Evidence persistence, comparison, and filters over trace/controller/compatibility records.
-9. Add selectable actor detail, filters, and trace/controller links in Runtime Debug Studio.
-10. Build Character Studio Preview from existing AIR/CMD/CNS/SFF data and absorb the transitional Inspector flow only after visual QA.
-11. Build Stage Studio Preview from existing stage reports.
-12. Expand source-package relink with persistent browser handles/IndexedDB source metadata where the browser allows it.
-13. Add generated-fighter authoring records, prompt/source provenance, atlas QA ingestion, and collision/action placeholders.
-14. Add IKEMEN profile scanner before any IKEMEN execution work.
-15. Define shared module contracts after the fighting runtime gates above hold.
-16. Start the tiny platformer slice only after those shared contracts are clean.
+6. Choose the next runtime spine cut from `docs/ROADMAP_EXECUTION_BOARD.md`.
+7. R1: add one recovery-threshold or recovery-velocity gate beyond the current positive route plus early reject pair.
+8. R2: deepen one `MatchWorld` ownership boundary without claiming new behavior.
+9. S1: expand Studio Evidence/Build trust chain from real evidence/status data, with visual QA.
+10. Add selectable actor detail, filters, and trace/controller links in Runtime Debug Studio.
+11. Build Character Studio Preview from existing AIR/CMD/CNS/SFF data and absorb the transitional Inspector flow only after visual QA.
+12. Build Stage Studio Preview from existing stage reports.
+13. Expand source-package relink with persistent browser handles/IndexedDB source metadata where the browser allows it.
+14. A1: add generated-fighter authoring records, prompt/source provenance, atlas QA ingestion, and collision/action placeholders.
+15. I1: add IKEMEN scanner/profile expansion before any IKEMEN execution work.
+16. M1: define shared module contracts after the fighting runtime gates above hold.
+17. Start the tiny platformer slice only after those shared contracts are clean.
 
 ## Round Closeout
 

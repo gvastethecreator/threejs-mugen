@@ -12,6 +12,7 @@ Use these files together:
 | --- | --- |
 | `CONTEXT.md` | Fast project/domain map for future agents. |
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
+| `docs/ROADMAP_EXECUTION_BOARD.md` | Current implementation queue, package acceptance, and handoff checklist. |
 | `docs/PORT_COMPLETION_SCORECARD.md` | Authoritative 0-100 scorecard for playable sandbox, MUGEN, IKEMEN, Studio, and modular engine horizons. |
 | `docs/WORKPLAN.md` | Current execution authority. |
 | `docs/BUILD_EXECUTION_BACKLOG.md` | Detailed history and backlog ledger. |
@@ -60,9 +61,21 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.
 
 5. **Roadmap hygiene**
+   - Use `docs/ROADMAP_EXECUTION_BOARD.md` as the first queue/handoff map.
    - Keep `docs/BUILD_EXECUTION_BACKLOG.md` append-only enough to preserve history.
    - Keep `docs/WORKPLAN.md` as execution authority.
    - Keep this tracker short and updated after meaningful milestones.
+
+## Active Queue Snapshot
+
+| Package | Linked issue | Next proof |
+| --- | --- | --- |
+| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Required synthetic recovery-threshold or recovery-velocity trace, optional KFM oracle after stable. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | One mutable runtime area moved behind named world/system boundary with tests or trace stability. |
+| S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
+| A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
+| I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |
+| M1 Shared contract readiness | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` | One shared contract candidate proven free of fighting-specific leakage. |
 
 ## Closeout Contract
 

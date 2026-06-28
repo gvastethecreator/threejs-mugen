@@ -34,12 +34,14 @@ Keep progress trackable through local markdown issues that connect each workstre
     03-generated-assets-pipeline.md
     04-ikemen-scan-and-reference.md
     05-modular-engine-boundaries.md
+    06-roadmap-control-and-qa-ledger.md
 ```
 
 ## Operating Rules
 
 - `docs/PROGRESS_TRACKER.md` stays compact and current.
 - `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 progress answers and score changes.
+- `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff board.
 - `docs/WORKPLAN.md` stays the execution authority.
 - `docs/BUILD_EXECUTION_BACKLOG.md` remains the detailed historical ledger.
 - Issues under this directory are slicing aids, not a second source of truth.

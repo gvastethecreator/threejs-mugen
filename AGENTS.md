@@ -10,10 +10,17 @@
 - Do not hardcode one character, one stage, or one fixture path into runtime behavior.
 - Preserve user work. Never revert unrelated changes.
 
+## Repo Entry Points
+
+- This git repo root is `mugen-web-sandbox`. If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, enter `mugen-web-sandbox` before running git, pnpm, or repo-wide searches.
+- Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
+- Use `.scratch/roadmap/` only as local issue slicing. Public/private compatibility truth belongs in `docs/`.
+
 ## Work Cadence
 
 - Prefer small runtime/evidence cuts over broad rewrites.
 - Before answering port progress or choosing next work, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
+- Before starting a new implementation slice, read `docs/ROADMAP_EXECUTION_BOARD.md` and the linked `.scratch/roadmap/issues/<NN>-*.md`.
 - Runtime/CNS/CMD work must close with:
   - typed operation or named runtime-system boundary where possible
   - trace artifact or focused unit coverage
@@ -22,6 +29,16 @@
 - Run tests/checks at the end of the round, not after every tiny edit.
 - If docs, backlog, or trackers are part of the workflow, keep them honest against current code and gates.
 - For architecture reviews, use subagents when available and reconcile their findings into one narrow plan.
+
+## Roadmap Update Protocol
+
+When a change affects support level, priority, or claimed progress:
+
+1. Update `docs/ROADMAP_EXECUTION_BOARD.md` first if the next queue or package status changes.
+2. Update `docs/PROGRESS_TRACKER.md` for compact current truth.
+3. Update `docs/PORT_COMPLETION_SCORECARD.md` only when score, band, or evidence ledger changes.
+4. Update `docs/WORKPLAN.md` for execution authority and `docs/BUILD_EXECUTION_BACKLOG.md` for historical closeout.
+5. Update the relevant `.scratch/roadmap/issues/` file with status, next cut, evidence, and blocked claims.
 
 ## Verification Baseline
 
@@ -52,6 +69,7 @@ pnpm qa:smoke
 - `docs/WORKPLAN.md` is the execution authority.
 - `docs/BUILD_EXECUTION_BACKLOG.md` is the detailed append-style history.
 - `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` are local slicing aids.
+- `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff map.
 - Update all affected roadmap files when a gate changes a score, claim, priority, or blocked scope.
 
 ## Agent skills
@@ -66,4 +84,4 @@ Use the canonical local labels `needs-triage`, `needs-info`, `ready-for-agent`, 
 
 ### Domain docs
 
-Single-context repo. Read root `CONTEXT.md` first, then relevant roadmap/architecture docs and ADRs under `docs/adr/` if present. See `docs/agents/domain.md`.
+Single-context repo. Read root `CONTEXT.md` first, then `docs/ROADMAP_EXECUTION_BOARD.md`, relevant roadmap/architecture docs, and ADRs under `docs/adr/` if present. See `docs/agents/domain.md`.

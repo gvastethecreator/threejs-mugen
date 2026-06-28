@@ -1,0 +1,153 @@
+# Roadmap Execution Board
+
+Last updated: 2026-06-28
+
+This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
+
+## Read Order
+
+Use this order before starting broad work:
+
+1. `CONTEXT.md`
+2. `AGENTS.md`
+3. `docs/ROADMAP_EXECUTION_BOARD.md`
+4. `docs/PROGRESS_TRACKER.md`
+5. `docs/WORKPLAN.md`
+6. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+
+Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
+
+## Current Position
+
+| Track | Current status | Next package | Blocked claim |
+| --- | --- | --- | --- |
+| Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
+| MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | KFM/Common1 recovery, guard, tick-order, and MatchWorld ownership cuts. | Full CNS VM, helpers, custom states, teams, screenpacks. |
+| IKEMEN | Scanner/reporting only for ZSS/Lua/config/screenpack/model-stage signals. | Expand scanner references and unsupported reporting. | No ZSS/Lua execution, rollback, netplay, IKEMEN runtime semantics. |
+| Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist. | Make Build/Evidence the single trust chain for next actions and stale/blocking state. | Full editor, asset DB, production export. |
+| Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Provenance plus motion/scale/baseline QA ingestion. | Imported compatibility credit. |
+| Modular engine | Boundary docs exist, platformer slice intentionally delayed. | Extract only contracts proven by fighting runtime and Studio evidence. | Production multi-genre engine. |
+
+## Active Implementation Queue
+
+### R1 - KFM/Common1 Recovery Precision
+
+Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
+
+Build next:
+
+- Add a required synthetic gate that proves recovery threshold or velocity behavior not already covered by early-reject and positive recovery routes.
+- Prefer a gate that exposes `CanRecover`, `fall.recovertime`, ground/air recovery selection, or recovery velocity as explicit actor-frame evidence.
+- If official KFM fixture is available, add optional confirmation only after the synthetic gate is stable.
+
+Acceptance:
+
+- Focused tests or `pnpm qa:trace` required artifact.
+- Claim allowed names artifact and route.
+- Claim blocked keeps exact tick-order, full recovery parity, and broad character claims out of scope.
+
+### R2 - MatchWorld Ownership Deepening
+
+Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
+
+Build next:
+
+- Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, pause, or audio.
+- Gate ownership through existing trace fields where possible rather than adding new UI.
+
+Acceptance:
+
+- Existing checksums either stay stable or drift is intentional and documented.
+- Focused unit tests cover boundary contract.
+- No new compatibility claim unless trace proves behavior.
+
+### S1 - Studio Evidence/Build Trust Chain
+
+Issue: `.scratch/roadmap/issues/02-studio-evidence-workflow.md`
+
+Build next:
+
+- Make Evidence and Build read the same status contract for stale, missing, partial, blocked, unsupported, and exportable state.
+- Surface one primary next action per blocked item.
+- Link rows to trace/report/runtime data already produced by the app.
+
+Acceptance:
+
+- Browser visual QA with `pnpm qa:smoke`.
+- Screenshot/diagnostic inspection confirms no decorative green status.
+- Docs update `docs/INTERFACE_SYSTEM.md` and this board if workflow meaning changes.
+
+### A1 - Generated Asset Provenance And QA
+
+Issue: `.scratch/roadmap/issues/03-generated-assets-pipeline.md`
+
+Build next:
+
+- Store source prompt, source image/sheet path, atlas manifest, contact sheet/GIF, collision/action data, and QA report links in one record.
+- Add motion/scale/baseline QA status that can fail generated walk/crouch/jump frames.
+
+Acceptance:
+
+- Bad locomotion requires source regeneration, not atlas cropping.
+- Studio shows QA state and next action.
+- Generated/native assets remain separate from imported MUGEN compatibility scores.
+
+### I1 - IKEMEN Reference Expansion
+
+Issue: `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
+
+Build next:
+
+- Map more Ikemen-GO source/docs signals into scanner-only findings.
+- Keep every finding classified as recognized, unsupported, or unknown unless runtime execution is gated.
+
+Acceptance:
+
+- Scanner tests prove the new signals.
+- Docs keep MUGEN 1.0, MUGEN 1.1, IKEMEN scan-only, and IKEMEN runtime future work separate.
+
+### M1 - Shared Contract Readiness
+
+Issue: `.scratch/roadmap/issues/05-modular-engine-boundaries.md`
+
+Build next:
+
+- Identify one shared contract candidate from project, asset, input, tick, snapshot, render, audio, debug, build, or QA.
+- Prove it is not importing CNS, CMD, HitDef, rounds, helpers, targets, or MUGEN command routing.
+
+Acceptance:
+
+- Docs or boundary tests show what is shared vs fighting-specific.
+- No platformer runtime begins until fighting smoke/trace gates remain stable.
+
+## Progress Update Rules
+
+Update these files when a package moves:
+
+| Change type | Required docs |
+| --- | --- |
+| Support level or compatibility behavior | `docs/SUPPORTED_FEATURES.md`, `docs/CONTROLLER_SUPPORT_REGISTRY.md`, `docs/QA_AND_ACCEPTANCE_GATES.md`, `docs/WORKPLAN.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, relevant issue. |
+| Score or answer to "0 to 100" changes | `docs/PORT_COMPLETION_SCORECARD.md`, `docs/PROGRESS_TRACKER.md`, this board. |
+| Studio workflow meaning changes | `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md`, `docs/PROGRESS_TRACKER.md`, relevant issue. |
+| Generated asset pipeline changes | `docs/GENERATED_ASSET_QA_CONTRACT.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, relevant issue. |
+| Modular boundary moves | `docs/MODULE_BOUNDARY_CONTRACT.md`, `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`, relevant issue. |
+
+## Agent Handoff Contract
+
+Before closing a round:
+
+- State exact files changed.
+- State checks run.
+- State why `pnpm qa:trace` or `pnpm qa:smoke` was or was not required.
+- Do not mark an issue done unless evidence exists and docs name the blocked scope.
+- Do not raise scores from docs-only changes.
+
+## Current Anti-Claims
+
+- No full MUGEN/IKEMEN parity.
+- No ZSS/Lua execution.
+- No rollback/netplay.
+- No full helper/custom-state/throw VM.
+- No full screenpack/lifebar engine.
+- No public bundled commercial/third-party characters.
+- No platformer/module runtime until fighting contracts stabilize.

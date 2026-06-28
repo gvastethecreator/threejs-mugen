@@ -9,9 +9,11 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 
 ## Next Useful Cuts
 
+- Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: S1 Studio Evidence/Build trust chain.
 - Promote `docs/PORT_COMPLETION_SCORECARD.md` scores into Studio Evidence/Build as read-only status rows once the data can link to real gates.
 - Make Evidence and Build surfaces point to the same source of truth.
 - Expose stale, missing, partial, blocked, and exportable states with affected item, impact, evidence, and next action.
+- Give each blocked item one primary next action and one linked evidence/source row.
 - Improve Character/Stage/Debug panels only when they bind to real runtime, parser, or evidence data.
 - Keep Workbench -> Assets -> Evidence -> Build as the main workflow.
 
