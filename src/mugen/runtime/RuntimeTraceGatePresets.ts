@@ -1739,8 +1739,7 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
   const p1 = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-assertspecial-control",
     displayName: "Synthetic Imported AssertSpecial Control",
-    selfCommandEntry: { commandName: "holdback", stateNo: 201 },
-    assertSpecialControlState: { stateNo: 201, flags: ["NoAutoTurn", "NoWalk", "Invisible"] },
+    passiveAssertSpecialFlags: ["NoAutoTurn", "NoWalk", "Invisible"],
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-assertspecial-control-golden",
@@ -1754,7 +1753,7 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
       label: "Synthetic imported AssertSpecial control flags",
       source: "mixed",
       notes: [
-        "Synthetic imported AssertSpecial control trace proves bounded NoWalk can suppress walk velocity without leaving a controlled imported state and Invisible can expose render-opacity telemetry. It does not claim exact NoAutoTurn tick order, AssertSpecial lifetime, global flag behavior, helper ownership, or full MUGEN/IKEMEN parity.",
+        "Synthetic imported AssertSpecial control trace proves bounded NoAutoTurn can hold facing before the automatic facing pass, NoWalk can suppress walk velocity without leaving a controlled imported state, and Invisible can expose render-opacity telemetry. It does not claim full AssertSpecial lifetime, global flag behavior, helper ownership, or full MUGEN/IKEMEN parity.",
       ],
     },
     gates: [
@@ -1762,14 +1761,14 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
         label: "synthetic-imported-assertspecial-control-golden",
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
-        requiredExecutedStates: [201],
         requiredExecutedControllers: ["AssertSpecial"],
         requiredActorFrames: [
           {
             actorId: "p1",
             source: "imported",
             actorKind: "player",
-            animNo: 201,
+            animNo: 0,
+            facing: 1,
             observedVelXAtLeast: 0,
             observedVelXAtMost: 0,
             observedPosXAtMost: 30,
@@ -1782,7 +1781,7 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
             actorId: "p1",
             source: "imported",
             actorKind: "player",
-            stateNo: 201,
+            stateNo: 0,
             ctrl: true,
           },
         ],
@@ -5602,7 +5601,6 @@ export function importedDelayedXScript(): RuntimeTraceInputFrame[] {
 
 export function importedAssertSpecialControlScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
-    { label: "enter-assertspecial-control-state", frames: 2, p1: ["B"], p2: [] },
     { label: "hold-forward-under-assertspecial", frames: 4, p1: ["F"], p2: [] },
   ]);
 }

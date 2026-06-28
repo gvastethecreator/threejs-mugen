@@ -290,6 +290,10 @@ export class PlayableMatchRuntime {
     this.p1.currentInput = new Set(p1Input);
     this.p2.currentInput = new Set(p2Input);
 
+    resetAssertSpecial(this.p1.runtime);
+    resetAssertSpecial(this.p2.runtime);
+    applyPreFacingAssertSpecial(this.p1, this.p2, this.tick);
+    applyPreFacingAssertSpecial(this.p2, this.p1, this.tick);
     updateFacing(this.p1, this.p2);
     updateFacing(this.p2, this.p1);
 
@@ -768,7 +772,6 @@ function advanceFighter(
   tickHitBySlots(fighter.runtime);
   tickHitOverrideSlots(fighter.runtime);
   advanceContactTimers(fighter);
-  resetAssertSpecial(fighter.runtime);
   fighter.runtime.renderAngle = undefined;
   fighter.stateElapsed += 1;
   fighter.runtime.playerPush = true;
@@ -1175,6 +1178,25 @@ function runActiveStateControllers(
         }
       }
     }
+  }
+}
+
+function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
+  const owner = fighter.stateOwner ?? fighter;
+  const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo);
+  const state = stateProgram?.source;
+  if (!state || (fighter.definition.source !== "imported" && owner.definition.source !== "imported")) {
+    return;
+  }
+
+  for (const controller of stateProgram.controllers) {
+    if (controller.normalizedType !== "assertspecial" || !triggersPass(controller, fighter, opponent, owner, tick)) {
+      continue;
+    }
+    fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
+      getConst: (name) => runtimeConst(owner.definition, name),
+      stageTime: tick,
+    });
   }
 }
 

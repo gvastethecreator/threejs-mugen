@@ -1518,7 +1518,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 
-  it("creates a synthetic imported AssertSpecial control artifact with walk and invisible evidence", () => {
+  it("creates a synthetic imported AssertSpecial control artifact with facing, walk, and invisible evidence", () => {
     const artifact = createSyntheticImportedAssertSpecialControlTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",
     });
@@ -1539,9 +1539,10 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
-    const actorFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.source === "imported" && actor.animNo === 201);
+    const actorFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.source === "imported" && actor.animNo === 0);
     expect(actorFrame).toMatchObject({
-      animNo: 201,
+      animNo: 0,
+      facing: 1,
       maxOpacity: 0,
       minOpacity: 0,
     });
@@ -1550,7 +1551,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(actorFrame?.minPos.x).toBe(30);
     expect(actorFrame?.maxPos.x).toBe(30);
     expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
-      stateNo: 201,
+      stateNo: 0,
       ctrl: true,
     });
   });
