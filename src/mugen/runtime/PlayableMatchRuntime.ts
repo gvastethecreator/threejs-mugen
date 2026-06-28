@@ -3,15 +3,10 @@ import type {
   BindToTargetControllerOp,
   ContactControllerOp,
   ControllerOp,
-  ExplodControllerOp,
   EnvColorControllerOp,
   FallEnvShakeControllerOp,
-  HelperControllerOp,
   HitDefControllerOp,
-  ModifyProjectileControllerOp,
   PauseControllerOp,
-  ProjectileControllerOp,
-  RemoveExplodControllerOp,
   ReversalDefControllerOp,
   SpriteEffectControllerOp,
   TargetControllerOp,
@@ -59,13 +54,13 @@ import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
-import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStores,
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
+import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
@@ -116,6 +111,7 @@ export type MatchStepOptions = {
 export type PlayableMatchRuntimeOptions = {
   effectActorWorld?: RuntimeEffectActorWorld;
   effectActorStores?: RuntimeEffectActorStores;
+  effectSpawnWorld?: RuntimeEffectSpawnWorld;
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
 };
@@ -188,6 +184,7 @@ export class PlayableMatchRuntime {
   private readonly p2: FighterMatchState;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
+  private readonly effectSpawnWorld: RuntimeEffectSpawnWorld;
   private readonly targetWorld: RuntimeTargetWorld;
   private readonly audioWorld = new RuntimeAudioWorld();
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
@@ -215,6 +212,7 @@ export class PlayableMatchRuntime {
     this.roundTimerFrames = options.roundTimerFrames;
     this.round = new RuntimeRoundSystem(options.roundTimerFrames);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
+    this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
     this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
     this.p1 = createFighterState(
       "p1",
@@ -325,6 +323,7 @@ export class PlayableMatchRuntime {
       this.spriteEffectWorld,
       this.hitOverrideWorld,
       this.reversalWorld,
+      this.effectSpawnWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -338,6 +337,7 @@ export class PlayableMatchRuntime {
         this.spriteEffectWorld,
         this.hitOverrideWorld,
         this.reversalWorld,
+        this.effectSpawnWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -407,6 +407,7 @@ export class PlayableMatchRuntime {
         this.spriteEffectWorld,
         this.hitOverrideWorld,
         this.reversalWorld,
+        this.effectSpawnWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -764,6 +765,7 @@ function advanceFighter(
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   hitOverrideWorld: RuntimeHitOverrideWorld,
   reversalWorld: RuntimeReversalWorld,
+  effectSpawnWorld: RuntimeEffectSpawnWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -830,7 +832,17 @@ function advanceFighter(
   }
 
   advanceAnimation(fighter);
-  runActiveStateControllers(fighter, opponent, actorConstraintWorld, spriteEffectWorld, reversalWorld, tick, onPauseController, onEnvColorController);
+  runActiveStateControllers(
+    fighter,
+    opponent,
+    actorConstraintWorld,
+    spriteEffectWorld,
+    reversalWorld,
+    effectSpawnWorld,
+    tick,
+    onPauseController,
+    onEnvColorController,
+  );
   advanceImportedGroundRecoveryLanding(fighter);
   advanceCommon1LieDownRecovery(fighter);
   actorConstraintWorld.preserveFrozenPosition(fighter.runtime, tickStartPos);
@@ -977,6 +989,7 @@ function runActiveStateControllers(
   actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   reversalWorld: RuntimeReversalWorld,
+  effectSpawnWorld: RuntimeEffectSpawnWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -1121,23 +1134,34 @@ function runActiveStateControllers(
         applyAngleController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "explod") {
         recordControllerExecution(fighter, rawController);
-        createExplod(fighter, opponent, rawController, controller.operation?.kind === "explod" ? controller.operation : undefined);
+        const operation = controller.operation?.kind === "explod" ? controller.operation : undefined;
+        if (effectSpawnWorld.spawnExplod(fighter, opponent, rawController, operation) && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "removeexplod") {
         recordControllerExecution(fighter, rawController);
-        removeExplods(fighter, rawController, controller.operation?.kind === "removeexplod" ? controller.operation : undefined);
+        const operation = controller.operation?.kind === "removeexplod" ? controller.operation : undefined;
+        if (effectSpawnWorld.removeExplods(fighter, rawController, operation) && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "helper") {
         recordControllerExecution(fighter, rawController);
-        createHelper(fighter, opponent, rawController, controller.operation?.kind === "helper" ? controller.operation : undefined);
+        const operation = controller.operation?.kind === "helper" ? controller.operation : undefined;
+        if (effectSpawnWorld.spawnHelper(fighter, opponent, rawController, operation) && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "projectile") {
         recordControllerExecution(fighter, rawController);
-        createProjectile(fighter, opponent, rawController, controller.operation?.kind === "projectile" ? controller.operation : undefined);
+        const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
+        if (effectSpawnWorld.spawnProjectile(fighter, opponent, rawController, operation) && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "modifyprojectile") {
         recordControllerExecution(fighter, rawController);
-        modifyProjectiles(
-          fighter,
-          rawController,
-          controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined,
-        );
+        const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
+        if (effectSpawnWorld.modifyProjectiles(fighter, rawController, operation) > 0 && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "target") {
         recordControllerExecution(fighter, rawController);
         applyTargetController(fighter, opponent, rawController, controller.operation?.kind === "target" ? controller.operation : undefined);
@@ -1280,52 +1304,6 @@ function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSa
   };
 }
 
-function createExplod(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  controller: MugenStateController,
-  operation?: ExplodControllerOp,
-): void {
-  const animNo = operation?.animNo ?? firstNumber(findParam(controller, "anim"));
-  if (animNo === undefined) {
-    return;
-  }
-  const owner = fighter.stateOwner ?? fighter;
-  const action = owner.definition.animations.get(animNo);
-  if (!action || action.frames.length === 0) {
-    return;
-  }
-  const localPos = operation?.pos ?? numberPair(findParam(controller, "pos")) ?? [0, 0];
-  const postype = operation?.postype ?? findParam(controller, "postype");
-  const worldPos = resolveExplodPosition(fighter, opponent, postype, localPos);
-  fighter.effectActorWorld.spawnExplod(fighter.id, {
-    controller,
-    operation,
-    ownerId: fighter.id,
-    rootId: fighter.id,
-    parentId: fighter.id,
-    spriteOwnerId: owner.id,
-    spriteOwnerDefinitionId: owner.definition.id,
-    spriteOwnerLabel: owner.label,
-    action,
-    animNo,
-    pos: worldPos,
-    bind: resolveExplodBind(postype, localPos),
-    fallbackFacing: fighter.runtime.facing,
-    defaultRemoveTime: actionDuration(action),
-  });
-  if (operation) {
-    recordControllerOperation(fighter, operation);
-  }
-}
-
-function removeExplods(fighter: FighterMatchState, controller: MugenStateController, operation?: RemoveExplodControllerOp): void {
-  fighter.effectActorWorld.removeExplods(fighter.id, operation?.explodId ?? firstNumber(findParam(controller, "id")));
-  if (operation) {
-    recordControllerOperation(fighter, operation);
-  }
-}
-
 function advancePresentationEffects(fighter: FighterMatchState): void {
   fighter.effectActorWorld.advancePresentationEffects(fighter.id, {
     pos: fighter.runtime.pos,
@@ -1352,108 +1330,8 @@ function toExplodSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
   return fighter.effectActorWorld.explodSnapshots(fighter.id, fighter.runtime.stateNo);
 }
 
-function createHelper(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  controller: MugenStateController,
-  operation?: HelperControllerOp,
-): void {
-  const owner = fighter.stateOwner ?? fighter;
-  const stateNo = operation?.stateNo ?? firstNumber(findParam(controller, "stateno") ?? findParam(controller, "value"));
-  const state = owner.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source ?? owner.definition.states?.find((candidate) => candidate.id === stateNo);
-  const animNo = operation?.animNo ?? firstNumber(findParam(controller, "anim")) ?? state?.anim ?? stateNo ?? fighter.runtime.animNo;
-  const action = owner.definition.animations.get(animNo);
-  if (!action || action.frames.length === 0) {
-    return;
-  }
-  const localPos = operation?.pos ?? numberPair(findParam(controller, "pos")) ?? [0, 0];
-  const worldPos = resolveExplodPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
-  fighter.effectActorWorld.spawnHelper(fighter.id, {
-    controller,
-    operation,
-    ownerId: fighter.id,
-    rootId: fighter.id,
-    parentId: fighter.id,
-    spriteOwnerId: owner.id,
-    spriteOwnerDefinitionId: owner.definition.id,
-    spriteOwnerLabel: owner.label,
-    action,
-    stateNo,
-    animNo,
-    pos: worldPos,
-    fallbackFacing: fighter.runtime.facing,
-  });
-  if (operation) {
-    recordControllerOperation(fighter, operation);
-  }
-}
-
 function toHelperSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
   return fighter.effectActorWorld.helperSnapshots(fighter.id, fighter.runtime.stateNo);
-}
-
-function createProjectile(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  controller: MugenStateController,
-  operation?: ProjectileControllerOp,
-): void {
-  const owner = fighter.stateOwner ?? fighter;
-  const animNo = operation?.projAnim ?? firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")) ?? 0;
-  const action = owner.definition.animations.get(animNo);
-  if (!action || action.frames.length === 0) {
-    return;
-  }
-  const localPos = operation?.offset ?? operation?.pos ?? numberPair(findParam(controller, "offset") ?? findParam(controller, "pos")) ?? [0, 0];
-  const worldPos = resolveExplodPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos);
-  fighter.effectActorWorld.spawnProjectile(fighter.id, {
-    controller,
-    operation,
-    ownerId: fighter.id,
-    rootId: fighter.id,
-    parentId: fighter.id,
-    spriteOwnerId: owner.id,
-    spriteOwnerDefinitionId: owner.definition.id,
-    spriteOwnerLabel: owner.label,
-    action,
-    animNo,
-    terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
-    pos: worldPos,
-    fallbackFacing: fighter.runtime.facing,
-    damageScale: fighter.runtime.attackMultiplier,
-  });
-  if (operation) {
-    recordControllerOperation(fighter, operation);
-  }
-}
-
-function resolveProjectileTerminalActions(
-  owner: FighterMatchState,
-  controller: MugenStateController,
-  operation?: ProjectileControllerOp,
-): RuntimeProjectileSpawnInput["terminalActions"] {
-  const hitAnim = operation?.hitAnim ?? firstNumber(findParam(controller, "projhitanim"));
-  const removeAnim = operation?.removeAnim ?? firstNumber(findParam(controller, "projremanim"));
-  const cancelAnim = operation?.cancelAnim ?? firstNumber(findParam(controller, "projcancelanim"));
-  return {
-    hit: hitAnim === undefined ? undefined : owner.definition.animations.get(hitAnim),
-    remove: removeAnim === undefined ? undefined : owner.definition.animations.get(removeAnim),
-    cancel: cancelAnim === undefined ? undefined : owner.definition.animations.get(cancelAnim),
-  };
-}
-
-function modifyProjectiles(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  operation?: ModifyProjectileControllerOp,
-): void {
-  const changed = fighter.effectActorWorld.modifyProjectiles(fighter.id, {
-    controller,
-    operation,
-  });
-  if (operation && changed > 0) {
-    recordControllerOperation(fighter, operation);
-  }
 }
 
 function applyTargetController(
@@ -1685,42 +1563,6 @@ function resolveProjectileClashes(left: FighterMatchState, right: FighterMatchSt
 
 function toProjectileSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
   return fighter.effectActorWorld.projectileSnapshots(fighter.id, fighter.runtime.stateNo);
-}
-
-function resolveExplodPosition(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  postype: string | undefined,
-  localPos: [number, number],
-): { x: number; y: number } {
-  const type = postype?.trim().toLowerCase() ?? "p1";
-  if (type === "p2") {
-    return { x: opponent.runtime.pos.x + localPos[0] * opponent.runtime.facing, y: opponent.runtime.pos.y + localPos[1] };
-  }
-  if (type === "front") {
-    return { x: fighter.runtime.pos.x + localPos[0] * fighter.runtime.facing + 48 * fighter.runtime.facing, y: fighter.runtime.pos.y + localPos[1] };
-  }
-  if (type === "back") {
-    return { x: fighter.runtime.pos.x + localPos[0] * fighter.runtime.facing - 48 * fighter.runtime.facing, y: fighter.runtime.pos.y + localPos[1] };
-  }
-  if (type === "left") {
-    return { x: localPos[0], y: localPos[1] };
-  }
-  return { x: fighter.runtime.pos.x + localPos[0] * fighter.runtime.facing, y: fighter.runtime.pos.y + localPos[1] };
-}
-
-function resolveExplodBind(postype: string | undefined, localPos: [number, number]): { localOffset: { x: number; y: number } } | undefined {
-  const type = postype?.trim().toLowerCase() ?? "p1";
-  if (type === "front") {
-    return { localOffset: { x: localPos[0] + 48, y: localPos[1] } };
-  }
-  if (type === "back") {
-    return { localOffset: { x: localPos[0] - 48, y: localPos[1] } };
-  }
-  if (type === "p1") {
-    return { localOffset: { x: localPos[0], y: localPos[1] } };
-  }
-  return undefined;
 }
 
 function recordSoundEvent(
@@ -2850,10 +2692,6 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
 
 function clampHitDefPriority(value: number): number {
   return Math.max(0, Math.min(10, Math.round(value)));
-}
-
-function actionDuration(action: MugenAnimationAction): number {
-  return action.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0);
 }
 
 function clampNumber(value: number, min: number, max: number): number {
