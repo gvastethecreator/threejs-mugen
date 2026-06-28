@@ -32,6 +32,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded fall recovery
 - synthetic bounded recovery input
 - synthetic bounded recovery threshold
+- synthetic bounded air recovery velocity
 - synthetic bounded ground recovery selection/velocity
 - state exit
 - Target*

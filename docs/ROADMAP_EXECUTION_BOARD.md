@@ -37,8 +37,9 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 Build next:
 
 - Current proof: required `synthetic-imported-default-fall-recovery-threshold.json` checksum `7bb15a5f` observes imported defender actor-frame `5050` with positive `hitFall.recoverTime`, then `5210` with `recoverTime = 0` after `CanRecover` plus `command = "recovery"` routes.
+- Current proof: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Current proof: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity telemetry for synthetic ground-recovery constants.
-- Build next recovery proof not already covered by threshold/early-reject/positive/ground-selection routes: exact tick-order, optional KFM threshold oracle, broader recovery parity, or guard/Common1 confirmation.
+- Build next recovery proof not already covered by threshold/early-reject/positive/air-velocity/ground-selection routes: exact tick-order, optional KFM threshold oracle, broader recovery parity, or guard/Common1 confirmation.
 - If official KFM fixture is available, add optional confirmation only after the synthetic gate is stable.
 
 Acceptance:

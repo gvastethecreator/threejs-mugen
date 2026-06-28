@@ -63,7 +63,7 @@ Next character-runtime work should follow `src/compiler.go`/`src/input.go`/`src/
 1. Add `buffer.pauseend`, `buffer.shared`, `autogreater`, exact charge conflict handling, and stricter step timing diagnostics.
 2. Broaden `State -1` routing edge cases beyond the current `triggerall` AND plus numbered-trigger OR grouping.
 3. Convert supported active-state controllers into a small TypeScript IR before execution, rather than evaluating raw controller params everywhere.
-4. Expand `HitDef` from partial damage/guard/pause/stun/push/default stand get-hit progression/guard-hit routing/fall ground-impact/bounce/lie-down entry plus bounded synthetic recovery/recovery-input/threshold/ground-selection evidence and optional official air/ground recovery-input evidence into attr/spark/sound/priority-aware runtime data, exact threshold/velocity math, broader recovery parity, and exact guard states.
+4. Expand `HitDef` from partial damage/guard/pause/stun/push/default stand get-hit progression/guard-hit routing/fall ground-impact/bounce/lie-down entry plus bounded synthetic recovery/recovery-input/threshold/air-velocity/ground-selection evidence and optional official air/ground recovery-input evidence into attr/spark/sound/priority-aware runtime data, exact threshold/velocity math, broader recovery parity, and exact guard states.
 5. Broaden visual/system hooks after the first `Pause`/`SuperPause`/`EnvShake`/`PalFX`/`AfterImage`/`Explod`/`Helper`/`Projectile` paths: richer sound hooks, pause layering, projectile edge cases, and helper state/lifecycle basics.
 6. Keep every skipped controller/trigger visible in UI and exported compatibility JSON.
 

@@ -62,7 +62,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 ## Next Ten Gates
 
 1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial plus one-frame expiry traces.
-2. Exact-enough fall/recovery tick order, optional fixture threshold oracles, and broader recovery parity beyond the current synthetic threshold handoff, bounded synthetic ground-selection/velocity gate, and synthetic/official early recovery-input reject gates.
+2. Exact-enough fall/recovery tick order, optional fixture threshold oracles, and broader recovery parity beyond the current synthetic threshold handoff, bounded synthetic air/ground velocity gates, and synthetic/official early recovery-input reject gates.
 3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
 4. Projectile parity slice beyond current bounded hit/guard/clash routes.
 5. Stage BGCtrl slice with animated/velocity/tile/parallax evidence.

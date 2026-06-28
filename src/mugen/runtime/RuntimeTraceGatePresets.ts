@@ -3460,6 +3460,7 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -3504,6 +3505,7 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrames: options.requiredActorFrames,
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -3514,6 +3516,51 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
             ctrl: true,
           },
         ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-air-recovery-velocity",
+    displayName: "Synthetic Imported Default Fall Air Recovery Velocity",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      includeRecoveryInput: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-air-recovery-velocity-attacker",
+    displayName: "Synthetic Imported Default Fall Air Recovery Velocity Attacker",
+    groundVelocity: [-3, -6],
+    fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 4 },
+  });
+  return createImportedDefaultFallRecoveryInputTraceArtifact(imported, {
+    ...options,
+    attacker,
+    targetId: "synthetic-imported-default-fall-air-recovery-velocity-golden",
+    targetLabel: "Synthetic imported Common1 air recovery velocity route",
+    notes: [
+      "Synthetic imported air-recovery velocity trace proves a bounded Common1-style defender can enter 5210 after CanRecover plus command = \"recovery\" and expose air-recovery VelSet telemetry before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery velocity math, threshold tables, or tick-order parity.",
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5210,
+        moveType: "I",
+        observedVelXAtLeast: 0,
+        observedVelXAtMost: 0,
+        observedVelYAtMost: -2,
+        minFrames: 1,
       },
     ],
   });
