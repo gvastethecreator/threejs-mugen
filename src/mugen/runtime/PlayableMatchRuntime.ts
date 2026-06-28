@@ -1075,6 +1075,7 @@ function runActiveStateControllers(
       recordControllerExecution(fighter, rawController);
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         getConst: (name) => runtimeConst(owner.definition, name),
+        hitPauseTime: () => fighter.hitPause,
         stageTime: tick,
       });
       if (controller.operation) {
@@ -1248,6 +1249,7 @@ function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: Fight
     }
     fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
       getConst: (name) => runtimeConst(owner.definition, name),
+      hitPauseTime: () => fighter.hitPause,
       stageTime: tick,
     });
   }
@@ -2281,7 +2283,10 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
     }
     if (isStateEntrySetupDispatch(dispatch)) {
       recordControllerExecution(fighter, controller.source);
-      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, { stageTime: tick });
+      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
+        hitPauseTime: () => fighter.hitPause,
+        stageTime: tick,
+      });
     }
   }
 }
@@ -2501,6 +2506,7 @@ function resolveDispatchNumber(
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
     hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
     hitCount: () => moveHitCountValue(fighter, false),
+    hitPauseTime: () => fighter.hitPause,
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
@@ -2562,6 +2568,7 @@ function evaluateRuntimeTrigger(
     getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
     hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
     hitCount: () => moveHitCountValue(fighter, false),
+    hitPauseTime: () => fighter.hitPause,
     hitShakeOver: () => fighter.hitPause <= 0,
     hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),

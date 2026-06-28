@@ -97,6 +97,7 @@ const supportedExpressionIdentifiers = new Set([
   "hitdefattr",
   "hitcount",
   "hitover",
+  "hitpausetime",
   "hitshakeover",
   "inguarddist",
   "life",

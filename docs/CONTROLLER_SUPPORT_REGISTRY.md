@@ -25,6 +25,10 @@ Every controller family should have:
 | `unsupported` | The controller is known but not executed. |
 | `unknown` | The controller or param was encountered but not classified. |
 
+## Current Trigger Notes
+
+- `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. This is trigger/expression support, not a new controller family and not `ignorehitpause` or exact hitpause-loop parity.
+
 ## Current Registry
 
 | Controller Family | Current Level | Evidence | Notes |

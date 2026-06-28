@@ -32,6 +32,7 @@ type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | 
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
+  hitPauseTime?: () => number;
   stageTime?: number;
 };
 
@@ -688,6 +689,7 @@ function evaluateNumber(
     self: state,
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),
+    hitPauseTime: context.hitPauseTime,
     stageTime: context.stageTime,
   });
   const value = Number(evaluated);

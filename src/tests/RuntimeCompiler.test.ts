@@ -38,7 +38,7 @@ time = 20
       'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     const contact = compileExpression(
-      "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1",
+      "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
     );
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
@@ -64,7 +64,15 @@ time = 20
     expect(clean.identifiers).toContain("PowerMax");
     expect(contact.supportLevel).toBe("executable");
     expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit", "ProjHitTime"]);
-    expect(contact.identifiers).toEqual(["HitCount", "MoveGuarded", "MoveReversed", "ReceivedDamage", "ReceivedHits", "UniqHitCount"]);
+    expect(contact.identifiers).toEqual([
+      "HitCount",
+      "HitPauseTime",
+      "MoveGuarded",
+      "MoveReversed",
+      "ReceivedDamage",
+      "ReceivedHits",
+      "UniqHitCount",
+    ]);
     expect(actorCounts.supportLevel).toBe("executable");
     expect(actorCounts.functions).toEqual(["NumExplod", "NumHelper", "NumProjID"]);
     expect(actorCounts.identifiers).toEqual(["NumProj"]);

@@ -14,6 +14,7 @@ export type ExpressionContext = {
   hitDefAttr?: (attrFilter: string) => boolean;
   hitCount?: () => number;
   hitOver?: () => boolean;
+  hitPauseTime?: () => number;
   hitShakeOver?: () => boolean;
   inGuardDist?: () => boolean;
   moveContact?: () => boolean | number;
@@ -383,6 +384,9 @@ class ExpressionParser {
     }
     if (lower === "hitover") {
       return this.context.hitOver?.() ? 1 : 0;
+    }
+    if (lower === "hitpausetime") {
+      return Math.max(0, Math.floor(this.context.hitPauseTime?.() ?? 0));
     }
     if (lower === "command" || lower === "selfcommand") {
       return commandIdentifierMarker;

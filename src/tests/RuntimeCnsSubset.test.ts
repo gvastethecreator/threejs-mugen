@@ -62,6 +62,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("HitShakeOver", { self: state, hitShakeOver: () => false })).toBe(0);
     expect(evaluateExpression("HitOver", { self: state, hitOver: () => true })).toBe(1);
     expect(evaluateExpression("!HitOver", { self: state, hitOver: () => false })).toBe(1);
+    expect(evaluateExpression("HitPauseTime > 0", { self: state, hitPauseTime: () => 4 })).toBe(1);
+    expect(evaluateExpression("HitPauseTime = 0", { self: state })).toBe(1);
     expect(evaluateExpression("MoveContact && MoveHit", { self: state, moveContact: () => true, moveHit: () => true })).toBe(1);
     expect(evaluateExpression("MoveGuarded", { self: state, moveGuarded: () => true })).toBe(1);
     expect(evaluateExpression("MoveHit >= 3", { self: state, moveHit: () => 3 })).toBe(1);
@@ -200,6 +202,17 @@ describe("StateControllerExecutor", () => {
     expect(compiled.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 4, y: -3 });
     expect(irResult.vel).toEqual(parsedResult.vel);
     expect(irResult.vel).toEqual({ x: 4, y: -3 });
+  });
+
+  it("evaluates HitPauseTime in runtime controller params when context supplies actor hitpause", () => {
+    const result = executeControllerIr(
+      compileControllerIr(controller("ChangeState", { value: "HitPauseTime + 200" })),
+      runtimeState(),
+      () => undefined,
+      { hitPauseTime: () => 6 },
+    );
+
+    expect(result.stateNo).toBe(206);
   });
 
   it("executes movement, animation, and state controllers", () => {
