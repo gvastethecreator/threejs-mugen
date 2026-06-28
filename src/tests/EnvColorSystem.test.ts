@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { EnvColorControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { calculateRuntimeStageFlash, createRuntimeEnvColorEvent, pushRuntimeEnvColorEvent } from "../mugen/runtime/EnvColorSystem";
+import {
+  calculateRuntimeStageFlash,
+  createRuntimeEnvColorEvent,
+  pushRuntimeEnvColorEvent,
+  RuntimeEnvColorWorld,
+} from "../mugen/runtime/EnvColorSystem";
 import type { RuntimeEnvColorEvent } from "../mugen/runtime/types";
 
 describe("EnvColorSystem", () => {
@@ -64,6 +69,26 @@ describe("EnvColorSystem", () => {
   it("returns no stage flash when every event is expired or from the future", () => {
     expect(calculateRuntimeStageFlash(20, [{ ...event(0), time: 3 }])).toBeUndefined();
     expect(calculateRuntimeStageFlash(2, [{ ...event(5), time: 3 }])).toBeUndefined();
+  });
+
+  it("wraps EnvColor event history and stage-flash projection behind RuntimeEnvColorWorld", () => {
+    const world = new RuntimeEnvColorWorld();
+
+    const emitted = world.emitController(
+      controller("EnvColor", { value: "16,96,255", time: "12", under: "0" }),
+      10,
+    );
+
+    expect(emitted).toMatchObject({ type: "EnvColor", color: [16, 96, 255], time: 12, under: false });
+    expect(world.snapshotStageFlash(13)).toEqual({
+      color: [16, 96, 255],
+      opacity: 0.495,
+      remaining: 9,
+      under: false,
+    });
+
+    world.reset();
+    expect(world.snapshotStageFlash(13)).toBeUndefined();
   });
 });
 

@@ -42,7 +42,7 @@ import {
   runtimeReceivedHitsValue,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
-import { calculateRuntimeStageFlash, createRuntimeEnvColorEvent, pushRuntimeEnvColorEvent } from "./EnvColorSystem";
+import { RuntimeEnvColorWorld } from "./EnvColorSystem";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
@@ -99,7 +99,6 @@ import type {
   CharacterRuntimeState,
   RuntimeAfterImageSample,
   RuntimeEnvShakeEvent,
-  RuntimeEnvColorEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
@@ -199,8 +198,8 @@ export class PlayableMatchRuntime {
   private readonly targetWorld: RuntimeTargetWorld;
   private readonly audioWorld = new RuntimeAudioWorld();
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
+  private readonly envColorWorld = new RuntimeEnvColorWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
-  private readonly envColorEvents: RuntimeEnvColorEvent[] = [];
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -434,7 +433,7 @@ export class PlayableMatchRuntime {
   getSnapshot(): MugenSnapshot {
     const center = cameraCenterX([this.p1, this.p2]);
     const shake = this.envShakeWorld.snapshotCameraShake(this.tick, [this.p1, this.p2]);
-    const envColor = calculateRuntimeStageFlash(this.tick, this.envColorEvents);
+    const envColor = this.envColorWorld.snapshotStageFlash(this.tick);
     return {
       tick: this.tick,
       selectedActionId: this.p1.runtime.animNo,
@@ -485,7 +484,7 @@ export class PlayableMatchRuntime {
     this.round.reset(this.roundTimerFrames);
     this.playing = true;
     this.pauseWorld.reset();
-    this.envColorEvents.length = 0;
+    this.envColorWorld.reset();
     this.effectActorWorld.reset();
     Object.assign(
       this.p1,
@@ -497,6 +496,8 @@ export class PlayableMatchRuntime {
         this.stage.playerStart.p1.facing,
         this.effectActorWorld,
         this.targetWorld,
+        this.audioWorld,
+        this.envShakeWorld,
       ),
     );
     Object.assign(
@@ -509,17 +510,15 @@ export class PlayableMatchRuntime {
         this.stage.playerStart.p2.facing,
         this.effectActorWorld,
         this.targetWorld,
+        this.audioWorld,
+        this.envShakeWorld,
       ),
     );
     this.logs.unshift("Round reset");
   }
 
   private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
-    const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation);
-    if (!event) {
-      return;
-    }
-    pushRuntimeEnvColorEvent(this.envColorEvents, event);
+    this.envColorWorld.emitController(controller, runtimeTick, operation);
   }
 
 }

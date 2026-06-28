@@ -26,6 +26,31 @@ export function pushRuntimeEnvColorEvent(events: RuntimeEnvColorEvent[], event: 
   events.splice(maxEvents);
 }
 
+export class RuntimeEnvColorWorld {
+  private readonly events: RuntimeEnvColorEvent[] = [];
+
+  emitController(
+    controller: MugenStateController,
+    runtimeTick: number,
+    operation?: EnvColorControllerOp,
+  ): RuntimeEnvColorEvent | undefined {
+    const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation);
+    if (!event) {
+      return undefined;
+    }
+    pushRuntimeEnvColorEvent(this.events, event);
+    return event;
+  }
+
+  snapshotStageFlash(runtimeTick: number): RuntimeStageFlash | undefined {
+    return calculateRuntimeStageFlash(runtimeTick, this.events);
+  }
+
+  reset(): void {
+    this.events.length = 0;
+  }
+}
+
 export function calculateRuntimeStageFlash(runtimeTick: number, events: readonly RuntimeEnvColorEvent[]): RuntimeStageFlash | undefined {
   const active = events
     .map((event) => ({ event, age: runtimeTick - event.runtimeTick }))

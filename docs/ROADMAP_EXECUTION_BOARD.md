@@ -61,6 +61,7 @@ Build next:
 - Current proof: `RuntimePauseWorld` owns current match pause state, snapshot projection, source-movetime checks, countdown ticks, controller application, and reset while preserving existing `Pause`/`SuperPause` trace behavior.
 - Current proof: `RuntimeEnvShakeWorld` owns bounded EnvShake/FallEnvShake event insertion plus deterministic multi-actor camera-shake projection consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeAudioWorld` owns bounded `PlaySnd`/`StopSnd` event insertion consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
+- Current proof: `RuntimeEnvColorWorld` owns bounded `EnvColor` event history, stage-flash projection, and reset consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, combat/effect ordering, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 
