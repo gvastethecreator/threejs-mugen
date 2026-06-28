@@ -38,6 +38,7 @@ For architecture or source-of-truth changes, also read:
 | What changed recently? | `docs/BUILD_EXECUTION_BACKLOG.md` |
 | What is the compact current truth? | `docs/PROGRESS_TRACKER.md` |
 | What gates define done? | `docs/ROADMAP_PROGRESS_SYSTEM.md` and `docs/QA_AND_ACCEPTANCE_GATES.md` |
+| What are the phase-by-phase delivery checkpoints? | `docs/DELIVERY_ROADMAP.md` |
 | What checklist should I follow for this task type? | `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` |
 | What can the runtime currently support? | `docs/SUPPORTED_FEATURES.md` and `docs/CONTROLLER_SUPPORT_REGISTRY.md` |
 | What must Studio become? | `docs/ENGINE_STUDIO_ROADMAP.md` and `docs/INTERFACE_SYSTEM.md` |

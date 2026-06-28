@@ -11,6 +11,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 - `README.md`
 - `docs/ROADMAP_NAVIGATION.md`
 - `docs/ROADMAP_PROGRESS_SYSTEM.md`
+- `docs/DELIVERY_ROADMAP.md`
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`
 - `docs/ROADMAP_EXECUTION_BOARD.md`
 - `docs/ROADMAP_RELEASE_TARGETS.md`
