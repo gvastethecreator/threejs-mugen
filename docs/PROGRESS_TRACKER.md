@@ -12,12 +12,13 @@ Use these files together:
 | --- | --- |
 | `CONTEXT.md` | Fast project/domain map for future agents. |
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
+| `docs/PORT_COMPLETION_SCORECARD.md` | Authoritative 0-100 scorecard for playable sandbox, MUGEN, IKEMEN, Studio, and modular engine horizons. |
 | `docs/WORKPLAN.md` | Current execution authority. |
 | `docs/BUILD_EXECUTION_BACKLOG.md` | Detailed history and backlog ledger. |
 | `.scratch/roadmap/PRD.md` | Local roadmap-tracking PRD. |
 | `.scratch/roadmap/issues/` | Small actionable issue slices for runtime, Studio, assets, IKEMEN, and modular-engine tracks. |
 
-Rule: this tracker stays short. Add detailed implementation history to `docs/BUILD_EXECUTION_BACKLOG.md`, and use `.scratch/roadmap/issues/` for next-slice planning.
+Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SCORECARD.md`, add detailed implementation history to `docs/BUILD_EXECUTION_BACKLOG.md`, and use `.scratch/roadmap/issues/` for next-slice planning.
 
 ## Current Score
 
@@ -25,6 +26,7 @@ Rule: this tracker stays short. Add detailed implementation history to `docs/BUI
 | --- | ---: | --- |
 | Playable private sandbox | 65 / 100 | Local match is playable with generated/native fighters, imported KFM route, stages, debug panels, and Studio workflow. |
 | Practical MUGEN compatibility by layers | 35 / 100 | DEF/AIR/CMD/CNS/SFF/SND pieces exist, many controllers/triggers have bounded gates, but broad character compatibility remains partial. |
+| MUGEN 1.0/1.1 MVP port | 20 / 100 | Infrastructure is in place for KFM/Common1-style authored routes, but exact VM/combat/helper/screenpack parity is still open. |
 | Full MUGEN/Ikemen-GO port | 10-12 / 100 | Foundation exists. Full VM parity, helpers, redirects, teams, lifebars/screenpacks, Lua/ZSS, exact tick order, rollback/netplay, and broad fixture matrix remain future work. |
 
 ## Evidence Snapshot

@@ -1,0 +1,81 @@
+# Port Completion Scorecard
+
+Last updated: 2026-06-28
+
+This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
+
+## Current Scores
+
+| Horizon | Score | Current truth |
+| --- | ---: | --- |
+| Playable private sandbox | 65 / 100 | Usable local Three.js match exists with native/generated fighters, original stage, HUD, hit/hurt boxes, debug panels, Studio surfaces, and trace/smoke QA. |
+| Practical MUGEN compatibility | 35 / 100 | DEF/AIR/CMD/CNS/SFF/SND/stage paths exist and many controller/trigger families have bounded gates, but broad character compatibility is still partial. |
+| MUGEN 1.0/1.1 MVP port | 20 / 100 | Enough parser/runtime/render infrastructure exists to keep marching toward KFM/Common1-style compatibility, but exact VM, combat, helpers, screenpack, palette, audio, and tick-order parity remain open. |
+| Full MUGEN-compatible engine | 10-12 / 100 | Foundation and evidence discipline exist. Complete behavior parity across real characters/stages/screenpacks is still a large engine project. |
+| Full IKEMEN-GO-class port | 6-8 / 100 | IKEMEN scanner/reporting exists. ZSS, Lua, rollback/netplay, extended screenpacks, team modes, and IKEMEN runtime semantics are not executed yet. |
+| Creator Studio / modular engine | 25 / 100 | Studio workbench/evidence/build/assets surfaces exist. Real authoring, persistent asset DB, export pipeline, and non-fighting modules are still early. |
+
+## What "Usable" Means Next
+
+The next usable milestone is not "full IKEMEN." It is:
+
+```txt
+MUGEN-lite playable MVP
+  -> load official/local KFM-style package
+  -> run common idle/walk/crouch/jump/attack/get-hit/guard/fall/recovery paths
+  -> inspect every unsupported controller/trigger
+  -> export trace/report evidence
+  -> keep native generated roster playable
+```
+
+Target score for that milestone: playable sandbox 75+, practical MUGEN compatibility 45+, MUGEN MVP port 30+.
+
+## Completion Bands
+
+| Band | Meaning | Required proof |
+| --- | --- | --- |
+| 0-15 | Foundation only | Project builds, app opens, docs state limits. |
+| 16-35 | Partial runtime | Real parsers, partial controller execution, synthetic trace gates. |
+| 36-55 | Practical MVP | Official/local KFM-style fixture can execute common authored routes with visible reports. |
+| 56-75 | Broad MUGEN subset | Many public character/stage packages load and play common move sets without custom patches. |
+| 76-90 | Near-parity MUGEN | Exact-ish CNS/CMD/tick/combat/helper/projectile/screenpack behavior for a broad regression corpus. |
+| 91-100 | Full engine parity | IKEMEN/MUGEN edge behavior, ZSS/Lua where applicable, teams, rollback/netplay, screenpacks, audio/video parity, tooling, release QA. |
+
+The project is currently in the **16-35 partial runtime band** for imported compatibility and in the **56-75 practical playable band** for the private native sandbox.
+
+## Evidence Ledger
+
+| Area | Score | Evidence | Main blocker |
+| --- | ---: | --- | --- |
+| Project control | 80 | `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `.scratch/roadmap/*`, this scorecard. | Keep docs synchronized after each gate. |
+| Native runtime | 65 | Local roster, Rooftop Dojo, HUD, controls, debug, smoke QA. | Gameplay depth, polish, broader move/system coverage. |
+| File loading/parsers | 55 | ZIP/folder loader, DEF/AIR/CMD/CNS/ST/SFF/SND partial parsers. | More corpus coverage, exact raw preservation, edge formats. |
+| SFF/render import | 40 | SFF v1 PCX and current SFF v2 RAW/RLE/LZ paths render current fixtures. | Palette parity, v2 edge formats, sprite/group fallback policy. |
+| CMD/CNS expression VM | 30 | Many triggers/controllers parse and partially execute through gates. | Full AST/IR, redirects, helpers, dynamic params, exact tick timing. |
+| Combat/Common1 | 30 | Direct HitDef, guard, hitstun, fall/get-hit/recovery gates. | Exact guard/fall/recovery, custom states, throws, priority, KO/round flow. |
+| Helpers/projectiles/explods | 25 | Bounded effect actors, projectile/Helper/Explod traces, pause budgets. | Real helper VM, ownership, redirects, exact lifecycle/pause parity. |
+| Stages/presentation/audio | 25 | Basic imported stage route, EnvShake/EnvColor, partial SND event path. | BGCtrl parity, screenpacks/lifebars, FightFX, audio mixing/timing. |
+| IKEMEN profile | 10 | Scanner recognizes ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, rollback/netplay, IKEMEN runtime extensions. |
+| Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
+| Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
+
+## Next Ten Gates
+
+1. `ChangeAnim` / `ChangeAnim2` required trace for imported animation-source retargeting.
+2. `AssertSpecial` and guard/facing/no-walk precision against KFM/Common1.
+3. Exact-enough fall/recovery thresholds, velocities, and recovery input timing.
+4. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
+5. Projectile parity slice beyond current bounded hit/guard/clash routes.
+6. Stage BGCtrl slice with animated/velocity/tile/parallax evidence.
+7. Palette application slice: ACT/SFF palette remap plus PalFX/RemapPal interaction.
+8. CMD/CNS compiler hardening: source-located AST/IR for dynamic params and unsupported expressions.
+9. Studio Build/Evidence as single trust source: stale fixture, blocked export, next-action workflow.
+10. IKEMEN reference expansion: map ZSS/Lua/screenpack findings to scanner tests and blocked runtime claims.
+
+## Claim Rules
+
+- Do not say "MUGEN compatible" without naming the fixture or trace artifact.
+- Do not say "IKEMEN supported" while IKEMEN remains scanner-only.
+- Do not count generated/native fighters as imported compatibility evidence.
+- Do not raise scores from docs alone; scores move when tests, traces, browser evidence, or fixture results improve.
+- Any changed score must update this file and `docs/PROGRESS_TRACKER.md`.

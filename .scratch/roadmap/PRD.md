@@ -39,6 +39,7 @@ Keep progress trackable through local markdown issues that connect each workstre
 ## Operating Rules
 
 - `docs/PROGRESS_TRACKER.md` stays compact and current.
+- `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 progress answers and score changes.
 - `docs/WORKPLAN.md` stays the execution authority.
 - `docs/BUILD_EXECUTION_BACKLOG.md` remains the detailed historical ledger.
 - Issues under this directory are slicing aids, not a second source of truth.

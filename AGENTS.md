@@ -13,6 +13,7 @@
 ## Work Cadence
 
 - Prefer small runtime/evidence cuts over broad rewrites.
+- Before answering port progress or choosing next work, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
 - Runtime/CNS/CMD work must close with:
   - typed operation or named runtime-system boundary where possible
   - trace artifact or focused unit coverage
@@ -43,6 +44,15 @@ Frontend, Studio, renderer, stage, sprite, or debug UI changes also require:
 ```bash
 pnpm qa:smoke
 ```
+
+## Roadmap Control
+
+- `docs/PORT_COMPLETION_SCORECARD.md` is the 0-100 status source for playable sandbox, MUGEN MVP, full MUGEN, IKEMEN, Studio, and modular-engine horizons.
+- `docs/PROGRESS_TRACKER.md` is the compact current truth board.
+- `docs/WORKPLAN.md` is the execution authority.
+- `docs/BUILD_EXECUTION_BACKLOG.md` is the detailed append-style history.
+- `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` are local slicing aids.
+- Update all affected roadmap files when a gate changes a score, claim, priority, or blocked scope.
 
 ## Agent skills
 

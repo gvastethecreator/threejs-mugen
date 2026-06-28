@@ -9,6 +9,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 
 ## Next Useful Cuts
 
+- Next recommended gate: required `ChangeAnim` / `ChangeAnim2` trace for imported animation-source retargeting and active AIR action evidence.
 - Add required traces for controller families currently covered only by unit/runtime tests.
 - Latest completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.
