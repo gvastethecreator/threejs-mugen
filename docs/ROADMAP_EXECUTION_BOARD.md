@@ -66,6 +66,7 @@ Build next:
 - Current proof: `RuntimeActorConstraintWorld` owns bounded `Width`, per-frame `PlayerPush`/`PosFreeze`/`ScreenBound` constraint reset/projection, stage clamping, and body-push separation consumed by `PlayableMatchRuntime`, with focused `ActorConstraintSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeDirectCombatWorld` owns bounded direct hit/guard result mutation consumed by `PlayableMatchRuntime`, including life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup, with focused `DirectCombatSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeHitOverrideWorld` owns bounded HitOverride slot ticking and redirect mutation consumed by direct and projectile combat paths, with focused `HitOverrideSystem` coverage and unchanged trace behavior expected.
+- Current proof: `RuntimeReversalWorld` owns bounded ReversalDef activation, active counter detection, and counter-result mutation consumed by direct HitDef contact paths, with focused `ReversalSystem` coverage and unchanged trace behavior expected.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, combat/effect ordering, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 

@@ -29,7 +29,6 @@ import {
   applyRuntimeHitAdd,
   createRuntimeContactMemory,
   hasRuntimeProjectileContact,
-  markRuntimeMoveReversed,
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
   resetRuntimeMoveContact,
@@ -59,6 +58,7 @@ import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoF
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
+import { RuntimeReversalWorld } from "./ReversalSystem";
 import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
@@ -197,6 +197,7 @@ export class PlayableMatchRuntime {
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
   private readonly directCombatWorld = new RuntimeDirectCombatWorld();
   private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
+  private readonly reversalWorld = new RuntimeReversalWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -323,6 +324,7 @@ export class PlayableMatchRuntime {
       this.actorConstraintWorld,
       this.spriteEffectWorld,
       this.hitOverrideWorld,
+      this.reversalWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -335,6 +337,7 @@ export class PlayableMatchRuntime {
         this.actorConstraintWorld,
         this.spriteEffectWorld,
         this.hitOverrideWorld,
+        this.reversalWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -352,8 +355,8 @@ export class PlayableMatchRuntime {
     applyBindToTarget(this.p1, this.p2);
     applyBindToTarget(this.p2, this.p1);
     resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
-    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, (line) => this.logs.unshift(line));
-    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, (line) => this.logs.unshift(line));
+    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
+    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
@@ -396,6 +399,7 @@ export class PlayableMatchRuntime {
         this.actorConstraintWorld,
         this.spriteEffectWorld,
         this.hitOverrideWorld,
+        this.reversalWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -752,6 +756,7 @@ function advanceFighter(
   actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   hitOverrideWorld: RuntimeHitOverrideWorld,
+  reversalWorld: RuntimeReversalWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -818,7 +823,7 @@ function advanceFighter(
   }
 
   advanceAnimation(fighter);
-  runActiveStateControllers(fighter, opponent, actorConstraintWorld, spriteEffectWorld, tick, onPauseController, onEnvColorController);
+  runActiveStateControllers(fighter, opponent, actorConstraintWorld, spriteEffectWorld, reversalWorld, tick, onPauseController, onEnvColorController);
   advanceImportedGroundRecoveryLanding(fighter);
   advanceCommon1LieDownRecovery(fighter);
   actorConstraintWorld.preserveFrozenPosition(fighter.runtime, tickStartPos);
@@ -964,6 +969,7 @@ function runActiveStateControllers(
   opponent: FighterMatchState,
   actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
+  reversalWorld: RuntimeReversalWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -1038,7 +1044,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        activateReversalDef(fighter, rawController, operation);
+        activateReversalDef(fighter, rawController, reversalWorld, operation);
       } else if (dispatch.effect === "width") {
         recordControllerExecution(fighter, rawController);
         const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "width" ? controller.operation : undefined;
@@ -1578,10 +1584,6 @@ function applyHitAddController(
   applyRuntimeHitAdd(fighter.contact, fighter.runtime.stateNo, value);
 }
 
-function markMoveReversed(fighter: FighterMatchState): void {
-  markRuntimeMoveReversed(fighter.contact, fighter.runtime.stateNo);
-}
-
 function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
   markRuntimeReceivedDamage(fighter.contact, fighter.runtime.stateNo, damage);
 }
@@ -1850,57 +1852,24 @@ function getActiveDirectHitDefMove(fighter: FighterMatchState): DemoMove | undef
 function activateReversalDef(
   fighter: FighterMatchState,
   controller: MugenStateController,
+  reversalWorld: RuntimeReversalWorld,
   operation?: ReversalDefControllerOp,
 ): void {
   const attr = (operation?.attr ?? stripMugenString(findParam(controller, "reversal.attr")))?.trim() ?? "";
-  if (!attr) {
-    if (fighter.currentMove?.isReversal) {
-      fighter.currentMove = undefined;
-      fighter.currentMoveLabel = undefined;
-      fighter.moveTick = 0;
-      fighter.hasHit = false;
-    }
-    fighter.runtime.reversal = undefined;
-    return;
-  }
-
   const frame = getCurrentFrame(fighter);
-  const hitbox = frame?.clsn1[0];
-  if (!hitbox) {
-    fighter.runtime.reversal = undefined;
-    return;
-  }
-
   const hitPause = operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(controller, "pausetime")) ?? 0));
   const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(controller, "p1stateno"));
   const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(controller, "p2stateno"));
   const targetId = operation?.targetId ?? firstNumber(findParam(controller, "id"));
-  fighter.currentMove = {
-    actionId: fighter.runtime.stateNo,
-    startup: 0,
-    activeStart: 0,
-    activeEnd: 3600,
-    recovery: 3600,
-    damage: 0,
-    attr: "S,NA",
-    targetId,
-    isReversal: true,
-    reversalAttr: attr,
+  reversalWorld.activate(fighter, {
+    attr,
+    hitbox: frame?.clsn1[0],
+    label: controller.name ?? "ReversalDef",
+    hitPause,
     p1StateNo,
     p2StateNo,
-    hitPause,
-    hitStun: 0,
-    push: 0,
-    hitbox: cloneBox(hitbox),
-  };
-  fighter.currentMoveLabel = controller.name ?? "ReversalDef";
-  fighter.hasHit = false;
-  fighter.runtime.reversal = {
-    attr,
-    hitPause,
-    ...(p1StateNo !== undefined ? { p1StateNo } : {}),
-    ...(p2StateNo !== undefined ? { p2StateNo } : {}),
-  };
+    targetId,
+  });
 }
 
 function resolveCombat(
@@ -1908,6 +1877,7 @@ function resolveCombat(
   defender: FighterMatchState,
   directCombatWorld: RuntimeDirectCombatWorld,
   hitOverrideWorld: RuntimeHitOverrideWorld,
+  reversalWorld: RuntimeReversalWorld,
   log: (line: string) => void,
 ): void {
   if (!attacker.currentMove || attacker.hasHit) {
@@ -1924,9 +1894,22 @@ function resolveCombat(
     return;
   }
   const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
-  const reversal = findActiveReversal(defender, move, attackBox);
+  const reversal = reversalWorld.findActive(defender, move, attackBox, {
+    isMoveActive,
+    worldBox: runtimeWorldBox,
+    boxesIntersect: collisionBoxesIntersect,
+    attrMatches: hitAttributeMatches,
+  });
   if (reversal) {
-    applyReversal(defender, attacker, reversal, log);
+    const outcome = reversalWorld.apply(defender, attacker, reversal, {
+      rememberTarget,
+      canEnterState: (target, stateNo) => canEnterState(target, stateNo),
+      enterState: (target, stateNo) => enterState(target, stateNo),
+      enterTargetHitState: (target, owner, stateNo, getP1State) => {
+        enterTargetHitState(target, owner, stateNo, getP1State);
+      },
+    });
+    log(outcome.message);
     return;
   }
   const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
@@ -2143,72 +2126,6 @@ function applyHitOverride(
     },
   });
   log(result.message);
-}
-
-function findActiveReversal(
-  defender: FighterMatchState,
-  incomingMove: DemoMove,
-  incomingAttackBox: CollisionBox,
-): DemoMove | undefined {
-  const reversal = defender.currentMove;
-  if (!reversal?.isReversal || defender.hasHit || !reversal.reversalAttr) {
-    return undefined;
-  }
-  if (!isMoveActive(reversal, defender.moveTick)) {
-    return undefined;
-  }
-  if (!hitAttributeMatches(reversal.reversalAttr, incomingMove.attr ?? "S,NA")) {
-    return undefined;
-  }
-  return collisionBoxesIntersect(runtimeWorldBox(defender.runtime, reversal.hitbox), incomingAttackBox) ? reversal : undefined;
-}
-
-function applyReversal(
-  reverser: FighterMatchState,
-  attacker: FighterMatchState,
-  reversal: DemoMove,
-  log: (line: string) => void,
-): void {
-  reverser.hasHit = true;
-  attacker.hasHit = true;
-  markMoveReversed(attacker);
-  rememberTarget(reverser, attacker, reversal.targetId);
-  reverser.hitPause = reversal.hitPause;
-  attacker.hitPause = reversal.hitPause;
-  attacker.hitStun = 0;
-  attacker.currentMove = undefined;
-  attacker.currentMoveLabel = undefined;
-  attacker.moveTick = 0;
-  attacker.runtime.guardStun = 0;
-  attacker.runtime.guardSlideTime = 0;
-  attacker.runtime.guardControlTime = 0;
-  attacker.runtime.guarding = false;
-  markFighterGotHit(attacker);
-  reverser.runtime.power = Math.min(runtimePowerMax(reverser.definition), reverser.runtime.power + 25);
-
-  const p1StateNo = reversal.p1StateNo;
-  const p2StateNo = reversal.p2StateNo;
-  if (p1StateNo !== undefined && canEnterState(reverser, p1StateNo)) {
-    enterState(reverser, p1StateNo);
-  } else {
-    clearReversal(reverser);
-  }
-  if (p2StateNo !== undefined) {
-    enterTargetHitState(attacker, reverser, p2StateNo, true);
-  }
-
-  const p1 = p1StateNo !== undefined ? ` p1->${p1StateNo}` : "";
-  const p2 = p2StateNo !== undefined ? ` p2->${p2StateNo}` : "";
-  log(`${reverser.label} reversed ${attacker.label}${p1}${p2}`);
-}
-
-function clearReversal(fighter: FighterMatchState): void {
-  if (fighter.currentMove?.isReversal) {
-    fighter.currentMove = undefined;
-    fighter.currentMoveLabel = undefined;
-    fighter.moveTick = 0;
-  }
-  fighter.runtime.reversal = undefined;
 }
 
 function applyHitStateTransitions(attacker: FighterMatchState, defender: FighterMatchState, move: DemoMove): void {
