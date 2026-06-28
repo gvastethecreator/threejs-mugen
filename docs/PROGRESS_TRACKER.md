@@ -35,7 +35,7 @@ This document is the compact truth board for progress. It does not replace detai
 
 3. **Compatibility trace coverage**
    - Add missing required traces for controller families currently covered only by unit/runtime tests.
-   - Current proof added: dedicated `synthetic-imported-movehitreset.json` trace artifact for bounded direct-contact memory reset evidence.
+   - Current proof added: dedicated `synthetic-imported-variable.json` trace artifact for typed `VarSet` / `VarAdd` / `VarRangeSet` evidence.
 
 4. **Studio trust workflow**
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.

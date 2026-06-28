@@ -203,6 +203,30 @@ export function createSyntheticImportedHitAddTraceArtifact(options: RuntimeTrace
   );
 }
 
+export function createSyntheticImportedVariableTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-variable",
+      displayName: "Synthetic Imported Variable Ops",
+      action200Duration: 30,
+      withVariableOps: { stateNo: 288 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-variable-golden",
+      targetLabel: "Synthetic imported variable controller route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 288],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "VarAdd", "VarRangeSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "variable:varadd", "variable:varrangeset"],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 288, animNo: 288 }],
+      notes: [
+        "Synthetic imported variable trace proves static VarSet, VarAdd, and VarRangeSet can execute as typed variable operations and drive a later var(...) ChangeState branch in the owner state. Dynamic variable expressions, helper/redirect variable scopes, sysvar/fvar parity, map vars, and exact MUGEN/IKEMEN VM semantics remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -6131,6 +6155,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitCountStateNo?: number;
   withHitAdd?: number;
   hitAddStateNo?: number;
+  withVariableOps?: { stateNo: number };
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
@@ -6413,6 +6438,7 @@ ${options.withMoveHitReset ? moveHitResetControllerBlock() : ""}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
+${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
@@ -6460,6 +6486,7 @@ ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
+${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -6536,6 +6563,7 @@ ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.state
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitAddStateNo === undefined ? [] : ([[options.hitAddStateNo, traceAction(options.hitAddStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
         ? []
         : ([
@@ -8068,6 +8096,37 @@ function moveHitResetControllerBlock(): string {
 [State 200, Reset Direct Contact]
 type = MoveHitReset
 trigger1 = MoveHit >= 1
+`;
+}
+
+function variableControllerBlock(stateNo: number): string {
+  return `
+[State 200, Var Set Seed]
+type = VarSet
+trigger1 = MoveHit >= 1
+v = 7
+value = 3
+
+[State 200, Var Add Delta]
+type = VarAdd
+trigger1 = var(7) = 3
+var(7) = 5
+
+[State 200, Var Range Fill]
+type = VarRangeSet
+trigger1 = var(7) = 8
+first = 2
+last = 4
+value = 9
+
+[State 200, Variable Branch]
+type = ChangeState
+trigger1 = var(7) = 8
+trigger1 = var(2) = 9
+trigger1 = var(3) = 9
+trigger1 = var(4) = 9
+value = ${stateNo}
+ctrl = 0
 `;
 }
 

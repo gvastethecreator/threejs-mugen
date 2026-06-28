@@ -92,6 +92,7 @@ import {
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
+  createSyntheticImportedVariableTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
@@ -364,6 +365,39 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["contact:hitadd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported variable artifact with typed variable operation evidence", () => {
+    const artifact = createSyntheticImportedVariableTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-variable-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 288]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "VarSet", "VarAdd", "VarRangeSet"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "variable:varset", "variable:varadd", "variable:varrangeset"]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 288]));
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarRangeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varrangeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 288, animNo: 288 });
   });
 
   it("creates a synthetic imported ReceivedDamage artifact with defender-local branch evidence", () => {

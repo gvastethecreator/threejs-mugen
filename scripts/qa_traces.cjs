@@ -56,6 +56,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitAddTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-variable",
+      required: true,
+      artifact: presets.createSyntheticImportedVariableTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),
@@ -1091,6 +1096,9 @@ function validateTraceCoverage(coverage) {
     "damage-scale:defencemulset",
     "contact:movehitreset",
     "contact:hitadd",
+    "variable:varset",
+    "variable:varadd",
+    "variable:varrangeset",
   ];
   const requiredEffectKinds = ["projectile", "helper", "explod"];
   const requiredEffectPayloadKinds = ["projectile", "helper", "explod"];
@@ -1141,6 +1149,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-afterimage",
     "synthetic-imported-movehitreset",
     "synthetic-imported-hitadd",
+    "synthetic-imported-variable",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-match-context",
