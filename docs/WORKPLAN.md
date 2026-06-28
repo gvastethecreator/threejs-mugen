@@ -235,7 +235,7 @@ These are the current mandatory cuts before the plan expands into larger Studio 
 1. **Stabilize custom get-hit evidence**
    - Owner: Runtime / QA.
    - Build: keep `synthetic-imported-common-gethit` required in `pnpm qa:trace`.
-   - Done: trace proves `p2stateno`, attacker-owned state execution, typed `HitFallVel`, `HitFallDamage`, `HitFallSet`, `FallEnvShake` evidence, final `hitFall`, and no false full-parity claim.
+   - Done: trace proves `p2stateno`, attacker-owned state execution, typed `HitFallVel`, `HitFallDamage`, `HitFallSet`, `FallEnvShake` evidence, bounded P2 FallEnvShake runtime event telemetry, final `hitFall`, and no false full-parity claim.
 
 2. **Move one side-effect family behind a runtime system**
    - Owner: Runtime architecture.

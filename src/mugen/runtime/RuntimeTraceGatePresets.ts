@@ -3418,6 +3418,18 @@ export function createSyntheticImportedCommonGetHitTraceArtifact(options: Runtim
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredEnvShakeEvents: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            time: 15,
+            freq: 178,
+            ampl: 6,
+            phase: 0,
+            stateNo: 5100,
+          },
+        ],
         requiredFinalActors: [
           {
             actorId: "p2",

@@ -3143,6 +3143,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["hitfall:hitfalldamage"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.fallenvshake).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([
+      {
+        actorId: "p2",
+        source: "demo",
+        actorKind: "player",
+        time: 15,
+        freq: 178,
+        ampl: 6,
+        phase: 0,
+        stateNo: 5100,
+      },
+    ]);
+    expect(evidence?.envShakeEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          source: "demo",
+          actorKind: "player",
+          time: 15,
+          freq: 178,
+          ampl: 6,
+          phase: 0,
+          stateNo: 5100,
+        }),
+      ]),
+    );
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       stateNo: 5100,
       hitFall: {
