@@ -431,6 +431,51 @@ describe("HitSparkRenderer helpers", () => {
     });
     renderer.dispose();
   });
+
+  it("applies AIR frame offsets to resolved system spark sprites", async () => {
+    const provider = new RecordingSpriteProvider([sprite(14201, 0)]);
+    const renderer = new HitSparkRenderer(provider, fakeTextureStore());
+    const sourceActor: ActorSnapshot = {
+      ...actor,
+      runtime: {
+        ...actor.runtime,
+        facing: -1,
+      },
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7001,
+          raw: "7001",
+          stateNo: 200,
+          tick: 1,
+          runtimeTick: 10,
+          assetFrame: {
+            source: "common",
+            actionId: 7001,
+            frameIndex: 0,
+            spriteGroup: 14201,
+            spriteIndex: 0,
+            offsetX: 12,
+            offsetY: -6,
+            duration: 3,
+          },
+        },
+      ],
+    };
+
+    await renderer.update([sourceActor], 11);
+
+    const sparkGroup = renderer.group.children[0] as THREE.Group;
+    const spriteMesh = sparkGroup.children.find((child) => child instanceof THREE.Mesh && child.renderOrder === 1) as THREE.Mesh;
+    const expectedSize = 44 + Math.abs(7001 % 5);
+
+    expect(spriteMesh.position.x).toBeLessThan(0);
+    expect(spriteMesh.position.y).toBeGreaterThan(0);
+    expect(Math.abs(spriteMesh.position.x)).toBeCloseTo(12 / expectedSize, 3);
+    expect(spriteMesh.position.y).toBeCloseTo(6 / expectedSize, 3);
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {

@@ -159,6 +159,11 @@ export class HitSparkRenderer {
       spriteMesh.material.opacity = presentation.opacity;
       spriteMesh.material.needsUpdate = true;
       spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
+      spriteMesh.position.set(
+        (actor.runtime.facing * (presentation.assetFrame?.offsetX ?? 0)) / Math.max(1, presentation.size),
+        -(presentation.assetFrame?.offsetY ?? 0) / Math.max(1, presentation.size),
+        0.01,
+      );
       presentation.asset.lookupStatus = "resolved-sprite";
       presentation.asset.fallbackReason = `Resolved ${hitSparkAssetSourceLabel(presentation.asset.source)} spark frame into a sprite texture.`;
     } else if (spark.sprite) {
