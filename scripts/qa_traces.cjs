@@ -266,6 +266,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnvColorTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
@@ -952,6 +957,7 @@ function createTraceCoverage(entries, skipped) {
       combatReasons: 0,
       matchPauseRoutes: 0,
       soundEventTypes: 0,
+      envShakeEventRoutes: 0,
       worldLifecycleRoutes: 0,
       targetLinkRoutes: 0,
       effectStoreRoutes: 0,
@@ -964,6 +970,7 @@ function createTraceCoverage(entries, skipped) {
     combatReasons: {},
     eventCategories: {},
     soundEvents: {},
+    envShakeEvents: {},
     matchPauses: {},
     matchPauseFreezes: {},
     matchPauseAdvances: {},
@@ -1012,6 +1019,9 @@ function createTraceCoverage(entries, skipped) {
       }
       for (const event of evidence.soundEvents ?? []) {
         addCoverageEntry(coverage.soundEvents, event.type, context, { count: event.count });
+      }
+      for (const event of evidence.envShakeEvents ?? []) {
+        addCoverageEntry(coverage.envShakeEvents, "EnvShake", context, { count: event.count });
       }
       for (const event of evidence.worldLifecycleEvents ?? []) {
         addCoverageEntry(coverage.worldLifecycle, `${event.kind}:${event.type}`, context);
@@ -1067,6 +1077,7 @@ function createTraceCoverage(entries, skipped) {
     Object.keys(coverage.matchPauseFreezes).length +
     Object.keys(coverage.matchPauseAdvances).length;
   coverage.summary.soundEventTypes = Object.keys(coverage.soundEvents).length;
+  coverage.summary.envShakeEventRoutes = Object.keys(coverage.envShakeEvents).length;
   coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
   coverage.summary.targetLinkRoutes = coverage.targetLinks.artifacts.length;
   coverage.summary.effectStoreRoutes = coverage.effectStores.artifacts.length;
@@ -1126,6 +1137,7 @@ function validateTraceCoverage(coverage) {
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredSoundEventTypes = ["PlaySnd", "StopSnd"];
+  const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
     "synthetic-imported-targetstate-custom",
@@ -1166,6 +1178,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-trans",
     "synthetic-imported-angle",
     "synthetic-imported-envcolor",
+    "synthetic-imported-envshake",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-movehitreset",
@@ -1208,12 +1221,16 @@ function validateTraceCoverage(coverage) {
   for (const key of requiredSoundEventTypes) {
     requireCoverageEntry(coverage.soundEvents, key, "sound event", failures);
   }
+  for (const key of requiredEnvShakeEventTypes) {
+    requireCoverageEntry(coverage.envShakeEvents, key, "env-shake event", failures);
+  }
   for (const name of requiredArtifactNames) {
     const hasArtifact =
       Object.values(coverage.controllers).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.operations).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.soundEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.envShakeEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseFreezes).some((entry) => entry.requiredArtifacts.includes(name));
     if (!hasArtifact) {

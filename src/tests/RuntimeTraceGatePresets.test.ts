@@ -65,6 +65,7 @@ import {
   createSyntheticImportedTransTraceArtifact,
   createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
+  createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
@@ -1602,6 +1603,48 @@ describe("RuntimeTraceGatePresets", () => {
           }),
         }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported EnvShake artifact with runtime camera event evidence", () => {
+    const artifact = createSyntheticImportedEnvShakeTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-envshake-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "EnvShake", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 16,
+        freq: 30,
+        ampl: -7,
+        phase: 0.5,
+        stateNo: 200,
+      },
+    ]);
+    expect(evidence?.executedControllers.EnvShake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.envShakeEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", time: 16, freq: 30, ampl: -7, phase: 0.5, stateNo: 200 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.envShakeEvents).toEqual(
+      expect.arrayContaining([expect.objectContaining({ time: 16, freq: 30, ampl: -7, phase: 0.5, stateNo: 200 })]),
     );
   });
 

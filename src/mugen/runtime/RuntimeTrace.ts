@@ -93,6 +93,7 @@ export type RuntimeTraceActor = {
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
+  envShakeEvents?: NonNullable<ActorSnapshot["envShakeEvents"]>;
   customOwnerId?: string;
   clsn1Count: number;
   clsn2Count: number;
@@ -641,6 +642,35 @@ export type RuntimeTraceGateSoundEventEvidence = {
   count: number;
 };
 
+export type RuntimeTraceEnvShakeEventRequirement = {
+  actorId?: string;
+  source?: NonNullable<ActorSnapshot["source"]>;
+  actorKind?: RuntimeActorKind;
+  time?: number;
+  freq?: number;
+  ampl?: number;
+  phase?: number;
+  stateNo?: number;
+  minCount?: number;
+};
+
+export type RuntimeTraceGateEnvShakeEventEvidence = {
+  actorId: string;
+  label: string;
+  source?: ActorSnapshot["source"];
+  actorKind: RuntimeActorKind;
+  time: number;
+  freq: number;
+  ampl: number;
+  phase: number;
+  stateNo: number;
+  eventTick: number;
+  runtimeTick: number;
+  firstTraceTick: number;
+  lastTraceTick: number;
+  count: number;
+};
+
 export type RuntimeTrace = {
   label: string;
   frameCount: number;
@@ -672,6 +702,7 @@ export type RuntimeTraceGate = {
   requiredMatchPauseFreezes?: RuntimeTraceMatchPauseFreezeRequirement[];
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
   requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
+  requiredEnvShakeEvents?: RuntimeTraceEnvShakeEventRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
   requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
@@ -697,6 +728,7 @@ export type RuntimeTraceGateEvidence = {
   matchPauseFreezes: RuntimeTraceGateMatchPauseFreezeEvidence[];
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
   soundEvents: RuntimeTraceGateSoundEventEvidence[];
+  envShakeEvents: RuntimeTraceGateEnvShakeEventEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
   stageFrames: RuntimeTraceGateStageFrameEvidence[];
   actorFrames: RuntimeTraceGateActorFrameEvidence[];
@@ -875,6 +907,15 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing sound event: ${describeSoundEventRequirement(requirement)} >= ${minCount} (actual ${actual})`);
     }
   }
+  for (const requirement of gate.requiredEnvShakeEvents ?? []) {
+    const minCount = requirement.minCount ?? 1;
+    const actual = evidence.envShakeEvents
+      .filter((event) => matchesEnvShakeEventRequirement(event, requirement))
+      .reduce((total, event) => total + event.count, 0);
+    if (actual < minCount) {
+      failures.push(`Missing env-shake event: ${describeEnvShakeEventRequirement(requirement)} >= ${minCount} (actual ${actual})`);
+    }
+  }
   for (const requirement of gate.requiredTargetLinks ?? []) {
     if (!evidence.targetLinks.some((link) => matchesTargetLinkRequirement(link, requirement))) {
       failures.push(`Missing target link: ${describeTargetLinkRequirement(requirement)}`);
@@ -940,6 +981,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const matchPauseFreezes = new Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>();
   const matchPauseAdvances = new Map<string, RuntimeTraceGateMatchPauseAdvanceEvidence>();
   const soundEvents = new Map<string, RuntimeTraceGateSoundEventEvidence>();
+  const envShakeEvents = new Map<string, RuntimeTraceGateEnvShakeEventEvidence>();
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
   const stageFrames = new Map<string, RuntimeTraceGateStageFrameEvidence>();
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
@@ -972,6 +1014,21 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
         const key = soundEventEvidenceKey(evidence);
         const existing = soundEvents.get(key);
         soundEvents.set(
+          key,
+          existing
+            ? {
+                ...existing,
+                firstTraceTick: Math.min(existing.firstTraceTick, frame.tick),
+                lastTraceTick: Math.max(existing.lastTraceTick, frame.tick),
+              }
+            : evidence,
+        );
+      }
+      for (const event of actor.envShakeEvents ?? []) {
+        const evidence = summarizeEnvShakeEventEvidence(frame.tick, actor, event);
+        const key = envShakeEventEvidenceKey(evidence);
+        const existing = envShakeEvents.get(key);
+        envShakeEvents.set(
           key,
           existing
             ? {
@@ -1275,6 +1332,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       matchPauseAdvanceEvidenceKey(left.type, left.actorId).localeCompare(matchPauseAdvanceEvidenceKey(right.type, right.actorId)),
     ),
     soundEvents: [...soundEvents.values()].sort((left, right) => soundEventEvidenceKey(left).localeCompare(soundEventEvidenceKey(right))),
+    envShakeEvents: [...envShakeEvents.values()].sort((left, right) => envShakeEventEvidenceKey(left).localeCompare(envShakeEventEvidenceKey(right))),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
     stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
@@ -1812,6 +1870,65 @@ function matchesSoundEventRequirement(
 }
 
 function describeSoundEventRequirement(requirement: RuntimeTraceSoundEventRequirement): string {
+  return Object.entries(requirement)
+    .filter(([key, value]) => value !== undefined && key !== "minCount")
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
+function summarizeEnvShakeEventEvidence(
+  traceTick: number,
+  actor: RuntimeTraceActor,
+  event: NonNullable<RuntimeTraceActor["envShakeEvents"]>[number],
+): RuntimeTraceGateEnvShakeEventEvidence {
+  return {
+    actorId: actor.id,
+    label: actor.label,
+    source: actor.source,
+    actorKind: actor.actorKind,
+    time: event.time,
+    freq: event.freq,
+    ampl: event.ampl,
+    phase: event.phase,
+    stateNo: event.stateNo,
+    eventTick: event.tick,
+    runtimeTick: event.runtimeTick,
+    firstTraceTick: traceTick,
+    lastTraceTick: traceTick,
+    count: 1,
+  };
+}
+
+function envShakeEventEvidenceKey(event: RuntimeTraceGateEnvShakeEventEvidence): string {
+  return [
+    event.actorId,
+    event.time,
+    event.freq,
+    event.ampl,
+    event.phase,
+    event.stateNo,
+    event.eventTick,
+    event.runtimeTick,
+  ].join(":");
+}
+
+function matchesEnvShakeEventRequirement(
+  event: RuntimeTraceGateEnvShakeEventEvidence,
+  requirement: RuntimeTraceEnvShakeEventRequirement,
+): boolean {
+  return (
+    (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.source === undefined || event.source === requirement.source) &&
+    (requirement.actorKind === undefined || event.actorKind === requirement.actorKind) &&
+    (requirement.time === undefined || event.time === requirement.time) &&
+    (requirement.freq === undefined || event.freq === requirement.freq) &&
+    (requirement.ampl === undefined || event.ampl === requirement.ampl) &&
+    (requirement.phase === undefined || event.phase === requirement.phase) &&
+    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
+  );
+}
+
+function describeEnvShakeEventRequirement(requirement: RuntimeTraceEnvShakeEventRequirement): string {
   return Object.entries(requirement)
     .filter(([key, value]) => value !== undefined && key !== "minCount")
     .map(([key, value]) => `${key}=${String(value)}`)
@@ -2514,6 +2631,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
+    envShakeEvents: actor.envShakeEvents?.map((event) => ({ ...event })),
     customOwnerId: actor.runtime.customState?.ownerId,
     clsn1Count: actor.clsn1.length,
     clsn2Count: actor.clsn2.length,
@@ -2541,6 +2659,7 @@ function summarizeActorForChecksum(
   | "posFreeze"
   | "screenBound"
   | "soundEvents"
+  | "envShakeEvents"
 > {
   const {
     animTime: _animTime,
@@ -2560,6 +2679,7 @@ function summarizeActorForChecksum(
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     soundEvents: _soundEvents,
+    envShakeEvents: _envShakeEvents,
     ...checksumActor
   } = actor;
   return checksumActor;

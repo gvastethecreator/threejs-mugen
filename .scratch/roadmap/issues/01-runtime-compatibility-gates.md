@@ -10,7 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Add required traces for controller families currently covered only by unit/runtime tests.
-- Latest completed cut: `synthetic-imported-sound.json` gates partial `PlaySnd` and `StopSnd` runtime sound-event evidence with checksum `911aa62d`; previous `synthetic-imported-resource.json` gates typed `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` resource-controller evidence with checksum `7bbcb2e4`.
+- Latest completed cut: `synthetic-imported-envshake.json` gates partial `EnvShake` runtime shake-event evidence with checksum `50e0ad4c`; previous `synthetic-imported-sound.json` gates partial `PlaySnd` and `StopSnd` runtime sound-event evidence with checksum `911aa62d`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.
 - Move mutable behavior behind named systems before adding broader parity claims.
 - Prefer KFM/Common1 precision when a synthetic gate already exists for the same family.

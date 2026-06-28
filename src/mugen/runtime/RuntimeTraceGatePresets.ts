@@ -280,6 +280,46 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
   );
 }
 
+export function createSyntheticImportedEnvShakeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envshake",
+      displayName: "Synthetic Imported EnvShake",
+      action200Duration: 30,
+      withEnvShake: {
+        time: 16,
+        freq: 30,
+        ampl: -7,
+        phase: 0.5,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-envshake-golden",
+      targetLabel: "Synthetic imported EnvShake event route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "EnvShake", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredEnvShakeEvents: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          time: 16,
+          freq: 30,
+          ampl: -7,
+          phase: 0.5,
+          stateNo: 200,
+        },
+      ],
+      notes: [
+        "Synthetic imported EnvShake trace proves EnvShake controllers emit bounded runtime event telemetry for later Three.js camera shake consumption. It does not claim exact MUGEN/IKEMEN camera blend, pause timing, stage binding, helper ownership, or screen-pack parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -840,6 +880,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
+    requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     script?: RuntimeTraceInputFrame[];
   } = {},
@@ -871,6 +912,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
+        requiredEnvShakeEvents: options.requiredEnvShakeEvents,
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),
         ...(options.requireHitEvent ? { requiredCombatReasons: ["hit" as const] } : {}),
@@ -6270,6 +6312,12 @@ export type SyntheticImportedTraceFighterOptions = {
     set?: number;
     add?: number;
   };
+  withEnvShake?: {
+    time?: number;
+    freq?: number;
+    ampl?: number;
+    phase?: number;
+  };
   withEnvColor?: {
     value?: [number, number, number];
     time?: number;
@@ -6438,6 +6486,7 @@ ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(option
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
 ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
+${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
@@ -7124,6 +7173,18 @@ trigger1 = Time >= 0
 value = ${(options.value ?? [255, 255, 255]).join(",")}
 time = ${options.time ?? 1}
 under = ${options.under ? 1 : 0}
+`;
+}
+
+function envShakeControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvShake"]>): string {
+  return `
+[State 200, EnvShake Probe]
+type = EnvShake
+trigger1 = Time = 1
+time = ${options.time ?? 16}
+freq = ${options.freq ?? 30}
+ampl = ${options.ampl ?? -7}
+phase = ${options.phase ?? 0.5}
 `;
 }
 
