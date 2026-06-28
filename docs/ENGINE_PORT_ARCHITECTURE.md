@@ -104,6 +104,8 @@ The compiler classifies each piece as:
 
 `RuntimeStunSystem` owns the bounded hitstun/guardstun timer update used by the playable match loop: input-lock checks, guardstun decay, guarding flag maintenance, hit/guard horizontal friction, and hitstun decay. `PlayableMatchRuntime` still maps those timer results to current presentation actions and imported-state preservation, so this is a system boundary for current behavior, not exact MUGEN/IKEMEN hitpause, guard recovery, or Common1 tick-order parity.
 
+`MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
+
 `synthetic-imported-superpause-effect-freeze.json` extends that pause evidence to visual Helper/Explod actors with bounded source-movetime advance plus later freeze checks; it is still evidence for visual effect actors, not Helper VM execution, Explod binding/removal parity, or exact MUGEN/IKEMEN pause layering.
 
 `synthetic-imported-projectile-motion.json` and `synthetic-imported-projectile-velmul.json` add the current Projectile visual-motion contract: compiled/raw `accel` and `velmul` are stored on projectile actors and applied during presentation advance, and compiled/raw `projscale` reaches effect payload plus `renderScale` snapshots for Three.js projection. This keeps bounded projectile motion/scale in `ProjectileSystem` / `RuntimeEffectActorWorld`; exact `velmul` tick-order parity, scaled collision parity, and contact/removal tick parity remain outside this cut.
