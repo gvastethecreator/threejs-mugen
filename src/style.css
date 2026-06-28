@@ -24932,3 +24932,452 @@ input {
   }
 
 }
+
+/* Desktop shell: neutral command-center chrome, stricter alignment, less demo-card noise. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --surface-accent: #8a96a3;
+    --section-accent: #87929f;
+    --dcc-panel: #0b0d10;
+    --dcc-frame: #11151a;
+    --dcc-slot: #06080b;
+    --dcc-field: #0d1116;
+    --dcc-row: #0f1318;
+    --dcc-row-alt: #0b0f14;
+    --dcc-row-hover: #171d24;
+    --dcc-control-hover: #151a20;
+    grid-template-columns: 296px minmax(680px, 1fr) 372px;
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    grid-template-columns: 290px minmax(0, 1fr) max-content;
+    min-height: 38px;
+    border-bottom: 1px solid #252b32;
+    background: #07090c;
+    box-shadow:
+      inset 0 -1px 0 #000,
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand,
+  .app-shell.mode-studio .studio-chrome-readout,
+  .app-shell.mode-studio .studio-chrome-actions {
+    min-height: 38px;
+    border-color: #252b32;
+    background: #0b0e12;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand {
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: 7px;
+    padding: 5px 8px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-icon,
+  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
+  .app-shell.mode-studio .studio-chrome-actions .ui-icon {
+    width: 15px;
+    height: 15px;
+    color: #8d9aa8;
+    opacity: 0.92;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand strong,
+  .app-shell.mode-studio .studio-chrome-readout b {
+    color: #f0f3f6;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand small,
+  .app-shell.mode-studio .studio-chrome-readout small {
+    color: #9aa5b2;
+    font-size: 11px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout {
+    grid-auto-columns: minmax(132px, 1fr);
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span {
+    grid-template-columns: 17px minmax(0, 1fr);
+    gap: 6px;
+    min-height: 38px;
+    padding: 5px 9px;
+    border-right: 1px solid #252b32;
+    background: #0b0e12;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn b,
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn b {
+    color: #c99b7f;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
+    color: #9fa891;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions {
+    grid-auto-columns: minmax(58px, max-content);
+    border-left: 1px solid #252b32;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button {
+    min-height: 38px;
+    padding: 4px 8px;
+    border: 0;
+    border-right: 1px solid #252b32;
+    border-radius: 0;
+    background: #0b0e12;
+    color: #dbe1e8;
+    font-size: 11.5px;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button:hover,
+  .app-shell.mode-studio .studio-chrome-actions button.is-active {
+    background: #151a20;
+    color: #f3f5f7;
+  }
+
+  .app-shell.mode-studio .workspace-header {
+    gap: 6px;
+    padding: 7px 7px 8px;
+    border-bottom: 1px solid #252b32;
+    background: #080a0d;
+  }
+
+  .app-shell.mode-studio .workspace-brand {
+    display: grid;
+    grid-template-columns: minmax(74px, max-content) minmax(0, 1fr);
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .app-shell.mode-studio .workspace-brand h1,
+  .app-shell.mode-studio .workspace-brand small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-brand h1 {
+    color: #f1f4f7;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .workspace-brand small {
+    color: #9ca6b1;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .mode-switch,
+  .app-shell.mode-studio .workspace-summary,
+  .app-shell.mode-studio .command-launcher,
+  .app-shell.mode-studio .workspace-actions,
+  .app-shell.mode-studio .studio-tab-section.is-compact,
+  .app-shell.mode-studio .section:has(.studio-mission-strip) {
+    border: 1px solid #242a31;
+    border-radius: 0;
+    background: #0b0e12;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.82);
+  }
+
+  .app-shell.mode-studio .mode-switch {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .mode-switch button {
+    grid-template-columns: 16px minmax(0, 1fr) 6px;
+    min-height: 30px;
+    gap: 5px;
+    padding: 4px 6px;
+    border: 0;
+    border-right: 1px solid #242a31;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .mode-switch button.is-active {
+    background: #151a20;
+    box-shadow: inset 0 -2px 0 #8a96a3;
+  }
+
+  .app-shell.mode-studio .workspace-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .workspace-summary span {
+    min-height: 30px;
+    align-content: center;
+    gap: 1px;
+    padding: 4px 6px;
+    border: 0;
+    border-right: 1px solid #242a31;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .workspace-summary small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-summary b {
+    color: #f0f3f6;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .workspace-summary small {
+    color: #98a3af;
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .command-launcher {
+    grid-template-columns: 16px minmax(0, 1fr) 30px;
+    min-height: 31px;
+    gap: 6px;
+    padding: 4px 6px;
+  }
+
+  .app-shell.mode-studio .command-launcher strong,
+  .app-shell.mode-studio .command-launcher small {
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .workspace-actions {
+    gap: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) minmax(66px, max-content);
+    min-height: 34px;
+    gap: 7px;
+    align-items: center;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid #242a31;
+    border-radius: 0;
+    background: #0d1116;
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    background: #151a20;
+    box-shadow: inset 2px 0 0 #8a96a3;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .action-icon {
+    width: 15px;
+    height: 15px;
+    color: #8d9aa8;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
+  .app-shell.mode-studio .workspace-action-grid button small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label {
+    color: #f0f3f6;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button small {
+    justify-self: end;
+    max-width: 92px;
+    color: #95a0ac;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact {
+    padding: 5px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .section-heading-row {
+    min-height: 20px;
+    margin: 0 0 5px;
+    padding-bottom: 4px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #242a31;
+    background: #07090c;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
+    grid-template-columns: 16px minmax(0, 1fr) minmax(22px, max-content);
+    min-height: 30px;
+    gap: 5px;
+    padding: 4px 5px;
+    border: 0;
+    border-right: 1px solid #242a31;
+    border-bottom: 1px solid #242a31;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 4) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
+    background: #151a20;
+    box-shadow: inset 0 -2px 0 var(--section-accent);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-count {
+    padding: 0;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label {
+    color: #edf1f4;
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-count {
+    min-width: 21px;
+    border-radius: 0;
+    background: #07090c;
+    color: #a6b0ba;
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .studio-mission-strip {
+    grid-template-columns: 1fr;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #242a31;
+    background: #07090c;
+  }
+
+  .app-shell.mode-studio .studio-mission-node {
+    grid-template-columns: 24px minmax(0, 1fr);
+    min-height: 38px;
+    gap: 7px;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid #242a31;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-mission-node:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-step {
+    width: 22px;
+    height: 22px;
+    border-radius: 0;
+    background: #07090c;
+    color: #a7b1bd;
+    font-size: 10.5px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 6px;
+    align-items: baseline;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong,
+  .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-detail {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong {
+    color: #edf1f4;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-detail {
+    color: #96a1ad;
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .studio-mission-detail {
+    grid-column: 2;
+  }
+}
