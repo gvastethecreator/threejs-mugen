@@ -30,14 +30,19 @@ Read in this order for broad work:
 
 1. `AGENTS.md` - local working rules, verification rules, and skill setup.
 2. `docs/ROADMAP_PROGRESS_SYSTEM.md` - source-of-truth stack, package lifecycle, horizon ladder, update matrix.
-3. `docs/ROADMAP_EXECUTION_BOARD.md` - current queue, package acceptance, and handoff map.
-4. `docs/PROGRESS_TRACKER.md` - compact score, evidence snapshot, next cuts.
-5. `docs/WORKPLAN.md` - current execution authority.
-6. `docs/BUILD_EXECUTION_BACKLOG.md` - append-only implementation history and backlog.
-7. `docs/ENGINE_PORT_ARCHITECTURE.md` - parser/compiler/runtime/render/audio/debug boundaries.
-8. `docs/CONTROLLER_SUPPORT_REGISTRY.md` - controller support levels and evidence requirements.
-9. `docs/SUPPORTED_FEATURES.md` - supported/partial/unsupported feature matrix.
-10. `docs/QA_AND_ACCEPTANCE_GATES.md` - closeout gates, trace rules, fixture rules, visual QA rules.
+3. `docs/ROADMAP_RELEASE_TARGETS.md` - release trains, usable milestone gates, and score-movement rules.
+4. `docs/ROADMAP_EXECUTION_BOARD.md` - current queue, package acceptance, and handoff map.
+5. `docs/PROGRESS_TRACKER.md` - compact score, evidence snapshot, next cuts.
+6. `docs/WORKPLAN.md` - current execution authority.
+7. `docs/BUILD_EXECUTION_BACKLOG.md` - append-only implementation history and backlog.
+8. `docs/ENGINE_PORT_ARCHITECTURE.md` - parser/compiler/runtime/render/audio/debug boundaries.
+9. `docs/CONTROLLER_SUPPORT_REGISTRY.md` - controller support levels and evidence requirements.
+10. `docs/SUPPORTED_FEATURES.md` - supported/partial/unsupported feature matrix.
+11. `docs/QA_AND_ACCEPTANCE_GATES.md` - closeout gates, trace rules, fixture rules, visual QA rules.
+
+Durable decisions:
+
+- `docs/adr/0001-roadmap-control-and-local-issues.md`
 
 Use roadmap/vision docs when scope decisions are needed:
 

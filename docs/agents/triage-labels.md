@@ -23,3 +23,13 @@ For this repo, prefer adding explicit evidence tags too:
 - `generated-assets`
 - `stage`
 - `audio`
+
+## Status Field Guidance
+
+- `needs-triage`: idea exists, no owner/acceptance yet.
+- `needs-info`: blocked on user-provided fixture, product choice, or external credential.
+- `ready-for-agent`: enough context, acceptance, and blocked claims exist for autonomous work.
+- `ready-for-human`: requires subjective product call, asset approval, or manual fixture/license decision.
+- `wontfix`: intentionally rejected; keep reason in issue body.
+
+Use evidence tags alongside status labels. Example: `Labels: runtime-trace, mugen-compat, ready-for-agent`.

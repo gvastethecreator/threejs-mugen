@@ -9,6 +9,7 @@ Authoritative horizon docs:
 - `MASTER_CONSTRUCTION_PLAN.md`: broad release train.
 - `CONSTRUCTION_WAVES.md`: practical wave plan with build packages, dependencies, acceptance gates, anti-claims, and next rounds.
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `ROADMAP_RELEASE_TARGETS.md`: release-train targets, usable milestone gates, and score-movement rules.
 - `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.
 - `ARCHITECTURE_DECISIONS.md`: decisions that constrain implementation.
@@ -49,6 +50,7 @@ Construction lock for the expanded horizon:
 Operational queue lock:
 
 - Use `docs/ROADMAP_EXECUTION_BOARD.md` to pick the next focused package.
+- Use `docs/ROADMAP_RELEASE_TARGETS.md` to keep "usable MVP" wording tied to gates instead of vibes.
 - Use `docs/ROADMAP_PROGRESS_SYSTEM.md` when deciding which docs must change and what closeout evidence is required.
 - Do not start a package unless its linked `.scratch/roadmap/issues/` file has acceptance and blocked claims.
 - Docs-only roadmap passes may improve handoff clarity, but they do not raise progress scores.

@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-28
 
-This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
+This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
 ## Read Order
 
@@ -11,12 +11,19 @@ Use this order before starting broad work:
 1. `CONTEXT.md`
 2. `AGENTS.md`
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
-4. `docs/ROADMAP_EXECUTION_BOARD.md`
-5. `docs/PROGRESS_TRACKER.md`
-6. `docs/WORKPLAN.md`
-7. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+4. `docs/ROADMAP_RELEASE_TARGETS.md`
+5. `docs/ROADMAP_EXECUTION_BOARD.md`
+6. `docs/PROGRESS_TRACKER.md`
+7. `docs/WORKPLAN.md`
+8. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
+
+## Release Target Now
+
+Current release target: **MUGEN-lite playable MVP**.
+
+This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
 ## Current Position
 
@@ -28,6 +35,8 @@ Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or chan
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist. | Make Build/Evidence the single trust chain for next actions and stale/blocking state. | Full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Provenance plus motion/scale/baseline QA ingestion. | Imported compatibility credit. |
 | Modular engine | Boundary docs exist, platformer slice intentionally delayed. | Extract only contracts proven by fighting runtime and Studio evidence. | Production multi-genre engine. |
+
+See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-movement rules.
 
 ## Active Implementation Queue
 
@@ -145,6 +154,7 @@ Update these files when a package moves:
 | --- | --- |
 | Support level or compatibility behavior | `docs/SUPPORTED_FEATURES.md`, `docs/CONTROLLER_SUPPORT_REGISTRY.md`, `docs/QA_AND_ACCEPTANCE_GATES.md`, `docs/WORKPLAN.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, relevant issue. |
 | Score or answer to "0 to 100" changes | `docs/PORT_COMPLETION_SCORECARD.md`, `docs/PROGRESS_TRACKER.md`, this board. |
+| Release target or usable-milestone wording changes | `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/PROGRESS_TRACKER.md`, this board. |
 | Studio workflow meaning changes | `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md`, `docs/PROGRESS_TRACKER.md`, relevant issue. |
 | Generated asset pipeline changes | `docs/GENERATED_ASSET_QA_CONTRACT.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, relevant issue. |
 | Modular boundary moves | `docs/MODULE_BOUNDARY_CONTRACT.md`, `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`, relevant issue. |

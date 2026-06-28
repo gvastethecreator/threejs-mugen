@@ -13,6 +13,7 @@ Use these files together:
 | `CONTEXT.md` | Fast project/domain map for future agents. |
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
 | `docs/ROADMAP_PROGRESS_SYSTEM.md` | Source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template. |
+| `docs/ROADMAP_RELEASE_TARGETS.md` | Release-train targets, usable milestones, and score-movement rules. |
 | `docs/ROADMAP_EXECUTION_BOARD.md` | Current implementation queue, package acceptance, and handoff checklist. |
 | `docs/PORT_COMPLETION_SCORECARD.md` | Authoritative 0-100 scorecard for playable sandbox, MUGEN, IKEMEN, Studio, and modular engine horizons. |
 | `docs/WORKPLAN.md` | Current execution authority. |
@@ -31,6 +32,8 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | MUGEN 1.0/1.1 MVP port | 20 / 100 | Infrastructure is in place for KFM/Common1-style authored routes, but exact VM/combat/helper/screenpack parity is still open. |
 | Full MUGEN/Ikemen-GO port | 10-12 / 100 | Foundation exists. Full VM parity, helpers, redirects, teams, lifebars/screenpacks, Lua/ZSS, exact tick order, rollback/netplay, and broad fixture matrix remain future work. |
 
+Docs/setup work in this round does not change scores. It improves project-control continuity only.
+
 ## Evidence Snapshot
 
 | Area | Current Proof | Still Weak |
@@ -41,6 +44,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
 | IKEMEN | Scanner-only profile for ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime extensions. |
 | Modular engine | Shared contracts and boundary tests. | Platformer proof slice blocked until fighting contracts stay stable. |
+| Project control | `AGENTS.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, release targets, and closeout. | Must keep docs synchronized after every score/support/queue change. |
 
 ## Next Required Cuts
 
@@ -82,6 +86,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 5. **Roadmap hygiene**
    - Use `docs/ROADMAP_PROGRESS_SYSTEM.md` to decide which doc owns each fact.
+   - Use `docs/ROADMAP_RELEASE_TARGETS.md` to keep release trains and usable milestones aligned with scores.
    - Use `docs/ROADMAP_EXECUTION_BOARD.md` as the first queue/handoff map.
    - Keep `docs/BUILD_EXECUTION_BACKLOG.md` append-only enough to preserve history.
    - Keep `docs/WORKPLAN.md` as execution authority.

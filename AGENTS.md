@@ -19,6 +19,7 @@
 ## Work Cadence
 
 - Prefer small runtime/evidence cuts over broad rewrites.
+- Start each non-trivial round by checking `git status --short --branch`, then reading the queue docs named below. Do not trust stale chat memory over repo truth.
 - Before answering port progress or choosing next work, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
 - Before starting a new implementation slice, read `docs/ROADMAP_EXECUTION_BOARD.md` and the linked `.scratch/roadmap/issues/<NN>-*.md`.
 - Runtime/CNS/CMD work must close with:
@@ -66,6 +67,7 @@ pnpm qa:smoke
 
 - `docs/PORT_COMPLETION_SCORECARD.md` is the 0-100 status source for playable sandbox, MUGEN MVP, full MUGEN, IKEMEN, Studio, and modular-engine horizons.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` explains source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `docs/ROADMAP_RELEASE_TARGETS.md` translates scores into release trains, gates, and "usable" milestones.
 - `docs/PROGRESS_TRACKER.md` is the compact current truth board.
 - `docs/WORKPLAN.md` is the execution authority.
 - `docs/BUILD_EXECUTION_BACKLOG.md` is the detailed append-style history.
@@ -75,10 +77,18 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Issue tracker: local markdown under `.scratch/<feature-slug>/`.
-- Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`.
-- Domain layout: single-context repo with root `CONTEXT.md`; durable decisions should use `docs/adr/` when needed.
+- `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
+- Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
+- Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
+- Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
+
+## Current Milestone Focus
+
+- Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
+- Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
+- Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
+- Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 
 ## Agent skills
 

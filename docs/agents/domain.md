@@ -10,6 +10,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 - `README.md`
 - `docs/ROADMAP_PROGRESS_SYSTEM.md`
 - `docs/ROADMAP_EXECUTION_BOARD.md`
+- `docs/ROADMAP_RELEASE_TARGETS.md`
 - `docs/PORT_COMPLETION_SCORECARD.md`
 - `docs/WORKPLAN.md`
 - `docs/PROGRESS_TRACKER.md`
@@ -19,7 +20,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 - `docs/SUPPORTED_FEATURES.md`
 - `docs/QA_AND_ACCEPTANCE_GATES.md`
 
-If present later, also read:
+Also read relevant ADRs under:
 
 - `docs/adr/`
 
@@ -39,7 +40,7 @@ Use these terms consistently:
 
 ## ADR Guidance
 
-No ADR directory exists yet. If a change introduces a durable architectural constraint, create `docs/adr/<NNNN>-<slug>.md` and link it from the relevant roadmap doc.
+Use `docs/adr/` for durable decisions that constrain future agents. Start with `docs/adr/0001-roadmap-control-and-local-issues.md` before changing issue-tracker, scorecard, release-train, or source-of-truth rules.
 
 ## Local Roadmap Tracker
 

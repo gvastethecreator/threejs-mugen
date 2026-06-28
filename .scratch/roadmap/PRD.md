@@ -41,6 +41,7 @@ Keep progress trackable through local markdown issues that connect each workstre
 
 - `docs/PROGRESS_TRACKER.md` stays compact and current.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth routing, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `docs/ROADMAP_RELEASE_TARGETS.md` owns release-train targets, usable milestone gates, and score-movement rules.
 - `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 progress answers and score changes.
 - `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff board.
 - `docs/WORKPLAN.md` stays the execution authority.
