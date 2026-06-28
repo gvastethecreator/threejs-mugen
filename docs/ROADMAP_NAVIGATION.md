@@ -13,7 +13,8 @@ For any non-trivial pass, read in this order:
 3. `docs/ROADMAP_NAVIGATION.md`
 4. `docs/ROADMAP_PROGRESS_SYSTEM.md`
 5. `docs/ROADMAP_EXECUTION_BOARD.md`
-6. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+6. `docs/ROADMAP_CONTINUITY_GUIDE.md`
+7. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 For a status answer, also read:
 
@@ -39,6 +40,7 @@ For architecture or source-of-truth changes, also read:
 | What is the compact current truth? | `docs/PROGRESS_TRACKER.md` |
 | What gates define done? | `docs/ROADMAP_PROGRESS_SYSTEM.md` and `docs/QA_AND_ACCEPTANCE_GATES.md` |
 | What are the phase-by-phase delivery checkpoints? | `docs/DELIVERY_ROADMAP.md` |
+| How do we continue long-running work without drifting? | `docs/ROADMAP_CONTINUITY_GUIDE.md` |
 | What checklist should I follow for this task type? | `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` |
 | What can the runtime currently support? | `docs/SUPPORTED_FEATURES.md` and `docs/CONTROLLER_SUPPORT_REGISTRY.md` |
 | What must Studio become? | `docs/ENGINE_STUDIO_ROADMAP.md` and `docs/INTERFACE_SYSTEM.md` |
@@ -107,6 +109,10 @@ See:
 - `docs/agents/issue-tracker.md`
 - `docs/agents/triage-labels.md`
 - `docs/agents/domain.md`
+
+## Continuity Guide
+
+Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when a task asks to continue the broader port, update the roadmap, or choose the next autonomous implementation slice. It summarizes the active horizon, continuity rules, workstream ladder, documentation update matrix, and closeout template.
 
 ## Anti-Drift Rules
 

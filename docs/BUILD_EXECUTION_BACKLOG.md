@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-06-28 - Setup-project continuity pass
+
+Changed:
+
+- Confirmed the repo's `setup-project` profile is already active: `AGENTS.md`, `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`, local `.scratch/roadmap/`, and `docs/adr/0001-roadmap-control-and-local-issues.md` are present.
+- Added `docs/ROADMAP_CONTINUITY_GUIDE.md` as a handoff guide for continuing the long-running MUGEN/IKEMEN Three.js port without drifting.
+- Linked the continuity guide from `AGENTS.md`, `README.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `docs/PROGRESS_TRACKER.md`, and `docs/agents/domain.md`.
+
+Evidence:
+
+- Docs-only setup/project-control pass.
+- No score movement.
+
+Claim allowed:
+
+- Future agents have a clearer setup-project and roadmap-continuity path for local markdown issues, canonical labels, single-context domain docs, next-slice selection, and closeout documentation.
+
+Claim blocked:
+
+- No new runtime, parser, renderer, Studio, asset-pipeline, IKEMEN, or modular-engine compatibility behavior was implemented in this pass.
+
 This document turns the agreed architecture, Studio, generated-asset, QA, and modular-engine directions into an executable backlog. The single cross-stream construction map lives in `MASTER_CONSTRUCTION_PLAN.md`; the current operating ledger lives in `WORKPLAN.md`; architecture constraints live in `ARCHITECTURE_DECISIONS.md`. This file remains the expanded backlog context for deciding the next implementation rounds without losing the playable prototype. It does not replace `FULL_BUILD_PROGRAM.md`, `CONSTRUCTION_PROGRAM.md`, or `BUILD_PLAN.md`.
 
 The practical wave map for all approved directions lives in `CONSTRUCTION_WAVES.md`. Use it when deciding which package can start now, which gates must close first, and which claims remain blocked.

@@ -4,6 +4,8 @@ Last updated: 2026-06-28
 
 This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
+Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when turning this board into a next implementation cut or when resuming after a long pause.
+
 ## Read Order
 
 Use this order before starting broad work:
@@ -13,9 +15,10 @@ Use this order before starting broad work:
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
 4. `docs/ROADMAP_RELEASE_TARGETS.md`
 5. `docs/ROADMAP_EXECUTION_BOARD.md`
-6. `docs/PROGRESS_TRACKER.md`
-7. `docs/WORKPLAN.md`
-8. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+6. `docs/ROADMAP_CONTINUITY_GUIDE.md`
+7. `docs/PROGRESS_TRACKER.md`
+8. `docs/WORKPLAN.md`
+9. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
 

@@ -25,6 +25,7 @@
 - Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_PROGRESS_SYSTEM.md` for progress ownership, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
 - Use `docs/ROADMAP_NAVIGATION.md` as the fast map for source-of-truth ownership, package lanes, score movement, and claim checklist.
 - Use `docs/DELIVERY_ROADMAP.md` when planning multi-phase delivery, milestone exits, or what "usable" means for each horizon.
+- Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming long-running work, choosing the next score-moving slice, or deciding which docs must change with a slice.
 - Use `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` to choose closeout gates for runtime, renderer, Studio, generated assets, IKEMEN scanner, modular boundaries, or docs-only work.
 - Use `.scratch/roadmap/` only as local issue slicing. Public/private compatibility truth belongs in `docs/`.
 
@@ -51,11 +52,12 @@ Use this checklist when resuming the goal or starting a new autonomous pass:
 2. Read `CONTEXT.md`, then `docs/ROADMAP_PROGRESS_SYSTEM.md`, then `docs/ROADMAP_EXECUTION_BOARD.md`.
 3. Read `docs/ROADMAP_NAVIGATION.md` when the task spans roadmap, setup-project, score, issue, or handoff docs.
 4. Read `docs/DELIVERY_ROADMAP.md` when choosing phase targets or answering what remains to reach a usable port.
-5. Read `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` before choosing verification gates.
-6. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
-7. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
-8. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
-9. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
+5. Read `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming autonomous work or converting roadmap language into the next implementation cut.
+6. Read `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` before choosing verification gates.
+7. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
+8. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
+9. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
+10. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
 
 ## Roadmap Update Protocol
 
@@ -95,6 +97,7 @@ pnpm qa:smoke
 - `docs/ROADMAP_NAVIGATION.md` is the fast route map for docs, lanes, score evidence, setup-project profile, and anti-drift rules.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` explains source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/DELIVERY_ROADMAP.md` defines delivery phases, horizon exit gates, and the next evidence ladder.
+- `docs/ROADMAP_CONTINUITY_GUIDE.md` keeps the long-running port pointed at the next useful evidence-backed slice.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` maps each work type to required docs, evidence, and commands.
 - `docs/ROADMAP_RELEASE_TARGETS.md` translates scores into release trains, gates, and "usable" milestones.
 - `docs/PROGRESS_TRACKER.md` is the compact current truth board.
