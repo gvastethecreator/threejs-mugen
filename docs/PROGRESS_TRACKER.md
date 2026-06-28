@@ -49,6 +49,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.
    - Current proof added: required `synthetic-imported-default-fall-recovery-too-early.json` checksum `050e7e3c` detects `command = "recovery"` while `fall.recovertime` is still positive, forbids `5210`, and keeps the defender in `5050`.
+   - Current optional fixture proof added: `kfm-official-default-fall-recovery-too-early.json` checksum `878b10b5` confirms real KFM/Common1 rejects the same early recovery window locally.
    - Optional official fixture gates cannot become public compatibility claims unless fixture is present and passing.
 
 3. **Compatibility trace coverage**

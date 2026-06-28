@@ -871,6 +871,17 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-fall-recovery-too-early",
+        required: false,
+        artifact: presets.createImportedDefaultFallRecoveryTooEarlyTraceArtifact(imported, {
+          targetId: "kfm-official-default-fall-recovery-too-early-golden",
+          targetLabel: "Official KFM Common1 recovery input too-early reject route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender does not leave Common1 fall state 5050 through command = "recovery" before the bounded recovery timer permits it. Exact recovery thresholds/velocities, tick-order parity, and official oracle breadth remain future work.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-fall-ground-recovery",
         required: false,
         artifact: presets.createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {

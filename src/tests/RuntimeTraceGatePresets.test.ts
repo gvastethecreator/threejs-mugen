@@ -13,6 +13,7 @@ import {
   createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact,
   createImportedDefaultFallGroundRecoveryTraceArtifact,
   createImportedDefaultFallRecoveryInputTraceArtifact,
+  createImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
@@ -137,6 +138,7 @@ import {
   importedDefaultFallRecoveryInputScript,
   importedDefaultFallOfficialGroundRecoveryScript,
   importedDefaultFallOfficialRecoveryInputScript,
+  importedDefaultFallOfficialRecoveryTooEarlyScript,
   importedDefaultFallOfficialRecoveryScript,
   importedDefaultFallRecoveryScript,
   importedDefaultCrouchGuardStateScript,
@@ -3172,6 +3174,53 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("creates an imported default Common1 recovery-input too-early reject artifact for official-style fixtures", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-fall-official-recovery-too-early",
+      displayName: "Synthetic Imported Default Fall Official Recovery Too Early",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        recoveryInputStateNo: 5210,
+        includeRecoveryInput: true,
+      },
+    });
+    const artifact = createImportedDefaultFallRecoveryTooEarlyTraceArtifact(imported, {
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      targetId: "synthetic-imported-default-fall-official-recovery-too-early-golden",
+      targetLabel: "Synthetic imported official-style recovery input too-early reject route",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-official-recovery-too-early-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-recovery-too-early-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050]));
+    expect(evidence?.executedStates).not.toContain(5210);
+    expect(evidence?.executedStates).not.toContain(5200);
+    expect(evidence?.executedStates).not.toContain(5201);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5050,
+      moveType: "H",
+      ctrl: false,
+    });
+  });
+
   it("creates an imported default Common1 ground-recovery artifact for official-style fixtures", () => {
     const imported = createSyntheticImportedTraceFighter({
       id: "synthetic-imported-default-fall-official-ground-recovery",
@@ -4892,6 +4941,12 @@ describe("RuntimeTraceGatePresets", () => {
       "default-fall-official-recovery-input-window",
       "default-fall-official-recovery-input",
       "default-fall-official-recovery-input-settle",
+    ]);
+    expect(importedDefaultFallOfficialRecoveryTooEarlyScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "imported-default-fall-official-recovery-too-early-x",
+      "default-fall-official-recovery-too-early-window",
+      "default-fall-official-recovery-too-early-input",
+      "default-fall-official-recovery-too-early-settle",
     ]);
     expect(importedDefaultFallOfficialGroundRecoveryScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-default-fall-official-ground-recovery-x",
