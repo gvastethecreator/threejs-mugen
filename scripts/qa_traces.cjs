@@ -41,6 +41,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMoveHitCounterTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-movehitreset",
+      required: true,
+      artifact: presets.createSyntheticImportedMoveHitResetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitcount",
       required: true,
       artifact: presets.createSyntheticImportedHitCountTraceArtifact(),
@@ -1084,6 +1089,7 @@ function validateTraceCoverage(coverage) {
     "reversaldef",
     "damage-scale:attackmulset",
     "damage-scale:defencemulset",
+    "contact:movehitreset",
     "contact:hitadd",
   ];
   const requiredEffectKinds = ["projectile", "helper", "explod"];
@@ -1133,6 +1139,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-envcolor",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
+    "synthetic-imported-movehitreset",
     "synthetic-imported-hitadd",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",

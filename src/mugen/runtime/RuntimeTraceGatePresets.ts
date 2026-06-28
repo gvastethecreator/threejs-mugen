@@ -135,6 +135,31 @@ export function createSyntheticImportedMoveHitCounterTraceArtifact(options: Runt
   );
 }
 
+export function createSyntheticImportedMoveHitResetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-movehitreset",
+      displayName: "Synthetic Imported MoveHitReset",
+      action200Duration: 30,
+      withMoveHitReset: true,
+      moveHitCounterStateNo: 263,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-movehitreset-golden",
+      targetLabel: "Synthetic imported MoveHitReset route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "MoveHitReset"],
+      requiredExecutedOperations: ["hitdef", "contact:movehitreset"],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200 }],
+      notes: [
+        "Synthetic imported MoveHitReset trace proves a direct HitDef contact can be cleared before a later MoveHit >= 1 branch fires in the same owner state. Exact first-tick timing, hitpause accounting, helper/redirect/team ownership, and full MUGEN/IKEMEN contact-memory parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedHitCountTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -6102,6 +6127,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveContactStateNo?: number;
   moveHitStateNo?: number;
   moveHitCounterStateNo?: number;
+  withMoveHitReset?: boolean;
   hitCountStateNo?: number;
   withHitAdd?: number;
   hitAddStateNo?: number;
@@ -6383,6 +6409,7 @@ ${options.projHitTimeStateNo === undefined ? "" : contactBranchBlock("ProjHitTim
 ${options.projGuardStateNo === undefined ? "" : contactBranchBlock("ProjGuarded(77)", options.projGuardStateNo, "ProjGuarded Branch")}
 ${options.moveContactStateNo === undefined ? "" : contactBranchBlock("MoveContact", options.moveContactStateNo, "MoveContact Branch")}
 ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", options.moveHitStateNo, "MoveHit Branch")}
+${options.withMoveHitReset ? moveHitResetControllerBlock() : ""}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
@@ -8033,6 +8060,14 @@ function hitAddControllerBlock(value: number): string {
 type = HitAdd
 trigger1 = MoveHit
 value = ${value}
+`;
+}
+
+function moveHitResetControllerBlock(): string {
+  return `
+[State 200, Reset Direct Contact]
+type = MoveHitReset
+trigger1 = MoveHit >= 1
 `;
 }
 

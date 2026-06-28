@@ -96,6 +96,7 @@ import {
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
+  createSyntheticImportedMoveHitResetTraceArtifact,
   createSyntheticImportedMatchContextTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
   createSyntheticImportedNumExplodTraceArtifact,
@@ -283,6 +284,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 263]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported MoveHitReset artifact with reset evidence", () => {
+    const artifact = createSyntheticImportedMoveHitResetTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-movehitreset-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "MoveHitReset"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "contact:movehitreset"]);
+    expect(evidence?.executedStates).toContain(200);
+    expect(evidence?.executedStates).not.toContain(263);
+    expect(evidence?.executedControllers.MoveHitReset).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["contact:movehitreset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, animNo: 200 });
   });
 
   it("creates a synthetic imported HitCount artifact with direct hit count evidence", () => {
