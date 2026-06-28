@@ -38,7 +38,7 @@
 - Frontend or visual changes require `pnpm qa:smoke` and visual inspection before closeout.
 - Run tests/checks at the end of the round, not after every tiny edit.
 - If docs, backlog, or trackers are part of the workflow, keep them honest against current code and gates.
-- For architecture reviews, use subagents when available and reconcile their findings into one narrow plan.
+- For architecture reviews, use subagents when available and reconcile their findings into one narrow plan. Include varied lenses when useful: one strict architecture/runtime reviewer, one product/UX reviewer, and one exploratory persona such as `ponytail` when the context benefits from a less conventional pass.
 
 ## Session Bootstrap Checklist
 

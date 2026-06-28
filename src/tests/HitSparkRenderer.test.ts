@@ -146,12 +146,13 @@ describe("HitSparkRenderer helpers", () => {
       source: "fightfx",
       actionId: 7000,
       lookupKey: "fightfx:7000",
+      lookupStatus: "resolved-frame",
     });
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, stateNo: 200, tick: 1 })).toMatchObject({
       source: "common",
       actionId: 7000,
       lookupKey: "common:7000",
-      lookupStatus: "missing-action",
+      lookupStatus: "resolved-frame",
     });
     expect(
       resolveHitSparkAssetRef({
@@ -169,6 +170,48 @@ describe("HitSparkRenderer helpers", () => {
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", rawPrefix: "Q", stateNo: 200, tick: 1 })).toMatchObject({
       source: "unknown",
       lookupStatus: "missing-id",
+    });
+  });
+
+  it("creates system spark lookup frames for common and FightFX refs", () => {
+    const common = resolveHitSparkPresentation(
+      actor,
+      { type: "HitSpark", kind: "hit", sparkNo: 7001, stateNo: 200, tick: 1, runtimeTick: 20 },
+      24,
+    );
+    const fightFx = resolveHitSparkPresentation(
+      actor,
+      { type: "HitSpark", kind: "guard", sparkNo: 7002, rawPrefix: "F", stateNo: 200, tick: 2, runtimeTick: 20 },
+      25,
+    );
+
+    expect(common).toMatchObject({
+      asset: {
+        source: "common",
+        actionId: 7001,
+        lookupStatus: "resolved-frame",
+      },
+      assetFrame: {
+        source: "common",
+        actionId: 7001,
+        frameIndex: 1,
+        spriteGroup: 7001,
+        spriteIndex: 1,
+      },
+    });
+    expect(fightFx).toMatchObject({
+      asset: {
+        source: "fightfx",
+        actionId: 7002,
+        lookupStatus: "resolved-frame",
+      },
+      assetFrame: {
+        source: "fightfx",
+        actionId: 7002,
+        frameIndex: 1,
+        spriteGroup: 7002,
+        spriteIndex: 1,
+      },
     });
   });
 });

@@ -238,14 +238,22 @@ async function captureRuntime(page, baseUrl, options) {
   await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
   await waitForBridge(page);
   await warmRuntimeRenderer(page);
-  await driveRuntimeHitSpark(page);
+  const drivenHitSparks = await driveRuntimeHitSpark(page);
   await page.waitForTimeout(80);
   await page.screenshot({ path: options.screenshotPath, fullPage: true });
   const canvasPng = await page.locator("canvas").first().screenshot({ path: options.canvasPath });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
   return page.evaluate(
-    ({ canvasPixels, label }) => {
+    ({ canvasPixels, drivenHitSparks, label }) => {
       const bridge = window.__MUGEN_WEB_SANDBOX__;
+      const currentHitSparks = bridge?.renderer?.hitSparks;
+      const hitSparks =
+        currentHitSparks && currentHitSparks.active > 0
+          ? currentHitSparks
+          : drivenHitSparks && drivenHitSparks.active > 0
+            ? drivenHitSparks
+            : (currentHitSparks ?? drivenHitSparks);
+      const renderer = bridge?.renderer ? { ...bridge.renderer, hitSparks } : undefined;
       return {
         label,
         title: document.title,
@@ -274,11 +282,11 @@ async function captureRuntime(page, baseUrl, options) {
           life: actor.runtime.life,
           hitEffects: actor.hitEffectEvents?.length ?? 0,
         })),
-        renderer: bridge?.renderer,
-        activeHitSparks: bridge?.renderer?.hitSparks?.active ?? 0,
-        hitSparkSources: bridge?.renderer?.hitSparks?.sources ?? {},
-        hitSparkResolvedSprites: bridge?.renderer?.hitSparks?.resolvedSprites ?? 0,
-        hitSparkPresentations: bridge?.renderer?.hitSparks?.presentations ?? [],
+        renderer,
+        activeHitSparks: hitSparks?.active ?? 0,
+        hitSparkSources: hitSparks?.sources ?? {},
+        hitSparkResolvedSprites: hitSparks?.resolvedSprites ?? 0,
+        hitSparkPresentations: hitSparks?.presentations ?? [],
         recentHitEffects:
           bridge?.snapshot?.actors?.flatMap((actor) =>
             (actor.hitEffectEvents ?? []).map((event) => ({
@@ -298,7 +306,7 @@ async function captureRuntime(page, baseUrl, options) {
         canvasPixels,
       };
     },
-    { canvasPixels, label: options.label },
+    { canvasPixels, drivenHitSparks, label: options.label },
   );
 }
 
@@ -327,10 +335,15 @@ async function driveRuntimeHitSpark(page) {
       .then(() => true)
       .catch(() => false);
     if (active) {
-      return;
+      return readHitSparkDiagnostics(page);
     }
     await page.waitForTimeout(220);
   }
+  return readHitSparkDiagnostics(page);
+}
+
+async function readHitSparkDiagnostics(page) {
+  return page.evaluate(() => window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks ?? undefined);
 }
 
 async function captureStudioWorkbench(page, baseUrl, outDir) {

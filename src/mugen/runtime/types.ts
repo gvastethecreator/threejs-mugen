@@ -194,7 +194,7 @@ export type RuntimeSoundEvent = {
 };
 
 export type RuntimeHitEffectAssetFrame = {
-  source: "player";
+  source: "player" | "common" | "fightfx";
   actionId: number;
   frameIndex: number;
   spriteGroup: number;

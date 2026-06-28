@@ -5,6 +5,8 @@ import { projectHitSpark } from "./projection";
 import { TextureStore } from "./TextureStore";
 
 export const HIT_SPARK_LIFETIME_FRAMES = 180;
+const HIT_SPARK_SYSTEM_FRAME_COUNT = 3;
+const HIT_SPARK_SYSTEM_FRAME_DURATION = 3;
 
 export type HitSparkAssetSource = "player" | "fightfx" | "common" | "unknown";
 export type HitSparkLookupStatus = "resolved-sprite" | "resolved-frame" | "missing-sprite" | "missing-action" | "unsupported-prefix" | "missing-id";
@@ -153,12 +155,12 @@ export class HitSparkRenderer {
     if (sprite) {
       const spriteMesh = this.ensureSpriteMesh(spark);
       spriteMesh.visible = true;
-      spriteMesh.material.map = this.textures?.getTexture(sprite, `hit-spark:${presentation.asset.source}:${actor.spriteOwnerId ?? actor.id}`) ?? null;
+      spriteMesh.material.map = this.textures?.getTexture(sprite, hitSparkTextureNamespace(actor, presentation)) ?? null;
       spriteMesh.material.opacity = presentation.opacity;
       spriteMesh.material.needsUpdate = true;
       spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
       presentation.asset.lookupStatus = "resolved-sprite";
-      presentation.asset.fallbackReason = "Resolved first local player AIR spark frame into a sprite texture.";
+      presentation.asset.fallbackReason = `Resolved ${hitSparkAssetSourceLabel(presentation.asset.source)} spark frame into a sprite texture.`;
     } else if (spark.sprite) {
       spark.sprite.visible = false;
     }
@@ -218,14 +220,15 @@ export class HitSparkRenderer {
   }
 
   private async resolveSparkSprite(actor: ActorSnapshot, presentation: HitSparkPresentation): Promise<MugenSprite | undefined> {
-    const frame = presentation.asset.source === "player" ? presentation.assetFrame : undefined;
+    const frame = presentation.assetFrame;
     if (!frame || !this.spriteProvider || !this.textures) {
       return undefined;
     }
-    const sprite = await this.spriteProvider.getSprite(frame.spriteGroup, frame.spriteIndex, { ownerId: actor.spriteOwnerId ?? actor.id });
+    const context = presentation.asset.source === "player" ? { ownerId: actor.spriteOwnerId ?? actor.id } : undefined;
+    const sprite = await this.spriteProvider.getSprite(frame.spriteGroup, frame.spriteIndex, context);
     if (!sprite) {
       presentation.asset.lookupStatus = "missing-sprite";
-      presentation.asset.fallbackReason = `Resolved AIR action ${frame.actionId} frame ${frame.frameIndex}, but sprite ${frame.spriteGroup},${frame.spriteIndex} was unavailable.`;
+      presentation.asset.fallbackReason = `Resolved ${hitSparkAssetSourceLabel(frame.source)} spark action ${frame.actionId} frame ${frame.frameIndex}, but sprite ${frame.spriteGroup},${frame.spriteIndex} was unavailable.`;
       return undefined;
     }
     return sprite;
@@ -265,6 +268,7 @@ export function resolveHitSparkPresentation(
   const baseSize = event.kind === "guard" ? 38 : 44;
   const sparkBias = event.sparkNo === undefined ? 0 : Math.abs(event.sparkNo % 5);
   const asset = resolveHitSparkAssetRef(event);
+  const assetFrame = resolveHitSparkPresentationFrame(asset, event, age);
   const layer = event.kind === "guard" ? "guard-spark" : "hit-spark";
   return {
     key: hitSparkKey(actor, event, eventIndex),
@@ -278,7 +282,7 @@ export function resolveHitSparkPresentation(
     asset,
     layer,
     renderOrder: event.kind === "guard" ? 710 : 720,
-    assetFrame: asset.source === "player" ? event.assetFrame : undefined,
+    assetFrame,
   };
 }
 
@@ -294,14 +298,14 @@ export function resolveHitSparkAssetRef(event: RuntimeHitEffectEvent): HitSparkA
   const rawPrefix = event.rawPrefix?.toUpperCase();
   const source = hitSparkAssetSource(rawPrefix);
   const supportedPrefix = source !== "unknown";
-  const hasPlayerFrame = source === "player" && event.assetFrame;
+  const hasLookupFrame = source === "player" ? Boolean(event.assetFrame) : source === "common" || source === "fightfx";
   return {
     source,
     actionId: event.sparkNo,
     rawPrefix,
     lookupKey: `${source}:${event.sparkNo}`,
-    lookupStatus: !supportedPrefix ? "unsupported-prefix" : hasPlayerFrame ? "resolved-frame" : "missing-action",
-    fallbackReason: fallbackReasonForHitSparkRef(source, rawPrefix, Boolean(hasPlayerFrame)),
+    lookupStatus: !supportedPrefix ? "unsupported-prefix" : hasLookupFrame ? "resolved-frame" : "missing-action",
+    fallbackReason: fallbackReasonForHitSparkRef(source, rawPrefix, hasLookupFrame),
   };
 }
 
@@ -318,19 +322,64 @@ function hitSparkAssetSource(rawPrefix: string | undefined): HitSparkAssetSource
   return "unknown";
 }
 
-function fallbackReasonForHitSparkRef(source: HitSparkAssetSource, rawPrefix: string | undefined, hasPlayerFrame: boolean): string {
+function resolveHitSparkPresentationFrame(
+  asset: HitSparkAssetRef,
+  event: RuntimeHitEffectEvent,
+  age: number,
+): RuntimeHitEffectAssetFrame | undefined {
+  if (asset.actionId === undefined) {
+    return undefined;
+  }
+  if (asset.source === "player") {
+    return event.assetFrame;
+  }
+  if (asset.source === "common" || asset.source === "fightfx") {
+    const frameIndex = Math.floor(age / HIT_SPARK_SYSTEM_FRAME_DURATION) % HIT_SPARK_SYSTEM_FRAME_COUNT;
+    return {
+      source: asset.source,
+      actionId: asset.actionId,
+      frameIndex,
+      spriteGroup: asset.actionId,
+      spriteIndex: frameIndex,
+      offsetX: 0,
+      offsetY: 0,
+      duration: HIT_SPARK_SYSTEM_FRAME_DURATION,
+    };
+  }
+  return undefined;
+}
+
+function fallbackReasonForHitSparkRef(source: HitSparkAssetSource, rawPrefix: string | undefined, hasLookupFrame: boolean): string {
   if (source === "player") {
-    return hasPlayerFrame
+    return hasLookupFrame
       ? "Resolved local player AIR spark action; sprite lookup runs in the Three.js renderer."
       : "S-prefixed spark points at the player's AIR action, but no frame was resolved; using fallback geometry.";
   }
   if (source === "common") {
-    return "Unprefixed MUGEN spark refs use common/default fight data; common FightFX lookup is not wired yet.";
+    return "Unprefixed MUGEN spark refs probe the global common/default spark sprite namespace; fallback geometry remains active when no sprite exists.";
   }
   if (source === "fightfx") {
-    return "F-prefixed spark refs are treated as FightFX refs; FightFX lookup is not wired yet.";
+    return "F-prefixed MUGEN spark refs probe the global FightFX spark sprite namespace; fallback geometry remains active when no sprite exists.";
   }
   return `Unsupported HitSpark prefix '${rawPrefix ?? ""}'; using fallback geometry.`;
+}
+
+function hitSparkTextureNamespace(actor: ActorSnapshot, presentation: HitSparkPresentation): string {
+  const owner = presentation.asset.source === "player" ? actor.spriteOwnerId ?? actor.id : "system";
+  return `hit-spark:${presentation.asset.source}:${owner}`;
+}
+
+function hitSparkAssetSourceLabel(source: HitSparkAssetSource): string {
+  if (source === "player") {
+    return "player AIR";
+  }
+  if (source === "common") {
+    return "common/default";
+  }
+  if (source === "fightfx") {
+    return "FightFX";
+  }
+  return "unknown";
 }
 
 export function hitSparkKey(actor: ActorSnapshot, event: RuntimeHitEffectEvent, eventIndex = 0): string {
