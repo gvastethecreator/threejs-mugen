@@ -81,6 +81,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-noop",
+      required: true,
+      artifact: presets.createSyntheticImportedNoOpTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),
@@ -1396,6 +1401,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-control",
     "synthetic-imported-animation",
     "synthetic-imported-sound",
+    "synthetic-imported-noop",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",

@@ -341,6 +341,29 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
   );
 }
 
+export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-noop",
+      displayName: "Synthetic Imported No-Op Controllers",
+      withNoOpControllers: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-noop-golden",
+      targetLabel: "Synthetic imported Null / ForceFeedback no-op route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Null", "ForceFeedback", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200 }],
+      notes: [
+        "Synthetic imported no-op trace proves Null and ForceFeedback controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback remains a browser no-op, and Null remains a true no-op; this does not claim device feedback, side effects, or full CNS VM parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedEnvShakeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -7847,6 +7870,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
   withSoundControllers?: boolean;
+  withNoOpControllers?: boolean;
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
@@ -8169,6 +8193,7 @@ ${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
+${options.withNoOpControllers ? noOpControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
@@ -10026,6 +10051,19 @@ channel = 2
 type = StopSnd
 trigger1 = Time = 3
 channel = 2
+`;
+}
+
+function noOpControllerBlock(): string {
+  return `
+[State 200, Null Probe]
+type = Null
+trigger1 = Time = 0
+
+[State 200, ForceFeedback Probe]
+type = ForceFeedback
+trigger1 = Time = 0
+time = 8
 `;
 }
 

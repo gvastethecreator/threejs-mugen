@@ -109,6 +109,7 @@ import {
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedAnimationTraceArtifact,
   createSyntheticImportedResourceMaxTraceArtifact,
+  createSyntheticImportedNoOpTraceArtifact,
   createSyntheticImportedSoundTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
@@ -347,6 +348,35 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).not.toContain(263);
     expect(evidence?.executedControllers.MoveHitReset).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["contact:movehitreset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, animNo: 200 });
+  });
+
+  it("creates a synthetic imported no-op artifact for Null and ForceFeedback", () => {
+    const artifact = createSyntheticImportedNoOpTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-noop-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "Null", "ForceFeedback", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef"]);
+    expect(evidence?.executedControllers.Null).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ForceFeedback).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, animNo: 200 });
