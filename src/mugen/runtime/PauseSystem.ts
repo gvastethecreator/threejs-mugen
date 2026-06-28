@@ -19,6 +19,44 @@ export type MatchPauseActor = {
   };
 };
 
+export class RuntimePauseWorld {
+  private pause?: RuntimeMatchPause;
+
+  current(): RuntimeMatchPause | undefined {
+    return this.pause;
+  }
+
+  reset(): void {
+    this.pause = undefined;
+  }
+
+  snapshot(): RuntimeMatchPauseSnapshot | undefined {
+    return this.pause ? toMatchPauseSnapshot(this.pause) : undefined;
+  }
+
+  canActorMove(actorId: string): boolean {
+    return canActorMoveDuringPause(this.pause, actorId);
+  }
+
+  tick(): RuntimeMatchPause | undefined {
+    this.pause = this.pause ? tickMatchPause(this.pause) : undefined;
+    return this.pause;
+  }
+
+  applyController(
+    actor: MatchPauseActor,
+    controller: MugenStateController,
+    tick: number,
+    operation?: PauseControllerOp,
+  ): MatchPauseControllerResult {
+    const result = createMatchPauseFromController(actor, controller, tick, operation);
+    if (result.pause) {
+      this.pause = result.pause;
+    }
+    return result;
+  }
+}
+
 export function createMatchPauseFromController(
   actor: MatchPauseActor,
   controller: MugenStateController,

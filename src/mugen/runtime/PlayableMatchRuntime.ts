@@ -76,13 +76,7 @@ import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
-import {
-  canActorMoveDuringPause,
-  createMatchPauseFromController,
-  tickMatchPause,
-  toMatchPauseSnapshot,
-  type RuntimeMatchPause,
-} from "./PauseSystem";
+import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
 import {
@@ -206,7 +200,7 @@ export class PlayableMatchRuntime {
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly targetWorld: RuntimeTargetWorld;
-  private matchPause?: RuntimeMatchPause;
+  private readonly pauseWorld = new RuntimePauseWorld();
   private readonly envColorEvents: RuntimeEnvColorEvent[] = [];
   private toggles = {
     showClsn1: true,
@@ -310,7 +304,7 @@ export class PlayableMatchRuntime {
       return;
     }
 
-    if (this.matchPause) {
+    if (this.pauseWorld.current()) {
       this.advancePausedMatch(input, p1Input, p2Input);
       return;
     }
@@ -332,7 +326,7 @@ export class PlayableMatchRuntime {
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
     );
     applyAutoGuardStart(this.p2, this.p1);
-    if (!this.matchPause) {
+    if (!this.pauseWorld.current()) {
       advanceFighter(
         this.p2,
         this.p1,
@@ -373,7 +367,7 @@ export class PlayableMatchRuntime {
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
-    const pause = this.matchPause;
+    const pause = this.pauseWorld.current();
     if (!pause) {
       return;
     }
@@ -384,7 +378,7 @@ export class PlayableMatchRuntime {
     const actor = pause.actorId === this.p2.id ? this.p2 : this.p1;
     const opponent = actor === this.p1 ? this.p2 : this.p1;
     const actorInput = actor === this.p1 ? p1Input : p2Input;
-    const actorMoved = canActorMoveDuringPause(pause, actor.id);
+    const actorMoved = this.pauseWorld.canActorMove(actor.id);
     if (actorMoved) {
       if (actor === this.p1 || input.p2) {
         handlePlayerInput(actor, actorInput, opponent, this.tick);
@@ -406,7 +400,7 @@ export class PlayableMatchRuntime {
       clampStage(actor, this.stage);
     }
 
-    if (this.matchPause !== pause) {
+    if (this.pauseWorld.current() !== pause) {
       return;
     }
     if (!actorMoved || actor.id !== this.p1.id) {
@@ -415,11 +409,11 @@ export class PlayableMatchRuntime {
     if (!actorMoved || actor.id !== this.p2.id) {
       advancePausedPresentationEffects(this.p2, pause.type, this.stage);
     }
-    this.matchPause = tickMatchPause(pause);
+    this.pauseWorld.tick();
   }
 
   private applyMatchPauseController(fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp): void {
-    const result = createMatchPauseFromController(fighter, controller, this.tick, operation);
+    const result = this.pauseWorld.applyController(fighter, controller, this.tick, operation);
     if (!result.pause) {
       return;
     }
@@ -429,7 +423,6 @@ export class PlayableMatchRuntime {
     if (result.powerDelta !== 0) {
       fighter.runtime.power = clampNumber(fighter.runtime.power + result.powerDelta, 0, runtimePowerMax(fighter.definition));
     }
-    this.matchPause = result.pause;
     this.logs.unshift(
       `${fighter.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
@@ -446,7 +439,7 @@ export class PlayableMatchRuntime {
       playing: this.playing,
       speed: this.speed,
       ...this.toggles,
-      matchPause: this.matchPause ? toMatchPauseSnapshot(this.matchPause) : undefined,
+      matchPause: this.pauseWorld.snapshot(),
       stage: {
         id: this.stage.id,
         displayName: this.stage.displayName,
@@ -488,7 +481,7 @@ export class PlayableMatchRuntime {
     this.frameClock = 0;
     this.round.reset(this.roundTimerFrames);
     this.playing = true;
-    this.matchPause = undefined;
+    this.pauseWorld.reset();
     this.envColorEvents.length = 0;
     this.effectActorWorld.reset();
     Object.assign(

@@ -3,6 +3,7 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
+  RuntimePauseWorld,
   tickMatchPause,
   toMatchPauseSnapshot,
 } from "../mugen/runtime/PauseSystem";
@@ -118,6 +119,30 @@ describe("PauseSystem", () => {
     const result = createMatchPauseFromController(actor("p1", 200), controller("Pause", { time: "0", movetime: "2" }), 0);
 
     expect(result).toEqual({ powerDelta: 0 });
+  });
+
+  it("wraps current pause state behind RuntimePauseWorld", () => {
+    const world = new RuntimePauseWorld();
+    const result = world.applyController(actor("p1", 200), controller("SuperPause", { time: "3", movetime: "1", darken: "1", poweradd: "25" }), 8);
+
+    expect(result.powerDelta).toBe(25);
+    expect(world.current()).toMatchObject({ type: "SuperPause", remaining: 3, moveTime: 1, startedAt: 8 });
+    expect(world.snapshot()).toEqual({
+      type: "SuperPause",
+      remaining: 3,
+      moveTime: 1,
+      actorId: "p1",
+      darken: true,
+      sourceStateNo: 200,
+    });
+    expect(world.canActorMove("p1")).toBe(true);
+    expect(world.canActorMove("p2")).toBe(false);
+
+    world.tick();
+    expect(world.snapshot()).toMatchObject({ remaining: 2, moveTime: 0 });
+    world.reset();
+    expect(world.current()).toBeUndefined();
+    expect(world.snapshot()).toBeUndefined();
   });
 });
 
