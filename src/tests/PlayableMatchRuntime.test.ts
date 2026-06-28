@@ -434,6 +434,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[1]?.runtime.hitFall).toMatchObject({
       falling: true,
       damage: 70,
+      defenceUp: 150,
       velocity: { x: 3, y: -6 },
       recover: false,
       recoverTime: 30,
@@ -1833,6 +1834,7 @@ function createImportedFixture(
     withChangeState?: { stateNo: number; controllerAnimNo?: number; stateAnimNo?: number | null };
     withAnimElemTimeVars?: boolean;
     withFallHitDef?: boolean;
+    fallDefenceUp?: number;
     fallKill?: boolean;
     downRecoverTime?: number;
     dataLiedownTime?: number;
@@ -1963,6 +1965,7 @@ ctrl = 0
     ? `
 fall = 1
 fall.damage = 70
+fall.defence_up = ${options.fallDefenceUp ?? 150}
 ${options.fallKill === undefined ? "" : `fall.kill = ${options.fallKill ? 1 : 0}`}
 fall.xvelocity = -3
 fall.yvelocity = -6

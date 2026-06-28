@@ -39,6 +39,7 @@ export type DemoMove = {
   fall?: {
     enabled: boolean;
     damage?: number;
+    defenceUp?: number;
     kill?: boolean;
     velocity?: {
       x?: number;

@@ -582,6 +582,27 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles HitDef fall.defence_up into typed fall metadata", () => {
+    const hitDef = compileControllerIr(
+      controller(200, "HitDef", [], {
+        damage: "40",
+        fall: "1",
+        "fall.damage": "20",
+        "fall.defence_up": "150",
+      }),
+    );
+
+    expect(hitDef.operation).toMatchObject({
+      kind: "hitdef",
+      damage: 40,
+      fall: {
+        enabled: true,
+        damage: 20,
+        defenceUp: 150,
+      },
+    });
+  });
+
   it("compiles Trans controllers into typed sprite opacity operations", () => {
     const trans = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha,128,128" }));
 

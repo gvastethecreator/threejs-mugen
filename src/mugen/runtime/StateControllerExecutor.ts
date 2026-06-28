@@ -111,7 +111,9 @@ export function executeControllerIr(
     }
   } else if (type === "hitfalldamage") {
     if (next.moveType === "H" && next.hitFall && next.hitFall.damage > 0) {
-      next.life = applyRuntimeDamage(next.life, next.hitFall.damage, canRuntimeDamageKill(next, next.hitFall.kill ?? true));
+      const defenceScale = next.hitFall.defenceUp === undefined ? 1 : Math.max(0, Math.min(10, next.hitFall.defenceUp / 100));
+      const scaledDamage = Math.max(0, Math.round(next.hitFall.damage * defenceScale));
+      next.life = applyRuntimeDamage(next.life, scaledDamage, canRuntimeDamageKill(next, next.hitFall.kill ?? true));
       next.hitFall = { ...next.hitFall, damage: 0 };
     }
   } else if (type === "hitfallset") {

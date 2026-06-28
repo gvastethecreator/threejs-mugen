@@ -129,6 +129,7 @@ export type RuntimeCustomState = {
 export type RuntimeHitFall = {
   falling: boolean;
   damage: number;
+  defenceUp?: number;
   kill?: boolean;
   velocity: {
     x?: number;

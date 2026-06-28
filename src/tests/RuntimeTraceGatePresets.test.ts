@@ -7,6 +7,7 @@ import {
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
+  createSyntheticImportedFallDefenceUpTraceArtifact,
   createImportedDefaultFallGroundRecoveryTraceArtifact,
   createImportedDefaultFallRecoveryInputTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
@@ -2130,6 +2131,38 @@ describe("RuntimeTraceGatePresets", () => {
         velocity: { x: 2, y: -7 },
         recover: false,
         recoverTime: 30,
+      },
+    });
+  });
+
+  it("creates a synthetic imported fall.defence_up artifact with scaled HitFallDamage evidence", () => {
+    const artifact = createSyntheticImportedFallDefenceUpTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-fall-defence-up-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-fall-defence-up-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5100]));
+    expect(evidence?.executedControllers.HitFallDamage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfalldamage"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "demo",
+      stateNo: 5100,
+      life: 858,
+      hitFall: {
+        falling: false,
+        damage: 0,
       },
     });
   });

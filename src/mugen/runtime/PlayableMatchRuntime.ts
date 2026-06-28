@@ -2081,6 +2081,7 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
     firstNumber(findParam(controller, "air.fall")) ??
     firstNumber(findParam(controller, "ground.fall"));
   const damage = operation?.fall.damage ?? firstNumber(findParam(controller, "fall.damage")) ?? existing?.fall?.damage;
+  const defenceUp = operation?.fall.defenceUp ?? firstNumber(findParam(controller, "fall.defence_up")) ?? existing?.fall?.defenceUp;
   const kill = operation?.fall.kill ?? booleanHitDefParam(controller, "fall.kill") ?? existing?.fall?.kill ?? true;
   const xVelocity = operation?.fall.xVelocity ?? firstNumber(findParam(controller, "fall.xvelocity")) ?? existing?.fall?.velocity?.x;
   const yVelocity = operation?.fall.yVelocity ?? firstNumber(findParam(controller, "fall.yvelocity")) ?? existing?.fall?.velocity?.y;
@@ -2097,6 +2098,7 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   const hasAny =
     enabled !== undefined ||
     damage !== undefined ||
+    defenceUp !== undefined ||
     operation?.fall.kill !== undefined ||
     findParam(controller, "fall.kill") !== undefined ||
     xVelocity !== undefined ||
@@ -2112,6 +2114,7 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
   return {
     enabled: enabled !== undefined ? enabled !== 0 : existing?.fall?.enabled ?? false,
     damage,
+    defenceUp,
     kill,
     velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : existing?.fall?.velocity,
     recover: recover !== undefined ? recover !== 0 : existing?.fall?.recover,
@@ -2139,6 +2142,7 @@ function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): Charact
   return {
     falling: fall.enabled,
     damage: Math.max(0, fall.damage ?? 0),
+    defenceUp: fall.defenceUp,
     kill: fall.kill,
     recover: fall.recover,
     recoverTime: fall.recoverTime,

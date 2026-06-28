@@ -221,6 +221,7 @@ function buildMove(
 function buildFallData(params: Record<string, string>): DemoMove["fall"] | undefined {
   const enabled = firstNumber(params.fall) ?? firstNumber(params["air.fall"]) ?? firstNumber(params["ground.fall"]);
   const damage = firstNumber(params["fall.damage"]);
+  const defenceUp = firstNumber(params["fall.defence_up"]);
   const kill = boolParam(params["fall.kill"]);
   const xVelocity = firstNumber(params["fall.xvelocity"]);
   const yVelocity = firstNumber(params["fall.yvelocity"]);
@@ -235,6 +236,7 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   const hasAny =
     enabled !== undefined ||
     damage !== undefined ||
+    defenceUp !== undefined ||
     kill !== undefined ||
     xVelocity !== undefined ||
     yVelocity !== undefined ||
@@ -249,6 +251,7 @@ function buildFallData(params: Record<string, string>): DemoMove["fall"] | undef
   return {
     enabled: enabled !== undefined ? enabled !== 0 : false,
     damage,
+    defenceUp,
     kill,
     velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : undefined,
     recover: recover !== undefined ? recover !== 0 : undefined,

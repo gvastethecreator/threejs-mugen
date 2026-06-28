@@ -2411,6 +2411,62 @@ export function createSyntheticImportedCommonGetHitTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedFallDefenceUpTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-fall-defence-up-attacker",
+    displayName: "Synthetic Imported Fall Defence Up Attacker",
+    fall: { ...commonGetHitFallData(), defenceUp: 150 },
+    getHitState: { stateNo: 5100, animNo: 500 },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-fall-defence-up-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-fall-defence-up-golden",
+      label: "Synthetic imported fall.defence_up route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported fall.defence_up trace proves a bounded HitDef fall.defence_up value scales deferred HitFallDamage. It does not claim exact MUGEN/IKEMEN fall-defense lifetime, stacking, rounding, helper, projectile, or custom-state parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-fall-defence-up-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5100],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel", "HitFallDamage", "HitFallSet"],
+        requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel", "hitfall:hitfalldamage", "hitfall:hitfallset"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            source: "demo",
+            stateNo: 5100,
+            life: 858,
+            hitFall: {
+              falling: false,
+              damage: 0,
+              velocityX: 2,
+              velocityY: -7,
+            },
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedCustomStateScript();
@@ -6834,6 +6890,7 @@ function fallHitDefBlock(fall: NonNullable<DemoMove["fall"]>): string {
   return `
 fall = ${fall.enabled ? 1 : 0}
 ${fall.damage === undefined ? "" : `fall.damage = ${fall.damage}`}
+${fall.defenceUp === undefined ? "" : `fall.defence_up = ${fall.defenceUp}`}
 ${fall.kill === undefined ? "" : `fall.kill = ${fall.kill ? 1 : 0}`}
 ${fall.velocity?.x === undefined ? "" : `fall.xvelocity = ${fall.velocity.x}`}
 ${fall.velocity?.y === undefined ? "" : `fall.yvelocity = ${fall.velocity.y}`}

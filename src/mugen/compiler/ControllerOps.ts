@@ -30,6 +30,7 @@ export type HitDefFallOp = {
   xVelocity?: number;
   yVelocity?: number;
   damage?: number;
+  defenceUp?: number;
   kill?: boolean;
   recover?: boolean;
   recoverTime?: number;
@@ -949,6 +950,7 @@ function compileHitDefFallOp(controller: MugenStateController): HitDefFallOp {
     xVelocity: firstNumber(findParam(controller, "fall.xvelocity")),
     yVelocity: firstNumber(findParam(controller, "fall.yvelocity")),
     damage: firstNumber(findParam(controller, "fall.damage")),
+    defenceUp: firstNumber(findParam(controller, "fall.defence_up")),
     kill: booleanNumber(findParam(controller, "fall.kill")),
     recover: booleanNumber(findParam(controller, "fall.recover")),
     recoverTime: firstNumber(findParam(controller, "fall.recovertime")),
