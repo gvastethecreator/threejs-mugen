@@ -4,6 +4,7 @@ import {
   HitSparkRenderer,
   hitSparkKey,
   HIT_SPARK_LIFETIME_FRAMES,
+  projectHitSparkSpriteLocalPosition,
   resolveHitSparkAssetRef,
   resolveHitSparkPresentation,
 } from "../game/render/HitSparkRenderer";
@@ -219,6 +220,26 @@ describe("HitSparkRenderer helpers", () => {
     });
   });
 
+  it("projects resolved spark sprites from SFF axis plus AIR frame offset", () => {
+    const local = projectHitSparkSpriteLocalPosition(
+      {
+        width: 32,
+        height: 24,
+        axisX: 10,
+        axisY: 18,
+      },
+      {
+        offsetX: 4,
+        offsetY: -2,
+      },
+      -1,
+      44,
+    );
+
+    expect(local.x).toBeCloseTo(-10 / 44, 3);
+    expect(local.y).toBeCloseTo(8 / 44, 3);
+  });
+
   it("preserves package-backed common and FightFX frames before synthetic system fallback", () => {
     const common = resolveHitSparkPresentation(
       actor,
@@ -432,8 +453,15 @@ describe("HitSparkRenderer helpers", () => {
     renderer.dispose();
   });
 
-  it("applies AIR frame offsets to resolved system spark sprites", async () => {
-    const provider = new RecordingSpriteProvider([sprite(14201, 0)]);
+  it("applies AIR frame offsets and SFF axis to resolved system spark sprites", async () => {
+    const provider = new RecordingSpriteProvider([
+      sprite(14201, 0, {
+        width: 32,
+        height: 24,
+        axisX: 10,
+        axisY: 18,
+      }),
+    ]);
     const renderer = new HitSparkRenderer(provider, fakeTextureStore());
     const sourceActor: ActorSnapshot = {
       ...actor,
@@ -472,8 +500,8 @@ describe("HitSparkRenderer helpers", () => {
 
     expect(spriteMesh.position.x).toBeLessThan(0);
     expect(spriteMesh.position.y).toBeGreaterThan(0);
-    expect(Math.abs(spriteMesh.position.x)).toBeCloseTo(12 / expectedSize, 3);
-    expect(spriteMesh.position.y).toBeCloseTo(6 / expectedSize, 3);
+    expect(Math.abs(spriteMesh.position.x)).toBeCloseTo(18 / expectedSize, 3);
+    expect(spriteMesh.position.y).toBeCloseTo(12 / expectedSize, 3);
     renderer.dispose();
   });
 });
@@ -494,7 +522,7 @@ class RecordingSpriteProvider implements SpriteProvider {
   }
 }
 
-function sprite(group: number, index: number): MugenSprite {
+function sprite(group: number, index: number, overrides: Partial<MugenSprite> = {}): MugenSprite {
   return {
     group,
     index,
@@ -502,6 +530,7 @@ function sprite(group: number, index: number): MugenSprite {
     height: 18,
     axisX: 9,
     axisY: 9,
+    ...overrides,
   };
 }
 

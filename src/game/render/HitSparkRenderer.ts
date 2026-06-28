@@ -159,11 +159,8 @@ export class HitSparkRenderer {
       spriteMesh.material.opacity = presentation.opacity;
       spriteMesh.material.needsUpdate = true;
       spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
-      spriteMesh.position.set(
-        (actor.runtime.facing * (presentation.assetFrame?.offsetX ?? 0)) / Math.max(1, presentation.size),
-        -(presentation.assetFrame?.offsetY ?? 0) / Math.max(1, presentation.size),
-        0.01,
-      );
+      const localPosition = projectHitSparkSpriteLocalPosition(sprite, presentation.assetFrame, actor.runtime.facing, presentation.size);
+      spriteMesh.position.set(localPosition.x, localPosition.y, 0.01);
       presentation.asset.lookupStatus = "resolved-sprite";
       presentation.asset.fallbackReason = `Resolved ${hitSparkAssetSourceLabel(presentation.asset.source)} spark frame into a sprite texture.`;
     } else if (spark.sprite) {
@@ -421,6 +418,21 @@ function hitSparkAssetSourceLabel(source: HitSparkAssetSource): string {
     return "FightFX";
   }
   return "unknown";
+}
+
+export function projectHitSparkSpriteLocalPosition(
+  sprite: Pick<MugenSprite, "width" | "height" | "axisX" | "axisY">,
+  frame: Pick<RuntimeHitEffectAssetFrame, "offsetX" | "offsetY"> | undefined,
+  facing: 1 | -1,
+  presentationSize: number,
+): { x: number; y: number } {
+  const size = Math.max(1, presentationSize);
+  const localX = (frame?.offsetX ?? 0) + sprite.width / 2 - sprite.axisX;
+  const localY = sprite.axisY - sprite.height / 2 - (frame?.offsetY ?? 0);
+  return {
+    x: (facing * localX) / size,
+    y: localY / size,
+  };
 }
 
 export function hitSparkKey(actor: ActorSnapshot, event: RuntimeHitEffectEvent, eventIndex = 0): string {
