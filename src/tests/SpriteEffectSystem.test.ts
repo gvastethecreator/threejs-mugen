@@ -3,6 +3,7 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   applyRuntimeAfterImageController,
   applyRuntimeAfterImageTimeController,
+  applyRuntimeAngleController,
   applyRuntimePaletteFxController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
@@ -161,6 +162,32 @@ describe("SpriteEffectSystem", () => {
       opacity: 0.65,
     });
     expect(state.renderOpacity).toBe(0.65);
+  });
+
+  it("applies bounded AngleSet, AngleAdd, and AngleDraw telemetry", () => {
+    const state = runtimeState();
+
+    applyRuntimeAngleController(state, controller("AngleSet", { value: "45" }));
+    expect(state.angle).toBe(45);
+    expect(state.renderAngle).toBeUndefined();
+
+    applyRuntimeAngleController(state, controller("AngleAdd", { value: "10" }));
+    expect(state.angle).toBe(55);
+
+    applyRuntimeAngleController(state, controller("AngleDraw", {}));
+    expect(state.renderAngle).toBe(55);
+
+    applyRuntimeAngleController(state, controller("AngleSet", { value: "9999" }), {
+      kind: "sprite-effect",
+      controllerType: "angleset",
+      angle: -30,
+    });
+    applyRuntimeAngleController(state, controller("AngleDraw", {}), {
+      kind: "sprite-effect",
+      controllerType: "angledraw",
+    });
+    expect(state.angle).toBe(-30);
+    expect(state.renderAngle).toBe(-30);
   });
 
   it("applies typed AfterImage and AfterImageTime operations before raw params", () => {

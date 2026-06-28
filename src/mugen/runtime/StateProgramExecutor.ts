@@ -9,6 +9,7 @@ export type StateProgramSideEffect =
   | "palfx"
   | "afterimage"
   | "afterimagetime"
+  | "angle"
   | "explod"
   | "removeexplod"
   | "helper"
@@ -68,6 +69,9 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   palfx: "palfx",
   afterimage: "afterimage",
   afterimagetime: "afterimagetime",
+  angleset: "angle",
+  angleadd: "angle",
+  angledraw: "angle",
   explod: "explod",
   removeexplod: "removeexplod",
   helper: "helper",

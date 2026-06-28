@@ -186,6 +186,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTransTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-angle",
+      required: true,
+      artifact: presets.createSyntheticImportedAngleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-envcolor",
       required: true,
       artifact: presets.createSyntheticImportedEnvColorTraceArtifact(),
@@ -1013,6 +1018,9 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:sprpriority",
     "sprite-effect:palfx",
     "sprite-effect:trans",
+    "sprite-effect:angleset",
+    "sprite-effect:angleadd",
+    "sprite-effect:angledraw",
     "envcolor",
     "sprite-effect:remappal",
     "sprite-effect:afterimage",
@@ -1059,6 +1067,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-sprpriority",
     "synthetic-imported-palfx",
     "synthetic-imported-trans",
+    "synthetic-imported-angle",
     "synthetic-imported-envcolor",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",

@@ -5,6 +5,11 @@ import type { CharacterRuntimeState, RuntimeAfterImageSample } from "./types";
 
 export type RuntimeAfterImageSampleFactory = () => RuntimeAfterImageSample | undefined;
 
+export type RuntimeAngleSpriteEffectOp =
+  | Extract<SpriteEffectControllerOp, { controllerType: "angleset" }>
+  | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
+  | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
+
 export function applyRuntimeSpritePriorityController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
@@ -131,6 +136,31 @@ export function applyRuntimeTransController(
   state.renderOpacity = operation?.opacity ?? parseTransOpacity(trans);
 }
 
+export function applyRuntimeAngleController(
+  state: CharacterRuntimeState,
+  controller: { type: string; params: Record<string, string> },
+  operation?: RuntimeAngleSpriteEffectOp,
+): void {
+  const type = operation?.controllerType ?? controller.type.toLowerCase();
+  if (type === "angleset") {
+    const angle = operation?.controllerType === "angleset" ? operation.angle : firstNumber(findControllerParam(controller, "value"));
+    if (angle !== undefined) {
+      state.angle = clampRenderAngle(angle);
+    }
+    return;
+  }
+  if (type === "angleadd") {
+    const delta = operation?.controllerType === "angleadd" ? operation.delta : firstNumber(findControllerParam(controller, "value"));
+    if (delta !== undefined) {
+      state.angle = clampRenderAngle((state.angle ?? 0) + delta);
+    }
+    return;
+  }
+  if (type === "angledraw") {
+    state.renderAngle = clampRenderAngle(state.angle ?? 0);
+  }
+}
+
 export function tickRuntimeAfterImage(
   state: CharacterRuntimeState,
   sampleFactory: RuntimeAfterImageSampleFactory,
@@ -250,6 +280,10 @@ function parseTransOpacity(value: string): number {
     return 0.65;
   }
   return 1;
+}
+
+function clampRenderAngle(value: number): number {
+  return Math.max(-720, Math.min(720, Math.round(value * 1000) / 1000));
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

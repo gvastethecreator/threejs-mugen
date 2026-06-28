@@ -18,7 +18,7 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import { evaluateExpression } from "./ExpressionEvaluator";
-import { applyRuntimeTransController } from "./SpriteEffectSystem";
+import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -186,6 +186,8 @@ export function executeControllerIr(
     applyRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"));
   } else if (type === "trans") {
     applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"));
+  } else if (type === "angleset" || type === "angleadd" || type === "angledraw") {
+    applyRuntimeAngleController(next, controller, spriteEffectOperation(controller, type));
   } else if (type === "posfreeze") {
     const operation = boundsOperation(controller, "posfreeze");
     const value = operation ? undefined : numberParam(controller, next, context, "value");
@@ -217,6 +219,9 @@ export function executeControllerIr(
     type === "palfx" ||
     type === "afterimage" ||
     type === "afterimagetime" ||
+    type === "angleset" ||
+    type === "angleadd" ||
+    type === "angledraw" ||
     type === "explod" ||
     type === "removeexplod" ||
     type === "helper" ||

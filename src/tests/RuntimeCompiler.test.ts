@@ -107,6 +107,8 @@ time = 20
     expect(getControllerSupport("Trans").level).toBe("partial");
     expect(isRuntimeExecutableController("EnvColor")).toBe(true);
     expect(getControllerSupport("EnvColor").level).toBe("partial");
+    expect(isRuntimeExecutableController("AngleDraw")).toBe(true);
+    expect(getControllerSupport("AngleDraw").runtimeLabel).toBe("sprite rotation");
   });
 
   it("compiles HitDef params into a typed controller operation", () => {
@@ -563,6 +565,18 @@ time = 20
       trans: "addalpha,128,128",
       opacity: 0.5,
     });
+  });
+
+  it("compiles static Angle controllers into typed sprite rotation operations", () => {
+    const angleSet = compileControllerIr(controller(200, "AngleSet", [], { value: "45" }));
+    const angleAdd = compileControllerIr(controller(200, "AngleAdd", [], { value: "10" }));
+    const angleDraw = compileControllerIr(controller(200, "AngleDraw", [], {}));
+    const dynamic = compileControllerIr(controller(200, "AngleSet", [], { value: "Const(data.life)" }));
+
+    expect(angleSet.operation).toEqual({ kind: "sprite-effect", controllerType: "angleset", angle: 45 });
+    expect(angleAdd.operation).toEqual({ kind: "sprite-effect", controllerType: "angleadd", delta: 10 });
+    expect(angleDraw.operation).toEqual({ kind: "sprite-effect", controllerType: "angledraw" });
+    expect(dynamic.operation).toBeUndefined();
   });
 
   it("compiles EnvColor controllers into typed stage flash operations", () => {

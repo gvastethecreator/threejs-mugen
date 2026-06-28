@@ -49,6 +49,8 @@ export type CharacterRuntimeState = {
   };
   renderOpacity?: number;
   renderScale?: { x: number; y: number };
+  angle?: number;
+  renderAngle?: number;
   animationSource?: "self" | "state-owner";
   customState?: RuntimeCustomState;
   assertSpecial?: RuntimeAssertSpecial;

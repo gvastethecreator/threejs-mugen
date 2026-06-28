@@ -67,8 +67,10 @@ import { dispatchStateProgramController, findControllerParam, isStateEntrySetupD
 import {
   applyRuntimeAfterImageController,
   applyRuntimeAfterImageTimeController,
+  applyRuntimeAngleController,
   applyRuntimePaletteFxController,
   applyRuntimeSpritePriorityController,
+  type RuntimeAngleSpriteEffectOp,
   tickRuntimeAfterImage,
   tickRuntimePaletteFx,
 } from "./SpriteEffectSystem";
@@ -768,6 +770,7 @@ function advanceFighter(
   tickHitOverrideSlots(fighter.runtime);
   advanceContactTimers(fighter);
   resetAssertSpecial(fighter.runtime);
+  fighter.runtime.renderAngle = undefined;
   fighter.stateElapsed += 1;
   fighter.runtime.playerPush = true;
   fighter.runtime.posFreeze = undefined;
@@ -1112,6 +1115,19 @@ function runActiveStateControllers(
           recordControllerOperation(fighter, operation);
         }
         applyAfterImageTimeController(fighter, rawController, operation);
+      } else if (dispatch.effect === "angle") {
+        recordControllerExecution(fighter, rawController);
+        const operation =
+          controller.operation?.kind === "sprite-effect" &&
+          (controller.operation.controllerType === "angleset" ||
+            controller.operation.controllerType === "angleadd" ||
+            controller.operation.controllerType === "angledraw")
+            ? controller.operation
+            : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        applyAngleController(fighter, rawController, operation);
       } else if (dispatch.effect === "explod") {
         recordControllerExecution(fighter, rawController);
         createExplod(fighter, opponent, rawController, controller.operation?.kind === "explod" ? controller.operation : undefined);
@@ -1248,6 +1264,14 @@ function applyAfterImageTimeController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
 ): void {
   applyRuntimeAfterImageTimeController(fighter.runtime, controller, operation);
+}
+
+function applyAngleController(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: RuntimeAngleSpriteEffectOp,
+): void {
+  applyRuntimeAngleController(fighter.runtime, controller, operation);
 }
 
 function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSample | undefined {

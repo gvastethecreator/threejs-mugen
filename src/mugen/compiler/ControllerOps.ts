@@ -285,6 +285,20 @@ export type SpriteEffectControllerOp =
       controllerType: "trans";
       trans: string;
       opacity: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "angleset";
+      angle: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "angleadd";
+      delta: number;
+    }
+  | {
+      kind: "sprite-effect";
+      controllerType: "angledraw";
     };
 
 export type ResourceControllerOp =
@@ -414,6 +428,15 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "trans") {
     return compileTransControllerOp(controller);
+  }
+  if (type === "angleset") {
+    return compileAngleSetControllerOp(controller);
+  }
+  if (type === "angleadd") {
+    return compileAngleAddControllerOp(controller);
+  }
+  if (type === "angledraw") {
+    return { kind: "sprite-effect", controllerType: "angledraw" };
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -679,6 +702,30 @@ function compileTransControllerOp(controller: MugenStateController): SpriteEffec
     controllerType: "trans",
     trans,
     opacity: normalizeTransOpacity(trans),
+  };
+}
+
+function compileAngleSetControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const angle = firstNumber(findParam(controller, "value"));
+  if (angle === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "angleset",
+    angle: clampRenderAngle(angle),
+  };
+}
+
+function compileAngleAddControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const delta = firstNumber(findParam(controller, "value"));
+  if (delta === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "angleadd",
+    delta: clampRenderAngle(delta),
   };
 }
 
@@ -1328,6 +1375,10 @@ function clampAfterImageLength(value: number): number {
 
 function clampAfterImageGap(value: number): number {
   return Math.max(1, Math.min(30, Math.round(value)));
+}
+
+function clampRenderAngle(value: number): number {
+  return Math.max(-720, Math.min(720, Math.round(value * 1000) / 1000));
 }
 
 function normalizeAfterImageOpacity(value: string | undefined): number {

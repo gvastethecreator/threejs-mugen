@@ -55,6 +55,7 @@ export type RuntimeTraceActor = {
   vel: { x: number; y: number };
   renderOpacity?: number;
   renderScale?: { x: number; y: number };
+  renderAngle?: number;
   bodyWidth?: { front: number; back: number };
   playerPush?: boolean;
   spritePriority?: number;
@@ -462,6 +463,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleYAtMost?: number;
   observedOpacityAtLeast?: number;
   observedOpacityAtMost?: number;
+  observedAngleAtLeast?: number;
+  observedAngleAtMost?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -514,6 +517,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxScale: { x: number; y: number };
   minOpacity: number;
   maxOpacity: number;
+  minAngle: number;
+  maxAngle: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -1115,6 +1120,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               },
               minOpacity: Math.min(existing.minOpacity, actor.renderOpacity ?? 1),
               maxOpacity: Math.max(existing.maxOpacity, actor.renderOpacity ?? 1),
+              minAngle: Math.min(existing.minAngle, actor.renderAngle ?? 0),
+              maxAngle: Math.max(existing.maxAngle, actor.renderAngle ?? 0),
             }
           : {
               actorId: actor.id,
@@ -1138,6 +1145,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               minOpacity: actor.renderOpacity ?? 1,
               maxOpacity: actor.renderOpacity ?? 1,
+              minAngle: actor.renderAngle ?? 0,
+              maxAngle: actor.renderAngle ?? 0,
               bodyWidthFront: actor.bodyWidth?.front,
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
@@ -1946,6 +1955,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
     actor.renderOpacity === undefined ? "op*" : `op${actor.renderOpacity}`,
+    actor.renderAngle === undefined ? "ang*" : `ang${actor.renderAngle}`,
     actor.paletteFx === undefined
       ? "pf*"
       : `pf${actor.paletteFx.time}:${actor.paletteFx.add.join(",")}:${actor.paletteFx.mul.join(",")}:${actor.paletteFx.color}:${actor.paletteFx.invert ? 1 : 0}`,
@@ -1980,6 +1990,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
     `op${actor.minOpacity}:${actor.maxOpacity}`,
+    `ang${actor.minAngle}:${actor.maxAngle}`,
     actor.paletteFxTime === undefined
       ? "pf*"
       : `pf${actor.paletteFxTime}:${actor.paletteFxAddR},${actor.paletteFxAddG},${actor.paletteFxAddB}:${actor.paletteFxMulR},${actor.paletteFxMulG},${actor.paletteFxMulB}:${actor.paletteFxColor}:${actor.paletteFxInvert ? 1 : 0}`,
@@ -2029,6 +2040,8 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
     (requirement.observedOpacityAtLeast === undefined || actor.maxOpacity >= requirement.observedOpacityAtLeast) &&
     (requirement.observedOpacityAtMost === undefined || actor.minOpacity <= requirement.observedOpacityAtMost) &&
+    (requirement.observedAngleAtLeast === undefined || actor.maxAngle >= requirement.observedAngleAtLeast) &&
+    (requirement.observedAngleAtMost === undefined || actor.minAngle <= requirement.observedAngleAtMost) &&
     (requirement.bodyWidthFront === undefined || sameTraceNumber(actor.bodyWidthFront ?? NaN, requirement.bodyWidthFront)) &&
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&
@@ -2327,6 +2340,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
         }
       : undefined,
     renderOpacity: actor.runtime.renderOpacity === undefined ? undefined : roundTraceNumber(actor.runtime.renderOpacity),
+    renderAngle: actor.runtime.renderAngle === undefined ? undefined : roundTraceNumber(actor.runtime.renderAngle),
     bodyWidth: actor.runtime.bodyWidth
       ? {
           front: roundTraceNumber(actor.runtime.bodyWidth.front),

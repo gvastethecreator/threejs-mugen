@@ -1267,6 +1267,58 @@ export function createSyntheticImportedTransTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedAngleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-angle",
+    displayName: "Synthetic Imported Angle",
+    withAngle: {
+      set: 45,
+      add: 10,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-angle-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-angle-golden",
+      label: "Synthetic imported AngleDraw route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AngleSet/AngleAdd/AngleDraw trace proves static angle controllers lower into typed sprite-effect operation evidence and reach bounded render-angle telemetry consumed by Three.js. It does not claim exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or dynamic expression parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-angle-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AngleSet", "AngleAdd", "AngleDraw", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:angleset", "sprite-effect:angleadd", "sprite-effect:angledraw", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedAngleAtLeast: 55,
+            observedAngleAtMost: 55,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -5608,6 +5660,10 @@ export type SyntheticImportedTraceFighterOptions = {
     invert?: boolean;
   };
   withTrans?: string;
+  withAngle?: {
+    set?: number;
+    add?: number;
+  };
   withEnvColor?: {
     value?: [number, number, number];
     time?: number;
@@ -5762,6 +5818,7 @@ ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
+${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
@@ -6313,6 +6370,24 @@ function transControllerBlock(trans: string): string {
 type = Trans
 trigger1 = Time >= 0
 trans = ${trans}
+`;
+}
+
+function angleControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withAngle"]>): string {
+  return `
+[State 200, AngleSet Probe]
+type = AngleSet
+trigger1 = Time >= 0
+value = ${options.set ?? 0}
+
+[State 200, AngleAdd Probe]
+type = AngleAdd
+trigger1 = Time >= 0
+value = ${options.add ?? 0}
+
+[State 200, AngleDraw Probe]
+type = AngleDraw
+trigger1 = Time >= 0
 `;
 }
 

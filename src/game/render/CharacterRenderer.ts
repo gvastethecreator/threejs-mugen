@@ -61,6 +61,7 @@ export class CharacterRenderer {
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
       mesh.position.z = 1 + Math.max(-5, Math.min(10, priority)) * 0.05 + orderBias;
+      mesh.rotation.z = THREE.MathUtils.degToRad(-(actor.runtime.renderAngle ?? 0));
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
     }
   }
@@ -110,6 +111,7 @@ export class CharacterRenderer {
       mesh.position.x = projected.x;
       mesh.position.y = projected.y;
       mesh.position.z = 0.78 + Math.max(-5, Math.min(10, priority)) * 0.05 - index * 0.012;
+      mesh.rotation.z = 0;
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
     }
   }

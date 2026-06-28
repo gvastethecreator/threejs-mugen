@@ -56,6 +56,7 @@ import {
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedPalFxTraceArtifact,
   createSyntheticImportedTransTraceArtifact,
+  createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
@@ -1132,6 +1133,53 @@ describe("RuntimeTraceGatePresets", () => {
         actorKind: "player",
         animNo: 200,
         observedOpacityAtMost: 0.5,
+        minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported AngleDraw artifact with typed sprite rotation evidence", () => {
+    const artifact = createSyntheticImportedAngleTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-angle-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-angle-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AngleSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AngleAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AngleDraw).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angleadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angledraw"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          animNo: 200,
+          minAngle: 55,
+          maxAngle: 55,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        animNo: 200,
+        observedAngleAtLeast: 55,
+        observedAngleAtMost: 55,
         minFrames: 1,
       },
     ]);
