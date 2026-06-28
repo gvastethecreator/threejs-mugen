@@ -112,6 +112,7 @@ import {
   createSyntheticImportedVariableTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
   createSyntheticImportedRoundKoTraceArtifact,
+  createSyntheticImportedRoundTimeOverTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
@@ -980,6 +981,41 @@ describe("RuntimeTraceGatePresets", () => {
       { state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" },
     ]);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.life).toBe(0);
+  });
+
+  it("creates a synthetic imported round time-over artifact with RoundSnapshot evidence", () => {
+    const artifact = createSyntheticImportedRoundTimeOverTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-round-timeover-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-round-timeover-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(expect.arrayContaining(["imported", "demo"]));
+    expect(evidence?.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          state: "timeover",
+          winner: "Draw",
+          message: "Time over - draw",
+          minTimer: 0,
+          maxTimer: 0,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredRoundFrames).toEqual([
+      { state: "timeover", winner: "Draw", message: "Time over - draw", observedTimerAtMost: 0 },
+    ]);
   });
 
   it("creates a synthetic imported RoundsExisted/MatchOver artifact with match-context branch evidence", () => {

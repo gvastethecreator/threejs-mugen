@@ -706,6 +706,39 @@ export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedRoundTimeOverTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-round-timeover",
+    displayName: "Synthetic Imported Round Time Over",
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedRoundTimeOverScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage, roundTimerFrames: 1 }), script, {
+    label: "synthetic-imported-round-timeover-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-round-timeover-golden",
+      label: "Synthetic imported round time-over snapshot route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported round time-over trace proves RuntimeTrace can gate bounded RoundSnapshot time-over/draw evidence with a short timer. It does not claim exact MUGEN/IKEMEN round transitions, lifebars, intros/winposes, teams, timer speed, or screenpack parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-round-timeover-golden",
+        requiredActorSources: ["imported", "demo"],
+        requiredActorKinds: ["player"],
+        requiredRoundFrames: [{ state: "timeover", winner: "Draw", message: "Time over - draw", observedTimerAtMost: 0 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedMatchContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -6983,6 +7016,10 @@ export function importedDelayedXScript(): RuntimeTraceInputFrame[] {
     { label: "stage-time-x", frames: 1, p1: ["x"], p2: [] },
     { label: "stage-time-settle", frames: 1, p1: [], p2: [] },
   ]);
+}
+
+export function importedRoundTimeOverScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([{ label: "round-timeover-wait", frames: 2, p1: [], p2: [] }]);
 }
 
 export function importedAssertSpecialControlScript(): RuntimeTraceInputFrame[] {

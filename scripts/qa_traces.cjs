@@ -151,6 +151,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRoundKoTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-round-timeover",
+      required: true,
+      artifact: presets.createSyntheticImportedRoundTimeOverTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-match-context",
       required: true,
       artifact: presets.createSyntheticImportedMatchContextTraceArtifact(),
@@ -1040,6 +1045,7 @@ function createTraceCoverage(entries, skipped) {
       soundEventTypes: 0,
       envShakeEventRoutes: 0,
       worldLifecycleRoutes: 0,
+      roundFrameRoutes: 0,
       targetLinkRoutes: 0,
       effectStoreRoutes: 0,
       effectPayloadKinds: 0,
@@ -1056,6 +1062,7 @@ function createTraceCoverage(entries, skipped) {
     matchPauseFreezes: {},
     matchPauseAdvances: {},
     worldLifecycle: {},
+    roundFrames: {},
     targetLinks: {
       artifacts: [],
       requiredArtifacts: [],
@@ -1106,6 +1113,9 @@ function createTraceCoverage(entries, skipped) {
       }
       for (const event of evidence.worldLifecycleEvents ?? []) {
         addCoverageEntry(coverage.worldLifecycle, `${event.kind}:${event.type}`, context);
+      }
+      for (const round of evidence.roundFrames ?? []) {
+        addCoverageEntry(coverage.roundFrames, round.state, context, { frames: round.frames });
       }
 
       if (evidence.targetLinks?.length) {
@@ -1160,6 +1170,7 @@ function createTraceCoverage(entries, skipped) {
   coverage.summary.soundEventTypes = Object.keys(coverage.soundEvents).length;
   coverage.summary.envShakeEventRoutes = Object.keys(coverage.envShakeEvents).length;
   coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
+  coverage.summary.roundFrameRoutes = Object.keys(coverage.roundFrames).length;
   coverage.summary.targetLinkRoutes = coverage.targetLinks.artifacts.length;
   coverage.summary.effectStoreRoutes = coverage.effectStores.artifacts.length;
   coverage.summary.effectPayloadKinds = Object.keys(coverage.effectPayloads).length;
@@ -1286,6 +1297,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",
+    "synthetic-imported-round-timeover",
     "synthetic-imported-match-context",
     "synthetic-imported-resource-max",
     "synthetic-imported-hitdefattr",
@@ -1333,6 +1345,7 @@ function validateTraceCoverage(coverage) {
       Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.soundEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.envShakeEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.roundFrames).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseFreezes).some((entry) => entry.requiredArtifacts.includes(name));
     if (!hasArtifact) {

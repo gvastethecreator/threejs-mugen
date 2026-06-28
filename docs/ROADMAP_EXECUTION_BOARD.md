@@ -56,7 +56,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 Build next:
 
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
-- Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` uses `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO state, winner, message, timer evidence, and final defender life `0`. Current trace aggregate: 144/144 artifacts passed, 127 required and 17 optional.
+- Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence. Current trace aggregate: 145/145 artifacts passed, 128 required and 17 optional.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, pause, or audio.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 

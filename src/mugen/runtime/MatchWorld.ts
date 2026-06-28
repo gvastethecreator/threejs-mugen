@@ -31,6 +31,7 @@ export type MatchWorldOptions = {
   p1?: DemoFighterDefinition;
   p2?: DemoFighterDefinition;
   stage?: MugenStageDefinition;
+  roundTimerFrames?: number;
 };
 
 export type MatchWorldActorRecord = {
@@ -84,7 +85,7 @@ export class MatchWorld {
       options.p1 ?? demoFighters[0]!,
       options.p2 ?? demoFighters[1]!,
       options.stage ?? trainingStage,
-      { effectActorWorld: this.effectActorWorld, targetWorld: this.targetWorld },
+      { effectActorWorld: this.effectActorWorld, targetWorld: this.targetWorld, roundTimerFrames: options.roundTimerFrames },
     );
     this.actorRegistry = this.refreshActorRegistry(this.runtime.getSnapshot(), true);
   }

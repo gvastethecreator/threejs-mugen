@@ -136,6 +136,7 @@ export type PlayableMatchRuntimeOptions = {
   effectActorWorld?: RuntimeEffectActorWorld;
   effectActorStores?: RuntimeEffectActorStores;
   targetWorld?: RuntimeTargetWorld;
+  roundTimerFrames?: number;
 };
 
 type FighterMatchState = {
@@ -197,7 +198,8 @@ export class PlayableMatchRuntime {
   private frameClock = 0;
   private playing = true;
   private speed = 1;
-  private readonly round = new RuntimeRoundSystem();
+  private readonly round: RuntimeRoundSystem;
+  private readonly roundTimerFrames?: number;
   private readonly logs: string[] = [];
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
@@ -220,6 +222,8 @@ export class PlayableMatchRuntime {
     options: PlayableMatchRuntimeOptions = {},
   ) {
     this.stage = stage;
+    this.roundTimerFrames = options.roundTimerFrames;
+    this.round = new RuntimeRoundSystem(options.roundTimerFrames);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
     this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
     this.p1 = createFighterState(
@@ -482,7 +486,7 @@ export class PlayableMatchRuntime {
   reset(): void {
     this.tick = 0;
     this.frameClock = 0;
-    this.round.reset();
+    this.round.reset(this.roundTimerFrames);
     this.playing = true;
     this.matchPause = undefined;
     this.envColorEvents.length = 0;

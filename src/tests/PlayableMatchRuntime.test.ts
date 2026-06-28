@@ -19,6 +19,28 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.playing).toBe(true);
   });
 
+  it("preserves configured round timer fixtures across reset", () => {
+    const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!, trainingStage, { roundTimerFrames: 1 });
+
+    let snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.round).toMatchObject({
+      state: "timeover",
+      timer: 0,
+      winner: "Draw",
+      message: "Time over - draw",
+    });
+    expect(snapshot.playing).toBe(false);
+
+    runtime.dispatch({ type: "reset" });
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    expect(snapshot.round).toMatchObject({
+      state: "timeover",
+      timer: 0,
+      winner: "Draw",
+      message: "Time over - draw",
+    });
+  });
+
   it("keeps the match paused during normal loop steps but supports forced frame stepping", () => {
     const runtime = new PlayableMatchRuntime(demoFighters[0]!, demoFighters[1]!);
     const paused = runtime.dispatch({ type: "set-playing", playing: false });
