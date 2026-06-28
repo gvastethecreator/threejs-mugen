@@ -1,6 +1,6 @@
 import type { CollisionBox } from "../../mugen/model/CollisionBox";
 import type { MugenSprite } from "../../mugen/model/MugenSprite";
-import type { ActorSnapshot } from "../../mugen/runtime/types";
+import type { ActorSnapshot, RuntimeHitEffectEvent } from "../../mugen/runtime/types";
 
 export type ProjectedRect = {
   x: number;
@@ -48,5 +48,14 @@ export function projectCollisionBox(actor: ActorSnapshot, box: CollisionBox): Pr
     y,
     width: Math.max(1, Math.abs(right - left)),
     height: Math.max(1, Math.abs(top - bottom)),
+  };
+}
+
+export function projectHitSpark(actor: ActorSnapshot, event: RuntimeHitEffectEvent): { x: number; y: number } {
+  const offset = event.offset ?? { x: 0, y: -64 };
+  const scale = actor.runtime.renderScale ?? { x: 1, y: 1 };
+  return {
+    x: actor.runtime.pos.x + actor.runtime.facing * offset.x * scale.x,
+    y: -actor.runtime.pos.y - offset.y * scale.y,
   };
 }

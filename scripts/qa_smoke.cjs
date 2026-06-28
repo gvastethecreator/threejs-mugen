@@ -237,9 +237,9 @@ async function captureRuntime(page, baseUrl, options) {
   await page.setViewportSize(options.viewport);
   await page.goto(`${baseUrl}${runtimeRoute}`, { waitUntil: "networkidle" });
   await waitForBridge(page);
-  await page.waitForTimeout(500);
-  await page.keyboard.press("KeyA");
-  await page.waitForTimeout(250);
+  await warmRuntimeRenderer(page);
+  await driveRuntimeHitSpark(page);
+  await page.waitForTimeout(80);
   await page.screenshot({ path: options.screenshotPath, fullPage: true });
   const canvasPng = await page.locator("canvas").first().screenshot({ path: options.canvasPath });
   const canvasPixels = await getCanvasPixelStats(page, canvasPng);
@@ -272,8 +272,20 @@ async function captureRuntime(page, baseUrl, options) {
           stateNo: actor.runtime.stateNo,
           animNo: actor.runtime.animNo,
           life: actor.runtime.life,
+          hitEffects: actor.hitEffectEvents?.length ?? 0,
         })),
         renderer: bridge?.renderer,
+        activeHitSparks: bridge?.renderer?.hitSparks?.active ?? 0,
+        recentHitEffects:
+          bridge?.snapshot?.actors?.flatMap((actor) =>
+            (actor.hitEffectEvents ?? []).map((event) => ({
+              actorId: actor.id,
+              kind: event.kind,
+              sparkNo: event.sparkNo,
+              runtimeTick: event.runtimeTick,
+              age: event.runtimeTick === undefined ? undefined : (bridge.snapshot?.tick ?? 0) - event.runtimeTick,
+            })),
+          ) ?? [],
         runtimeRosterCount: bridge?.runtimeRoster?.length ?? 0,
         selectedRosterAtlasStatuses:
           bridge?.runtimeRoster
@@ -285,6 +297,37 @@ async function captureRuntime(page, baseUrl, options) {
     },
     { canvasPixels, label: options.label },
   );
+}
+
+async function warmRuntimeRenderer(page) {
+  await page
+    .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.render?.calls ?? 0) > 0, null, { timeout: 3000 })
+    .catch(() => undefined);
+  await page.waitForTimeout(180);
+  const reset = page.locator('[data-action="reset-round"]').first();
+  if ((await reset.count()) > 0) {
+    await reset.click();
+  }
+  await page.waitForTimeout(120);
+}
+
+async function driveRuntimeHitSpark(page) {
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(760);
+  await page.keyboard.up("ArrowRight");
+
+  const attacks = ["KeyZ", "KeyA", "KeyZ"];
+  for (const attack of attacks) {
+    await page.keyboard.press(attack);
+    const active = await page
+      .waitForFunction(() => (window.__MUGEN_WEB_SANDBOX__?.renderer?.hitSparks?.active ?? 0) > 0, null, { timeout: 1400 })
+      .then(() => true)
+      .catch(() => false);
+    if (active) {
+      return;
+    }
+    await page.waitForTimeout(220);
+  }
 }
 
 async function captureStudioWorkbench(page, baseUrl, outDir) {
@@ -1364,6 +1407,9 @@ function assertSmoke(diagnostics) {
     if (runtime.actorRegistryEffectStores < 2 || !runtime.actorRegistryEffectStoreOwners.includes("p1")) {
       failures.push(`${runtime.label}: actor registry effect stores were missing`);
     }
+    if (runtime.activeHitSparks < 1) {
+      failures.push(`${runtime.label}: native hit spark renderer did not expose an active spark after KeyA`);
+    }
     const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
       (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
     );
@@ -1810,10 +1856,12 @@ function summarizeDiagnostics(diagnostics) {
     runtimeDesktop: {
       actors: diagnostics.checks.runtimeDesktop.actorCount,
       uniqueColors: diagnostics.checks.runtimeDesktop.canvasPixels.uniqueColors,
+      hitSparks: diagnostics.checks.runtimeDesktop.activeHitSparks,
     },
     runtimeMobile: {
       actors: diagnostics.checks.runtimeMobile.actorCount,
       uniqueColors: diagnostics.checks.runtimeMobile.canvasPixels.uniqueColors,
+      hitSparks: diagnostics.checks.runtimeMobile.activeHitSparks,
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,

@@ -88,6 +88,7 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
+- Last audited: 2026-06-28 during the roadmap-control/setup-project pass.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.

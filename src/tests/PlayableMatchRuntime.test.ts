@@ -104,6 +104,13 @@ describe("PlayableMatchRuntime", () => {
 
     expect(snapshot.actors[1]!.runtime.life).toBeLessThan(lifeBefore);
     expect(snapshot.logs.some((line) => line.includes("hit"))).toBe(true);
+    expect(snapshot.actors[0]?.hitEffectEvents?.[0]).toMatchObject({
+      type: "HitSpark",
+      kind: "hit",
+      sparkNo: 7002,
+      raw: "S7002",
+      offset: { x: 48, y: -44 },
+    });
   });
 
   it("uses imported CMD State -1 entries to enter CNS attack states", () => {

@@ -1610,6 +1610,7 @@ export class App {
     if (!this.renderBusy) {
       this.renderBusy = true;
       void this.renderer.render(this.getRenderableSnapshot()).finally(() => {
+        this.installDiagnosticsBridge();
         this.renderBusy = false;
       });
     }

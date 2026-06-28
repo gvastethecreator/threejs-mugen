@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { projectCollisionBox, projectSprite } from "../game/render/projection";
+import { projectCollisionBox, projectHitSpark, projectSprite } from "../game/render/projection";
 import type { ActorSnapshot } from "../mugen/runtime/types";
 
 const actor: ActorSnapshot = {
@@ -87,5 +87,25 @@ describe("projection", () => {
       width: 80,
       height: 40,
     });
+  });
+
+  it("projects HitDef spark offsets with actor facing and render scale", () => {
+    expect(projectHitSpark(actor, { type: "HitSpark", kind: "hit", offset: { x: 10, y: -72 }, stateNo: 200, tick: 1 })).toEqual({
+      x: 110,
+      y: 72,
+    });
+    expect(
+      projectHitSpark(
+        {
+          ...actor,
+          runtime: {
+            ...actor.runtime,
+            facing: -1,
+            renderScale: { x: 2, y: 0.5 },
+          },
+        },
+        { type: "HitSpark", kind: "guard", offset: { x: 12, y: -64 }, stateNo: 200, tick: 1 },
+      ),
+    ).toEqual({ x: 76, y: 32 });
   });
 });

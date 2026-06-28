@@ -5,6 +5,7 @@ import type { MugenSnapshot } from "../../mugen/runtime/types";
 import { AxisRenderer } from "./AxisRenderer";
 import { CharacterRenderer } from "./CharacterRenderer";
 import { CollisionBoxRenderer } from "./CollisionBoxRenderer";
+import { HitSparkRenderer } from "./HitSparkRenderer";
 import { TextureStore } from "./TextureStore";
 import type { MugenRenderer } from "./types";
 
@@ -16,6 +17,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   private readonly textures = new TextureStore();
   private readonly axis = new AxisRenderer(this.textures);
   private readonly boxes = new CollisionBoxRenderer();
+  private readonly hitSparks = new HitSparkRenderer();
   private readonly characters: CharacterRenderer;
   private readonly pauseOverlayMaterial = new THREE.MeshBasicMaterial({
     color: 0x05070c,
@@ -43,6 +45,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.renderer.setClearColor(0x000000, 0);
     this.scene.add(this.axis.group);
     this.scene.add(this.characters.group);
+    this.scene.add(this.hitSparks.group);
     this.scene.add(this.boxes.group);
     this.pauseOverlay.visible = false;
     this.pauseOverlay.renderOrder = 1000;
@@ -79,6 +82,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     });
     const effects = snapshot.effects ?? [];
     await this.characters.update([...snapshot.actors, ...effects]);
+    this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
     const collisionActors = [...snapshot.actors, ...effects.filter((effect) => effect.clsn1.length > 0 || effect.clsn2.length > 0)];
     this.boxes.update(collisionActors, {
       showClsn1: snapshot.showClsn1,
@@ -135,6 +139,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     pixelRatio: number;
     render: { calls: number; triangles: number; points: number; lines: number };
     memory: { geometries: number; textures: number };
+    hitSparks: { active: number };
   } {
     return {
       size: this.size,
@@ -149,6 +154,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
         geometries: this.renderer.info.memory.geometries,
         textures: this.renderer.info.memory.textures,
       },
+      hitSparks: {
+        active: this.hitSparks.getActiveCount(),
+      },
     };
   }
 
@@ -156,6 +164,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.resizeObserver?.disconnect();
     this.axis.dispose();
     this.boxes.dispose();
+    this.hitSparks.dispose();
     this.characters.dispose();
     this.pauseOverlay.geometry.dispose();
     this.pauseOverlayMaterial.dispose();
