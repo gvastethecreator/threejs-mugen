@@ -18,6 +18,13 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import { evaluateExpression } from "./ExpressionEvaluator";
+import {
+  applyRuntimeLifeAdd,
+  applyRuntimeResourceController,
+  applyRuntimeVariableAssignment,
+  applyRuntimeVariableRangeAssignment,
+  type RuntimeVariableAssignment,
+} from "./RuntimeResourceSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -126,31 +133,36 @@ export function executeControllerIr(
     next.vel = { ...next.vel, y: next.vel.y + (operation?.y ?? 0.55) };
   } else if (type === "ctrlset") {
     const operation = resourceOperation(controller, "ctrlset");
-    next.ctrl = operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0;
+    applyRuntimeResourceController(next, {
+      kind: "resource",
+      controllerType: "ctrlset",
+      value: operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0,
+    });
   } else if (type === "statetypeset") {
     applyStateTypeSet(next, controller, metadataOperation(controller, "statetypeset"));
   } else if (type === "lifeadd") {
     const operation = resourceOperation(controller, "lifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
     const kill = operation?.kill ?? ((numberParam(controller, next, context, "kill") ?? 1) !== 0);
-    next.life =
-      value < 0
-        ? applyRuntimeDamage(next.life, Math.abs(value), canRuntimeDamageKill(next, kill))
-        : Math.max(0, next.life + value);
+    applyRuntimeLifeAdd(next, value, kill);
   } else if (type === "lifeset") {
     const operation = resourceOperation(controller, "lifeset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
-      next.life = Math.max(0, value);
+      applyRuntimeResourceController(next, { kind: "resource", controllerType: "lifeset", value });
     }
   } else if (type === "poweradd") {
     const operation = resourceOperation(controller, "poweradd");
-    next.power = Math.max(0, next.power + (operation?.value ?? numberParam(controller, next, context, "value") ?? 0));
+    applyRuntimeResourceController(next, {
+      kind: "resource",
+      controllerType: "poweradd",
+      value: operation?.value ?? numberParam(controller, next, context, "value") ?? 0,
+    });
   } else if (type === "powerset") {
     const operation = resourceOperation(controller, "powerset");
     const value = operation?.value ?? numberParam(controller, next, context, "value");
     if (value !== undefined) {
-      next.power = Math.max(0, value);
+      applyRuntimeResourceController(next, { kind: "resource", controllerType: "powerset", value });
     }
   } else if (type === "varset" || type === "varadd") {
     applyVariableController(next, controller, context, type === "varadd", variableOperation(controller, type));
@@ -458,24 +470,19 @@ function applyVariableController(
   operation?: Extract<VariableControllerOp, { controllerType: "varset" | "varadd" }>,
 ): void {
   const assignment = operation
-    ? { kind: operation.variableType, index: operation.index, value: operation.value }
+    ? { variableType: operation.variableType, index: operation.index, value: operation.value }
     : variableAssignmentParam(controller, state, context);
-  const target =
-    assignment?.kind === "sysvar"
-      ? (state.sysvars ??= [])
-      : assignment?.kind === "fvar" ||
-          operation?.variableType === "fvar" ||
-          findParam(controller, "fv") !== undefined ||
-          findParam(controller, "fvar") !== undefined
-        ? state.fvars
-        : state.vars;
+  const variableType =
+    assignment?.variableType ??
+    (operation?.variableType === "fvar" || findParam(controller, "fv") !== undefined || findParam(controller, "fvar") !== undefined
+      ? "fvar"
+      : "var");
   const index = assignment?.index ?? numberParam(controller, state, context, "v", "var", "fv", "fvar");
   const value = assignment?.value ?? numberParam(controller, state, context, "value");
   if (index === undefined || value === undefined || index < 0) {
     return;
   }
-  const current = target[index] ?? 0;
-  target[index] = additive ? current + value : value;
+  applyRuntimeVariableAssignment(state, { variableType, index, value }, additive);
 }
 
 function applyVariableRangeSet(
@@ -485,7 +492,6 @@ function applyVariableRangeSet(
   operation?: Extract<VariableControllerOp, { controllerType: "varrangeset" }>,
 ): void {
   const isFloat = operation?.variableType === "fvar" || findParam(controller, "fvalue") !== undefined;
-  const target = isFloat ? state.fvars : state.vars;
   const value = operation?.value ?? numberParam(controller, state, context, isFloat ? "fvalue" : "value");
   if (value === undefined) {
     return;
@@ -493,11 +499,7 @@ function applyVariableRangeSet(
   const maxIndex = isFloat ? 39 : 59;
   const first = clampIndex(Math.round(operation?.first ?? numberParam(controller, state, context, "first") ?? 0), maxIndex);
   const last = clampIndex(Math.round(operation?.last ?? numberParam(controller, state, context, "last") ?? maxIndex), maxIndex);
-  const start = Math.min(first, last);
-  const end = Math.max(first, last);
-  for (let index = start; index <= end; index += 1) {
-    target[index] = value;
-  }
+  applyRuntimeVariableRangeAssignment(state, { variableType: isFloat ? "fvar" : "var", first, last, value });
 }
 
 function applyHitByController(
@@ -648,7 +650,7 @@ function variableAssignmentParam(
   controller: ControllerExecutionSource,
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext,
-): { kind: "var" | "fvar" | "sysvar"; index: number; value: number } | undefined {
+): RuntimeVariableAssignment | undefined {
   for (const [key, rawValue] of Object.entries(controller.params)) {
     const match = /^(sysvar|f?var)\((\d+)\)$/i.exec(key.trim());
     if (!match) {
@@ -659,7 +661,7 @@ function variableAssignmentParam(
       continue;
     }
     return {
-      kind: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
+      variableType: match[1]?.toLowerCase() === "sysvar" ? "sysvar" : match[1]?.toLowerCase() === "fvar" ? "fvar" : "var",
       index: Number(match[2]),
       value,
     };
