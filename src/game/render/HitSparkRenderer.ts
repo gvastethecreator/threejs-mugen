@@ -331,6 +331,10 @@ function resolveHitSparkPresentationFrame(
   if (asset.actionId === undefined) {
     return undefined;
   }
+  const matchingFrames = event.assetFrames?.filter((frame) => isMatchingAssetFrame(frame, asset.source, asset.actionId)) ?? [];
+  if (matchingFrames.length > 0) {
+    return selectTimedAssetFrame(matchingFrames, age);
+  }
   if (asset.source === "player") {
     return isMatchingAssetFrame(event.assetFrame, asset.source, asset.actionId) ? event.assetFrame : undefined;
   }
@@ -351,6 +355,26 @@ function resolveHitSparkPresentationFrame(
     };
   }
   return undefined;
+}
+
+function selectTimedAssetFrame(frames: RuntimeHitEffectAssetFrame[], age: number): RuntimeHitEffectAssetFrame {
+  const totalDuration = frames.reduce((total, frame) => total + normalizeAssetFrameDuration(frame.duration), 0);
+  let cursor = totalDuration > 0 ? age % totalDuration : 0;
+  for (const frame of frames) {
+    const duration = normalizeAssetFrameDuration(frame.duration);
+    if (cursor < duration) {
+      return frame;
+    }
+    cursor -= duration;
+  }
+  return frames[frames.length - 1]!;
+}
+
+function normalizeAssetFrameDuration(duration: number): number {
+  if (!Number.isFinite(duration) || duration <= 0) {
+    return HIT_SPARK_SYSTEM_FRAME_DURATION;
+  }
+  return Math.max(1, Math.round(duration));
 }
 
 function isMatchingAssetFrame(

@@ -364,6 +364,73 @@ describe("HitSparkRenderer helpers", () => {
     ]);
     renderer.dispose();
   });
+
+  it("advances package-backed system spark frames by AIR frame duration", async () => {
+    const provider = new RecordingSpriteProvider([
+      sprite(14201, 0),
+      sprite(14201, 1),
+    ]);
+    const renderer = new HitSparkRenderer(provider, fakeTextureStore());
+    const sourceActor: ActorSnapshot = {
+      ...actor,
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7001,
+          raw: "7001",
+          stateNo: 200,
+          tick: 1,
+          runtimeTick: 10,
+          assetFrame: {
+            source: "common",
+            actionId: 7001,
+            frameIndex: 0,
+            spriteGroup: 14201,
+            spriteIndex: 0,
+            offsetX: 0,
+            offsetY: 0,
+            duration: 3,
+          },
+          assetFrames: [
+            {
+              source: "common",
+              actionId: 7001,
+              frameIndex: 0,
+              spriteGroup: 14201,
+              spriteIndex: 0,
+              offsetX: 0,
+              offsetY: 0,
+              duration: 3,
+            },
+            {
+              source: "common",
+              actionId: 7001,
+              frameIndex: 1,
+              spriteGroup: 14201,
+              spriteIndex: 1,
+              offsetX: 0,
+              offsetY: 0,
+              duration: 5,
+            },
+          ],
+        },
+      ],
+    };
+
+    await renderer.update([sourceActor], 11);
+    await renderer.update([sourceActor], 14);
+
+    expect(provider.lookups).toEqual([
+      { group: 14201, index: 0, ownerId: undefined },
+      { group: 14201, index: 1, ownerId: undefined },
+    ]);
+    expect(renderer.getDiagnostics().presentations[0]).toMatchObject({
+      source: "common",
+      lookupStatus: "resolved-sprite",
+    });
+    renderer.dispose();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {

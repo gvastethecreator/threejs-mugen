@@ -203,7 +203,7 @@ describe("PlayableMatchRuntime", () => {
       withStateMove: false,
       hitSpark: "7001",
       hitSparkLibraries: {
-        common: { source: "common", animations: new Map([[7001, action(7001, {}, 7200)]]) },
+        common: { source: "common", animations: new Map([[7001, action(7001, { durations: [3, 5] }, 7200)]]) },
       },
     });
     const fightFx = createImportedFixture({
@@ -230,6 +230,22 @@ describe("PlayableMatchRuntime", () => {
         spriteGroup: 14201,
         spriteIndex: 0,
       },
+      assetFrames: [
+        {
+          source: "common",
+          actionId: 7001,
+          frameIndex: 0,
+          spriteGroup: 14201,
+          spriteIndex: 0,
+        },
+        {
+          source: "common",
+          actionId: 7001,
+          frameIndex: 1,
+          spriteGroup: 14201,
+          spriteIndex: 1,
+        },
+      ],
     });
     expect(fightFxSnapshot.actors[0]?.hitEffectEvents?.[0]).toMatchObject({
       type: "HitSpark",
@@ -245,6 +261,15 @@ describe("PlayableMatchRuntime", () => {
         spriteGroup: 15302,
         spriteIndex: 0,
       },
+      assetFrames: [
+        {
+          source: "fightfx",
+          actionId: 7002,
+          frameIndex: 0,
+          spriteGroup: 15302,
+          spriteIndex: 0,
+        },
+      ],
     });
   });
 

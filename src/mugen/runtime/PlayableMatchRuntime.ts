@@ -1773,65 +1773,64 @@ function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | unde
 
 function recordHitDefEffectEvent(fighter: FighterMatchState, kind: "hit" | "guard", move: DemoMove, runtimeTick: number): void {
   const spark = kind === "guard" ? move.guardSpark : move.hitSpark;
-  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, resolveHitSparkAssetFrame(fighter, spark));
+  const assetFrames = resolveHitSparkAssetFrames(fighter, spark);
+  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, assetFrames[0], assetFrames);
 }
 
-function resolveHitSparkAssetFrame(fighter: FighterMatchState, spark: string | undefined): RuntimeHitEffectAssetFrame | undefined {
+function resolveHitSparkAssetFrames(fighter: FighterMatchState, spark: string | undefined): RuntimeHitEffectAssetFrame[] {
   const parsed = parseMugenSparkValue(spark);
   if (!parsed) {
-    return undefined;
+    return [];
   }
   if (parsed.rawPrefix === "S") {
-    return resolvePlayerHitSparkAssetFrame(fighter, parsed.sparkNo);
+    return resolvePlayerHitSparkAssetFrames(fighter, parsed.sparkNo);
   }
   const source = hitSparkLibrarySource(parsed.rawPrefix);
   if (!source) {
-    return undefined;
+    return [];
   }
-  return resolveLibraryHitSparkAssetFrame(fighter, source, parsed.sparkNo);
+  return resolveLibraryHitSparkAssetFrames(fighter, source, parsed.sparkNo);
 }
 
-function resolvePlayerHitSparkAssetFrame(fighter: FighterMatchState, actionId: number): RuntimeHitEffectAssetFrame | undefined {
+function resolvePlayerHitSparkAssetFrames(fighter: FighterMatchState, actionId: number): RuntimeHitEffectAssetFrame[] {
   const owner = fighter.stateOwner ?? fighter;
   const action = owner.definition.animations.get(actionId);
-  const frame = action?.frames[0];
-  if (!frame) {
-    return undefined;
+  if (!action) {
+    return [];
   }
-  return {
+  return action.frames.map((frame, frameIndex) => ({
     source: "player",
     actionId,
-    frameIndex: 0,
+    frameIndex,
     spriteGroup: frame.spriteGroup,
     spriteIndex: frame.spriteIndex,
     offsetX: frame.offsetX,
     offsetY: frame.offsetY,
     duration: frame.duration,
-  };
+  }));
 }
 
-function resolveLibraryHitSparkAssetFrame(
+function resolveLibraryHitSparkAssetFrames(
   fighter: FighterMatchState,
   source: HitSparkLibrarySource,
   actionId: number,
-): RuntimeHitEffectAssetFrame | undefined {
+): RuntimeHitEffectAssetFrame[] {
   const owner = fighter.stateOwner ?? fighter;
   const library = owner.definition.hitSparkLibraries?.[source];
   const action = library?.animations.get(actionId);
-  const frame = action?.frames[0];
-  if (!frame) {
-    return undefined;
+  if (!action) {
+    return [];
   }
-  return {
+  return action.frames.map((frame, frameIndex) => ({
     source,
     actionId,
-    frameIndex: 0,
+    frameIndex,
     spriteGroup: frame.spriteGroup,
     spriteIndex: frame.spriteIndex,
     offsetX: frame.offsetX,
     offsetY: frame.offsetY,
     duration: frame.duration,
-  };
+  }));
 }
 
 function hitSparkLibrarySource(rawPrefix: string | undefined): HitSparkLibrarySource | undefined {
@@ -2189,6 +2188,7 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
       ...event,
       offset: event.offset ? { ...event.offset } : undefined,
       assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
+      assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
     })),
     envShakeEvents: fighter.envShakeEvents.map((event) => ({ ...event })),
   };

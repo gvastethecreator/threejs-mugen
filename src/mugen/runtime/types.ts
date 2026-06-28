@@ -215,6 +215,7 @@ export type RuntimeHitEffectEvent = {
   tick: number;
   runtimeTick?: number;
   assetFrame?: RuntimeHitEffectAssetFrame;
+  assetFrames?: RuntimeHitEffectAssetFrame[];
 };
 
 export type RuntimeEnvShakeEvent = {

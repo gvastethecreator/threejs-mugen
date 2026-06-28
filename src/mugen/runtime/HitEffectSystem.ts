@@ -18,6 +18,7 @@ export class RuntimeHitEffectWorld {
     offset: [number, number] | undefined,
     runtimeTick: number,
     assetFrame?: RuntimeHitEffectAssetFrame,
+    assetFrames?: RuntimeHitEffectAssetFrame[],
   ): RuntimeHitEffectEvent | undefined {
     if (!spark) {
       return undefined;
@@ -37,6 +38,7 @@ export class RuntimeHitEffectWorld {
       tick: actor.stateElapsed,
       runtimeTick,
       assetFrame,
+      assetFrames,
     };
     pushRuntimeHitEffectEvent(actor.hitEffectEvents, event);
     return event;
