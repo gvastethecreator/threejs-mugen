@@ -31,6 +31,7 @@ import {
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
+  officialKfmGroundRecoveryControllerSequence,
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
@@ -2677,6 +2678,25 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 0, controller: "VelSet" },
       { stateNo: 0, operation: "kinematic:velset" },
     ]);
+  });
+
+  it("exports official KFM ground-recovery controller-order requirements", () => {
+    expect(officialKfmGroundRecoveryControllerSequence()).toEqual({
+      label: "Official KFM 5050/5200/52 ground-recovery controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 5050, controller: "VelAdd" },
+        { stateNo: 5050, controller: "ChangeState" },
+        { stateNo: 5200, controller: "VelAdd" },
+        { stateNo: 5200, controller: "SelfState" },
+        { stateNo: 52, controller: "VelSet" },
+        { stateNo: 52, operation: "kinematic:velset" },
+        { stateNo: 52, controller: "PosSet" },
+        { stateNo: 52, operation: "kinematic:posset" },
+        { stateNo: 52, controller: "ChangeState" },
+      ],
+    });
   });
 
   it("exports official KFM guard-hit actor-frame physics requirements", () => {

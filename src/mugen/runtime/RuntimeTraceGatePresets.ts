@@ -4311,6 +4311,25 @@ export function defaultGroundRecoveryControllerSequence(): RuntimeTraceControlle
   };
 }
 
+export function officialKfmGroundRecoveryControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 5050/5200/52 ground-recovery controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5050, controller: "VelAdd" },
+      { stateNo: 5050, controller: "ChangeState" },
+      { stateNo: 5200, controller: "VelAdd" },
+      { stateNo: 5200, controller: "SelfState" },
+      { stateNo: 52, controller: "VelSet" },
+      { stateNo: 52, operation: "kinematic:velset" },
+      { stateNo: 52, controller: "PosSet" },
+      { stateNo: 52, operation: "kinematic:posset" },
+      { stateNo: 52, controller: "ChangeState" },
+    ],
+  };
+}
+
 export function createSyntheticImportedDefaultFallRecoveryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
