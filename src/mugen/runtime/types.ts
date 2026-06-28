@@ -12,6 +12,7 @@ export type CharacterRuntimeState = {
   posFreeze?: { x: boolean; y: boolean };
   screenBound?: { bound: boolean; moveCameraX: boolean; moveCameraY: boolean };
   hitVelocity?: { x: number; y: number };
+  hitVars?: RuntimeGetHitVars;
   hitFall?: RuntimeHitFall;
   targetCount?: number;
   targetRefs?: RuntimeTargetSnapshot[];
@@ -118,6 +119,13 @@ export type RuntimeReversalDef = {
   p1StateNo?: number;
   p2StateNo?: number;
   hitPause: number;
+};
+
+export type RuntimeGetHitVars = {
+  animType?: number;
+  groundType?: number;
+  airType?: number;
+  isBound?: boolean;
 };
 
 export type RuntimeCustomState = {

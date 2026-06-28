@@ -603,6 +603,27 @@ time = 20
     });
   });
 
+  it("compiles HitDef get-hit anim and type metadata into typed data", () => {
+    const hitDef = compileControllerIr(
+      controller(200, "HitDef", [], {
+        damage: "40",
+        animtype: "Medium",
+        "fall.animtype": "Up",
+        "ground.type": "Low",
+        "air.type": "Trip",
+      }),
+    );
+
+    expect(hitDef.operation).toMatchObject({
+      kind: "hitdef",
+      damage: 40,
+      animType: 1,
+      fallAnimType: 4,
+      groundType: 2,
+      airType: 3,
+    });
+  });
+
   it("compiles Trans controllers into typed sprite opacity operations", () => {
     const trans = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha,128,128" }));
 

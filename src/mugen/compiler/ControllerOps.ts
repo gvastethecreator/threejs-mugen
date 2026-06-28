@@ -22,6 +22,10 @@ export type HitDefControllerOp = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  animType?: number;
+  groundType?: number;
+  airType?: number;
+  fallAnimType?: number;
   fall: HitDefFallOp;
 };
 
@@ -940,6 +944,10 @@ function compileHitDefControllerOp(controller: MugenStateController): HitDefCont
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     p2StateNo,
     p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
+    animType: hitAnimType(findParam(controller, "animtype")),
+    groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),
+    airType: hitType(findParam(controller, "air.type")),
+    fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     fall: compileHitDefFallOp(controller),
   });
 }
@@ -1341,6 +1349,46 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function hitAnimType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    light: 0,
+    medium: 1,
+    med: 1,
+    hard: 2,
+    heavy: 2,
+    back: 3,
+    up: 4,
+    diagup: 5,
+    diagonalup: 5,
+  };
+  return values[normalized];
+}
+
+function hitType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    high: 1,
+    low: 2,
+    trip: 3,
+  };
+  return values[normalized];
 }
 
 function normalizeStateType(value: string | undefined): MetadataControllerOp["stateType"] | undefined {

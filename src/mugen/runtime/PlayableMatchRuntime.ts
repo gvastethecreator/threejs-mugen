@@ -1817,6 +1817,15 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     operation?.guardDistance ?? firstNumber(findParam(controller, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
   const guardPush =
     Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
+  const groundType = operation?.groundType ?? hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")) ?? existing?.hitVars?.groundType ?? 1;
+  const airType = operation?.airType ?? hitType(findParam(controller, "air.type")) ?? existing?.hitVars?.airType ?? groundType;
+  const animType =
+    operation?.fallAnimType ??
+    hitAnimType(findParam(controller, "fall.animtype")) ??
+    operation?.animType ??
+    hitAnimType(findParam(controller, "animtype")) ??
+    existing?.hitVars?.animType ??
+    0;
   const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(controller, "p1stateno"));
   const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(controller, "p2stateno"));
   const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : false);
@@ -1837,6 +1846,7 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     hitStun,
     push,
     hitVelocityY: groundVelocity?.[1] ?? existing?.hitVelocityY,
+    hitVars: { animType, groundType, airType },
     guardDistance,
     guardFlag: operation?.guardFlag ?? stripMugenString(findParam(controller, "guardflag")) ?? existing?.guardFlag ?? "MA",
     guardDamage,
@@ -2007,6 +2017,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
@@ -2030,6 +2041,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
   defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
   defender.runtime.vel.x = attacker.runtime.facing * result.push;
   defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+  defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
   defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
   if (result.hitVelocityY !== undefined) {
     defender.runtime.vel.y = result.hitVelocityY;
@@ -2130,6 +2142,15 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
             phase: envShakePhase ?? 0,
           }
         : existing?.fall?.envShake,
+  };
+}
+
+function runtimeGetHitVarsFromMove(move: DemoMove): CharacterRuntimeState["hitVars"] {
+  return {
+    animType: move.hitVars?.animType ?? 0,
+    groundType: move.hitVars?.groundType ?? 1,
+    airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,
+    isBound: false,
   };
 }
 
@@ -2941,6 +2962,18 @@ function boundedRuntimeDamageMultiplier(value: number): number {
 
 function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
   const key = name.trim().toLowerCase();
+  if (key === "animtype") {
+    return state.hitVars?.animType ?? 0;
+  }
+  if (key === "groundtype") {
+    return state.hitVars?.groundType ?? 0;
+  }
+  if (key === "airtype") {
+    return state.hitVars?.airType ?? 0;
+  }
+  if (key === "isbound") {
+    return state.hitVars?.isBound ? 1 : 0;
+  }
   if (key === "fall") {
     return state.hitFall?.falling ? 1 : 0;
   }
@@ -3107,6 +3140,46 @@ function stripMugenString(value: string | undefined): string | undefined {
     return undefined;
   }
   return trimmed.replace(/^"|"$/g, "");
+}
+
+function hitAnimType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    light: 0,
+    medium: 1,
+    med: 1,
+    hard: 2,
+    heavy: 2,
+    back: 3,
+    up: 4,
+    diagup: 5,
+    diagonalup: 5,
+  };
+  return values[normalized];
+}
+
+function hitType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    high: 1,
+    low: 2,
+    trip: 3,
+  };
+  return values[normalized];
 }
 
 function normalizeStateType(value: string, fallback: CharacterRuntimeState["stateType"]): CharacterRuntimeState["stateType"] {

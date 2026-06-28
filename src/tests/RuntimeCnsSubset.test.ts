@@ -251,6 +251,25 @@ describe("StateControllerExecutor", () => {
     );
 
     expect(state.ctrl).toBe(false);
+
+    const typedState = executeControllerIr(
+      compileControllerIr(
+        controller("PowerSet", {
+          value: "100 + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound)",
+        }),
+      ),
+      runtimeState({
+        hitVars: {
+          animType: 4,
+          groundType: 2,
+          airType: 3,
+          isBound: false,
+        },
+      }),
+      () => undefined,
+    );
+
+    expect(typedState.power).toBe(424);
   });
 
   it("executes additional simple CNS controllers and expression params", () => {

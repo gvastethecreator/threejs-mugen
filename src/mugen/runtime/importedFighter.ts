@@ -95,6 +95,7 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
         guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
         guardPush: Math.abs(numberPair(hitDef.params["guard.velocity"])?.[0] ?? 0) || undefined,
         guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
+        hitVars: buildHitVars(hitDef.params),
         fall: buildFallData(hitDef.params),
         requiresHitDef: true,
       }),
@@ -174,6 +175,7 @@ function buildMove(
       | "guardControlTime"
       | "guardPush"
       | "guardVelocityY"
+      | "hitVars"
       | "fall"
     >
   > = {},
@@ -213,9 +215,32 @@ function buildMove(
     guardControlTime: overrides.guardControlTime,
     guardPush: overrides.guardPush,
     guardVelocityY: overrides.guardVelocityY,
+    hitVars: overrides.hitVars,
     fall: overrides.fall,
     hitbox: cloneBox(activeWindow?.frame.clsn1[0] ?? fallbackHitbox),
   };
+}
+
+function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | undefined {
+  const animType = hitAnimType(params.animtype);
+  const fallAnimType = hitAnimType(params["fall.animtype"]);
+  const groundType = hitType(params["ground.type"] ?? params.type);
+  const airType = hitType(params["air.type"]);
+  if (animType === undefined && fallAnimType === undefined && groundType === undefined && airType === undefined) {
+    return undefined;
+  }
+  const hitVars: NonNullable<DemoMove["hitVars"]> = {};
+  const resolvedAnimType = fallAnimType ?? animType;
+  if (resolvedAnimType !== undefined) {
+    hitVars.animType = resolvedAnimType;
+  }
+  if (groundType !== undefined) {
+    hitVars.groundType = groundType;
+  }
+  if (airType !== undefined) {
+    hitVars.airType = airType;
+  }
+  return hitVars;
 }
 
 function buildFallData(params: Record<string, string>): DemoMove["fall"] | undefined {
@@ -295,6 +320,54 @@ function secondNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function hitAnimType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    light: 0,
+    medium: 1,
+    med: 1,
+    hard: 2,
+    heavy: 2,
+    back: 3,
+    up: 4,
+    diagup: 5,
+    diagonalup: 5,
+  };
+  return values[normalized];
+}
+
+function hitType(value: string | undefined): number | undefined {
+  const numeric = firstNumber(value);
+  if (numeric !== undefined) {
+    return numeric;
+  }
+  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
+  if (!normalized) {
+    return undefined;
+  }
+  const values: Record<string, number> = {
+    high: 1,
+    low: 2,
+    trip: 3,
+  };
+  return values[normalized];
+}
+
+function stripMugenString(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  return trimmed.replace(/^"|"$/g, "");
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

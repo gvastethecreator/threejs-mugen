@@ -181,6 +181,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-gethitvar-animtype",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarAnimTypeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-bounds",
       required: true,
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
@@ -1107,6 +1112,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",
     "synthetic-imported-gethitvar-fall-defence-up",
+    "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-width",

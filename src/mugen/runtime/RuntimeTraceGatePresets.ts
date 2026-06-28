@@ -2524,6 +2524,70 @@ export function createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact(optio
   });
 }
 
+export function createSyntheticImportedGetHitVarAnimTypeTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-gethitvar-animtype-attacker",
+    displayName: "Synthetic Imported GetHitVar AnimType Attacker",
+    fall: { ...commonGetHitFallData(), damage: 0 },
+    hitAnimType: "Medium",
+    fallAnimType: "Up",
+    hitGroundType: "Low",
+    hitAirType: "Trip",
+    getHitState: { stateNo: 5100, animNo: 500 },
+    getHitVarBranch: {
+      stateNo: 287,
+      expression: "GetHitVar(animtype) = 4 && GetHitVar(groundtype) = 2 && GetHitVar(airtype) = 3 && !GetHitVar(isbound)",
+    },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCommonGetHitScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-gethitvar-animtype-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-gethitvar-animtype-golden",
+      label: "Synthetic imported GetHitVar animtype route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported GetHitVar animtype trace proves bounded HitDef animtype, fall.animtype, ground.type, air.type, and isbound values can route an owner-backed get-hit state. It does not claim exact get-hit animation selection, custom-state binding, helper/projectile inheritance, or full Common1 parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-gethitvar-animtype-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5100, 287],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel"],
+        requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            actorKind: "player",
+            source: "demo",
+            stateNo: 287,
+            customOwnerId: "p1",
+            hitFall: {
+              falling: true,
+              damage: 0,
+              velocityX: 3,
+              velocityY: -6,
+            },
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCustomStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedCustomStateScript();
@@ -5877,6 +5941,10 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefDamage?: number;
   hitDefKill?: boolean;
   hitDefPriority?: number;
+  hitAnimType?: string;
+  hitGroundType?: string;
+  hitAirType?: string;
+  fallAnimType?: string;
   passiveNotHitBy?: string;
   passiveHitBy?: string;
   passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number; targetId?: number };
@@ -5892,6 +5960,7 @@ export type SyntheticImportedTraceFighterOptions = {
   fall?: DemoMove["fall"];
   getHitState?: { stateNo: number; animNo?: number };
   fallDefenceUpBranchStateNo?: number;
+  getHitVarBranch?: { stateNo: number; expression: string; animNo?: number };
   defaultGetHitState?: { stateNo: number; animNo?: number };
   defaultGetHitProgression?: { shakeStateNo?: number; slideStateNo?: number; shakeAnimNo?: number; slideAnimNo?: number };
   defaultGuardHit?: {
@@ -6085,6 +6154,12 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefDamage = options.hitDefDamage ?? 37;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
+  const hitVarLines = `
+${options.hitAnimType === undefined ? "" : `animtype = ${options.hitAnimType}`}
+${options.hitGroundType === undefined ? "" : `ground.type = ${options.hitGroundType}`}
+${options.hitAirType === undefined ? "" : `air.type = ${options.hitAirType}`}
+${options.fallAnimType === undefined ? "" : `fall.animtype = ${options.fallAnimType}`}
+`;
   const groundVelocity = options.groundVelocity ?? [-3];
   const guardLine =
     options.guardDamage === undefined &&
@@ -6207,6 +6282,7 @@ trigger1 = Time = 1
 attr = ${hitDefAttr}
 damage = ${damageLine}
 ${hitDefKillLine}
+${hitVarLines}
 pausetime = 4,4
 ground.hittime = 9
 ground.velocity = ${groundVelocity.join(",")}
@@ -6273,7 +6349,7 @@ ${options.withScaledExplod ? scaledExplodControllerBlock() : ""}
 ${options.withRemoveExplod ? removeExplodControllerBlock() : ""}
 ${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(9000) > 0", options.numExplodStateNo, "NumExplod Branch")}
 
-${options.getHitState ? getHitStateBlock(options.getHitState, options.fallDefenceUpBranchStateNo) : ""}
+${options.getHitState ? getHitStateBlock(options.getHitState, options.fallDefenceUpBranchStateNo, options.getHitVarBranch) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
 ${options.receivedDamageRoute ? receivedDamageRouteBlock(options.receivedDamageRoute) : ""}
@@ -6474,6 +6550,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
             ...(options.fallDefenceUpBranchStateNo === undefined
               ? []
               : ([[options.fallDefenceUpBranchStateNo, traceAction(options.fallDefenceUpBranchStateNo)]] as Array<[number, MugenAnimationAction]>)),
+            ...(options.getHitVarBranch === undefined
+              ? []
+              : ([[options.getHitVarBranch.stateNo, traceAction(options.getHitVarBranch.animNo ?? options.getHitVarBranch.stateNo)]] as Array<
+                  [number, MugenAnimationAction]
+                >)),
           ] as Array<[number, MugenAnimationAction]>)),
       ...(options.customStateRoute === undefined
         ? []
@@ -6970,7 +7051,11 @@ ${fall.envShake?.phase === undefined ? "" : `fall.envshake.phase = ${fall.envSha
 `;
 }
 
-function getHitStateBlock(state: { stateNo: number; animNo?: number }, fallDefenceUpBranchStateNo?: number): string {
+function getHitStateBlock(
+  state: { stateNo: number; animNo?: number },
+  fallDefenceUpBranchStateNo?: number,
+  getHitVarBranch?: { stateNo: number; expression: string; animNo?: number },
+): string {
   const animNo = state.animNo ?? state.stateNo;
   return `
 [Statedef ${state.stateNo}]
@@ -7010,6 +7095,20 @@ type = A
 movetype = H
 physics = A
 anim = ${fallDefenceUpBranchStateNo}
+ctrl = 0
+`}
+${getHitVarBranch === undefined ? "" : `
+[State ${state.stateNo}, GetHitVar Branch]
+type = ChangeState
+trigger1 = Time = 1
+trigger1 = ${getHitVarBranch.expression}
+value = ${getHitVarBranch.stateNo}
+
+[Statedef ${getHitVarBranch.stateNo}]
+type = A
+movetype = H
+physics = A
+anim = ${getHitVarBranch.animNo ?? getHitVarBranch.stateNo}
 ctrl = 0
 `}
 `;

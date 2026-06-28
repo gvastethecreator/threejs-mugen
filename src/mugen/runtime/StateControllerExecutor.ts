@@ -695,6 +695,18 @@ function evaluateNumber(
 
 function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
   const key = name.trim().toLowerCase();
+  if (key === "animtype") {
+    return state.hitVars?.animType ?? 0;
+  }
+  if (key === "groundtype") {
+    return state.hitVars?.groundType ?? 0;
+  }
+  if (key === "airtype") {
+    return state.hitVars?.airType ?? 0;
+  }
+  if (key === "isbound") {
+    return state.hitVars?.isBound ? 1 : 0;
+  }
   if (key === "fall") {
     return state.hitFall?.falling ? 1 : 0;
   }

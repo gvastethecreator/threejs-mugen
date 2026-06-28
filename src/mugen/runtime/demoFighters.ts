@@ -3,6 +3,7 @@ import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
+import type { RuntimeGetHitVars } from "./types";
 
 export type DemoMove = {
   actionId: number;
@@ -26,6 +27,7 @@ export type DemoMove = {
   hitStun: number;
   push: number;
   hitVelocityY?: number;
+  hitVars?: RuntimeGetHitVars;
   guardDistance?: number;
   guardFlag?: string;
   guardDamage?: number;
