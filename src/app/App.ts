@@ -3228,6 +3228,7 @@ export class App {
   private renderStudioAssetsNavigator(): string {
     const library = this.getStudioAssetLibrarySummary();
     return `
+      ${this.renderStudioAssetsCommandCenter(library)}
       <div class="section">
         <div class="section-heading-row">
           <h2>Project Assets</h2>
@@ -3243,16 +3244,6 @@ export class App {
                 .join("")}</div>`
             : `<div class="empty-state">No assets match this filter.</div>`
         }
-      </div>
-      ${this.renderStudioAssetsCommandCenter(library)}
-      <div class="section">
-        <h2>Asset Actions</h2>
-        <div class="action-stack">
-          <button type="button" class="primary-action" data-mode="inspect">Inspect package</button>
-          <button type="button" data-action="compile-project">Compile runtime</button>
-          <button type="button" data-action="export-project">Export project.json</button>
-          <button type="button" data-studio-tab="evidence">Evidence</button>
-        </div>
       </div>
     `;
   }
@@ -8215,12 +8206,17 @@ export class App {
   }
 
   private renderAssetFilterButton(filter: StudioAssetFilter, library: StudioAssetLibrarySummary): string {
-    const label =
-      filter === "attention"
-        ? "Attention"
-        : filter === "all"
-          ? "All"
-          : filter[0]!.toUpperCase() + filter.slice(1);
+    const labelByFilter: Record<StudioAssetFilter, string> = {
+      all: "All",
+      attention: "Needs",
+      characters: "Chars",
+      stages: "Stages",
+      generated: "Gen",
+      imported: "Import",
+      reports: "Reports",
+      selected: "Selected",
+    };
+    const label = labelByFilter[filter];
     const count = this.getAssetFilterCount(filter, library);
     return `
       <button type="button" role="tab" aria-selected="${this.studioAssetFilter === filter}" class="tab ${this.studioAssetFilter === filter ? "is-active" : ""}" data-asset-filter="${filter}">

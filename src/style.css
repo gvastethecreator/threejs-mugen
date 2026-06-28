@@ -23650,3 +23650,157 @@ input {
     white-space: nowrap;
   }
 }
+
+/* Desktop Assets: keep command state and asset list both inside first viewport. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center {
+    gap: 5px;
+    padding: 6px 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .command-center-header {
+    min-height: 22px;
+    padding-bottom: 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .command-meter-grid span {
+    min-height: 27px;
+    padding: 3px 6px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip span {
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 31px;
+    gap: 4px 6px;
+    padding: 4px 6px;
+    border-right: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip span:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip span:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip small,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip b,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip em {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip small {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip b {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .asset-lane-strip em {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .command-center-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .operator-callout {
+    grid-template-columns: minmax(74px, 0.28fr) minmax(0, 1fr);
+    min-height: 0;
+    gap: 2px 7px;
+    padding: 5px 7px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .operator-callout small {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.14;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .operator-callout .badge-row {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .command-action-column {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center .command-action-column button {
+    min-height: 28px;
+    padding: 4px 5px;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-browser-list {
+    max-height: calc(100vh - 716px);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab {
+    grid-template-columns: minmax(0, 1fr) max-content;
+    grid-template-rows: auto;
+    min-height: 24px;
+    align-content: center;
+    gap: 4px;
+    padding: 3px 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab:nth-child(2n) {
+    border-right: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab:nth-last-child(-n + 4) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab-label,
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab-status,
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab-count {
+    padding: 0;
+    font-size: 12px;
+    line-height: 1;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs[aria-label="Asset filters"] .tab-count {
+    justify-self: end;
+    min-width: 18px;
+    padding: 1px 3px;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+    font-family: var(--mono);
+    text-align: center;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-browser-list {
+    max-height: calc(100vh - 646px);
+  }
+}
