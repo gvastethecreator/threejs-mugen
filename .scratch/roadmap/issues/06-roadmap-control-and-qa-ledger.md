@@ -10,6 +10,8 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 ## Next Useful Cuts
 
 - Current setup-project refresh: parent workspace `AGENTS.md` now routes agents into `mugen-web-sandbox`; repo `AGENTS.md` remains authoritative and records setup-project defaults, slice-selection priority, verification baseline, and docs-only no-score rule.
+- Current setup-project verification: repo setup already exists (`AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/adr/`, local `.scratch/roadmap/`, GitHub remote). This pass refreshes alignment rather than creating a duplicate agent contract.
+- Current roadmap drift fix: `docs/ROADMAP_PROGRESS_SYSTEM.md` no longer points future docs-only closeout to the already-closed `HitBy` mismatch-reject gate; it now routes back to R1 Common1/FightFX precision or R2 `MatchWorld` ownership after the target-owned custom-state gate.
 - Current roadmap-control cut: `docs/ROADMAP_EXECUTION_BOARD.md` now includes an operating snapshot table that maps P0/P1/P2/P3 workstreams to next shippable proof, evidence gate, and score effect.
 - Current tracker cut: `docs/PROGRESS_TRACKER.md` now includes the immediate execution order so future autonomous passes can return from docs/setup work to the first score-moving runtime or ownership gate.
 - Current cut: `AGENTS.md` and `docs/agents/*` now document setup-project defaults; `docs/adr/0001-roadmap-control-and-local-issues.md` records the local markdown tracker/source-of-truth decision; `docs/ROADMAP_RELEASE_TARGETS.md` defines release trains, usable milestone gates, and score-movement rules.
@@ -48,6 +50,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth order, resume/checkpoint protocol, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/ROADMAP_NAVIGATION.md` owns the fast route map for future agents who need to find the right doc/issue/gate quickly.
 - `docs/ROADMAP_PACKAGE_MILESTONES.md` owns compact package selection, milestone exits, and the next recommended evidence-producing slice.
+- `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including FightFX/common spark lookup after the current fallback/source-metadata route.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.

@@ -132,6 +132,7 @@ When the user says to continue the port, choose the first slice that can produce
 6. Modular boundary proof with `pnpm check:boundaries` or docs-only blocked-scope wording.
 
 Docs-only/setup slices improve control only. They do not raise scores.
+Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, and the linked `.scratch/roadmap/issues/` file so already-closed gates are not rebuilt.
 
 ## Current Milestone Focus
 

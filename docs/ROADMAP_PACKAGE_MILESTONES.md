@@ -52,6 +52,23 @@ R1 Common1/FightFX precision
 
 Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, or effect/combat ordering if it can preserve trace behavior.
 
+## Slice Selection Guardrails
+
+Before starting work, check the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md`, this section, and the linked `.scratch/roadmap/issues/` file. Do not rebuild a gate that is already listed as closed.
+
+Current closed gates that must not be reselected as "next":
+
+- `synthetic-imported-hitby-allow.json`
+- `synthetic-imported-hitby-reject.json`
+- `synthetic-imported-hitdef-hit-sound.json`
+- `synthetic-imported-target-owned-custom-state.json`
+
+After docs-only/setup work, return to one of these evidence-producing cuts:
+
+1. R1 Common1 recovery/guard controller-loop precision.
+2. R1 FightFX/common presentation proof beyond current package-frame handoff.
+3. R2 `MatchWorld` ownership around target/helper/effect ordering with stable or documented trace behavior.
+
 ## Package Closeout Contract
 
 Every package closeout must include:
