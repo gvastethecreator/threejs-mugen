@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
+import * as THREE from "three";
 import {
+  HitSparkRenderer,
   hitSparkKey,
   HIT_SPARK_LIFETIME_FRAMES,
   resolveHitSparkAssetRef,
   resolveHitSparkPresentation,
 } from "../game/render/HitSparkRenderer";
+import type { TextureStore } from "../game/render/TextureStore";
+import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot, RuntimeHitEffectEvent } from "../mugen/runtime/types";
 
 const actor: ActorSnapshot = {
@@ -291,4 +295,106 @@ describe("HitSparkRenderer helpers", () => {
       },
     });
   });
+
+  it("resolves package-backed common/FightFX frames through the global sprite provider route", async () => {
+    const provider = new RecordingSpriteProvider([
+      sprite(14201, 3),
+      sprite(15302, 4),
+    ]);
+    const renderer = new HitSparkRenderer(provider, fakeTextureStore());
+    const sourceActor: ActorSnapshot = {
+      ...actor,
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7001,
+          raw: "7001",
+          stateNo: 200,
+          tick: 1,
+          runtimeTick: 10,
+          assetFrame: {
+            source: "common",
+            actionId: 7001,
+            frameIndex: 0,
+            spriteGroup: 14201,
+            spriteIndex: 3,
+            offsetX: 0,
+            offsetY: 0,
+            duration: 5,
+          },
+        },
+        {
+          type: "HitSpark",
+          kind: "guard",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          stateNo: 200,
+          tick: 2,
+          runtimeTick: 10,
+          assetFrame: {
+            source: "fightfx",
+            actionId: 7002,
+            frameIndex: 0,
+            spriteGroup: 15302,
+            spriteIndex: 4,
+            offsetX: 0,
+            offsetY: 0,
+            duration: 6,
+          },
+        },
+      ],
+    };
+
+    await renderer.update([sourceActor], 11);
+
+    expect(renderer.getDiagnostics()).toMatchObject({
+      active: 2,
+      fallbackGeometry: false,
+      resolvedSprites: 2,
+      sources: {
+        common: 1,
+        fightfx: 1,
+      },
+    });
+    expect(provider.lookups).toEqual([
+      { group: 14201, index: 3, ownerId: undefined },
+      { group: 15302, index: 4, ownerId: undefined },
+    ]);
+    renderer.dispose();
+  });
 });
+
+class RecordingSpriteProvider implements SpriteProvider {
+  readonly lookups: Array<{ group: number; index: number; ownerId?: string }> = [];
+  private readonly sprites = new Map<string, MugenSprite>();
+
+  constructor(sprites: MugenSprite[]) {
+    for (const spriteRecord of sprites) {
+      this.sprites.set(`${spriteRecord.group}:${spriteRecord.index}`, spriteRecord);
+    }
+  }
+
+  async getSprite(group: number, index: number, context: SpriteLookupContext = {}): Promise<MugenSprite | undefined> {
+    this.lookups.push({ group, index, ownerId: context.ownerId });
+    return this.sprites.get(`${group}:${index}`);
+  }
+}
+
+function sprite(group: number, index: number): MugenSprite {
+  return {
+    group,
+    index,
+    width: 18,
+    height: 18,
+    axisX: 9,
+    axisY: 9,
+  };
+}
+
+function fakeTextureStore(): TextureStore {
+  return {
+    getTexture: () => new THREE.Texture(),
+  } as unknown as TextureStore;
+}
