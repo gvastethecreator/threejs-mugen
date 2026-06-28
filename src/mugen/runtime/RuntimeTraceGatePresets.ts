@@ -999,6 +999,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
+    requiredHitEffectEvents?: RuntimeTraceGate["requiredHitEffectEvents"];
     requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
     requiredRoundFrames?: RuntimeTraceGate["requiredRoundFrames"];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
@@ -1033,6 +1034,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
+        requiredHitEffectEvents: options.requiredHitEffectEvents,
         requiredEnvShakeEvents: options.requiredEnvShakeEvents,
         requiredRoundFrames: options.requiredRoundFrames,
         requiredActorFrames: options.requiredActorFrames,
@@ -2390,6 +2392,38 @@ export function createSyntheticImportedHitDefGuardSoundTraceArtifact(options: Ru
     ],
     notes: [
       "Synthetic imported HitDef guard-sound trace proves a guarded direct HitDef can emit bounded PlaySnd telemetry from guardsound = S6,0 on the attacker actor. It does not claim exact SND playback, FightFX spark/sound routing, channel priority, timing/mixing parity, or full MUGEN/IKEMEN guard-effect behavior.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefHitSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-hit-spark-attacker",
+    displayName: "Synthetic Imported HitDef Hit Spark Attacker",
+    hitSpark: "S7001",
+    sparkXy: [10, -72],
+    moveHitStateNo: 261,
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-hit-spark-golden",
+    targetLabel: "Synthetic imported HitDef hit spark route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 7001,
+        raw: "S7001",
+        rawPrefix: "S",
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef hit-spark trace proves a direct HitDef hit can emit bounded HitSpark telemetry from sparkno = S7001 plus sparkxy metadata on the attacker actor. It does not claim exact FightFX/common sprite lookup, spark binding, render timing, layering, scale, palette, or full MUGEN/IKEMEN hit-effect behavior.",
     ],
   });
 }

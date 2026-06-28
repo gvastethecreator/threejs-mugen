@@ -336,6 +336,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefGuardSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-hit-spark",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefHitSparkTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-guard-spark",
       required: true,
       artifact: presets.createSyntheticImportedHitDefGuardSparkTraceArtifact(),
@@ -1302,7 +1307,7 @@ function validateTraceCoverage(coverage) {
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredSoundEventTypes = ["PlaySnd", "StopSnd"];
-  const requiredHitEffectEventKinds = ["HitSpark:guard"];
+  const requiredHitEffectEventKinds = ["HitSpark:hit", "HitSpark:guard"];
   const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
@@ -1372,6 +1377,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
     "synthetic-imported-hitdef-guard-sound",
+    "synthetic-imported-hitdef-hit-spark",
     "synthetic-imported-hitdef-guard-spark",
     "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-crouch-guarddeny",

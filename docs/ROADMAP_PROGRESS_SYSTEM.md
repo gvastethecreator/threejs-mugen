@@ -22,6 +22,17 @@ Read these in order when planning or reporting status:
 
 Rule: when two docs disagree, prefer the more specific owner above. Then update stale docs in the same round if the task touched that scope.
 
+## Resume And Checkpoint Protocol
+
+Use this sequence when a new agent, resumed thread, or subtask starts work:
+
+1. Run `git status --short --branch` from the repo root.
+2. Read `CONTEXT.md`, `AGENTS.md`, this file, `docs/ROADMAP_RELEASE_TARGETS.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
+3. For status answers, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
+4. For implementation slices, read the linked `.scratch/roadmap/issues/<NN>-*.md` issue and update it with evidence, next cut, and blocked claims.
+5. For score/support/queue changes, update every owner listed in the update matrix below.
+6. For checkpoint requests, commit only after the required closeout gates pass; docs-only/setup work still needs normal build/test gates and must state no score movement.
+
 ## Package Lifecycle
 
 Every roadmap package should move through this lifecycle:
