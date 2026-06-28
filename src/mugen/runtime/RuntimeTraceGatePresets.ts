@@ -440,6 +440,29 @@ export function createSyntheticImportedStageTimeTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedAliveTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-alive",
+      displayName: "Synthetic Imported Alive",
+      aliveStateEntry: { stateNo: 280 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-alive-golden",
+      targetLabel: "Synthetic imported Alive route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [280],
+      requiredExecutedStates: [280],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported Alive trace proves State -1 routing can branch on current owner life > 0 through the bounded Alive trigger. KO, round-state transitions, lifebar edge cases, helpers, redirects, and exact IKEMEN/MUGEN round parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -5729,6 +5752,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
+  aliveStateEntry?: { stateNo: number };
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
@@ -5881,6 +5905,7 @@ ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(opti
 ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
+${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -6011,6 +6036,7 @@ ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.sta
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
+${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
@@ -6145,6 +6171,9 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.stageTimeEntry === undefined
         ? []
         : ([[options.stageTimeEntry.stateNo, traceAction(options.stageTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.aliveStateEntry === undefined
+        ? []
+        : ([[options.aliveStateEntry.stateNo, traceAction(options.aliveStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.assertSpecialControlState === undefined
         ? []
         : ([[options.assertSpecialControlState.stateNo, traceAction(options.assertSpecialControlState.stateNo)]] as Array<
@@ -7743,6 +7772,17 @@ value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = StageTime >= ${route.minStageTime}
+`;
+}
+
+function aliveStateEntryBlock(route: { stateNo: number }): string {
+  return `
+[State -1, Alive Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = Alive
 `;
 }
 

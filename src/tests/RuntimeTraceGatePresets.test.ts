@@ -22,6 +22,7 @@ import {
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
+  createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
   createSyntheticImportedInGuardDistFarTraceArtifact,
   createSyntheticImportedStateExitTraceArtifact,
@@ -620,6 +621,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([279]);
     expect(artifact.trace.frames.some((frame) => frame.tick >= 3)).toBe(true);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 279)).toBe(true);
+  });
+
+  it("creates a synthetic imported Alive artifact with owner-life branch evidence", () => {
+    const artifact = createSyntheticImportedAliveTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-alive-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(280);
+    expect(evidence?.executedStates).toContain(280);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([280]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([280]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 280 && actor.life > 0)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {

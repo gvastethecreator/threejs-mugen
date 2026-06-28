@@ -106,6 +106,11 @@ async function main() {
       artifact: presets.createSyntheticImportedStageTimeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-alive",
+      required: true,
+      artifact: presets.createSyntheticImportedAliveTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
@@ -1083,6 +1088,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-hitadd",
+    "synthetic-imported-alive",
     "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",

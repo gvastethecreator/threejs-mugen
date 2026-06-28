@@ -796,6 +796,8 @@ Use this as the next practical queue.
 
 135. Done bounded `AssertSpecial` control evidence cut: imported directional input now respects `NoWalk` by zeroing horizontal velocity and preserving the current controlled imported state instead of collapsing into sandbox walk/idle, and imported active states get a pre-facing `AssertSpecial` pass so bounded `NoAutoTurn` can hold facing before automatic facing updates. `pnpm qa:trace` now requires `synthetic-imported-assertspecial-control.json`, proving passive state `0` `AssertSpecial` execution, held facing with the opponent behind, no walk velocity/position drift under held-forward input, and `Invisible` render-opacity evidence. Claim allowed: bounded `NoAutoTurn`, `NoWalk`, and `Invisible` behavior is protected by runtime trace evidence. Claim blocked: global AssertSpecial flags, helper-owned AssertSpecial behavior, pause-layer lifetimes, exact team/redirect timing, and full MUGEN/IKEMEN parity remain future work.
 
+136. Done bounded `Alive` trigger evidence cut: `ExpressionEvaluator` and the compiler already classify `Alive` as executable; the QA trace suite now requires `synthetic-imported-alive.json`, proving a State -1 route can branch on current owner `life > 0` into state `280`. Focused runtime/compiler/trace tests cover the trigger and artifact. Claim allowed: imported State -1 routing can branch on bounded owner life. Claim blocked: exact KO transition timing, round-state lifetimes, helper/redirect owner life, team modes, and full IKEMEN/MUGEN `Alive` semantics.
+
 ## Release Evidence Bundle
 
 Every milestone should leave a bundle under `.scratch/qa/<milestone-or-feature>/`:
