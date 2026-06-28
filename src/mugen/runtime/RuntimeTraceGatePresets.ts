@@ -6,6 +6,7 @@ import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoF
 import { MatchWorld } from "./MatchWorld";
 import type {
   RuntimeTraceActorFrameRequirement,
+  RuntimeTraceActorFrameSequenceRequirement,
   RuntimeTraceControllerEventSequenceRequirement,
   RuntimeTraceFinalActorRequirement,
   RuntimeTraceGate,
@@ -2980,6 +2981,27 @@ export function officialKfmAutoGuardEndControllerSequence(): RuntimeTraceControl
   };
 }
 
+export function syntheticAutoGuardStartActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Synthetic 120 before 130 auto guard-start actor-frame order",
+    steps: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 120, animNo: 120, minFrames: 1 },
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
+    ],
+  };
+}
+
+export function syntheticAutoGuardEndActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Synthetic 120/130/140 auto guard-end actor-frame order",
+    steps: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 120, animNo: 120, minFrames: 1 },
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 130, animNo: 130, minFrames: 1 },
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 140, animNo: 140, minFrames: 1 },
+    ],
+  };
+}
+
 export function officialKfmStandGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
   return [
     {
@@ -3331,6 +3353,7 @@ export function createSyntheticImportedAutoGuardStartTraceArtifact(options: Runt
   return createImportedAutoGuardStartTraceArtifact(defender, {
     ...options,
     attacker,
+    requiredActorFrameSequences: [syntheticAutoGuardStartActorFrameSequence()],
     targetId: "synthetic-imported-auto-guard-start-golden",
     targetLabel: "Synthetic imported automatic guard-start route",
     notes: [
@@ -3355,6 +3378,7 @@ export function createSyntheticImportedAutoGuardEndTraceArtifact(options: Runtim
   return createImportedAutoGuardEndTraceArtifact(defender, {
     ...options,
     attacker,
+    requiredActorFrameSequences: [syntheticAutoGuardEndActorFrameSequence()],
     targetId: "synthetic-imported-auto-guard-end-golden",
     targetLabel: "Synthetic imported automatic guard-end route",
     notes: [
@@ -5053,6 +5077,7 @@ export function createImportedAutoGuardStartTraceArtifact(
     requiredExecutedControllers?: string[];
     requiredExecutedOperations?: string[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredFinalStateNo?: number;
   } = {},
 ): RuntimeTraceArtifact {
@@ -5092,6 +5117,7 @@ export function createImportedAutoGuardStartTraceArtifact(
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredControllerEventSequences: options.requiredControllerEventSequences,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredActiveCommands: ["holdback", "x"],
         requiredCombatReasons: ["whiff"],
         requiredFinalActors: [
@@ -5122,6 +5148,7 @@ export function createImportedAutoGuardEndTraceArtifact(
     requiredExecutedControllers?: string[];
     requiredExecutedOperations?: string[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? guardDistanceOnlyStage();
@@ -5160,6 +5187,7 @@ export function createImportedAutoGuardEndTraceArtifact(
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredControllerEventSequences: options.requiredControllerEventSequences,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredCombatReasons: ["whiff"],
         requiredFinalActors: [
           {

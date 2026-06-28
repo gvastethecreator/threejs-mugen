@@ -35,6 +35,8 @@ import {
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
+  syntheticAutoGuardEndActorFrameSequence,
+  syntheticAutoGuardStartActorFrameSequence,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
@@ -3054,6 +3056,10 @@ describe("RuntimeTraceGatePresets", () => {
       ctrl: false,
       source: "imported",
     });
+    const startFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120);
+    const holdFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 130);
+    expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardStartActorFrameSequence()]);
   });
 
   it("creates a synthetic imported automatic guard-end artifact without contact", () => {
@@ -3087,6 +3093,12 @@ describe("RuntimeTraceGatePresets", () => {
       ctrl: true,
       source: "imported",
     });
+    const startFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120);
+    const holdFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 130);
+    const endFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 140);
+    expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
+    expect(holdFrame?.lastTick).toBeLessThan(endFrame?.firstTick ?? 0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardEndActorFrameSequence()]);
   });
 
   it("creates a synthetic imported hitstun artifact with target get-hit evidence", () => {
