@@ -12,9 +12,10 @@ For any non-trivial pass, read in this order:
 2. `CONTEXT.md`
 3. `docs/ROADMAP_NAVIGATION.md`
 4. `docs/ROADMAP_PROGRESS_SYSTEM.md`
-5. `docs/ROADMAP_EXECUTION_BOARD.md`
-6. `docs/ROADMAP_CONTINUITY_GUIDE.md`
-7. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+5. `docs/ROADMAP_PACKAGE_MILESTONES.md`
+6. `docs/ROADMAP_EXECUTION_BOARD.md`
+7. `docs/ROADMAP_CONTINUITY_GUIDE.md`
+8. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 For a status answer, also read:
 
@@ -35,6 +36,7 @@ For architecture or source-of-truth changes, also read:
 | What rules should agents follow? | `AGENTS.md` |
 | What is this product/engine trying to become? | `CONTEXT.md` |
 | What is the current queue? | `docs/ROADMAP_EXECUTION_BOARD.md` |
+| What package should move next? | `docs/ROADMAP_PACKAGE_MILESTONES.md` |
 | How far are we from playable/full ports? | `docs/PORT_COMPLETION_SCORECARD.md` |
 | What changed recently? | `docs/BUILD_EXECUTION_BACKLOG.md` |
 | What is the compact current truth? | `docs/PROGRESS_TRACKER.md` |
@@ -110,6 +112,7 @@ See:
 - `docs/agents/issue-tracker.md`
 - `docs/agents/triage-labels.md`
 - `docs/agents/domain.md`
+- `docs/ROADMAP_PACKAGE_MILESTONES.md`
 
 ## Continuity Guide
 

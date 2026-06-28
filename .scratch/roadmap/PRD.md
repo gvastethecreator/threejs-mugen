@@ -41,6 +41,7 @@ Keep progress trackable through local markdown issues that connect each workstre
 
 - `docs/PROGRESS_TRACKER.md` stays compact and current.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth routing, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `docs/ROADMAP_PACKAGE_MILESTONES.md` owns compact package status, milestone exits, next recommended slice, and package closeout ownership.
 - `docs/ROADMAP_RELEASE_TARGETS.md` owns release-train targets, usable milestone gates, and score-movement rules.
 - `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 progress answers and score changes.
 - `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff board.
@@ -57,8 +58,9 @@ Roadmap tracking is useful when a new agent can read:
 2. `AGENTS.md`
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
 4. `docs/ROADMAP_NAVIGATION.md`
-5. `docs/PROGRESS_TRACKER.md`
-6. this PRD
-7. one relevant issue
+5. `docs/ROADMAP_PACKAGE_MILESTONES.md`
+6. `docs/PROGRESS_TRACKER.md`
+7. this PRD
+8. one relevant issue
 
 and then identify the next safe implementation slice without asking for basic context.

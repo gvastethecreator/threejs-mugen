@@ -8,7 +8,7 @@ This document translates the scorecard and roadmap into release trains. It does 
 
 | Train | Target | Current basis | Exit gates | Score effect |
 | --- | --- | --- | --- | --- |
-| R0 Project Control | Agents can resume work without re-asking basic setup questions. | `AGENTS.md`, `docs/agents/*`, `.scratch/roadmap/*`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, this file. | Local issue tracker documented, source-of-truth stack clear, ADR recorded. | No compatibility score movement. |
+| R0 Project Control | Agents can resume work without re-asking basic setup questions. | `AGENTS.md`, `docs/agents/*`, `.scratch/roadmap/*`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, this file. | Local issue tracker documented, source-of-truth stack clear, ADR recorded. | No compatibility score movement. |
 | R1 Playable Sandbox Stability | Private local match remains reliable while port work changes internals. | Native/generated fighters, Rooftop Dojo, HUD/debug/Studio smoke path. | `pnpm qa:smoke` green after visual/runtime changes; no broken default match route. | Can move playable sandbox only with visual/runtime evidence. |
 | R2 MUGEN-lite Imported MVP | KFM/Common1-style package can run common authored routes with reports. | DEF/AIR/CMD/CNS/SFF/SND parsers, trace gates, optional KFM fixture routes. | Idle/walk/crouch/jump/attack/guard/get-hit/fall/recovery routes from imported data; unsupported features visible. | Can move practical compatibility and MUGEN MVP scores. |
 | R3 Practical Character Corpus | Several local characters/stages load partially without hardcoded patches. | Compatibility profiles, fixture matrix, SFF/stage parser paths. | Multi-fixture trace/report matrix; no fatal crashes; unsupported features categorized. | Can move broad MUGEN subset band. |
@@ -66,7 +66,7 @@ Required public-facing wording:
 - If a runtime behavior change can be trace-gated, do that before UI polish.
 - If a UI change does not expose real runtime/project/evidence/build data, defer it.
 - If a docs change clarifies which code gate comes next, it is valid, but it does not raise scores.
-- If two docs disagree, prefer `AGENTS.md` for rules, `docs/PORT_COMPLETION_SCORECARD.md` for scores, `docs/ROADMAP_EXECUTION_BOARD.md` for next queue, and this file for release target sequencing.
+- If two docs disagree, prefer `AGENTS.md` for rules, `docs/PORT_COMPLETION_SCORECARD.md` for scores, `docs/ROADMAP_PACKAGE_MILESTONES.md` for package selection, `docs/ROADMAP_EXECUTION_BOARD.md` for next queue, and this file for release target sequencing.
 
 ## Closeout Rules By Train
 
@@ -81,9 +81,9 @@ Required public-facing wording:
 
 ## Current Next Slice Menu
 
-Use `docs/ROADMAP_EXECUTION_BOARD.md` for exact queue status. The safe next slices are:
+Use `docs/ROADMAP_PACKAGE_MILESTONES.md` for package selection and `docs/ROADMAP_EXECUTION_BOARD.md` for exact queue status. The safe next slices are:
 
-- R1: exact controller/VM tick-order inside Common1 recovery loop, or broader guard/Common1 confirmation.
+- R1: required `HitBy` mismatch-reject trace, then exact controller/VM tick-order inside Common1 recovery loop or broader guard/Common1 confirmation.
 - R1 presentation: first real FightFX/common spark asset lookup beyond the current `S`/`F`/unprefixed source metadata and fallback geometry.
 - R2: one more mutable effect/helper/projectile/explod ownership boundary with focused tests and stable trace behavior.
 - S1: shared Build/Evidence status contract with visual QA.

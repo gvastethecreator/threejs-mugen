@@ -13,6 +13,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 - `README.md`
 - `docs/ROADMAP_NAVIGATION.md`
 - `docs/ROADMAP_PROGRESS_SYSTEM.md`
+- `docs/ROADMAP_PACKAGE_MILESTONES.md`
 - `docs/ROADMAP_CONTINUITY_GUIDE.md`
 - `docs/DELIVERY_ROADMAP.md`
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`
@@ -60,6 +61,7 @@ When a user asks "how far are we?" or "0 to 100?", answer from `docs/PORT_COMPLE
 - `setup-project` output for this repo is local markdown issues, canonical labels, and single-context docs.
 - If an agent starts in `D:\DEV\mugen-sandbox-prototypes`, first enter `mugen-web-sandbox`; parent `AGENTS.md` is only a router.
 - `ROADMAP_CONTINUITY_GUIDE.md` is the handoff bridge from broad roadmap intent to the next evidence-backed implementation slice.
+- `ROADMAP_PACKAGE_MILESTONES.md` is the compact package ladder for choosing the next code slice after setup/docs work.
 - Product/interface skills should improve Studio/workbench usability without inventing status not backed by runtime/project/evidence data.
 - `imagegen` and `sprite-atlas-builder` work belongs to generated/native assets. Keep provenance, QA, and bad-source regeneration rules visible.
 - Runtime/Three.js skills must preserve the playable match and close visible changes with browser smoke plus visual inspection.

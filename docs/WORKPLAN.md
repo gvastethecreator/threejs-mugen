@@ -9,6 +9,7 @@ Authoritative horizon docs:
 - `MASTER_CONSTRUCTION_PLAN.md`: broad release train.
 - `CONSTRUCTION_WAVES.md`: practical wave plan with build packages, dependencies, acceptance gates, anti-claims, and next rounds.
 - `ROADMAP_PROGRESS_SYSTEM.md`: source-of-truth stack, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `ROADMAP_PACKAGE_MILESTONES.md`: compact package ladder, milestone exits, next recommended slice, and package closeout ownership.
 - `ROADMAP_RELEASE_TARGETS.md`: release-train targets, usable milestone gates, and score-movement rules.
 - `ROADMAP_EXECUTION_BOARD.md`: current queue, package acceptance, and handoff checklist.
 - `WORKPLAN.md`: current execution ledger.
@@ -50,6 +51,7 @@ Construction lock for the expanded horizon:
 Operational queue lock:
 
 - Use `docs/ROADMAP_EXECUTION_BOARD.md` to pick the next focused package.
+- Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to confirm the active package ladder and default next code slice after docs/setup work.
 - Use `docs/ROADMAP_RELEASE_TARGETS.md` to keep "usable MVP" wording tied to gates instead of vibes.
 - Use `docs/ROADMAP_PROGRESS_SYSTEM.md` when deciding which docs must change and what closeout evidence is required.
 - Do not start a package unless its linked `.scratch/roadmap/issues/` file has acceptance and blocked claims.
@@ -166,7 +168,7 @@ Rules added by the review:
 
 This table is the tie-breaker when older roadmap docs repeat similar queues. Build from top to bottom unless a newer round explicitly documents why it is taking a parallel evidence-only slice. A row is not "done" because code exists; it is done when the acceptance artifact, closeout, allowed claim, and blocked claim language all line up.
 
-Progress control now also has a compact status board in `docs/PROGRESS_TRACKER.md`. Keep that file short: update it after meaningful milestones, score changes, or roadmap-order changes. Keep detailed evidence and historical claims here and in `docs/BUILD_EXECUTION_BACKLOG.md`.
+Progress control now also has a compact status board in `docs/PROGRESS_TRACKER.md` and a compact package ladder in `docs/ROADMAP_PACKAGE_MILESTONES.md`. Keep the tracker short, use the package ladder for slice selection, and keep detailed evidence plus historical claims here and in `docs/BUILD_EXECUTION_BACKLOG.md`.
 
 | Order | Build | Code Anchors | Acceptance Artifact | Required Closeout | Claim Allowed | Still Blocked |
 | --- | --- | --- | --- | --- | --- | --- |

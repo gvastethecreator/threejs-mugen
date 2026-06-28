@@ -14,6 +14,7 @@ Use these files together:
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
 | `docs/ROADMAP_NAVIGATION.md` | Fast route map for docs ownership, package lanes, score evidence, setup-project profile, and anti-drift rules. |
 | `docs/ROADMAP_PROGRESS_SYSTEM.md` | Source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template. |
+| `docs/ROADMAP_PACKAGE_MILESTONES.md` | Compact active package ladder, milestone exits, next recommended slice, and package closeout ownership. |
 | `docs/ROADMAP_CONTINUITY_GUIDE.md` | Continuity rules, next useful gates, documentation update matrix, and closeout template for long-running work. |
 | `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` | Task-type checklist for runtime, renderer, Studio, generated assets, IKEMEN scanner, modular boundaries, docs-only setup, and score movement. |
 | `docs/ROADMAP_RELEASE_TARGETS.md` | Release-train targets, usable milestones, and score-movement rules. |
@@ -41,14 +42,14 @@ Docs/setup work in this round does not change scores. It improves project-contro
 
 | Slot | Cut | Done when |
 | --- | --- | --- |
-| 1 | R1 runtime compatibility gate | One trigger/controller/Common1 route has focused test or trace evidence plus claim allowed/blocked docs. |
+| 1 | R1 runtime compatibility gate | Default next slice: required `HitBy` mismatch-reject trace, unless already closed by newer code. |
 | 2 | R2 MatchWorld ownership | One mutable behavior moves behind a named system with focused coverage and no hidden checksum drift. |
 | 3 | S1 Studio trust chain | Evidence and Build show one shared truthful status/next action, visually verified. |
 | 4 | A1 generated asset QA/provenance | One generated/native fighter or asset record links source prompt, sheet, atlas, QA, collisions, and playtest result. |
 | 5 | I1 IKEMEN scanner | One more IKEMEN-only signal is classified by tests as recognized, unsupported, or unknown. |
 | 6 | M1 shared boundary | One shared contract is proven free of fighting/MUGEN leakage. |
 
-Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unless the user changes priority.
+Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unless the user changes priority. Use `docs/ROADMAP_PACKAGE_MILESTONES.md` to choose the exact package.
 
 ## Evidence Snapshot
 
@@ -60,9 +61,14 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
 | IKEMEN | Scanner-only profile for ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime extensions. |
 | Modular engine | Shared contracts and boundary tests. | Platformer proof slice blocked until fighting contracts stay stable. |
-| Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, and closeout. | Must keep docs synchronized after every score/support/queue change. |
+| Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, and closeout. | Must keep docs synchronized after every score/support/queue change. |
 
 ## Next Required Cuts
+
+0. **Hit-eligibility required trace gap**
+   - Add required `HitBy` mismatch-reject trace for `HitBy value = S,NT` rejecting `HitDef attr = S,NA`.
+   - Gate typed `eligibility:hitby` reject evidence and prove no accepted direct-hit damage.
+   - This complements `synthetic-imported-hitby-allow.json` and `synthetic-imported-reject.json` without claiming exact attr grammar or slot priority.
 
 1. **MatchWorld ownership**
    - Move more lifecycle/combat/pause/target behavior behind named systems.

@@ -9,7 +9,7 @@ This checklist turns the roadmap into repeatable execution steps. It is not a ne
 Before changing code or docs:
 
 1. Run `git status --short --branch`.
-2. Read `AGENTS.md`, `CONTEXT.md`, `docs/ROADMAP_NAVIGATION.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
+2. Read `AGENTS.md`, `CONTEXT.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 3. Open the relevant local issue under `.scratch/roadmap/issues/`.
 4. Identify the work type: runtime compatibility, visual runtime, Studio/product workflow, generated assets, IKEMEN scanner/reference, modular engine boundary, or docs/project control.
 5. Name the expected evidence before editing.

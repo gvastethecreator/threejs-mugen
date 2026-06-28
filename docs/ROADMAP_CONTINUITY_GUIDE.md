@@ -53,6 +53,8 @@ These are good next implementation slices because they can be proven without pre
 
 Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack parity until the smaller routes above stay green.
 
+The compact package ladder and current default next slice live in `docs/ROADMAP_PACKAGE_MILESTONES.md`. After docs/setup work, return there before choosing code.
+
 ## Next Useful Studio Gates
 
 Studio should become a production workbench, not a static dashboard. Good next slices:

@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-28
 
-This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
+This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
 Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when turning this board into a next implementation cut or when resuming after a long pause.
 
@@ -13,12 +13,13 @@ Use this order before starting broad work:
 1. `CONTEXT.md`
 2. `AGENTS.md`
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
-4. `docs/ROADMAP_RELEASE_TARGETS.md`
-5. `docs/ROADMAP_EXECUTION_BOARD.md`
-6. `docs/ROADMAP_CONTINUITY_GUIDE.md`
-7. `docs/PROGRESS_TRACKER.md`
-8. `docs/WORKPLAN.md`
-9. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+4. `docs/ROADMAP_PACKAGE_MILESTONES.md`
+5. `docs/ROADMAP_RELEASE_TARGETS.md`
+6. `docs/ROADMAP_EXECUTION_BOARD.md`
+7. `docs/ROADMAP_CONTINUITY_GUIDE.md`
+8. `docs/PROGRESS_TRACKER.md`
+9. `docs/WORKPLAN.md`
+10. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
 
@@ -57,18 +58,19 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. R1: move one Common1 recovery/guard tick-order slice from summarized evidence toward exact controller-loop ordering.
-2. R1: promote one more optional official KFM guard/fall/recovery route into a stricter local oracle when the private fixture exists.
-3. R1 presentation: deepen FightFX/common spark presentation beyond first-pass package `fight.def`/AIR/SFF loading, decoded system-SFF provider registration, bounded AIR-duration frame advance, and bounded AIR/SFF axis binding: exact layering, scale, palette, and motif/screenpack ownership remain open.
-4. R2: deepen one `MatchWorld` ownership boundary around target links, effect ordering, helper lifecycle, or presentation effects without behavior drift.
-5. R2: add trace evidence for effect/combat ordering if ownership changes can affect checksums.
-6. S1: make Studio Evidence and Build read one shared status/next-action contract.
-7. S1: add visual QA for any Studio workflow reshaping, using real evidence rows and blocked actions.
-8. A1: store generated asset prompt/source/atlas/contact-sheet/QA/collision/playtest provenance as one record.
-9. A1: surface motion/scale/baseline QA failures so bad sprites trigger regeneration, not cropping.
-10. I1: expand scanner-only Ikemen-GO references from source/docs into recognized/unsupported/unknown findings with tests.
-11. M1: prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage.
-12. R3 later: add another private fixture corpus package only as local evidence; no bundled third-party assets.
+1. R1: add required `HitBy` mismatch-reject trace so the bounded allow-list has both accept and reject evidence.
+2. R1: move one Common1 recovery/guard tick-order slice from summarized evidence toward exact controller-loop ordering.
+3. R1: promote one more optional official KFM guard/fall/recovery route into a stricter local oracle when the private fixture exists.
+4. R1 presentation: deepen FightFX/common spark presentation beyond first-pass package `fight.def`/AIR/SFF loading, decoded system-SFF provider registration, bounded AIR-duration frame advance, and bounded AIR/SFF axis binding: exact layering, scale, palette, and motif/screenpack ownership remain open.
+5. R2: deepen one `MatchWorld` ownership boundary around target links, effect ordering, helper lifecycle, or presentation effects without behavior drift.
+6. R2: add trace evidence for effect/combat ordering if ownership changes can affect checksums.
+7. S1: make Studio Evidence and Build read one shared status/next-action contract.
+8. S1: add visual QA for any Studio workflow reshaping, using real evidence rows and blocked actions.
+9. A1: store generated asset prompt/source/atlas/contact-sheet/QA/collision/playtest provenance as one record.
+10. A1: surface motion/scale/baseline QA failures so bad sprites trigger regeneration, not cropping.
+11. I1: expand scanner-only Ikemen-GO references from source/docs into recognized/unsupported/unknown findings with tests.
+12. M1: prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage.
+13. R3 later: add another private fixture corpus package only as local evidence; no bundled third-party assets.
 
 ## Active Implementation Queue
 
