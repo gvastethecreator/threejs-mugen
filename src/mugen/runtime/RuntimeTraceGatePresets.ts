@@ -2663,7 +2663,7 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
   });
 }
 
-function defaultStandGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+export function defaultStandGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "150/151 named guard-hit controller and typed operation order",
     actorId: "p2",
@@ -2680,7 +2680,7 @@ function defaultStandGuardHitControllerSequence(): RuntimeTraceControllerEventSe
   };
 }
 
-function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+export function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "152/153 named crouch guard-hit controller and typed operation order",
     actorId: "p2",
@@ -2697,7 +2697,7 @@ function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventS
   };
 }
 
-function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+export function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "154/155 named air guard-hit controller and typed operation order",
     actorId: "p2",
@@ -2711,6 +2711,63 @@ function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequ
       { stateNo: 155, controller: "CtrlSet", name: "Regain Air Guard Control" },
       { stateNo: 155, operation: "resource:ctrlset" },
       { stateNo: 155, controller: "ChangeState", name: "Air Guard Hit Over" },
+    ],
+  };
+}
+
+export function officialKfmStandGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 150/151 guard-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 150, controller: "ChangeAnim" },
+      { stateNo: 150, controller: "ChangeState" },
+      { stateNo: 151, controller: "HitVelSet" },
+      { stateNo: 151, operation: "kinematic:hitvelset" },
+      { stateNo: 151, controller: "CtrlSet" },
+      { stateNo: 151, operation: "resource:ctrlset" },
+      { stateNo: 151, controller: "ChangeState" },
+    ],
+  };
+}
+
+export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 152/153 crouch guard-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 152, controller: "ChangeAnim" },
+      { stateNo: 152, controller: "ChangeState" },
+      { stateNo: 153, controller: "HitVelSet" },
+      { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "CtrlSet" },
+      { stateNo: 153, operation: "resource:ctrlset" },
+      { stateNo: 153, controller: "ChangeState" },
+    ],
+  };
+}
+
+export function officialKfmAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 154/155 air guard-hit and landing controller order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 154, controller: "ChangeAnim" },
+      { stateNo: 154, controller: "ChangeState" },
+      { stateNo: 155, controller: "HitVelSet" },
+      { stateNo: 155, operation: "kinematic:hitvelset" },
+      { stateNo: 155, controller: "VelAdd" },
+      { stateNo: 155, controller: "CtrlSet" },
+      { stateNo: 155, operation: "resource:ctrlset" },
+      { stateNo: 155, controller: "VelSet" },
+      { stateNo: 155, operation: "kinematic:velset" },
+      { stateNo: 155, controller: "PosSet" },
+      { stateNo: 155, operation: "kinematic:posset" },
+      { stateNo: 155, controller: "ChangeState" },
+      { stateNo: 52, controller: "ChangeState" },
     ],
   };
 }

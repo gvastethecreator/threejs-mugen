@@ -26,6 +26,9 @@ import {
   createImportedDefaultGuardStateTraceArtifact,
   createImportedGuardTraceArtifact,
   createSyntheticImportedHitstunTraceArtifact,
+  officialKfmAirGuardHitControllerSequence,
+  officialKfmCrouchGuardHitControllerSequence,
+  officialKfmStandGuardHitControllerSequence,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
@@ -2491,6 +2494,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([150, 151]));
     expect(artifact.gates[0]?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+  });
+
+  it("exports official KFM guard controller-order requirements for optional fixture QA", () => {
+    expect(officialKfmStandGuardHitControllerSequence()).toMatchObject({
+      label: "Official KFM 150/151 guard-hit controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 150, controller: "ChangeAnim" },
+        { stateNo: 150, controller: "ChangeState" },
+        { stateNo: 151, controller: "HitVelSet" },
+        { stateNo: 151, operation: "kinematic:hitvelset" },
+        { stateNo: 151, controller: "CtrlSet" },
+        { stateNo: 151, operation: "resource:ctrlset" },
+        { stateNo: 151, controller: "ChangeState" },
+      ],
+    });
+    expect(officialKfmCrouchGuardHitControllerSequence().steps).toEqual([
+      { stateNo: 152, controller: "ChangeAnim" },
+      { stateNo: 152, controller: "ChangeState" },
+      { stateNo: 153, controller: "HitVelSet" },
+      { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "CtrlSet" },
+      { stateNo: 153, operation: "resource:ctrlset" },
+      { stateNo: 153, controller: "ChangeState" },
+    ]);
+    expect(officialKfmAirGuardHitControllerSequence().steps).toEqual([
+      { stateNo: 154, controller: "ChangeAnim" },
+      { stateNo: 154, controller: "ChangeState" },
+      { stateNo: 155, controller: "HitVelSet" },
+      { stateNo: 155, operation: "kinematic:hitvelset" },
+      { stateNo: 155, controller: "VelAdd" },
+      { stateNo: 155, controller: "CtrlSet" },
+      { stateNo: 155, operation: "resource:ctrlset" },
+      { stateNo: 155, controller: "VelSet" },
+      { stateNo: 155, operation: "kinematic:velset" },
+      { stateNo: 155, controller: "PosSet" },
+      { stateNo: 155, operation: "kinematic:posset" },
+      { stateNo: 155, controller: "ChangeState" },
+      { stateNo: 52, controller: "ChangeState" },
+    ]);
   });
 
   it("creates a synthetic imported crouch guard-state artifact from command expressions", () => {

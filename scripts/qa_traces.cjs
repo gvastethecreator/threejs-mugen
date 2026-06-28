@@ -741,10 +741,12 @@ async function main() {
         name: "kfm-official-default-guard-state",
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+          requiredControllerEventSequences: [presets.officialKfmStandGuardHitControllerSequence()],
           targetId: "kfm-official-default-guard-state-golden",
           targetLabel: "Official KFM Common1 guard-hit route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 guard-hit states 150 and 151 after blocking a HitDef without p2stateno. Guard-distance, guard-start, and guard-end parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 guard-hit states 150 and 151 after blocking a HitDef without p2stateno, with bounded controller/operation order evidence. Guard-distance, guard-start, and guard-end parity remain future work.`,
           ],
         }),
       });
@@ -754,11 +756,13 @@ async function main() {
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           script: presets.importedDefaultCrouchGuardStateScript(),
           requiredExecutedStates: [200, 153],
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+          requiredControllerEventSequences: [presets.officialKfmCrouchGuardHitControllerSequence()],
           requiredActiveCommands: ["holddown", "x"],
           targetId: "kfm-official-default-crouch-guard-state-golden",
           targetLabel: "Official KFM Common1 crouch guard-hit route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can evaluate Common1 command expressions and enter crouch guard-hit state 153 after blocking a HitDef while holding down-back. Guard-distance, guard-start, guard-end, sparks, sounds, and exact crouch/air guard parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can evaluate Common1 command expressions and enter crouch guard-hit state 153 after blocking a HitDef while holding down-back, with bounded controller/operation order evidence. Guard-distance, guard-start, guard-end, sparks, sounds, and exact crouch/air guard parity remain future work.`,
           ],
         }),
       });
@@ -776,7 +780,9 @@ async function main() {
           }),
           script: presets.importedDefaultAirGuardStateScript(),
           requiredExecutedStates: [200, 154, 155, 52],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VarSet", "VelAdd"],
+          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "PosSet", "VarSet", "VelAdd", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:posset", "kinematic:velset"],
+          requiredControllerEventSequences: [presets.officialKfmAirGuardHitControllerSequence()],
           requiredActiveCommands: ["holdback", "x"],
           requiredFinalActors: [
             {
@@ -793,7 +799,7 @@ async function main() {
           targetId: "kfm-official-default-air-guard-state-golden",
           targetLabel: "Official KFM Common1 air guard-hit route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 air guard-hit states 154 and 155 after blocking an A-guardable HitDef while airborne and holding back. Exact air guard physics, landing, guard-distance, guard-start, guard-end, sparks, sounds, and IKEMEN parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 air guard-hit states 154 and 155 after blocking an A-guardable HitDef while airborne and holding back, then land through state 52 with bounded controller/operation order evidence. Exact air guard physics, landing, guard-distance, guard-start, guard-end, sparks, sounds, and IKEMEN parity remain future work.`,
           ],
         }),
       });
