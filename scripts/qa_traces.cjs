@@ -814,10 +814,13 @@ async function main() {
             guardFlag: "MA",
             guardDistance: 180,
           }),
+          requiredExecutedControllers: ["ChangeAnim", "ChangeState", "HitDef", "StateTypeSet"],
+          requiredExecutedOperations: ["hitdef", "metadata:statetypeset"],
+          requiredControllerEventSequences: [presets.officialKfmAutoGuardStartControllerSequence()],
           targetId: "kfm-official-auto-guard-start-golden",
           targetLabel: "Official KFM Common1 automatic guard-start route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter its Common1 guard-start route from held-back input plus bounded InGuardDist before contact. Exact proximity guard, guard end, air guard, sparks, sounds, and IKEMEN parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter its Common1 guard-start route from held-back input plus bounded InGuardDist before contact, including ordered ChangeAnim, StateTypeSet, typed metadata, and ChangeState evidence through 120 -> 130. Exact proximity guard, guard end, air guard, sparks, sounds, and IKEMEN parity remain future work.`,
           ],
         }),
       });
@@ -832,10 +835,13 @@ async function main() {
             guardFlag: "MA",
             guardDistance: 180,
           }),
+          requiredExecutedControllers: ["ChangeAnim", "ChangeState", "HitDef", "StateTypeSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:velset", "metadata:statetypeset"],
+          requiredControllerEventSequences: [presets.officialKfmAutoGuardEndControllerSequence()],
           targetId: "kfm-official-auto-guard-end-golden",
           targetLabel: "Official KFM Common1 automatic guard-end route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can leave its Common1 guard route through state 140 and return to idle/control after bounded InGuardDist is no longer true. Exact guard-end timing, proximity guard, air guard, sparks, sounds, and IKEMEN parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can leave its Common1 guard route through state 140 and return to idle/control after bounded InGuardDist is no longer true, including ordered 120 -> 130 guard-start evidence, 130 stop-guarding ChangeState, and idle VelSet typed operation evidence. Exact guard-end timing, proximity guard, air guard, sparks, sounds, and IKEMEN parity remain future work.`,
           ],
         }),
       });

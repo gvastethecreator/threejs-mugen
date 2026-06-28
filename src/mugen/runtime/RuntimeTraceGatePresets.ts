@@ -2772,6 +2772,39 @@ export function officialKfmAirGuardHitControllerSequence(): RuntimeTraceControll
   };
 }
 
+export function officialKfmAutoGuardStartControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 120/130 auto guard-start controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 120, controller: "ChangeAnim" },
+      { stateNo: 120, controller: "StateTypeSet" },
+      { stateNo: 120, operation: "metadata:statetypeset" },
+      { stateNo: 120, controller: "ChangeState" },
+      { stateNo: 130, controller: "ChangeAnim" },
+    ],
+  };
+}
+
+export function officialKfmAutoGuardEndControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 120/130/140 auto guard-end controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 120, controller: "ChangeAnim" },
+      { stateNo: 120, controller: "StateTypeSet" },
+      { stateNo: 120, operation: "metadata:statetypeset" },
+      { stateNo: 120, controller: "ChangeState" },
+      { stateNo: 130, controller: "ChangeAnim" },
+      { stateNo: 130, controller: "ChangeState" },
+      { stateNo: 0, controller: "VelSet" },
+      { stateNo: 0, operation: "kinematic:velset" },
+    ],
+  };
+}
+
 export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-crouch-guard-state",
@@ -4631,6 +4664,9 @@ export function createImportedAutoGuardStartTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredExecutedStates?: number[];
+    requiredExecutedControllers?: string[];
+    requiredExecutedOperations?: string[];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
     requiredFinalStateNo?: number;
   } = {},
 ): RuntimeTraceArtifact {
@@ -4667,8 +4703,9 @@ export function createImportedAutoGuardStartTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [120, 130, 200],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActiveCommands: ["holdback", "x"],
         requiredCombatReasons: ["whiff"],
         requiredFinalActors: [
@@ -4696,6 +4733,9 @@ export function createImportedAutoGuardEndTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredExecutedStates?: number[];
+    requiredExecutedControllers?: string[];
+    requiredExecutedOperations?: string[];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? guardDistanceOnlyStage();
@@ -4731,8 +4771,9 @@ export function createImportedAutoGuardEndTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [120, 130, 140, 200],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredCombatReasons: ["whiff"],
         requiredFinalActors: [
           {

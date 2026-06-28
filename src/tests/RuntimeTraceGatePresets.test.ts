@@ -27,6 +27,8 @@ import {
   createImportedGuardTraceArtifact,
   createSyntheticImportedHitstunTraceArtifact,
   officialKfmAirGuardHitControllerSequence,
+  officialKfmAutoGuardEndControllerSequence,
+  officialKfmAutoGuardStartControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmStandGuardHitControllerSequence,
   createSyntheticImportedAutoGuardEndTraceArtifact,
@@ -2534,6 +2536,31 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 155, operation: "kinematic:posset" },
       { stateNo: 155, controller: "ChangeState" },
       { stateNo: 52, controller: "ChangeState" },
+    ]);
+  });
+
+  it("exports official KFM auto guard-start and guard-end controller-order requirements", () => {
+    expect(officialKfmAutoGuardStartControllerSequence()).toMatchObject({
+      label: "Official KFM 120/130 auto guard-start controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 120, controller: "ChangeAnim" },
+        { stateNo: 120, controller: "StateTypeSet" },
+        { stateNo: 120, operation: "metadata:statetypeset" },
+        { stateNo: 120, controller: "ChangeState" },
+        { stateNo: 130, controller: "ChangeAnim" },
+      ],
+    });
+    expect(officialKfmAutoGuardEndControllerSequence().steps).toEqual([
+      { stateNo: 120, controller: "ChangeAnim" },
+      { stateNo: 120, controller: "StateTypeSet" },
+      { stateNo: 120, operation: "metadata:statetypeset" },
+      { stateNo: 120, controller: "ChangeState" },
+      { stateNo: 130, controller: "ChangeAnim" },
+      { stateNo: 130, controller: "ChangeState" },
+      { stateNo: 0, controller: "VelSet" },
+      { stateNo: 0, operation: "kinematic:velset" },
     ]);
   });
 
