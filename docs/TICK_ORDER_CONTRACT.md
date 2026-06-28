@@ -78,7 +78,7 @@ Official KFM recovery completion requires a trace naming `5000 -> 5030 -> 5050 -
 
 ## Guard Order
 
-Current guard behavior is useful but not parity. A bounded auto guard-start bridge now runs after the attacker advances and before the defender advances, so imported defenders holding back can enter defender-owned Common1-style `120 -> 130` when `InGuardDist` is true before contact. A bounded guard-end bridge can then leave through `140` and return to idle/control after `InGuardDist` is no longer true.
+Current guard behavior is useful but not parity. A bounded auto guard-start bridge now runs after the attacker advances and before the defender advances, so imported defenders holding back can enter defender-owned Common1-style `120 -> 130` when `InGuardDist` is true before contact. A bounded guard-end bridge can then leave through `140` and return to idle/control after `InGuardDist` is no longer true. The required synthetic stand guard-hit gate now also proves ordered named controller/typed-operation evidence for `150 -> 151`: `ChangeAnim` -> `ChangeState` -> `HitVelSet` -> `kinematic:hitvelset` -> `CtrlSet` -> `resource:ctrlset` -> `ChangeState`.
 
 The remaining exact guard-state gate must prove:
 
@@ -88,7 +88,7 @@ The remaining exact guard-state gate must prove:
 - guardflag eligibility
 - parsed `guard.dist` where present, with bounded fallback distance
 - guard damage/stun/push
-- state/anim route where supported
+- state/anim/controller/typed-operation route where supported
 - unsupported guard-state params
 - final control/recovery constraints
 

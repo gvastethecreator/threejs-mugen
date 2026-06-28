@@ -4,7 +4,12 @@ import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { MatchWorld } from "./MatchWorld";
-import type { RuntimeTraceFinalActorRequirement, RuntimeTraceGate, RuntimeTraceInputFrame } from "./RuntimeTrace";
+import type {
+  RuntimeTraceControllerEventSequenceRequirement,
+  RuntimeTraceFinalActorRequirement,
+  RuntimeTraceGate,
+  RuntimeTraceInputFrame,
+} from "./RuntimeTrace";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "./RuntimeTrace";
 import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
 import { createRuntimeTraceArtifact } from "./RuntimeTraceArtifact";
@@ -2651,6 +2656,22 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
     targetId: "synthetic-imported-default-guard-state-golden",
     targetLabel: "Synthetic imported Common1 guard-hit route",
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "150/151 named guard-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
+          { stateNo: 151, operation: "resource:ctrlset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
+        ],
+      },
+    ],
     notes: [
       "Synthetic imported guard-state trace proves a held-back defender can enter its own Common1-style guard-hit states 150 and 151 after blocking an imported HitDef, including runtime-backed guard.slidetime and guard.ctrltime exposure through GetHitVar. It does not claim full guard-distance, guard-start, or guard-end parity.",
     ],
@@ -4456,6 +4477,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
     requiredExecutedStates?: number[];
     requiredExecutedControllers?: string[];
     requiredExecutedOperations?: string[];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
     requiredActiveCommands?: string[];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
   } = {},
@@ -4494,6 +4516,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 150, 151],
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef", "HitVelSet"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "resource:ctrlset"],
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],

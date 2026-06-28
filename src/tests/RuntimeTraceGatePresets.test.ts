@@ -2426,6 +2426,12 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
+      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet", "CtrlSet"]),
+    );
+    expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(
+      expect.arrayContaining(["kinematic:hitvelset", "resource:ctrlset"]),
+    );
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
@@ -2437,6 +2443,22 @@ describe("RuntimeTraceGatePresets", () => {
       guardSlideTime: 5,
       guardControlTime: 7,
     });
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "150/151 named guard-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
+          { stateNo: 151, operation: "resource:ctrlset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
+        ],
+      },
+    ]);
   });
 
   it("creates a reusable imported default guard-state artifact for imported fighters", () => {
