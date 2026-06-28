@@ -2950,6 +2950,7 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
     targetLabel: "Synthetic imported Common1 guard-hit route",
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultStandGuardHitControllerSequence()],
+    requiredActorFrames: syntheticStandGuardHitPhysicsFrames(),
     notes: [
       "Synthetic imported guard-state trace proves a held-back defender can enter its own Common1-style guard-hit states 150 and 151 after blocking an imported HitDef, including runtime-backed guard.slidetime and guard.ctrltime exposure through GetHitVar. It does not claim full guard-distance, guard-start, or guard-end parity.",
     ],
@@ -3006,6 +3007,118 @@ export function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEv
       { stateNo: 155, controller: "ChangeState", name: "Air Guard Hit Over" },
     ],
   };
+}
+
+export function syntheticStandGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 150,
+      animNo: 150,
+      stateType: "S",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 151,
+      animNo: 150,
+      stateType: "S",
+      moveType: "H",
+      physics: "S",
+      minFrames: 8,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 2,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
+}
+
+export function syntheticCrouchGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 152,
+      animNo: 10,
+      stateType: "C",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 153,
+      animNo: 150,
+      stateType: "C",
+      moveType: "H",
+      physics: "C",
+      minFrames: 8,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
+}
+
+export function syntheticAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 154,
+      animNo: 40,
+      stateType: "A",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtMost: -30,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 155,
+      animNo: 150,
+      stateType: "A",
+      moveType: "H",
+      physics: "N",
+      minFrames: 8,
+      observedPosYAtMost: -10,
+      observedVelXAtLeast: 2,
+      observedVelYAtLeast: 6,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
 }
 
 export function assertSpecialGuardDenyControllerSequence(options: {
@@ -3277,6 +3390,7 @@ export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: Ru
     requiredExecutedStates: [200, 152, 153],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
+    requiredActorFrames: syntheticCrouchGuardHitPhysicsFrames(),
     requiredActiveCommands: ["holddown", "x"],
     targetId: "synthetic-imported-crouch-guard-state-golden",
     targetLabel: "Synthetic imported Common1 crouch guard-hit route",
@@ -3298,6 +3412,7 @@ export function createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(opt
     requiredExecutedStates: [200, 152, 153],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
+    requiredActorFrames: syntheticCrouchGuardHitPhysicsFrames(),
     requiredActiveCommands: ["holdback", "holddown", "x"],
     targetId: "synthetic-imported-diagonal-crouch-guard-state-golden",
     targetLabel: "Synthetic imported atomic DB crouch guard-hit route",
@@ -3337,6 +3452,7 @@ export function createSyntheticImportedAirGuardStateTraceArtifact(options: Runti
     requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
+    requiredActorFrames: syntheticAirGuardHitPhysicsFrames(),
     requiredActiveCommands: ["holdback", "x"],
     requiredFinalActors: [
       {

@@ -36,8 +36,11 @@ import {
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
+  syntheticAirGuardHitPhysicsFrames,
   syntheticAutoGuardEndActorFrameSequence,
   syntheticAutoGuardStartActorFrameSequence,
+  syntheticCrouchGuardHitPhysicsFrames,
+  syntheticStandGuardHitPhysicsFrames,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
@@ -2763,6 +2766,7 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticStandGuardHitPhysicsFrames());
   });
 
   it("creates a reusable imported default guard-state artifact for imported fighters", () => {
@@ -2908,6 +2912,40 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
+  it("exports synthetic guard-hit actor-frame physics requirements", () => {
+    expect(syntheticStandGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 150, animNo: 150, stateType: "S", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 151,
+        animNo: 150,
+        stateType: "S",
+        moveType: "H",
+        physics: "S",
+        minFrames: 8,
+        observedVelXAtLeast: 2,
+      }),
+    ]);
+    expect(syntheticCrouchGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 152, animNo: 10, stateType: "C", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({ actorId: "p2", stateNo: 153, animNo: 150, stateType: "C", moveType: "H", physics: "C", minFrames: 8 }),
+    ]);
+    expect(syntheticAirGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 154, animNo: 40, stateType: "A", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 8,
+        observedVelXAtLeast: 2,
+        observedVelYAtLeast: 6,
+      }),
+    ]);
+  });
+
   it("creates a synthetic imported crouch guard-state artifact from command expressions", () => {
     const artifact = createSyntheticImportedCrouchGuardStateTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",
@@ -2955,6 +2993,7 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticCrouchGuardHitPhysicsFrames());
   });
 
   it("creates a synthetic imported atomic DB crouch guard-state artifact", () => {
@@ -2997,6 +3036,7 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticCrouchGuardHitPhysicsFrames());
   });
 
   it("creates a synthetic imported air guard-state artifact", () => {
@@ -3064,6 +3104,7 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardHitPhysicsFrames());
   });
 
   it("creates a synthetic imported InGuardDist artifact without contact", () => {

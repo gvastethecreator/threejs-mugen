@@ -32,13 +32,13 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Current R1 custom-state ownership slice completed:
+Current R1 synthetic guard-hit frame-physics slice completed:
 
 ```txt
-R1 target-owned custom-state oracle
-  -> required synthetic-imported-target-owned-custom-state.json
-  -> checksum 410fb8c0
-  -> proves HitDef p2stateno with p2getp1state = 0 routes P2 through defender-owned state data
+R1 synthetic guard-hit actor-frame telemetry
+  -> required synthetic-imported-default-guard-state.json / crouch / diagonal-crouch / air
+  -> checksums 016938a1 / 6c4321af / 1dd33fb5 / ce9cc9ba
+  -> proves stand/crouch/atomic-DB/air guard-hit controller order plus actor-frame state/physics/body evidence
   -> qa:trace aggregate 156/156, 138 required, 18 optional
 ```
 
@@ -47,7 +47,7 @@ Default next implementation slice after this cut:
 ```txt
 R1 Common1/FightFX precision
   -> move one guard/fall/recovery or FightFX/common route beyond current bounded evidence
-  -> prefer exact controller/operation order, fixture-backed confirmation, or visible package presentation evidence
+  -> prefer deeper VM loop order, broader fixture-backed confirmation, or visible package presentation evidence
 ```
 
 Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, or effect/combat ordering if it can preserve trace behavior.
@@ -62,6 +62,10 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitby-reject.json`
 - `synthetic-imported-hitdef-hit-sound.json`
 - `synthetic-imported-target-owned-custom-state.json`
+- `synthetic-imported-default-guard-state.json` actor-frame telemetry
+- `synthetic-imported-crouch-guard-state.json` actor-frame telemetry
+- `synthetic-imported-diagonal-crouch-guard-state.json` actor-frame telemetry
+- `synthetic-imported-air-guard-state.json` actor-frame telemetry
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

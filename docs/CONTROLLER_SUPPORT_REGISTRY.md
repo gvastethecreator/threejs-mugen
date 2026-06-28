@@ -32,6 +32,7 @@ Every controller family should have:
 ## Current Guard Notes
 
 - Required synthetic auto guard-start/end gates now include minimum actor-frame state-order evidence: `synthetic-imported-auto-guard-start.json` checksum `0c734290` requires `120` before `130`, and `synthetic-imported-auto-guard-end.json` checksum `d1dc0aa3` requires `120 -> 130 -> 140` plus final idle/control evidence. This strengthens bounded guard-start/end trace evidence without claiming exact proximity guard, guard-end timing, controller-loop parity, or full MUGEN/IKEMEN guard VM parity.
+- Required synthetic guard-hit gates now also include actor-frame state/physics/body/push telemetry: `synthetic-imported-default-guard-state.json` checksum `016938a1` gates stand `150 -> 151`, `synthetic-imported-crouch-guard-state.json` checksum `6c4321af` and `synthetic-imported-diagonal-crouch-guard-state.json` checksum `1dd33fb5` gate crouch `152 -> 153`, and `synthetic-imported-air-guard-state.json` checksum `ce9cc9ba` gates air `154 -> 155` with bounded air velocity telemetry. This strengthens synthetic Common1-style guard-hit evidence without claiming exact proximity guard, guard effects, air landing parity, controller-loop parity, or full guard VM parity.
 
 ## Current Registry
 

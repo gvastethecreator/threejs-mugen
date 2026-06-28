@@ -138,7 +138,7 @@ Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `doc
 
 - Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
 - Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
-- Immediate next slice after the target-owned custom-state gate: R1 Common1/FightFX precision or R2 MatchWorld ownership, whichever can produce focused evidence without broad drift.
+- Immediate next slice after the synthetic guard-hit actor-frame gate: R1 Common1/FightFX precision or R2 MatchWorld ownership, whichever can produce focused evidence without broad drift.
 - Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
 - Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 
