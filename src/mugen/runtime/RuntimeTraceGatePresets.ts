@@ -463,6 +463,29 @@ export function createSyntheticImportedAliveTraceArtifact(options: RuntimeTraceG
   );
 }
 
+export function createSyntheticImportedRoundTriggerTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-round-trigger",
+      displayName: "Synthetic Imported Round Trigger",
+      roundStateEntry: { roundNo: 1, roundState: 2, stateNo: 281 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-round-trigger-golden",
+      targetLabel: "Synthetic imported RoundNo/RoundState route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [281],
+      requiredExecutedStates: [281],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported RoundNo/RoundState trace proves State -1 routing can branch on the current bounded single-round match context. Multi-round sequencing, intro/KO states, team modes, round transitions, and exact IKEMEN/MUGEN round-system parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -5753,6 +5776,7 @@ export type SyntheticImportedTraceFighterOptions = {
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   aliveStateEntry?: { stateNo: number };
+  roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
@@ -5906,6 +5930,7 @@ ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryB
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
+${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -6037,6 +6062,7 @@ ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
+${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
 ${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
@@ -6174,6 +6200,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.aliveStateEntry === undefined
         ? []
         : ([[options.aliveStateEntry.stateNo, traceAction(options.aliveStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.roundStateEntry === undefined
+        ? []
+        : ([[options.roundStateEntry.stateNo, traceAction(options.roundStateEntry.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.assertSpecialControlState === undefined
         ? []
         : ([[options.assertSpecialControlState.stateNo, traceAction(options.assertSpecialControlState.stateNo)]] as Array<
@@ -7783,6 +7814,18 @@ value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = Alive
+`;
+}
+
+function roundStateEntryBlock(route: { roundNo: number; roundState: number; stateNo: number }): string {
+  return `
+[State -1, Round Trigger Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = RoundNo = ${route.roundNo}
+trigger1 = RoundState = ${route.roundState}
 `;
 }
 

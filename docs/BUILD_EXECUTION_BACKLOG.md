@@ -798,6 +798,8 @@ Use this as the next practical queue.
 
 136. Done bounded `Alive` trigger evidence cut: `ExpressionEvaluator` and the compiler already classify `Alive` as executable; the QA trace suite now requires `synthetic-imported-alive.json`, proving a State -1 route can branch on current owner `life > 0` into state `280`. Focused runtime/compiler/trace tests cover the trigger and artifact. Claim allowed: imported State -1 routing can branch on bounded owner life. Claim blocked: exact KO transition timing, round-state lifetimes, helper/redirect owner life, team modes, and full IKEMEN/MUGEN `Alive` semantics.
 
+137. Done bounded `RoundNo` / `RoundState` trigger evidence cut: `ExpressionEvaluator` and the compiler classify the current bounded single-round context as executable; the QA trace suite now requires `synthetic-imported-round-trigger.json`, proving a State -1 route can branch on `RoundNo = 1` and `RoundState = 2` into state `281`. Focused runtime/compiler/trace tests cover the route. Claim allowed: imported routing can inspect the current bounded fight-round context. Claim blocked: intro/KO/win/round-transition states, multi-round sequencing, simul/team modes, pause/rollback accounting, and exact IKEMEN/MUGEN round-system semantics.
+
 ## Release Evidence Bundle
 
 Every milestone should leave a bundle under `.scratch/qa/<milestone-or-feature>/`:

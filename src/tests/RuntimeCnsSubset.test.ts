@@ -116,6 +116,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("!SelfStateNoExist(9999)", { self: state, stateExists: (id) => id === 5000 })).toBe(1);
     expect(evaluateExpression("Alive", { self: state })).toBe(1);
     expect(evaluateExpression("Alive", { self: runtimeState({ life: 0 }) })).toBe(0);
+    expect(evaluateExpression("RoundNo = 1", { self: state })).toBe(1);
+    expect(evaluateExpression("RoundState = 2", { self: state })).toBe(1);
     expect(evaluateExpression("ifelse(ctrl, 10, 20)", { self: state })).toBe(10);
     expect(
       evaluateExpression("Const(movement.down.bounce.offset.y) = 24", {
