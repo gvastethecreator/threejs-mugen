@@ -57,6 +57,7 @@ import {
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedGravityTraceArtifact,
+  createSyntheticImportedKinematicTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
@@ -1312,6 +1313,66 @@ describe("RuntimeTraceGatePresets", () => {
         animNo: 200,
         stateType: "A",
         observedVelYAtLeast: 0.55,
+        minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported kinematic artifact with typed position and velocity evidence", () => {
+    const artifact = createSyntheticImportedKinematicTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-kinematic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelMul).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:veladd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velmul"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          maxPos: expect.objectContaining({ x: expect.any(Number) }),
+          maxVel: expect.objectContaining({ x: expect.any(Number) }),
+          minVel: expect.objectContaining({ y: expect.any(Number) }),
+        }),
+      ]),
+    );
+    const kinematicFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p1" && frame.source === "imported" && frame.animNo === 200);
+    expect(kinematicFrame?.maxPos.x).toBeGreaterThanOrEqual(-14);
+    expect(kinematicFrame?.minPos.y).toBeLessThanOrEqual(-10);
+    expect(kinematicFrame?.maxVel.x).toBeGreaterThanOrEqual(6);
+    expect(kinematicFrame?.minVel.y).toBeLessThanOrEqual(-1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        animNo: 200,
+        observedPosXAtLeast: -14,
+        observedPosYAtMost: -10,
+        observedVelXAtLeast: 6,
+        observedVelYAtMost: -1,
         minFrames: 1,
       },
     ]);

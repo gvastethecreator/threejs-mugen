@@ -857,3 +857,5 @@ Visible changes also require browser verification. Runtime, renderer, debug pane
 - Large folder reshuffles that do not reduce runtime risk.
 
 These are future horizons, not blockers for the private usable MVP.
+
+153. Done bounded static kinematic trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-kinematic.json` checksum `92804390`, where imported P1 enters state `200`, executes real static `VelSet`, `VelAdd`, `VelMul`, `PosSet`, and `PosAdd` controllers through typed `kinematic:velset`, `kinematic:veladd`, `kinematic:velmul`, `kinematic:posset`, and `kinematic:posadd` operation evidence, and exposes bounded actor-frame position/velocity telemetry. Claim allowed: imported owner states can use bounded static movement/position controllers through compiled IR and required trace evidence. Claim blocked: dynamic expressions, exact MUGEN/IKEMEN physics/tick order, floor snapping, helper/custom-state ownership, and full movement parity.

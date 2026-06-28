@@ -10,7 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Add required traces for controller families currently covered only by unit/runtime tests.
-- Latest completed cut: `synthetic-imported-gravity.json` gates partial `Gravity` typed kinematic evidence and vertical velocity telemetry with checksum `92161764`; previous `synthetic-imported-envshake.json` gates partial `EnvShake` runtime shake-event evidence with checksum `50e0ad4c`.
+- Latest completed cut: `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`; previous `synthetic-imported-gravity.json` gates partial `Gravity` typed kinematic evidence and vertical velocity telemetry with checksum `92161764`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.
 - Move mutable behavior behind named systems before adding broader parity claims.
 - Prefer KFM/Common1 precision when a synthetic gate already exists for the same family.

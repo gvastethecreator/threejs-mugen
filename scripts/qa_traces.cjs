@@ -226,6 +226,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGravityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-kinematic",
+      required: true,
+      artifact: presets.createSyntheticImportedKinematicTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-width",
       required: true,
       artifact: presets.createSyntheticImportedWidthTraceArtifact(),
@@ -1105,6 +1110,11 @@ function validateTraceCoverage(coverage) {
     "helper",
     "explod",
     "removeexplod",
+    "kinematic:velset",
+    "kinematic:veladd",
+    "kinematic:velmul",
+    "kinematic:posset",
+    "kinematic:posadd",
     "kinematic:gravity",
     "kinematic:hitvelset",
     "bounds:posfreeze",
@@ -1176,6 +1186,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-gravity",
+    "synthetic-imported-kinematic",
     "synthetic-imported-width",
     "synthetic-imported-statetypeset",
     "synthetic-imported-playerpush",

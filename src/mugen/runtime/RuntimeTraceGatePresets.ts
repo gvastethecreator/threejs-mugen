@@ -1329,6 +1329,49 @@ export function createSyntheticImportedGravityTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedKinematicTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-kinematic",
+      displayName: "Synthetic Imported Kinematic Ops",
+      action200Duration: 30,
+      withKinematicControllers: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-kinematic-golden",
+      targetLabel: "Synthetic imported kinematic controller route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VelSet", "VelAdd", "VelMul", "PosSet", "PosAdd", "HitDef"],
+      requiredExecutedOperations: [
+        "hitdef",
+        "kinematic:velset",
+        "kinematic:veladd",
+        "kinematic:velmul",
+        "kinematic:posset",
+        "kinematic:posadd",
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          observedPosXAtLeast: -14,
+          observedPosYAtMost: -10,
+          observedVelXAtLeast: 6,
+          observedVelYAtMost: -1,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported kinematic trace proves bounded static VelSet, VelAdd, VelMul, PosSet, and PosAdd controllers lower into typed kinematic operation evidence and affect actor position/velocity telemetry. Dynamic expressions, exact MUGEN physics, pause/tick order, floor snapping, and helper/custom-state ownership remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -6333,6 +6376,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
   withGravity?: boolean;
+  withKinematicControllers?: boolean;
   withWidthController?: [number, number?];
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
@@ -6517,6 +6561,7 @@ ${options.attackMultiplier !== undefined ? attackMultiplierController(options.at
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
 ${options.withGravity ? gravityControllerBlock() : ""}
+${options.withKinematicControllers ? kinematicControllerBlock() : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -7132,6 +7177,40 @@ function gravityControllerBlock(): string {
 [State 200, Gravity Probe]
 type = Gravity
 trigger1 = Time >= 0
+`;
+}
+
+function kinematicControllerBlock(): string {
+  return `
+[State 200, Kinematic VelSet Probe]
+type = VelSet
+trigger1 = Time = 0
+x = 2
+y = -4
+
+[State 200, Kinematic VelAdd Probe]
+type = VelAdd
+trigger1 = Time = 0
+x = 1
+y = 2
+
+[State 200, Kinematic VelMul Probe]
+type = VelMul
+trigger1 = Time = 0
+x = 2
+y = 0.5
+
+[State 200, Kinematic PosSet Probe]
+type = PosSet
+trigger1 = Time = 0
+x = 10
+y = -8
+
+[State 200, Kinematic PosAdd Probe]
+type = PosAdd
+trigger1 = Time = 0
+x = 6
+y = -2
 `;
 }
 

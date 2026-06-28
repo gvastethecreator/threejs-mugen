@@ -105,6 +105,8 @@ Current resource-controller cut: `synthetic-imported-resource.json` checksum `7b
 
 Current Gravity cut: `synthetic-imported-gravity.json` checksum `92161764` proves imported airborne state `200` can execute the real `Gravity` controller through typed `kinematic:gravity` evidence and expose vertical velocity telemetry. Exact `yaccel` constants, floor snap, pause/tick order, and full MUGEN/IKEMEN air-physics parity remain future work.
 
+Current kinematic-controller cut: `synthetic-imported-kinematic.json` checksum `92804390` proves imported state `200` can execute static `VelSet`, `VelAdd`, `VelMul`, `PosSet`, and `PosAdd` through typed `kinematic:*` operation evidence and expose bounded position/velocity telemetry. Dynamic expressions, exact physics/tick order, floor snapping, helper/custom-state ownership, and full MUGEN/IKEMEN movement parity remain future work.
+
 Current sound-controller cut: `synthetic-imported-sound.json` checksum `911aa62d` proves imported partial `PlaySnd` and `StopSnd` controllers emit bounded runtime sound-event evidence for `S5,0` on channel `2`. This is event telemetry only: SND decode breadth, Web Audio timing/mixing, loops, pan, volume, priority, helper/redirect ownership, and exact MUGEN/IKEMEN audio parity remain future work.
 
 Current EnvShake cut: `synthetic-imported-envshake.json` checksum `50e0ad4c` proves imported partial `EnvShake` controllers emit bounded runtime shake-event evidence for `time = 16`, `freq = 30`, `ampl = -7`, and `phase = 0.5`, with deterministic camera-shake snapshot consumption. This is event/presentation telemetry only: dynamic params, `mul`, exact pause/stage/layer behavior, helper/redirect ownership, and MUGEN/IKEMEN waveform parity remain future work.
