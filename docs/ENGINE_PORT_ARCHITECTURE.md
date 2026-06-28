@@ -138,6 +138,7 @@ MatchWorld
   RuntimeSpriteEffectWorld
   RuntimeActorConstraintWorld
   RuntimeDirectCombatWorld
+  RuntimeHitOverrideWorld
   SpriteEffectSystem
   EffectActorSystem
   ExplodSystem
@@ -166,17 +167,18 @@ The current extraction order is:
 5. `RuntimeEnvColorWorld` / `EnvColorSystem`: own stage-flash event history and snapshot math outside the match runtime, while Three.js applies the bounded overlay.
 6. `RuntimeSpriteEffectWorld` / `SpriteEffectSystem`: own match-runtime `SprPriority`, `PalFX`, `AngleSet`/`AngleAdd`/`AngleDraw`, `AfterImage`, and `AfterImageTime` mutation/ticking, while `SpriteEffectSystem` also keeps lower-level `Trans` and helper functions and Three.js applies snapshot material, trail, and rotation changes.
 7. `RuntimeActorConstraintWorld` / `ActorConstraintSystem`: own bounded actor body width, one-frame PlayerPush/PosFreeze/ScreenBound constraints, stage clamping, and player body-push separation outside the match runtime.
-8. `RuntimeDirectCombatWorld` / `DirectCombatSystem`: own bounded direct hit/guard result mutation outside the match runtime while collision, reversal, HitOverride, target routing, and Common1/custom-state transitions stay explicit integration points.
-9. `ExplodSystem`: own non-colliding effect actor lifecycle and snapshots.
-10. `HelperSystem`: own the current visual helper actor lifecycle and snapshots.
-11. `ProjectileSystem`: own the current colliding projectile lifecycle, hitbox projection, bounded hit-count/cooldown state, and snapshots.
-12. `ProjectileCombatSystem`: own the bounded projectile contact/reject/override/damage/removal loop, multi-hit cooldown, and projectile clash/cancel subset through the effect-actor world contract.
-13. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, active/presentation advance passes, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
-14. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
-15. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
-16. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-17. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-18. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+8. `RuntimeDirectCombatWorld` / `DirectCombatSystem`: own bounded direct hit/guard result mutation outside the match runtime while collision, reversal, target routing, and Common1/custom-state transitions stay explicit integration points.
+9. `RuntimeHitOverrideWorld` / `HitOverrideSystem`: own bounded HitOverride slot countdown and redirect mutation outside the match runtime while state-entry validation remains an integration hook.
+10. `ExplodSystem`: own non-colliding effect actor lifecycle and snapshots.
+11. `HelperSystem`: own the current visual helper actor lifecycle and snapshots.
+12. `ProjectileSystem`: own the current colliding projectile lifecycle, hitbox projection, bounded hit-count/cooldown state, and snapshots.
+13. `ProjectileCombatSystem`: own the bounded projectile contact/reject/override/damage/removal loop, multi-hit cooldown, and projectile clash/cancel subset through the effect-actor world contract.
+14. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, active/presentation advance passes, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
+15. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
+16. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
+17. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+18. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+19. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

@@ -58,6 +58,7 @@ import {
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
+import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
@@ -195,6 +196,7 @@ export class PlayableMatchRuntime {
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
   private readonly directCombatWorld = new RuntimeDirectCombatWorld();
+  private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -320,6 +322,7 @@ export class PlayableMatchRuntime {
       this.p2,
       this.actorConstraintWorld,
       this.spriteEffectWorld,
+      this.hitOverrideWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -331,6 +334,7 @@ export class PlayableMatchRuntime {
         this.p1,
         this.actorConstraintWorld,
         this.spriteEffectWorld,
+        this.hitOverrideWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -348,10 +352,10 @@ export class PlayableMatchRuntime {
     applyBindToTarget(this.p1, this.p2);
     applyBindToTarget(this.p2, this.p1);
     resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
-    resolveCombat(this.p1, this.p2, this.directCombatWorld, (line) => this.logs.unshift(line));
-    resolveCombat(this.p2, this.p1, this.directCombatWorld, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
+    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, (line) => this.logs.unshift(line));
+    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, (line) => this.logs.unshift(line));
+    resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, (line) => this.logs.unshift(line));
+    resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
     this.actorConstraintWorld.clampToStage(this.p2.runtime, this.stage);
     advancePresentationEffects(this.p1);
@@ -391,6 +395,7 @@ export class PlayableMatchRuntime {
         opponent,
         this.actorConstraintWorld,
         this.spriteEffectWorld,
+        this.hitOverrideWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -746,13 +751,14 @@ function advanceFighter(
   opponent: FighterMatchState,
   actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
+  hitOverrideWorld: RuntimeHitOverrideWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
   spriteEffectWorld.tick(fighter.runtime, () => createAfterImageSample(fighter));
   tickHitBySlots(fighter.runtime);
-  tickHitOverrideSlots(fighter.runtime);
+  hitOverrideWorld.tickSlots(fighter.runtime);
   advanceContactTimers(fighter);
   fighter.runtime.renderAngle = undefined;
   fighter.stateElapsed += 1;
@@ -1212,24 +1218,6 @@ function tickHitBySlot(slot: RuntimeHitBySlot | undefined): RuntimeHitBySlot | u
   return remaining > 0 ? { ...slot, remaining } : undefined;
 }
 
-function tickHitOverrideSlots(state: CharacterRuntimeState): void {
-  if (!state.hitOverrides) {
-    return;
-  }
-  const next = state.hitOverrides
-    .map((slot) => tickHitOverrideSlot(slot))
-    .filter((slot): slot is RuntimeHitOverrideSlot => slot !== undefined);
-  state.hitOverrides = next.length > 0 ? next : undefined;
-}
-
-function tickHitOverrideSlot(slot: RuntimeHitOverrideSlot | undefined): RuntimeHitOverrideSlot | undefined {
-  if (!slot || slot.remaining === Number.POSITIVE_INFINITY) {
-    return slot;
-  }
-  const remaining = Math.max(0, slot.remaining - 1);
-  return remaining > 0 ? { ...slot, remaining } : undefined;
-}
-
 function resetAssertSpecial(state: CharacterRuntimeState): void {
   state.assertSpecial = undefined;
   state.renderOpacity = undefined;
@@ -1654,7 +1642,12 @@ function advanceActiveEffects(fighter: FighterMatchState, stage: MugenStageDefin
   fighter.effectActorWorld.advanceActiveEffects(fighter.id, stage);
 }
 
-function resolveProjectileCombat(attacker: FighterMatchState, defender: FighterMatchState, log: (line: string) => void): void {
+function resolveProjectileCombat(
+  attacker: FighterMatchState,
+  defender: FighterMatchState,
+  hitOverrideWorld: RuntimeHitOverrideWorld,
+  log: (line: string) => void,
+): void {
   const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
   attacker.effectActorWorld.resolveProjectileCombat(attacker.id, {
     attacker,
@@ -1663,7 +1656,8 @@ function resolveProjectileCombat(attacker: FighterMatchState, defender: FighterM
     holdingBack: isRuntimeHoldingBack(defender.currentInput),
     log,
     rememberTarget,
-    applyHitOverride,
+    applyHitOverride: (source, target, override, hitPause, logger) =>
+      applyHitOverride(source, target, override, hitPause, hitOverrideWorld, logger),
     applyGuardHit: applyDefaultGuardHitState,
     applyHitState: applyDefaultProjectileGetHitState,
     markDefenderGotHit: markFighterGotHit,
@@ -1913,6 +1907,7 @@ function resolveCombat(
   attacker: FighterMatchState,
   defender: FighterMatchState,
   directCombatWorld: RuntimeDirectCombatWorld,
+  hitOverrideWorld: RuntimeHitOverrideWorld,
   log: (line: string) => void,
 ): void {
   if (!attacker.currentMove || attacker.hasHit) {
@@ -1947,7 +1942,16 @@ function resolveCombat(
   if (override) {
     attacker.hasHit = true;
     rememberTarget(attacker, defender, move.targetId);
-    applyHitOverride(attacker, defender, override, move.hitPause, log);
+    const result = hitOverrideWorld.applyRedirect(attacker, defender, override, move.hitPause, {
+      tryEnterState: (target, stateNo) => {
+        if (!canEnterState(target, stateNo)) {
+          return false;
+        }
+        enterState(target, stateNo);
+        return true;
+      },
+    });
+    log(result.message);
     return;
   }
 
@@ -2126,27 +2130,19 @@ function applyHitOverride(
   defender: FighterMatchState,
   override: RuntimeHitOverrideSlot,
   hitPause: number,
+  hitOverrideWorld: RuntimeHitOverrideWorld,
   log: (line: string) => void,
 ): void {
-  attacker.hitPause = hitPause;
-  defender.hitPause = hitPause;
-  defender.hitStun = 0;
-  defender.runtime.guardStun = 0;
-  defender.runtime.guardSlideTime = 0;
-  defender.runtime.guardControlTime = 0;
-  defender.runtime.guarding = override.forceGuard ?? false;
-  if (override.forceGuard) {
-    markFighterGotHit(defender);
-  }
-  if (override.forceAir) {
-    defender.runtime.stateType = "A";
-    defender.runtime.physics = "A";
-  }
-  if (!override.keepState && override.stateNo !== undefined && canEnterState(defender, override.stateNo)) {
-    enterState(defender, override.stateNo);
-  }
-  const targetState = override.stateNo !== undefined ? ` to state ${override.stateNo}` : "";
-  log(`${defender.label} HitOverride slot ${override.slot} redirected ${attacker.label}${targetState}`);
+  const result = hitOverrideWorld.applyRedirect(attacker, defender, override, hitPause, {
+    tryEnterState: (target, stateNo) => {
+      if (!canEnterState(target, stateNo)) {
+        return false;
+      }
+      enterState(target, stateNo);
+      return true;
+    },
+  });
+  log(result.message);
 }
 
 function findActiveReversal(

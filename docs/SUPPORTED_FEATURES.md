@@ -181,6 +181,7 @@
 - AIR action playback.
 - `RuntimeActorConstraintWorld` owns the current bounded actor constraint path for `Width` body-width updates, one-frame `PlayerPush`, `PosFreeze`, and `ScreenBound` projection, stage clamping, and body-push separation. This is runtime ownership for existing bounded telemetry, not exact MUGEN/IKEMEN player/edge/camera/team/helper collision parity.
 - `RuntimeDirectCombatWorld` owns the current bounded direct hit/guard result path for life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup. This is runtime ownership for existing bounded direct HitDef telemetry, not exact priority, throw, multi-hit, helper/team/redirect, or tick-order parity.
+- `RuntimeHitOverrideWorld` owns the current bounded HitOverride slot ticking and redirect mutation path for direct and projectile combat. This is runtime ownership for existing bounded HitOverride telemetry, not exact slot priority, attr grammar, helper/custom-state redirect breadth, projectile/custom-state edge timing, or IKEMEN parity.
 - Play/pause and step-frame controls.
 - Basic runtime state snapshot.
 - Floor/grid/axis overlay.
