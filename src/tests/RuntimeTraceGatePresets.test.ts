@@ -17,6 +17,7 @@ import {
   createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact,
   createImportedDefaultFallGroundRecoveryTraceArtifact,
   createImportedDefaultFallRecoveryInputTraceArtifact,
+  createImportedDefaultFallRecoveryThresholdTraceArtifact,
   createImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
   createImportedDefaultGetHitTraceArtifact,
@@ -3462,6 +3463,76 @@ describe("RuntimeTraceGatePresets", () => {
       moveType: "I",
       ctrl: true,
     });
+  });
+
+  it("creates an imported default Common1 recovery-threshold artifact for official-style fixtures", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-fall-official-recovery-threshold",
+      displayName: "Synthetic Imported Default Fall Official Recovery Threshold",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        recoveryInputStateNo: 5200,
+        groundRecoveryStateNo: 5200,
+        groundRecoveryLandStateNo: 5201,
+        landStateNo: 52,
+        includeGroundRecovery: true,
+      },
+    });
+    const artifact = createImportedDefaultFallRecoveryThresholdTraceArtifact(imported, {
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      targetId: "synthetic-imported-default-fall-official-recovery-threshold-golden",
+      targetLabel: "Synthetic imported official-style recovery threshold route",
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-default-fall-official-recovery-threshold-attacker",
+        displayName: "Synthetic Imported Default Fall Official Recovery Threshold Attacker",
+        groundVelocity: [-3, -6],
+        fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 10 },
+      }),
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-official-recovery-threshold-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-ground-recovery-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5050);
+    const recoveryFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5200);
+    expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5200,
+        moveType: "H",
+        observedHitFallRecoverTimeAtMost: 0,
+        minFrames: 1,
+      },
+    ]);
   });
 
   it("creates an imported default Common1 recovery-input too-early reject artifact for official-style fixtures", () => {

@@ -59,6 +59,21 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
+Latest trace aggregate: `pnpm qa:trace` passes 146/146 artifacts, with 128 required and 18 optional local-fixture artifacts. The latest optional official KFM oracle is `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d`, proving a bounded private-fixture Common1 recovery threshold route through `5050 -> 5200 -> 5201 -> 52 -> 0`.
+
+## Gap To Full Port
+
+| Remaining area | Why it is still large |
+| --- | --- |
+| CNS VM and expression parity | Needs full source-located AST/IR, redirects, dynamic params, helper/parent/root ownership, exact trigger lifetime, and error compatibility. |
+| Common1/combat parity | Needs exact get-hit, guard, fall, recovery, throws, custom states, priority, KO/round flow, sparks/sounds, and tick order across real fixtures. |
+| Helpers/projectiles/explods | Current visual/effect actors are bounded. Full port needs helper-local VM, ownership, redirects, pause behavior, contact rules, and lifecycle parity. |
+| Rendering/palettes/audio | Needs full SFF/ACT palette behavior, FightFX, lifebars, screenpacks, blend/shadow behavior, SND timing/mixing, and presentation parity. |
+| IKEMEN-specific runtime | Scanner exists, but ZSS, Lua hooks, rollback/netplay, model-stage, screenpack extensions, team modes, and IKEMEN-specific controllers are not executed. |
+| Corpus and tooling | Full port needs many fixture packages, golden traces, compatibility profiles, automated diffing, authoring tools, and release QA. |
+
+Practical reading: from today's evidence, a private playable sandbox is roughly two-thirds usable, a practical MUGEN subset is about one-third there, and a full IKEMEN-GO-class port remains a multi-stage engine project.
+
 ## Next Ten Gates
 
 1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial plus one-frame expiry traces.

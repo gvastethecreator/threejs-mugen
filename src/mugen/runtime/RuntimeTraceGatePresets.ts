@@ -3581,6 +3581,61 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
   });
 }
 
+export function createImportedDefaultFallRecoveryThresholdTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    attacker?: DemoFighterDefinition;
+  } = {},
+): RuntimeTraceArtifact {
+  const script = importedDefaultFallOfficialRecoveryInputScript();
+  const attacker =
+    options.attacker ??
+    createSyntheticImportedTraceFighter({
+      id: `${imported.id}-common1-recovery-threshold-attacker`,
+      displayName: `${imported.displayName} Common1 Recovery Threshold Probe`,
+      groundVelocity: [-3, -6],
+      fall: {
+        ...commonGetHitFallData(),
+        velocity: { x: 3, y: -6 },
+        recover: true,
+        recoverTime: 10,
+      },
+    });
+  return createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {
+    ...options,
+    attacker,
+    script,
+    targetId: options.targetId ?? `${imported.id}-default-fall-recovery-threshold-golden`,
+    targetLabel: options.targetLabel ?? `${imported.displayName} Common1 recovery threshold route`,
+    notes: options.notes ?? [
+      "Imported Common1 recovery-threshold trace verifies that a real imported defender reaches fall state 5050 while fall.recovertime is still positive, then routes into ground recovery state 5200 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" near the ground. It still does not claim exact recovery threshold tables, velocities, controller tick order, air-recovery selection, or full MUGEN/IKEMEN recovery parity.",
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5200,
+        moveType: "H",
+        observedHitFallRecoverTimeAtMost: 0,
+        minFrames: 1,
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -3701,10 +3756,11 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = importedDefaultFallOfficialGroundRecoveryScript();
+  const script = options.script ?? importedDefaultFallOfficialGroundRecoveryScript();
   const attacker =
     options.attacker ??
     createSyntheticImportedTraceFighter({

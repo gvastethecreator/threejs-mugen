@@ -40,8 +40,8 @@ Build next:
 - Current proof: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates summarized actor-frame order where `5050` with positive recover time appears before `5210` recovery evidence.
 - Current proof: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Current proof: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity telemetry for synthetic ground-recovery constants.
-- Build next recovery proof not already covered by threshold/tick-order/early-reject/positive/air-velocity/ground-selection routes: exact controller/VM tick-order, optional KFM threshold oracle, broader recovery parity, or guard/Common1 confirmation.
-- If official KFM fixture is available, add optional confirmation only after the synthetic gate is stable.
+- Current optional fixture proof: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 reaches state `5050` while `hitFall.recoverTime` is still positive, then accepts recovery into the ground branch `5200 -> 5201 -> 52 -> 0` when the private fixture is present.
+- Build next recovery proof not already covered by threshold/tick-order/early-reject/positive/air-velocity/ground-selection routes: exact controller/VM tick-order, broader recovery parity, or guard/Common1 confirmation.
 
 Acceptance:
 
@@ -56,7 +56,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 Build next:
 
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
-- Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence. Current trace aggregate: 145/145 artifacts passed, 128 required and 17 optional.
+- Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence. Current trace aggregate: 146/146 artifacts passed, 128 required and 18 optional.
 - Current proof: `RuntimeTargetWorld.snapshotRuntimeState` owns cloned target-memory snapshots consumed by `MatchWorld` actor records, with focused tests proving target refs, TargetBind bindings, and `BindToTarget` registry evidence remain stable.
 - Current proof: `RuntimePauseWorld` owns current match pause state, snapshot projection, source-movetime checks, countdown ticks, controller application, and reset while preserving existing `Pause`/`SuperPause` trace behavior.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, pause, or audio.

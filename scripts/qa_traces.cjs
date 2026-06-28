@@ -901,6 +901,17 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-fall-recovery-threshold",
+        required: false,
+        artifact: presets.createImportedDefaultFallRecoveryThresholdTraceArtifact(imported, {
+          targetId: "kfm-official-default-fall-recovery-threshold-golden",
+          targetLabel: "Official KFM Common1 recovery threshold route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM Common1 exposes actor-frame recovery-threshold evidence: state 5050 while fall.recovertime is still positive, then ground recovery state 5200 with recoverTime = 0 after CanRecover plus command = "recovery". This artifact does not yet prove exact recovery threshold tables, velocity math, controller tick order, air-recovery selection, or full recovery parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-fall-recovery-too-early",
         required: false,
         artifact: presets.createImportedDefaultFallRecoveryTooEarlyTraceArtifact(imported, {

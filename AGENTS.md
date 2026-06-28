@@ -72,6 +72,13 @@ pnpm qa:smoke
 - `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff map.
 - Update all affected roadmap files when a gate changes a score, claim, priority, or blocked scope.
 
+## Setup Project Profile
+
+- Issue tracker: local markdown under `.scratch/<feature-slug>/`.
+- Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`.
+- Domain layout: single-context repo with root `CONTEXT.md`; durable decisions should use `docs/adr/` when needed.
+- Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
+
 ## Agent skills
 
 ### Issue tracker
