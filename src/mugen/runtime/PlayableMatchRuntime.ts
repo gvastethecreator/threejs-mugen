@@ -314,6 +314,28 @@ export class PlayableMatchRuntime {
     if (globalPause > 0) {
       this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
       this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
+      runHitPauseIgnoredControllers(
+        this.p1,
+        this.p2,
+        this.actorConstraintWorld,
+        this.spriteEffectWorld,
+        this.reversalWorld,
+        this.effectSpawnWorld,
+        this.tick,
+        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+      );
+      runHitPauseIgnoredControllers(
+        this.p2,
+        this.p1,
+        this.actorConstraintWorld,
+        this.spriteEffectWorld,
+        this.reversalWorld,
+        this.effectSpawnWorld,
+        this.tick,
+        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+      );
       this.effectLifecycleWorld.advancePausedPresentation(this.p1, "hitpause", this.stage);
       this.effectLifecycleWorld.advancePausedPresentation(this.p2, "hitpause", this.stage);
       this.p1.hitPause = Math.max(0, this.p1.hitPause - 1);
@@ -1011,7 +1033,7 @@ function advanceAnimation(fighter: FighterMatchState): void {
   fighter.runtime.frameIndex = fighter.currentAction.loopStart ?? Math.max(0, frames.length - 1);
 }
 
-function runActiveStateControllers(
+function runHitPauseIgnoredControllers(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   actorConstraintWorld: RuntimeActorConstraintWorld,
@@ -1022,6 +1044,36 @@ function runActiveStateControllers(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
+  runActiveStateControllers(
+    fighter,
+    opponent,
+    actorConstraintWorld,
+    spriteEffectWorld,
+    reversalWorld,
+    effectSpawnWorld,
+    tick,
+    onPauseController,
+    onEnvColorController,
+    { onlyIgnoreHitPause: true },
+  );
+}
+
+type ActiveControllerRunOptions = {
+  onlyIgnoreHitPause?: boolean;
+};
+
+function runActiveStateControllers(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  actorConstraintWorld: RuntimeActorConstraintWorld,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
+  reversalWorld: RuntimeReversalWorld,
+  effectSpawnWorld: RuntimeEffectSpawnWorld,
+  tick: number,
+  onPauseController?: PauseControllerHandler,
+  onEnvColorController?: EnvColorControllerHandler,
+  options: ActiveControllerRunOptions = {},
+): void {
   const owner = fighter.stateOwner ?? fighter;
   const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo);
   const state = stateProgram?.source;
@@ -1030,6 +1082,9 @@ function runActiveStateControllers(
   }
 
   for (const controller of stateProgram.controllers) {
+    if (options.onlyIgnoreHitPause && !controllerIgnoresHitPause(controller)) {
+      continue;
+    }
     if (!triggersPass(controller, fighter, opponent, owner, tick)) {
       continue;
     }
@@ -1233,6 +1288,10 @@ function runActiveStateControllers(
       }
     }
   }
+}
+
+function controllerIgnoresHitPause(controller: ControllerIr): boolean {
+  return (firstNumber(findParam(controller, "ignorehitpause")) ?? 0) !== 0;
 }
 
 function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {

@@ -1327,6 +1327,50 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.routedStateEntries).toBe(1);
   });
 
+  it("executes imported ignorehitpause controllers during global hit pause", () => {
+    const imported = createHitPauseIgnoreControllerFixture(true);
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, closeStage);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]) });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.hitPause).toBeGreaterThan(0);
+
+    snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(220);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ChangeState).toBe(2);
+  });
+
+  it("keeps non-ignorehitpause imported controllers frozen during global hit pause", () => {
+    const imported = createHitPauseIgnoreControllerFixture(false);
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, closeStage);
+
+    let snapshot = runtime.step({ p1: new Set(["x"]) });
+    expect(snapshot.actors[0]?.runtime.stateNo).toBe(200);
+    expect(snapshot.actors[0]?.hitPause).toBeGreaterThan(0);
+
+    for (let frame = 0; frame < 8; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.actors[0]?.runtime.stateNo).not.toBe(220);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ChangeState).toBe(1);
+  });
+
   it("executes imported Pause by freezing the opponent while honoring source movetime", () => {
     const imported = createImportedFixture({ withStateMove: false, withPause: true });
     const farStage = {
@@ -3173,6 +3217,101 @@ ctrl = 1
       [0, action(0)],
       [200, action(200)],
       [210, action(210)],
+      [500, action(500)],
+    ]),
+  };
+}
+
+function createHitPauseIgnoreControllerFixture(ignoreHitPause: boolean): DemoFighterDefinition {
+  const commands = parseCmd(`
+[Defaults]
+command.time = 30
+command.buffer.time = 30
+command.buffer.hitpause = 1
+
+[Command]
+name = "first"
+command = x
+time = 5
+`).commands;
+  const entry = parseCns(`
+[State -1, First]
+type = ChangeState
+value = 200
+triggerall = command = "first"
+trigger1 = ctrl
+`).controllers;
+  const stateFile = parseCns(`
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+ctrl = 1
+
+[Statedef 200]
+type = S
+movetype = A
+physics = S
+anim = 200
+ctrl = 1
+
+[State 200, HitPause Starter]
+type = HitDef
+trigger1 = Time = 0
+damage = 1
+pausetime = 5,5
+ground.hittime = 5
+ground.velocity = -1
+
+[State 200, HitPause Branch]
+type = ChangeState
+trigger1 = HitPauseTime > 0
+ignorehitpause = ${ignoreHitPause ? 1 : 0}
+value = 220
+
+[Statedef 220]
+type = S
+movetype = I
+physics = S
+anim = 220
+ctrl = 1
+`);
+  const move: DemoMove = {
+    actionId: 200,
+    startup: 1,
+    activeStart: 1,
+    activeEnd: 2,
+    recovery: 6,
+    damage: 1,
+    hitPause: 5,
+    hitStun: 5,
+    push: 1,
+    hitbox: { x1: 10, y1: -70, x2: 72, y2: -30 },
+  };
+
+  return {
+    id: `hitpause-ignore-${ignoreHitPause ? "on" : "off"}`,
+    source: "imported",
+    displayName: `HitPause Ignore ${ignoreHitPause ? "On" : "Off"}`,
+    palette: "#fff",
+    spriteGroupBase: 0,
+    speed: 3,
+    jumpVelocity: -9,
+    idleAction: 0,
+    walkAction: 20,
+    crouchAction: 10,
+    jumpAction: 40,
+    hitstunAction: 500,
+    moves: { punch: move, kick: { ...move, actionId: 220 } },
+    stateMoves: new Map(),
+    states: stateFile.states,
+    stateEntryControllers: entry,
+    commands,
+    animations: new Map([
+      [0, action(0)],
+      [200, action(200)],
+      [220, action(220)],
       [500, action(500)],
     ]),
   };
