@@ -9,6 +9,10 @@ export type RuntimeSoundActor = {
   stateElapsed: number;
 };
 
+export type RuntimeAudioWorldActor = RuntimeSoundActor & {
+  soundEvents: RuntimeSoundEvent[];
+};
+
 export function createRuntimeSoundEvent(
   actor: RuntimeSoundActor,
   controller: MugenStateController,
@@ -30,6 +34,14 @@ export function createRuntimeSoundEvent(
 export function pushRuntimeSoundEvent(events: RuntimeSoundEvent[], event: RuntimeSoundEvent, maxEvents = 8): void {
   events.unshift(event);
   events.splice(maxEvents);
+}
+
+export class RuntimeAudioWorld {
+  emitController(actor: RuntimeAudioWorldActor, controller: MugenStateController, runtimeTick: number): RuntimeSoundEvent {
+    const event = createRuntimeSoundEvent(actor, controller, runtimeTick);
+    pushRuntimeSoundEvent(actor.soundEvents, event);
+    return event;
+  }
 }
 
 export function parseMugenSoundValue(value: string | undefined): { group: number; index: number } | undefined {

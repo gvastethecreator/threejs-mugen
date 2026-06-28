@@ -22,7 +22,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
-import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
+import { RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
   advanceRuntimeContactTimers,
@@ -159,6 +159,7 @@ type FighterMatchState = {
   executedOperationCounts: Record<string, number>;
   firedHitDefs: Set<string>;
   soundEvents: RuntimeSoundEvent[];
+  audioWorld: RuntimeAudioWorld;
   envShakeEvents: RuntimeEnvShakeEvent[];
   envShakeWorld: RuntimeEnvShakeWorld;
   effectActorWorld: RuntimeEffectActorWorld;
@@ -196,6 +197,7 @@ export class PlayableMatchRuntime {
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly targetWorld: RuntimeTargetWorld;
+  private readonly audioWorld = new RuntimeAudioWorld();
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly envColorEvents: RuntimeEnvColorEvent[] = [];
@@ -225,6 +227,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p1.facing,
       this.effectActorWorld,
       this.targetWorld,
+      this.audioWorld,
       this.envShakeWorld,
     );
     this.p2 = createFighterState(
@@ -235,6 +238,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p2.facing,
       this.effectActorWorld,
       this.targetWorld,
+      this.audioWorld,
       this.envShakeWorld,
     );
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
@@ -528,6 +532,7 @@ function createFighterState(
   facing: 1 | -1,
   effectActorWorld = new RuntimeEffectActorWorld(),
   targetWorld = new RuntimeTargetWorld(),
+  audioWorld = new RuntimeAudioWorld(),
   envShakeWorld = new RuntimeEnvShakeWorld(),
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
@@ -591,6 +596,7 @@ function createFighterState(
     executedOperationCounts: {},
     firedHitDefs: new Set(),
     soundEvents: [],
+    audioWorld,
     envShakeEvents: [],
     envShakeWorld,
     effectActorWorld,
@@ -1739,7 +1745,7 @@ function recordSoundEvent(
   controller: MugenStateController,
   runtimeTick: number,
 ): void {
-  pushRuntimeSoundEvent(fighter.soundEvents, createRuntimeSoundEvent(fighter, controller, runtimeTick));
+  fighter.audioWorld.emitController(fighter, controller, runtimeTick);
 }
 
 function recordEnvShakeEvent(fighter: FighterMatchState, controller: MugenStateController, runtimeTick: number): void {

@@ -4,6 +4,7 @@ import {
   createRuntimeSoundEvent,
   parseMugenSoundValue,
   pushRuntimeSoundEvent,
+  RuntimeAudioWorld,
 } from "../mugen/runtime/AudioEventSystem";
 import type { RuntimeSoundEvent } from "../mugen/runtime/types";
 
@@ -62,6 +63,16 @@ describe("AudioEventSystem", () => {
     }
 
     expect(events.map((event) => event.tick)).toEqual([9, 8, 7, 6]);
+  });
+
+  it("wraps sound event history mutation behind RuntimeAudioWorld", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitController(fighter, controller("PlaySnd", { value: "S5,0", channel: "2" }), 120);
+
+    expect(event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 });
+    expect(fighter.soundEvents).toEqual([event]);
   });
 });
 
