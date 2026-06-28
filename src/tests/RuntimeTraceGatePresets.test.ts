@@ -3143,6 +3143,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["hitfall:hitfalldamage"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.fallenvshake).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5100 named custom get-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5100, controller: "HitFallVel", name: "Apply Fall Velocity" },
+          { stateNo: 5100, operation: "hitfall:hitfallvel" },
+          { stateNo: 5100, controller: "HitFallDamage", name: "Apply Fall Damage" },
+          { stateNo: 5100, operation: "hitfall:hitfalldamage" },
+          { stateNo: 5100, controller: "HitFallSet", name: "Mark Fall Resolved" },
+          { stateNo: 5100, operation: "hitfall:hitfallset" },
+          { stateNo: 5100, controller: "FallEnvShake", name: "Fall Camera Shake" },
+          { stateNo: 5100, operation: "fallenvshake" },
+        ],
+      },
+    ]);
     expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([
       {
         actorId: "p2",

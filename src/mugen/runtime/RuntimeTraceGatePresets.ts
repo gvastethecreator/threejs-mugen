@@ -3415,6 +3415,7 @@ export function createSyntheticImportedCommonGetHitTraceArtifact(options: Runtim
         requiredExecutedStates: [200, 5100],
         requiredExecutedControllers: ["ChangeState", "HitDef", "HitFallVel", "HitFallDamage", "HitFallSet", "FallEnvShake"],
         requiredExecutedOperations: ["hitdef", "hitfall:hitfallvel", "hitfall:hitfalldamage", "hitfall:hitfallset", "fallenvshake"],
+        requiredControllerEventSequences: [commonGetHitControllerSequence(5100)],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -3449,6 +3450,24 @@ export function createSyntheticImportedCommonGetHitTraceArtifact(options: Runtim
       },
     ],
   });
+}
+
+export function commonGetHitControllerSequence(stateNo: number): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${stateNo} named custom get-hit controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo, controller: "HitFallVel", name: "Apply Fall Velocity" },
+      { stateNo, operation: "hitfall:hitfallvel" },
+      { stateNo, controller: "HitFallDamage", name: "Apply Fall Damage" },
+      { stateNo, operation: "hitfall:hitfalldamage" },
+      { stateNo, controller: "HitFallSet", name: "Mark Fall Resolved" },
+      { stateNo, operation: "hitfall:hitfallset" },
+      { stateNo, controller: "FallEnvShake", name: "Fall Camera Shake" },
+      { stateNo, operation: "fallenvshake" },
+    ],
+  };
 }
 
 export function createSyntheticImportedFallDefenceUpTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
