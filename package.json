@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "qa:smoke": "node scripts/qa_smoke.cjs",
     "qa:trace": "node scripts/qa_traces.cjs",
+    "check:boundaries": "node scripts/check_boundaries.cjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

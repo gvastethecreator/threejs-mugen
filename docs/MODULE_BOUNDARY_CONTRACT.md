@@ -138,13 +138,13 @@ Before promoting shared core code, verify:
 - Three.js adapters consume snapshots/events only
 - Studio surfaces use module descriptors instead of fighting assumptions where practical
 
-Future automation target:
+Automation target:
 
 ```bash
 pnpm check:boundaries
 ```
 
-The first version can be a small script or `rg` gate. It should fail if `src/core/**` imports `src/mugen/**` or contains fighting/MUGEN terminology, and it should fail if a future `platformer` module imports the fighting module.
+The first version is `scripts/check_boundaries.cjs`. It fails if `src/core/**` imports `src/mugen/**` or contains fighting/MUGEN terminology, if a future platformer module imports the fighting module, or if `src/engine/**` introduces fighting terms outside the explicit `ModuleContracts.ts` boundary registry.
 
 ## Anti-Claims
 

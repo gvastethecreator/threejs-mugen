@@ -162,12 +162,14 @@ Issue: `.scratch/roadmap/issues/05-modular-engine-boundaries.md`
 
 Build next:
 
+- Current proof: `pnpm check:boundaries` runs `scripts/check_boundaries.cjs` and guards future `src/core/**`, future platformer module paths, and `src/engine/**` shared contracts against fighting/MUGEN leakage outside explicit boundary registries.
 - Identify one shared contract candidate from project, asset, input, tick, snapshot, render, audio, debug, build, or QA.
 - Prove it is not importing CNS, CMD, HitDef, rounds, helpers, targets, or MUGEN command routing.
 
 Acceptance:
 
 - Docs or boundary tests show what is shared vs fighting-specific.
+- `pnpm check:boundaries` passes for any shared/module boundary move.
 - No platformer runtime begins until fighting smoke/trace gates remain stable.
 
 ## Progress Update Rules
