@@ -24296,3 +24296,191 @@ input {
     box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--trace-accent) 62%, transparent);
   }
 }
+
+/* Desktop Assets: reduce endless audit-stack feel with compact inspector drawers. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="assets"] {
+    --section-accent: #91889a;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right {
+    gap: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > .section,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > details.section {
+    gap: 7px;
+    padding: 8px 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .action-callout {
+    display: grid;
+    grid-template-columns: minmax(86px, 0.28fr) minmax(0, 1fr);
+    min-height: 0;
+    gap: 2px 8px;
+    margin: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .action-callout .panel-kicker {
+    grid-row: 1 / span 2;
+    align-self: center;
+    color: var(--subtle);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .action-callout strong,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .action-callout small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv {
+    margin: 0;
+    max-height: 260px;
+    overflow: auto;
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+    min-height: 23px;
+    padding: 4px 7px;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > .section > .badge-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > .section > .badge-row .badge {
+    min-height: 22px;
+    min-width: 0;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > .section > .badge-row .badge:nth-child(4n),
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right > .section > .badge-row .badge:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer {
+    gap: 0;
+    padding: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 32px;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 9px;
+    border-bottom: 1px solid var(--dcc-line);
+    background: var(--dcc-panel);
+    cursor: pointer;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary small {
+    justify-self: end;
+    padding: 2px 5px;
+    border: 1px solid var(--dcc-line);
+    background: var(--dcc-field);
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer-body {
+    display: grid;
+    gap: 6px;
+    padding: 8px;
+    background: var(--dcc-rail-deep);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer:not([open]) > summary {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer:not([open]) {
+    min-height: 32px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer[open] .asset-inspector-drawer-body {
+    max-height: 292px;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer[open]:not(:has(.replacement-flow)) .asset-inspector-drawer-body {
+    max-height: 236px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-map {
+    max-height: 190px;
+    overflow: auto;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .compact-list {
+    max-height: 176px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate {
+    min-height: 32px;
+    padding: 5px 7px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item > span {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-meta {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
