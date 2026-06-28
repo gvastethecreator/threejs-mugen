@@ -172,6 +172,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...advance,
           changedFields: [...advance.changedFields],
         })),
+        soundEvents: gate.evidence.soundEvents.map((event) => ({ ...event })),
         targetLinks: gate.evidence.targetLinks.map((link) => ({
           ...link,
           bindingOffset: link.bindingOffset ? { ...link.bindingOffset } : undefined,
@@ -534,6 +535,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredMatchPauses: gate.requiredMatchPauses?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseFreezes: gate.requiredMatchPauseFreezes?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseAdvances: gate.requiredMatchPauseAdvances?.map((requirement) => ({ ...requirement })),
+    requiredSoundEvents: gate.requiredSoundEvents?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
     requiredStageFrames: gate.requiredStageFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
@@ -551,6 +553,7 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     vel: { ...actor.vel },
     bodyWidth: actor.bodyWidth ? { ...actor.bodyWidth } : undefined,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
+    soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
     hitFall: actor.hitFall
       ? {
           ...actor.hitFall,

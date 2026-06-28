@@ -50,7 +50,7 @@ Rule: this tracker stays short. Add detailed implementation history to `docs/BUI
 
 3. **Compatibility trace coverage**
    - Add missing required traces for controller families currently covered only by unit/runtime tests.
-   - Current proof added: dedicated `synthetic-imported-resource.json` trace artifact for typed `LifeAdd` / `LifeSet` / `PowerAdd` / `PowerSet` evidence, plus prior `synthetic-imported-variable.json` evidence for `VarSet` / `VarAdd` / `VarRangeSet`.
+   - Current proof added: dedicated `synthetic-imported-sound.json` trace artifact for partial `PlaySnd` / `StopSnd` runtime event evidence, plus `synthetic-imported-resource.json` for typed `LifeAdd` / `LifeSet` / `PowerAdd` / `PowerSet` and `synthetic-imported-variable.json` for `VarSet` / `VarAdd` / `VarRangeSet`.
 
 4. **Studio trust workflow**
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.

@@ -79,6 +79,7 @@ import {
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedResourceMaxTraceArtifact,
+  createSyntheticImportedSoundTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
@@ -452,6 +453,46 @@ describe("RuntimeTraceGatePresets", () => {
       life: 750,
       power: 900,
     });
+  });
+
+  it("creates a synthetic imported sound artifact with PlaySnd and StopSnd event evidence", () => {
+    const artifact = createSyntheticImportedSoundTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-sound-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "PlaySnd", "StopSnd"]);
+    expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
+      { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 },
+      { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
+    ]);
+    expect(evidence?.executedControllers.PlaySnd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.StopSnd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 }),
+        expect.objectContaining({ actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 }),
+        expect.objectContaining({ type: "StopSnd", channel: 2, stateNo: 200 }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported ReceivedDamage artifact with defender-local branch evidence", () => {

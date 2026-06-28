@@ -66,6 +66,11 @@ async function main() {
       artifact: presets.createSyntheticImportedResourceTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-sound",
+      required: true,
+      artifact: presets.createSyntheticImportedSoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),
@@ -946,6 +951,7 @@ function createTraceCoverage(entries, skipped) {
       effectKinds: 0,
       combatReasons: 0,
       matchPauseRoutes: 0,
+      soundEventTypes: 0,
       worldLifecycleRoutes: 0,
       targetLinkRoutes: 0,
       effectStoreRoutes: 0,
@@ -957,6 +963,7 @@ function createTraceCoverage(entries, skipped) {
     effectKinds: {},
     combatReasons: {},
     eventCategories: {},
+    soundEvents: {},
     matchPauses: {},
     matchPauseFreezes: {},
     matchPauseAdvances: {},
@@ -1002,6 +1009,9 @@ function createTraceCoverage(entries, skipped) {
         addCoverageEntry(coverage.matchPauseAdvances, `${advance.type}:${advance.actorKind ?? advance.actorId ?? "actor"}`, context, {
           frames: advance.advancedFrames,
         });
+      }
+      for (const event of evidence.soundEvents ?? []) {
+        addCoverageEntry(coverage.soundEvents, event.type, context, { count: event.count });
       }
       for (const event of evidence.worldLifecycleEvents ?? []) {
         addCoverageEntry(coverage.worldLifecycle, `${event.kind}:${event.type}`, context);
@@ -1056,6 +1066,7 @@ function createTraceCoverage(entries, skipped) {
     Object.keys(coverage.matchPauses).length +
     Object.keys(coverage.matchPauseFreezes).length +
     Object.keys(coverage.matchPauseAdvances).length;
+  coverage.summary.soundEventTypes = Object.keys(coverage.soundEvents).length;
   coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
   coverage.summary.targetLinkRoutes = coverage.targetLinks.artifacts.length;
   coverage.summary.effectStoreRoutes = coverage.effectStores.artifacts.length;
@@ -1114,6 +1125,7 @@ function validateTraceCoverage(coverage) {
   const requiredEffectPayloadDeltas = ["projectile:hits", "projectile:removal", "projectile:terminal", "explod:bindRemaining"];
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredSoundEventTypes = ["PlaySnd", "StopSnd"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
     "synthetic-imported-targetstate-custom",
@@ -1160,6 +1172,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",
     "synthetic-imported-resource",
+    "synthetic-imported-sound",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-match-context",
@@ -1192,11 +1205,15 @@ function validateTraceCoverage(coverage) {
   for (const key of requiredPauseFreezeRoutes) {
     requireCoverageEntry(coverage.matchPauseFreezes, key, "match-pause freeze", failures);
   }
+  for (const key of requiredSoundEventTypes) {
+    requireCoverageEntry(coverage.soundEvents, key, "sound event", failures);
+  }
   for (const name of requiredArtifactNames) {
     const hasArtifact =
       Object.values(coverage.controllers).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.operations).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.soundEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseFreezes).some((entry) => entry.requiredArtifacts.includes(name));
     if (!hasArtifact) {

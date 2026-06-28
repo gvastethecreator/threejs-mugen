@@ -253,6 +253,33 @@ export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-sound",
+      displayName: "Synthetic Imported Sound Events",
+      action200Duration: 30,
+      withSoundControllers: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-sound-golden",
+      targetLabel: "Synthetic imported PlaySnd/StopSnd event route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd", "StopSnd"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredSoundEvents: [
+        { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 },
+        { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
+      ],
+      notes: [
+        "Synthetic imported sound trace proves PlaySnd and StopSnd controllers emit bounded runtime sound events with parsed Sgroup,index/channel telemetry. It does not claim SND decode coverage, Web Audio timing/mixing, loops, pan, volume, priorities, or exact MUGEN/IKEMEN audio parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -812,6 +839,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedStates?: number[];
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     script?: RuntimeTraceInputFrame[];
   } = {},
@@ -842,6 +870,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [200],
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
+        requiredSoundEvents: options.requiredSoundEvents,
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),
         ...(options.requireHitEvent ? { requiredCombatReasons: ["hit" as const] } : {}),
@@ -6183,6 +6212,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitAddStateNo?: number;
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
+  withSoundControllers?: boolean;
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
@@ -6467,6 +6497,7 @@ ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
+${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
@@ -8189,6 +8220,21 @@ trigger1 = Life = 750
 trigger1 = Power = 900
 value = ${stateNo}
 ctrl = 0
+`;
+}
+
+function soundControllerBlock(): string {
+  return `
+[State 200, Play Sound Probe]
+type = PlaySnd
+trigger1 = Time = 1
+value = S5,0
+channel = 2
+
+[State 200, Stop Sound Probe]
+type = StopSnd
+trigger1 = Time = 3
+channel = 2
 `;
 }
 
