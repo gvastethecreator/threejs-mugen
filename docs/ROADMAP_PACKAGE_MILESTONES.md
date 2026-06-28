@@ -32,17 +32,25 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Default next implementation slice after this docs/setup pass:
+Current R1 hit-eligibility slice completed:
 
 ```txt
 R1 hit-eligibility oracle
-  -> add required HitBy mismatch-reject trace
-  -> prove HitBy value = S,NT rejects HitDef attr = S,NA
-  -> require eligibility:hitby reject event and no accepted hit
-  -> update support docs, QA gates, issue 01, scorecard ledger if aggregate changes
+  -> required synthetic-imported-hitby-reject.json
+  -> checksum 65185fd1
+  -> proves HitBy value = S,NT rejects HitDef attr = S,NA
+  -> qa:trace aggregate 154/154, 136 required, 18 optional
 ```
 
-Why: the previous required oracle proves `HitBy value = S,NA` allows a matching `HitDef attr = S,NA`, and `NotHitBy` already rejects through `eligibility:nothitby`. A mismatch-reject trace closes the other half of the bounded static `HitBy` allow-list story without broad VM drift.
+Default next implementation slice after this cut:
+
+```txt
+R1 Common1/FightFX precision
+  -> move one guard/fall/recovery or FightFX/common route beyond current bounded evidence
+  -> prefer exact controller/operation order, fixture-backed confirmation, or visible package presentation evidence
+```
+
+Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, or effect/combat ordering if it can preserve trace behavior.
 
 ## Package Closeout Contract
 

@@ -58,19 +58,18 @@ See `docs/ROADMAP_RELEASE_TARGETS.md` for the release-train ladder and score-mov
 
 These are ordered candidates, not new score claims:
 
-1. R1: add required `HitBy` mismatch-reject trace so the bounded allow-list has both accept and reject evidence.
-2. R1: move one Common1 recovery/guard tick-order slice from summarized evidence toward exact controller-loop ordering.
-3. R1: promote one more optional official KFM guard/fall/recovery route into a stricter local oracle when the private fixture exists.
-4. R1 presentation: deepen FightFX/common spark presentation beyond first-pass package `fight.def`/AIR/SFF loading, decoded system-SFF provider registration, bounded AIR-duration frame advance, and bounded AIR/SFF axis binding: exact layering, scale, palette, and motif/screenpack ownership remain open.
-5. R2: deepen one `MatchWorld` ownership boundary around target links, effect ordering, helper lifecycle, or presentation effects without behavior drift.
-6. R2: add trace evidence for effect/combat ordering if ownership changes can affect checksums.
-7. S1: make Studio Evidence and Build read one shared status/next-action contract.
-8. S1: add visual QA for any Studio workflow reshaping, using real evidence rows and blocked actions.
-9. A1: store generated asset prompt/source/atlas/contact-sheet/QA/collision/playtest provenance as one record.
-10. A1: surface motion/scale/baseline QA failures so bad sprites trigger regeneration, not cropping.
-11. I1: expand scanner-only Ikemen-GO references from source/docs into recognized/unsupported/unknown findings with tests.
-12. M1: prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage.
-13. R3 later: add another private fixture corpus package only as local evidence; no bundled third-party assets.
+1. R1: move one Common1 recovery/guard tick-order slice from summarized evidence toward exact controller-loop ordering.
+2. R1: promote one more optional official KFM guard/fall/recovery route into a stricter local oracle when the private fixture exists.
+3. R1 presentation: deepen FightFX/common spark presentation beyond first-pass package `fight.def`/AIR/SFF loading, decoded system-SFF provider registration, bounded AIR-duration frame advance, and bounded AIR/SFF axis binding: exact layering, scale, palette, and motif/screenpack ownership remain open.
+4. R2: deepen one `MatchWorld` ownership boundary around target links, effect ordering, helper lifecycle, or presentation effects without behavior drift.
+5. R2: add trace evidence for effect/combat ordering if ownership changes can affect checksums.
+6. S1: make Studio Evidence and Build read one shared status/next-action contract.
+7. S1: add visual QA for any Studio workflow reshaping, using real evidence rows and blocked actions.
+8. A1: store generated asset prompt/source/atlas/contact-sheet/QA/collision/playtest provenance as one record.
+9. A1: surface motion/scale/baseline QA failures so bad sprites trigger regeneration, not cropping.
+10. I1: expand scanner-only Ikemen-GO references from source/docs into recognized/unsupported/unknown findings with tests.
+11. M1: prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage.
+12. R3 later: add another private fixture corpus package only as local evidence; no bundled third-party assets.
 
 ## Active Implementation Queue
 
@@ -87,7 +86,7 @@ Build next:
 - Current proof: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, with `SelfState`, `VelSet`, `PosSet`, actor-frame velocity telemetry for synthetic ground-recovery constants, and ordered named controller/typed-operation evidence from `5050` gravity/recovery input through `5200` self-land, `5201` safety/land, and `52` control restore.
 - Current visual-effect proof: required `synthetic-imported-modifyexplod.json` checksum `bca75991` gates bounded typed `ModifyExplod` operation evidence and live owner-side visual Explod mutation for static velocity, acceleration, scale, remove time, sprite priority, remove-on-get-hit, and pause-budget telemetry through `RuntimeEffectSpawnWorld` / `RuntimeEffectActorWorld`. Dynamic params, position rebinding, helper-owned Explods, FightFX/common routing, remove-trigger parity, exact tick order, and full Explod lifecycle parity remain blocked.
 - Current trigger proof: focused compiler/evaluator/runtime-controller tests cover bounded `HitPauseTime` expression support against the current actor hitpause counter, and required `synthetic-imported-hitpausetime-ignorehitpause.json` checksum `a3a78bb8` proves an imported active-state `ChangeState` with `ignorehitpause = 1` can branch on `HitPauseTime > 0` into state `220` during global hitpause while P1 records `HitPause:player` advance and P2 records player freeze. Persistent controller semantics, helper-owned controller execution, broad side-effect ordering, and exact hitpause tick-order parity remain blocked.
-- Current hit-eligibility proof: required `synthetic-imported-hitby-allow.json` checksum `c75d5c7d` gates bounded `HitBy value = S,NA` allow-list acceptance through typed `eligibility:hitby`, accepted direct-hit contact, and final P2 life `963`; required `synthetic-imported-reject.json` checksum `5aca7dc0` gates the matching `NotHitBy` deny-list reject route through typed `eligibility:nothitby`. Exact attr grammar, slot priority, edge timing, helper/custom-state ownership, and full hit-eligibility parity remain blocked.
+- Current hit-eligibility proof: required `synthetic-imported-hitby-allow.json` checksum `c75d5c7d` gates bounded `HitBy value = S,NA` allow-list acceptance through typed `eligibility:hitby`, accepted direct-hit contact, and final P2 life `963`; required `synthetic-imported-hitby-reject.json` checksum `65185fd1` gates bounded `HitBy value = S,NT` mismatch rejection against `HitDef attr = S,NA` through typed `eligibility:hitby`, reject telemetry, and final P2 life `1000`; required `synthetic-imported-reject.json` checksum `5aca7dc0` gates the matching `NotHitBy` deny-list reject route through typed `eligibility:nothitby`. Exact attr grammar, slot priority, edge timing, helper/custom-state ownership, and full hit-eligibility parity remain blocked.
 - Current guard proof: required `synthetic-imported-default-guard-state.json` checksum `016938a1`, `synthetic-imported-crouch-guard-state.json` checksum `6c4321af`, `synthetic-imported-diagonal-crouch-guard-state.json` checksum `1dd33fb5`, and `synthetic-imported-air-guard-state.json` checksum `ce9cc9ba` gate bounded stand/crouch/atomic-`DB`/air guard-hit controller/operation routes through `ChangeAnim`, `ChangeState`, `HitVelSet`, `kinematic:hitvelset`, `CtrlSet`, `resource:ctrlset`, and final `ChangeState`; air also gates `VelAdd` gravity evidence.
 - Current auto guard proof: required `synthetic-imported-auto-guard-start.json` checksum `0c734290` now gates ordered actor-frame evidence for `120` before `130`, and required `synthetic-imported-auto-guard-end.json` checksum `d1dc0aa3` gates `120 -> 130 -> 140` plus final idle/control evidence. This is minimum bounded guard-start/end state-order evidence, not exact proximity guard, guard-end timing, controller-loop parity, or full guard VM parity.
 - Current AssertSpecial proof: required `synthetic-imported-assertspecial-noko.json` checksum `9dd76f9b` now gates bounded P2 state `0` `Passive AssertSpecial` before P1 state `200` lethal `HitDef`, plus final P2 life `1`; this is minimum NoKO flag-before-hit evidence only, not exact round/no-KO parity.
@@ -111,7 +110,7 @@ Build next:
 
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
 - Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence.
-- Current proof: required `synthetic-imported-hitby-allow.json` checksum `c75d5c7d` gates bounded `HitBy` allow-list acceptance through typed `eligibility:hitby` evidence; required `synthetic-imported-noop.json` checksum `57c74c93` still gates imported `Null` and browser no-op `ForceFeedback` controller execution visibility before a simple `HitDef` route. Current trace aggregate: 153/153 artifacts passed, 135 required and 18 optional.
+- Current proof: required `synthetic-imported-hitby-reject.json` checksum `65185fd1` gates bounded `HitBy` allow-list mismatch rejection through typed `eligibility:hitby` evidence and final P2 life `1000`; required `synthetic-imported-hitby-allow.json` checksum `c75d5c7d` remains the matching allow-list acceptance route, and required `synthetic-imported-noop.json` checksum `57c74c93` still gates imported `Null` and browser no-op `ForceFeedback` controller execution visibility before a simple `HitDef` route. Current trace aggregate: 154/154 artifacts passed, 136 required and 18 optional.
 - Current proof: `RuntimeTargetWorld.snapshotRuntimeState` owns cloned target-memory snapshots consumed by `MatchWorld` actor records, with focused tests proving target refs, TargetBind bindings, and `BindToTarget` registry evidence remain stable.
 - Current proof: `RuntimePauseWorld` owns current match pause state, snapshot projection, source-movetime checks, countdown ticks, controller application, and reset while preserving existing `Pause`/`SuperPause` trace behavior.
 - Current proof: `RuntimeEnvShakeWorld` owns bounded EnvShake/FallEnvShake event insertion plus deterministic multi-actor camera-shake projection consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.

@@ -206,6 +206,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitByAllowTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitby-reject",
+      required: true,
+      artifact: presets.createSyntheticImportedHitByRejectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitoverride",
       required: true,
       artifact: presets.createSyntheticImportedHitOverrideTraceArtifact(),
@@ -1376,6 +1381,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-reversal",
     "synthetic-imported-hitoverride",
     "synthetic-imported-hitby-allow",
+    "synthetic-imported-hitby-reject",
     "synthetic-imported-damage-scale",
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",

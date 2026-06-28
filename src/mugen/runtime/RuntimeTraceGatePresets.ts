@@ -1169,6 +1169,60 @@ export function createSyntheticImportedHitByAllowTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedHitByRejectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitby-reject-attacker",
+    displayName: "Synthetic Imported HitBy Reject Attacker",
+    hitDefAttr: "S,NA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitby-reject-defender",
+    displayName: "Synthetic Imported HitBy Reject Defender",
+    passiveHitBy: "S,NT",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitby-reject-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitby-reject-golden",
+      label: "Synthetic imported HitBy reject route",
+      source: "imported",
+      notes: [
+        "Synthetic imported HitBy reject trace proves a defender-side HitBy allow-list can reject a mismatched HitDef attr without applying damage. It does not claim exact attr grammar, slot priority, helper ownership, or full MUGEN/IKEMEN hit-eligibility timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitby-reject-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitBy"],
+        requiredExecutedOperations: ["hitdef", "eligibility:hitby"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reject"],
+        requiredCombatReasons: ["reject"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitOverrideTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();

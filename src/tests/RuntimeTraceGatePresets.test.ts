@@ -77,6 +77,7 @@ import {
   createSyntheticImportedExplodTraceArtifact,
   createSyntheticImportedHitOverrideTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
+  createSyntheticImportedHitByRejectTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
@@ -1307,6 +1308,41 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
     expect(artifact.trace.events.some((event) => event.category === "reject")).toBe(false);
+  });
+
+  it("creates a synthetic imported HitBy reject artifact with mismatched attr evidence", () => {
+    const artifact = createSyntheticImportedHitByRejectTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitby-reject-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitby-reject-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "HitBy"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "eligibility:hitby"]);
+    expect(artifact.gates[0]?.requirements.requiredFinalActors).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        life: 1000,
+        moveType: "I",
+      },
+    ]);
+    expect(artifact.gates[0]?.evidence.executedControllers.HitBy).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["eligibility:hitby"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.eventCategories).toContain("reject");
+    expect(artifact.gates[0]?.evidence.combatReasons).toContain("reject");
+    expect(artifact.trace.events.some((event) => event.category === "hit")).toBe(false);
   });
 
   it("creates a synthetic imported HitOverride artifact with redirect reason evidence", () => {

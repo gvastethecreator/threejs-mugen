@@ -137,7 +137,7 @@ Docs-only/setup slices improve control only. They do not raise scores.
 
 - Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
 - Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
-- Immediate next slice after this setup refresh: R1 `HitBy` mismatch-reject required trace, unless newer code changes already closed it.
+- Immediate next slice after the current HitBy accept/reject gate: R1 Common1/FightFX precision or R2 MatchWorld ownership, whichever can produce focused evidence without broad drift.
 - Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
 - Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 
