@@ -24484,3 +24484,108 @@ input {
     white-space: nowrap;
   }
 }
+
+/* Desktop Debug: actor selection and runtime focus read as inspector rows. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="debug"] {
+    --section-accent: #a0777b;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-list {
+    gap: 0;
+    margin-top: 6px;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button {
+    grid-template-columns: minmax(0, 1fr) minmax(86px, max-content);
+    min-height: 38px;
+    gap: 8px;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button.is-selected {
+    background: var(--dcc-row-hover);
+    outline: 1px solid color-mix(in srgb, var(--debug-accent) 48%, var(--dcc-line));
+    outline-offset: -1px;
+    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--debug-accent) 62%, transparent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main {
+    gap: 1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
+    line-height: 1.06;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics {
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    min-width: 0;
+    justify-content: end;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics .badge,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics span {
+    min-width: 0;
+    border-radius: 0;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .section:has(.debug-actor-list),
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .section:has(.compact-debug-row) {
+    gap: 7px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .compact-debug-row,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .list-item.compact-debug-row {
+    min-height: 34px;
+    padding: 5px 7px;
+    border-radius: 0;
+    background: var(--dcc-row);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane .studio-kv,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv {
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-section > .section-heading-row + .debug-lens-grid,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-section > .section-heading-row + .debug-lens-stat-grid {
+    margin-top: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-section .section-heading-row {
+    min-height: 28px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--dcc-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-section .badge-row .badge,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row .badge {
+    min-height: 20px;
+    border-radius: 0;
+    font-size: 11px;
+  }
+}
