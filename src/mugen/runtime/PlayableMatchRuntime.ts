@@ -86,6 +86,7 @@ import type {
   ActorSnapshot,
   CharacterRuntimeState,
   RuntimeAfterImageSample,
+  RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
@@ -146,6 +147,9 @@ type FighterMatchState = {
   lastRoutedState?: { stateId: number; name?: string };
   executedControllerCounts: Record<string, number>;
   executedOperationCounts: Record<string, number>;
+  controllerEvents: RuntimeControllerTraceEvent[];
+  nextControllerEventSequence: number;
+  compatibilityTick: number;
   firedHitDefs: Set<string>;
   soundEvents: RuntimeSoundEvent[];
   audioWorld: RuntimeAudioWorld;
@@ -284,6 +288,8 @@ export class PlayableMatchRuntime {
     this.tick += 1;
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
+    this.p1.compatibilityTick = this.tick;
+    this.p2.compatibilityTick = this.tick;
     this.p1.currentInput = new Set(p1Input);
     this.p2.currentInput = new Set(p2Input);
 
@@ -616,6 +622,9 @@ function createFighterState(
     routedStateIds: [],
     executedControllerCounts: {},
     executedOperationCounts: {},
+    controllerEvents: [],
+    nextControllerEventSequence: 0,
+    compatibilityTick: 0,
     firedHitDefs: new Set(),
     soundEvents: [],
     audioWorld,
@@ -2204,6 +2213,7 @@ function recordControllerExecution(fighter: FighterMatchState, controller: Mugen
   }
   const key = controller.type || controller.name || "Unknown";
   fighter.executedControllerCounts[key] = (fighter.executedControllerCounts[key] ?? 0) + 1;
+  appendControllerEvent(fighter, controller);
 }
 
 function recordControllerOperation(fighter: FighterMatchState, operation: ControllerOp): void {
@@ -2212,6 +2222,23 @@ function recordControllerOperation(fighter: FighterMatchState, operation: Contro
   }
   const key = controllerOperationKey(operation);
   fighter.executedOperationCounts[key] = (fighter.executedOperationCounts[key] ?? 0) + 1;
+  appendControllerEvent(fighter, undefined, key);
+}
+
+function appendControllerEvent(fighter: FighterMatchState, controller?: MugenStateController, operation?: string): void {
+  const key = controller?.type || controller?.name || operation || "Unknown";
+  fighter.controllerEvents.push({
+    sequence: fighter.nextControllerEventSequence++,
+    tick: fighter.compatibilityTick,
+    stateNo: fighter.runtime.stateNo,
+    controller: key,
+    ...(controller?.name ? { name: controller.name } : {}),
+    ...(controller?.line !== undefined ? { line: controller.line } : {}),
+    ...(operation ? { operation } : {}),
+  });
+  while (fighter.controllerEvents.length > 160) {
+    fighter.controllerEvents.shift();
+  }
 }
 
 function controllerOperationKey(operation: ControllerOp): string {
@@ -2277,6 +2304,7 @@ function buildCompatibilitySession(fighters: FighterMatchState[]): MugenSnapshot
         routedStates: [...fighter.routedStateIds],
         executedControllers: { ...fighter.executedControllerCounts },
         executedOperations: { ...fighter.executedOperationCounts },
+        controllerEvents: fighter.controllerEvents.map((event) => ({ ...event })),
         activeCommands: activeImportedCommands(fighter),
         commandHistory: fighter.commandBuffer.getHistory(24),
       };

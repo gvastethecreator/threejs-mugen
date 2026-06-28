@@ -119,6 +119,18 @@ describe("RuntimeTrace", () => {
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "HitDef"],
       requiredExecutedOperations: ["hitdef"],
+      requiredControllerEventSequences: [
+        {
+          label: "imported-x-controller-order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { controller: "ChangeState" },
+            { stateNo: 200, controller: "HitDef" },
+            { stateNo: 200, operation: "hitdef" },
+          ],
+        },
+      ],
       requiredActiveCommands: ["x"],
       requiredEventCategories: ["hit"],
     });
@@ -131,6 +143,8 @@ describe("RuntimeTrace", () => {
     });
     expect(gate.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(gate.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate.evidence.controllerEvents.map((event) => event.controller)).toContain("ChangeState");
+    expect(gate.evidence.controllerEvents.map((event) => event.operation).filter(Boolean)).toContain("hitdef");
     expect(trace.final.actors[1]?.life).toBeLessThan(1000);
 
     const forbiddenGate = evaluateRuntimeTraceGate(trace, {

@@ -11,6 +11,7 @@ import type {
   CompatibilitySessionSnapshot,
   MugenSnapshot,
   RuntimeActorKind,
+  RuntimeControllerTraceEvent,
   RuntimeMatchPauseSnapshot,
   RoundSnapshot,
   StageSnapshot,
@@ -112,6 +113,12 @@ export type RuntimeTraceCompatibilityActor = Pick<
 > & {
   executedControllers: Record<string, number>;
   executedOperations: Record<string, number>;
+  controllerEvents: RuntimeTraceControllerEvent[];
+};
+
+export type RuntimeTraceControllerEvent = RuntimeControllerTraceEvent & {
+  actorId: string;
+  label: string;
 };
 
 export type RuntimeTraceEvent = {
@@ -724,6 +731,7 @@ export type RuntimeTraceGate = {
   forbiddenExecutedStates?: number[];
   requiredExecutedControllers?: Array<string | { type: string; minCount: number }>;
   requiredExecutedOperations?: Array<string | { operation: string; minCount: number }>;
+  requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   requiredActiveCommands?: string[];
   requiredEventCategories?: RuntimeTraceEvent["category"][];
   requiredEventSubstrings?: string[];
@@ -752,6 +760,7 @@ export type RuntimeTraceGateEvidence = {
   executedStates: number[];
   executedControllers: Record<string, number>;
   executedOperations: Record<string, number>;
+  controllerEvents: RuntimeTraceControllerEvent[];
   activeCommands: string[];
   eventCategories: RuntimeTraceEvent["category"][];
   eventLines: string[];
@@ -776,6 +785,20 @@ export type RuntimeTraceGateResult = {
   passed: boolean;
   failures: string[];
   evidence: RuntimeTraceGateEvidence;
+};
+
+export type RuntimeTraceControllerEventRequirement = {
+  actorId?: string;
+  stateNo?: number;
+  controller?: string;
+  operation?: string;
+};
+
+export type RuntimeTraceControllerEventSequenceRequirement = {
+  label?: string;
+  actorId?: string;
+  steps: RuntimeTraceControllerEventRequirement[];
+  allowSameTick?: boolean;
 };
 
 export type RuntimeTraceRunner = {
@@ -886,6 +909,12 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
     const actual = evidence.executedOperations[type] ?? 0;
     if (actual < minCount) {
       failures.push(`Missing executed operation: ${type} >= ${minCount} (actual ${actual})`);
+    }
+  }
+  for (const requirement of gate.requiredControllerEventSequences ?? []) {
+    const result = matchesControllerEventSequenceRequirement(evidence.controllerEvents, requirement);
+    if (!result.passed) {
+      failures.push(`Missing controller event sequence: ${describeControllerEventSequenceRequirement(requirement)} (${result.reason})`);
     }
   }
   for (const command of gate.requiredActiveCommands ?? []) {
@@ -1040,6 +1069,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
   const executedOperations: Record<string, number> = {};
+  const controllerEvents = new Map<string, RuntimeTraceControllerEvent>();
 
   for (const [frameIndex, frame] of frames.entries()) {
     const allActors = [...frame.actors, ...frame.effects];
@@ -1113,6 +1143,9 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       }
       for (const [type, count] of Object.entries(actor.executedOperations)) {
         executedOperations[type] = Math.max(executedOperations[type] ?? 0, count);
+      }
+      for (const event of actor.controllerEvents) {
+        controllerEvents.set(controllerEventKey(event), event);
       }
     }
     for (const reason of frame.combatReasons) {
@@ -1376,6 +1409,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     executedStates: sortNumbers([...executedStates]),
     executedControllers: Object.fromEntries(Object.entries(executedControllers).sort(([left], [right]) => left.localeCompare(right))),
     executedOperations: Object.fromEntries(Object.entries(executedOperations).sort(([left], [right]) => left.localeCompare(right))),
+    controllerEvents: [...controllerEvents.values()].sort(compareControllerTraceEvents),
     activeCommands: sortStrings([...activeCommands]),
     eventCategories: sortStrings([...eventCategories]) as RuntimeTraceEvent["category"][],
     eventLines: sortStrings([...eventLines]),
@@ -2580,7 +2614,7 @@ function summarizeTraceSnapshot(
     effects: frame.effects.map(summarizeActorForChecksum),
     round: frame.round,
     matchPause: frame.matchPause,
-    compatibility: frame.compatibility,
+    compatibility: summarizeCompatibilityForChecksum(frame.compatibility),
     events: frame.events.map((event) => event.line),
     combatReasons: frame.combatReasons,
   });
@@ -2941,9 +2975,20 @@ function summarizeCompatibility(session: CompatibilitySessionSnapshot | undefine
     })),
     executedControllers: { ...actor.executedControllers },
     executedOperations: { ...actor.executedOperations },
+    controllerEvents: (actor.controllerEvents ?? []).map((event) => ({
+      actorId: actor.actorId,
+      label: actor.label,
+      ...event,
+    })),
     lastRoutedState: actor.lastRoutedState ? { ...actor.lastRoutedState } : undefined,
     lastExecutedState: actor.lastExecutedState,
   }));
+}
+
+function summarizeCompatibilityForChecksum(
+  compatibility: RuntimeTraceCompatibilityActor[] | undefined,
+): Array<Omit<RuntimeTraceCompatibilityActor, "controllerEvents">> | undefined {
+  return compatibility?.map(({ controllerEvents: _controllerEvents, ...actor }) => actor);
 }
 
 function toMatchInput(frame: RuntimeTraceInputFrame): MatchInput {
@@ -2962,6 +3007,72 @@ function collectNewLogs(previous: string[], current: string[]): string[] {
   }
   const previousSet = new Set(previous);
   return current.filter((line) => !previousSet.has(line));
+}
+
+function controllerEventKey(event: RuntimeTraceControllerEvent): string {
+  return `${event.actorId}:${event.sequence}`;
+}
+
+function compareControllerTraceEvents(left: RuntimeTraceControllerEvent, right: RuntimeTraceControllerEvent): number {
+  return left.tick - right.tick || left.sequence - right.sequence || left.actorId.localeCompare(right.actorId);
+}
+
+function matchesControllerEventSequenceRequirement(
+  events: RuntimeTraceControllerEvent[],
+  requirement: RuntimeTraceControllerEventSequenceRequirement,
+): { passed: boolean; reason: string } {
+  if (requirement.steps.length === 0) {
+    return { passed: true, reason: "empty sequence" };
+  }
+  let cursor = -1;
+  let previous: RuntimeTraceControllerEvent | undefined;
+  for (const step of requirement.steps) {
+    const foundIndex = events.findIndex((event, index) => {
+      if (index <= cursor) {
+        return false;
+      }
+      if (requirement.actorId !== undefined && event.actorId !== requirement.actorId) {
+        return false;
+      }
+      if (!matchesControllerEventRequirement(event, step)) {
+        return false;
+      }
+      if (!requirement.allowSameTick && previous && event.tick <= previous.tick) {
+        return false;
+      }
+      return true;
+    });
+    if (foundIndex === -1) {
+      return { passed: false, reason: `missing ${describeControllerEventRequirement(step)} after index ${cursor}` };
+    }
+    cursor = foundIndex;
+    previous = events[foundIndex];
+  }
+  return { passed: true, reason: "matched" };
+}
+
+function matchesControllerEventRequirement(
+  event: RuntimeTraceControllerEvent,
+  requirement: RuntimeTraceControllerEventRequirement,
+): boolean {
+  return (
+    (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
+    (requirement.controller === undefined || event.controller === requirement.controller) &&
+    (requirement.operation === undefined || event.operation === requirement.operation)
+  );
+}
+
+function describeControllerEventSequenceRequirement(requirement: RuntimeTraceControllerEventSequenceRequirement): string {
+  const label = requirement.label ? `${requirement.label}: ` : "";
+  return `${label}${requirement.steps.map(describeControllerEventRequirement).join(" -> ")}`;
+}
+
+function describeControllerEventRequirement(requirement: RuntimeTraceControllerEventRequirement): string {
+  return Object.entries(requirement)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
 }
 
 function categorizeLogLine(line: string): RuntimeTraceEvent["category"] {

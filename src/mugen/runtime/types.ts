@@ -322,6 +322,17 @@ export type ActorCompatibilitySession = {
   };
   lastExecutedState?: number;
   executedOperations: Record<string, number>;
+  controllerEvents?: RuntimeControllerTraceEvent[];
+};
+
+export type RuntimeControllerTraceEvent = {
+  sequence: number;
+  tick: number;
+  stateNo: number;
+  controller: string;
+  name?: string;
+  line?: number;
+  operation?: string;
 };
 
 export type CompatibilitySessionSnapshot = {

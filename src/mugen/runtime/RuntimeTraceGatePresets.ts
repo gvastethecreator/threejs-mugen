@@ -4155,7 +4155,7 @@ export function createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact
       label: "Synthetic imported Common1 recovery actor-frame tick-order route",
       source: "mixed",
       notes: [
-        "Synthetic imported recovery tick-order trace proves summarized actor-frame evidence can require 5050 with positive fall.recovertime before 5210 with recoverTime = 0 on the bounded recovery-input route. It does not claim exact MUGEN/IKEMEN VM tick order, controller ordering, or official KFM threshold tables.",
+        "Synthetic imported recovery tick-order trace proves summarized actor-frame evidence can require 5050 with positive fall.recovertime before 5210 with recoverTime = 0 on the bounded recovery-input route, and can require a bounded controller-event sequence for the same route. It does not claim exact MUGEN/IKEMEN VM tick order, full controller-loop ordering, or official KFM threshold tables.",
       ],
     },
     gates: [
@@ -4167,6 +4167,20 @@ export function createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact
         requiredExecutedStates: [200, 5000, 5030, 5050, 5210],
         requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd", "HitFallSet"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          {
+            label: "5050 recovery controller order into 5210 settle",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 5050, controller: "VelAdd" },
+              { stateNo: 5050, controller: "ChangeState" },
+              { stateNo: 5210, controller: "VelSet" },
+              { stateNo: 5210, controller: "HitFallSet" },
+              { stateNo: 5210, controller: "ChangeState" },
+            ],
+          },
+        ],
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],

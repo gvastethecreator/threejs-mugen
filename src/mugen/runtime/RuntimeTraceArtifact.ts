@@ -147,6 +147,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
         executedStates: [...gate.evidence.executedStates],
         executedControllers: { ...gate.evidence.executedControllers },
         executedOperations: { ...gate.evidence.executedOperations },
+        controllerEvents: gate.evidence.controllerEvents.map((event) => ({ ...event })),
         activeCommands: [...gate.evidence.activeCommands],
         eventCategories: [...gate.evidence.eventCategories],
         eventLines: [...gate.evidence.eventLines],
@@ -529,6 +530,10 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredExecutedOperations: gate.requiredExecutedOperations?.map((requirement) =>
       typeof requirement === "string" ? requirement : { ...requirement },
     ),
+    requiredControllerEventSequences: gate.requiredControllerEventSequences?.map((sequence) => ({
+      ...sequence,
+      steps: sequence.steps.map((step) => ({ ...step })),
+    })),
     requiredActiveCommands: gate.requiredActiveCommands ? [...gate.requiredActiveCommands] : undefined,
     requiredEventCategories: gate.requiredEventCategories ? [...gate.requiredEventCategories] : undefined,
     requiredEventSubstrings: gate.requiredEventSubstrings ? [...gate.requiredEventSubstrings] : undefined,

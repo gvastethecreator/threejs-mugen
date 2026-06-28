@@ -3260,6 +3260,13 @@ describe("RuntimeTraceGatePresets", () => {
     expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
     expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(fallFrame?.lastTick).toBeLessThan(recoveryFrame?.firstTick ?? 0);
+    expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
+      expect.arrayContaining(["VelAdd", "ChangeState", "VelSet", "HitFallSet"]),
+    );
+    const fallControllerEvents = evidence?.controllerEvents
+      .filter((event) => event.actorId === "p2" && event.stateNo === 5050)
+      .map((event) => event.controller);
+    expect(fallControllerEvents).toEqual(expect.arrayContaining(["VelAdd", "ChangeState"]));
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
       {
         label: "5050 positive recoverTime before 5210 recovery",
@@ -3282,6 +3289,20 @@ describe("RuntimeTraceGatePresets", () => {
             observedHitFallRecoverTimeAtMost: 0,
             minFrames: 1,
           },
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5050 recovery controller order into 5210 settle",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5050, controller: "VelAdd" },
+          { stateNo: 5050, controller: "ChangeState" },
+          { stateNo: 5210, controller: "VelSet" },
+          { stateNo: 5210, controller: "HitFallSet" },
+          { stateNo: 5210, controller: "ChangeState" },
         ],
       },
     ]);
