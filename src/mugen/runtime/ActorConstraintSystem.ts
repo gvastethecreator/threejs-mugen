@@ -1,0 +1,88 @@
+import type { CollisionControllerOp } from "../compiler/ControllerOps";
+import type { MugenStageDefinition } from "../model/MugenStage";
+import type { MugenStateController } from "../model/MugenState";
+import { findControllerParam } from "./StateProgramExecutor";
+import type { CharacterRuntimeState } from "./types";
+
+export type RuntimeActorConstraintState = Pick<
+  CharacterRuntimeState,
+  "pos" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound"
+>;
+
+export class RuntimeActorConstraintWorld {
+  resetFrameConstraints(state: RuntimeActorConstraintState): void {
+    state.playerPush = true;
+    state.posFreeze = undefined;
+    state.screenBound = undefined;
+  }
+
+  applyWidth(
+    state: RuntimeActorConstraintState,
+    controller: MugenStateController,
+    operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
+  ): void {
+    const pair = operation ? undefined : numberPair(findControllerParam(controller, "player") ?? findControllerParam(controller, "value"));
+    const front = operation?.front ?? pair?.[0];
+    if (front === undefined) {
+      return;
+    }
+    state.bodyWidth = {
+      front: clampBodyWidth(front),
+      back: clampBodyWidth(operation?.back ?? pair?.[1] ?? front),
+    };
+  }
+
+  preserveFrozenPosition(state: RuntimeActorConstraintState, tickStartPos: { x: number; y: number }): void {
+    const posFreeze = state.posFreeze;
+    if (posFreeze?.x) {
+      state.pos.x = tickStartPos.x;
+    }
+    if (posFreeze?.y) {
+      state.pos.y = tickStartPos.y;
+    }
+  }
+
+  clampToStage(state: RuntimeActorConstraintState, stage: Pick<MugenStageDefinition, "bounds">): void {
+    if (state.screenBound?.bound === false) {
+      return;
+    }
+    state.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, state.pos.x));
+  }
+
+  separate(left: RuntimeActorConstraintState, right: RuntimeActorConstraintState): void {
+    if (left.playerPush === false || right.playerPush === false) {
+      return;
+    }
+    const minDistance = widthToward(left, right) + widthToward(right, left);
+    const delta = right.pos.x - left.pos.x;
+    const distance = Math.abs(delta);
+    if (distance >= minDistance || distance === 0) {
+      return;
+    }
+    const push = (minDistance - distance) / 2;
+    const direction = delta > 0 ? 1 : -1;
+    left.pos.x -= push * direction;
+    right.pos.x += push * direction;
+  }
+}
+
+function widthToward(self: RuntimeActorConstraintState, target: RuntimeActorConstraintState): number {
+  const width = self.bodyWidth ?? { front: 39, back: 39 };
+  const targetIsInFront = (target.pos.x - self.pos.x) * self.facing >= 0;
+  return targetIsInFront ? width.front : width.back;
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value.split(",").map((part) => Number(part.trim()));
+  if (numbers.length < 2 || numbers.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
+  }
+  return [numbers[0]!, numbers[1]!];
+}
+
+function clampBodyWidth(value: number): number {
+  return Math.max(1, Math.min(160, Math.abs(Math.round(value))));
+}

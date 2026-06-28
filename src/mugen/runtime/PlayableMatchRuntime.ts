@@ -1,7 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   BindToTargetControllerOp,
-  CollisionControllerOp,
   ContactControllerOp,
   ControllerOp,
   ExplodControllerOp,
@@ -22,6 +21,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
+import { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
@@ -195,6 +195,7 @@ export class PlayableMatchRuntime {
   private readonly envColorWorld = new RuntimeEnvColorWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
+  private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -318,6 +319,7 @@ export class PlayableMatchRuntime {
     advanceFighter(
       this.p1,
       this.p2,
+      this.actorConstraintWorld,
       this.spriteEffectWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -328,6 +330,7 @@ export class PlayableMatchRuntime {
       advanceFighter(
         this.p2,
         this.p1,
+        this.actorConstraintWorld,
         this.spriteEffectWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -340,7 +343,7 @@ export class PlayableMatchRuntime {
     advanceActiveEffects(this.p1, this.stage);
     advanceActiveEffects(this.p2, this.stage);
     resolveProjectileClashes(this.p1, this.p2, (line) => this.logs.unshift(line));
-    separateFighters(this.p1, this.p2);
+    this.actorConstraintWorld.separate(this.p1.runtime, this.p2.runtime);
     applyTargetBindings(this.p1, this.p2);
     applyTargetBindings(this.p2, this.p1);
     applyBindToTarget(this.p1, this.p2);
@@ -350,8 +353,8 @@ export class PlayableMatchRuntime {
     resolveCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p2, this.p1, (line) => this.logs.unshift(line));
-    clampStage(this.p1, this.stage);
-    clampStage(this.p2, this.stage);
+    this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
+    this.actorConstraintWorld.clampToStage(this.p2.runtime, this.stage);
     advancePresentationEffects(this.p1);
     advancePresentationEffects(this.p2);
 
@@ -387,6 +390,7 @@ export class PlayableMatchRuntime {
       advanceFighter(
         actor,
         opponent,
+        this.actorConstraintWorld,
         this.spriteEffectWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -397,7 +401,7 @@ export class PlayableMatchRuntime {
       advancePresentationEffects(actor);
       applyTargetBindings(actor, opponent);
       applyBindToTarget(actor, opponent);
-      clampStage(actor, this.stage);
+      this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
     }
 
     if (this.pauseWorld.current() !== pause) {
@@ -741,6 +745,7 @@ function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState,
 function advanceFighter(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
+  actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
@@ -752,9 +757,7 @@ function advanceFighter(
   advanceContactTimers(fighter);
   fighter.runtime.renderAngle = undefined;
   fighter.stateElapsed += 1;
-  fighter.runtime.playerPush = true;
-  fighter.runtime.posFreeze = undefined;
-  fighter.runtime.screenBound = undefined;
+  actorConstraintWorld.resetFrameConstraints(fighter.runtime);
   advanceHitFallRecoveryWindow(fighter);
   const tickStartPos = { ...fighter.runtime.pos };
   const stunTick = tickRuntimeStun(fighter);
@@ -810,16 +813,10 @@ function advanceFighter(
   }
 
   advanceAnimation(fighter);
-  runActiveStateControllers(fighter, opponent, spriteEffectWorld, tick, onPauseController, onEnvColorController);
+  runActiveStateControllers(fighter, opponent, actorConstraintWorld, spriteEffectWorld, tick, onPauseController, onEnvColorController);
   advanceImportedGroundRecoveryLanding(fighter);
   advanceCommon1LieDownRecovery(fighter);
-  const posFreeze = fighter.runtime.posFreeze as CharacterRuntimeState["posFreeze"];
-  if (posFreeze?.x) {
-    fighter.runtime.pos.x = tickStartPos.x;
-  }
-  if (posFreeze?.y) {
-    fighter.runtime.pos.y = tickStartPos.y;
-  }
+  actorConstraintWorld.preserveFrozenPosition(fighter.runtime, tickStartPos);
 }
 
 function startMove(fighter: FighterMatchState, moveName: "punch" | "kick"): void {
@@ -960,6 +957,7 @@ function advanceAnimation(fighter: FighterMatchState): void {
 function runActiveStateControllers(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
+  actorConstraintWorld: RuntimeActorConstraintWorld,
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
@@ -1042,7 +1040,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applyWidthController(fighter, rawController, operation);
+        actorConstraintWorld.applyWidth(fighter.runtime, rawController, operation);
       } else if (dispatch.effect === "fallenvshake") {
         recordControllerExecution(fighter, rawController);
         recordFallEnvShakeEvent(
@@ -1177,22 +1175,6 @@ function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: Fight
       stageTime: tick,
     });
   }
-}
-
-function applyWidthController(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
-): void {
-  const pair = operation ? undefined : numberPair(findParam(controller, "player") ?? findParam(controller, "value"));
-  const front = operation?.front ?? pair?.[0];
-  if (front === undefined) {
-    return;
-  }
-  fighter.runtime.bodyWidth = {
-    front: clampBodyWidth(front),
-    back: clampBodyWidth(operation?.back ?? pair?.[1] ?? front),
-  };
 }
 
 function applySprPriorityController(
@@ -2522,35 +2504,6 @@ function updateFacing(self: FighterMatchState, opponent: FighterMatchState): voi
   self.runtime.facing = self.runtime.pos.x <= opponent.runtime.pos.x ? 1 : -1;
 }
 
-function clampStage(fighter: FighterMatchState, stage: MugenStageDefinition): void {
-  if (fighter.runtime.screenBound?.bound === false) {
-    return;
-  }
-  fighter.runtime.pos.x = Math.max(stage.bounds.left, Math.min(stage.bounds.right, fighter.runtime.pos.x));
-}
-
-function separateFighters(left: FighterMatchState, right: FighterMatchState): void {
-  if (left.runtime.playerPush === false || right.runtime.playerPush === false) {
-    return;
-  }
-  const minDistance = widthToward(left, right) + widthToward(right, left);
-  const delta = right.runtime.pos.x - left.runtime.pos.x;
-  const distance = Math.abs(delta);
-  if (distance >= minDistance || distance === 0) {
-    return;
-  }
-  const push = (minDistance - distance) / 2;
-  const direction = delta > 0 ? 1 : -1;
-  left.runtime.pos.x -= push * direction;
-  right.runtime.pos.x += push * direction;
-}
-
-function widthToward(self: FighterMatchState, target: FighterMatchState): number {
-  const width = self.runtime.bodyWidth ?? { front: 39, back: 39 };
-  const targetIsInFront = (target.runtime.pos.x - self.runtime.pos.x) * self.runtime.facing >= 0;
-  return targetIsInFront ? width.front : width.back;
-}
-
 function cloneBox(box: CollisionBox): CollisionBox {
   return { x1: box.x1, y1: box.y1, x2: box.x2, y2: box.y2 };
 }
@@ -3087,10 +3040,6 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? 0];
-}
-
-function clampBodyWidth(value: number): number {
-  return Math.max(1, Math.min(160, Math.abs(Math.round(value))));
 }
 
 function clampHitDefPriority(value: number): number {
