@@ -2517,7 +2517,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
+      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet", "CtrlSet"]),
+    );
+    expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(
+      expect.arrayContaining(["kinematic:hitvelset", "resource:ctrlset"]),
+    );
     expect(evidence?.eventCategories).toContain("guard");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "152/153 named crouch guard-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 152, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
+          { stateNo: 153, operation: "kinematic:hitvelset" },
+          { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
+          { stateNo: 153, operation: "resource:ctrlset" },
+          { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
+        ],
+      },
+    ]);
   });
 
   it("creates a synthetic imported atomic DB crouch guard-state artifact", () => {
@@ -2544,6 +2566,22 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([152, 153, 200]));
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("guard");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "152/153 named crouch guard-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 152, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
+          { stateNo: 153, operation: "kinematic:hitvelset" },
+          { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
+          { stateNo: 153, operation: "resource:ctrlset" },
+          { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
+        ],
+      },
+    ]);
   });
 
   it("creates a synthetic imported air guard-state artifact", () => {
@@ -2586,8 +2624,31 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
+      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet", "VelAdd", "CtrlSet"]),
+    );
+    expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(
+      expect.arrayContaining(["kinematic:hitvelset", "resource:ctrlset"]),
+    );
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "154/155 named air guard-hit controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 154, controller: "ChangeAnim", name: "Air Guard Shake Anim" },
+          { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+          { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+          { stateNo: 155, operation: "kinematic:hitvelset" },
+          { stateNo: 155, controller: "VelAdd", name: "Apply Air Guard Gravity" },
+          { stateNo: 155, controller: "CtrlSet", name: "Regain Air Guard Control" },
+          { stateNo: 155, operation: "resource:ctrlset" },
+          { stateNo: 155, controller: "ChangeState", name: "Air Guard Hit Over" },
+        ],
+      },
+    ]);
   });
 
   it("creates a synthetic imported InGuardDist artifact without contact", () => {

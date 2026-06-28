@@ -2656,26 +2656,63 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
     targetId: "synthetic-imported-default-guard-state-golden",
     targetLabel: "Synthetic imported Common1 guard-hit route",
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
-    requiredControllerEventSequences: [
-      {
-        label: "150/151 named guard-hit controller and typed operation order",
-        actorId: "p2",
-        allowSameTick: true,
-        steps: [
-          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
-          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
-          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
-          { stateNo: 151, operation: "kinematic:hitvelset" },
-          { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
-          { stateNo: 151, operation: "resource:ctrlset" },
-          { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
-        ],
-      },
-    ],
+    requiredControllerEventSequences: [defaultStandGuardHitControllerSequence()],
     notes: [
       "Synthetic imported guard-state trace proves a held-back defender can enter its own Common1-style guard-hit states 150 and 151 after blocking an imported HitDef, including runtime-backed guard.slidetime and guard.ctrltime exposure through GetHitVar. It does not claim full guard-distance, guard-start, or guard-end parity.",
     ],
   });
+}
+
+function defaultStandGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "150/151 named guard-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+      { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+      { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+      { stateNo: 151, operation: "kinematic:hitvelset" },
+      { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
+      { stateNo: 151, operation: "resource:ctrlset" },
+      { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
+    ],
+  };
+}
+
+function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "152/153 named crouch guard-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 152, controller: "ChangeAnim", name: "Guard Shake Anim" },
+      { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
+      { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
+      { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
+      { stateNo: 153, operation: "resource:ctrlset" },
+      { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
+    ],
+  };
+}
+
+function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "154/155 named air guard-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 154, controller: "ChangeAnim", name: "Air Guard Shake Anim" },
+      { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+      { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+      { stateNo: 155, operation: "kinematic:hitvelset" },
+      { stateNo: 155, controller: "VelAdd", name: "Apply Air Guard Gravity" },
+      { stateNo: 155, controller: "CtrlSet", name: "Regain Air Guard Control" },
+      { stateNo: 155, operation: "resource:ctrlset" },
+      { stateNo: 155, controller: "ChangeState", name: "Air Guard Hit Over" },
+    ],
+  };
 }
 
 export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
@@ -2689,6 +2726,7 @@ export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: Ru
     script: importedDefaultCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
     requiredActiveCommands: ["holddown", "x"],
     targetId: "synthetic-imported-crouch-guard-state-golden",
     targetLabel: "Synthetic imported Common1 crouch guard-hit route",
@@ -2709,6 +2747,7 @@ export function createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(opt
     script: importedDefaultDiagonalCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
     requiredActiveCommands: ["holdback", "holddown", "x"],
     targetId: "synthetic-imported-diagonal-crouch-guard-state-golden",
     targetLabel: "Synthetic imported atomic DB crouch guard-hit route",
@@ -2747,6 +2786,7 @@ export function createSyntheticImportedAirGuardStateTraceArtifact(options: Runti
     requiredExecutedStates: [200, 154, 155],
     requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
     requiredActiveCommands: ["holdback", "x"],
     requiredFinalActors: [
       {
