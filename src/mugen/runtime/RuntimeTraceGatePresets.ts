@@ -2292,6 +2292,16 @@ export function createSyntheticImportedAssertSpecialNoKoTraceArtifact(options: R
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          {
+            label: "NoKO defender AssertSpecial before lethal HitDef",
+            allowSameTick: true,
+            steps: [
+              { actorId: "p2", stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+              { actorId: "p1", stateNo: 200, controller: "HitDef" },
+            ],
+          },
+        ],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],

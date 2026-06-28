@@ -2550,6 +2550,16 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventLines.some((line) => line.includes("hit Synthetic Imported AssertSpecial NoKO Defender for 2000"))).toBe(
       true,
     );
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "NoKO defender AssertSpecial before lethal HitDef",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+          { actorId: "p1", stateNo: 200, controller: "HitDef" },
+        ],
+      },
+    ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")?.life).toBe(1);
   });
 
