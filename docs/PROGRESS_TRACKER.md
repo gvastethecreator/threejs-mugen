@@ -12,6 +12,7 @@ Use these files together:
 | --- | --- |
 | `CONTEXT.md` | Fast project/domain map for future agents. |
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
+| `docs/ROADMAP_PROGRESS_SYSTEM.md` | Source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template. |
 | `docs/ROADMAP_EXECUTION_BOARD.md` | Current implementation queue, package acceptance, and handoff checklist. |
 | `docs/PORT_COMPLETION_SCORECARD.md` | Authoritative 0-100 scorecard for playable sandbox, MUGEN, IKEMEN, Studio, and modular engine horizons. |
 | `docs/WORKPLAN.md` | Current execution authority. |
@@ -56,7 +57,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Current proof added: `RuntimeEnvColorWorld` now owns bounded `EnvColor` event history, stage-flash projection, and reset. Focused tests prove the boundary while preserving existing stage-frame color/opacity trace behavior. This is ownership cleanup, not exact blend/layer/window/pause parity.
    - Current proof added: `RuntimeSpriteEffectWorld` now owns current match-runtime `SprPriority`, `PalFX`, `AfterImage`, `AfterImageTime`, and `Angle*` mutation/ticking. Focused tests prove the boundary while preserving existing actor presentation telemetry. This is ownership cleanup, not exact draw-order, trail, palette, or renderer parity.
    - Current proof added: `RuntimeActorConstraintWorld` now owns bounded `Width`, one-frame `PlayerPush`/`PosFreeze`/`ScreenBound` constraint reset/projection, stage clamping, and body-push separation. Focused tests prove the boundary while preserving existing actor body/bounds telemetry. This is ownership cleanup, not exact player/edge collision, team/helper push, or screen/camera parity.
-   - Current proof added: `RuntimeDirectCombatWorld` now owns bounded direct hit/guard result mutation: life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup. Focused tests prove the boundary while preserving existing direct HitDef telemetry. This is ownership cleanup, not exact priority, throws, multi-hit, helper/team/redirect, or tick-order parity.
+   - Current proof added: `RuntimeDirectCombatWorld` now owns bounded direct hit/guard result mutation plus same-tick direct `HitDef` priority win/trade mutation: life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup. Focused tests prove the boundary while preserving existing direct HitDef telemetry. This is ownership cleanup, not exact priority classes, throws, multi-hit, helper/team/redirect, or tick-order parity.
    - Current proof added: `RuntimeHitOverrideWorld` now owns bounded HitOverride slot ticking and redirect mutation for direct and projectile combat paths. Focused tests prove the boundary while preserving existing HitOverride telemetry. This is ownership cleanup, not exact slot priority, attr grammar, helper/custom-state redirect breadth, or edge timing parity.
    - Current proof added: `RuntimeReversalWorld` now owns bounded ReversalDef activation, active counter detection, and counter-result mutation for direct HitDef contact paths. Focused tests prove the boundary while preserving existing ReversalDef telemetry. This is ownership cleanup, not exact priority, guard/projectile/helper/custom-state breadth, attr grammar, trigger lifetime, or tick-order parity.
 
@@ -79,6 +80,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.
 
 5. **Roadmap hygiene**
+   - Use `docs/ROADMAP_PROGRESS_SYSTEM.md` to decide which doc owns each fact.
    - Use `docs/ROADMAP_EXECUTION_BOARD.md` as the first queue/handoff map.
    - Keep `docs/BUILD_EXECUTION_BACKLOG.md` append-only enough to preserve history.
    - Keep `docs/WORKPLAN.md` as execution authority.
@@ -89,7 +91,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
 | R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM loop order or broader guard/Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/sprite-effect/actor-constraint/direct-combat/hitoverride/reversal ownership; next proof should target remaining combat/effect ordering, deeper presentation semantics, helper/projectile/explod ownership, or exact checksum-stable ownership. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/sprite-effect/actor-constraint/direct-combat/direct-priority/hitoverride/reversal ownership; next proof should target remaining combat/effect ordering, deeper presentation semantics, helper/projectile/explod ownership, or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |

@@ -10,10 +10,72 @@ import {
   RuntimeDirectCombatWorld,
   type RuntimeDirectCombatActor,
   type RuntimeDirectCombatHooks,
+  type RuntimeDirectPriorityHooks,
 } from "../mugen/runtime/DirectCombatSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("DirectCombatSystem", () => {
+  it("resolves bounded direct HitDef priority winners", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const left = actor("p1", "P1", { currentMove: move({ priority: 6 }), moveTick: 1 });
+    const right = actor("p2", "P2", { currentMove: move({ priority: 3 }), moveTick: 1 });
+
+    const outcome = world.resolvePriorityClash(left, right, priorityHooks());
+
+    expect(outcome).toEqual({
+      kind: "win",
+      winnerId: "p1",
+      loserId: "p2",
+      message: "HitDef priority clash: P1 priority 6 beat P2 priority 3",
+    });
+    expect(left.hasHit).toBe(false);
+    expect(right.hasHit).toBe(true);
+  });
+
+  it("resolves bounded equal-priority direct HitDef trades", () => {
+    const world = new RuntimeDirectCombatWorld();
+    const left = actor("p1", "P1", { currentMove: move({ priority: 4 }), moveTick: 1 });
+    const right = actor("p2", "P2", { currentMove: move({ priority: 4 }), moveTick: 1 });
+
+    const outcome = world.resolvePriorityClash(left, right, priorityHooks());
+
+    expect(outcome).toEqual({
+      kind: "trade",
+      message: "HitDef priority clash: P1 priority 4 traded with P2 priority 4",
+    });
+    expect(left.hasHit).toBe(true);
+    expect(right.hasHit).toBe(true);
+  });
+
+  it("skips priority clashes for inactive, consumed, reversal, or separated attacks", () => {
+    const world = new RuntimeDirectCombatWorld();
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 6 }), hasHit: true }),
+      actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
+      priorityHooks(),
+    )).toBeUndefined();
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 6, isReversal: true }) }),
+      actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
+      priorityHooks(),
+    )).toBeUndefined();
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 6, requiresHitDef: true }) }),
+      actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
+      priorityHooks(),
+    )).toBeUndefined();
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 6, hitbox: { x1: 200, y1: -40, x2: 240, y2: -10 } }) }),
+      actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
+      priorityHooks(),
+    )).toBeUndefined();
+    expect(world.resolvePriorityClash(
+      actor("p1", "P1", { currentMove: move({ priority: 6 }) }),
+      actor("p2", "P2", { currentMove: move({ priority: 3 }) }),
+      priorityHooks({ isMoveActive: () => false }),
+    )).toBeUndefined();
+  });
+
   it("applies bounded guard results behind RuntimeDirectCombatWorld", () => {
     const world = new RuntimeDirectCombatWorld();
     const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
@@ -210,6 +272,21 @@ function hooks(overrides: Partial<RuntimeDirectCombatHooks> = {}): RuntimeDirect
     applyGuardHit: () => undefined,
     applyHitStateTransitions: () => undefined,
     applyDefaultGetHit: () => undefined,
+    ...overrides,
+  };
+}
+
+function priorityHooks(overrides: Partial<RuntimeDirectPriorityHooks> = {}): RuntimeDirectPriorityHooks {
+  return {
+    isMoveActive: () => true,
+    worldBox: (state, source) => ({
+      x1: state.pos.x + source.x1,
+      y1: state.pos.y + source.y1,
+      x2: state.pos.x + source.x2,
+      y2: state.pos.y + source.y2,
+    }),
+    boxesIntersect: (left, right) =>
+      left.x1 <= right.x2 && left.x2 >= right.x1 && left.y1 <= right.y2 && left.y2 >= right.y1,
     ...overrides,
   };
 }

@@ -13,7 +13,7 @@
 ## Repo Entry Points
 
 - This git repo root is `mugen-web-sandbox`. If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, enter `mugen-web-sandbox` before running git, pnpm, or repo-wide searches.
-- Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
+- Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_PROGRESS_SYSTEM.md` for progress ownership, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
 - Use `.scratch/roadmap/` only as local issue slicing. Public/private compatibility truth belongs in `docs/`.
 
 ## Work Cadence
@@ -65,6 +65,7 @@ pnpm qa:smoke
 ## Roadmap Control
 
 - `docs/PORT_COMPLETION_SCORECARD.md` is the 0-100 status source for playable sandbox, MUGEN MVP, full MUGEN, IKEMEN, Studio, and modular-engine horizons.
+- `docs/ROADMAP_PROGRESS_SYSTEM.md` explains source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/PROGRESS_TRACKER.md` is the compact current truth board.
 - `docs/WORKPLAN.md` is the execution authority.
 - `docs/BUILD_EXECUTION_BACKLOG.md` is the detailed append-style history.

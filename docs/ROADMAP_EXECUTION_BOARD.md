@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-28
 
-This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
+This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
 ## Read Order
 
@@ -10,10 +10,11 @@ Use this order before starting broad work:
 
 1. `CONTEXT.md`
 2. `AGENTS.md`
-3. `docs/ROADMAP_EXECUTION_BOARD.md`
-4. `docs/PROGRESS_TRACKER.md`
-5. `docs/WORKPLAN.md`
-6. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
+4. `docs/ROADMAP_EXECUTION_BOARD.md`
+5. `docs/PROGRESS_TRACKER.md`
+6. `docs/WORKPLAN.md`
+7. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
 
@@ -64,7 +65,7 @@ Build next:
 - Current proof: `RuntimeEnvColorWorld` owns bounded `EnvColor` event history, stage-flash projection, and reset consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeSpriteEffectWorld` owns current match-runtime `SprPriority`, `PalFX`, `AfterImage`, `AfterImageTime`, and `Angle*` mutation/ticking consumed by `PlayableMatchRuntime`, with focused `SpriteEffectSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeActorConstraintWorld` owns bounded `Width`, per-frame `PlayerPush`/`PosFreeze`/`ScreenBound` constraint reset/projection, stage clamping, and body-push separation consumed by `PlayableMatchRuntime`, with focused `ActorConstraintSystem` coverage and unchanged trace behavior expected.
-- Current proof: `RuntimeDirectCombatWorld` owns bounded direct hit/guard result mutation consumed by `PlayableMatchRuntime`, including life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup, with focused `DirectCombatSystem` coverage and unchanged trace behavior expected.
+- Current proof: `RuntimeDirectCombatWorld` owns bounded direct hit/guard result mutation consumed by `PlayableMatchRuntime`, including same-tick direct `HitDef` priority win/trade mutation, life, pause, stun, velocity, hit vars, hit fall metadata, power gain, contact memory, received-damage memory, and get-hit cleanup, with focused `DirectCombatSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeHitOverrideWorld` owns bounded HitOverride slot ticking and redirect mutation consumed by direct and projectile combat paths, with focused `HitOverrideSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeReversalWorld` owns bounded ReversalDef activation, active counter detection, and counter-result mutation consumed by direct HitDef contact paths, with focused `ReversalSystem` coverage and unchanged trace behavior expected.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, combat/effect ordering, deeper audio semantics, or deeper presentation ownership.
@@ -156,6 +157,8 @@ Before closing a round:
 - State why `pnpm qa:trace` or `pnpm qa:smoke` was or was not required.
 - Do not mark an issue done unless evidence exists and docs name the blocked scope.
 - Do not raise scores from docs-only changes.
+
+Use `docs/ROADMAP_PROGRESS_SYSTEM.md` for package lifecycle, update matrix, and the closeout template when a slice touches more than one doc family.
 
 ## Current Anti-Claims
 

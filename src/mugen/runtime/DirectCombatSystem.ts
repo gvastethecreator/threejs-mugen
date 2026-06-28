@@ -1,3 +1,4 @@
+import type { CollisionBox } from "../model/CollisionBox";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import {
@@ -39,7 +40,57 @@ export type RuntimeDirectCombatOutcome = {
   message: string;
 };
 
+export type RuntimeDirectPriorityHooks = {
+  isMoveActive: (move: DemoMove, tick: number) => boolean;
+  worldBox: (state: CharacterRuntimeState, box: CollisionBox) => CollisionBox;
+  boxesIntersect: (left: CollisionBox, right: CollisionBox) => boolean;
+};
+
+export type RuntimeDirectPriorityOutcome = {
+  kind: "trade" | "win";
+  winnerId?: string;
+  loserId?: string;
+  message: string;
+};
+
 export class RuntimeDirectCombatWorld {
+  resolvePriorityClash<TActor extends RuntimeDirectCombatActor>(
+    left: TActor,
+    right: TActor,
+    hooks: RuntimeDirectPriorityHooks,
+  ): RuntimeDirectPriorityOutcome | undefined {
+    const leftMove = getActiveDirectHitDefMove(left, hooks);
+    const rightMove = getActiveDirectHitDefMove(right, hooks);
+    if (!leftMove || !rightMove) {
+      return undefined;
+    }
+    const leftBox = hooks.worldBox(left.runtime, leftMove.hitbox);
+    const rightBox = hooks.worldBox(right.runtime, rightMove.hitbox);
+    if (!hooks.boxesIntersect(leftBox, rightBox)) {
+      return undefined;
+    }
+    const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
+    const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
+    if (leftPriority === rightPriority) {
+      left.hasHit = true;
+      right.hasHit = true;
+      return {
+        kind: "trade",
+        message: `HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`,
+      };
+    }
+    const winner = leftPriority > rightPriority ? left : right;
+    const loser = winner === left ? right : left;
+    winner.hasHit = false;
+    loser.hasHit = true;
+    return {
+      kind: "win",
+      winnerId: winner.id,
+      loserId: loser.id,
+      message: `HitDef priority clash: ${winner.label} priority ${Math.max(leftPriority, rightPriority)} beat ${loser.label} priority ${Math.min(leftPriority, rightPriority)}`,
+    };
+  }
+
   applyResolvedHit<TActor extends RuntimeDirectCombatActor>(
     attacker: TActor,
     defender: TActor,
@@ -124,6 +175,14 @@ export class RuntimeDirectCombatWorld {
   }
 }
 
+function getActiveDirectHitDefMove(actor: RuntimeDirectCombatActor, hooks: Pick<RuntimeDirectPriorityHooks, "isMoveActive">): DemoMove | undefined {
+  const move = actor.currentMove;
+  if (!move || actor.hasHit || move.requiresHitDef || move.isReversal || !hooks.isMoveActive(move, actor.moveTick)) {
+    return undefined;
+  }
+  return move;
+}
+
 function interruptCurrentMove(actor: RuntimeDirectCombatActor): void {
   actor.currentMove = undefined;
   actor.currentMoveLabel = undefined;
@@ -177,4 +236,11 @@ function boundedRuntimeResourceMax(value: number | undefined, fallback: number):
     return fallback;
   }
   return Math.max(1, Math.round(value));
+}
+
+function clampHitDefPriority(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 4;
+  }
+  return Math.max(1, Math.min(7, Math.round(value)));
 }

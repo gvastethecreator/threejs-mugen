@@ -47,7 +47,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 | Area | Score | Evidence | Main blocker |
 | --- | ---: | --- | --- |
-| Project control | 80 | `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `.scratch/roadmap/*`, this scorecard. | Keep docs synchronized after each gate. |
+| Project control | 80 | `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `.scratch/roadmap/*`, this scorecard. | Keep docs synchronized after each gate. |
 | Native runtime | 65 | Local roster, Rooftop Dojo, HUD, controls, debug, smoke QA. | Gameplay depth, polish, broader move/system coverage. |
 | File loading/parsers | 55 | ZIP/folder loader, DEF/AIR/CMD/CNS/ST/SFF/SND partial parsers. | More corpus coverage, exact raw preservation, edge formats. |
 | SFF/render import | 40 | SFF v1 PCX and current SFF v2 RAW/RLE/LZ paths render current fixtures. | Palette parity, v2 edge formats, sprite/group fallback policy. |

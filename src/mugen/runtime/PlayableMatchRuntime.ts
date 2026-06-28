@@ -354,7 +354,14 @@ export class PlayableMatchRuntime {
     applyTargetBindings(this.p2, this.p1);
     applyBindToTarget(this.p1, this.p2);
     applyBindToTarget(this.p2, this.p1);
-    resolveDirectHitDefPriority(this.p1, this.p2, (line) => this.logs.unshift(line));
+    const priorityOutcome = this.directCombatWorld.resolvePriorityClash(this.p1, this.p2, {
+      isMoveActive,
+      worldBox: runtimeWorldBox,
+      boxesIntersect: collisionBoxesIntersect,
+    });
+    if (priorityOutcome) {
+      this.logs.unshift(priorityOutcome.message);
+    }
     resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
     resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, (line) => this.logs.unshift(line));
@@ -1813,40 +1820,6 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   fighter.runtime.reversal = undefined;
   fighter.runtime.moveType = "A";
   fighter.runtime.ctrl = false;
-}
-
-function resolveDirectHitDefPriority(left: FighterMatchState, right: FighterMatchState, log: (line: string) => void): void {
-  const leftMove = getActiveDirectHitDefMove(left);
-  const rightMove = getActiveDirectHitDefMove(right);
-  if (!leftMove || !rightMove) {
-    return;
-  }
-  const leftBox = runtimeWorldBox(left.runtime, leftMove.hitbox);
-  const rightBox = runtimeWorldBox(right.runtime, rightMove.hitbox);
-  if (!collisionBoxesIntersect(leftBox, rightBox)) {
-    return;
-  }
-  const leftPriority = clampHitDefPriority(leftMove.priority ?? 4);
-  const rightPriority = clampHitDefPriority(rightMove.priority ?? 4);
-  if (leftPriority === rightPriority) {
-    left.hasHit = true;
-    right.hasHit = true;
-    log(`HitDef priority clash: ${left.label} priority ${leftPriority} traded with ${right.label} priority ${rightPriority}`);
-    return;
-  }
-  const winner = leftPriority > rightPriority ? left : right;
-  const loser = winner === left ? right : left;
-  winner.hasHit = false;
-  loser.hasHit = true;
-  log(`HitDef priority clash: ${winner.label} priority ${Math.max(leftPriority, rightPriority)} beat ${loser.label} priority ${Math.min(leftPriority, rightPriority)}`);
-}
-
-function getActiveDirectHitDefMove(fighter: FighterMatchState): DemoMove | undefined {
-  const move = fighter.currentMove;
-  if (!move || fighter.hasHit || move.requiresHitDef || move.isReversal || !isMoveActive(move, fighter.moveTick)) {
-    return undefined;
-  }
-  return move;
 }
 
 function activateReversalDef(

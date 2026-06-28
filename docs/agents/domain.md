@@ -8,6 +8,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 
 - `CONTEXT.md`
 - `README.md`
+- `docs/ROADMAP_PROGRESS_SYSTEM.md`
 - `docs/ROADMAP_EXECUTION_BOARD.md`
 - `docs/PORT_COMPLETION_SCORECARD.md`
 - `docs/WORKPLAN.md`
@@ -42,6 +43,6 @@ No ADR directory exists yet. If a change introduces a durable architectural cons
 
 ## Local Roadmap Tracker
 
-Use `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` as local markdown slicing aids. They do not replace `docs/WORKPLAN.md` or `docs/BUILD_EXECUTION_BACKLOG.md`; they help agents pick the next small, evidence-backed cut.
+Use `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` as local markdown slicing aids. They do not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/WORKPLAN.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; they help agents pick the next small, evidence-backed cut.
 
 When a user asks "how far are we?" or "0 to 100?", answer from `docs/PORT_COMPLETION_SCORECARD.md` first, then qualify with the latest trace/build evidence.
