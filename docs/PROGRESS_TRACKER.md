@@ -49,6 +49,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.
+   - Current proof added: required `synthetic-imported-default-fall-recovery-threshold.json` checksum `7bb15a5f` observes imported defender actor-frame `5050` while `hitFall.recoverTime` is positive and later actor-frame `5210` with `recoverTime = 0` after `CanRecover` plus `command = "recovery"` routes.
    - Current proof added: required `synthetic-imported-default-fall-recovery-too-early.json` checksum `050e7e3c` detects `command = "recovery"` while `fall.recovertime` is still positive, forbids `5210`, and keeps the defender in `5050`.
    - Current optional fixture proof added: `kfm-official-default-fall-recovery-too-early.json` checksum `878b10b5` confirms real KFM/Common1 rejects the same early recovery window locally.
    - Optional official fixture gates cannot become public compatibility claims unless fixture is present and passing.
@@ -70,7 +71,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
-| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Required synthetic recovery-threshold or recovery-velocity trace, optional KFM oracle after stable. |
+| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move from bounded threshold observation to recovery velocity, exact ground/air branching, or optional KFM threshold oracle. |
 | R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | One mutable runtime area moved behind named world/system boundary with tests or trace stability. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |

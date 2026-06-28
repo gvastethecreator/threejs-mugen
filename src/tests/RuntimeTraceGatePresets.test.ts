@@ -5,6 +5,7 @@ import {
   createSyntheticImportedCommonGetHitTraceArtifact,
   createSyntheticImportedCustomStateTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
+  createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
@@ -2062,7 +2063,6 @@ describe("RuntimeTraceGatePresets", () => {
       targetId: "custom-imported-guard-golden",
       targetLabel: "Custom Imported Guard Route",
     });
-
     expect(artifact).toMatchObject({
       status: "passed",
       target: {
@@ -3048,6 +3048,63 @@ describe("RuntimeTraceGatePresets", () => {
       moveType: "I",
       ctrl: true,
     });
+  });
+
+  it("creates a synthetic imported default Common1 recovery-threshold artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-recovery-threshold-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-fall-recovery-threshold-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5210]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5050);
+    expect(fallFrame).toMatchObject({
+      actorId: "p2",
+      source: "imported",
+      animNo: 5050,
+    });
+    expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    const recoveryFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5210);
+    expect(recoveryFrame).toMatchObject({
+      actorId: "p2",
+      source: "imported",
+      animNo: 5210,
+      minHitFallRecoverTime: 0,
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5210,
+        moveType: "I",
+        observedHitFallRecoverTimeAtMost: 0,
+        minFrames: 1,
+      },
+    ]);
   });
 
   it("creates a synthetic imported default Common1 recovery-input too-early reject artifact", () => {

@@ -36,8 +36,8 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 
 Build next:
 
-- Add a required synthetic gate that proves recovery threshold or velocity behavior not already covered by early-reject and positive recovery routes.
-- Prefer a gate that exposes `CanRecover`, `fall.recovertime`, ground/air recovery selection, or recovery velocity as explicit actor-frame evidence.
+- Current proof: required `synthetic-imported-default-fall-recovery-threshold.json` checksum `7bb15a5f` observes imported defender actor-frame `5050` with positive `hitFall.recoverTime`, then `5210` with `recoverTime = 0` after `CanRecover` plus `command = "recovery"` routes.
+- Build next recovery proof not already covered by threshold/early-reject/positive routes: recovery velocity, exact ground/air recovery selection, or optional KFM threshold oracle.
 - If official KFM fixture is available, add optional confirmation only after the synthetic gate is stable.
 
 Acceptance:

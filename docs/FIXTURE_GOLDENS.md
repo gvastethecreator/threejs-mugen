@@ -31,6 +31,7 @@ Required artifacts should prove engine plumbing without private assets:
 - default Common1 get-hit and progression
 - synthetic bounded fall recovery
 - synthetic bounded recovery input
+- synthetic bounded recovery threshold
 - state exit
 - Target*
 - Pause/SuperPause
@@ -61,6 +62,7 @@ Optional KFM artifacts may prove:
 - fall/ground-impact/bounce/lie-down entry `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110`
 - lie-down/get-up recovery completion `5110 -> 5120 -> 0`
 - air recovery-input completion `5050 -> 5210 -> 52 -> 0`
+- early recovery-input rejection while still in `5050`
 - ground recovery-input completion `5050 -> 5200 -> 5201 -> 52 -> 0`
 
 Skipped optional artifacts are not passes.

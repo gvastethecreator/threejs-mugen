@@ -3785,6 +3785,90 @@ export function createSyntheticImportedDefaultFallRecoveryInputTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-threshold",
+    displayName: "Synthetic Imported Default Fall Recovery Threshold",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      includeRecoveryInput: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-threshold-attacker",
+    displayName: "Synthetic Imported Default Fall Recovery Threshold Attacker",
+    groundVelocity: [-3, -6],
+    fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 10 },
+  });
+  const script = importedDefaultFallRecoveryInputScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage: options.stage ?? closeCombatStage() }), script, {
+    label: "synthetic-imported-default-fall-recovery-threshold-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-default-fall-recovery-threshold-golden",
+      label: "Synthetic imported Common1 recovery threshold route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported recovery-threshold trace proves the defender stays in Common1-style fall state 5050 while hitFall.recoverTime is still positive, then reaches recovery state 5210 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" routes. It does not claim exact MUGEN/IKEMEN thresholds, velocities, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-default-fall-recovery-threshold-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 5030, 5050, 5210],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd", "HitFallSet"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x", "recovery"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            animNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            animNo: 5210,
+            moveType: "I",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            moveType: "I",
+            ctrl: true,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
