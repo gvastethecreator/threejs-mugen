@@ -2,7 +2,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
-import { markRuntimeMoveReversed, type RuntimeContactMemory } from "./ContactMemorySystem";
+import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeReversalActor = {
@@ -48,6 +48,8 @@ export type RuntimeReversalOutcome = {
 };
 
 export class RuntimeReversalWorld {
+  constructor(private readonly contactWorld: RuntimeContactMemoryWorld = new RuntimeContactMemoryWorld()) {}
+
   activate<TActor extends RuntimeReversalActor>(fighter: TActor, activation: RuntimeReversalActivation): boolean {
     const attr = activation.attr.trim();
     if (!attr) {
@@ -115,7 +117,7 @@ export class RuntimeReversalWorld {
   ): RuntimeReversalOutcome {
     reverser.hasHit = true;
     attacker.hasHit = true;
-    markRuntimeMoveReversed(attacker.contact, attacker.runtime.stateNo);
+    this.contactWorld.markMoveReversed(attacker.contact, attacker.runtime.stateNo);
     hooks.rememberTarget(reverser, attacker, reversal.targetId);
     reverser.hitPause = reversal.hitPause;
     attacker.hitPause = reversal.hitPause;

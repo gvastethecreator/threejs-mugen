@@ -20,19 +20,7 @@ import { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
-  advanceRuntimeContactTimers,
-  applyRuntimeHitAdd,
-  createRuntimeContactMemory,
-  hasRuntimeProjectileContact,
-  markRuntimeProjectileContact,
-  markRuntimeReceivedDamage,
-  resetRuntimeMoveContact,
-  runtimeMoveContactValue,
-  runtimeMoveHitCountValue,
-  runtimeMoveReversedValue,
-  runtimeProjectileContactTime,
-  runtimeReceivedDamageValue,
-  runtimeReceivedHitsValue,
+  RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import { RuntimeEnvColorWorld } from "./EnvColorSystem";
@@ -163,6 +151,7 @@ type FighterMatchState = {
   hitEffectWorld: RuntimeHitEffectWorld;
   effectActorWorld: RuntimeEffectActorWorld;
   targetWorld: RuntimeTargetWorld;
+  contactWorld: RuntimeContactMemoryWorld;
   lastExecutedState?: number;
   contact: RuntimeContactMemory;
 };
@@ -205,9 +194,10 @@ export class PlayableMatchRuntime {
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private readonly actorConstraintWorld = new RuntimeActorConstraintWorld();
-  private readonly directCombatWorld = new RuntimeDirectCombatWorld();
+  private readonly contactWorld = new RuntimeContactMemoryWorld();
+  private readonly directCombatWorld = new RuntimeDirectCombatWorld(this.contactWorld);
   private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
-  private readonly reversalWorld = new RuntimeReversalWorld();
+  private readonly reversalWorld = new RuntimeReversalWorld(this.contactWorld);
   private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private toggles = {
     showClsn1: true,
@@ -240,6 +230,7 @@ export class PlayableMatchRuntime {
       this.audioWorld,
       this.envShakeWorld,
       this.hitEffectWorld,
+      this.contactWorld,
     );
     this.p2 = createFighterState(
       "p2",
@@ -252,6 +243,7 @@ export class PlayableMatchRuntime {
       this.audioWorld,
       this.envShakeWorld,
       this.hitEffectWorld,
+      this.contactWorld,
     );
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
@@ -559,6 +551,7 @@ export class PlayableMatchRuntime {
         this.audioWorld,
         this.envShakeWorld,
         this.hitEffectWorld,
+        this.contactWorld,
       ),
     );
     Object.assign(
@@ -574,6 +567,7 @@ export class PlayableMatchRuntime {
         this.audioWorld,
         this.envShakeWorld,
         this.hitEffectWorld,
+        this.contactWorld,
       ),
     );
     this.logs.unshift("Round reset");
@@ -596,6 +590,7 @@ function createFighterState(
   audioWorld = new RuntimeAudioWorld(),
   envShakeWorld = new RuntimeEnvShakeWorld(),
   hitEffectWorld = new RuntimeHitEffectWorld(),
+  contactWorld = new RuntimeContactMemoryWorld(),
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
@@ -668,7 +663,8 @@ function createFighterState(
     hitEffectWorld,
     effectActorWorld,
     targetWorld,
-    contact: createRuntimeContactMemory(),
+    contactWorld,
+    contact: contactWorld.create(),
   };
 }
 
@@ -1515,11 +1511,11 @@ function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState
 }
 
 function resetContactState(fighter: FighterMatchState): void {
-  fighter.contact = createRuntimeContactMemory();
+  fighter.contact = fighter.contactWorld.create();
 }
 
 function resetMoveContactState(fighter: FighterMatchState): void {
-  resetRuntimeMoveContact(fighter.contact);
+  fighter.contactWorld.resetMoveContact(fighter.contact);
 }
 
 function applyHitAddController(
@@ -1531,47 +1527,47 @@ function applyHitAddController(
   if (value === undefined) {
     return;
   }
-  applyRuntimeHitAdd(fighter.contact, fighter.runtime.stateNo, value);
+  fighter.contactWorld.applyHitAdd(fighter.contact, fighter.runtime.stateNo, value);
 }
 
 function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
-  markRuntimeReceivedDamage(fighter.contact, fighter.runtime.stateNo, damage);
+  fighter.contactWorld.markReceivedDamage(fighter.contact, fighter.runtime.stateNo, damage);
 }
 
 function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
-  markRuntimeProjectileContact(fighter.contact, fighter.runtime.stateNo, projectileId, kind);
+  fighter.contactWorld.markProjectileContact(fighter.contact, fighter.runtime.stateNo, projectileId, kind);
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {
-  advanceRuntimeContactTimers(fighter.contact);
+  fighter.contactWorld.advance(fighter.contact);
 }
 
 function moveContactValue(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): number {
-  return runtimeMoveContactValue(fighter.contact, fighter.runtime.stateNo, kind);
+  return fighter.contactWorld.moveContactValue(fighter.contact, fighter.runtime.stateNo, kind);
 }
 
 function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number {
-  return runtimeMoveHitCountValue(fighter.contact, fighter.runtime.stateNo, unique);
+  return fighter.contactWorld.moveHitCountValue(fighter.contact, fighter.runtime.stateNo, unique);
 }
 
 function moveReversedValue(fighter: FighterMatchState): number {
-  return runtimeMoveReversedValue(fighter.contact, fighter.runtime.stateNo);
+  return fighter.contactWorld.moveReversedValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function receivedDamageValue(fighter: FighterMatchState): number {
-  return runtimeReceivedDamageValue(fighter.contact, fighter.runtime.stateNo);
+  return fighter.contactWorld.receivedDamageValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function receivedHitsValue(fighter: FighterMatchState): number {
-  return runtimeReceivedHitsValue(fighter.contact, fighter.runtime.stateNo);
+  return fighter.contactWorld.receivedHitsValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
-  return hasRuntimeProjectileContact(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
+  return fighter.contactWorld.hasProjectileContact(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
 }
 
 function projectileContactTime(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): number {
-  return runtimeProjectileContactTime(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
+  return fighter.contactWorld.projectileContactTime(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
 }
 
 function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {

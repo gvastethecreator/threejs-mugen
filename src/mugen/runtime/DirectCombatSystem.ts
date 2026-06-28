@@ -8,8 +8,7 @@ import {
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
 import {
-  markRuntimeMoveContact,
-  markRuntimeReceivedDamage,
+  RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import type { CharacterRuntimeState } from "./types";
@@ -55,6 +54,8 @@ export type RuntimeDirectPriorityOutcome = {
 };
 
 export class RuntimeDirectCombatWorld {
+  constructor(private readonly contactWorld: RuntimeContactMemoryWorld = new RuntimeContactMemoryWorld()) {}
+
   resolvePriorityClash<TActor extends RuntimeDirectCombatActor>(
     left: TActor,
     right: TActor,
@@ -113,7 +114,7 @@ export class RuntimeDirectCombatWorld {
     result: Extract<RuntimeCombatHitResult, { kind: "guard" }>,
     hooks: RuntimeDirectCombatHooks<TActor>,
   ): RuntimeDirectCombatOutcome {
-    markRuntimeMoveContact(attacker.contact, attacker.runtime.stateNo, "guard", defender.id);
+    this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "guard", defender.id);
     interruptCurrentMove(defender);
     attacker.hitPause = result.pause;
     defender.hitPause = result.pause;
@@ -146,7 +147,7 @@ export class RuntimeDirectCombatWorld {
     result: Extract<RuntimeCombatHitResult, { kind: "hit" }>,
     hooks: RuntimeDirectCombatHooks<TActor>,
   ): RuntimeDirectCombatOutcome {
-    markRuntimeMoveContact(attacker.contact, attacker.runtime.stateNo, "hit", defender.id);
+    this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "hit", defender.id);
     attacker.hitPause = result.pause;
     interruptCurrentMove(defender);
     defender.hitPause = result.pause;
@@ -167,7 +168,7 @@ export class RuntimeDirectCombatWorld {
     attacker.runtime.power = Math.min(runtimePowerMax(attacker), attacker.runtime.power + result.powerGain);
     hooks.applyHitStateTransitions(attacker, defender, move);
     hooks.applyDefaultGetHit(defender, move);
-    markRuntimeReceivedDamage(defender.contact, defender.runtime.stateNo, result.damage);
+    this.contactWorld.markReceivedDamage(defender.contact, defender.runtime.stateNo, result.damage);
     return {
       kind: "hit",
       damage: result.damage,

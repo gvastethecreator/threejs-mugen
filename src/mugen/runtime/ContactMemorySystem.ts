@@ -25,6 +25,88 @@ export type RuntimeContactMemory = {
 
 export type RuntimeContactKind = "contact" | "hit" | "guard";
 
+export class RuntimeContactMemoryWorld {
+  create(): RuntimeContactMemory {
+    return createRuntimeContactMemory();
+  }
+
+  resetMoveContact(memory: RuntimeContactMemory): void {
+    resetRuntimeMoveContact(memory);
+  }
+
+  applyHitAdd(memory: RuntimeContactMemory, stateNo: number, value: number): void {
+    applyRuntimeHitAdd(memory, stateNo, value);
+  }
+
+  markMoveContact(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    kind: Extract<RuntimeContactKind, "hit" | "guard">,
+    targetActorId?: string,
+  ): void {
+    markRuntimeMoveContact(memory, stateNo, kind, targetActorId);
+  }
+
+  markMoveReversed(memory: RuntimeContactMemory, stateNo: number): void {
+    markRuntimeMoveReversed(memory, stateNo);
+  }
+
+  markReceivedDamage(memory: RuntimeContactMemory, stateNo: number, damage: number): void {
+    markRuntimeReceivedDamage(memory, stateNo, damage);
+  }
+
+  markProjectileContact(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    projectileId: number | undefined,
+    kind: Extract<RuntimeContactKind, "hit" | "guard">,
+  ): void {
+    markRuntimeProjectileContact(memory, stateNo, projectileId, kind);
+  }
+
+  advance(memory: RuntimeContactMemory): void {
+    advanceRuntimeContactTimers(memory);
+  }
+
+  moveContactValue(memory: RuntimeContactMemory, stateNo: number, kind: RuntimeContactKind): number {
+    return runtimeMoveContactValue(memory, stateNo, kind);
+  }
+
+  moveHitCountValue(memory: RuntimeContactMemory, stateNo: number, unique: boolean): number {
+    return runtimeMoveHitCountValue(memory, stateNo, unique);
+  }
+
+  moveReversedValue(memory: RuntimeContactMemory, stateNo: number): number {
+    return runtimeMoveReversedValue(memory, stateNo);
+  }
+
+  receivedDamageValue(memory: RuntimeContactMemory, stateNo: number): number {
+    return runtimeReceivedDamageValue(memory, stateNo);
+  }
+
+  receivedHitsValue(memory: RuntimeContactMemory, stateNo: number): number {
+    return runtimeReceivedHitsValue(memory, stateNo);
+  }
+
+  hasProjectileContact(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    kind: RuntimeContactKind,
+    projectileId?: number,
+  ): boolean {
+    return hasRuntimeProjectileContact(memory, stateNo, kind, projectileId);
+  }
+
+  projectileContactTime(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    kind: RuntimeContactKind,
+    projectileId?: number,
+  ): number {
+    return runtimeProjectileContactTime(memory, stateNo, kind, projectileId);
+  }
+}
+
 export function createRuntimeContactMemory(): RuntimeContactMemory {
   return {};
 }

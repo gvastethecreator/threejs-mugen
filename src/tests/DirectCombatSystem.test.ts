@@ -2,9 +2,12 @@ import { describe, expect, it } from "vitest";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import {
   createRuntimeContactMemory,
+  RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
   runtimeReceivedDamageValue,
+  type RuntimeContactKind,
+  type RuntimeContactMemory,
 } from "../mugen/runtime/ContactMemorySystem";
 import {
   RuntimeDirectCombatWorld,
@@ -77,7 +80,8 @@ describe("DirectCombatSystem", () => {
   });
 
   it("applies bounded guard results behind RuntimeDirectCombatWorld", () => {
-    const world = new RuntimeDirectCombatWorld();
+    const contactWorld = new RecordingContactWorld();
+    const world = new RuntimeDirectCombatWorld(contactWorld);
     const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
     const defender = actor("p2", "Defender", {
       life: 8,
@@ -125,12 +129,14 @@ describe("DirectCombatSystem", () => {
     expect(attacker.removedExplodsOnGetHit).toBe(0);
     expect(defender.removedExplodsOnGetHit).toBe(1);
     expect(attacker.contact).toMatchObject({ moveContactState: 200, moveGuardState: 200, moveGuardTime: 0 });
+    expect(contactWorld.calls).toEqual(["move:guard:200:p2"]);
     expect(runtimeMoveContactValue(attacker.contact, 200, "guard")).toBe(0);
     expect(runtimeReceivedDamageValue(defender.contact, 130)).toBe(0);
   });
 
   it("applies bounded hit results, hitFall metadata, and received damage", () => {
-    const world = new RuntimeDirectCombatWorld();
+    const contactWorld = new RecordingContactWorld();
+    const world = new RuntimeDirectCombatWorld(contactWorld);
     const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210 });
     const defender = actor("p2", "Defender", {
       life: 80,
@@ -196,6 +202,7 @@ describe("DirectCombatSystem", () => {
     expect(transitions).toEqual(["state-transition", "default-gethit"]);
     expect(defender.removedExplodsOnGetHit).toBe(1);
     expect(attacker.contact).toMatchObject({ moveContactState: 210, moveHitState: 210, moveHitTime: 0 });
+    expect(contactWorld.calls).toEqual(["move:hit:210:p2", "received:5000:30"]);
     expect(runtimeMoveContactValue(attacker.contact, 210, "hit")).toBe(0);
     expect(runtimeMoveHitCountValue(attacker.contact, 210, false)).toBe(1);
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(30);
@@ -289,4 +296,23 @@ function priorityHooks(overrides: Partial<RuntimeDirectPriorityHooks> = {}): Run
       left.x1 <= right.x2 && left.x2 >= right.x1 && left.y1 <= right.y2 && left.y2 >= right.y1,
     ...overrides,
   };
+}
+
+class RecordingContactWorld extends RuntimeContactMemoryWorld {
+  readonly calls: string[] = [];
+
+  override markMoveContact(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    kind: Extract<RuntimeContactKind, "hit" | "guard">,
+    targetActorId?: string,
+  ): void {
+    this.calls.push(`move:${kind}:${stateNo}:${targetActorId ?? "none"}`);
+    super.markMoveContact(memory, stateNo, kind, targetActorId);
+  }
+
+  override markReceivedDamage(memory: RuntimeContactMemory, stateNo: number, damage: number): void {
+    this.calls.push(`received:${stateNo}:${damage}`);
+    super.markReceivedDamage(memory, stateNo, damage);
+  }
 }

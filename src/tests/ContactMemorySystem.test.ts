@@ -8,6 +8,7 @@ import {
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
   resetRuntimeMoveContact,
+  RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
   runtimeProjectileContactTime,
@@ -67,5 +68,31 @@ describe("ContactMemorySystem", () => {
     expect(runtimeReceivedHitsValue(memory, 5000)).toBe(2);
     expect(runtimeReceivedDamageValue(memory, 5001)).toBe(0);
     expect(runtimeReceivedHitsValue(memory, 5001)).toBe(0);
+  });
+
+  it("wraps contact memory mutation and readback behind RuntimeContactMemoryWorld", () => {
+    const world = new RuntimeContactMemoryWorld();
+    const memory = world.create();
+
+    world.markMoveContact(memory, 200, "hit", "p2");
+    world.applyHitAdd(memory, 200, 2);
+    world.markMoveReversed(memory, 200);
+    world.markReceivedDamage(memory, 5000, 31);
+    world.markProjectileContact(memory, 200, 77, "guard");
+    world.advance(memory);
+
+    expect(world.moveContactValue(memory, 200, "hit")).toBe(1);
+    expect(world.moveHitCountValue(memory, 200, false)).toBe(3);
+    expect(world.moveHitCountValue(memory, 200, true)).toBe(1);
+    expect(world.moveReversedValue(memory, 200)).toBe(1);
+    expect(world.receivedDamageValue(memory, 5000)).toBe(31);
+    expect(world.receivedHitsValue(memory, 5000)).toBe(1);
+    expect(world.hasProjectileContact(memory, 200, "guard", 77)).toBe(true);
+    expect(world.projectileContactTime(memory, 200, "guard", 77)).toBe(1);
+
+    world.resetMoveContact(memory);
+
+    expect(world.moveHitCountValue(memory, 200, false)).toBe(0);
+    expect(world.hasProjectileContact(memory, 200, "guard", 77)).toBe(true);
   });
 });

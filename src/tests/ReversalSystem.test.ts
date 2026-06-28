@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { CollisionBox } from "../mugen/model/CollisionBox";
-import { createRuntimeContactMemory, runtimeMoveReversedValue } from "../mugen/runtime/ContactMemorySystem";
+import {
+  createRuntimeContactMemory,
+  RuntimeContactMemoryWorld,
+  runtimeMoveReversedValue,
+  type RuntimeContactMemory,
+} from "../mugen/runtime/ContactMemorySystem";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import {
   RuntimeReversalWorld,
@@ -63,7 +68,8 @@ describe("ReversalSystem", () => {
   });
 
   it("applies bounded reversal result and delegates state routing through hooks", () => {
-    const world = new RuntimeReversalWorld();
+    const contactWorld = new RecordingContactWorld();
+    const world = new RuntimeReversalWorld(contactWorld);
     const reverser = actor("p2", "Reverser", { power: 2990, powerMax: 3000, stateNo: 300 });
     const attacker = actor("p1", "Attacker", {
       stateNo: 200,
@@ -101,6 +107,7 @@ describe("ReversalSystem", () => {
     expect(attacker.runtime.moveType).toBe("H");
     expect(attacker.removedExplodsOnGetHit).toBe(1);
     expect(reverser.runtime.power).toBe(3000);
+    expect(contactWorld.calls).toEqual(["reversed:200"]);
     expect(runtimeMoveReversedValue(attacker.contact, 200)).toBe(0);
     expect(calls).toEqual(["target:4", "p1:777", "p2:778"]);
   });
@@ -216,4 +223,13 @@ function hooks(overrides: Partial<RuntimeReversalHooks> = {}): RuntimeReversalHo
     enterTargetHitState: () => undefined,
     ...overrides,
   };
+}
+
+class RecordingContactWorld extends RuntimeContactMemoryWorld {
+  readonly calls: string[] = [];
+
+  override markMoveReversed(memory: RuntimeContactMemory, stateNo: number): void {
+    this.calls.push(`reversed:${stateNo}`);
+    super.markMoveReversed(memory, stateNo);
+  }
 }
