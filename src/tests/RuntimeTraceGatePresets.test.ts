@@ -111,6 +111,7 @@ import {
   createSyntheticImportedHitAddTraceArtifact,
   createSyntheticImportedVariableTraceArtifact,
   createSyntheticImportedReceivedDamageTraceArtifact,
+  createSyntheticImportedRoundKoTraceArtifact,
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
@@ -942,6 +943,43 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([281]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([281]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 281)).toBe(true);
+  });
+
+  it("creates a synthetic imported round KO artifact with RoundSnapshot evidence", () => {
+    const artifact = createSyntheticImportedRoundKoTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-round-ko-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.executedStates).toContain(200);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          state: "ko",
+          winner: "Synthetic Imported Round KO",
+          message: "Synthetic Imported Round KO wins",
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredRoundFrames).toEqual([
+      { state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" },
+    ]);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.life).toBe(0);
   });
 
   it("creates a synthetic imported RoundsExisted/MatchOver artifact with match-context branch evidence", () => {

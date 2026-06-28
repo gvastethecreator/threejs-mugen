@@ -146,6 +146,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRoundTriggerTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-round-ko",
+      required: true,
+      artifact: presets.createSyntheticImportedRoundKoTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-match-context",
       required: true,
       artifact: presets.createSyntheticImportedMatchContextTraceArtifact(),
@@ -1280,6 +1285,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-sound",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
+    "synthetic-imported-round-ko",
     "synthetic-imported-match-context",
     "synthetic-imported-resource-max",
     "synthetic-imported-hitdefattr",

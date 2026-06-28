@@ -601,6 +601,26 @@ export type RuntimeTraceGateStageFrameEvidence = {
   frames: number;
 };
 
+export type RuntimeTraceRoundFrameRequirement = {
+  state?: RoundSnapshot["state"];
+  winner?: string;
+  message?: string;
+  minFrames?: number;
+  observedTimerAtLeast?: number;
+  observedTimerAtMost?: number;
+};
+
+export type RuntimeTraceGateRoundFrameEvidence = {
+  state: RoundSnapshot["state"];
+  winner?: string;
+  message: string;
+  minTimer: number;
+  maxTimer: number;
+  firstTick: number;
+  lastTick: number;
+  frames: number;
+};
+
 export type RuntimeTraceGateFinalActorEvidence = Pick<
   RuntimeTraceActor,
   | "id"
@@ -715,6 +735,7 @@ export type RuntimeTraceGate = {
   requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
   requiredEnvShakeEvents?: RuntimeTraceEnvShakeEventRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
+  requiredRoundFrames?: RuntimeTraceRoundFrameRequirement[];
   requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
   requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
@@ -742,6 +763,7 @@ export type RuntimeTraceGateEvidence = {
   soundEvents: RuntimeTraceGateSoundEventEvidence[];
   envShakeEvents: RuntimeTraceGateEnvShakeEventEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
+  roundFrames: RuntimeTraceGateRoundFrameEvidence[];
   stageFrames: RuntimeTraceGateStageFrameEvidence[];
   actorFrames: RuntimeTraceGateActorFrameEvidence[];
   finalActors: RuntimeTraceGateFinalActorEvidence[];
@@ -938,6 +960,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing target link: ${describeTargetLinkRequirement(requirement)}`);
     }
   }
+  for (const requirement of gate.requiredRoundFrames ?? []) {
+    if (!evidence.roundFrames.some((round) => matchesRoundFrameRequirement(round, requirement))) {
+      failures.push(`Missing round frame: ${describeRoundFrameRequirement(requirement)}`);
+    }
+  }
   for (const requirement of gate.requiredStageFrames ?? []) {
     if (!evidence.stageFrames.some((stage) => matchesStageFrameRequirement(stage, requirement))) {
       failures.push(`Missing stage frame: ${describeStageFrameRequirement(requirement)}`);
@@ -1006,6 +1033,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const soundEvents = new Map<string, RuntimeTraceGateSoundEventEvidence>();
   const envShakeEvents = new Map<string, RuntimeTraceGateEnvShakeEventEvidence>();
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
+  const roundFrames = new Map<string, RuntimeTraceGateRoundFrameEvidence>();
   const stageFrames = new Map<string, RuntimeTraceGateStageFrameEvidence>();
   const actorFrames = new Map<string, RuntimeTraceGateActorFrameEvidence>();
   const executedControllers: Record<string, number> = {};
@@ -1017,6 +1045,11 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       const key = stageFrameEvidenceKey(frame.stage);
       const existing = stageFrames.get(key);
       stageFrames.set(key, existing ? mergeStageFrameEvidence(existing, frame.stage, frame.tick) : summarizeStageFrameEvidence(frame.stage, frame.tick));
+    }
+    if (frame.round) {
+      const key = roundFrameEvidenceKey(frame.round);
+      const existing = roundFrames.get(key);
+      roundFrames.set(key, existing ? mergeRoundFrameEvidence(existing, frame.round, frame.tick) : summarizeRoundFrameEvidence(frame.round, frame.tick));
     }
     for (const actor of frame.actors) {
       if (actor.source) {
@@ -1361,6 +1394,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     soundEvents: [...soundEvents.values()].sort((left, right) => soundEventEvidenceKey(left).localeCompare(soundEventEvidenceKey(right))),
     envShakeEvents: [...envShakeEvents.values()].sort((left, right) => envShakeEventEvidenceKey(left).localeCompare(envShakeEventEvidenceKey(right))),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
+    roundFrames: [...roundFrames.values()].sort((left, right) => roundFrameGateEvidenceKey(left).localeCompare(roundFrameGateEvidenceKey(right))),
     stageFrames: [...stageFrames.values()].sort((left, right) => stageFrameGateEvidenceKey(left).localeCompare(stageFrameGateEvidenceKey(right))),
     actorFrames: [...actorFrames.values()].sort((left, right) => actorFrameGateEvidenceKey(left).localeCompare(actorFrameGateEvidenceKey(right))),
     finalActors: trace.final.actors.map(summarizeFinalActorEvidence),
@@ -2072,6 +2106,63 @@ function matchesTargetLinkRequirement(
 }
 
 function describeTargetLinkRequirement(requirement: RuntimeTraceTargetLinkRequirement): string {
+  return Object.entries(requirement)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
+function summarizeRoundFrameEvidence(round: RoundSnapshot, tick: number): RuntimeTraceGateRoundFrameEvidence {
+  return {
+    state: round.state,
+    winner: round.winner,
+    message: round.message,
+    minTimer: round.timer,
+    maxTimer: round.timer,
+    firstTick: tick,
+    lastTick: tick,
+    frames: 1,
+  };
+}
+
+function mergeRoundFrameEvidence(
+  current: RuntimeTraceGateRoundFrameEvidence,
+  round: RoundSnapshot,
+  tick: number,
+): RuntimeTraceGateRoundFrameEvidence {
+  return {
+    ...current,
+    minTimer: Math.min(current.minTimer, round.timer),
+    maxTimer: Math.max(current.maxTimer, round.timer),
+    firstTick: Math.min(current.firstTick, tick),
+    lastTick: Math.max(current.lastTick, tick),
+    frames: current.frames + 1,
+  };
+}
+
+function roundFrameEvidenceKey(round: RoundSnapshot): string {
+  return [round.state, round.winner ?? "", round.message].join(":");
+}
+
+function roundFrameGateEvidenceKey(round: RuntimeTraceGateRoundFrameEvidence): string {
+  return [round.state, round.winner ?? "", round.message].join(":");
+}
+
+function matchesRoundFrameRequirement(
+  round: RuntimeTraceGateRoundFrameEvidence,
+  requirement: RuntimeTraceRoundFrameRequirement,
+): boolean {
+  return (
+    (requirement.state === undefined || round.state === requirement.state) &&
+    (requirement.winner === undefined || round.winner === requirement.winner) &&
+    (requirement.message === undefined || round.message === requirement.message) &&
+    (requirement.minFrames === undefined || round.frames >= requirement.minFrames) &&
+    (requirement.observedTimerAtLeast === undefined || round.maxTimer >= requirement.observedTimerAtLeast) &&
+    (requirement.observedTimerAtMost === undefined || round.minTimer <= requirement.observedTimerAtMost)
+  );
+}
+
+function describeRoundFrameRequirement(requirement: RuntimeTraceRoundFrameRequirement): string {
   return Object.entries(requirement)
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${String(value)}`)

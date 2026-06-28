@@ -34,7 +34,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
-| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. | Exact tick order, helpers as real VM actors, custom states/throws, teams, full guard/fall/recovery semantics. |
+| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest runtime aggregate: 144/144 artifacts passed, 127 required and 17 optional. | Exact tick order, helpers as real VM actors, custom states/throws, teams, full guard/fall/recovery semantics. |
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks. | Pixel-perfect MUGEN render parity, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
@@ -47,6 +47,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Move more lifecycle/combat/pause/target behavior behind named systems.
    - Keep trace checksum drift intentional and documented.
    - Current proof added: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message snapshot wording, and reset behavior with focused unit coverage. This is sandbox round-state ownership, not MUGEN/IKEMEN round/lifebar/team/screenpack parity.
+   - Current proof added: required `synthetic-imported-round-ko.json` checksum `bfd5f073` gates `RoundSnapshot` KO/winner/message/timer evidence through `RuntimeTraceGate.requiredRoundFrames`, plus final P2 life `0`. This proves trace visibility for bounded sandbox KO state, not exact MUGEN/IKEMEN round flow.
 
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.
@@ -76,7 +77,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
 | R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond threshold, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM tick order, optional KFM threshold oracle, or broader guard/Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue moving mutable runtime areas behind named systems after the `RuntimeRoundSystem` boundary; next proof should target pause/combat/target/effect ordering or exact checksum-stable ownership. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after `RuntimeRoundSystem` and `requiredRoundFrames`; next proof should target pause/combat/target/effect ordering or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |

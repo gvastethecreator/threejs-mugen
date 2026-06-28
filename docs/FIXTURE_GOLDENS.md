@@ -35,6 +35,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded recovery actor-frame tick order
 - synthetic bounded air recovery velocity
 - synthetic bounded ground recovery selection/velocity
+- synthetic bounded round KO snapshot evidence
 - state exit
 - Target*
 - Pause/SuperPause

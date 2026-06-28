@@ -254,6 +254,89 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures[0]).toContain("step 2 not after tick 2");
   });
 
+  it("gates round snapshots from trace frame evidence", () => {
+    const trace = traceFromFrames([
+      traceFrame({
+        frameIndex: 0,
+        tick: 1,
+        checksum: "fight",
+        effects: [],
+        round: { state: "fight", timer: 99, message: "Fight" },
+      }),
+      traceFrame({
+        frameIndex: 1,
+        tick: 2,
+        checksum: "ko",
+        effects: [],
+        round: { state: "ko", timer: 98, winner: "P1", message: "P1 wins" },
+      }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-round-snapshot",
+        label: "Synthetic round snapshot",
+        source: "native",
+      },
+      gates: [
+        {
+          label: "round-ko",
+          requiredRoundFrames: [{ state: "ko", winner: "P1", message: "P1 wins", observedTimerAtMost: 98 }],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.trace.frames[1]?.round).toEqual({ state: "ko", timer: 98, winner: "P1", message: "P1 wins" });
+    expect(artifact.gates[0]?.requirements.requiredRoundFrames).toEqual([
+      { state: "ko", winner: "P1", message: "P1 wins", observedTimerAtMost: 98 },
+    ]);
+    expect(artifact.gates[0]?.evidence.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          state: "ko",
+          winner: "P1",
+          message: "P1 wins",
+          minTimer: 98,
+          maxTimer: 98,
+        }),
+      ]),
+    );
+  });
+
+  it("fails round snapshot gates when state evidence is absent", () => {
+    const trace = traceFromFrames([
+      traceFrame({
+        frameIndex: 0,
+        tick: 1,
+        checksum: "fight",
+        effects: [],
+        round: { state: "fight", timer: 99, message: "Fight" },
+      }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-round-snapshot-failure",
+        label: "Synthetic round snapshot failure",
+        source: "native",
+      },
+      gates: [
+        {
+          label: "round-ko",
+          requiredRoundFrames: [{ state: "ko", winner: "P1" }],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.failures).toEqual(["Missing round frame: state=ko, winner=P1"]);
+  });
+
   it("exports effect payloads and effect field deltas without hiding actor evidence", () => {
     const projectile0 = effectActor("fx-p1-proj-1", "Nova fireball", projectileEffect({ hitsRemaining: 2, missTimeRemaining: 5 }));
     const projectile1 = effectActor(
@@ -421,6 +504,12 @@ function traceFrame(
   }
   if (input.world !== undefined) {
     frame.world = input.world;
+  }
+  if (input.round !== undefined) {
+    frame.round = input.round;
+  }
+  if (input.stage !== undefined) {
+    frame.stage = input.stage;
   }
   return frame;
 }

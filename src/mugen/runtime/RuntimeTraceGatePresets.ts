@@ -681,6 +681,31 @@ export function createSyntheticImportedRoundTriggerTraceArtifact(options: Runtim
   );
 }
 
+export function createSyntheticImportedRoundKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-round-ko",
+      displayName: "Synthetic Imported Round KO",
+      hitDefDamage: 1200,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-round-ko-golden",
+      targetLabel: "Synthetic imported round KO snapshot route",
+      script: importedOneShotXScript(),
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredRoundFrames: [{ state: "ko", winner: "Synthetic Imported Round KO", message: "Synthetic Imported Round KO wins" }],
+      requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 0 }],
+      notes: [
+        "Synthetic imported round KO trace proves RuntimeTrace can gate bounded RoundSnapshot KO/winner/message evidence after a lethal imported HitDef. It does not claim exact MUGEN/IKEMEN KO slowdowns, lifebars, round transitions, intros/winposes, teams, or screenpack parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedMatchContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -934,6 +959,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
     requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
+    requiredRoundFrames?: RuntimeTraceGate["requiredRoundFrames"];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     script?: RuntimeTraceInputFrame[];
@@ -967,6 +993,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
         requiredEnvShakeEvents: options.requiredEnvShakeEvents,
+        requiredRoundFrames: options.requiredRoundFrames,
         requiredActorFrames: options.requiredActorFrames,
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),

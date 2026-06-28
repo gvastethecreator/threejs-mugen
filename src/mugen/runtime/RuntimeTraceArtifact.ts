@@ -59,6 +59,7 @@ export type RuntimeTraceArtifactFrameSummary = {
   actorCount: number;
   effectCount: number;
   stage?: RuntimeTraceFrame["stage"];
+  round?: RuntimeTraceFrame["round"];
   world?: RuntimeTraceFrame["world"];
   eventCategories: RuntimeTraceFrame["events"][number]["category"][];
   combatReasons: RuntimeTraceFrame["combatReasons"][number]["reason"][];
@@ -178,6 +179,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...link,
           bindingOffset: link.bindingOffset ? { ...link.bindingOffset } : undefined,
         })),
+        roundFrames: gate.evidence.roundFrames.map((round) => ({ ...round })),
         stageFrames: gate.evidence.stageFrames.map((stage) => ({
           ...stage,
           bounds: stage.bounds ? { ...stage.bounds } : undefined,
@@ -209,6 +211,7 @@ function summarizeArtifactFrame(frame: RuntimeTraceFrame, previous: RuntimeTrace
     actorCount: frame.actors.length,
     effectCount: frame.effects.length,
     stage: frame.stage ? cloneTraceStage(frame.stage) : undefined,
+    round: frame.round ? { ...frame.round } : undefined,
     world: frame.world ? cloneTraceWorld(frame.world) : undefined,
     eventCategories: [...new Set(frame.events.map((event) => event.category))],
     combatReasons: [...new Set(frame.combatReasons.map((reason) => reason.reason))],
@@ -539,6 +542,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredSoundEvents: gate.requiredSoundEvents?.map((requirement) => ({ ...requirement })),
     requiredEnvShakeEvents: gate.requiredEnvShakeEvents?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
+    requiredRoundFrames: gate.requiredRoundFrames?.map((requirement) => ({ ...requirement })),
     requiredStageFrames: gate.requiredStageFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrameSequences: gate.requiredActorFrameSequences?.map((sequence) => ({
