@@ -52,7 +52,7 @@ import {
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
-import { RuntimeHitEffectWorld } from "./HitEffectSystem";
+import { parseMugenSparkValue, RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
@@ -89,6 +89,7 @@ import type {
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
+  RuntimeHitEffectAssetFrame,
   RuntimeHitEffectEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
@@ -1771,7 +1772,31 @@ function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | unde
 }
 
 function recordHitDefEffectEvent(fighter: FighterMatchState, kind: "hit" | "guard", move: DemoMove, runtimeTick: number): void {
-  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, kind === "guard" ? move.guardSpark : move.hitSpark, move.sparkXy, runtimeTick);
+  const spark = kind === "guard" ? move.guardSpark : move.hitSpark;
+  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, resolvePlayerHitSparkAssetFrame(fighter, spark));
+}
+
+function resolvePlayerHitSparkAssetFrame(fighter: FighterMatchState, spark: string | undefined): RuntimeHitEffectAssetFrame | undefined {
+  const parsed = parseMugenSparkValue(spark);
+  if (!parsed || parsed.rawPrefix !== "S") {
+    return undefined;
+  }
+  const owner = fighter.stateOwner ?? fighter;
+  const action = owner.definition.animations.get(parsed.sparkNo);
+  const frame = action?.frames[0];
+  if (!frame) {
+    return undefined;
+  }
+  return {
+    source: "player",
+    actionId: parsed.sparkNo,
+    frameIndex: 0,
+    spriteGroup: frame.spriteGroup,
+    spriteIndex: frame.spriteIndex,
+    offsetX: frame.offsetX,
+    offsetY: frame.offsetY,
+    duration: frame.duration,
+  };
 }
 
 function recordFallEnvShakeEvent(
@@ -2121,6 +2146,7 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
     hitEffectEvents: fighter.hitEffectEvents.map((event) => ({
       ...event,
       offset: event.offset ? { ...event.offset } : undefined,
+      assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
     })),
     envShakeEvents: fighter.envShakeEvents.map((event) => ({ ...event })),
   };

@@ -149,6 +149,9 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
     [crouchAction, action(options.spriteGroupBase, crouchAction, [5, 7, 7], { height: 78, loopStart: 2 })],
     [walkAction, action(options.spriteGroupBase, walkAction, [10, 10, 10, 10, 10, 10, 10, 10], { loopStart: 0, step: 1 })],
     [jumpAction, action(options.spriteGroupBase, jumpAction, [6, 7, 8, 8], { airborne: true })],
+    [7000, sparkAction(7000, [3, 3, 4])],
+    [7001, sparkAction(7001, [3, 3, 4])],
+    [7002, sparkAction(7002, [3, 3, 4])],
     [
       punchAction,
       action(options.spriteGroupBase, punchAction, [4, 4, 5, 7], {
@@ -212,6 +215,24 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
       },
     },
     animations,
+  };
+}
+
+function sparkAction(id: number, durations: number[]): MugenAnimationAction {
+  return {
+    id,
+    rawLines: [`[Begin Action ${id}]`],
+    frames: durations.map((duration, index) => ({
+      spriteGroup: id,
+      spriteIndex: index,
+      offsetX: 0,
+      offsetY: 0,
+      duration,
+      clsn1: [],
+      clsn2: [],
+      raw: `${id},${index},0,0,${duration}`,
+      line: index + 1,
+    })),
   };
 }
 

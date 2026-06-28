@@ -17,8 +17,18 @@ describe("HitEffectSystem", () => {
   it("wraps bounded HitDef spark telemetry behind RuntimeHitEffectWorld", () => {
     const world = new RuntimeHitEffectWorld();
     const fighter = { runtime: { stateNo: 200 }, stateElapsed: 7, hitEffectEvents: [] as RuntimeHitEffectEvent[] };
+    const assetFrame = {
+      source: "player" as const,
+      actionId: 7000,
+      frameIndex: 0,
+      spriteGroup: 7000,
+      spriteIndex: 0,
+      offsetX: 0,
+      offsetY: 0,
+      duration: 3,
+    };
 
-    const event = world.emitHitDefEffect(fighter, "guard", "S7000", [12, -64], 140);
+    const event = world.emitHitDefEffect(fighter, "guard", "S7000", [12, -64], 140, assetFrame);
 
     expect(event).toMatchObject({
       type: "HitSpark",
@@ -30,6 +40,7 @@ describe("HitEffectSystem", () => {
       stateNo: 200,
       tick: 7,
       runtimeTick: 140,
+      assetFrame,
     });
     expect(fighter.hitEffectEvents).toEqual([event]);
   });

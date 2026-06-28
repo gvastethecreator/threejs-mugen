@@ -110,6 +110,13 @@ describe("PlayableMatchRuntime", () => {
       sparkNo: 7002,
       raw: "S7002",
       offset: { x: 48, y: -44 },
+      assetFrame: {
+        source: "player",
+        actionId: 7002,
+        frameIndex: 0,
+        spriteGroup: 7002,
+        spriteIndex: 0,
+      },
     });
   });
 

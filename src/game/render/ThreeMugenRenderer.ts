@@ -17,7 +17,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
   private readonly textures = new TextureStore();
   private readonly axis = new AxisRenderer(this.textures);
   private readonly boxes = new CollisionBoxRenderer();
-  private readonly hitSparks = new HitSparkRenderer();
+  private readonly hitSparks: HitSparkRenderer;
   private readonly characters: CharacterRenderer;
   private readonly pauseOverlayMaterial = new THREE.MeshBasicMaterial({
     color: 0x05070c,
@@ -41,6 +41,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
 
   constructor(spriteProvider: SpriteProvider) {
     this.characters = new CharacterRenderer(spriteProvider, this.textures);
+    this.hitSparks = new HitSparkRenderer(spriteProvider, this.textures);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.setClearColor(0x000000, 0);
     this.scene.add(this.axis.group);
@@ -82,7 +83,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     });
     const effects = snapshot.effects ?? [];
     await this.characters.update([...snapshot.actors, ...effects]);
-    this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
+    await this.hitSparks.update([...snapshot.actors, ...effects], snapshot.tick);
     const collisionActors = [...snapshot.actors, ...effects.filter((effect) => effect.clsn1.length > 0 || effect.clsn2.length > 0)];
     this.boxes.update(collisionActors, {
       showClsn1: snapshot.showClsn1,

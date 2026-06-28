@@ -44,6 +44,7 @@ import { ThreeMugenRenderer } from "../game/render/ThreeMugenRenderer";
 import { AtlasSpriteProvider } from "../game/textures/AtlasSpriteProvider";
 import { CompositeSpriteProvider } from "../game/textures/CompositeSpriteProvider";
 import { MockSpriteProvider } from "../game/textures/MockSpriteProvider";
+import { NativeHitSparkSpriteProvider } from "../game/textures/NativeHitSparkSpriteProvider";
 import { SffSpriteProvider } from "../game/textures/SffSpriteProvider";
 import { FolderCharacterSource } from "../mugen/loader/FolderCharacterSource";
 import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
@@ -607,6 +608,7 @@ const TRACE_ARTIFACT_HISTORY_LIMIT = 8;
 export class App {
   private readonly spriteProvider = new CompositeSpriteProvider(new MockSpriteProvider());
   private readonly renderer = new ThreeMugenRenderer(this.spriteProvider);
+  private readonly nativeHitSparks = new NativeHitSparkSpriteProvider();
   private readonly audio = new MugenAudioSystem();
   private readonly keyboard = new KeyboardInputAdapter();
   private readonly commandBuffer = new CommandBuffer();
@@ -667,7 +669,9 @@ export class App {
   private readonly htmlCache = new Map<string, string>();
   private readonly loop = createFrameLoop((deltaMs) => this.onFrame(deltaMs));
 
-  constructor(private readonly root: HTMLElement) {}
+  constructor(private readonly root: HTMLElement) {
+    this.spriteProvider.registerGroupRange(7000, 7002, this.nativeHitSparks, "native-hit-sparks");
+  }
 
   start(): void {
     this.readUrlState();

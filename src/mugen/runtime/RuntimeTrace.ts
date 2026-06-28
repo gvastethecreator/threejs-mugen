@@ -29,6 +29,7 @@ export type RuntimeTraceScriptSegment = RuntimeTraceInputFrame & {
 };
 
 export type RuntimeTraceEffectSummary = NonNullable<ActorSnapshot["effect"]>;
+export type RuntimeTraceHitEffectEvent = Omit<NonNullable<ActorSnapshot["hitEffectEvents"]>[number], "assetFrame">;
 
 export type RuntimeTraceActor = {
   id: string;
@@ -94,7 +95,7 @@ export type RuntimeTraceActor = {
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
-  hitEffectEvents?: NonNullable<ActorSnapshot["hitEffectEvents"]>;
+  hitEffectEvents?: RuntimeTraceHitEffectEvent[];
   envShakeEvents?: NonNullable<ActorSnapshot["envShakeEvents"]>;
   customOwnerId?: string;
   clsn1Count: number;
@@ -2952,14 +2953,25 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
-    hitEffectEvents: actor.hitEffectEvents?.map((event) => ({
-      ...event,
-      offset: event.offset ? { ...event.offset } : undefined,
-    })),
+    hitEffectEvents: actor.hitEffectEvents?.map(cloneTraceHitEffectEvent),
     envShakeEvents: actor.envShakeEvents?.map((event) => ({ ...event })),
     customOwnerId: actor.runtime.customState?.ownerId,
     clsn1Count: actor.clsn1.length,
     clsn2Count: actor.clsn2.length,
+  };
+}
+
+function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEvents"]>[number]): RuntimeTraceHitEffectEvent {
+  return {
+    type: event.type,
+    kind: event.kind,
+    sparkNo: event.sparkNo,
+    raw: event.raw,
+    rawPrefix: event.rawPrefix,
+    offset: event.offset ? { ...event.offset } : undefined,
+    stateNo: event.stateNo,
+    tick: event.tick,
+    runtimeTick: event.runtimeTick,
   };
 }
 

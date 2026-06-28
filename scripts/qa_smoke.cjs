@@ -277,6 +277,7 @@ async function captureRuntime(page, baseUrl, options) {
         renderer: bridge?.renderer,
         activeHitSparks: bridge?.renderer?.hitSparks?.active ?? 0,
         hitSparkSources: bridge?.renderer?.hitSparks?.sources ?? {},
+        hitSparkResolvedSprites: bridge?.renderer?.hitSparks?.resolvedSprites ?? 0,
         hitSparkPresentations: bridge?.renderer?.hitSparks?.presentations ?? [],
         recentHitEffects:
           bridge?.snapshot?.actors?.flatMap((actor) =>
@@ -1412,8 +1413,11 @@ function assertSmoke(diagnostics) {
     if (runtime.activeHitSparks < 1) {
       failures.push(`${runtime.label}: native hit spark renderer did not expose an active spark after KeyA`);
     }
-    if ((runtime.hitSparkSources?.system ?? 0) < 1) {
-      failures.push(`${runtime.label}: native hit spark renderer did not expose system spark source metadata`);
+    if ((runtime.hitSparkSources?.player ?? 0) < 1) {
+      failures.push(`${runtime.label}: native hit spark renderer did not expose player AIR spark source metadata`);
+    }
+    if ((runtime.hitSparkResolvedSprites ?? 0) < 1) {
+      failures.push(`${runtime.label}: native hit spark renderer did not resolve a player AIR spark sprite`);
     }
     const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
       (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
@@ -1863,12 +1867,14 @@ function summarizeDiagnostics(diagnostics) {
       uniqueColors: diagnostics.checks.runtimeDesktop.canvasPixels.uniqueColors,
       hitSparks: diagnostics.checks.runtimeDesktop.activeHitSparks,
       hitSparkSources: diagnostics.checks.runtimeDesktop.hitSparkSources,
+      hitSparkResolvedSprites: diagnostics.checks.runtimeDesktop.hitSparkResolvedSprites,
     },
     runtimeMobile: {
       actors: diagnostics.checks.runtimeMobile.actorCount,
       uniqueColors: diagnostics.checks.runtimeMobile.canvasPixels.uniqueColors,
       hitSparks: diagnostics.checks.runtimeMobile.activeHitSparks,
       hitSparkSources: diagnostics.checks.runtimeMobile.hitSparkSources,
+      hitSparkResolvedSprites: diagnostics.checks.runtimeMobile.hitSparkResolvedSprites,
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,

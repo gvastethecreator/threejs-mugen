@@ -60,6 +60,16 @@ describe("HitSparkRenderer helpers", () => {
       stateNo: 200,
       tick: 8,
       runtimeTick: 40,
+      assetFrame: {
+        source: "player",
+        actionId: 7001,
+        frameIndex: 0,
+        spriteGroup: 7001,
+        spriteIndex: 0,
+        offsetX: 0,
+        offsetY: 0,
+        duration: 3,
+      },
     };
 
     const presentation = resolveHitSparkPresentation(actor, event, 44);
@@ -71,10 +81,16 @@ describe("HitSparkRenderer helpers", () => {
       age: 4,
       color: 0xffc247,
       asset: {
-        source: "system",
+        source: "player",
         actionId: 7001,
-        lookupKey: "system:7001",
-        lookupStatus: "fallback-geometry",
+        lookupKey: "player:7001",
+        lookupStatus: "resolved-frame",
+      },
+      assetFrame: {
+        source: "player",
+        actionId: 7001,
+        spriteGroup: 7001,
+        spriteIndex: 0,
       },
       layer: "hit-spark",
       renderOrder: 720,
@@ -121,10 +137,10 @@ describe("HitSparkRenderer helpers", () => {
 
   it("maps MUGEN spark prefixes into explicit presentation asset refs", () => {
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, rawPrefix: "S", stateNo: 200, tick: 1 })).toMatchObject({
-      source: "system",
+      source: "player",
       actionId: 7000,
-      lookupKey: "system:7000",
-      lookupStatus: "fallback-geometry",
+      lookupKey: "player:7000",
+      lookupStatus: "missing-action",
     });
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, rawPrefix: "F", stateNo: 200, tick: 1 })).toMatchObject({
       source: "fightfx",
@@ -132,9 +148,23 @@ describe("HitSparkRenderer helpers", () => {
       lookupKey: "fightfx:7000",
     });
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, stateNo: 200, tick: 1 })).toMatchObject({
-      source: "character-or-common",
+      source: "common",
       actionId: 7000,
-      lookupKey: "character-or-common:7000",
+      lookupKey: "common:7000",
+      lookupStatus: "missing-action",
+    });
+    expect(
+      resolveHitSparkAssetRef({
+        type: "HitSpark",
+        kind: "hit",
+        sparkNo: 7000,
+        rawPrefix: "Q",
+        stateNo: 200,
+        tick: 1,
+      }),
+    ).toMatchObject({
+      source: "unknown",
+      lookupStatus: "unsupported-prefix",
     });
     expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", rawPrefix: "Q", stateNo: 200, tick: 1 })).toMatchObject({
       source: "unknown",

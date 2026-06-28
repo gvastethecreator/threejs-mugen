@@ -193,6 +193,17 @@ export type RuntimeSoundEvent = {
   runtimeTick?: number;
 };
 
+export type RuntimeHitEffectAssetFrame = {
+  source: "player";
+  actionId: number;
+  frameIndex: number;
+  spriteGroup: number;
+  spriteIndex: number;
+  offsetX: number;
+  offsetY: number;
+  duration: number;
+};
+
 export type RuntimeHitEffectEvent = {
   type: "HitSpark";
   kind: "hit" | "guard";
@@ -203,6 +214,7 @@ export type RuntimeHitEffectEvent = {
   stateNo: number;
   tick: number;
   runtimeTick?: number;
+  assetFrame?: RuntimeHitEffectAssetFrame;
 };
 
 export type RuntimeEnvShakeEvent = {

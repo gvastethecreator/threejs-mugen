@@ -39,6 +39,9 @@ function textureSourceKey(sprite: MugenSprite): string {
     if (record.mock) {
       return `mock:${sprite.width}x${sprite.height}`;
     }
+    if (record.nativeHitSpark) {
+      return `native-hit-spark:${String(record.variant ?? "")}:${String(record.frame ?? "")}:${sprite.width}x${sprite.height}`;
+    }
   }
   return `canvas:${sprite.width}x${sprite.height}`;
 }

@@ -1,11 +1,13 @@
 import * as THREE from "three";
-import type { ActorSnapshot, RuntimeHitEffectEvent } from "../../mugen/runtime/types";
+import type { MugenSprite, SpriteProvider } from "../../mugen/model/MugenSprite";
+import type { ActorSnapshot, RuntimeHitEffectAssetFrame, RuntimeHitEffectEvent } from "../../mugen/runtime/types";
 import { projectHitSpark } from "./projection";
+import { TextureStore } from "./TextureStore";
 
-export const HIT_SPARK_LIFETIME_FRAMES = 120;
+export const HIT_SPARK_LIFETIME_FRAMES = 180;
 
-export type HitSparkAssetSource = "system" | "fightfx" | "character-or-common" | "unknown";
-export type HitSparkLookupStatus = "fallback-geometry" | "missing-id";
+export type HitSparkAssetSource = "player" | "fightfx" | "common" | "unknown";
+export type HitSparkLookupStatus = "resolved-sprite" | "resolved-frame" | "missing-sprite" | "missing-action" | "unsupported-prefix" | "missing-id";
 export type HitSparkRenderLayer = "hit-spark" | "guard-spark";
 
 export type HitSparkAssetRef = {
@@ -27,6 +29,7 @@ export type HitSparkPresentation = {
   color: number;
   age: number;
   asset: HitSparkAssetRef;
+  assetFrame?: RuntimeHitEffectAssetFrame;
   layer: HitSparkRenderLayer;
   renderOrder: number;
 };
@@ -35,6 +38,7 @@ type SparkMeshSet = {
   group: THREE.Group;
   flare: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   core: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
+  sprite?: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 };
 
 export class HitSparkRenderer {
@@ -43,25 +47,30 @@ export class HitSparkRenderer {
   private readonly firstSeenTicks = new Map<string, number>();
   private readonly activePresentations = new Map<string, HitSparkPresentation>();
 
-  update(actors: ActorSnapshot[], currentTick: number): void {
+  constructor(
+    private readonly spriteProvider?: SpriteProvider,
+    private readonly textures?: TextureStore,
+  ) {}
+
+  async update(actors: ActorSnapshot[], currentTick: number): Promise<void> {
     const activeKeys = new Set<string>();
     const observedKeys = new Set<string>();
     const nextPresentations = new Map<string, HitSparkPresentation>();
     for (const actor of actors) {
       const events = actor.hitEffectEvents ?? [];
-      events.forEach((event, index) => {
+      for (const [index, event] of events.entries()) {
         const key = hitSparkKey(actor, event, index);
         observedKeys.add(key);
         const firstSeenTick = this.firstSeenTicks.get(key) ?? currentTick;
         this.firstSeenTicks.set(key, firstSeenTick);
         const presentation = resolveHitSparkPresentation(actor, event, currentTick, index, HIT_SPARK_LIFETIME_FRAMES, firstSeenTick);
         if (!presentation) {
-          return;
+          continue;
         }
         activeKeys.add(presentation.key);
+        await this.updateSpark(actor, presentation);
         nextPresentations.set(presentation.key, presentation);
-        this.updateSpark(presentation);
-      });
+      }
     }
 
     for (const [key, spark] of this.sparks) {
@@ -87,6 +96,7 @@ export class HitSparkRenderer {
   getDiagnostics(): {
     active: number;
     fallbackGeometry: boolean;
+    resolvedSprites: number;
     sources: Partial<Record<HitSparkAssetSource, number>>;
     presentations: Array<{
       key: string;
@@ -105,7 +115,8 @@ export class HitSparkRenderer {
     }
     return {
       active: this.sparks.size,
-      fallbackGeometry: presentations.length > 0,
+      fallbackGeometry: presentations.some((presentation) => presentation.asset.lookupStatus !== "resolved-sprite"),
+      resolvedSprites: presentations.filter((presentation) => presentation.asset.lookupStatus === "resolved-sprite").length,
       sources,
       presentations: presentations.map((presentation) => ({
         key: presentation.key,
@@ -128,15 +139,29 @@ export class HitSparkRenderer {
     this.activePresentations.clear();
   }
 
-  private updateSpark(presentation: HitSparkPresentation): void {
+  private async updateSpark(actor: ActorSnapshot, presentation: HitSparkPresentation): Promise<void> {
     const spark = this.sparks.get(presentation.key) ?? this.createSpark(presentation.key);
+    const sprite = await this.resolveSparkSprite(actor, presentation);
+    const hasSprite = Boolean(sprite);
     spark.group.position.set(presentation.x, presentation.y, 6);
     spark.group.rotation.z = presentation.rotation;
     spark.group.scale.set(presentation.size, presentation.size, 1);
     spark.group.renderOrder = presentation.renderOrder;
     spark.flare.material.color.setHex(presentation.color);
-    spark.flare.material.opacity = presentation.opacity * 0.42;
-    spark.core.material.opacity = Math.min(1, presentation.opacity * 1.12);
+    spark.flare.material.opacity = presentation.opacity * (hasSprite ? 0.18 : 0.42);
+    spark.core.material.opacity = Math.min(1, presentation.opacity * (hasSprite ? 0.34 : 1.12));
+    if (sprite) {
+      const spriteMesh = this.ensureSpriteMesh(spark);
+      spriteMesh.visible = true;
+      spriteMesh.material.map = this.textures?.getTexture(sprite, `hit-spark:${presentation.asset.source}:${actor.spriteOwnerId ?? actor.id}`) ?? null;
+      spriteMesh.material.opacity = presentation.opacity;
+      spriteMesh.material.needsUpdate = true;
+      spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
+      presentation.asset.lookupStatus = "resolved-sprite";
+      presentation.asset.fallbackReason = "Resolved first local player AIR spark frame into a sprite texture.";
+    } else if (spark.sprite) {
+      spark.sprite.visible = false;
+    }
   }
 
   private createSpark(key: string): SparkMeshSet {
@@ -172,6 +197,40 @@ export class HitSparkRenderer {
     return spark;
   }
 
+  private ensureSpriteMesh(spark: SparkMeshSet): THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> {
+    if (spark.sprite) {
+      return spark.sprite;
+    }
+    const sprite = new THREE.Mesh(
+      new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({
+        transparent: true,
+        opacity: 1,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        depthTest: false,
+      }),
+    );
+    sprite.renderOrder = 1;
+    spark.group.add(sprite);
+    spark.sprite = sprite;
+    return sprite;
+  }
+
+  private async resolveSparkSprite(actor: ActorSnapshot, presentation: HitSparkPresentation): Promise<MugenSprite | undefined> {
+    const frame = presentation.asset.source === "player" ? presentation.assetFrame : undefined;
+    if (!frame || !this.spriteProvider || !this.textures) {
+      return undefined;
+    }
+    const sprite = await this.spriteProvider.getSprite(frame.spriteGroup, frame.spriteIndex, { ownerId: actor.spriteOwnerId ?? actor.id });
+    if (!sprite) {
+      presentation.asset.lookupStatus = "missing-sprite";
+      presentation.asset.fallbackReason = `Resolved AIR action ${frame.actionId} frame ${frame.frameIndex}, but sprite ${frame.spriteGroup},${frame.spriteIndex} was unavailable.`;
+      return undefined;
+    }
+    return sprite;
+  }
+
   private disposeSpark(key: string, spark: SparkMeshSet): void {
     this.group.remove(spark.group);
     spark.group.remove(spark.flare, spark.core);
@@ -179,6 +238,11 @@ export class HitSparkRenderer {
     spark.flare.material.dispose();
     spark.core.geometry.dispose();
     spark.core.material.dispose();
+    if (spark.sprite) {
+      spark.group.remove(spark.sprite);
+      spark.sprite.geometry.dispose();
+      spark.sprite.material.dispose();
+    }
     this.sparks.delete(key);
   }
 }
@@ -214,6 +278,7 @@ export function resolveHitSparkPresentation(
     asset,
     layer,
     renderOrder: event.kind === "guard" ? 710 : 720,
+    assetFrame: asset.source === "player" ? event.assetFrame : undefined,
   };
 }
 
@@ -228,27 +293,44 @@ export function resolveHitSparkAssetRef(event: RuntimeHitEffectEvent): HitSparkA
   }
   const rawPrefix = event.rawPrefix?.toUpperCase();
   const source = hitSparkAssetSource(rawPrefix);
+  const supportedPrefix = source !== "unknown";
+  const hasPlayerFrame = source === "player" && event.assetFrame;
   return {
     source,
     actionId: event.sparkNo,
     rawPrefix,
     lookupKey: `${source}:${event.sparkNo}`,
-    lookupStatus: "fallback-geometry",
-    fallbackReason: "FightFX/common sprite lookup is not wired yet; using bounded Three.js fallback geometry.",
+    lookupStatus: !supportedPrefix ? "unsupported-prefix" : hasPlayerFrame ? "resolved-frame" : "missing-action",
+    fallbackReason: fallbackReasonForHitSparkRef(source, rawPrefix, Boolean(hasPlayerFrame)),
   };
 }
 
 function hitSparkAssetSource(rawPrefix: string | undefined): HitSparkAssetSource {
   if (rawPrefix === "S") {
-    return "system";
+    return "player";
   }
   if (rawPrefix === "F") {
     return "fightfx";
   }
   if (rawPrefix === undefined) {
-    return "character-or-common";
+    return "common";
   }
   return "unknown";
+}
+
+function fallbackReasonForHitSparkRef(source: HitSparkAssetSource, rawPrefix: string | undefined, hasPlayerFrame: boolean): string {
+  if (source === "player") {
+    return hasPlayerFrame
+      ? "Resolved local player AIR spark action; sprite lookup runs in the Three.js renderer."
+      : "S-prefixed spark points at the player's AIR action, but no frame was resolved; using fallback geometry.";
+  }
+  if (source === "common") {
+    return "Unprefixed MUGEN spark refs use common/default fight data; common FightFX lookup is not wired yet.";
+  }
+  if (source === "fightfx") {
+    return "F-prefixed spark refs are treated as FightFX refs; FightFX lookup is not wired yet.";
+  }
+  return `Unsupported HitSpark prefix '${rawPrefix ?? ""}'; using fallback geometry.`;
 }
 
 export function hitSparkKey(actor: ActorSnapshot, event: RuntimeHitEffectEvent, eventIndex = 0): string {

@@ -1,4 +1,4 @@
-import type { RuntimeHitEffectEvent } from "./types";
+import type { RuntimeHitEffectAssetFrame, RuntimeHitEffectEvent } from "./types";
 
 export type RuntimeHitEffectActor = {
   runtime: {
@@ -17,6 +17,7 @@ export class RuntimeHitEffectWorld {
     spark: string | undefined,
     offset: [number, number] | undefined,
     runtimeTick: number,
+    assetFrame?: RuntimeHitEffectAssetFrame,
   ): RuntimeHitEffectEvent | undefined {
     if (!spark) {
       return undefined;
@@ -35,6 +36,7 @@ export class RuntimeHitEffectWorld {
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
+      assetFrame,
     };
     pushRuntimeHitEffectEvent(actor.hitEffectEvents, event);
     return event;
