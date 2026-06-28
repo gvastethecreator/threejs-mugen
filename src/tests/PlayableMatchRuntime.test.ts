@@ -191,6 +191,63 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Mira Volt for 37"))).toBe(true);
   });
 
+  it("resolves package-backed common and FightFX HitDef spark refs on imported attacks", () => {
+    const closeStage = {
+      ...trainingStage,
+      playerStart: {
+        p1: { x: -20, y: 0, facing: 1 as const },
+        p2: { x: 35, y: 0, facing: -1 as const },
+      },
+    };
+    const common = createImportedFixture({
+      withStateMove: false,
+      hitSpark: "7001",
+      hitSparkLibraries: {
+        common: { source: "common", animations: new Map([[7001, action(7001, {}, 7200)]]) },
+      },
+    });
+    const fightFx = createImportedFixture({
+      withStateMove: false,
+      hitSpark: "F7002",
+      hitSparkLibraries: {
+        fightfx: { source: "fightfx", animations: new Map([[7002, action(7002, {}, 8300)]]) },
+      },
+    });
+
+    const commonSnapshot = new PlayableMatchRuntime(common, demoFighters[1]!, closeStage).step({ p1: new Set(["x"]) });
+    const fightFxSnapshot = new PlayableMatchRuntime(fightFx, demoFighters[1]!, closeStage).step({ p1: new Set(["x"]) });
+
+    expect(commonSnapshot.actors[0]?.hitEffectEvents?.[0]).toMatchObject({
+      type: "HitSpark",
+      kind: "hit",
+      sparkNo: 7001,
+      raw: "7001",
+      offset: { x: 10, y: -72 },
+      assetFrame: {
+        source: "common",
+        actionId: 7001,
+        frameIndex: 0,
+        spriteGroup: 14201,
+        spriteIndex: 0,
+      },
+    });
+    expect(fightFxSnapshot.actors[0]?.hitEffectEvents?.[0]).toMatchObject({
+      type: "HitSpark",
+      kind: "hit",
+      sparkNo: 7002,
+      raw: "F7002",
+      rawPrefix: "F",
+      offset: { x: 10, y: -72 },
+      assetFrame: {
+        source: "fightfx",
+        actionId: 7002,
+        frameIndex: 0,
+        spriteGroup: 15302,
+        spriteIndex: 0,
+      },
+    });
+  });
+
   it("evaluates bounded MoveHit triggers after direct imported HitDef contact", () => {
     const imported = createImportedFixture({
       withStateMove: false,
@@ -1833,6 +1890,9 @@ function createImportedFixture(
     hitDefP2ChangeAnim2To?: number;
     hitDefP2ChangeAnim2After?: number;
     extraStateNos?: number[];
+    hitSpark?: string;
+    guardSpark?: string;
+    hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
     guardDamage?: number;
     guardKill?: boolean;
     guardFlag?: string;
@@ -1911,6 +1971,14 @@ ${options.hitDefP2StateNo !== undefined ? `p2getp1state = ${options.hitDefP2GetP
       : "";
   const damageLine = options.guardDamage !== undefined ? `${hitDefDamage},${options.guardDamage}` : `${hitDefDamage}`;
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
+  const hitSparkLines =
+    options.hitSpark !== undefined || options.guardSpark !== undefined
+      ? `
+${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
+${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}`}
+sparkxy = 10,-72
+`
+      : "";
   const guardLine =
     options.guardFlag !== undefined
       ? `
@@ -2756,6 +2824,7 @@ attr = ${hitDefAttr}
 damage = ${damageLine}
 ${hitDefKillLine}
 priority = ${hitDefPriority}, Hit
+${hitSparkLines}
 ${guardLine}
 ${hitDefCustomStateLines}
 pausetime = 8,8
@@ -2881,6 +2950,9 @@ ctrl = 0
     hitStun: 11,
     push: 4,
     guardKill: options.guardKill,
+    hitSpark: options.hitSpark,
+    guardSpark: options.guardSpark,
+    sparkXy: options.hitSpark !== undefined || options.guardSpark !== undefined ? ([10, -72] as [number, number]) : undefined,
     fall: options.withFallHitDef
       ? {
           enabled: true,
@@ -2977,6 +3049,7 @@ ctrl = 0
     commands,
     constants: stateFile.constants,
     animations,
+    hitSparkLibraries: options.hitSparkLibraries,
   };
 }
 

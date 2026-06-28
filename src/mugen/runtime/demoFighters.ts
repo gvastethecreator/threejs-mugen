@@ -5,6 +5,13 @@ import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { RuntimeGetHitVars } from "./types";
 
+export type HitSparkLibrarySource = "common" | "fightfx";
+
+export type HitSparkLibrary = {
+  source: HitSparkLibrarySource;
+  animations: Map<number, MugenAnimationAction>;
+};
+
 export type DemoMove = {
   actionId: number;
   startup: number;
@@ -90,6 +97,7 @@ export type DemoFighterDefinition = {
   commands?: MugenCommand[];
   runtimeProgram?: RuntimeProgramIr;
   animations: Map<number, MugenAnimationAction>;
+  hitSparkLibraries?: Partial<Record<HitSparkLibrarySource, HitSparkLibrary>>;
 };
 
 export const demoFighters: DemoFighterDefinition[] = [

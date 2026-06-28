@@ -214,4 +214,81 @@ describe("HitSparkRenderer helpers", () => {
       },
     });
   });
+
+  it("preserves package-backed common and FightFX frames before synthetic system fallback", () => {
+    const common = resolveHitSparkPresentation(
+      actor,
+      {
+        type: "HitSpark",
+        kind: "hit",
+        sparkNo: 7001,
+        stateNo: 200,
+        tick: 1,
+        runtimeTick: 20,
+        assetFrame: {
+          source: "common",
+          actionId: 7001,
+          frameIndex: 0,
+          spriteGroup: 14201,
+          spriteIndex: 3,
+          offsetX: -2,
+          offsetY: 6,
+          duration: 5,
+        },
+      },
+      24,
+    );
+    const fightFx = resolveHitSparkPresentation(
+      actor,
+      {
+        type: "HitSpark",
+        kind: "guard",
+        sparkNo: 7002,
+        rawPrefix: "F",
+        stateNo: 200,
+        tick: 2,
+        runtimeTick: 20,
+        assetFrame: {
+          source: "fightfx",
+          actionId: 7002,
+          frameIndex: 0,
+          spriteGroup: 15302,
+          spriteIndex: 4,
+          offsetX: 1,
+          offsetY: -3,
+          duration: 6,
+        },
+      },
+      25,
+    );
+
+    expect(common).toMatchObject({
+      asset: {
+        source: "common",
+        actionId: 7001,
+        lookupStatus: "resolved-frame",
+      },
+      assetFrame: {
+        source: "common",
+        actionId: 7001,
+        frameIndex: 0,
+        spriteGroup: 14201,
+        spriteIndex: 3,
+      },
+    });
+    expect(fightFx).toMatchObject({
+      asset: {
+        source: "fightfx",
+        actionId: 7002,
+        lookupStatus: "resolved-frame",
+      },
+      assetFrame: {
+        source: "fightfx",
+        actionId: 7002,
+        frameIndex: 0,
+        spriteGroup: 15302,
+        spriteIndex: 4,
+      },
+    });
+  });
 });

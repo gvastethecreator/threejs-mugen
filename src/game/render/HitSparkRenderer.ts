@@ -298,7 +298,8 @@ export function resolveHitSparkAssetRef(event: RuntimeHitEffectEvent): HitSparkA
   const rawPrefix = event.rawPrefix?.toUpperCase();
   const source = hitSparkAssetSource(rawPrefix);
   const supportedPrefix = source !== "unknown";
-  const hasLookupFrame = source === "player" ? Boolean(event.assetFrame) : source === "common" || source === "fightfx";
+  const hasLookupFrame =
+    source === "player" ? isMatchingAssetFrame(event.assetFrame, source, event.sparkNo) : source === "common" || source === "fightfx";
   return {
     source,
     actionId: event.sparkNo,
@@ -331,9 +332,12 @@ function resolveHitSparkPresentationFrame(
     return undefined;
   }
   if (asset.source === "player") {
-    return event.assetFrame;
+    return isMatchingAssetFrame(event.assetFrame, asset.source, asset.actionId) ? event.assetFrame : undefined;
   }
   if (asset.source === "common" || asset.source === "fightfx") {
+    if (isMatchingAssetFrame(event.assetFrame, asset.source, asset.actionId)) {
+      return event.assetFrame;
+    }
     const frameIndex = Math.floor(age / HIT_SPARK_SYSTEM_FRAME_DURATION) % HIT_SPARK_SYSTEM_FRAME_COUNT;
     return {
       source: asset.source,
@@ -347,6 +351,14 @@ function resolveHitSparkPresentationFrame(
     };
   }
   return undefined;
+}
+
+function isMatchingAssetFrame(
+  frame: RuntimeHitEffectAssetFrame | undefined,
+  source: HitSparkAssetSource,
+  actionId: number | undefined,
+): frame is RuntimeHitEffectAssetFrame {
+  return Boolean(frame && actionId !== undefined && frame.source === source && frame.actionId === actionId);
 }
 
 function fallbackReasonForHitSparkRef(source: HitSparkAssetSource, rawPrefix: string | undefined, hasLookupFrame: boolean): string {
