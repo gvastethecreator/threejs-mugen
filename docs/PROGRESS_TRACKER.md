@@ -4,6 +4,21 @@ Last updated: 2026-06-28
 
 This document is the compact truth board for progress. It does not replace detailed docs; it points to the evidence that keeps claims honest.
 
+## Progress Control System
+
+Use these files together:
+
+| File | Role |
+| --- | --- |
+| `CONTEXT.md` | Fast project/domain map for future agents. |
+| `AGENTS.md` | Working rules, verification baseline, skill setup. |
+| `docs/WORKPLAN.md` | Current execution authority. |
+| `docs/BUILD_EXECUTION_BACKLOG.md` | Detailed history and backlog ledger. |
+| `.scratch/roadmap/PRD.md` | Local roadmap-tracking PRD. |
+| `.scratch/roadmap/issues/` | Small actionable issue slices for runtime, Studio, assets, IKEMEN, and modular-engine tracks. |
+
+Rule: this tracker stays short. Add detailed implementation history to `docs/BUILD_EXECUTION_BACKLOG.md`, and use `.scratch/roadmap/issues/` for next-slice planning.
+
 ## Current Score
 
 | Horizon | Score | Meaning |

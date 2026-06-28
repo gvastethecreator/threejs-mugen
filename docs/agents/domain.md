@@ -6,6 +6,7 @@ This is a single-context repo for a Three.js-based progressive MUGEN/Ikemen-GO p
 
 Read these first when the task is architectural, compatibility-sensitive, or cross-cutting:
 
+- `CONTEXT.md`
 - `README.md`
 - `docs/WORKPLAN.md`
 - `docs/PROGRESS_TRACKER.md`
@@ -17,7 +18,6 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 
 If present later, also read:
 
-- `CONTEXT.md`
 - `docs/adr/`
 
 ## Domain Vocabulary
@@ -37,3 +37,7 @@ Use these terms consistently:
 ## ADR Guidance
 
 No ADR directory exists yet. If a change introduces a durable architectural constraint, create `docs/adr/<NNNN>-<slug>.md` and link it from the relevant roadmap doc.
+
+## Local Roadmap Tracker
+
+Use `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` as local markdown slicing aids. They do not replace `docs/WORKPLAN.md` or `docs/BUILD_EXECUTION_BACKLOG.md`; they help agents pick the next small, evidence-backed cut.

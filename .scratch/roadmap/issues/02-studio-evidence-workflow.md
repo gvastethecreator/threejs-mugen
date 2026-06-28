@@ -1,0 +1,28 @@
+# 02 - Studio Evidence Workflow
+
+Status: ready-for-agent
+Labels: studio, visual-qa, docs, ready-for-agent
+
+## Objective
+
+Make Studio Mode the trusted operating surface for project state, assets, evidence, build/export readiness, and next actions.
+
+## Next Useful Cuts
+
+- Make Evidence and Build surfaces point to the same source of truth.
+- Expose stale, missing, partial, blocked, and exportable states with affected item, impact, evidence, and next action.
+- Improve Character/Stage/Debug panels only when they bind to real runtime, parser, or evidence data.
+- Keep Workbench -> Assets -> Evidence -> Build as the main workflow.
+
+## Acceptance
+
+- UI uses real project/runtime/evidence data, not decorative status.
+- Visible changes close with `pnpm qa:smoke` and screenshot/diagnostic inspection.
+- `docs/INTERFACE_SYSTEM.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, and `docs/PROGRESS_TRACKER.md` are updated when workflow meaning changes.
+
+## Blocked Claims
+
+- Full editor/authoring suite.
+- Production export pipeline.
+- Multi-project asset database.
+- Any readiness badge that cannot link to evidence or a next action.

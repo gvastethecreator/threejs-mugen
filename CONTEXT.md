@@ -1,0 +1,91 @@
+# Project Context
+
+`mugen-web-sandbox` is a private/local TypeScript + Three.js project for a progressive MUGEN/IKEMEN-GO browser port. It is also the first module of a future creator studio and modular browser game engine.
+
+This file is the short domain map for agents. Detailed state lives in the docs listed below; do not replace those docs with this summary.
+
+## Current Product Shape
+
+- **Runtime Mode**: playable fight sandbox with local generated/native fighters, stages, input, HUD, hitboxes, hit pause, hit stun, life/power, trace evidence, and partial imported fighter routes.
+- **Inspector Mode**: local ZIP/folder loader for MUGEN character/stage resources, parsers, animation preview, collision boxes, compatibility reports, and unsupported-feature diagnostics.
+- **Studio Mode**: project workbench for assets, evidence, build/export status, debug state, module status, source provenance, and future authoring tools.
+
+## North Star
+
+Build a Three.js runtime and creator workflow that can expand from:
+
+```txt
+private playable MUGEN-like sandbox
+  -> fixture-backed MUGEN compatibility layers
+  -> IKEMEN-GO scan/report bridge
+  -> evidence-first Creator Studio
+  -> reusable modular browser game engine
+```
+
+Near-term language must stay honest: this is **partial MUGEN compatibility with trace and fixture gates**, plus **IKEMEN scanner/reporting first**. It is not a full MUGEN or IKEMEN-GO port yet.
+
+## Authoritative Docs
+
+Read in this order for broad work:
+
+1. `AGENTS.md` - local working rules, verification rules, and skill setup.
+2. `docs/PROGRESS_TRACKER.md` - compact score, evidence snapshot, next cuts.
+3. `docs/WORKPLAN.md` - current execution authority.
+4. `docs/BUILD_EXECUTION_BACKLOG.md` - append-only implementation history and backlog.
+5. `docs/ENGINE_PORT_ARCHITECTURE.md` - parser/compiler/runtime/render/audio/debug boundaries.
+6. `docs/CONTROLLER_SUPPORT_REGISTRY.md` - controller support levels and evidence requirements.
+7. `docs/SUPPORTED_FEATURES.md` - supported/partial/unsupported feature matrix.
+8. `docs/QA_AND_ACCEPTANCE_GATES.md` - closeout gates, trace rules, fixture rules, visual QA rules.
+
+Use roadmap/vision docs when scope decisions are needed:
+
+- `docs/APPROVED_HORIZON_PLAN.md`
+- `docs/HORIZON_IMPLEMENTATION_BLUEPRINT.md`
+- `docs/MASTER_CONSTRUCTION_PLAN.md`
+- `docs/CONSTRUCTION_WAVES.md`
+- `docs/PORTING_ROADMAP.md`
+- `docs/ENGINE_STUDIO_ROADMAP.md`
+- `docs/CREATOR_STUDIO_AND_MODULAR_ENGINE.md`
+- `docs/MODULE_BOUNDARY_CONTRACT.md`
+
+Use local tracker docs for current work slicing:
+
+- `.scratch/roadmap/PRD.md`
+- `.scratch/roadmap/issues/`
+
+## Domain Vocabulary
+
+- **Compatibility gate**: deterministic trace/test/fixture proof for one bounded behavior.
+- **Claim allowed**: exact behavior the current evidence proves.
+- **Claim blocked**: parity or edge cases that remain unsupported or unproven.
+- **Imported fighter**: fighter loaded from MUGEN-like package files.
+- **Native/generated fighter**: project-owned atlas-backed fighter created for this sandbox.
+- **MatchWorld**: renderer-independent ownership/evidence boundary for actors, effects, lifecycle, targets, and snapshots.
+- **ControllerOp**: typed runtime operation lowered from CNS/controller data.
+- **RuntimeTrace**: deterministic evidence artifact for runtime behavior gates.
+- **Fixture gate**: optional or required character/stage package evidence, usually local-only and not redistributed.
+
+## Hard Rules
+
+- No commercial or third-party character assets in repo.
+- Do not hardcode one character, stage, or fixture path into runtime behavior.
+- Do not count generated/native fighters as imported MUGEN compatibility.
+- Do not claim full parity from parser counts or partial runtime gates.
+- Every unsupported parser/runtime/render/audio feature must be visible in reports or docs.
+- Frontend/render changes require visual QA before closeout.
+- Runtime compatibility changes require trace evidence or focused tests plus docs.
+
+## Current Build Priority
+
+```txt
+RuntimeTrace and ControllerOp coverage
+  -> MatchWorld ownership
+  -> KFM/Common1 fixture precision
+  -> Studio Evidence/Build trust workflow
+  -> generated asset authoring and QA
+  -> IKEMEN profile scanner
+  -> shared engine contracts
+  -> first non-fighting module slice
+```
+
+When choosing next work, prefer the smallest cut that improves evidence, runtime correctness, or Studio trust without inflating compatibility claims.

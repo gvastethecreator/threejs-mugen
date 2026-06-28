@@ -56,4 +56,4 @@ Use the canonical local labels `needs-triage`, `needs-info`, `ready-for-agent`, 
 
 ### Domain docs
 
-Single-context repo. Read root `CONTEXT.md` if present, then relevant roadmap/architecture docs and ADRs under `docs/adr/` if present. See `docs/agents/domain.md`.
+Single-context repo. Read root `CONTEXT.md` first, then relevant roadmap/architecture docs and ADRs under `docs/adr/` if present. See `docs/agents/domain.md`.
