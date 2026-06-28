@@ -46,6 +46,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 1. **MatchWorld ownership**
    - Move more lifecycle/combat/pause/target behavior behind named systems.
    - Keep trace checksum drift intentional and documented.
+   - Current proof added: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message snapshot wording, and reset behavior with focused unit coverage. This is sandbox round-state ownership, not MUGEN/IKEMEN round/lifebar/team/screenpack parity.
 
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.
@@ -75,7 +76,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
 | R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond threshold, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM tick order, optional KFM threshold oracle, or broader guard/Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | One mutable runtime area moved behind named world/system boundary with tests or trace stability. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue moving mutable runtime areas behind named systems after the `RuntimeRoundSystem` boundary; next proof should target pause/combat/target/effect ordering or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |

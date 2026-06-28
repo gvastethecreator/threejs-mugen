@@ -104,6 +104,8 @@ The compiler classifies each piece as:
 
 `RuntimeStunSystem` owns the bounded hitstun/guardstun timer update used by the playable match loop: input-lock checks, guardstun decay, guarding flag maintenance, hit/guard horizontal friction, and hitstun decay. `PlayableMatchRuntime` still maps those timer results to current presentation actions and imported-state preservation, so this is a system boundary for current behavior, not exact MUGEN/IKEMEN hitpause, guard recovery, or Common1 tick-order parity.
 
+`RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. The match loop still decides when combat/resources change life and when playback stops, so this is ownership cleanup for current sandbox round state, not MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, winpose, or screenpack parity.
+
 `MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
 
 `synthetic-imported-superpause-effect-freeze.json` extends that pause evidence to visual Helper/Explod actors with bounded source-movetime advance plus later freeze checks; it is still evidence for visual effect actors, not Helper VM execution, Explod binding/removal parity, or exact MUGEN/IKEMEN pause layering.
@@ -142,6 +144,7 @@ MatchWorld
   TargetSystem
   CombatResolver
   PauseSystem
+  RuntimeRoundSystem
   CommandSystem
 ```
 
@@ -166,8 +169,9 @@ The current extraction order is:
 10. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, active/presentation advance passes, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
 11. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
 12. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
-13. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-14. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+13. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+14. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+15. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

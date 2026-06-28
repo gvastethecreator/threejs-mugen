@@ -74,6 +74,7 @@ import {
 } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
+import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import {
   canActorMoveDuringPause,
@@ -196,10 +197,7 @@ export class PlayableMatchRuntime {
   private frameClock = 0;
   private playing = true;
   private speed = 1;
-  private roundOver = false;
-  private roundState: "fight" | "ko" | "timeover" = "fight";
-  private roundTimerFrames = 99 * 60;
-  private winner?: string;
+  private readonly round = new RuntimeRoundSystem();
   private readonly logs: string[] = [];
   private readonly p1: FighterMatchState;
   private readonly p2: FighterMatchState;
@@ -266,7 +264,7 @@ export class PlayableMatchRuntime {
     this.frameClock += 1;
     const iterations = options.force ? 1 : this.consumeSpeedIterations();
     for (let index = 0; index < iterations; index += 1) {
-      if (this.roundOver) {
+      if (this.round.isOver) {
         break;
       }
       this.advanceOneTick(input);
@@ -313,7 +311,7 @@ export class PlayableMatchRuntime {
       return;
     }
 
-    this.roundTimerFrames = Math.max(0, this.roundTimerFrames - 1);
+    this.round.tickTimer();
     this.p1.commandBuffer.push(this.tick, p1Input);
     this.p2.commandBuffer.push(this.tick, p2Input);
     handlePlayerInput(this.p1, p1Input, this.p2, this.tick);
@@ -360,8 +358,13 @@ export class PlayableMatchRuntime {
     advancePresentationEffects(this.p1);
     advancePresentationEffects(this.p2);
 
-    if (this.p1.runtime.life <= 0 || this.p2.runtime.life <= 0 || this.roundTimerFrames <= 0) {
-      this.finishRound();
+    const roundFinish = this.round.finishIfNeeded(
+      { label: this.p1.label, life: this.p1.runtime.life },
+      { label: this.p2.label, life: this.p2.runtime.life },
+    );
+    if (roundFinish) {
+      this.playing = false;
+      this.logs.unshift(roundFinish.message);
     }
   }
 
@@ -457,12 +460,7 @@ export class PlayableMatchRuntime {
         animations: this.stage.animations,
         bgControllers: this.stage.bgControllers,
       },
-      round: {
-        state: this.roundState,
-        timer: Math.ceil(this.roundTimerFrames / 60),
-        winner: this.winner,
-        message: this.roundMessage(),
-      },
+      round: this.round.snapshot(),
       actors: [toSnapshot(this.p1), toSnapshot(this.p2)],
       effects: [
         ...toExplodSnapshots(this.p1),
@@ -484,10 +482,7 @@ export class PlayableMatchRuntime {
   reset(): void {
     this.tick = 0;
     this.frameClock = 0;
-    this.roundOver = false;
-    this.roundState = "fight";
-    this.roundTimerFrames = 99 * 60;
-    this.winner = undefined;
+    this.round.reset();
     this.playing = true;
     this.matchPause = undefined;
     this.envColorEvents.length = 0;
@@ -519,23 +514,6 @@ export class PlayableMatchRuntime {
     this.logs.unshift("Round reset");
   }
 
-  private finishRound(): void {
-    if (this.roundOver) {
-      return;
-    }
-    this.roundOver = true;
-    this.roundState = this.roundTimerFrames <= 0 ? "timeover" : "ko";
-    const p1Life = this.p1.runtime.life;
-    const p2Life = this.p2.runtime.life;
-    if (p1Life === p2Life) {
-      this.winner = "Draw";
-    } else {
-      this.winner = p1Life > p2Life ? this.p1.label : this.p2.label;
-    }
-    this.playing = false;
-    this.logs.unshift(`${this.roundMessage()} - press Reset to fight again`);
-  }
-
   private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
     const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation);
     if (!event) {
@@ -544,15 +522,6 @@ export class PlayableMatchRuntime {
     pushRuntimeEnvColorEvent(this.envColorEvents, event);
   }
 
-  private roundMessage(): string {
-    if (this.roundState === "fight") {
-      return "Fight";
-    }
-    if (this.winner === "Draw") {
-      return this.roundState === "timeover" ? "Time over - draw" : "Double KO";
-    }
-    return `${this.winner ?? "Fighter"} wins`;
-  }
 }
 
 function createFighterState(

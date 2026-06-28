@@ -55,6 +55,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 
 Build next:
 
+- Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, pause, or audio.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 

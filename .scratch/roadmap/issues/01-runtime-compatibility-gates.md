@@ -10,6 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 recovery precision, R2 MatchWorld ownership deepening.
+- Latest completed R2 cut: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish decision, winner/message snapshot projection, and reset behavior with focused unit coverage. This is ownership cleanup only; no MUGEN/IKEMEN round parity claim.
 - Latest completed cut: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates ordered actor-frame evidence for `5050` with positive `hitFall.recoverTime` before `5210` with `recoverTime = 0` on the bounded recovery-input route.
 - Previous completed cut: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Previous completed cut: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground recovery selection: imported defender `5050` routes through `5200 -> 5201 -> 52 -> 0` with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity evidence for synthetic `velocity.air.gethit.groundrecover.*` constants.
@@ -39,3 +40,4 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 - Full helper/custom-state/redirect/team ownership.
 - Full IKEMEN runtime behavior.
 - Exact tick order beyond the bounded actor-frame sequence without fixture-backed evidence.
+- Full round/lifebar/team/screenpack parity from the bounded `RuntimeRoundSystem` ownership cut.
