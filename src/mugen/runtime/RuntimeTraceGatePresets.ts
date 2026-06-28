@@ -486,6 +486,29 @@ export function createSyntheticImportedRoundTriggerTraceArtifact(options: Runtim
   );
 }
 
+export function createSyntheticImportedMatchContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-match-context",
+      displayName: "Synthetic Imported Match Context",
+      matchContextEntry: { roundsExisted: 0, stateNo: 282 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-match-context-golden",
+      targetLabel: "Synthetic imported RoundsExisted/MatchOver route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [282],
+      requiredExecutedStates: [282],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported RoundsExisted/MatchOver trace proves State -1 routing can branch on the current bounded single-round non-matchover context. Multi-round match accounting, win/loss bookkeeping, team modes, and exact IKEMEN/MUGEN match lifecycle parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -5777,6 +5800,7 @@ export type SyntheticImportedTraceFighterOptions = {
   stageTimeEntry?: { minStageTime: number; stateNo: number };
   aliveStateEntry?: { stateNo: number };
   roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
+  matchContextEntry?: { roundsExisted: number; stateNo: number };
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
@@ -5931,6 +5955,7 @@ ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(optio
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 ${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
+${options.matchContextEntry === undefined ? "" : matchContextEntryBlock(options.matchContextEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -6063,6 +6088,7 @@ ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.asser
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
+${options.matchContextEntry ? simpleStateBlock(options.matchContextEntry.stateNo, "I") : ""}
 ${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
@@ -6203,6 +6229,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.roundStateEntry === undefined
         ? []
         : ([[options.roundStateEntry.stateNo, traceAction(options.roundStateEntry.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
+      ...(options.matchContextEntry === undefined
+        ? []
+        : ([[options.matchContextEntry.stateNo, traceAction(options.matchContextEntry.stateNo)]] as Array<
             [number, MugenAnimationAction]
           >)),
       ...(options.assertSpecialControlState === undefined
@@ -7826,6 +7857,18 @@ triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = RoundNo = ${route.roundNo}
 trigger1 = RoundState = ${route.roundState}
+`;
+}
+
+function matchContextEntryBlock(route: { roundsExisted: number; stateNo: number }): string {
+  return `
+[State -1, Match Context Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = RoundsExisted = ${route.roundsExisted}
+trigger1 = !MatchOver
 `;
 }
 

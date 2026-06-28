@@ -90,6 +90,7 @@ import {
   createSyntheticImportedRoundTriggerTraceArtifact,
   createSyntheticImportedHitDefAttrTraceArtifact,
   createSyntheticImportedMoveHitCounterTraceArtifact,
+  createSyntheticImportedMatchContextTraceArtifact,
   createSyntheticImportedMoveContactTraceArtifact,
   createSyntheticImportedNumExplodTraceArtifact,
   createSyntheticImportedEnemyNearTraceArtifact,
@@ -674,6 +675,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([281]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([281]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 281)).toBe(true);
+  });
+
+  it("creates a synthetic imported RoundsExisted/MatchOver artifact with match-context branch evidence", () => {
+    const artifact = createSyntheticImportedMatchContextTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-match-context-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(282);
+    expect(evidence?.executedStates).toContain(282);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([282]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([282]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 282)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {

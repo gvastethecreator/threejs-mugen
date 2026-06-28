@@ -116,6 +116,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRoundTriggerTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-match-context",
+      required: true,
+      artifact: presets.createSyntheticImportedMatchContextTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
@@ -1095,6 +1100,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitadd",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
+    "synthetic-imported-match-context",
     "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
