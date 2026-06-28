@@ -166,6 +166,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDamageScaleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-data-damage-scale",
+      required: true,
+      artifact: presets.createSyntheticImportedDataDamageScaleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-bounds",
       required: true,
       artifact: presets.createSyntheticImportedBoundsTraceArtifact(),
@@ -1089,6 +1094,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-removeexplod",
     "synthetic-imported-reversal",
     "synthetic-imported-damage-scale",
+    "synthetic-imported-data-damage-scale",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-width",

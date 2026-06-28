@@ -49,6 +49,7 @@ import {
   createSyntheticImportedRejectTraceArtifact,
   createSyntheticImportedReversalTraceArtifact,
   createSyntheticImportedDamageScaleTraceArtifact,
+  createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
@@ -940,6 +941,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),
+    );
+  });
+
+  it("creates a synthetic imported data damage-scale artifact from CNS Data constants", () => {
+    const artifact = createSyntheticImportedDataDamageScaleTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-data-damage-scale-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-data-damage-scale-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedControllers.AttackMulSet ?? 0).toBe(0);
+    expect(evidence?.executedControllers.DefenceMulSet ?? 0).toBe(0);
+    expect(evidence?.executedOperations["damage-scale:attackmulset"] ?? 0).toBe(0);
+    expect(evidence?.executedOperations["damage-scale:defencemulset"] ?? 0).toBe(0);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventLines.some((line) => line.includes("for 30"))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "imported", life: 970, moveType: "H" })]),

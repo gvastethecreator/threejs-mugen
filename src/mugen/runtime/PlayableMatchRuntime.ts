@@ -568,6 +568,8 @@ function createFighterState(
   const runtimeProgram = getRuntimeProgram(definition);
   const lifeMax = runtimeLifeMax(definition);
   const powerMax = runtimePowerMax(definition);
+  const attackMultiplier = runtimeAttackMultiplier(definition);
+  const defenseMultiplier = runtimeDefenseMultiplier(definition);
   return {
     id,
     label: definition.displayName,
@@ -581,6 +583,8 @@ function createFighterState(
       bodyWidth: { front: 39, back: 39 },
       playerPush: true,
       targetCount: 0,
+      ...(attackMultiplier === undefined ? {} : { attackMultiplier }),
+      ...(defenseMultiplier === undefined ? {} : { defenseMultiplier }),
       spritePriority: id === "p2" ? 1 : 2,
       stateNo: 0,
       animNo: definition.idleAction,
@@ -2907,11 +2911,28 @@ function runtimePowerMax(definition: DemoFighterDefinition): number {
   return boundedRuntimeResourceMax(definition.constants?.["data.power"], 3000);
 }
 
+function runtimeAttackMultiplier(definition: DemoFighterDefinition): number | undefined {
+  const attack = definition.constants?.["data.attack"];
+  return attack === undefined ? undefined : boundedRuntimeDamageMultiplier(attack / 100);
+}
+
+function runtimeDefenseMultiplier(definition: DemoFighterDefinition): number | undefined {
+  const defence = definition.constants?.["data.defence"];
+  return defence === undefined || defence <= 0 ? undefined : boundedRuntimeDamageMultiplier(100 / defence);
+}
+
 function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
   if (value === undefined || !Number.isFinite(value)) {
     return fallback;
   }
   return Math.max(1, Math.round(value));
+}
+
+function boundedRuntimeDamageMultiplier(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(0, Math.min(10, Math.round(value * 1000) / 1000));
 }
 
 function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {

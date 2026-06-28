@@ -630,6 +630,29 @@ describe("PlayableMatchRuntime", () => {
     expect(scaledSnapshot.logs.some((line) => line.includes("Imported Fixture hit Imported Fixture for 19"))).toBe(true);
   });
 
+  it("uses imported CNS Data attack and defence as bounded base damage scale", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, hitDefDamage: 40, dataAttack: 150 }),
+      createImportedFixture({ withStateMove: false, dataDefence: 200 }),
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+    );
+
+    const snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+
+    expect(snapshot.actors[0]?.runtime.attackMultiplier).toBe(1.5);
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+    expect(snapshot.actors[1]?.runtime.life).toBe(970);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.AttackMulSet ?? 0).toBe(0);
+    expect(snapshot.compatibilitySession?.actors[1]?.executedControllers.DefenceMulSet ?? 0).toBe(0);
+    expect(snapshot.logs.some((line) => line.includes("Imported Fixture hit Imported Fixture for 30"))).toBe(true);
+  });
+
   it("uses imported HitOverride to redirect matching incoming HitDefs without normal damage", () => {
     const attacker = createImportedFixture({ withStateMove: false, hitDefDamage: 37, hitDefAttr: "S,NA" });
     const defender = createImportedFixture({
@@ -1813,6 +1836,8 @@ function createImportedFixture(
     fallKill?: boolean;
     downRecoverTime?: number;
     dataLiedownTime?: number;
+    dataAttack?: number;
+    dataDefence?: number;
     defaultGetHitStateNo?: number;
     moveHitStateNo?: number;
     moveHitCounterStateNo?: number;
@@ -2655,6 +2680,8 @@ trigger1 = ctrl
   const stateFile = parseCns(`
 [Data]
 liedown.time = ${options.dataLiedownTime ?? 60}
+${options.dataAttack === undefined ? "" : `attack = ${options.dataAttack}`}
+${options.dataDefence === undefined ? "" : `defence = ${options.dataDefence}`}
 
 [Statedef 0]
 type = S

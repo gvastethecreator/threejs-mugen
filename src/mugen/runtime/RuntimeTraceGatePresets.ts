@@ -922,6 +922,62 @@ export function createSyntheticImportedDamageScaleTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedDataDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-data-damage-scale-attacker",
+    displayName: "Synthetic Imported Data Attack Attacker",
+    hitDefDamage: 40,
+    dataStats: { attack: 150 },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-data-damage-scale-defender",
+    displayName: "Synthetic Imported Data Defence Defender",
+    dataStats: { defence: 200 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-data-damage-scale-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-data-damage-scale-golden",
+      label: "Synthetic imported CNS Data attack/defence route",
+      source: "imported",
+      notes: [
+        "Synthetic imported data damage-scale trace proves parsed CNS [Data] attack and defence values feed bounded base outgoing and incoming HitDef damage scaling without requiring AttackMulSet or DefenceMulSet controllers. Exact stacking with controller multipliers, helpers, projectiles, guards, custom states, and round edge cases remains future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-data-damage-scale-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredEventSubstrings: ["for 30"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 970,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedBoundsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -5821,6 +5877,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
+  dataStats?: { attack?: number; defence?: number; life?: number; power?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
   stageTimeEntry?: { minStageTime: number; stateNo: number };
@@ -5991,7 +6048,7 @@ triggerall = command = "x"
 trigger1 = ctrl
 `).controllers;
   const stateFile = parseCns(`
-${dataConstantsBlock(options.resourceMaxEntry)}
+${dataConstantsBlock(options)}
 ${sizeConstantsBlock(options.sizeConstants)}
 [Statedef 0]
 type = S
@@ -6428,14 +6485,22 @@ ${size.midPos ? `mid.pos = ${size.midPos[0]},${size.midPos[1]}` : ""}
 `;
 }
 
-function dataConstantsBlock(resourceMaxEntry: SyntheticImportedTraceFighterOptions["resourceMaxEntry"]): string {
-  if (!resourceMaxEntry) {
+function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): string {
+  const data = {
+    life: options.resourceMaxEntry?.lifeMax ?? options.dataStats?.life,
+    power: options.resourceMaxEntry?.powerMax ?? options.dataStats?.power,
+    attack: options.dataStats?.attack,
+    defence: options.dataStats?.defence,
+  };
+  const lines = Object.entries(data)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => `${key} = ${value}`);
+  if (lines.length === 0) {
     return "";
   }
   return `
 [Data]
-life = ${resourceMaxEntry.lifeMax}
-power = ${resourceMaxEntry.powerMax}
+${lines.join("\n")}
 `;
 }
 

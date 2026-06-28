@@ -181,6 +181,8 @@ damage = 30
 [Data]
 life = 1000
 power = 3000
+attack = 150
+defence = 200
 liedown.time = 60
 
 [Movement]
@@ -199,6 +201,8 @@ mid.pos = 2,-64
 
     expect(parsed.constants["data.life"]).toBe(1000);
     expect(parsed.constants["data.power"]).toBe(3000);
+    expect(parsed.constants["data.attack"]).toBe(150);
+    expect(parsed.constants["data.defence"]).toBe(200);
     expect(parsed.constants["data.liedown.time"]).toBe(60);
     expect(parsed.constants["movement.yaccel"]).toBe(0.44);
     expect(parsed.constants["movement.down.bounce.offset.x"]).toBe(0);
