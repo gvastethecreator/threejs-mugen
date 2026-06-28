@@ -235,6 +235,24 @@ describe("StateControllerExecutor", () => {
     expect(compileControllerIr(controller("PosSet", { y: "Const(movement.down.bounce.offset.y)" })).operation).toBeUndefined();
   });
 
+  it("evaluates controller params with runtime hit variables", () => {
+    const state = executeControllerIr(
+      compileControllerIr(controller("CtrlSet", { value: "GetHitVar(fall.kill)" })),
+      runtimeState({
+        ctrl: true,
+        hitFall: {
+          falling: true,
+          damage: 70,
+          kill: false,
+          velocity: { x: 2, y: -7 },
+        },
+      }),
+      () => undefined,
+    );
+
+    expect(state.ctrl).toBe(false);
+  });
+
   it("executes additional simple CNS controllers and expression params", () => {
     let state = runtimeState({ vel: { x: 10, y: -2 }, stateType: "C", moveType: "I", physics: "C" });
     const unsupported: string[] = [];

@@ -704,6 +704,9 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
   if (key === "fall.defence_up") {
     return state.hitFall?.defenceUp ?? 100;
   }
+  if (key === "fall.kill") {
+    return state.hitFall?.kill === false ? 0 : 1;
+  }
   if (key === "fall.xvel" || key === "fall.xvelocity") {
     return state.hitFall?.velocity.x ?? 0;
   }
