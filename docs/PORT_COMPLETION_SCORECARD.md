@@ -61,16 +61,16 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Next Ten Gates
 
-1. `ChangeAnim` / `ChangeAnim2` required trace for imported animation-source retargeting.
-2. `AssertSpecial` and guard/facing/no-walk precision against KFM/Common1.
-3. Exact-enough fall/recovery thresholds, velocities, and recovery input timing.
-4. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
-5. Projectile parity slice beyond current bounded hit/guard/clash routes.
-6. Stage BGCtrl slice with animated/velocity/tile/parallax evidence.
-7. Palette application slice: ACT/SFF palette remap plus PalFX/RemapPal interaction.
-8. CMD/CNS compiler hardening: source-located AST/IR for dynamic params and unsupported expressions.
-9. Studio Build/Evidence as single trust source: stale fixture, blocked export, next-action workflow.
-10. IKEMEN reference expansion: map ZSS/Lua/screenpack findings to scanner tests and blocked runtime claims.
+1. `AssertSpecial` and guard/facing/no-walk precision against KFM/Common1.
+2. Exact-enough fall/recovery thresholds, velocities, and recovery input timing.
+3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
+4. Projectile parity slice beyond current bounded hit/guard/clash routes.
+5. Stage BGCtrl slice with animated/velocity/tile/parallax evidence.
+6. Palette application slice: ACT/SFF palette remap plus PalFX/RemapPal interaction.
+7. CMD/CNS compiler hardening: source-located AST/IR for dynamic params and unsupported expressions.
+8. Studio Build/Evidence as single trust source: stale fixture, blocked export, next-action workflow.
+9. IKEMEN reference expansion: map ZSS/Lua/screenpack findings to scanner tests and blocked runtime claims.
+10. ChangeAnim2 depth slice: missing-action fallback, redirects, helper/custom-state ownership, and multi-import SFF namespace behavior.
 
 ## Claim Rules
 

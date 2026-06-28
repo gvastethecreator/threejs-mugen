@@ -71,6 +71,11 @@ async function main() {
       artifact: presets.createSyntheticImportedControlTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-animation",
+      required: true,
+      artifact: presets.createSyntheticImportedAnimationTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-sound",
       required: true,
       artifact: presets.createSyntheticImportedSoundTraceArtifact(),
@@ -1210,6 +1215,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-variable",
     "synthetic-imported-resource",
     "synthetic-imported-control",
+    "synthetic-imported-animation",
     "synthetic-imported-sound",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",

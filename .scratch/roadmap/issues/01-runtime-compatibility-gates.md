@@ -9,9 +9,10 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 
 ## Next Useful Cuts
 
-- Next recommended gate: required `ChangeAnim` / `ChangeAnim2` trace for imported animation-source retargeting and active AIR action evidence.
+- Latest completed cut: `synthetic-imported-animation.json` gates bounded `ChangeAnim` / partial `ChangeAnim2` active AIR retargeting evidence with checksum `ee651cbc`.
+- Next recommended gate: exact-enough `AssertSpecial` / guard or fall-recovery precision against KFM/Common1, unless a narrower raw-controller family can be promoted to required trace evidence first.
 - Add required traces for controller families currently covered only by unit/runtime tests.
-- Latest completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
+- Previous completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.
 - Move mutable behavior behind named systems before adding broader parity claims.
 - Prefer KFM/Common1 precision when a synthetic gate already exists for the same family.

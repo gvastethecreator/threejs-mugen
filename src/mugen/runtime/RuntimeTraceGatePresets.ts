@@ -278,6 +278,34 @@ export function createSyntheticImportedControlTraceArtifact(options: RuntimeTrac
   );
 }
 
+export function createSyntheticImportedAnimationTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-animation",
+      displayName: "Synthetic Imported Animation Ops",
+      action200Duration: 30,
+      withAnimationOps: true,
+    }),
+    {
+      ...options,
+      script: importedOneShotXScript(),
+      targetId: "synthetic-imported-animation-golden",
+      targetLabel: "Synthetic imported ChangeAnim route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "ChangeAnim", "ChangeAnim2"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredActorFrames: [
+        { actorId: "p1", source: "imported", actorKind: "player", animNo: 205, minFrames: 1 },
+        { actorId: "p1", source: "imported", actorKind: "player", animNo: 206, minFrames: 1 },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 206 }],
+      notes: [
+        "Synthetic imported animation trace proves bounded ChangeAnim and ChangeAnim2 can retarget the active AIR action in an imported owner state, with actor-frame and final-animation evidence. Missing-action fallback, elem/elemtime edge cases, redirects, helper/custom-state ownership, multi-import SFF namespaces, and exact MUGEN/IKEMEN animation-source parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -6358,6 +6386,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withHitAdd?: number;
   hitAddStateNo?: number;
   withControlOps?: boolean;
+  withAnimationOps?: boolean;
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
   withSoundControllers?: boolean;
@@ -6654,6 +6683,7 @@ ${options.withMoveHitReset ? moveHitResetControllerBlock() : ""}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
+${options.withAnimationOps ? animationControllerBlock() : ""}
 ${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
@@ -6783,6 +6813,7 @@ ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitAddStateNo === undefined ? [] : ([[options.hitAddStateNo, traceAction(options.hitAddStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withAnimationOps ? ([[205, traceAction(205)], [206, traceAction(206)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
@@ -8448,6 +8479,22 @@ value = 0
 type = CtrlSet
 trigger1 = Time = 2
 value = 1
+`;
+}
+
+function animationControllerBlock(): string {
+  return `
+[State 200, ChangeAnim Probe]
+type = ChangeAnim
+trigger1 = Time = 0
+value = 205
+elem = 1
+
+[State 200, ChangeAnim2 Probe]
+type = ChangeAnim2
+trigger1 = Time = 2
+value = 206
+elem = 1
 `;
 }
 

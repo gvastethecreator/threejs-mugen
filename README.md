@@ -106,6 +106,8 @@ Current resource-controller cut: `synthetic-imported-resource.json` checksum `7b
 
 Current control-controller cut: `synthetic-imported-control.json` checksum `80c4c446` proves imported static `CtrlSet` executes through typed `resource:ctrlset` operation evidence and can restore owner control in state `200`. Dynamic expressions, helper/redirect ownership, exact state-entry control timing, and full MUGEN/IKEMEN control semantics remain future work.
 
+Current animation-controller cut: `synthetic-imported-animation.json` checksum `ee651cbc` proves imported `ChangeAnim` can retarget the active AIR action to `205` and partial `ChangeAnim2` can retarget to owner-backed action `206`, with actor-frame and final-animation evidence in state `200`. Missing-action fallback, deeper `elem`/`elemtime` parity, redirects, helper/custom-state ownership, multi-import SFF namespaces, and exact animation-source behavior remain future work.
+
 Current Gravity cut: `synthetic-imported-gravity.json` checksum `92161764` proves imported airborne state `200` can execute the real `Gravity` controller through typed `kinematic:gravity` evidence and expose vertical velocity telemetry. Exact `yaccel` constants, floor snap, pause/tick order, and full MUGEN/IKEMEN air-physics parity remain future work.
 
 Current kinematic-controller cut: `synthetic-imported-kinematic.json` checksum `92804390` proves imported state `200` can execute static `VelSet`, `VelAdd`, `VelMul`, `PosSet`, and `PosAdd` through typed `kinematic:*` operation evidence and expose bounded position/velocity telemetry. Dynamic expressions, exact physics/tick order, floor snapping, helper/custom-state ownership, and full MUGEN/IKEMEN movement parity remain future work.

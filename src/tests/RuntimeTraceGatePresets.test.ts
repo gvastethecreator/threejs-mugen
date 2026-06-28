@@ -82,6 +82,7 @@ import {
   createSyntheticImportedProjectileVelMulTraceArtifact,
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
+  createSyntheticImportedAnimationTraceArtifact,
   createSyntheticImportedResourceMaxTraceArtifact,
   createSyntheticImportedSoundTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
@@ -500,6 +501,47 @@ describe("RuntimeTraceGatePresets", () => {
         animNo: 200,
         ctrl: true,
       },
+    ]);
+  });
+
+  it("creates a synthetic imported animation artifact with ChangeAnim and ChangeAnim2 evidence", () => {
+    const artifact = createSyntheticImportedAnimationTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-animation-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ChangeAnim).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeAnim2).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", animNo: 205 }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", animNo: 206 }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 200,
+      animNo: 206,
+    });
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(
+      expect.arrayContaining(["ChangeAnim", "ChangeAnim2"]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      { actorId: "p1", source: "imported", actorKind: "player", animNo: 205, minFrames: 1 },
+      { actorId: "p1", source: "imported", actorKind: "player", animNo: 206, minFrames: 1 },
     ]);
   });
 
