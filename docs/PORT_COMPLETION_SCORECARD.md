@@ -61,7 +61,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 
 ## Next Ten Gates
 
-1. Remaining `AssertSpecial` and guard precision: crouch/air denial variants, lifetime, priority, helper/team ownership, and KFM/Common1 confirmation.
+1. Remaining `AssertSpecial` and guard precision: lifetime, priority, helper/team/global ownership, pause interaction, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial traces.
 2. Exact-enough fall/recovery thresholds, velocities, and recovery input timing.
 3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
 4. Projectile parity slice beyond current bounded hit/guard/clash routes.

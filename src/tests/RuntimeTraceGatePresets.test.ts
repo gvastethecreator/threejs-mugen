@@ -21,7 +21,9 @@ import {
   createSyntheticImportedHitstunTraceArtifact,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
+  createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialControlTraceArtifact,
+  createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
@@ -2137,6 +2139,80 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", moveType: "H" })]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial crouch guard-deny artifact with NoCrouchGuard hit evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-crouch-guarddeny-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-crouch-guarddeny-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "holddown", "x"]));
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.eventCategories).not.toContain("guard");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 963,
+    });
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", stateType: "C", moveType: "H" })]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial air guard-deny artifact with NoAirGuard hit evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-air-guarddeny-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-air-guarddeny-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.eventCategories).not.toContain("guard");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 963,
+    });
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", stateType: "A", moveType: "H" })]),
     );
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });

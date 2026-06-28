@@ -2396,6 +2396,124 @@ export function createSyntheticImportedAssertSpecialGuardDenyTraceArtifact(
   });
 }
 
+export function createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedP2CrouchGuardDenyScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-crouch-guarddeny-attacker",
+    displayName: "Synthetic Imported AssertSpecial Crouch Guard-Deny Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-crouch-guarddeny-defender",
+    displayName: "Synthetic Imported AssertSpecial Crouch Guard-Deny Defender",
+    assertSpecialControlState: { stateNo: 10, stateType: "C", physics: "C", flags: ["NoCrouchGuard"] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: defender, p2: attacker, stage }), script, {
+    label: "synthetic-imported-assertspecial-crouch-guarddeny-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-crouch-guarddeny-golden",
+      label: "Synthetic imported AssertSpecial NoCrouchGuard route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AssertSpecial crouch guard-deny trace proves defender-owned NoCrouchGuard in a crouch state can deny guard for a held down-back defender and resolve the same M-guardable HitDef as a hit. It does not claim exact guard priority, lifetime, global/helper ownership, or full MUGEN/IKEMEN guard parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-crouch-guarddeny-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["holdback", "holddown", "x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateType: "C", moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            life: 963,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedP2AirGuardDenyScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-air-guarddeny-attacker",
+    displayName: "Synthetic Imported AssertSpecial Air Guard-Deny Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-air-guarddeny-defender",
+    displayName: "Synthetic Imported AssertSpecial Air Guard-Deny Defender",
+    assertSpecialControlState: { stateNo: 40, stateType: "A", physics: "A", flags: ["NoWalk", "NoAirGuard"] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: defender, p2: attacker, stage }), script, {
+    label: "synthetic-imported-assertspecial-air-guarddeny-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-air-guarddeny-golden",
+      label: "Synthetic imported AssertSpecial NoAirGuard route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AssertSpecial air guard-deny trace proves defender-owned NoAirGuard in an airborne state can deny guard for a held-back defender and resolve the same A-guardable HitDef as a hit. It does not claim exact air-guard physics, landing, lifetime, global/helper ownership, or full MUGEN/IKEMEN guard parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-air-guarddeny-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["holdback", "x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateType: "A", moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            life: 963,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-default-guard-state",
@@ -6261,6 +6379,22 @@ export function importedP2GuardDenyScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedP2CrouchGuardDenyScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-crouch-guarddeny-prime", frames: 2, p1: ["B", "D"], p2: [] },
+    { label: "imported-crouch-guarddeny-x", frames: 14, p1: ["B", "D"], p2: ["x"] },
+    { label: "crouch-guarddeny-settle", frames: 4, p1: ["B", "D"], p2: [] },
+  ]);
+}
+
+export function importedP2AirGuardDenyScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-air-guarddeny-jump", frames: 2, p1: ["U"], p2: [] },
+    { label: "imported-air-guarddeny-x", frames: 14, p1: ["B"], p2: ["x"] },
+    { label: "air-guarddeny-settle", frames: 4, p1: ["B"], p2: [] },
+  ]);
+}
+
 export function importedDefaultGuardStateScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-default-guard-state-x", frames: 14, p1: ["x"], p2: ["B"] },
@@ -6540,7 +6674,13 @@ export type SyntheticImportedTraceFighterOptions = {
   withAfterImageTime?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
-  assertSpecialControlState?: { stateNo: number; flags: string[] };
+  assertSpecialControlState?: {
+    stateNo: number;
+    flags: string[];
+    stateType?: "S" | "C" | "A" | "L";
+    moveType?: "I" | "A" | "H";
+    physics?: "S" | "C" | "A" | "N";
+  };
   sizeConstants?: {
     headPos?: [number, number];
     midPos?: [number, number];
@@ -7219,12 +7359,12 @@ flag = ${flags.join(", ")}
 `;
 }
 
-function assertSpecialControlStateBlock(route: { stateNo: number; flags: string[] }): string {
+function assertSpecialControlStateBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["assertSpecialControlState"]>): string {
   return `
 [Statedef ${route.stateNo}]
-type = S
-movetype = I
-physics = S
+type = ${route.stateType ?? "S"}
+movetype = ${route.moveType ?? "I"}
+physics = ${route.physics ?? "S"}
 anim = ${route.stateNo}
 ctrl = 1
 
