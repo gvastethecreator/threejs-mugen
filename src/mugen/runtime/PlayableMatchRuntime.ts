@@ -2947,6 +2947,9 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
   if (key === "fall.damage") {
     return state.hitFall?.damage ?? 0;
   }
+  if (key === "fall.defence_up") {
+    return state.hitFall?.defenceUp ?? 100;
+  }
   if (key === "fall.kill") {
     return state.hitFall?.kill === false ? 0 : 1;
   }

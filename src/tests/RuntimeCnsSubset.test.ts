@@ -140,6 +140,7 @@ describe("ExpressionEvaluator", () => {
       hitFall: {
         falling: true,
         damage: 70,
+        defenceUp: 150,
         velocity: { x: -3, y: -6 },
         recover: true,
         recoverTime: 30,
@@ -156,6 +157,12 @@ describe("ExpressionEvaluator", () => {
       evaluateExpression("GetHitVar(fall.damage) = 70", {
         self: state,
         getHitVar: (name) => (name.toLowerCase() === "fall.damage" ? state.hitFall?.damage : undefined),
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("GetHitVar(fall.defence_up) = 150", {
+        self: state,
+        getHitVar: (name) => (name.toLowerCase() === "fall.defence_up" ? state.hitFall?.defenceUp : undefined),
       }),
     ).toBe(1);
     expect(

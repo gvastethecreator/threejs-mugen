@@ -729,6 +729,7 @@ function defaultHitVar(name: string): number {
     ctrltime: 0,
     fall: 0,
     "fall.damage": 0,
+    "fall.defence_up": 100,
     "fall.kill": 1,
     "fall.envshake.ampl": 0,
     "fall.envshake.freq": 60,

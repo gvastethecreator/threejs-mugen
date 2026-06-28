@@ -8,6 +8,7 @@ import {
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
   createSyntheticImportedFallDefenceUpTraceArtifact,
+  createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact,
   createImportedDefaultFallGroundRecoveryTraceArtifact,
   createImportedDefaultFallRecoveryInputTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
@@ -2163,6 +2164,37 @@ describe("RuntimeTraceGatePresets", () => {
       hitFall: {
         falling: false,
         damage: 0,
+      },
+    });
+  });
+
+  it("creates a synthetic imported GetHitVar fall.defence_up artifact with route evidence", () => {
+    const artifact = createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-gethitvar-fall-defence-up-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-gethitvar-fall-defence-up-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5100, 286]));
+    expect(evidence?.executedControllers.HitFallVel).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "demo",
+      stateNo: 286,
+      customOwnerId: "p1",
+      hitFall: {
+        falling: true,
+        damage: 70,
       },
     });
   });

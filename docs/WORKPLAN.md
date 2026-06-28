@@ -101,6 +101,7 @@ Latest runtime evidence cut:
 - Own-state lookup now has a bounded `SelfStateNoExist(n)` cut: `synthetic-imported-selfstatenoexist.json` gates a State -1 route where existing state `277` is accepted and missing state `9999` is rejected. Redirected state owners, helpers, parent/root lookup, and exact MUGEN/IKEMEN lookup parity remain blocked.
 - Own-command lookup now has a bounded `SelfCommand` cut: `synthetic-imported-selfcommand.json` gates a State -1 route where the current owner command buffer routes `SelfCommand = "x"` into state `278`. Helper/team/redirect command ownership and exact IKEMEN/MUGEN lookup parity remain blocked.
 - Global tick lookup now has a bounded `StageTime` cut: `synthetic-imported-stagetime.json` gates a State -1 route where `StageTime >= 3` routes into state `279`. Stage scripting, pause/replay/rollback accounting, round-system edges, and exact IKEMEN/MUGEN timing parity remain blocked.
+- Fall-defense hit-var lookup now has a bounded `GetHitVar(fall.defence_up)` cut: `synthetic-imported-gethitvar-fall-defence-up.json` gates an owner-backed get-hit route where stored `fall.defence_up = 150` branches into state `286`. Exact lifetime/stacking, redirects, helper/projectile/custom-state inheritance, and tick-order parity remain blocked.
 
 ## Construction Review Addendum
 
