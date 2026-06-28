@@ -156,6 +156,10 @@ describe("scanIkemenFeatures", () => {
         '[Function test]\nlet localCounter = 0\nif StageTime > 20 { assertInput{flag: "x"} camera{view: "Follow"} changeMovelist{value: 1} depth{value: 4} }\nignoreHitPause persistent(3) { getHitVarSet{fall: 1} }\nfor i := 0; i < 2; i++ { mapSet{map: "rounds"; value: i} }\n',
       ],
       [
+        "data/action.zss",
+        'lifeBarAction{spr: const(MsgFirstAttack), 0; top: 1}\ngameMakeAnim{value: F60; pos: 0,0}\ntext{text: "Ready"; layerno: 1}\nredLifeSet{value: lifeMax}\n',
+      ],
+      [
         "data/system.def",
         "menu.itemname.freebattle = Quick Battle\nmenu.itemname.extras.storymode = Story Mode\nmenu.itemname.menugame = Arcade\n",
       ],
@@ -167,7 +171,7 @@ describe("scanIkemenFeatures", () => {
     });
 
     expect(report.detected).toBe(true);
-    expect(report.files.zss).toEqual(["chars/neo/neo.cns.zss"]);
+    expect(report.files.zss).toEqual(["chars/neo/neo.cns.zss", "data/action.zss"]);
     expect(report.files.screenpack).toEqual(["data/system.def"]);
     expect(report.features["ZSS fallback file for CNS reference"]).toBe(1);
     expect(report.features["IKEMEN movelist reference"]).toBe(1);
@@ -182,8 +186,12 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN controller Camera"]).toBe(1);
     expect(report.features["IKEMEN controller ChangeMovelist"]).toBe(1);
     expect(report.features["IKEMEN controller Depth"]).toBe(1);
+    expect(report.features["IKEMEN controller GameMakeAnim"]).toBe(1);
     expect(report.features["IKEMEN controller GetHitVarSet"]).toBe(1);
+    expect(report.features["IKEMEN controller LifeBarAction"]).toBe(1);
     expect(report.features["IKEMEN controller MapSet"]).toBe(1);
+    expect(report.features["IKEMEN controller RedLifeSet"]).toBe(1);
+    expect(report.features["IKEMEN controller Text"]).toBe(1);
     expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN screenpack menu item"]).toBe(3);
     expect(report.features["IKEMEN extra menu mode freebattle"]).toBe(1);
