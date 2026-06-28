@@ -541,6 +541,10 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
     requiredStageFrames: gate.requiredStageFrames?.map((requirement) => ({ ...requirement })),
     requiredActorFrames: gate.requiredActorFrames?.map((requirement) => ({ ...requirement })),
+    requiredActorFrameSequences: gate.requiredActorFrameSequences?.map((sequence) => ({
+      ...sequence,
+      steps: sequence.steps.map((step) => ({ ...step })),
+    })),
     requiredFinalActors: gate.requiredFinalActors?.map((actor) => ({
       ...actor,
       hitFall: actor.hitFall ? { ...actor.hitFall } : undefined,

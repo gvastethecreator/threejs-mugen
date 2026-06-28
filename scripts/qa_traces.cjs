@@ -486,6 +486,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-fall-recovery-tick-order",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-fall-air-recovery-velocity",
       required: true,
       artifact: presets.createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact(),
@@ -1246,6 +1251,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-fall-defence-up",
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-default-fall-recovery-threshold",
+    "synthetic-imported-default-fall-recovery-tick-order",
     "synthetic-imported-default-fall-air-recovery-velocity",
     "synthetic-imported-default-fall-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",

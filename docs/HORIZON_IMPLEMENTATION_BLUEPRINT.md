@@ -124,7 +124,7 @@ Goal: prove partial imported compatibility through real characters instead of pa
 Build:
 
 1. Make optional fixture absence explicit: skipped is not passed.
-2. Tighten official KFM/Common1 recovery after the current synthetic `5050 -> 5210 -> 0` recovery-input branch, synthetic air-recovery velocity gate, synthetic ground-recovery selection/velocity gate, plus optional official `5110 -> 5120 -> 0`, `5050 -> 5210 -> 52 -> 0`, and `5050 -> 5200 -> 5201 -> 52 -> 0` fixture gates by adding exact threshold tables/velocity math and exact tick-order checks.
+2. Tighten official KFM/Common1 recovery after the current synthetic `5050 -> 5210 -> 0` recovery-input branch, synthetic actor-frame tick-order gate, synthetic air-recovery velocity gate, synthetic ground-recovery selection/velocity gate, plus optional official `5110 -> 5120 -> 0`, `5050 -> 5210 -> 52 -> 0`, and `5050 -> 5200 -> 5201 -> 52 -> 0` fixture gates by adding exact threshold tables/velocity math and exact controller/VM tick-order checks.
 3. Improve exact guard behavior beyond held-back guard plus bounded guard-hit routing.
 4. Add KFM720 localcoord/scale and CodeFuMan SFF v1/PCX stress gates.
 5. Keep SF3 Ryu-style third-party packages as parser/report stress until a targeted runtime slice exists.
@@ -300,7 +300,7 @@ If a task cannot name its artifact, screenshot, trace, fixture, report, or impor
 
 This is the immediate sequence for building all ideas without losing control:
 
-1. Tighten official KFM/Common1 recovery with exact threshold tables/velocity math and exact tick-order evidence after the current synthetic `5050 -> 5210 -> 0` recovery-input branch, synthetic air-recovery velocity gate, synthetic ground-recovery selection/velocity gate, plus optional official `5110 -> 5120 -> 0`, `5050 -> 5210 -> 52 -> 0`, and `5050 -> 5200 -> 5201 -> 52 -> 0` fixture gates.
+1. Tighten official KFM/Common1 recovery with exact threshold tables/velocity math and exact controller/VM tick-order evidence after the current synthetic `5050 -> 5210 -> 0` recovery-input branch, synthetic actor-frame tick-order gate, synthetic air-recovery velocity gate, synthetic ground-recovery selection/velocity gate, plus optional official `5110 -> 5120 -> 0`, `5050 -> 5210 -> 52 -> 0`, and `5050 -> 5200 -> 5201 -> 52 -> 0` fixture gates.
 2. Deepen `MatchWorld` lifecycle ownership for helper/projectile/explod/target/effect actors.
 3. Improve exact guard-rule parity and trace evidence.
 4. Harden the Studio status model so gates/assets/build rows expose evidence, affected item, impact, severity, next action, and stale/missing-source state.

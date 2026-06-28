@@ -172,6 +172,88 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.trace.finalActors).toHaveLength(2);
   });
 
+  it("gates ordered actor-frame sequences from summarized evidence", () => {
+    const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
+    const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "fall", actors: [fall], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "recovery", actors: [recovery], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-actor-frame-sequence",
+        label: "Synthetic actor-frame sequence",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "actor-frame-sequence",
+          requiredActorFrameSequences: [
+            {
+              label: "5050 before 5210",
+              steps: [
+                { actorId: "p2", source: "imported", actorKind: "player", animNo: 5050, moveType: "H", minFrames: 1 },
+                { actorId: "p2", source: "imported", actorKind: "player", animNo: 5210, moveType: "I", minFrames: 1 },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 before 5210",
+        steps: [
+          { actorId: "p2", source: "imported", actorKind: "player", animNo: 5050, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", animNo: 5210, moveType: "I", minFrames: 1 },
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
+  it("fails actor-frame sequence gates when frames appear out of order", () => {
+    const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
+    const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "recovery", actors: [recovery], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "fall", actors: [fall], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-actor-frame-sequence-failure",
+        label: "Synthetic actor-frame sequence failure",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "actor-frame-sequence",
+          requiredActorFrameSequences: [
+            {
+              label: "5050 before 5210",
+              steps: [
+                { actorId: "p2", source: "imported", actorKind: "player", animNo: 5050, moveType: "H", minFrames: 1 },
+                { actorId: "p2", source: "imported", actorKind: "player", animNo: 5210, moveType: "I", minFrames: 1 },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.failures[0]).toContain("Missing actor frame sequence: 5050 before 5210");
+    expect(artifact.gates[0]?.failures[0]).toContain("step 2 not after tick 2");
+  });
+
   it("exports effect payloads and effect field deltas without hiding actor evidence", () => {
     const projectile0 = effectActor("fx-p1-proj-1", "Nova fireball", projectileEffect({ hitsRemaining: 2, missTimeRemaining: 5 }));
     const projectile1 = effectActor(
@@ -376,6 +458,51 @@ function effectActor(
     clsn1Count: effect.kind === "projectile" ? 1 : 0,
     clsn2Count: 1,
     effect,
+  };
+}
+
+function playerActor(input: {
+  animNo: number;
+  moveType: string;
+  hitFallRecoverTime?: number;
+}): RuntimeTraceFrame["actors"][number] {
+  return {
+    id: "p2",
+    label: "Imported Defender",
+    actorKind: "player",
+    ownerId: "p2",
+    rootId: "p2",
+    parentId: "p2",
+    source: "imported",
+    stateNo: input.animNo,
+    animNo: input.animNo,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: input.moveType === "I",
+    stateType: input.moveType === "H" ? "A" : "S",
+    moveType: input.moveType,
+    physics: input.moveType === "H" ? "A" : "S",
+    pos: { x: 0, y: 0 },
+    vel: { x: 0, y: input.moveType === "H" ? -2 : 0 },
+    facing: -1,
+    hitPause: 0,
+    guarding: false,
+    guardStun: 0,
+    hitFall:
+      input.hitFallRecoverTime === undefined
+        ? undefined
+        : {
+            falling: true,
+            damage: 20,
+            velocity: { x: 3, y: -6 },
+            recover: true,
+            recoverTime: input.hitFallRecoverTime,
+          },
+    targetCount: 0,
+    clsn1Count: 0,
+    clsn2Count: 1,
   };
 }
 

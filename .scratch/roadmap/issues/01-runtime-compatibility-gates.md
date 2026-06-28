@@ -10,13 +10,14 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 recovery precision, R2 MatchWorld ownership deepening.
-- Latest completed cut: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
+- Latest completed cut: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates ordered actor-frame evidence for `5050` with positive `hitFall.recoverTime` before `5210` with `recoverTime = 0` on the bounded recovery-input route.
+- Previous completed cut: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Previous completed cut: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground recovery selection: imported defender `5050` routes through `5200 -> 5201 -> 52 -> 0` with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity evidence for synthetic `velocity.air.gethit.groundrecover.*` constants.
 - Previous completed cut: required `synthetic-imported-default-fall-recovery-threshold.json` checksum `7bb15a5f` gates actor-frame recovery countdown handoff: imported defender `5050` is observed with positive `hitFall.recoverTime`, then `5210` is observed with `recoverTime = 0` after `CanRecover` plus `command = "recovery"` routes.
 - Previous completed cut: optional `kfm-official-default-fall-recovery-too-early.json` checksum `878b10b5` confirms the bounded early recovery-input reject window against real KFM/Common1 when the private fixture exists: `command = "recovery"` is active before the bounded recovery timer permits it, states `5210`, `5200`, and `5201` are forbidden, and the defender remains in `5050`.
 - Previous completed cut: `synthetic-imported-default-fall-recovery-too-early.json` checksum `050e7e3c` gates the same bounded Common1-style early recovery-input rejection without requiring the private fixture.
 - Previous completed cut: `synthetic-imported-assertspecial-guarddeny.json` checksum `f636748d`, `synthetic-imported-assertspecial-crouch-guarddeny.json` checksum `e47a0cb1`, `synthetic-imported-assertspecial-air-guarddeny.json` checksum `62179385`, and `synthetic-imported-assertspecial-lifetime.json` checksum `181ded30` gate bounded defender-side `NoStandGuard` / `NoCrouchGuard` / `NoAirGuard` hit-over-guard evidence plus one-frame `NoStandGuard` expiry into later guard.
-- Next recommended gate: exact tick-order, optional KFM threshold oracle, broader recovery parity, or a broader guard/AssertSpecial confirmation. Threshold handoff and bounded synthetic air/ground velocity now have required evidence; exact parity remains blocked.
+- Next recommended gate: optional KFM threshold oracle, broader recovery parity, exact controller/VM tick-order beyond the summarized actor-frame sequence, or a broader guard/AssertSpecial confirmation. Threshold handoff, bounded actor-frame tick order, and bounded synthetic air/ground velocity now have required evidence; exact parity remains blocked.
 - Alternate recommended gate: broader `AssertSpecial` priority/KFM confirmation/pause layering, or a narrower raw-controller family promotion to required trace evidence.
 - Add required traces for controller families currently covered only by unit/runtime tests.
 - Previous completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
@@ -37,4 +38,4 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 - Full CNS VM parity.
 - Full helper/custom-state/redirect/team ownership.
 - Full IKEMEN runtime behavior.
-- Exact tick order without fixture-backed evidence.
+- Exact tick order beyond the bounded actor-frame sequence without fixture-backed evidence.

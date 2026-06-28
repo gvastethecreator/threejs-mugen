@@ -8,6 +8,7 @@ import {
   createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact,
+  createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
@@ -3149,6 +3150,64 @@ describe("RuntimeTraceGatePresets", () => {
         moveType: "I",
         observedHitFallRecoverTimeAtMost: 0,
         minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported default Common1 recovery tick-order artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-recovery-tick-order-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-fall-recovery-tick-order-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5210]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    const fallFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5050 && frame.moveType === "H",
+    );
+    const recoveryFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5210 && frame.moveType === "I",
+    );
+    expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.lastTick).toBeLessThan(recoveryFrame?.firstTick ?? 0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 positive recoverTime before 5210 recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            animNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            animNo: 5210,
+            moveType: "I",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+        ],
       },
     ]);
   });

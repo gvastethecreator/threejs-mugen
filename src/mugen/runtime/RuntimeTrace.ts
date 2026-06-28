@@ -500,6 +500,12 @@ export type RuntimeTraceActorFrameRequirement = {
   moveCameraY?: boolean;
 };
 
+export type RuntimeTraceActorFrameSequenceRequirement = {
+  label?: string;
+  steps: RuntimeTraceActorFrameRequirement[];
+  allowSameTick?: boolean;
+};
+
 export type RuntimeTraceGateActorFrameEvidence = {
   actorId: string;
   label: string;
@@ -711,6 +717,7 @@ export type RuntimeTraceGate = {
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
   requiredStageFrames?: RuntimeTraceStageFrameRequirement[];
   requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
+  requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
   requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
 };
 
@@ -939,6 +946,12 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
   for (const requirement of gate.requiredActorFrames ?? []) {
     if (!evidence.actorFrames.some((actor) => matchesActorFrameRequirement(actor, requirement))) {
       failures.push(`Missing actor frame: ${describeActorFrameRequirement(requirement)}`);
+    }
+  }
+  for (const requirement of gate.requiredActorFrameSequences ?? []) {
+    const result = matchesActorFrameSequenceRequirement(evidence.actorFrames, requirement);
+    if (!result.passed) {
+      failures.push(`Missing actor frame sequence: ${describeActorFrameSequenceRequirement(requirement)} (${result.reason})`);
     }
   }
   for (const requirement of gate.requiredFinalActors ?? []) {
@@ -2340,6 +2353,40 @@ function describeActorFrameRequirement(requirement: RuntimeTraceActorFrameRequir
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}=${String(value)}`)
     .join(", ");
+}
+
+function matchesActorFrameSequenceRequirement(
+  actors: RuntimeTraceGateActorFrameEvidence[],
+  requirement: RuntimeTraceActorFrameSequenceRequirement,
+): { passed: true } | { passed: false; reason: string } {
+  if (requirement.steps.length === 0) {
+    return { passed: true };
+  }
+  let previousBoundaryTick = Number.NEGATIVE_INFINITY;
+  for (const [index, step] of requirement.steps.entries()) {
+    const candidates = actors
+      .filter((actor) => matchesActorFrameRequirement(actor, step))
+      .sort((left, right) => left.firstTick - right.firstTick || left.lastTick - right.lastTick);
+    if (candidates.length === 0) {
+      return { passed: false, reason: `step ${index + 1} missing ${describeActorFrameRequirement(step)}` };
+    }
+    const candidate = candidates.find((actor) =>
+      requirement.allowSameTick ? actor.firstTick >= previousBoundaryTick : actor.firstTick > previousBoundaryTick,
+    );
+    if (!candidate) {
+      return {
+        passed: false,
+        reason: `step ${index + 1} not after tick ${previousBoundaryTick}: ${describeActorFrameRequirement(step)}`,
+      };
+    }
+    previousBoundaryTick = requirement.allowSameTick ? candidate.firstTick : candidate.lastTick;
+  }
+  return { passed: true };
+}
+
+function describeActorFrameSequenceRequirement(requirement: RuntimeTraceActorFrameSequenceRequirement): string {
+  const label = requirement.label ? `${requirement.label}: ` : "";
+  return `${label}${requirement.steps.map(describeActorFrameRequirement).join(" -> ")}`;
 }
 
 function compareHitFallRequirement(

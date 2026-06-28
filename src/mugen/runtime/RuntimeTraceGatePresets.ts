@@ -3978,6 +3978,95 @@ export function createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact
   });
 }
 
+export function createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-tick-order",
+    displayName: "Synthetic Imported Default Fall Recovery Tick Order",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      includeRecoveryInput: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-tick-order-attacker",
+    displayName: "Synthetic Imported Default Fall Recovery Tick Order Attacker",
+    groundVelocity: [-3, -6],
+    fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 10 },
+  });
+  const script = importedDefaultFallRecoveryInputScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage: options.stage ?? closeCombatStage() }), script, {
+    label: "synthetic-imported-default-fall-recovery-tick-order-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-default-fall-recovery-tick-order-golden",
+      label: "Synthetic imported Common1 recovery actor-frame tick-order route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported recovery tick-order trace proves summarized actor-frame evidence can require 5050 with positive fall.recovertime before 5210 with recoverTime = 0 on the bounded recovery-input route. It does not claim exact MUGEN/IKEMEN VM tick order, controller ordering, or official KFM threshold tables.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-default-fall-recovery-tick-order-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 5030, 5050, 5210],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd", "HitFallSet"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x", "recovery"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrameSequences: [
+          {
+            label: "5050 positive recoverTime before 5210 recovery",
+            steps: [
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                animNo: 5050,
+                moveType: "H",
+                observedHitFallRecoverTimeAtLeast: 1,
+                minFrames: 1,
+              },
+              {
+                actorId: "p2",
+                source: "imported",
+                actorKind: "player",
+                animNo: 5210,
+                moveType: "I",
+                observedHitFallRecoverTimeAtMost: 0,
+                minFrames: 1,
+              },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            moveType: "I",
+            ctrl: true,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
