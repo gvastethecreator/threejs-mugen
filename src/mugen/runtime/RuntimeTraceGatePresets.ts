@@ -3718,6 +3718,72 @@ export function createSyntheticImportedDefaultFallRecoveryInputTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-too-early",
+    displayName: "Synthetic Imported Default Fall Recovery Too Early",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      includeRecoveryInput: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-recovery-too-early-attacker",
+    displayName: "Synthetic Imported Default Fall Recovery Too Early Attacker",
+    groundVelocity: [-3, -6],
+    fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 20 },
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultFallRecoveryTooEarlyScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: imported, stage }), script, {
+    label: "synthetic-imported-default-fall-recovery-too-early-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-default-fall-recovery-too-early-golden",
+      label: "Synthetic imported Common1 recovery input too-early reject route",
+      source: "imported",
+      notes: [
+        "Synthetic imported recovery-input negative trace proves a bounded defender-owned Common1-style fall route does not leave 5050 through command = \"recovery\" while fall.recovertime is still positive. It does not claim exact MUGEN/IKEMEN recovery thresholds, velocities, or tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-default-fall-recovery-too-early-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 5030, 5050],
+        forbiddenExecutedStates: [5210],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x", "recovery"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            ctrl: false,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createImportedHitstunTraceArtifact(
   imported: DemoFighterDefinition,
   options: RuntimeTraceGatePresetOptions & { targetId?: string; targetLabel?: string; notes?: string[] } = {},
@@ -6265,6 +6331,15 @@ export function importedDefaultFallRecoveryInputScript(): RuntimeTraceInputFrame
     { label: "default-fall-recovery-input-window", frames: 5, p1: [], p2: [] },
     { label: "default-fall-recovery-input", frames: 4, p1: [], p2: ["x", "y"] },
     { label: "default-fall-recovery-input-settle", frames: 12, p1: [], p2: [] },
+  ]);
+}
+
+export function importedDefaultFallRecoveryTooEarlyScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-fall-recovery-too-early-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "default-fall-recovery-too-early-window", frames: 1, p1: [], p2: [] },
+    { label: "default-fall-recovery-too-early-input", frames: 3, p1: [], p2: ["x", "y"] },
+    { label: "default-fall-recovery-too-early-settle", frames: 2, p1: [], p2: [] },
   ]);
 }
 

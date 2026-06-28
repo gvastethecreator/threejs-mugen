@@ -5,6 +5,7 @@ import {
   createSyntheticImportedCommonGetHitTraceArtifact,
   createSyntheticImportedCustomStateTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
+  createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
   createSyntheticImportedFallDefenceUpTraceArtifact,
@@ -3044,6 +3045,38 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 0,
       moveType: "I",
       ctrl: true,
+    });
+  });
+
+  it("creates a synthetic imported default Common1 recovery-input too-early reject artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-recovery-too-early-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-fall-recovery-too-early-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050]));
+    expect(evidence?.executedStates).not.toContain(5210);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5050,
+      moveType: "H",
+      ctrl: false,
     });
   });
 

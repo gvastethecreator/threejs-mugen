@@ -689,6 +689,7 @@ export type RuntimeTraceGate = {
   requiredEffectKinds?: RuntimeActorKind[];
   requiredRoutedStates?: number[];
   requiredExecutedStates?: number[];
+  forbiddenExecutedStates?: number[];
   requiredExecutedControllers?: Array<string | { type: string; minCount: number }>;
   requiredExecutedOperations?: Array<string | { operation: string; minCount: number }>;
   requiredActiveCommands?: string[];
@@ -829,6 +830,11 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
   for (const stateNo of gate.requiredExecutedStates ?? []) {
     if (!evidence.executedStates.includes(stateNo)) {
       failures.push(`Missing executed state: ${stateNo}`);
+    }
+  }
+  for (const stateNo of gate.forbiddenExecutedStates ?? []) {
+    if (evidence.executedStates.includes(stateNo)) {
+      failures.push(`Forbidden executed state: ${stateNo}`);
     }
   }
   for (const controller of gate.requiredExecutedControllers ?? []) {

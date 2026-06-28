@@ -481,6 +481,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallRecoveryInputTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-fall-recovery-too-early",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-state-exit",
       required: true,
       artifact: presets.createSyntheticImportedStateExitTraceArtifact(),
@@ -1214,6 +1219,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-fall-defence-up",
     "synthetic-imported-gethitvar-fall-defence-up",
     "synthetic-imported-gethitvar-animtype",
+    "synthetic-imported-default-fall-recovery-too-early",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-gravity",

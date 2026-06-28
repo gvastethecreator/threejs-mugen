@@ -132,6 +132,12 @@ describe("RuntimeTrace", () => {
     expect(gate.evidence.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(gate.evidence.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(trace.final.actors[1]?.life).toBeLessThan(1000);
+
+    const forbiddenGate = evaluateRuntimeTraceGate(trace, {
+      label: "imported-fixture-forbidden-state-gate",
+      forbiddenExecutedStates: [200],
+    });
+    expect(forbiddenGate.failures).toContain("Forbidden executed state: 200");
   });
 
   itWithKfmFixture("evaluates optional official KFM imported runtime trace when the local fixture is present", async () => {
