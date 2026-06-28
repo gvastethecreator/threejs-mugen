@@ -34,6 +34,9 @@ export type SharedEngineContractReport = {
     sharedCoreForbidden: string[];
     platformerForbidden: string[];
   };
+  verificationCommands: {
+    boundary: string;
+  };
 };
 
 export const SHARED_ENGINE_CONTRACTS: SharedEngineContractId[] = [
@@ -153,6 +156,9 @@ export function buildSharedEngineContractReport(moduleIds: string[]): SharedEngi
     boundaries: {
       sharedCoreForbidden: [...SHARED_CORE_FORBIDDEN_LEGACY_CONCEPTS],
       platformerForbidden: [...PLATFORMER_MODULE_FORBIDDEN_LEGACY_CONCEPTS],
+    },
+    verificationCommands: {
+      boundary: "pnpm check:boundaries",
     },
   };
 }

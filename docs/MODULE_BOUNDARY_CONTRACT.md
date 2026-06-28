@@ -144,7 +144,7 @@ Automation target:
 pnpm check:boundaries
 ```
 
-The first version is `scripts/check_boundaries.cjs`. It fails if `src/core/**` imports `src/mugen/**` or contains fighting/MUGEN terminology, if a future platformer module imports the fighting module, or if `src/engine/**` introduces fighting terms outside the explicit `ModuleContracts.ts` boundary registry.
+The first version is `scripts/check_boundaries.cjs`. It fails if `src/core/**` imports `src/mugen/**` or contains fighting/MUGEN terminology, if a future platformer module imports the fighting module, or if `src/engine/**` introduces fighting terms outside the explicit `ModuleContracts.ts` boundary registry. `runtime-manifest/v0` exports the same command as `contracts.verificationCommands.boundary` so Studio/Build packages can point at the executable proof.
 
 ## Anti-Claims
 

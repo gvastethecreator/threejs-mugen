@@ -38,5 +38,6 @@ describe("ModuleContracts", () => {
     expect(report.schemaVersion).toBe("mugen-web-sandbox/shared-engine-contracts/v0");
     expect(report.moduleContracts.map((contract) => contract.id)).toEqual(["mugen-compat", "platformer-module"]);
     expect(report.boundaries.platformerForbidden).toEqual(expect.arrayContaining(["CNS", "HitDef", "round", "helper"]));
+    expect(report.verificationCommands.boundary).toBe("pnpm check:boundaries");
   });
 });

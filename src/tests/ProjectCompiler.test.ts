@@ -27,6 +27,7 @@ describe("ProjectCompiler", () => {
     expect(runtimeManifest.contracts.boundaries.sharedCoreForbidden).toEqual(
       expect.arrayContaining(["CNS", "CMD", "HitDef", "round", "helper", "MUGEN command routing"]),
     );
+    expect(runtimeManifest.contracts.verificationCommands.boundary).toBe("pnpm check:boundaries");
     expect(runtimeManifest.modules.planned.find((module) => module.id === "platformer-module")?.forbiddenSharedCoreConcepts).toEqual(
       expect.arrayContaining(["CNS", "HitDef", "round", "helper", "MUGEN command routing"]),
     );
