@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
-import { resolveRuntimeProjectileClashes, resolveRuntimeProjectileCombat } from "../mugen/runtime/ProjectileCombatSystem";
+import {
+  resolveRuntimeProjectileClashes,
+  resolveRuntimeProjectileCombat,
+  RuntimeProjectileCombatWorld,
+} from "../mugen/runtime/ProjectileCombatSystem";
 import type { RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -23,6 +27,75 @@ const action: MugenAnimationAction = {
 };
 
 describe("ProjectileCombatSystem", () => {
+  it("owns bounded projectile hit mutation behind RuntimeProjectileCombatWorld", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 10 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+    const logs: string[] = [];
+    const targets: string[] = [];
+    let receivedDamage = 0;
+    const world = new RuntimeProjectileCombatWorld();
+
+    world.resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: (_attacker, target, targetId) => targets.push(`${target.id}:${targetId ?? "none"}`),
+      applyHitOverride: () => {
+        throw new Error("unexpected hit override");
+      },
+      recordReceivedDamage: (target, damage) => {
+        expect(target.id).toBe("p2");
+        receivedDamage = damage;
+      },
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(958);
+    expect(defender.hitPause).toBe(4);
+    expect(defender.hitStun).toBe(13);
+    expect(defender.runtime.moveType).toBe("H");
+    expect(receivedDamage).toBe(42);
+    expect(attacker.runtime.power).toBe(45);
+    expect(targets).toEqual(["p2:77"]);
+    expect(logs).toEqual(["P1 projectile hit P2 for 42; hits remaining 0, miss 0; hit removal anim none"]);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("owns bounded projectile clash mutation behind RuntimeProjectileCombatWorld", () => {
+    let leftProjectiles = [
+      projectile({ serialId: "p1-projectile-0", ownerId: "p1", priority: 5, pos: { x: 0, y: 0 }, facing: 1 }),
+    ];
+    let rightProjectiles = [
+      projectile({ serialId: "p2-projectile-0", ownerId: "p2", priority: 5, pos: { x: 40, y: 0 }, facing: -1 }),
+    ];
+    const logs: string[] = [];
+    const world = new RuntimeProjectileCombatWorld();
+
+    world.resolveClashes({
+      leftLabel: "P1",
+      rightLabel: "P2",
+      leftProjectiles,
+      rightProjectiles,
+      log: (line) => logs.push(line),
+      removeProjectilesMarkedForRemoval: () => {
+        leftProjectiles = leftProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
+        rightProjectiles = rightProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
+      },
+    });
+
+    expect(logs).toEqual([
+      "Projectile clash: P1 p1-projectile-0 traded with P2 p2-projectile-0 at priority 5; p1-projectile-0 cancel removal anim none; p2-projectile-0 cancel removal anim none",
+    ]);
+    expect(leftProjectiles).toEqual([]);
+    expect(rightProjectiles).toEqual([]);
+  });
+
   it("routes projectile get-hit through an owner callback when provided", () => {
     const projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, moveType: "A" }));

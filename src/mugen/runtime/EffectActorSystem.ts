@@ -29,8 +29,7 @@ import {
   type RuntimeProjectileSpawnInput,
 } from "./ProjectileSystem";
 import {
-  resolveRuntimeProjectileClashes,
-  resolveRuntimeProjectileCombat,
+  RuntimeProjectileCombatWorld,
   type RuntimeProjectileCombatActor,
   type RuntimeProjectileCombatInput,
 } from "./ProjectileCombatSystem";
@@ -71,9 +70,14 @@ export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOption
 
 export class RuntimeEffectActorWorld {
   private readonly stores: RuntimeEffectActorStores;
+  private readonly projectileCombatWorld: RuntimeProjectileCombatWorld;
 
-  constructor(stores: RuntimeEffectActorStores = createRuntimeEffectActorStores()) {
+  constructor(
+    stores: RuntimeEffectActorStores = createRuntimeEffectActorStores(),
+    projectileCombatWorld: RuntimeProjectileCombatWorld = new RuntimeProjectileCombatWorld(),
+  ) {
     this.stores = stores;
+    this.projectileCombatWorld = projectileCombatWorld;
   }
 
   getStores(): RuntimeEffectActorStores {
@@ -178,7 +182,7 @@ export class RuntimeEffectActorWorld {
     ownerId: string,
     input: Omit<RuntimeProjectileCombatInput<TActor>, "projectiles" | "removeProjectilesMarkedForRemoval">,
   ): void {
-    resolveRuntimeProjectileCombat({
+    this.projectileCombatWorld.resolveCombat({
       ...input,
       projectiles: this.projectiles(ownerId),
       removeProjectilesMarkedForRemoval: () => this.removeProjectilesMarkedForRemoval(ownerId),
@@ -190,7 +194,7 @@ export class RuntimeEffectActorWorld {
     rightOwnerId: string,
     input: { leftLabel: string; rightLabel: string; log: (line: string) => void },
   ): void {
-    resolveRuntimeProjectileClashes({
+    this.projectileCombatWorld.resolveClashes({
       ...input,
       leftProjectiles: this.projectiles(leftOwnerId),
       rightProjectiles: this.projectiles(rightOwnerId),
