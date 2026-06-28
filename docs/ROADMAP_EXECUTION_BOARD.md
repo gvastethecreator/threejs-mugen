@@ -40,8 +40,8 @@ Build next:
 - Current proof: required `synthetic-imported-default-fall-recovery-tick-order.json` checksum `e2691aab` gates summarized actor-frame order where `5050` with positive recover time appears before `5210` recovery evidence.
 - Current proof: required `synthetic-imported-default-fall-air-recovery-velocity.json` checksum `560f6308` gates bounded air-recovery velocity telemetry in `5210` after `CanRecover` plus `command = "recovery"`.
 - Current proof: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, with `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity telemetry for synthetic ground-recovery constants.
-- Current optional fixture proof: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 reaches state `5050` while `hitFall.recoverTime` is still positive, then accepts recovery into the ground branch `5200 -> 5201 -> 52 -> 0` when the private fixture is present.
-- Build next recovery proof not already covered by threshold/tick-order/early-reject/positive/air-velocity/ground-selection routes: exact controller/VM tick-order, broader recovery parity, or guard/Common1 confirmation.
+- Current optional fixture proof: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 reaches state `5050` while `hitFall.recoverTime` is still positive, then accepts recovery into the ground branch `5200 -> 5201 -> 52 -> 0` when the private fixture is present; the gate now also requires ordered actor-frame evidence where the positive `5050` observation precedes `5200` with `recoverTime = 0`.
+- Build next recovery proof not already covered by threshold/tick-order/early-reject/positive/air-velocity/ground-selection/official ordered-threshold routes: exact controller/VM tick-order inside the controller loop, broader recovery parity, or guard/Common1 confirmation.
 
 Acceptance:
 

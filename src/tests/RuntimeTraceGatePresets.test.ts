@@ -3511,8 +3511,14 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
     const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5050);
     const recoveryFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5200);
+    expect(fallFrame).toBeDefined();
+    expect(recoveryFrame).toBeDefined();
+    if (!fallFrame || !recoveryFrame) {
+      throw new Error("expected recovery-threshold actor-frame evidence");
+    }
     expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
     expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame.lastTick).toBeLessThan(recoveryFrame.firstTick);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
       {
         actorId: "p2",
@@ -3531,6 +3537,31 @@ describe("RuntimeTraceGatePresets", () => {
         moveType: "H",
         observedHitFallRecoverTimeAtMost: 0,
         minFrames: 1,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 positive recoverTime before 5200 ground recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5200,
+            moveType: "H",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+        ],
       },
     ]);
   });

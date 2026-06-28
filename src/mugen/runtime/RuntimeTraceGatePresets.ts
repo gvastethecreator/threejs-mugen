@@ -3633,6 +3633,31 @@ export function createImportedDefaultFallRecoveryThresholdTraceArtifact(
         minFrames: 1,
       },
     ],
+    requiredActorFrameSequences: [
+      {
+        label: "5050 positive recoverTime before 5200 ground recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5200,
+            moveType: "H",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
   });
 }
 
@@ -3756,6 +3781,7 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
     script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
@@ -3802,6 +3828,7 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
         requiredActorFrames: options.requiredActorFrames,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredFinalActors: [
           {
             actorId: "p2",

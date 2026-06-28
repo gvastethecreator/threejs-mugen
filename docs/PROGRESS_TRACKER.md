@@ -34,7 +34,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
-| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest runtime aggregate: 146/146 artifacts passed, 128 required and 18 optional. | Exact tick order, helpers as real VM actors, custom states/throws, teams, full guard/fall/recovery semantics. |
+| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest runtime aggregate: 146/146 artifacts passed, 128 required and 18 optional. | Exact controller/VM tick order inside frames, helpers as real VM actors, custom states/throws, teams, full guard/fall/recovery semantics. |
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks. | Pixel-perfect MUGEN render parity, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
@@ -60,7 +60,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Current proof added: required `synthetic-imported-default-fall-ground-recovery.json` checksum `7945fd93` gates bounded near-ground recovery selection through `5050 -> 5200 -> 5201 -> 52 -> 0`, including `SelfState`, `VelSet`, `PosSet`, and actor-frame velocity telemetry for synthetic ground-recovery constants.
    - Current proof added: required `synthetic-imported-default-fall-recovery-too-early.json` checksum `050e7e3c` detects `command = "recovery"` while `fall.recovertime` is still positive, forbids `5210`, and keeps the defender in `5050`.
    - Current optional fixture proof added: `kfm-official-default-fall-recovery-too-early.json` checksum `878b10b5` confirms real KFM/Common1 rejects the same early recovery window locally.
-   - Current optional fixture proof added: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 exposes state-frame threshold evidence: `5050` while `hitFall.recoverTime` is still positive, then ground recovery branch `5200 -> 5201 -> 52 -> 0` after `command = "recovery"` is accepted near the ground.
+   - Current optional fixture proof added: `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d` confirms real KFM/Common1 exposes ordered state-frame threshold evidence: `5050` while `hitFall.recoverTime` is still positive, before `5200` with `recoverTime = 0` and ground recovery branch `5200 -> 5201 -> 52 -> 0` after `command = "recovery"` is accepted near the ground.
    - Optional official fixture gates cannot become public compatibility claims unless fixture is present and passing.
 
 3. **Compatibility trace coverage**
@@ -80,7 +80,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
-| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional KFM threshold oracle, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM tick order or broader guard/Common1 parity. |
+| R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM loop order or broader guard/Common1 parity. |
 | R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after `RuntimeRoundSystem` and `requiredRoundFrames`; next proof should target pause/combat/target/effect ordering or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
