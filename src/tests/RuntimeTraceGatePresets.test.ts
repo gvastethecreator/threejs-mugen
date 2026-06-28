@@ -56,6 +56,7 @@ import {
   createSyntheticImportedDataDamageScaleTraceArtifact,
   createSyntheticImportedBoundsTraceArtifact,
   createSyntheticImportedScreenBoundCameraTraceArtifact,
+  createSyntheticImportedGravityTraceArtifact,
   createSyntheticImportedWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
@@ -1268,6 +1269,52 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.frames.some((frame) => frame.stage?.camera.x === 0)).toBe(true);
+  });
+
+  it("creates a synthetic imported Gravity artifact with typed vertical velocity evidence", () => {
+    const artifact = createSyntheticImportedGravityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-gravity-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Gravity).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:gravity"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          stateType: "A",
+          animNo: 200,
+          maxVel: expect.objectContaining({ y: expect.any(Number) }),
+        }),
+      ]),
+    );
+    const airborneFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p1" && frame.source === "imported" && frame.animNo === 200);
+    expect(airborneFrame?.maxVel.y).toBeGreaterThanOrEqual(0.55);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        animNo: 200,
+        stateType: "A",
+        observedVelYAtLeast: 0.55,
+        minFrames: 1,
+      },
+    ]);
   });
 
   it("creates a synthetic imported Width artifact with typed collision evidence", () => {

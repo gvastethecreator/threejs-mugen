@@ -881,6 +881,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
     requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     script?: RuntimeTraceInputFrame[];
   } = {},
@@ -913,6 +914,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
         requiredEnvShakeEvents: options.requiredEnvShakeEvents,
+        requiredActorFrames: options.requiredActorFrames,
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),
         ...(options.requireHitEvent ? { requiredCombatReasons: ["hit" as const] } : {}),
@@ -1290,6 +1292,41 @@ export function createSyntheticImportedScreenBoundCameraTraceArtifact(options: R
       },
     ],
   });
+}
+
+export function createSyntheticImportedGravityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-gravity",
+      displayName: "Synthetic Imported Gravity",
+      attackStateType: "A",
+      action200Duration: 30,
+      withGravity: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-gravity-golden",
+      targetLabel: "Synthetic imported Gravity route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "Gravity", "HitDef"],
+      requiredExecutedOperations: ["hitdef", "kinematic:gravity"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          stateType: "A",
+          observedVelYAtLeast: 0.55,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported Gravity trace proves a bounded imported airborne state can execute the real Gravity controller through typed kinematic operation evidence and expose vertical-velocity telemetry. Exact physics integration, ground snap, yaccel constants, pause/tick order, and full MUGEN/IKEMEN air physics parity remain future work.",
+      ],
+    },
+  );
 }
 
 export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
@@ -6295,6 +6332,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withAutoGuardStartStates?: boolean;
   withBoundsControllers?: boolean;
   withScreenBoundCameraProbe?: boolean;
+  withGravity?: boolean;
   withWidthController?: [number, number?];
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
@@ -6478,6 +6516,7 @@ ${assertSpecialLine}
 ${options.attackMultiplier !== undefined ? attackMultiplierController(options.attackMultiplier) : ""}
 ${options.withBoundsControllers ? boundsControllerBlock() : ""}
 ${options.withScreenBoundCameraProbe ? screenBoundCameraProbeBlock() : ""}
+${options.withGravity ? gravityControllerBlock() : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
@@ -7085,6 +7124,14 @@ function widthControllerBlock(width: [number, number?]): string {
 type = Width
 trigger1 = Time >= 0
 player = ${width[0]},${width[1] ?? width[0]}
+`;
+}
+
+function gravityControllerBlock(): string {
+  return `
+[State 200, Gravity Probe]
+type = Gravity
+trigger1 = Time >= 0
 `;
 }
 

@@ -817,6 +817,8 @@ Use this as the next practical queue.
 
 151. Done bounded EnvShake trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-envshake.json` checksum `50e0ad4c`, where imported P1 executes partial `EnvShake time = 16`, `freq = 30`, `ampl = -7`, and `phase = 0.5` in state `200`; `RuntimeTrace` exports env-shake event gate evidence and final actor env-shake history without folding that telemetry into behavior checksums. Claim allowed: imported owner states can emit bounded EnvShake events for debugger/Three.js camera-shake consumption and trace-gate parsed time/frequency/amplitude/phase/state data. Claim blocked: dynamic EnvShake expressions, `mul`, exact pause/stage/layer behavior, helper/redirect ownership, and full MUGEN/IKEMEN camera-shake waveform parity.
 
+152. Done bounded Gravity trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-gravity.json` checksum `92161764`, where imported P1 enters airborne state `200`, executes the real `Gravity` controller through typed `kinematic:gravity` operation evidence, and exposes actor-frame vertical velocity telemetry. Claim allowed: imported airborne owner states can use bounded Gravity acceleration through compiled IR and trace evidence. Claim blocked: exact `yaccel` constants, floor snap, pause/tick order, helper/custom-state ownership, and full MUGEN/IKEMEN air-physics parity.
+
 ## Release Evidence Bundle
 
 Every milestone should leave a bundle under `.scratch/qa/<milestone-or-feature>/`:

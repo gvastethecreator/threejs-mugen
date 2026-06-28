@@ -221,6 +221,11 @@ async function main() {
       artifact: presets.createSyntheticImportedScreenBoundCameraTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-gravity",
+      required: true,
+      artifact: presets.createSyntheticImportedGravityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-width",
       required: true,
       artifact: presets.createSyntheticImportedWidthTraceArtifact(),
@@ -1100,6 +1105,7 @@ function validateTraceCoverage(coverage) {
     "helper",
     "explod",
     "removeexplod",
+    "kinematic:gravity",
     "kinematic:hitvelset",
     "bounds:posfreeze",
     "bounds:screenbound",
@@ -1169,6 +1175,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
+    "synthetic-imported-gravity",
     "synthetic-imported-width",
     "synthetic-imported-statetypeset",
     "synthetic-imported-playerpush",
