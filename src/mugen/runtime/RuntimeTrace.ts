@@ -94,6 +94,7 @@ export type RuntimeTraceActor = {
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
   soundEvents?: NonNullable<ActorSnapshot["soundEvents"]>;
+  hitEffectEvents?: NonNullable<ActorSnapshot["hitEffectEvents"]>;
   envShakeEvents?: NonNullable<ActorSnapshot["envShakeEvents"]>;
   customOwnerId?: string;
   clsn1Count: number;
@@ -681,6 +682,37 @@ export type RuntimeTraceGateSoundEventEvidence = {
   count: number;
 };
 
+export type RuntimeTraceHitEffectEventRequirement = {
+  actorId?: string;
+  source?: NonNullable<ActorSnapshot["source"]>;
+  actorKind?: RuntimeActorKind;
+  kind?: NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["kind"];
+  sparkNo?: number;
+  raw?: string;
+  rawPrefix?: string;
+  stateNo?: number;
+  minCount?: number;
+};
+
+export type RuntimeTraceGateHitEffectEventEvidence = {
+  actorId: string;
+  label: string;
+  source?: ActorSnapshot["source"];
+  actorKind: RuntimeActorKind;
+  type: NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["type"];
+  kind: NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["kind"];
+  sparkNo?: number;
+  raw?: string;
+  rawPrefix?: string;
+  offset?: { x: number; y: number };
+  stateNo: number;
+  eventTick: number;
+  runtimeTick?: number;
+  firstTraceTick: number;
+  lastTraceTick: number;
+  count: number;
+};
+
 export type RuntimeTraceEnvShakeEventRequirement = {
   actorId?: string;
   source?: NonNullable<ActorSnapshot["source"]>;
@@ -743,6 +775,7 @@ export type RuntimeTraceGate = {
   requiredMatchPauseFreezes?: RuntimeTraceMatchPauseFreezeRequirement[];
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
   requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
+  requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
   requiredEnvShakeEvents?: RuntimeTraceEnvShakeEventRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
   requiredRoundFrames?: RuntimeTraceRoundFrameRequirement[];
@@ -772,6 +805,7 @@ export type RuntimeTraceGateEvidence = {
   matchPauseFreezes: RuntimeTraceGateMatchPauseFreezeEvidence[];
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
   soundEvents: RuntimeTraceGateSoundEventEvidence[];
+  hitEffectEvents: RuntimeTraceGateHitEffectEventEvidence[];
   envShakeEvents: RuntimeTraceGateEnvShakeEventEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
   roundFrames: RuntimeTraceGateRoundFrameEvidence[];
@@ -978,6 +1012,15 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       failures.push(`Missing sound event: ${describeSoundEventRequirement(requirement)} >= ${minCount} (actual ${actual})`);
     }
   }
+  for (const requirement of gate.requiredHitEffectEvents ?? []) {
+    const minCount = requirement.minCount ?? 1;
+    const actual = evidence.hitEffectEvents
+      .filter((event) => matchesHitEffectEventRequirement(event, requirement))
+      .reduce((total, event) => total + event.count, 0);
+    if (actual < minCount) {
+      failures.push(`Missing hit-effect event: ${describeHitEffectEventRequirement(requirement)} >= ${minCount} (actual ${actual})`);
+    }
+  }
   for (const requirement of gate.requiredEnvShakeEvents ?? []) {
     const minCount = requirement.minCount ?? 1;
     const actual = evidence.envShakeEvents
@@ -1063,6 +1106,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
   const matchPauseFreezes = new Map<string, RuntimeTraceGateMatchPauseFreezeEvidence>();
   const matchPauseAdvances = new Map<string, RuntimeTraceGateMatchPauseAdvanceEvidence>();
   const soundEvents = new Map<string, RuntimeTraceGateSoundEventEvidence>();
+  const hitEffectEvents = new Map<string, RuntimeTraceGateHitEffectEventEvidence>();
   const envShakeEvents = new Map<string, RuntimeTraceGateEnvShakeEventEvidence>();
   const targetLinks = new Map<string, RuntimeTraceGateTargetLinkEvidence>();
   const roundFrames = new Map<string, RuntimeTraceGateRoundFrameEvidence>();
@@ -1103,6 +1147,21 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
         const key = soundEventEvidenceKey(evidence);
         const existing = soundEvents.get(key);
         soundEvents.set(
+          key,
+          existing
+            ? {
+                ...existing,
+                firstTraceTick: Math.min(existing.firstTraceTick, frame.tick),
+                lastTraceTick: Math.max(existing.lastTraceTick, frame.tick),
+              }
+            : evidence,
+        );
+      }
+      for (const event of actor.hitEffectEvents ?? []) {
+        const evidence = summarizeHitEffectEventEvidence(frame.tick, actor, event);
+        const key = hitEffectEventEvidenceKey(evidence);
+        const existing = hitEffectEvents.get(key);
+        hitEffectEvents.set(
           key,
           existing
             ? {
@@ -1430,6 +1489,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
       matchPauseAdvanceEvidenceKey(left.type, left.actorId).localeCompare(matchPauseAdvanceEvidenceKey(right.type, right.actorId)),
     ),
     soundEvents: [...soundEvents.values()].sort((left, right) => soundEventEvidenceKey(left).localeCompare(soundEventEvidenceKey(right))),
+    hitEffectEvents: [...hitEffectEvents.values()].sort((left, right) => hitEffectEventEvidenceKey(left).localeCompare(hitEffectEventEvidenceKey(right))),
     envShakeEvents: [...envShakeEvents.values()].sort((left, right) => envShakeEventEvidenceKey(left).localeCompare(envShakeEventEvidenceKey(right))),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
     roundFrames: [...roundFrames.values()].sort((left, right) => roundFrameGateEvidenceKey(left).localeCompare(roundFrameGateEvidenceKey(right))),
@@ -1969,6 +2029,70 @@ function matchesSoundEventRequirement(
 }
 
 function describeSoundEventRequirement(requirement: RuntimeTraceSoundEventRequirement): string {
+  return Object.entries(requirement)
+    .filter(([key, value]) => value !== undefined && key !== "minCount")
+    .map(([key, value]) => `${key}=${String(value)}`)
+    .join(", ");
+}
+
+function summarizeHitEffectEventEvidence(
+  traceTick: number,
+  actor: RuntimeTraceActor,
+  event: NonNullable<RuntimeTraceActor["hitEffectEvents"]>[number],
+): RuntimeTraceGateHitEffectEventEvidence {
+  return {
+    actorId: actor.id,
+    label: actor.label,
+    source: actor.source,
+    actorKind: actor.actorKind,
+    type: event.type,
+    kind: event.kind,
+    sparkNo: event.sparkNo,
+    raw: event.raw,
+    rawPrefix: event.rawPrefix,
+    offset: event.offset ? { ...event.offset } : undefined,
+    stateNo: event.stateNo,
+    eventTick: event.tick,
+    runtimeTick: event.runtimeTick,
+    firstTraceTick: traceTick,
+    lastTraceTick: traceTick,
+    count: 1,
+  };
+}
+
+function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence): string {
+  return [
+    event.actorId,
+    event.type,
+    event.kind,
+    event.sparkNo ?? "",
+    event.raw ?? "",
+    event.rawPrefix ?? "",
+    event.offset?.x ?? "",
+    event.offset?.y ?? "",
+    event.stateNo,
+    event.eventTick,
+    event.runtimeTick ?? "",
+  ].join(":");
+}
+
+function matchesHitEffectEventRequirement(
+  event: RuntimeTraceGateHitEffectEventEvidence,
+  requirement: RuntimeTraceHitEffectEventRequirement,
+): boolean {
+  return (
+    (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.source === undefined || event.source === requirement.source) &&
+    (requirement.actorKind === undefined || event.actorKind === requirement.actorKind) &&
+    (requirement.kind === undefined || event.kind === requirement.kind) &&
+    (requirement.sparkNo === undefined || event.sparkNo === requirement.sparkNo) &&
+    (requirement.raw === undefined || event.raw === requirement.raw) &&
+    (requirement.rawPrefix === undefined || event.rawPrefix === requirement.rawPrefix) &&
+    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
+  );
+}
+
+function describeHitEffectEventRequirement(requirement: RuntimeTraceHitEffectEventRequirement): string {
   return Object.entries(requirement)
     .filter(([key, value]) => value !== undefined && key !== "minCount")
     .map(([key, value]) => `${key}=${String(value)}`)
@@ -2828,6 +2952,10 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
+    hitEffectEvents: actor.hitEffectEvents?.map((event) => ({
+      ...event,
+      offset: event.offset ? { ...event.offset } : undefined,
+    })),
     envShakeEvents: actor.envShakeEvents?.map((event) => ({ ...event })),
     customOwnerId: actor.runtime.customState?.ownerId,
     clsn1Count: actor.clsn1.length,
@@ -2856,6 +2984,7 @@ function summarizeActorForChecksum(
   | "posFreeze"
   | "screenBound"
   | "soundEvents"
+  | "hitEffectEvents"
   | "envShakeEvents"
 > {
   const {
@@ -2876,6 +3005,7 @@ function summarizeActorForChecksum(
     posFreeze: _posFreeze,
     screenBound: _screenBound,
     soundEvents: _soundEvents,
+    hitEffectEvents: _hitEffectEvents,
     envShakeEvents: _envShakeEvents,
     ...checksumActor
   } = actor;

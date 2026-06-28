@@ -9,6 +9,7 @@ import type {
   RuntimeTraceControllerEventSequenceRequirement,
   RuntimeTraceFinalActorRequirement,
   RuntimeTraceGate,
+  RuntimeTraceHitEffectEventRequirement,
   RuntimeTraceInputFrame,
   RuntimeTraceSoundEventRequirement,
 } from "./RuntimeTrace";
@@ -2393,6 +2394,39 @@ export function createSyntheticImportedHitDefGuardSoundTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHitDefGuardSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-guard-spark-attacker",
+    displayName: "Synthetic Imported HitDef Guard Spark Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSpark: "S7000",
+    sparkXy: [12, -64],
+    moveGuardStateNo: 260,
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-guard-spark-golden",
+    targetLabel: "Synthetic imported HitDef guard spark route",
+    requiredExecutedStates: [200, 260],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 7000,
+        raw: "S7000",
+        rawPrefix: "S",
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef guard-spark trace proves a guarded direct HitDef can emit bounded HitSpark telemetry from guard.sparkno = S7000 plus sparkxy metadata on the attacker actor. It does not claim exact FightFX/common sprite lookup, spark binding, render timing, layering, scale, palette, or full MUGEN/IKEMEN guard-effect behavior.",
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialUnguardableTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -4720,6 +4754,7 @@ export function createImportedGuardTraceArtifact(
     notes?: string[];
     requiredExecutedStates?: number[];
     requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
+    requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -4752,6 +4787,7 @@ export function createImportedGuardTraceArtifact(
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
         requiredSoundEvents: options.requiredSoundEvents,
+        requiredHitEffectEvents: options.requiredHitEffectEvents,
       },
     ],
   });
@@ -7478,6 +7514,9 @@ export type SyntheticImportedTraceFighterOptions = {
   groundVelocity?: [number, number?];
   hitSound?: string;
   guardSound?: string;
+  hitSpark?: string;
+  guardSpark?: string;
+  sparkXy?: [number, number];
   fall?: DemoMove["fall"];
   getHitState?: { stateNo: number; animNo?: number };
   fallDefenceUpBranchStateNo?: number;
@@ -7834,6 +7873,9 @@ ground.hittime = 9
 ground.velocity = ${groundVelocity.join(",")}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
 ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
+${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
+${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}`}
+${options.sparkXy === undefined ? "" : `sparkxy = ${options.sparkXy.join(",")}`}
 id = 77
 priority = ${options.hitDefPriority ?? 4}, Hit
 ${guardLine}

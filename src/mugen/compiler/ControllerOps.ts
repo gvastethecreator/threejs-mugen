@@ -28,6 +28,9 @@ export type HitDefControllerOp = {
   fallAnimType?: number;
   hitSound?: string;
   guardSound?: string;
+  hitSpark?: string;
+  guardSpark?: string;
+  sparkXy?: [number, number?];
   fall: HitDefFallOp;
 };
 
@@ -952,6 +955,9 @@ function compileHitDefControllerOp(controller: MugenStateController): HitDefCont
     fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
+    hitSpark: stripMugenString(findParam(controller, "sparkno")),
+    guardSpark: stripMugenString(findParam(controller, "guard.sparkno")),
+    sparkXy: numberPair(findParam(controller, "sparkxy")),
     fall: compileHitDefFallOp(controller),
   });
 }

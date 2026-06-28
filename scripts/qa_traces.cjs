@@ -336,6 +336,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefGuardSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-guard-spark",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGuardSparkTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-unguardable",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialUnguardableTraceArtifact(),
@@ -1098,6 +1103,7 @@ function createTraceCoverage(entries, skipped) {
       combatReasons: 0,
       matchPauseRoutes: 0,
       soundEventTypes: 0,
+      hitEffectEventKinds: 0,
       envShakeEventRoutes: 0,
       worldLifecycleRoutes: 0,
       roundFrameRoutes: 0,
@@ -1112,6 +1118,7 @@ function createTraceCoverage(entries, skipped) {
     combatReasons: {},
     eventCategories: {},
     soundEvents: {},
+    hitEffects: {},
     envShakeEvents: {},
     matchPauses: {},
     matchPauseFreezes: {},
@@ -1162,6 +1169,9 @@ function createTraceCoverage(entries, skipped) {
       }
       for (const event of evidence.soundEvents ?? []) {
         addCoverageEntry(coverage.soundEvents, event.type, context, { count: event.count });
+      }
+      for (const event of evidence.hitEffectEvents ?? []) {
+        addCoverageEntry(coverage.hitEffects, `${event.type}:${event.kind}`, context, { count: event.count });
       }
       for (const event of evidence.envShakeEvents ?? []) {
         addCoverageEntry(coverage.envShakeEvents, "EnvShake", context, { count: event.count });
@@ -1223,6 +1233,7 @@ function createTraceCoverage(entries, skipped) {
     Object.keys(coverage.matchPauseFreezes).length +
     Object.keys(coverage.matchPauseAdvances).length;
   coverage.summary.soundEventTypes = Object.keys(coverage.soundEvents).length;
+  coverage.summary.hitEffectEventKinds = Object.keys(coverage.hitEffects).length;
   coverage.summary.envShakeEventRoutes = Object.keys(coverage.envShakeEvents).length;
   coverage.summary.worldLifecycleRoutes = Object.keys(coverage.worldLifecycle).length;
   coverage.summary.roundFrameRoutes = Object.keys(coverage.roundFrames).length;
@@ -1291,6 +1302,7 @@ function validateTraceCoverage(coverage) {
   const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
   const requiredSoundEventTypes = ["PlaySnd", "StopSnd"];
+  const requiredHitEffectEventKinds = ["HitSpark:guard"];
   const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
@@ -1360,6 +1372,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
     "synthetic-imported-hitdef-guard-sound",
+    "synthetic-imported-hitdef-guard-spark",
     "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-crouch-guarddeny",
     "synthetic-imported-assertspecial-air-guarddeny",
@@ -1391,6 +1404,9 @@ function validateTraceCoverage(coverage) {
   for (const key of requiredSoundEventTypes) {
     requireCoverageEntry(coverage.soundEvents, key, "sound event", failures);
   }
+  for (const key of requiredHitEffectEventKinds) {
+    requireCoverageEntry(coverage.hitEffects, key, "hit-effect event", failures);
+  }
   for (const key of requiredEnvShakeEventTypes) {
     requireCoverageEntry(coverage.envShakeEvents, key, "env-shake event", failures);
   }
@@ -1400,6 +1416,7 @@ function validateTraceCoverage(coverage) {
       Object.values(coverage.operations).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.soundEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
+      Object.values(coverage.hitEffects).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.envShakeEvents).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.roundFrames).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||

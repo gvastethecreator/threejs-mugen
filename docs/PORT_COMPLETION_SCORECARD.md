@@ -52,14 +52,14 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | File loading/parsers | 55 | ZIP/folder loader, DEF/AIR/CMD/CNS/ST/SFF/SND partial parsers. | More corpus coverage, exact raw preservation, edge formats. |
 | SFF/render import | 40 | SFF v1 PCX and current SFF v2 RAW/RLE/LZ paths render current fixtures. | Palette parity, v2 edge formats, sprite/group fallback policy. |
 | CMD/CNS expression VM | 30 | Many triggers/controllers parse and partially execute through gates. | Full AST/IR, redirects, helpers, dynamic params, exact tick timing. |
-| Combat/Common1 | 30 | Direct HitDef, guard, hitstun, fall/get-hit/recovery gates, bounded guard-sound telemetry. | Exact guard/fall/recovery, custom states, throws, priority, KO/round flow. |
+| Combat/Common1 | 30 | Direct HitDef, guard, hitstun, fall/get-hit/recovery gates, bounded guard-sound and guard-spark telemetry. | Exact guard/fall/recovery, custom states, throws, priority, KO/round flow. |
 | Helpers/projectiles/explods | 25 | Bounded effect actors, projectile/Helper/Explod traces, pause budgets. | Real helper VM, ownership, redirects, exact lifecycle/pause parity. |
-| Stages/presentation/audio | 25 | Basic imported stage route, EnvShake/EnvColor, partial SND event path, bounded HitDef guard-sound events. | BGCtrl parity, screenpacks/lifebars, FightFX, audio mixing/timing. |
+| Stages/presentation/audio | 25 | Basic imported stage route, EnvShake/EnvColor, partial SND event path, bounded HitDef guard sound/spark telemetry. | BGCtrl parity, screenpacks/lifebars, FightFX, audio mixing/timing. |
 | IKEMEN profile | 10 | Scanner recognizes ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, rollback/netplay, IKEMEN runtime extensions. |
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
-Latest trace aggregate: `pnpm qa:trace` passes 147/147 artifacts, with 129 required and 18 optional local-fixture artifacts. The latest required guard-effect oracle is `synthetic-imported-hitdef-guard-sound.json` checksum `fdf1f7f6`, proving bounded `HitDef guardsound = S6,0` telemetry as a `PlaySnd` event on a guarded imported direct-hit route. The latest optional official KFM guard-hit oracles remain `kfm-official-default-guard-state.json` checksum `885bb1da`, `kfm-official-default-crouch-guard-state.json` checksum `d11153d0`, and `kfm-official-default-air-guard-state.json` checksum `f4378971`.
+Latest trace aggregate: `pnpm qa:trace` passes 148/148 artifacts, with 130 required and 18 optional local-fixture artifacts. The latest required guard-effect oracles are `synthetic-imported-hitdef-guard-sound.json` checksum `fdf1f7f6`, proving bounded `HitDef guardsound = S6,0` telemetry as a `PlaySnd` event, and `synthetic-imported-hitdef-guard-spark.json` checksum `72c8fa3a`, proving bounded `guard.sparkno = S7000` plus `sparkxy = 12,-64` telemetry as an attacker-side `HitSpark` event on guarded imported direct-hit routes. The latest optional official KFM guard-hit oracles remain `kfm-official-default-guard-state.json` checksum `885bb1da`, `kfm-official-default-crouch-guard-state.json` checksum `d11153d0`, and `kfm-official-default-air-guard-state.json` checksum `f4378971`.
 
 ## Gap To Full Port
 
@@ -76,7 +76,7 @@ Practical reading: from today's evidence, a private playable sandbox is roughly 
 
 ## Next Ten Gates
 
-1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, guard effects, proximity rules, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial, one-frame expiry traces, and optional guard-hit actor-frame physics telemetry.
+1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, rendered FightFX/common guard effects, proximity rules, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial, one-frame expiry traces, and optional guard-hit actor-frame physics telemetry.
 2. Exact-enough fall/recovery tick order, optional fixture threshold oracles, and broader recovery parity beyond the current synthetic threshold handoff, summarized actor-frame tick-order gate, bounded synthetic air/ground velocity gates, and synthetic/official early recovery-input reject gates.
 3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
 4. Projectile parity slice beyond current bounded hit/guard/clash routes.

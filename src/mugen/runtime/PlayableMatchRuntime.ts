@@ -52,6 +52,7 @@ import {
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
+import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
@@ -88,6 +89,7 @@ import type {
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
+  RuntimeHitEffectEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
@@ -155,6 +157,8 @@ type FighterMatchState = {
   audioWorld: RuntimeAudioWorld;
   envShakeEvents: RuntimeEnvShakeEvent[];
   envShakeWorld: RuntimeEnvShakeWorld;
+  hitEffectEvents: RuntimeHitEffectEvent[];
+  hitEffectWorld: RuntimeHitEffectWorld;
   effectActorWorld: RuntimeEffectActorWorld;
   targetWorld: RuntimeTargetWorld;
   lastExecutedState?: number;
@@ -194,6 +198,7 @@ export class PlayableMatchRuntime {
   private readonly targetWorld: RuntimeTargetWorld;
   private readonly audioWorld = new RuntimeAudioWorld();
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
+  private readonly hitEffectWorld = new RuntimeHitEffectWorld();
   private readonly envColorWorld = new RuntimeEnvColorWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
@@ -231,6 +236,7 @@ export class PlayableMatchRuntime {
       this.targetWorld,
       this.audioWorld,
       this.envShakeWorld,
+      this.hitEffectWorld,
     );
     this.p2 = createFighterState(
       "p2",
@@ -242,6 +248,7 @@ export class PlayableMatchRuntime {
       this.targetWorld,
       this.audioWorld,
       this.envShakeWorld,
+      this.hitEffectWorld,
     );
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
@@ -527,6 +534,7 @@ export class PlayableMatchRuntime {
         this.targetWorld,
         this.audioWorld,
         this.envShakeWorld,
+        this.hitEffectWorld,
       ),
     );
     Object.assign(
@@ -541,6 +549,7 @@ export class PlayableMatchRuntime {
         this.targetWorld,
         this.audioWorld,
         this.envShakeWorld,
+        this.hitEffectWorld,
       ),
     );
     this.logs.unshift("Round reset");
@@ -562,6 +571,7 @@ function createFighterState(
   targetWorld = new RuntimeTargetWorld(),
   audioWorld = new RuntimeAudioWorld(),
   envShakeWorld = new RuntimeEnvShakeWorld(),
+  hitEffectWorld = new RuntimeHitEffectWorld(),
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
@@ -630,6 +640,8 @@ function createFighterState(
     audioWorld,
     envShakeEvents: [],
     envShakeWorld,
+    hitEffectEvents: [],
+    hitEffectWorld,
     effectActorWorld,
     targetWorld,
     contact: createRuntimeContactMemory(),
@@ -1630,6 +1642,9 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
     hitSound: operation?.hitSound ?? stripMugenString(findParam(controller, "hitsound")) ?? existing?.hitSound,
     guardSound: operation?.guardSound ?? stripMugenString(findParam(controller, "guardsound")) ?? existing?.guardSound,
+    hitSpark: operation?.hitSpark ?? stripMugenString(findParam(controller, "sparkno")) ?? existing?.hitSpark,
+    guardSpark: operation?.guardSpark ?? stripMugenString(findParam(controller, "guard.sparkno")) ?? existing?.guardSpark,
+    sparkXy: operation?.sparkXy ? normalizeSparkOffset(operation.sparkXy) : numberPair(findParam(controller, "sparkxy")) ?? existing?.sparkXy,
     p1StateNo,
     p2StateNo,
     p2GetP1State,
@@ -1747,11 +1762,16 @@ function resolveCombat(
     applyDefaultGetHit: applyDefaultGetHitState,
   });
   recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick);
+  recordHitDefEffectEvent(attacker, outcome.kind, move, runtimeTick);
   log(outcome.message);
 }
 
 function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | undefined, runtimeTick: number): void {
   fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick);
+}
+
+function recordHitDefEffectEvent(fighter: FighterMatchState, kind: "hit" | "guard", move: DemoMove, runtimeTick: number): void {
+  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, kind === "guard" ? move.guardSpark : move.hitSpark, move.sparkXy, runtimeTick);
 }
 
 function recordFallEnvShakeEvent(
@@ -2098,6 +2118,10 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
     clsn1: activeHitbox.map((box) => ({ ...box })),
     clsn2: frame?.clsn2.map((box) => ({ ...box })) ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }],
     soundEvents: fighter.soundEvents.map((event) => ({ ...event })),
+    hitEffectEvents: fighter.hitEffectEvents.map((event) => ({
+      ...event,
+      offset: event.offset ? { ...event.offset } : undefined,
+    })),
     envShakeEvents: fighter.envShakeEvents.map((event) => ({ ...event })),
   };
 }
@@ -2673,6 +2697,10 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   return [numbers[0], numbers[1] ?? numbers[0]];
+}
+
+function normalizeSparkOffset(value: [number, number?]): [number, number] {
+  return [value[0], value[1] ?? value[0]];
 }
 
 function velocityPair(value: string | undefined): [number, number] | undefined {

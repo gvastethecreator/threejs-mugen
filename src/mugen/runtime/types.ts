@@ -193,6 +193,18 @@ export type RuntimeSoundEvent = {
   runtimeTick?: number;
 };
 
+export type RuntimeHitEffectEvent = {
+  type: "HitSpark";
+  kind: "hit" | "guard";
+  sparkNo?: number;
+  raw?: string;
+  rawPrefix?: string;
+  offset?: { x: number; y: number };
+  stateNo: number;
+  tick: number;
+  runtimeTick?: number;
+};
+
 export type RuntimeEnvShakeEvent = {
   type: "EnvShake";
   time: number;
@@ -303,6 +315,7 @@ export type ActorSnapshot = RuntimeActorIdentity & {
   clsn1: CollisionBox[];
   clsn2: CollisionBox[];
   soundEvents?: RuntimeSoundEvent[];
+  hitEffectEvents?: RuntimeHitEffectEvent[];
   envShakeEvents?: RuntimeEnvShakeEvent[];
 };
 

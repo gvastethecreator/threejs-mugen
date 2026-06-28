@@ -97,6 +97,9 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
         guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
         hitSound: stripMugenString(hitDef.params.hitsound),
         guardSound: stripMugenString(hitDef.params.guardsound),
+        hitSpark: stripMugenString(hitDef.params.sparkno),
+        guardSpark: stripMugenString(hitDef.params["guard.sparkno"]),
+        sparkXy: numberPair(hitDef.params.sparkxy),
         hitVars: buildHitVars(hitDef.params),
         fall: buildFallData(hitDef.params),
         requiresHitDef: true,
@@ -179,6 +182,9 @@ function buildMove(
       | "guardVelocityY"
       | "hitSound"
       | "guardSound"
+      | "hitSpark"
+      | "guardSpark"
+      | "sparkXy"
       | "hitVars"
       | "fall"
     >
@@ -221,6 +227,9 @@ function buildMove(
     guardVelocityY: overrides.guardVelocityY,
     hitSound: overrides.hitSound,
     guardSound: overrides.guardSound,
+    hitSpark: overrides.hitSpark,
+    guardSpark: overrides.guardSpark,
+    sparkXy: overrides.sparkXy,
     hitVars: overrides.hitVars,
     fall: overrides.fall,
     hitbox: cloneBox(activeWindow?.frame.clsn1[0] ?? fallbackHitbox),

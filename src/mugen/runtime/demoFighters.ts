@@ -40,6 +40,9 @@ export type DemoMove = {
   guardVelocityY?: number;
   hitSound?: string;
   guardSound?: string;
+  hitSpark?: string;
+  guardSpark?: string;
+  sparkXy?: [number, number];
   fall?: {
     enabled: boolean;
     damage?: number;
