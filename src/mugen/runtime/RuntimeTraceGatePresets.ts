@@ -3593,6 +3593,7 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -3637,6 +3638,7 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrames: options.requiredActorFrames,
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -3647,6 +3649,66 @@ export function createImportedDefaultFallGroundRecoveryTraceArtifact(
             ctrl: true,
           },
         ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-ground-recovery",
+    displayName: "Synthetic Imported Default Fall Ground Recovery",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      groundRecoveryStateNo: 5200,
+      groundRecoveryLandStateNo: 5201,
+      landStateNo: 52,
+      includeGroundRecovery: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-ground-recovery-attacker",
+    displayName: "Synthetic Imported Default Fall Ground Recovery Attacker",
+    groundVelocity: [-3, -6],
+    fall: {
+      ...commonGetHitFallData(),
+      velocity: { x: 3, y: -6 },
+      recover: true,
+      recoverTime: 4,
+    },
+  });
+  return createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {
+    ...options,
+    attacker,
+    targetId: "synthetic-imported-default-fall-ground-recovery-golden",
+    targetLabel: "Synthetic imported Common1 ground recovery input route",
+    notes: [
+      "Synthetic imported ground-recovery trace proves a bounded Common1-style defender can choose the 5200/5201 ground recovery branch near ground, apply configured ground-recovery velocity constants, land through state 52, and return to idle/control. It does not claim exact MUGEN/IKEMEN thresholds, velocity math, tick-order, or broad KFM parity.",
+    ],
+    requiredActorFrames: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5200,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5201,
+        moveType: "H",
+        observedVelXAtMost: -0.15,
+        observedVelYAtMost: -3.5,
+        observedPosYAtMost: 0,
+        minFrames: 1,
       },
     ],
   });
@@ -8559,7 +8621,7 @@ value = ${state.groundRecoveryLandStateNo}
 [Statedef ${state.groundRecoveryLandStateNo}]
 type = A
 movetype = H
-physics = A
+physics = N
 anim = ${state.groundRecoveryLandAnimNo}
 ctrl = 0
 
@@ -8579,6 +8641,11 @@ type = NotHitBy
 trigger1 = 1
 value = SCA
 time = 1
+
+[State ${state.groundRecoveryLandStateNo}, Land]
+type = ChangeState
+trigger1 = Time = 3
+value = ${state.landStateNo}
 
 [Statedef ${state.landStateNo}]
 type = S

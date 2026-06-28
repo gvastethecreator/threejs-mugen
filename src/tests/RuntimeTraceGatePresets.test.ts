@@ -4,6 +4,7 @@ import {
   createNativeWhiffTraceArtifact,
   createSyntheticImportedCommonGetHitTraceArtifact,
   createSyntheticImportedCustomStateTraceArtifact,
+  createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
@@ -3102,6 +3103,60 @@ describe("RuntimeTraceGatePresets", () => {
         animNo: 5210,
         moveType: "I",
         observedHitFallRecoverTimeAtMost: 0,
+        minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported default Common1 ground-recovery artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-ground-recovery-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-ground-recovery-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(1);
+    const groundRecoveryFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5201,
+    );
+    expect(groundRecoveryFrame?.minVel.x).toBeLessThanOrEqual(-0.15);
+    expect(groundRecoveryFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(groundRecoveryFrame?.minPos.y).toBeLessThanOrEqual(0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5200,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5201,
+        moveType: "H",
+        observedVelXAtMost: -0.15,
+        observedVelYAtMost: -3.5,
+        observedPosYAtMost: 0,
         minFrames: 1,
       },
     ]);
