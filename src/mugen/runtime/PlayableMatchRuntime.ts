@@ -65,6 +65,7 @@ import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -207,6 +208,7 @@ export class PlayableMatchRuntime {
   private readonly directCombatWorld = new RuntimeDirectCombatWorld();
   private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
   private readonly reversalWorld = new RuntimeReversalWorld();
+  private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -361,32 +363,31 @@ export class PlayableMatchRuntime {
       );
       applyAutoGuardStart(this.p1, this.p2);
     }
-    advanceTargetMemory(this.p1);
-    advanceTargetMemory(this.p2);
-    this.effectLifecycleWorld.advanceActive(this.p1, this.stage);
-    this.effectLifecycleWorld.advanceActive(this.p2, this.stage);
-    resolveProjectileClashes(this.p1, this.p2, (line) => this.logs.unshift(line));
-    this.actorConstraintWorld.separate(this.p1.runtime, this.p2.runtime);
-    applyTargetBindings(this.p1, this.p2);
-    applyTargetBindings(this.p2, this.p1);
-    applyBindToTarget(this.p1, this.p2);
-    applyBindToTarget(this.p2, this.p1);
-    const priorityOutcome = this.directCombatWorld.resolvePriorityClash(this.p1, this.p2, {
-      isMoveActive,
-      worldBox: runtimeWorldBox,
-      boxesIntersect: collisionBoxesIntersect,
+    this.matchInteractionWorld.advance({
+      p1: this.p1,
+      p2: this.p2,
+      advanceTargetMemory,
+      advanceActiveEffects: (fighter) => this.effectLifecycleWorld.advanceActive(fighter, this.stage),
+      resolveProjectileClashes: (left, right) => resolveProjectileClashes(left, right, (line) => this.logs.unshift(line)),
+      separateActors: (left, right) => this.actorConstraintWorld.separate(left.runtime, right.runtime),
+      applyTargetBindings,
+      applyBindToTarget,
+      resolvePriorityClash: (left, right) =>
+        this.directCombatWorld.resolvePriorityClash(left, right, {
+          isMoveActive,
+          worldBox: runtimeWorldBox,
+          boxesIntersect: collisionBoxesIntersect,
+        })?.message,
+      resolveDirectCombat: (attacker, defender) =>
+        resolveCombat(attacker, defender, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) =>
+          this.logs.unshift(line),
+        ),
+      resolveProjectileCombat: (attacker, defender) =>
+        resolveProjectileCombat(attacker, defender, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line)),
+      clampToStage: (fighter) => this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage),
+      advancePresentationEffects: (fighter) => this.effectLifecycleWorld.advancePresentation(fighter),
+      log: (line) => this.logs.unshift(line),
     });
-    if (priorityOutcome) {
-      this.logs.unshift(priorityOutcome.message);
-    }
-    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) => this.logs.unshift(line));
-    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
-    this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
-    this.actorConstraintWorld.clampToStage(this.p2.runtime, this.stage);
-    this.effectLifecycleWorld.advancePresentation(this.p1);
-    this.effectLifecycleWorld.advancePresentation(this.p2);
 
     const roundFinish = this.round.finishIfNeeded(
       { label: this.p1.label, life: this.p1.runtime.life },
