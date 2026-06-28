@@ -9,6 +9,7 @@ Read these first when the task is architectural, compatibility-sensitive, or cro
 - `AGENTS.md`
 - `CONTEXT.md`
 - `README.md`
+- `docs/ROADMAP_NAVIGATION.md`
 - `docs/ROADMAP_PROGRESS_SYSTEM.md`
 - `docs/ROADMAP_EXECUTION_BOARD.md`
 - `docs/ROADMAP_RELEASE_TARGETS.md`

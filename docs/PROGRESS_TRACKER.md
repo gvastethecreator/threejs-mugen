@@ -12,6 +12,7 @@ Use these files together:
 | --- | --- |
 | `CONTEXT.md` | Fast project/domain map for future agents. |
 | `AGENTS.md` | Working rules, verification baseline, skill setup. |
+| `docs/ROADMAP_NAVIGATION.md` | Fast route map for docs ownership, package lanes, score evidence, setup-project profile, and anti-drift rules. |
 | `docs/ROADMAP_PROGRESS_SYSTEM.md` | Source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template. |
 | `docs/ROADMAP_RELEASE_TARGETS.md` | Release-train targets, usable milestones, and score-movement rules. |
 | `docs/ROADMAP_EXECUTION_BOARD.md` | Current implementation queue, package acceptance, and handoff checklist. |
@@ -44,7 +45,7 @@ Docs/setup work in this round does not change scores. It improves project-contro
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
 | IKEMEN | Scanner-only profile for ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime extensions. |
 | Modular engine | Shared contracts and boundary tests. | Platformer proof slice blocked until fighting contracts stay stable. |
-| Project control | `AGENTS.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, and closeout. | Must keep docs synchronized after every score/support/queue change. |
+| Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, and closeout. | Must keep docs synchronized after every score/support/queue change. |
 
 ## Next Required Cuts
 
@@ -90,6 +91,7 @@ Docs/setup work in this round does not change scores. It improves project-contro
    - Improve Evidence/Build as the authority for current state, stale inputs, blocked exports, and next actions.
 
 5. **Roadmap hygiene**
+   - Use `docs/ROADMAP_NAVIGATION.md` as the first fast map for ownership, lanes, score evidence, setup-project profile, and anti-drift rules.
    - Use `docs/ROADMAP_PROGRESS_SYSTEM.md` to decide which doc owns each fact.
    - Use `docs/ROADMAP_RELEASE_TARGETS.md` to keep release trains and usable milestones aligned with scores.
    - Use `docs/ROADMAP_EXECUTION_BOARD.md` as the first queue/handoff map.

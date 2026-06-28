@@ -56,8 +56,9 @@ Roadmap tracking is useful when a new agent can read:
 1. `CONTEXT.md`
 2. `AGENTS.md`
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
-4. `docs/PROGRESS_TRACKER.md`
-5. this PRD
-6. one relevant issue
+4. `docs/ROADMAP_NAVIGATION.md`
+5. `docs/PROGRESS_TRACKER.md`
+6. this PRD
+7. one relevant issue
 
 and then identify the next safe implementation slice without asking for basic context.

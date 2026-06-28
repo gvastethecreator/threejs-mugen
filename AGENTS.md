@@ -23,6 +23,7 @@
 
 - This git repo root is `mugen-web-sandbox`. If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, enter `mugen-web-sandbox` before running git, pnpm, or repo-wide searches.
 - Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_PROGRESS_SYSTEM.md` for progress ownership, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
+- Use `docs/ROADMAP_NAVIGATION.md` as the fast map for source-of-truth ownership, package lanes, score movement, and claim checklist.
 - Use `.scratch/roadmap/` only as local issue slicing. Public/private compatibility truth belongs in `docs/`.
 
 ## Work Cadence
@@ -46,10 +47,11 @@ Use this checklist when resuming the goal or starting a new autonomous pass:
 
 1. Confirm repo root with `git status --short --branch`.
 2. Read `CONTEXT.md`, then `docs/ROADMAP_PROGRESS_SYSTEM.md`, then `docs/ROADMAP_EXECUTION_BOARD.md`.
-3. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
-4. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
-5. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching verification row in `docs/ROADMAP_PROGRESS_SYSTEM.md`.
-6. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
+3. Read `docs/ROADMAP_NAVIGATION.md` when the task spans roadmap, setup-project, score, issue, or handoff docs.
+4. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
+5. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
+6. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching verification row in `docs/ROADMAP_PROGRESS_SYSTEM.md`.
+7. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
 
 ## Roadmap Update Protocol
 
@@ -86,6 +88,7 @@ pnpm qa:smoke
 ## Roadmap Control
 
 - `docs/PORT_COMPLETION_SCORECARD.md` is the 0-100 status source for playable sandbox, MUGEN MVP, full MUGEN, IKEMEN, Studio, and modular-engine horizons.
+- `docs/ROADMAP_NAVIGATION.md` is the fast route map for docs, lanes, score evidence, setup-project profile, and anti-drift rules.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` explains source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/ROADMAP_RELEASE_TARGETS.md` translates scores into release trains, gates, and "usable" milestones.
 - `docs/PROGRESS_TRACKER.md` is the compact current truth board.

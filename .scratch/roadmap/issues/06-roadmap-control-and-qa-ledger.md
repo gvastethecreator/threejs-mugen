@@ -1,6 +1,6 @@
 # 06 - Roadmap Control And QA Ledger
 
-Status: in-progress
+Status: closed
 Labels: docs, roadmap, ready-for-agent
 
 ## Objective
@@ -13,6 +13,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Current cut: `AGENTS.md` and `docs/ROADMAP_PROGRESS_SYSTEM.md` now share a resume/checkpoint protocol so a new agent can recover repo truth, select the correct issue, run the right gates, and avoid score inflation.
 - Current audit: `setup-project` was rechecked against repo state on 2026-06-28: GitHub remote exists, `AGENTS.md` is the active agent file, `docs/agents/*` exists, `CONTEXT.md` plus `docs/adr/` make this a single-context repo, and `.scratch/roadmap/` remains the working issue tracker.
 - Current cut: `AGENTS.md` now records named-skill routing for setup-project, caveman, product/interface, imagegen/sprite-atlas, and Three.js visual QA work; `docs/ROADMAP_EXECUTION_BOARD.md` now has a twelve-item concrete gate queue for R1/R2/S1/A1/I1/M1 follow-up.
+- Current closeout: `docs/ROADMAP_NAVIGATION.md` now gives the fast route map for source ownership, package lanes, score movement evidence, setup-project profile, and anti-drift rules; `AGENTS.md`, `docs/agents/domain.md`, `docs/PROGRESS_TRACKER.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `.scratch/roadmap/PRD.md` link to it.
 - Keep `docs/ROADMAP_EXECUTION_BOARD.md` as the current queue/handoff board.
 - Keep `docs/PROGRESS_TRACKER.md` compact and current after meaningful milestones.
 - Keep `docs/PORT_COMPLETION_SCORECARD.md` as the only 0-100 answer source.
@@ -39,6 +40,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `AGENTS.md` owns repo rules, setup-project profile, session bootstrap, roadmap update protocol, and verification baseline.
 - `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, and `docs/agents/domain.md` define the local markdown tracker, canonical triage vocabulary, and single-context domain-doc layout.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth order, resume/checkpoint protocol, package lifecycle, horizon ladder, update matrix, and closeout template.
+- `docs/ROADMAP_NAVIGATION.md` owns the fast route map for future agents who need to find the right doc/issue/gate quickly.
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including FightFX/common spark lookup after the current fallback/source-metadata route.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.

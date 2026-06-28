@@ -12,6 +12,7 @@ Read these in order when planning or reporting status:
 | --- | --- | --- |
 | Working rules | `AGENTS.md` | Repo-specific agent behavior, verification baseline, setup-project config. |
 | Domain map | `CONTEXT.md` | Product shape, vocabulary, hard rules, current priority. |
+| Navigation | `docs/ROADMAP_NAVIGATION.md` | Fast route map for docs ownership, package lanes, score evidence, and anti-drift rules. |
 | Release targets | `docs/ROADMAP_RELEASE_TARGETS.md` | Usable milestones, release trains, and score-movement rules. |
 | Current queue | `docs/ROADMAP_EXECUTION_BOARD.md` | Active packages, acceptance gates, handoff contract. |
 | Scoreboard | `docs/PORT_COMPLETION_SCORECARD.md` | 0-100 status by horizon and evidence ledger. |
@@ -27,7 +28,7 @@ Rule: when two docs disagree, prefer the more specific owner above. Then update 
 Use this sequence when a new agent, resumed thread, or subtask starts work:
 
 1. Run `git status --short --branch` from the repo root.
-2. Read `CONTEXT.md`, `AGENTS.md`, this file, `docs/ROADMAP_RELEASE_TARGETS.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
+2. Read `CONTEXT.md`, `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, this file, `docs/ROADMAP_RELEASE_TARGETS.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 3. For status answers, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
 4. For implementation slices, read the linked `.scratch/roadmap/issues/<NN>-*.md` issue and update it with evidence, next cut, and blocked claims.
 5. For score/support/queue changes, update every owner listed in the update matrix below.
