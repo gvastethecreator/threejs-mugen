@@ -2578,6 +2578,13 @@ export function createSyntheticImportedAssertSpecialGuardDenyTraceArtifact(
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          assertSpecialGuardDenyControllerSequence({
+            label: "NoStandGuard defender AssertSpecial before guardable HitDef",
+            defenderStateNo: 0,
+            defenderControllerName: "Passive AssertSpecial",
+          }),
+        ],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -2635,6 +2642,13 @@ export function createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          assertSpecialGuardDenyControllerSequence({
+            label: "NoCrouchGuard defender AssertSpecial before guardable HitDef",
+            defenderStateNo: 10,
+            defenderControllerName: "AssertSpecial Control Flags",
+          }),
+        ],
         requiredActiveCommands: ["holdback", "holddown", "x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -2694,6 +2708,13 @@ export function createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact(
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          assertSpecialGuardDenyControllerSequence({
+            label: "NoAirGuard defender AssertSpecial before guardable HitDef",
+            defenderStateNo: 40,
+            defenderControllerName: "AssertSpecial Control Flags",
+          }),
+        ],
         requiredActiveCommands: ["holdback", "x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -2845,6 +2866,26 @@ export function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEv
       { stateNo: 155, controller: "CtrlSet", name: "Regain Air Guard Control" },
       { stateNo: 155, operation: "resource:ctrlset" },
       { stateNo: 155, controller: "ChangeState", name: "Air Guard Hit Over" },
+    ],
+  };
+}
+
+export function assertSpecialGuardDenyControllerSequence(options: {
+  label: string;
+  defenderStateNo: number;
+  defenderControllerName: string;
+}): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: options.label,
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p1",
+        stateNo: options.defenderStateNo,
+        controller: "AssertSpecial",
+        name: options.defenderControllerName,
+      },
+      { actorId: "p2", stateNo: 200, controller: "HitDef" },
     ],
   };
 }

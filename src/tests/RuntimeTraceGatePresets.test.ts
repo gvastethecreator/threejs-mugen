@@ -2375,6 +2375,16 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", moveType: "H" })]),
     );
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "NoStandGuard defender AssertSpecial before guardable HitDef",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p1", stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+          { actorId: "p2", stateNo: 200, controller: "HitDef" },
+        ],
+      },
+    ]);
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 
@@ -2412,6 +2422,16 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", stateType: "C", moveType: "H" })]),
     );
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "NoCrouchGuard defender AssertSpecial before guardable HitDef",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p1", stateNo: 10, controller: "AssertSpecial", name: "AssertSpecial Control Flags" },
+          { actorId: "p2", stateNo: 200, controller: "HitDef" },
+        ],
+      },
+    ]);
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 
@@ -2449,6 +2469,16 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", stateType: "A", moveType: "H" })]),
     );
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "NoAirGuard defender AssertSpecial before guardable HitDef",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p1", stateNo: 40, controller: "AssertSpecial", name: "AssertSpecial Control Flags" },
+          { actorId: "p2", stateNo: 200, controller: "HitDef" },
+        ],
+      },
+    ]);
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 
