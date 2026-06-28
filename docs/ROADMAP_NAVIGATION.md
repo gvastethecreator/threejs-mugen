@@ -99,6 +99,7 @@ Compatibility claims must name the trace, test, fixture, checksum, or browser ev
 Current setup:
 
 - Agent file: `AGENTS.md`
+- Parent router: `D:\DEV\mugen-sandbox-prototypes\AGENTS.md` only points agents into this repo.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`
 - Triage labels: canonical `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`
 - Domain layout: single-context repo with root `CONTEXT.md` and ADRs under `docs/adr/`

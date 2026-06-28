@@ -28,6 +28,18 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
+## Operating Snapshot
+
+| Priority | Workstream | Next shippable proof | Evidence gate | Score effect |
+| --- | --- | --- | --- | --- |
+| P0 | Project control | Keep setup-project, local issues, AGENTS, and roadmap routing synchronized. | `pnpm test`, `pnpm typecheck`, `pnpm build` for docs-only closeout. | No score movement. |
+| P1 | R1 runtime compatibility | One bounded Common1/controller/trigger behavior with trace or focused test. | `pnpm qa:trace` plus normal gates when runtime semantics change. | Possible MUGEN-lite movement only if scorecard evidence threshold is met. |
+| P1 | R2 MatchWorld ownership | One mutable runtime behavior moved behind named world/system boundary. | Focused system tests; trace stable or intentionally documented. | Usually architecture debt reduction, not score movement by itself. |
+| P2 | S1 Studio trust chain | Evidence and Build consume one shared status/next-action contract. | `pnpm qa:smoke` plus visual inspection. | Possible Studio movement only with real bound evidence data. |
+| P2 | A1 generated assets | One provenance record links prompt/source/atlas/QA/collision/playtest. | Asset QA proof; visual QA if visible. | Generated/native confidence only, never imported MUGEN compatibility. |
+| P3 | I1 IKEMEN scanner | One new recognized/unsupported/unknown IKEMEN signal. | Focused scanner tests and blocked runtime wording. | Scanner-only movement, no IKEMEN execution claim. |
+| P3 | M1 modular boundary | One shared contract proven free of fighting-specific leakage. | `pnpm check:boundaries` or equivalent contract test. | Modular readiness only. |
+
 ## Current Position
 
 | Track | Current status | Next package | Blocked claim |

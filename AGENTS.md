@@ -22,6 +22,7 @@
 ## Repo Entry Points
 
 - This git repo root is `mugen-web-sandbox`. If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, enter `mugen-web-sandbox` before running git, pnpm, or repo-wide searches.
+- Parent workspace `D:\DEV\mugen-sandbox-prototypes\AGENTS.md` is only a router. This file remains the authoritative repo agent contract.
 - Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_PROGRESS_SYSTEM.md` for progress ownership, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
 - Use `docs/ROADMAP_NAVIGATION.md` as the fast map for source-of-truth ownership, package lanes, score movement, and claim checklist.
 - Use `docs/DELIVERY_ROADMAP.md` when planning multi-phase delivery, milestone exits, or what "usable" means for each horizon.
@@ -109,12 +110,25 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Last audited: 2026-06-28 during the roadmap-control/setup-project pass.
+- Last audited: 2026-06-28 during the setup-project refresh and roadmap-control pass.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
 - Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
+
+## Roadmap Slice Selection
+
+When the user says to continue the port, choose the first slice that can produce evidence without broad drift:
+
+1. Runtime trace/controller behavior with a focused test or required artifact.
+2. MatchWorld/system extraction with stable or documented checksum behavior.
+3. Studio Evidence/Build workflow with real data binding and visual QA.
+4. Generated asset provenance/QA with source, atlas, motion, scale, collision, and playtest links.
+5. IKEMEN scanner expansion with tests and explicit no-runtime-execution wording.
+6. Modular boundary proof with `pnpm check:boundaries` or docs-only blocked-scope wording.
+
+Docs-only/setup slices improve control only. They do not raise scores.
 
 ## Current Milestone Focus
 

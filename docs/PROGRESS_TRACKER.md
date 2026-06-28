@@ -37,6 +37,19 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 Docs/setup work in this round does not change scores. It improves project-control continuity only.
 
+## Immediate Execution Order
+
+| Slot | Cut | Done when |
+| --- | --- | --- |
+| 1 | R1 runtime compatibility gate | One trigger/controller/Common1 route has focused test or trace evidence plus claim allowed/blocked docs. |
+| 2 | R2 MatchWorld ownership | One mutable behavior moves behind a named system with focused coverage and no hidden checksum drift. |
+| 3 | S1 Studio trust chain | Evidence and Build show one shared truthful status/next action, visually verified. |
+| 4 | A1 generated asset QA/provenance | One generated/native fighter or asset record links source prompt, sheet, atlas, QA, collisions, and playtest result. |
+| 5 | I1 IKEMEN scanner | One more IKEMEN-only signal is classified by tests as recognized, unsupported, or unknown. |
+| 6 | M1 shared boundary | One shared contract is proven free of fighting/MUGEN leakage. |
+
+Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unless the user changes priority.
+
 ## Evidence Snapshot
 
 | Area | Current Proof | Still Weak |

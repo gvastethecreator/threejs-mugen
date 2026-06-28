@@ -1,5 +1,7 @@
 # Issue Tracker: Local Markdown
 
+Last audited: 2026-06-28
+
 Issues, PRDs, audits, and implementation plans for this repo live as markdown files in `.scratch/`.
 
 ## Conventions
@@ -24,6 +26,8 @@ When a skill says to fetch an issue, read the referenced markdown path. If the u
 ## Repo-Specific Rule
 
 Do not treat `.scratch/fixtures/` or `.scratch/external/` as redistributable source. Those are local/private evidence inputs.
+
+Do not use the GitHub remote as the active issue tracker unless the user explicitly asks for GitHub Issues. Local markdown remains the working queue for autonomous agent passes.
 
 ## Roadmap Issue Schema
 

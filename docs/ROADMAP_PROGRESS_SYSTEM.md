@@ -34,6 +34,8 @@ Use this sequence when a new agent, resumed thread, or subtask starts work:
 5. For score/support/queue changes, update every owner listed in the update matrix below.
 6. For checkpoint requests, commit only after the required closeout gates pass; docs-only/setup work still needs normal build/test gates and must state no score movement.
 
+If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, first enter `mugen-web-sandbox`. The parent `AGENTS.md` is only a routing file; repo rules live in root `AGENTS.md` inside `mugen-web-sandbox`.
+
 ## Package Lifecycle
 
 Every roadmap package should move through this lifecycle:
@@ -108,3 +110,7 @@ RuntimeTrace / ControllerOp depth
 ```
 
 Parallel docs are allowed when they reduce drift. Parallel UI is allowed when it binds to real runtime/project/evidence data and passes visual QA.
+
+## Docs-Only Setup Rule
+
+`setup-project`, roadmap routing, issue tracker docs, and AGENTS changes are valid control work, but they are not compatibility evidence. Close them with normal build/test gates, update `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`, and keep `docs/PORT_COMPLETION_SCORECARD.md` unchanged unless runtime, visual, fixture, scanner, Studio, or package evidence also changed.

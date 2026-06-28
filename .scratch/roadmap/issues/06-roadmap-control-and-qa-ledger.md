@@ -9,6 +9,9 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
+- Current setup-project refresh: parent workspace `AGENTS.md` now routes agents into `mugen-web-sandbox`; repo `AGENTS.md` remains authoritative and records setup-project defaults, slice-selection priority, verification baseline, and docs-only no-score rule.
+- Current roadmap-control cut: `docs/ROADMAP_EXECUTION_BOARD.md` now includes an operating snapshot table that maps P0/P1/P2/P3 workstreams to next shippable proof, evidence gate, and score effect.
+- Current tracker cut: `docs/PROGRESS_TRACKER.md` now includes the immediate execution order so future autonomous passes can return from docs/setup work to the first score-moving runtime or ownership gate.
 - Current cut: `AGENTS.md` and `docs/agents/*` now document setup-project defaults; `docs/adr/0001-roadmap-control-and-local-issues.md` records the local markdown tracker/source-of-truth decision; `docs/ROADMAP_RELEASE_TARGETS.md` defines release trains, usable milestone gates, and score-movement rules.
 - Current cut: `AGENTS.md` and `docs/ROADMAP_PROGRESS_SYSTEM.md` now share a resume/checkpoint protocol so a new agent can recover repo truth, select the correct issue, run the right gates, and avoid score inflation.
 - Current audit: `setup-project` was rechecked against repo state on 2026-06-28: GitHub remote exists, `AGENTS.md` is the active agent file, `docs/agents/*` exists, `CONTEXT.md` plus `docs/adr/` make this a single-context repo, and `.scratch/roadmap/` remains the working issue tracker.
@@ -38,6 +41,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Evidence
 
+- Parent `AGENTS.md` routes agents from `D:\DEV\mugen-sandbox-prototypes` into the repo instead of letting work happen at the wrong folder level.
 - `AGENTS.md` owns repo rules, setup-project profile, session bootstrap, roadmap update protocol, and verification baseline.
 - `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, and `docs/agents/domain.md` define the local markdown tracker, canonical triage vocabulary, and single-context domain-doc layout.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth order, resume/checkpoint protocol, package lifecycle, horizon ladder, update matrix, and closeout template.

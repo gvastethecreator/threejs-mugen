@@ -1,5 +1,7 @@
 # Domain Docs
 
+Last audited: 2026-06-28
+
 This is a single-context repo for a Three.js-based progressive MUGEN/Ikemen-GO port, playable sandbox, and future modular engine/studio.
 
 ## Read Before Broad Work
@@ -56,6 +58,7 @@ When a user asks "how far are we?" or "0 to 100?", answer from `docs/PORT_COMPLE
 ## Skill Routing Notes
 
 - `setup-project` output for this repo is local markdown issues, canonical labels, and single-context docs.
+- If an agent starts in `D:\DEV\mugen-sandbox-prototypes`, first enter `mugen-web-sandbox`; parent `AGENTS.md` is only a router.
 - `ROADMAP_CONTINUITY_GUIDE.md` is the handoff bridge from broad roadmap intent to the next evidence-backed implementation slice.
 - Product/interface skills should improve Studio/workbench usability without inventing status not backed by runtime/project/evidence data.
 - `imagegen` and `sprite-atlas-builder` work belongs to generated/native assets. Keep provenance, QA, and bad-source regeneration rules visible.
