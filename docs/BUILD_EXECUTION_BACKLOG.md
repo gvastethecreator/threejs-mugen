@@ -45,6 +45,10 @@ This is the working board for building all agreed directions without splitting t
 
 The first usable horizon is not "full MUGEN." It is a private workbench where a user can load or select a character, see exactly what parsed/decoded/compiled/executed, play a stable match, export evidence, and keep building from that truth.
 
+## Latest Execution Note
+
+- First-pass package FightFX/common spark asset loading is now wired: `MugenCharacterLoader` discovers optional `data/fight.def`, resolves `fightfx.air` / `fightfx.sff`, parses AIR actions as current common/FightFX hit-spark libraries, decodes the system SFF when possible, `createImportedFighterDefinition` carries those package-backed libraries into runtime fighter definitions, and `App` registers decoded system SFF sprites through a global hit-spark provider route. Focused tests cover loader discovery/decoding and imported-fighter library handoff. Claim allowed: package-backed common/FightFX spark AIR/SFF can enter the bounded `HitSparkRenderer` lookup path. Claim blocked: exact spark multi-frame timing, binding, layering, scale, palette, motif/screenpack ownership, and full FightFX parity.
+
 ## Usable MVP Definition
 
 The next "usable" bar is:

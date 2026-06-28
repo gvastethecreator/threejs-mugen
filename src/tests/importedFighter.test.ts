@@ -47,6 +47,45 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.runtimeProgram?.states.map((compiledState) => compiledState.id)).toEqual([200]);
     expect(fighter?.runtimeProgram?.states[0]?.controllers[0]?.normalizedType).toBe("velset");
   });
+
+  it("maps loaded system hit spark libraries into imported fighter definitions", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations);
+    character.systemAssets = {
+      fightDefPath: "data/fight.def",
+      diagnostics: [],
+      hitSparkLibraries: {
+        common: {
+          source: "common",
+          airPath: "data/fightfx.air",
+          sffPath: "data/fightfx.sff",
+          diagnostics: [],
+          animations: new Map([[7001, action(7001, [[9100, 0, 0]])]]),
+        },
+        fightfx: {
+          source: "fightfx",
+          airPath: "data/fightfx.air",
+          sffPath: "data/fightfx.sff",
+          diagnostics: [],
+          animations: new Map([[7002, action(7002, [[9101, 0, 0]])]]),
+        },
+      },
+    };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.hitSparkLibraries?.common?.animations.get(7001)?.frames[0]).toMatchObject({
+      spriteGroup: 9100,
+      spriteIndex: 0,
+    });
+    expect(fighter?.hitSparkLibraries?.fightfx?.animations.get(7002)?.frames[0]).toMatchObject({
+      spriteGroup: 9101,
+      spriteIndex: 0,
+    });
+  });
 });
 
 function action(id: number, frames: Array<[number, number, number, { x1: number; y1: number; x2: number; y2: number }?]>): MugenAnimationAction {

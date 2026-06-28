@@ -1529,7 +1529,9 @@ export class App {
 
   private installCharacterSffProvider(character: MugenCharacter): void {
     this.spriteProvider.clearRoutesByTag("character-sff");
+    this.spriteProvider.clearRoutesByTag("system-hit-sparks");
     this.importedSffProvider = undefined;
+    this.installSystemHitSparkProviders(character);
     const archive = character.spriteArchive;
     if (!archive || archive.sprites.length === 0) {
       this.log("Character SFF did not provide decoded sprites; using mock sprite fallback");
@@ -1544,6 +1546,28 @@ export class App {
     this.spriteProvider.registerGroupRange(provider.minGroup, provider.maxGroup, provider, "character-sff");
     const total = archive.metadata?.spriteTotal ?? archive.sprites.length;
     this.log(`Character SFF ${archive.version} decoded ${archive.sprites.length}/${total} sprites (${provider.minGroup}-${provider.maxGroup})`);
+  }
+
+  private installSystemHitSparkProviders(character: MugenCharacter): void {
+    const libraries = character.systemAssets?.hitSparkLibraries;
+    if (!libraries) {
+      return;
+    }
+    const seenArchives = new Set<unknown>();
+    for (const source of ["common", "fightfx"] as const) {
+      const archive = libraries[source]?.spriteArchive;
+      if (!archive || archive.sprites.length === 0 || seenArchives.has(archive)) {
+        continue;
+      }
+      seenArchives.add(archive);
+      const provider = new SffSpriteProvider(archive);
+      if (!provider.hasSprites) {
+        continue;
+      }
+      this.spriteProvider.registerGroupRange(provider.minGroup, provider.maxGroup, provider, "system-hit-sparks");
+      const total = archive.metadata?.spriteTotal ?? archive.sprites.length;
+      this.log(`System ${source} SFF ${archive.version} decoded ${archive.sprites.length}/${total} sprites (${provider.minGroup}-${provider.maxGroup})`);
+    }
   }
 
   private installImportedFighter(imported: DemoFighterDefinition | undefined): void {

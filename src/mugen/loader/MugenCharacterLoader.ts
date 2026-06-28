@@ -11,6 +11,7 @@ import { parseDef } from "../parsers/DefParser";
 import { parseSnd } from "../parsers/SndParser";
 import { SffParser } from "../parsers/SffParser";
 import { PathResolver } from "./PathResolver";
+import { loadMugenSystemAssets } from "./MugenSystemAssetsLoader";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
 
 export class MugenCharacterLoader {
@@ -74,6 +75,10 @@ export class MugenCharacterLoader {
     const definition = parseDef(defText, defPath);
     diagnostics.push(...definition.diagnostics);
     const files = this.resolveFiles(defPath, definition.files, resolver, diagnostics);
+    const systemAssets = await loadMugenSystemAssets(vfs, resolver);
+    if (systemAssets) {
+      diagnostics.push(...systemAssets.diagnostics);
+    }
 
     const animations = new Map();
     if (files.anim) {
@@ -205,6 +210,7 @@ export class MugenCharacterLoader {
       runtimeProgram,
       spriteArchive,
       soundArchive,
+      systemAssets,
       diagnostics,
       compatibility,
     };

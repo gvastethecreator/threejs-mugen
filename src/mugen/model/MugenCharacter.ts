@@ -5,6 +5,7 @@ import type { MugenCommand, MugenCommandFile } from "./MugenCommand";
 import type { SndArchive } from "./MugenSound";
 import type { SffArchive } from "./MugenSprite";
 import type { MugenStateController, MugenStateDef } from "./MugenState";
+import type { MugenSystemAssets } from "./MugenSystemAssets";
 
 export type MugenCharacterDef = {
   info: {
@@ -57,6 +58,7 @@ export type MugenCharacter = {
   runtimeProgram?: RuntimeProgramIr;
   spriteArchive?: SffArchive;
   soundArchive?: SndArchive;
+  systemAssets?: MugenSystemAssets;
   diagnostics: MugenDiagnostic[];
   compatibility: CompatibilityReport;
 };

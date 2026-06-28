@@ -63,7 +63,26 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     commands: character.commands,
     runtimeProgram: character.runtimeProgram,
     animations,
+    hitSparkLibraries: normalizeHitSparkLibraries(character),
   };
+}
+
+function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefinition["hitSparkLibraries"] | undefined {
+  const libraries = character.systemAssets?.hitSparkLibraries;
+  if (!libraries) {
+    return undefined;
+  }
+  const result: NonNullable<DemoFighterDefinition["hitSparkLibraries"]> = {};
+  for (const source of ["common", "fightfx"] as const) {
+    const library = libraries[source];
+    if (library && library.animations.size > 0) {
+      result[source] = {
+        source,
+        animations: normalizeAnimations(library.animations),
+      };
+    }
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function buildStateMoves(states: MugenCharacter["states"], animations: Map<number, MugenAnimationAction>): Map<number, DemoMove> {
