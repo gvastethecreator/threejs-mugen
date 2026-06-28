@@ -3231,6 +3231,27 @@ export function officialKfmAutoGuardEndControllerSequence(): RuntimeTraceControl
   };
 }
 
+export function syntheticAutoGuardStartControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Synthetic 120/130 auto guard-start controller order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [{ stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }],
+  };
+}
+
+export function syntheticAutoGuardEndControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Synthetic 120/130/140 auto guard-end controller order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 120, controller: "ChangeState", name: "Guard Start Done" },
+      { stateNo: 130, controller: "ChangeState", name: "Stop Guarding" },
+    ],
+  };
+}
+
 export function syntheticAutoGuardStartActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
   return {
     label: "Synthetic 120 before 130 auto guard-start actor-frame order",
@@ -3606,6 +3627,7 @@ export function createSyntheticImportedAutoGuardStartTraceArtifact(options: Runt
   return createImportedAutoGuardStartTraceArtifact(defender, {
     ...options,
     attacker,
+    requiredControllerEventSequences: [syntheticAutoGuardStartControllerSequence()],
     requiredActorFrameSequences: [syntheticAutoGuardStartActorFrameSequence()],
     targetId: "synthetic-imported-auto-guard-start-golden",
     targetLabel: "Synthetic imported automatic guard-start route",
@@ -3631,6 +3653,7 @@ export function createSyntheticImportedAutoGuardEndTraceArtifact(options: Runtim
   return createImportedAutoGuardEndTraceArtifact(defender, {
     ...options,
     attacker,
+    requiredControllerEventSequences: [syntheticAutoGuardEndControllerSequence()],
     requiredActorFrameSequences: [syntheticAutoGuardEndActorFrameSequence()],
     targetId: "synthetic-imported-auto-guard-end-golden",
     targetLabel: "Synthetic imported automatic guard-end route",

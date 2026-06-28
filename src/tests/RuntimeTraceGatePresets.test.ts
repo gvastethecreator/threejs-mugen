@@ -37,7 +37,9 @@ import {
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
   syntheticAirGuardHitPhysicsFrames,
+  syntheticAutoGuardEndControllerSequence,
   syntheticAutoGuardEndActorFrameSequence,
+  syntheticAutoGuardStartControllerSequence,
   syntheticAutoGuardStartActorFrameSequence,
   syntheticCrouchGuardHitPhysicsFrames,
   syntheticStandGuardHitPhysicsFrames,
@@ -2867,6 +2869,24 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
+  it("exports synthetic auto guard-start and guard-end controller-order requirements", () => {
+    expect(syntheticAutoGuardStartControllerSequence()).toEqual({
+      label: "Synthetic 120/130 auto guard-start controller order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [{ stateNo: 120, controller: "ChangeState", name: "Guard Start Done" }],
+    });
+    expect(syntheticAutoGuardEndControllerSequence()).toEqual({
+      label: "Synthetic 120/130/140 auto guard-end controller order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 120, controller: "ChangeState", name: "Guard Start Done" },
+        { stateNo: 130, controller: "ChangeState", name: "Stop Guarding" },
+      ],
+    });
+  });
+
   it("exports official KFM ground-recovery controller-order requirements", () => {
     expect(officialKfmGroundRecoveryControllerSequence()).toEqual({
       label: "Official KFM 5050/5200/52 ground-recovery controller and typed operation order",
@@ -3209,6 +3229,7 @@ describe("RuntimeTraceGatePresets", () => {
     const startFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 120);
     const holdFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 130);
     expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([syntheticAutoGuardStartControllerSequence()]);
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardStartActorFrameSequence()]);
   });
 
@@ -3248,6 +3269,7 @@ describe("RuntimeTraceGatePresets", () => {
     const endFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 140);
     expect(startFrame?.lastTick).toBeLessThan(holdFrame?.firstTick ?? 0);
     expect(holdFrame?.lastTick).toBeLessThan(endFrame?.firstTick ?? 0);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([syntheticAutoGuardEndControllerSequence()]);
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([syntheticAutoGuardEndActorFrameSequence()]);
   });
 

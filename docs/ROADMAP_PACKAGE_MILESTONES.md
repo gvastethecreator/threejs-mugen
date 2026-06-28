@@ -32,13 +32,13 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Current R1 synthetic guard-hit frame-physics slice completed:
+Current R1 synthetic auto-guard controller-order slice completed:
 
 ```txt
-R1 synthetic guard-hit actor-frame telemetry
-  -> required synthetic-imported-default-guard-state.json / crouch / diagonal-crouch / air
-  -> checksums 016938a1 / 6c4321af / 1dd33fb5 / ce9cc9ba
-  -> proves stand/crouch/atomic-DB/air guard-hit controller order plus actor-frame state/physics/body evidence
+R1 synthetic auto guard-start/end controller-order evidence
+  -> required synthetic-imported-auto-guard-start.json / synthetic-imported-auto-guard-end.json
+  -> checksums 0c734290 / d1dc0aa3
+  -> proves bounded 120/130/140 auto-guard route with P2 controller events plus actor-frame state order
   -> qa:trace aggregate 156/156, 138 required, 18 optional
 ```
 
@@ -66,6 +66,8 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-crouch-guard-state.json` actor-frame telemetry
 - `synthetic-imported-diagonal-crouch-guard-state.json` actor-frame telemetry
 - `synthetic-imported-air-guard-state.json` actor-frame telemetry
+- `synthetic-imported-auto-guard-start.json` controller-order evidence
+- `synthetic-imported-auto-guard-end.json` controller-order evidence
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
