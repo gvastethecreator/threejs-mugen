@@ -100,6 +100,8 @@ The compiler classifies each piece as:
 
 `RuntimeEffectSpawnWorld` now owns the bounded spawn/dispatch bridge from active CNS controllers into the effect actor world: Explod action/position/bind/default duration resolution, Helper state/action resolution including state-owner sprite/action lookup, Projectile action/offset/terminal-action resolution, RemoveExplod dispatch, and ModifyProjectile dispatch. `PlayableMatchRuntime` still records controller execution/operation evidence and owns match orchestration, so this is an ownership cleanup rather than exact effect spawn timing, helper VM, parent/root redirect, or FightFX/Common animation parity.
 
+`RuntimeEffectLifecycleWorld` now owns the bounded lifecycle orchestration that happens after those effect actors exist: active-effect ticks, presentation ticks, paused presentation ticks, effect snapshot grouping, and shared get-hit cleanup. `PlayableMatchRuntime` delegates current effect lifecycle passes and projectile get-hit cleanup to that boundary, while direct combat, HitOverride, and Reversal share the same effect get-hit cleanup helper. This is current-behavior ownership, not exact helper VM lifecycle, pause/combat ordering, advanced remove-trigger timing, parent/root/redirect parity, or full MUGEN/IKEMEN effect lifecycle parity.
+
 `synthetic-imported-hitadd.json` adds the current contact-memory controller contract: static `HitAdd value` compiles into `contact:hitadd`, `PlayableMatchRuntime` applies it only to bounded current-state direct `HitCount` telemetry, and `UniqHitCount` remains target uniqueness. This keeps combo/count approximation explicit instead of folding it into hidden combat math.
 
 `ContactMemorySystem` now owns the bounded contact-memory data structure and mutations behind those direct/projectile trigger cuts: direct `MoveContact`/`MoveHit`/`MoveGuarded`, direct `HitCount`/`UniqHitCount`, `HitAdd`, `MoveReversed`, defender-local `ReceivedDamage`/`ReceivedHits`, and projectile contact/time markers. `PlayableMatchRuntime` still decides when combat events occur and passes the current state number into that system, so this is an ownership cleanup, not a claim of exact contact/combo lifetime parity. `RuntimeResourceSystem` now owns the bounded resource and variable writes used by `StateControllerExecutor`: `CtrlSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, `VarSet`, `VarAdd`, and `VarRangeSet`, including sysvar assignment support. `StateControllerExecutor` still resolves params, expressions, and dynamic fallback, so this does not claim exact variable scope, parent/root redirects, or full CNS VM parity.
@@ -149,6 +151,7 @@ MatchWorld
   ProjectileSystem
   ProjectileCombatSystem
   EffectSpawnSystem
+  EffectLifecycleSystem
   TargetSystem
   CombatResolver
   PauseSystem
@@ -179,12 +182,13 @@ The current extraction order is:
 13. `ProjectileSystem`: own the current colliding projectile lifecycle, hitbox projection, bounded hit-count/cooldown state, and snapshots.
 14. `RuntimeProjectileCombatWorld` / `ProjectileCombatSystem`: own the bounded projectile contact/reject/override/damage/removal loop, multi-hit cooldown, and projectile clash/cancel subset through the effect-actor world contract.
 15. `RuntimeEffectSpawnWorld` / `EffectSpawnSystem`: own bounded Explod/Helper/Projectile spawn resolution plus RemoveExplod/ModifyProjectile dispatch before those operations reach the effect actor world.
-16. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, active/presentation advance passes, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
-17. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
-18. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
-19. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-20. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-21. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+16. `RuntimeEffectLifecycleWorld` / `EffectLifecycleSystem`: own bounded active-effect tick, presentation tick, paused presentation tick, effect snapshot grouping, and shared get-hit cleanup orchestration over the effect actor world.
+17. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, low-level active/presentation advance mutation, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
+18. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
+19. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
+20. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+21. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+22. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

@@ -79,7 +79,8 @@ Build next:
 - Current proof: `RuntimeReversalWorld` owns bounded ReversalDef activation, active counter detection, and counter-result mutation consumed by direct HitDef contact paths, with focused `ReversalSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeProjectileCombatWorld` owns bounded projectile contact/reject/HitOverride/hit-or-guard/cleanup mutation plus projectile clash trade/cancel/decrement mutation consumed by `RuntimeEffectActorWorld`, with focused `ProjectileCombatSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeEffectSpawnWorld` owns bounded Explod/Helper/Projectile spawn resolution, RemoveExplod dispatch, and ModifyProjectile dispatch consumed by `PlayableMatchRuntime`, with focused `EffectSpawnSystem` coverage and unchanged trace behavior expected.
-- Move one mutable runtime area behind a named world/system boundary without changing behavior: deeper helper/projectile/explod lifecycle, combat/effect ordering, target links, deeper audio semantics, or deeper presentation ownership.
+- Current proof: `RuntimeEffectLifecycleWorld` owns bounded active-effect tick, presentation tick, paused presentation tick, effect snapshot grouping, and shared get-hit cleanup orchestration consumed by `PlayableMatchRuntime`, `RuntimeDirectCombatWorld`, `RuntimeHitOverrideWorld`, and `RuntimeReversalWorld`, with focused `EffectLifecycleSystem` coverage and unchanged trace behavior expected.
+- Move one mutable runtime area behind a named world/system boundary without changing behavior: deeper helper/projectile/explod VM lifecycle, combat/effect ordering, target links, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 
 Acceptance:

@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
@@ -127,7 +128,7 @@ export class RuntimeDirectCombatWorld {
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
-    markActorGotHit(defender);
+    markRuntimeEffectActorGotHit(defender);
     defender.runtime.ctrl = false;
     attacker.runtime.power = Math.min(runtimePowerMax(attacker), attacker.runtime.power + result.powerGain);
     hooks.applyGuardHit(defender);
@@ -162,7 +163,7 @@ export class RuntimeDirectCombatWorld {
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
-    markActorGotHit(defender);
+    markRuntimeEffectActorGotHit(defender);
     attacker.runtime.power = Math.min(runtimePowerMax(attacker), attacker.runtime.power + result.powerGain);
     hooks.applyHitStateTransitions(attacker, defender, move);
     hooks.applyDefaultGetHit(defender, move);
@@ -188,11 +189,6 @@ function interruptCurrentMove(actor: RuntimeDirectCombatActor): void {
   actor.currentMoveLabel = undefined;
   actor.moveTick = 0;
   actor.hasHit = false;
-}
-
-function markActorGotHit(actor: RuntimeDirectCombatActor): void {
-  actor.runtime.moveType = "H";
-  actor.effectActorWorld.removeExplodsOnGetHit(actor.id);
 }
 
 function runtimeGetHitVarsFromMove(move: DemoMove): CharacterRuntimeState["hitVars"] {

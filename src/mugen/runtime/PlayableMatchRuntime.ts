@@ -60,8 +60,8 @@ import {
   type RuntimeEffectActorStores,
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
+import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
-import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
@@ -111,6 +111,7 @@ export type MatchStepOptions = {
 export type PlayableMatchRuntimeOptions = {
   effectActorWorld?: RuntimeEffectActorWorld;
   effectActorStores?: RuntimeEffectActorStores;
+  effectLifecycleWorld?: RuntimeEffectLifecycleWorld;
   effectSpawnWorld?: RuntimeEffectSpawnWorld;
   targetWorld?: RuntimeTargetWorld;
   roundTimerFrames?: number;
@@ -184,6 +185,7 @@ export class PlayableMatchRuntime {
   private readonly p2: FighterMatchState;
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
+  private readonly effectLifecycleWorld: RuntimeEffectLifecycleWorld;
   private readonly effectSpawnWorld: RuntimeEffectSpawnWorld;
   private readonly targetWorld: RuntimeTargetWorld;
   private readonly audioWorld = new RuntimeAudioWorld();
@@ -212,6 +214,7 @@ export class PlayableMatchRuntime {
     this.roundTimerFrames = options.roundTimerFrames;
     this.round = new RuntimeRoundSystem(options.roundTimerFrames);
     this.effectActorWorld = options.effectActorWorld ?? new RuntimeEffectActorWorld(options.effectActorStores);
+    this.effectLifecycleWorld = options.effectLifecycleWorld ?? new RuntimeEffectLifecycleWorld();
     this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
     this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
     this.p1 = createFighterState(
@@ -295,8 +298,8 @@ export class PlayableMatchRuntime {
     if (globalPause > 0) {
       this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
       this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
-      advancePausedPresentationEffects(this.p1, "hitpause", this.stage);
-      advancePausedPresentationEffects(this.p2, "hitpause", this.stage);
+      this.effectLifecycleWorld.advancePausedPresentation(this.p1, "hitpause", this.stage);
+      this.effectLifecycleWorld.advancePausedPresentation(this.p2, "hitpause", this.stage);
       this.p1.hitPause = Math.max(0, this.p1.hitPause - 1);
       this.p2.hitPause = Math.max(0, this.p2.hitPause - 1);
       return;
@@ -346,8 +349,8 @@ export class PlayableMatchRuntime {
     }
     advanceTargetMemory(this.p1);
     advanceTargetMemory(this.p2);
-    advanceActiveEffects(this.p1, this.stage);
-    advanceActiveEffects(this.p2, this.stage);
+    this.effectLifecycleWorld.advanceActive(this.p1, this.stage);
+    this.effectLifecycleWorld.advanceActive(this.p2, this.stage);
     resolveProjectileClashes(this.p1, this.p2, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.separate(this.p1.runtime, this.p2.runtime);
     applyTargetBindings(this.p1, this.p2);
@@ -364,12 +367,12 @@ export class PlayableMatchRuntime {
     }
     resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
     resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, (line) => this.logs.unshift(line));
-    resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, (line) => this.logs.unshift(line));
+    resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
+    resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
     this.actorConstraintWorld.clampToStage(this.p2.runtime, this.stage);
-    advancePresentationEffects(this.p1);
-    advancePresentationEffects(this.p2);
+    this.effectLifecycleWorld.advancePresentation(this.p1);
+    this.effectLifecycleWorld.advancePresentation(this.p2);
 
     const roundFinish = this.round.finishIfNeeded(
       { label: this.p1.label, life: this.p1.runtime.life },
@@ -413,8 +416,8 @@ export class PlayableMatchRuntime {
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
       );
       advanceTargetMemory(actor);
-      advanceActiveEffects(actor, this.stage);
-      advancePresentationEffects(actor);
+      this.effectLifecycleWorld.advanceActive(actor, this.stage);
+      this.effectLifecycleWorld.advancePresentation(actor);
       applyTargetBindings(actor, opponent);
       applyBindToTarget(actor, opponent);
       this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
@@ -424,10 +427,10 @@ export class PlayableMatchRuntime {
       return;
     }
     if (!actorMoved || actor.id !== this.p1.id) {
-      advancePausedPresentationEffects(this.p1, pause.type, this.stage);
+      this.effectLifecycleWorld.advancePausedPresentation(this.p1, pause.type, this.stage);
     }
     if (!actorMoved || actor.id !== this.p2.id) {
-      advancePausedPresentationEffects(this.p2, pause.type, this.stage);
+      this.effectLifecycleWorld.advancePausedPresentation(this.p2, pause.type, this.stage);
     }
     this.pauseWorld.tick();
   }
@@ -452,6 +455,8 @@ export class PlayableMatchRuntime {
     const center = cameraCenterX([this.p1, this.p2]);
     const shake = this.envShakeWorld.snapshotCameraShake(this.tick, [this.p1, this.p2]);
     const envColor = this.envColorWorld.snapshotStageFlash(this.tick);
+    const p1Effects = this.effectLifecycleWorld.snapshotGroups(this.p1);
+    const p2Effects = this.effectLifecycleWorld.snapshotGroups(this.p2);
     return {
       tick: this.tick,
       selectedActionId: this.p1.runtime.animNo,
@@ -480,12 +485,12 @@ export class PlayableMatchRuntime {
       round: this.round.snapshot(),
       actors: [toSnapshot(this.p1), toSnapshot(this.p2)],
       effects: [
-        ...toExplodSnapshots(this.p1),
-        ...toExplodSnapshots(this.p2),
-        ...toHelperSnapshots(this.p1),
-        ...toHelperSnapshots(this.p2),
-        ...toProjectileSnapshots(this.p1),
-        ...toProjectileSnapshots(this.p2),
+        ...p1Effects.explods,
+        ...p2Effects.explods,
+        ...p1Effects.helpers,
+        ...p2Effects.helpers,
+        ...p1Effects.projectiles,
+        ...p2Effects.projectiles,
       ],
       compatibilitySession: buildCompatibilitySession([this.p1, this.p2]),
       logs: this.logs.slice(0, 80),
@@ -1304,36 +1309,6 @@ function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSa
   };
 }
 
-function advancePresentationEffects(fighter: FighterMatchState): void {
-  fighter.effectActorWorld.advancePresentationEffects(fighter.id, {
-    pos: fighter.runtime.pos,
-    facing: fighter.runtime.facing,
-  });
-}
-
-function advancePausedPresentationEffects(
-  fighter: FighterMatchState,
-  pauseKind: RuntimeExplodPauseKind,
-  stage: Pick<MugenStageDefinition, "bounds">,
-): void {
-  fighter.effectActorWorld.advancePresentationEffects(
-    fighter.id,
-    {
-      pos: fighter.runtime.pos,
-      facing: fighter.runtime.facing,
-    },
-    { pauseKind, stage },
-  );
-}
-
-function toExplodSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
-  return fighter.effectActorWorld.explodSnapshots(fighter.id, fighter.runtime.stateNo);
-}
-
-function toHelperSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
-  return fighter.effectActorWorld.helperSnapshots(fighter.id, fighter.runtime.stateNo);
-}
-
 function applyTargetController(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
@@ -1525,14 +1500,11 @@ function countRuntimeProjectiles(fighter: FighterMatchState, projectileId?: numb
   return fighter.effectActorWorld.countProjectiles(fighter.id, projectileId);
 }
 
-function advanceActiveEffects(fighter: FighterMatchState, stage: MugenStageDefinition): void {
-  fighter.effectActorWorld.advanceActiveEffects(fighter.id, stage);
-}
-
 function resolveProjectileCombat(
   attacker: FighterMatchState,
   defender: FighterMatchState,
   hitOverrideWorld: RuntimeHitOverrideWorld,
+  effectLifecycleWorld: RuntimeEffectLifecycleWorld,
   log: (line: string) => void,
 ): void {
   const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
@@ -1547,7 +1519,7 @@ function resolveProjectileCombat(
       applyHitOverride(source, target, override, hitPause, hitOverrideWorld, logger),
     applyGuardHit: applyDefaultGuardHitState,
     applyHitState: applyDefaultProjectileGetHitState,
-    markDefenderGotHit: markFighterGotHit,
+    markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
     recordReceivedDamage: markReceivedDamage,
   });
@@ -1559,10 +1531,6 @@ function resolveProjectileClashes(left: FighterMatchState, right: FighterMatchSt
     rightLabel: right.label,
     log,
   });
-}
-
-function toProjectileSnapshots(fighter: FighterMatchState): ActorSnapshot[] {
-  return fighter.effectActorWorld.projectileSnapshots(fighter.id, fighter.runtime.stateNo);
 }
 
 function recordSoundEvent(
@@ -1767,11 +1735,6 @@ function resolveCombat(
     applyDefaultGetHit: applyDefaultGetHitState,
   });
   log(outcome.message);
-}
-
-function markFighterGotHit(fighter: FighterMatchState): void {
-  fighter.runtime.moveType = "H";
-  fighter.effectActorWorld.removeExplodsOnGetHit(fighter.id);
 }
 
 function recordFallEnvShakeEvent(

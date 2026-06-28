@@ -1,0 +1,76 @@
+import type { MugenStageDefinition } from "../model/MugenStage";
+import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import type { RuntimeExplodPauseKind } from "./ExplodSystem";
+import type { ActorSnapshot, CharacterRuntimeState } from "./types";
+
+export type RuntimeEffectGetHitActor = {
+  id: string;
+  runtime: Pick<CharacterRuntimeState, "moveType">;
+  effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit">;
+};
+
+export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
+  runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "stateNo" | "moveType">;
+  effectActorWorld: Pick<
+    RuntimeEffectActorWorld,
+    | "advanceActiveEffects"
+    | "advancePresentationEffects"
+    | "explodSnapshots"
+    | "helperSnapshots"
+    | "projectileSnapshots"
+    | "removeExplodsOnGetHit"
+  >;
+};
+
+export type RuntimeEffectSnapshotGroups = {
+  explods: ActorSnapshot[];
+  helpers: ActorSnapshot[];
+  projectiles: ActorSnapshot[];
+};
+
+export class RuntimeEffectLifecycleWorld {
+  advanceActive(actor: RuntimeEffectLifecycleActor, stage: Pick<MugenStageDefinition, "bounds">): void {
+    actor.effectActorWorld.advanceActiveEffects(actor.id, stage);
+  }
+
+  advancePresentation(actor: RuntimeEffectLifecycleActor): void {
+    actor.effectActorWorld.advancePresentationEffects(actor.id, effectBindAnchor(actor));
+  }
+
+  advancePausedPresentation(
+    actor: RuntimeEffectLifecycleActor,
+    pauseKind: RuntimeExplodPauseKind,
+    stage: Pick<MugenStageDefinition, "bounds">,
+  ): void {
+    actor.effectActorWorld.advancePresentationEffects(actor.id, effectBindAnchor(actor), { pauseKind, stage });
+  }
+
+  markGetHit(actor: RuntimeEffectLifecycleActor): void {
+    markRuntimeEffectActorGotHit(actor);
+  }
+
+  snapshotGroups(actor: RuntimeEffectLifecycleActor): RuntimeEffectSnapshotGroups {
+    return {
+      explods: actor.effectActorWorld.explodSnapshots(actor.id, actor.runtime.stateNo),
+      helpers: actor.effectActorWorld.helperSnapshots(actor.id, actor.runtime.stateNo),
+      projectiles: actor.effectActorWorld.projectileSnapshots(actor.id, actor.runtime.stateNo),
+    };
+  }
+
+  snapshots(actor: RuntimeEffectLifecycleActor): ActorSnapshot[] {
+    const groups = this.snapshotGroups(actor);
+    return [...groups.explods, ...groups.helpers, ...groups.projectiles];
+  }
+}
+
+export function markRuntimeEffectActorGotHit(actor: RuntimeEffectGetHitActor): void {
+  actor.runtime.moveType = "H";
+  actor.effectActorWorld.removeExplodsOnGetHit(actor.id);
+}
+
+function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: number; y: number }; facing: 1 | -1 } {
+  return {
+    pos: actor.runtime.pos,
+    facing: actor.runtime.facing,
+  };
+}

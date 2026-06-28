@@ -1,4 +1,5 @@
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 
 export type RuntimeHitOverrideActor = {
@@ -47,7 +48,7 @@ export class RuntimeHitOverrideWorld {
     defender.runtime.guardControlTime = 0;
     defender.runtime.guarding = override.forceGuard ?? false;
     if (override.forceGuard) {
-      markActorGotHit(defender);
+      markRuntimeEffectActorGotHit(defender);
     }
     if (override.forceAir) {
       defender.runtime.stateType = "A";
@@ -72,9 +73,4 @@ function tickHitOverrideSlot(slot: RuntimeHitOverrideSlot | undefined): RuntimeH
   }
   const remaining = Math.max(0, slot.remaining - 1);
   return remaining > 0 ? { ...slot, remaining } : undefined;
-}
-
-function markActorGotHit(actor: RuntimeHitOverrideActor): void {
-  actor.runtime.moveType = "H";
-  actor.effectActorWorld.removeExplodsOnGetHit(actor.id);
 }

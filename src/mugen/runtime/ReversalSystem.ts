@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { markRuntimeMoveReversed, type RuntimeContactMemory } from "./ContactMemorySystem";
 import type { CharacterRuntimeState } from "./types";
 
@@ -124,7 +125,7 @@ export class RuntimeReversalWorld {
     attacker.runtime.guardSlideTime = 0;
     attacker.runtime.guardControlTime = 0;
     attacker.runtime.guarding = false;
-    markActorGotHit(attacker);
+    markRuntimeEffectActorGotHit(attacker);
     reverser.runtime.power = Math.min(runtimePowerMax(reverser), reverser.runtime.power + 25);
 
     const p1StateNo = reversal.p1StateNo;
@@ -162,11 +163,6 @@ function interruptCurrentMove(actor: RuntimeReversalActor): void {
   actor.currentMove = undefined;
   actor.currentMoveLabel = undefined;
   actor.moveTick = 0;
-}
-
-function markActorGotHit(actor: RuntimeReversalActor): void {
-  actor.runtime.moveType = "H";
-  actor.effectActorWorld.removeExplodsOnGetHit(actor.id);
 }
 
 function runtimePowerMax(actor: RuntimeReversalActor): number {
