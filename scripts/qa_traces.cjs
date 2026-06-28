@@ -596,6 +596,11 @@ async function main() {
       artifact: presets.createSyntheticImportedExplodIgnoreHitPauseTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitpausetime-ignorehitpause",
+      required: true,
+      artifact: presets.createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
@@ -1311,8 +1316,24 @@ function validateTraceCoverage(coverage) {
   const requiredEffectKinds = ["projectile", "helper", "explod"];
   const requiredEffectPayloadKinds = ["projectile", "helper", "explod"];
   const requiredEffectPayloadDeltas = ["projectile:hits", "projectile:removal", "projectile:terminal", "explod:bindRemaining"];
-  const requiredPauseAdvanceRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
-  const requiredPauseFreezeRoutes = ["HitPause:explod", "Pause:explod", "SuperPause:player", "SuperPause:projectile", "SuperPause:helper", "SuperPause:explod"];
+  const requiredPauseAdvanceRoutes = [
+    "HitPause:player",
+    "HitPause:explod",
+    "Pause:explod",
+    "SuperPause:player",
+    "SuperPause:projectile",
+    "SuperPause:helper",
+    "SuperPause:explod",
+  ];
+  const requiredPauseFreezeRoutes = [
+    "HitPause:player",
+    "HitPause:explod",
+    "Pause:explod",
+    "SuperPause:player",
+    "SuperPause:projectile",
+    "SuperPause:helper",
+    "SuperPause:explod",
+  ];
   const requiredSoundEventTypes = ["PlaySnd", "StopSnd"];
   const requiredHitEffectEventKinds = ["HitSpark:hit", "HitSpark:guard"];
   const requiredEnvShakeEventTypes = ["EnvShake"];
@@ -1335,6 +1356,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-explod-scale",
     "synthetic-imported-explod-pausemovetime",
     "synthetic-imported-explod-ignorehitpause",
+    "synthetic-imported-hitpausetime-ignorehitpause",
     "synthetic-imported-explod-removeongethit",
     "synthetic-imported-explod-removeonprojectilehit",
     "synthetic-imported-explod-removeonprojectileguard",

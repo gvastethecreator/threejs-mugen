@@ -65,6 +65,7 @@ import {
   createSyntheticImportedExplodPauseMoveTimeTraceArtifact,
   createSyntheticImportedExplodSuperMoveTimeTraceArtifact,
   createSyntheticImportedExplodVelocityTraceArtifact,
+  createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
   createSyntheticImportedHelperIgnoreHitPauseTraceArtifact,
@@ -4587,6 +4588,49 @@ describe("RuntimeTraceGatePresets", () => {
           changedFields: expect.arrayContaining(["animTime", "pos"]),
         }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported HitPauseTime ignorehitpause artifact with active-state branch evidence", () => {
+    const artifact = createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitpausetime-ignorehitpause-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitpausetime-ignorehitpause-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual([{ type: "ChangeState", minCount: 2 }, "HitDef"]);
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 220]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "HitPause", actorId: "p1", actorKind: "player", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+    ]);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 220]));
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "HitPause",
+          actorId: "p1",
+          actorKind: "player",
+          ownerId: "p1",
+          changedFields: expect.arrayContaining(["stateNo", "animNo"]),
+        }),
+      ]),
+    );
+    expect(evidence?.matchPauseFreezes).toEqual(
+      expect.arrayContaining([expect.objectContaining({ type: "HitPause", actorId: "p2", actorKind: "player", ownerId: "p2" })]),
     );
   });
 

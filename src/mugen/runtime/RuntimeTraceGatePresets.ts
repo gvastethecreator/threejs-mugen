@@ -5707,6 +5707,72 @@ export function createSyntheticImportedExplodIgnoreHitPauseTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitpausetime-ignorehitpause",
+    displayName: "Synthetic Imported HitPauseTime IgnoreHitPause",
+    hitPauseTimeIgnoreHitPauseStateNo: 220,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitpausetime-ignorehitpause-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitpausetime-ignorehitpause-golden",
+      label: "Synthetic imported HitPauseTime ignorehitpause controller route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported HitPauseTime ignorehitpause trace proves an imported active-state ChangeState controller marked ignorehitpause = 1 can evaluate HitPauseTime > 0 and route during global hitpause. It does not claim persistent controllers, ordinary non-ignore controllers, helper-owned hitpause, full side-effect ordering, or exact MUGEN/IKEMEN hitpause tick-order parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitpausetime-ignorehitpause-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 220],
+        requiredExecutedControllers: [{ type: "ChangeState", minCount: 2 }, "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredControllerEventSequences: [
+          {
+            label: "HitPauseTime ignorehitpause active-state branch",
+            actorId: "p1",
+            steps: [
+              { stateNo: 200, controller: "HitDef", name: "HitDef" },
+              { stateNo: 200, controller: "ChangeState", name: "HitPauseTime Branch" },
+            ],
+          },
+        ],
+        requiredMatchPauseFreezes: [{ type: "HitPause", actorId: "p2", actorKind: "player", ownerId: "p2", minFrozenFrames: 2 }],
+        requiredMatchPauseAdvances: [
+          { type: "HitPause", actorId: "p1", actorKind: "player", ownerId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 },
+        ],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 220,
+            animNo: 220,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -7784,6 +7850,7 @@ export type SyntheticImportedTraceFighterOptions = {
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
+  hitPauseTimeIgnoreHitPauseStateNo?: number;
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
   numHelperStateNo?: number;
@@ -8104,6 +8171,7 @@ ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.w
 ${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
+${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
@@ -8163,6 +8231,7 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
+${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -8250,6 +8319,11 @@ ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I
           ] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveReversedStateNo === undefined ? [] : ([[options.moveReversedStateNo, traceAction(options.moveReversedStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveGuardStateNo === undefined ? [] : ([[options.moveGuardStateNo, traceAction(options.moveGuardStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.hitPauseTimeIgnoreHitPauseStateNo === undefined
+        ? []
+        : ([[options.hitPauseTimeIgnoreHitPauseStateNo, traceAction(options.hitPauseTimeIgnoreHitPauseStateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -9814,6 +9888,17 @@ function contactBranchBlock(trigger: string, stateNo: number, label: string): st
 [State 200, ${label}]
 type = ChangeState
 trigger1 = ${trigger}
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function hitPauseTimeIgnoreHitPauseBranchBlock(stateNo: number): string {
+  return `
+[State 200, HitPauseTime Branch]
+type = ChangeState
+trigger1 = HitPauseTime > 0
+ignorehitpause = 1
 value = ${stateNo}
 ctrl = 0
 `;

@@ -27,7 +27,7 @@ Every controller family should have:
 
 ## Current Trigger Notes
 
-- `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. Imported active-state controllers with `ignorehitpause = 1` can run in a bounded controller-only pass during global hitpause. This is trigger/controller-loop subset support, not a new controller family, not persistent parity, and not exact hitpause-loop parity.
+- `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. Imported active-state controllers with `ignorehitpause = 1` can run in a bounded controller-only pass during global hitpause, and required `synthetic-imported-hitpausetime-ignorehitpause.json` checksum `a3a78bb8` gates P1 player advance into state `220` while P2 player freeze evidence remains present. This is trigger/controller-loop subset support, not a new controller family, not persistent parity, and not exact hitpause-loop parity.
 
 ## Current Registry
 

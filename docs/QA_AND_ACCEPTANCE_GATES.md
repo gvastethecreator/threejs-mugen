@@ -313,10 +313,12 @@ This proves bounded owner-side direct/projectile hit-or-guard pruning only. It d
 
 ## Current Explod Pause-Budget Gate
 
-`pnpm qa:trace` includes required `synthetic-imported-explod-ignorehitpause.json`, `synthetic-imported-explod-pausemovetime.json`, and `synthetic-imported-explod-supermovetime.json`.
+`pnpm qa:trace` includes required `synthetic-imported-hitpausetime-ignorehitpause.json`, `synthetic-imported-explod-ignorehitpause.json`, `synthetic-imported-explod-pausemovetime.json`, and `synthetic-imported-explod-supermovetime.json`.
 
 These gates prove:
 
+- imported P1 can route from active state `200` to `220` during direct-hit hitpause through `HitPauseTime > 0` on a `ChangeState` marked `ignorehitpause = 1`;
+- the `HitPauseTime` route records P1 `HitPause:player` advance and P2 `HitPause:player` freeze evidence;
 - imported P1 creates two source-owned visual `Explod` actors during regular `Pause` and `SuperPause` routes;
 - imported P1 creates two source-owned visual `Explod` actors before a direct-hit hitpause route;
 - one Explod without `ignorehitpause` freezes during hitpause;
@@ -327,7 +329,7 @@ These gates prove:
 - MatchWorld emits Explod spawn/store evidence with P1 serial progression;
 - trace evidence records both match-pause freeze and advance rows by exact Explod actor id.
 
-This proves bounded Explod `ignorehitpause`/`pausemovetime`/`supermovetime` actor advance only. Exact MUGEN/IKEMEN pause layering remains unsupported.
+This proves bounded player active-state `HitPauseTime`/`ignorehitpause` routing and bounded Explod `ignorehitpause`/`pausemovetime`/`supermovetime` actor advance only. Exact MUGEN/IKEMEN pause layering and broad controller tick order remain unsupported.
 
 ## Playable MVP Acceptance
 
