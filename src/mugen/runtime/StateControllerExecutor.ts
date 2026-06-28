@@ -228,6 +228,9 @@ export function executeControllerIr(
     type === "width" ||
     type === "fallenvshake" ||
     type === "forcefeedback" ||
+    type === "displaytoclipboard" ||
+    type === "appendtoclipboard" ||
+    type === "clearclipboard" ||
     type === "playsnd" ||
     type === "stopsnd" ||
     type === "envshake" ||

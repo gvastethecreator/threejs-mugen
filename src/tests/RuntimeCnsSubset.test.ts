@@ -215,6 +215,16 @@ describe("StateControllerExecutor", () => {
     expect(result.stateNo).toBe(206);
   });
 
+  it("accepts debug clipboard controllers as no-op runtime controllers", () => {
+    for (const type of ["DisplayToClipboard", "AppendToClipboard", "ClearClipboard"]) {
+      const compiled = compileControllerIr(controller(type, { text: '"state=%d"', params: "StateNo" }));
+      const result = executeControllerIr(compiled, runtimeState({ stateNo: 200, life: 777 }), () => undefined);
+
+      expect(compiled.supportLevel).toBe("noop");
+      expect(result).toMatchObject({ stateNo: 200, life: 777 });
+    }
+  });
+
   it("executes movement, animation, and state controllers", () => {
     let state = runtimeState();
     const unsupported: string[] = [];

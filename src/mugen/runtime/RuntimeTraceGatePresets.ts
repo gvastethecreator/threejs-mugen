@@ -352,14 +352,22 @@ export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGa
     {
       ...options,
       targetId: "synthetic-imported-noop-golden",
-      targetLabel: "Synthetic imported Null / ForceFeedback no-op route",
+      targetLabel: "Synthetic imported no-op/debug controller route",
       requireHitEvent: true,
       requiredExecutedStates: [200],
-      requiredExecutedControllers: ["ChangeState", "Null", "ForceFeedback", "HitDef"],
+      requiredExecutedControllers: [
+        "ChangeState",
+        "Null",
+        "ForceFeedback",
+        "DisplayToClipboard",
+        "AppendToClipboard",
+        "ClearClipboard",
+        "HitDef",
+      ],
       requiredExecutedOperations: ["hitdef"],
       requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200 }],
       notes: [
-        "Synthetic imported no-op trace proves Null and ForceFeedback controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback remains a browser no-op, and Null remains a true no-op; this does not claim device feedback, side effects, or full CNS VM parity.",
+        "Synthetic imported no-op trace proves Null, ForceFeedback, DisplayToClipboard, AppendToClipboard, and ClearClipboard controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback and debug clipboard controllers remain browser/runtime no-ops, and Null remains a true no-op; this does not claim device feedback, debug text rendering, clipboard output, side effects, or full CNS VM parity.",
       ],
     },
   );
@@ -10508,6 +10516,22 @@ trigger1 = Time = 0
 type = ForceFeedback
 trigger1 = Time = 0
 time = 8
+
+[State 200, Display Debug Clipboard Probe]
+type = DisplayToClipboard
+trigger1 = Time = 0
+text = "state=%d"
+params = StateNo
+
+[State 200, Append Debug Clipboard Probe]
+type = AppendToClipboard
+trigger1 = Time = 0
+text = " time=%d"
+params = Time
+
+[State 200, Clear Debug Clipboard Probe]
+type = ClearClipboard
+trigger1 = Time = 0
 `;
 }
 

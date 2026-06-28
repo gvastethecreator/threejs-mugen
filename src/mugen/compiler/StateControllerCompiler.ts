@@ -81,6 +81,9 @@ const controllerSupport: Record<string, ControllerSupport> = {
   angleadd: partial("sprite rotation"),
   angledraw: partial("sprite rotation"),
   forcefeedback: noop("browser no-op"),
+  displaytoclipboard: noop("debug clipboard no-op"),
+  appendtoclipboard: noop("debug clipboard no-op"),
+  clearclipboard: noop("debug clipboard no-op"),
   turn: partial("facing"),
   null: noop("true no-op"),
 };

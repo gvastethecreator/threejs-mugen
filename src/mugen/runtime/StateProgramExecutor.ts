@@ -122,6 +122,9 @@ const runtimeControllers = new Set([
   "posfreeze",
   "screenbound",
   "forcefeedback",
+  "displaytoclipboard",
+  "appendtoclipboard",
+  "clearclipboard",
   "assertspecial",
   "null",
 ]);

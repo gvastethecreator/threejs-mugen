@@ -364,7 +364,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, animNo: 200 });
   });
 
-  it("creates a synthetic imported no-op artifact for Null and ForceFeedback", () => {
+  it("creates a synthetic imported no-op artifact for Null, ForceFeedback, and debug clipboard controllers", () => {
     const artifact = createSyntheticImportedNoOpTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -382,10 +382,21 @@ describe("RuntimeTraceGatePresets", () => {
       ],
     });
     const evidence = artifact.gates[0]?.evidence;
-    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "Null", "ForceFeedback", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "Null",
+      "ForceFeedback",
+      "DisplayToClipboard",
+      "AppendToClipboard",
+      "ClearClipboard",
+      "HitDef",
+    ]);
     expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef"]);
     expect(evidence?.executedControllers.Null).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.ForceFeedback).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.DisplayToClipboard).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AppendToClipboard).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ClearClipboard).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
