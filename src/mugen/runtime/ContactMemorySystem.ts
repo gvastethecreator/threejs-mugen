@@ -1,0 +1,188 @@
+export type RuntimeContactMemory = {
+  moveContactState?: number;
+  moveHitState?: number;
+  moveGuardState?: number;
+  moveContactTime?: number;
+  moveHitTime?: number;
+  moveGuardTime?: number;
+  moveHitCount?: number;
+  moveUniqueHitCount?: number;
+  moveHitTargetIds?: Set<string>;
+  moveReversedState?: number;
+  moveReversedTime?: number;
+  receivedDamageState?: number;
+  receivedDamageAmount?: number;
+  receivedHitsState?: number;
+  receivedHitsCount?: number;
+  projectileContactState?: number;
+  projectileHitState?: number;
+  projectileGuardState?: number;
+  projectileId?: number;
+  projectileContactTime?: number;
+  projectileHitTime?: number;
+  projectileGuardTime?: number;
+};
+
+export type RuntimeContactKind = "contact" | "hit" | "guard";
+
+export function createRuntimeContactMemory(): RuntimeContactMemory {
+  return {};
+}
+
+export function resetRuntimeMoveContact(memory: RuntimeContactMemory): void {
+  delete memory.moveContactState;
+  delete memory.moveHitState;
+  delete memory.moveGuardState;
+  delete memory.moveContactTime;
+  delete memory.moveHitTime;
+  delete memory.moveGuardTime;
+  delete memory.moveHitCount;
+  delete memory.moveUniqueHitCount;
+  delete memory.moveHitTargetIds;
+  delete memory.moveReversedState;
+  delete memory.moveReversedTime;
+}
+
+export function applyRuntimeHitAdd(memory: RuntimeContactMemory, stateNo: number, value: number): void {
+  const current = memory.moveHitState === stateNo ? memory.moveHitCount ?? 0 : 0;
+  memory.moveHitState = stateNo;
+  memory.moveHitTime = memory.moveHitTime ?? 0;
+  memory.moveHitCount = clampHitCount(current + value);
+}
+
+export function markRuntimeMoveContact(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  kind: Extract<RuntimeContactKind, "hit" | "guard">,
+  targetActorId?: string,
+): void {
+  memory.moveContactState = stateNo;
+  memory.moveContactTime = 0;
+  if (kind === "hit") {
+    memory.moveHitState = stateNo;
+    memory.moveHitTime = 0;
+    memory.moveHitCount = clampHitCount((memory.moveHitCount ?? 0) + 1);
+    if (targetActorId) {
+      const targetIds = memory.moveHitTargetIds ?? new Set<string>();
+      if (!targetIds.has(targetActorId)) {
+        targetIds.add(targetActorId);
+        memory.moveUniqueHitCount = clampHitCount((memory.moveUniqueHitCount ?? 0) + 1);
+      }
+      memory.moveHitTargetIds = targetIds;
+    } else {
+      memory.moveUniqueHitCount = clampHitCount((memory.moveUniqueHitCount ?? 0) + 1);
+    }
+  } else {
+    memory.moveGuardState = stateNo;
+    memory.moveGuardTime = 0;
+  }
+}
+
+export function markRuntimeMoveReversed(memory: RuntimeContactMemory, stateNo: number): void {
+  memory.moveReversedState = stateNo;
+  memory.moveReversedTime = 0;
+}
+
+export function markRuntimeReceivedDamage(memory: RuntimeContactMemory, stateNo: number, damage: number): void {
+  memory.receivedDamageState = stateNo;
+  memory.receivedDamageAmount = Math.max(0, Math.round(damage));
+  memory.receivedHitsState = stateNo;
+  memory.receivedHitsCount = clampHitCount((memory.receivedHitsCount ?? 0) + 1);
+}
+
+export function markRuntimeProjectileContact(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  projectileId: number | undefined,
+  kind: Extract<RuntimeContactKind, "hit" | "guard">,
+): void {
+  memory.projectileContactState = stateNo;
+  memory.projectileId = projectileId;
+  memory.projectileContactTime = 0;
+  if (kind === "hit") {
+    memory.projectileHitState = stateNo;
+    memory.projectileHitTime = 0;
+  } else {
+    memory.projectileGuardState = stateNo;
+    memory.projectileGuardTime = 0;
+  }
+}
+
+export function advanceRuntimeContactTimers(memory: RuntimeContactMemory): void {
+  if (memory.moveContactTime !== undefined) memory.moveContactTime += 1;
+  if (memory.moveHitTime !== undefined) memory.moveHitTime += 1;
+  if (memory.moveGuardTime !== undefined) memory.moveGuardTime += 1;
+  if (memory.moveReversedTime !== undefined) memory.moveReversedTime += 1;
+  if (memory.projectileContactTime !== undefined) memory.projectileContactTime += 1;
+  if (memory.projectileHitTime !== undefined) memory.projectileHitTime += 1;
+  if (memory.projectileGuardTime !== undefined) memory.projectileGuardTime += 1;
+}
+
+export function runtimeMoveContactValue(memory: RuntimeContactMemory, stateNo: number, kind: RuntimeContactKind): number {
+  if (kind === "hit") {
+    return memory.moveHitState === stateNo ? memory.moveHitTime ?? 0 : 0;
+  }
+  if (kind === "guard") {
+    return memory.moveGuardState === stateNo ? memory.moveGuardTime ?? 0 : 0;
+  }
+  return memory.moveContactState === stateNo ? memory.moveContactTime ?? 0 : 0;
+}
+
+export function runtimeMoveHitCountValue(memory: RuntimeContactMemory, stateNo: number, unique: boolean): number {
+  if (memory.moveHitState !== stateNo) {
+    return 0;
+  }
+  return unique ? memory.moveUniqueHitCount ?? 0 : memory.moveHitCount ?? 0;
+}
+
+export function runtimeMoveReversedValue(memory: RuntimeContactMemory, stateNo: number): number {
+  return memory.moveReversedState === stateNo ? memory.moveReversedTime ?? 0 : 0;
+}
+
+export function runtimeReceivedDamageValue(memory: RuntimeContactMemory, stateNo: number): number {
+  return memory.receivedDamageState === stateNo ? memory.receivedDamageAmount ?? 0 : 0;
+}
+
+export function runtimeReceivedHitsValue(memory: RuntimeContactMemory, stateNo: number): number {
+  return memory.receivedHitsState === stateNo ? memory.receivedHitsCount ?? 0 : 0;
+}
+
+export function hasRuntimeProjectileContact(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  kind: RuntimeContactKind,
+  projectileId?: number,
+): boolean {
+  if (projectileId !== undefined && memory.projectileId !== projectileId) {
+    return false;
+  }
+  if (kind === "hit") {
+    return memory.projectileHitState === stateNo;
+  }
+  if (kind === "guard") {
+    return memory.projectileGuardState === stateNo;
+  }
+  return memory.projectileContactState === stateNo;
+}
+
+export function runtimeProjectileContactTime(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  kind: RuntimeContactKind,
+  projectileId?: number,
+): number {
+  if (projectileId !== undefined && memory.projectileId !== projectileId) {
+    return -1;
+  }
+  if (kind === "hit") {
+    return memory.projectileHitState === stateNo ? memory.projectileHitTime ?? 0 : -1;
+  }
+  if (kind === "guard") {
+    return memory.projectileGuardState === stateNo ? memory.projectileGuardTime ?? 0 : -1;
+  }
+  return memory.projectileContactState === stateNo ? memory.projectileContactTime ?? 0 : -1;
+}
+
+function clampHitCount(value: number): number {
+  return Math.max(0, Math.min(999, Math.round(value)));
+}

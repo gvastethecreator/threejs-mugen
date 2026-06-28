@@ -24,6 +24,24 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
+import {
+  advanceRuntimeContactTimers,
+  applyRuntimeHitAdd,
+  createRuntimeContactMemory,
+  hasRuntimeProjectileContact,
+  markRuntimeMoveContact,
+  markRuntimeMoveReversed,
+  markRuntimeProjectileContact,
+  markRuntimeReceivedDamage,
+  resetRuntimeMoveContact,
+  runtimeMoveContactValue,
+  runtimeMoveHitCountValue,
+  runtimeMoveReversedValue,
+  runtimeProjectileContactTime,
+  runtimeReceivedDamageValue,
+  runtimeReceivedHitsValue,
+  type RuntimeContactMemory,
+} from "./ContactMemorySystem";
 import { calculateRuntimeStageFlash, createRuntimeEnvColorEvent, pushRuntimeEnvColorEvent } from "./EnvColorSystem";
 import {
   applyRuntimeDamage,
@@ -153,32 +171,7 @@ type FighterMatchState = {
   effectActorWorld: RuntimeEffectActorWorld;
   targetWorld: RuntimeTargetWorld;
   lastExecutedState?: number;
-  contact: FighterContactState;
-};
-
-type FighterContactState = {
-  moveContactState?: number;
-  moveHitState?: number;
-  moveGuardState?: number;
-  moveContactTime?: number;
-  moveHitTime?: number;
-  moveGuardTime?: number;
-  moveHitCount?: number;
-  moveUniqueHitCount?: number;
-  moveHitTargetIds?: Set<string>;
-  moveReversedState?: number;
-  moveReversedTime?: number;
-  receivedDamageState?: number;
-  receivedDamageAmount?: number;
-  receivedHitsState?: number;
-  receivedHitsCount?: number;
-  projectileContactState?: number;
-  projectileHitState?: number;
-  projectileGuardState?: number;
-  projectileId?: number;
-  projectileContactTime?: number;
-  projectileHitTime?: number;
-  projectileGuardTime?: number;
+  contact: RuntimeContactMemory;
 };
 
 type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
@@ -622,7 +615,7 @@ function createFighterState(
     envShakeEvents: [],
     effectActorWorld,
     targetWorld,
-    contact: {},
+    contact: createRuntimeContactMemory(),
   };
 }
 
@@ -1592,21 +1585,11 @@ function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState
 }
 
 function resetContactState(fighter: FighterMatchState): void {
-  fighter.contact = {};
+  fighter.contact = createRuntimeContactMemory();
 }
 
 function resetMoveContactState(fighter: FighterMatchState): void {
-  delete fighter.contact.moveContactState;
-  delete fighter.contact.moveHitState;
-  delete fighter.contact.moveGuardState;
-  delete fighter.contact.moveContactTime;
-  delete fighter.contact.moveHitTime;
-  delete fighter.contact.moveGuardTime;
-  delete fighter.contact.moveHitCount;
-  delete fighter.contact.moveUniqueHitCount;
-  delete fighter.contact.moveHitTargetIds;
-  delete fighter.contact.moveReversedState;
-  delete fighter.contact.moveReversedTime;
+  resetRuntimeMoveContact(fighter.contact);
 }
 
 function applyHitAddController(
@@ -1618,137 +1601,55 @@ function applyHitAddController(
   if (value === undefined) {
     return;
   }
-  const current = fighter.contact.moveHitState === fighter.runtime.stateNo ? fighter.contact.moveHitCount ?? 0 : 0;
-  fighter.contact.moveHitState = fighter.runtime.stateNo;
-  fighter.contact.moveHitTime = fighter.contact.moveHitTime ?? 0;
-  fighter.contact.moveHitCount = clampHitCount(current + value);
+  applyRuntimeHitAdd(fighter.contact, fighter.runtime.stateNo, value);
 }
 
 function markMoveContact(fighter: FighterMatchState, kind: "hit" | "guard", targetActorId?: string): void {
-  fighter.contact.moveContactState = fighter.runtime.stateNo;
-  fighter.contact.moveContactTime = 0;
-  if (kind === "hit") {
-    fighter.contact.moveHitState = fighter.runtime.stateNo;
-    fighter.contact.moveHitTime = 0;
-    fighter.contact.moveHitCount = (fighter.contact.moveHitCount ?? 0) + 1;
-    if (targetActorId) {
-      const targetIds = fighter.contact.moveHitTargetIds ?? new Set<string>();
-      if (!targetIds.has(targetActorId)) {
-        targetIds.add(targetActorId);
-        fighter.contact.moveUniqueHitCount = (fighter.contact.moveUniqueHitCount ?? 0) + 1;
-      }
-      fighter.contact.moveHitTargetIds = targetIds;
-    } else {
-      fighter.contact.moveUniqueHitCount = (fighter.contact.moveUniqueHitCount ?? 0) + 1;
-    }
-  } else {
-    fighter.contact.moveGuardState = fighter.runtime.stateNo;
-    fighter.contact.moveGuardTime = 0;
-  }
+  markRuntimeMoveContact(fighter.contact, fighter.runtime.stateNo, kind, targetActorId);
 }
 
 function markMoveReversed(fighter: FighterMatchState): void {
-  fighter.contact.moveReversedState = fighter.runtime.stateNo;
-  fighter.contact.moveReversedTime = 0;
+  markRuntimeMoveReversed(fighter.contact, fighter.runtime.stateNo);
 }
 
 function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
-  fighter.contact.receivedDamageState = fighter.runtime.stateNo;
-  fighter.contact.receivedDamageAmount = Math.max(0, Math.round(damage));
-  fighter.contact.receivedHitsState = fighter.runtime.stateNo;
-  fighter.contact.receivedHitsCount = (fighter.contact.receivedHitsCount ?? 0) + 1;
+  markRuntimeReceivedDamage(fighter.contact, fighter.runtime.stateNo, damage);
 }
 
 function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
-  fighter.contact.projectileContactState = fighter.runtime.stateNo;
-  fighter.contact.projectileId = projectileId;
-  fighter.contact.projectileContactTime = 0;
-  if (kind === "hit") {
-    fighter.contact.projectileHitState = fighter.runtime.stateNo;
-    fighter.contact.projectileHitTime = 0;
-  } else {
-    fighter.contact.projectileGuardState = fighter.runtime.stateNo;
-    fighter.contact.projectileGuardTime = 0;
-  }
+  markRuntimeProjectileContact(fighter.contact, fighter.runtime.stateNo, projectileId, kind);
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {
-  if (fighter.contact.moveContactTime !== undefined) {
-    fighter.contact.moveContactTime += 1;
-  }
-  if (fighter.contact.moveHitTime !== undefined) {
-    fighter.contact.moveHitTime += 1;
-  }
-  if (fighter.contact.moveGuardTime !== undefined) {
-    fighter.contact.moveGuardTime += 1;
-  }
-  if (fighter.contact.moveReversedTime !== undefined) {
-    fighter.contact.moveReversedTime += 1;
-  }
-  if (fighter.contact.projectileContactTime !== undefined) {
-    fighter.contact.projectileContactTime += 1;
-  }
-  if (fighter.contact.projectileHitTime !== undefined) {
-    fighter.contact.projectileHitTime += 1;
-  }
-  if (fighter.contact.projectileGuardTime !== undefined) {
-    fighter.contact.projectileGuardTime += 1;
-  }
+  advanceRuntimeContactTimers(fighter.contact);
 }
 
 function moveContactValue(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): number {
-  if (kind === "hit") {
-    return fighter.contact.moveHitState === fighter.runtime.stateNo ? fighter.contact.moveHitTime ?? 0 : 0;
-  }
-  if (kind === "guard") {
-    return fighter.contact.moveGuardState === fighter.runtime.stateNo ? fighter.contact.moveGuardTime ?? 0 : 0;
-  }
-  return fighter.contact.moveContactState === fighter.runtime.stateNo ? fighter.contact.moveContactTime ?? 0 : 0;
+  return runtimeMoveContactValue(fighter.contact, fighter.runtime.stateNo, kind);
 }
 
 function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number {
-  if (fighter.contact.moveHitState !== fighter.runtime.stateNo) {
-    return 0;
-  }
-  return unique ? fighter.contact.moveUniqueHitCount ?? 0 : fighter.contact.moveHitCount ?? 0;
+  return runtimeMoveHitCountValue(fighter.contact, fighter.runtime.stateNo, unique);
 }
 
 function moveReversedValue(fighter: FighterMatchState): number {
-  return fighter.contact.moveReversedState === fighter.runtime.stateNo ? fighter.contact.moveReversedTime ?? 0 : 0;
+  return runtimeMoveReversedValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function receivedDamageValue(fighter: FighterMatchState): number {
-  return fighter.contact.receivedDamageState === fighter.runtime.stateNo ? fighter.contact.receivedDamageAmount ?? 0 : 0;
+  return runtimeReceivedDamageValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function receivedHitsValue(fighter: FighterMatchState): number {
-  return fighter.contact.receivedHitsState === fighter.runtime.stateNo ? fighter.contact.receivedHitsCount ?? 0 : 0;
+  return runtimeReceivedHitsValue(fighter.contact, fighter.runtime.stateNo);
 }
 
 function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
-  if (projectileId !== undefined && fighter.contact.projectileId !== projectileId) {
-    return false;
-  }
-  if (kind === "hit") {
-    return fighter.contact.projectileHitState === fighter.runtime.stateNo;
-  }
-  if (kind === "guard") {
-    return fighter.contact.projectileGuardState === fighter.runtime.stateNo;
-  }
-  return fighter.contact.projectileContactState === fighter.runtime.stateNo;
+  return hasRuntimeProjectileContact(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
 }
 
 function projectileContactTime(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): number {
-  if (projectileId !== undefined && fighter.contact.projectileId !== projectileId) {
-    return -1;
-  }
-  if (kind === "hit") {
-    return fighter.contact.projectileHitState === fighter.runtime.stateNo ? fighter.contact.projectileHitTime ?? 0 : -1;
-  }
-  if (kind === "guard") {
-    return fighter.contact.projectileGuardState === fighter.runtime.stateNo ? fighter.contact.projectileGuardTime ?? 0 : -1;
-  }
-  return fighter.contact.projectileContactState === fighter.runtime.stateNo ? fighter.contact.projectileContactTime ?? 0 : -1;
+  return runtimeProjectileContactTime(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
 }
 
 function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {
@@ -3122,10 +3023,6 @@ function clampBodyWidth(value: number): number {
 
 function clampHitDefPriority(value: number): number {
   return Math.max(0, Math.min(10, Math.round(value)));
-}
-
-function clampHitCount(value: number): number {
-  return Math.max(0, Math.min(999, Math.round(value)));
 }
 
 function actionDuration(action: MugenAnimationAction): number {
