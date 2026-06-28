@@ -331,6 +331,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-guard-sound",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGuardSoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-unguardable",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialUnguardableTraceArtifact(),
@@ -1354,6 +1359,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
+    "synthetic-imported-hitdef-guard-sound",
     "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-crouch-guarddeny",
     "synthetic-imported-assertspecial-air-guarddeny",

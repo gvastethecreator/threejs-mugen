@@ -51,6 +51,7 @@ import {
   createSyntheticImportedCrouchGuardStateTraceArtifact,
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
   createSyntheticImportedGuardTraceArtifact,
+  createSyntheticImportedHitDefGuardSoundTraceArtifact,
   createSyntheticImportedDefaultGuardStateTraceArtifact,
   createSyntheticImportedExplodBindTraceArtifact,
   createSyntheticImportedExplodRemoveOnGetHitTraceArtifact,
@@ -2134,6 +2135,41 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("guard");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("guard");
     expect(artifact.trace.events.some((event) => event.category === "guard" && event.line.includes("guarded"))).toBe(true);
+  });
+
+  it("creates a synthetic imported HitDef guard-sound artifact", () => {
+    const artifact = createSyntheticImportedHitDefGuardSoundTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-guard-sound-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-guard-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          type: "PlaySnd",
+          group: 6,
+          index: 0,
+          stateNo: 200,
+        }),
+      ]),
+    );
   });
 
   it("creates a generic imported guard artifact for imported fighters", () => {

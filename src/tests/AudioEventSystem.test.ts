@@ -74,6 +74,24 @@ describe("AudioEventSystem", () => {
     expect(event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 });
     expect(fighter.soundEvents).toEqual([event]);
   });
+
+  it("wraps direct HitDef sound telemetry behind RuntimeAudioWorld", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 6), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitHitDefSound(fighter, "S6,0", 140);
+
+    expect(event).toMatchObject({
+      type: "PlaySnd",
+      group: 6,
+      index: 0,
+      raw: "S6,0",
+      stateNo: 200,
+      tick: 6,
+      runtimeTick: 140,
+    });
+    expect(fighter.soundEvents).toEqual([event]);
+  });
 });
 
 function actor(stateNo: number, stateElapsed: number) {

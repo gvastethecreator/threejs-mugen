@@ -42,6 +42,24 @@ export class RuntimeAudioWorld {
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;
   }
+
+  emitHitDefSound(actor: RuntimeAudioWorldActor, sound: string | undefined, runtimeTick: number): RuntimeSoundEvent | undefined {
+    if (!sound) {
+      return undefined;
+    }
+    const parsed = parseMugenSoundValue(sound);
+    const event: RuntimeSoundEvent = {
+      type: "PlaySnd",
+      group: parsed?.group,
+      index: parsed?.index,
+      raw: sound,
+      stateNo: actor.runtime.stateNo,
+      tick: actor.stateElapsed,
+      runtimeTick,
+    };
+    pushRuntimeSoundEvent(actor.soundEvents, event);
+    return event;
+  }
 }
 
 export function parseMugenSoundValue(value: string | undefined): { group: number; index: number } | undefined {

@@ -371,8 +371,8 @@ export class PlayableMatchRuntime {
     if (priorityOutcome) {
       this.logs.unshift(priorityOutcome.message);
     }
-    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
-    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, (line) => this.logs.unshift(line));
+    resolveCombat(this.p1, this.p2, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) => this.logs.unshift(line));
+    resolveCombat(this.p2, this.p1, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p1, this.p2, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
     resolveProjectileCombat(this.p2, this.p1, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line));
     this.actorConstraintWorld.clampToStage(this.p1.runtime, this.stage);
@@ -1628,6 +1628,8 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     guardControlTime,
     guardPush,
     guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
+    hitSound: operation?.hitSound ?? stripMugenString(findParam(controller, "hitsound")) ?? existing?.hitSound,
+    guardSound: operation?.guardSound ?? stripMugenString(findParam(controller, "guardsound")) ?? existing?.guardSound,
     p1StateNo,
     p2StateNo,
     p2GetP1State,
@@ -1670,6 +1672,7 @@ function resolveCombat(
   directCombatWorld: RuntimeDirectCombatWorld,
   hitOverrideWorld: RuntimeHitOverrideWorld,
   reversalWorld: RuntimeReversalWorld,
+  runtimeTick: number,
   log: (line: string) => void,
 ): void {
   if (!attacker.currentMove || attacker.hasHit) {
@@ -1743,7 +1746,12 @@ function resolveCombat(
     applyHitStateTransitions,
     applyDefaultGetHit: applyDefaultGetHitState,
   });
+  recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick);
   log(outcome.message);
+}
+
+function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | undefined, runtimeTick: number): void {
+  fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick);
 }
 
 function recordFallEnvShakeEvent(

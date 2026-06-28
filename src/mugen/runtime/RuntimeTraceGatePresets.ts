@@ -10,6 +10,7 @@ import type {
   RuntimeTraceFinalActorRequirement,
   RuntimeTraceGate,
   RuntimeTraceInputFrame,
+  RuntimeTraceSoundEventRequirement,
 } from "./RuntimeTrace";
 import { expandRuntimeTraceScript, runRuntimeTrace } from "./RuntimeTrace";
 import type { RuntimeTraceArtifact } from "./RuntimeTraceArtifact";
@@ -2361,6 +2362,37 @@ export function createSyntheticImportedGuardTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedHitDefGuardSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-guard-sound-attacker",
+    displayName: "Synthetic Imported HitDef Guard Sound Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSound: "S6,0",
+    moveGuardStateNo: 260,
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-guard-sound-golden",
+    targetLabel: "Synthetic imported HitDef guard sound route",
+    requiredExecutedStates: [200, 260],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 6,
+        index: 0,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef guard-sound trace proves a guarded direct HitDef can emit bounded PlaySnd telemetry from guardsound = S6,0 on the attacker actor. It does not claim exact SND playback, FightFX spark/sound routing, channel priority, timing/mixing parity, or full MUGEN/IKEMEN guard-effect behavior.",
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialUnguardableTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -4687,6 +4719,7 @@ export function createImportedGuardTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     requiredExecutedStates?: number[];
+    requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -4718,6 +4751,7 @@ export function createImportedGuardTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        requiredSoundEvents: options.requiredSoundEvents,
       },
     ],
   });
@@ -7442,6 +7476,8 @@ export type SyntheticImportedTraceFighterOptions = {
   guardSlideTime?: number;
   guardControlTime?: number;
   groundVelocity?: [number, number?];
+  hitSound?: string;
+  guardSound?: string;
   fall?: DemoMove["fall"];
   getHitState?: { stateNo: number; animNo?: number };
   fallDefenceUpBranchStateNo?: number;
@@ -7796,6 +7832,8 @@ ${hitVarLines}
 pausetime = 4,4
 ground.hittime = 9
 ground.velocity = ${groundVelocity.join(",")}
+${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
+${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
 id = 77
 priority = ${options.hitDefPriority ?? 4}, Hit
 ${guardLine}
