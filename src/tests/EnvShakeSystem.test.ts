@@ -5,6 +5,7 @@ import {
   createRuntimeEnvShakeEvent,
   createRuntimeFallEnvShakeEvent,
   pushRuntimeEnvShakeEvent,
+  RuntimeEnvShakeWorld,
 } from "../mugen/runtime/EnvShakeSystem";
 import type { RuntimeEnvShakeEvent } from "../mugen/runtime/types";
 
@@ -74,6 +75,24 @@ describe("EnvShakeSystem", () => {
     expect(calculateRuntimeCameraShake(20, [{ ...event(0, 0), time: 3 }])).toBeUndefined();
     expect(calculateRuntimeCameraShake(2, [{ ...event(5, 5), time: 3 }])).toBeUndefined();
   });
+
+  it("wraps EnvShake event mutation and camera projection behind RuntimeEnvShakeWorld", () => {
+    const world = new RuntimeEnvShakeWorld();
+    const p1 = actor(200, 4);
+    const p2 = actor(5050, 8, { time: 20, freq: 30, ampl: -8, phase: 0 });
+
+    world.emitController(p1, controller("EnvShake", { time: "12", freq: "30", ampl: "3", phase: "0" }), 10);
+    world.emitFall(p2, 11);
+
+    expect(p1.envShakeEvents).toHaveLength(1);
+    expect(p2.envShakeEvents).toHaveLength(1);
+    expect(p2.envShakeEvents[0]).toMatchObject({ stateNo: 5050, runtimeTick: 11, ampl: -8 });
+
+    const shake = world.snapshotCameraShake(12, [p1, p2]);
+
+    expect(shake?.amplitude).toBeLessThan(0);
+    expect(shake?.remaining).toBe(19);
+  });
 });
 
 function actor(
@@ -94,6 +113,7 @@ function actor(
         : undefined,
     },
     stateElapsed,
+    envShakeEvents: [],
   };
 }
 

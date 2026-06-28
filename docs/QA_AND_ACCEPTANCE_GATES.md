@@ -141,7 +141,7 @@ Minimum trace evidence:
 - Combat reason evidence for hit, guard, whiff, reject, override, and reversal when the trace gate depends on combat behavior.
 - Match-pause snapshot evidence for `Pause`/`SuperPause` gates, including source actor/state, darken, remaining frames, source `movetime`, frozen actor/effect evidence when the gate depends on opponent or effect freeze, and actor/effect advance evidence when the gate depends on source `movetime`; hitpause actor/effect freeze/advance evidence when the gate depends on `ignorehitpause`.
 - Sound-event evidence for `PlaySnd`/`StopSnd` gates, including actor id, controller type, parsed `Sgroup,index`, channel, state, and tick data.
-- EnvShake event evidence for `EnvShake` gates, including actor id/source/kind, `time`, `freq`, `ampl`, `phase`, state, and tick data.
+- EnvShake event evidence for `EnvShake` gates, including actor id/source/kind, `time`, `freq`, `ampl`, `phase`, state, and tick data; `RuntimeEnvShakeWorld` owns the bounded event insertion and camera-shake projection used by runtime snapshots.
 - Target-link evidence for `Target*` gates, including active binding metadata when the gate depends on a bound target surviving a pause or source-movetime path.
 - Round-frame evidence for round gates, including `RoundSnapshot.state`, winner, HUD message, observed timer range, first/last tick, and frame count when a gate depends on KO/time-over/fight-state visibility.
 - `MatchWorld` lifecycle event evidence for actor/effect spawn, active, and remove when the gate depends on world ownership.

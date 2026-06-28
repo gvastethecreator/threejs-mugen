@@ -51,6 +51,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
    - Current proof added: required `synthetic-imported-round-timeover.json` checksum `7d9f7907` gates `RoundSnapshot` `timeover` draw/winner/message/timer evidence with a short `roundTimerFrames` fixture. This proves bounded time-over trace visibility, not exact timer or round-transition parity.
    - Current proof added: `RuntimeTargetWorld.snapshotRuntimeState` now owns cloned target-memory snapshots consumed by `MatchWorld` actor records. Focused tests prove target refs, TargetBind bindings, `BindToTarget`, and DebugPanel registry rendering remain stable. This is ownership cleanup, not broader target redirect/team/helper parity.
    - Current proof added: `RuntimePauseWorld` now owns current match pause state, snapshot projection, source-movetime checks, countdown ticks, controller application, and reset. Focused tests prove the boundary and existing trace gates still cover bounded `Pause`/`SuperPause` evidence. This is ownership cleanup, not exact pause-layering parity.
+   - Current proof added: `RuntimeEnvShakeWorld` now owns bounded EnvShake/FallEnvShake event insertion and deterministic multi-actor camera-shake projection. Focused tests prove the boundary while preserving existing actor event histories for renderer/debug/trace consumers. This is ownership cleanup, not exact EnvShake waveform or pause/stage/layer parity.
 
 2. **KFM/Common1 precision**
    - Tighten guard/fall/recovery timing and velocity semantics.
@@ -81,7 +82,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
 | R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, and bounded air/ground velocity telemetry into exact controller/VM loop order or broader guard/Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after `RuntimeRoundSystem` and `requiredRoundFrames`; next proof should target pause/combat/target/effect ordering or exact checksum-stable ownership. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake ownership; next proof should target audio, combat/effect ordering, or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |

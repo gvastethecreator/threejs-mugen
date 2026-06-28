@@ -59,12 +59,7 @@ import {
   scaleRuntimeIncomingDamage,
 } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
-import {
-  calculateRuntimeCameraShake,
-  createRuntimeEnvShakeEvent,
-  createRuntimeFallEnvShakeEvent,
-  pushRuntimeEnvShakeEvent,
-} from "./EnvShakeSystem";
+import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import type { RuntimeProjectileSpawnInput } from "./ProjectileSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
@@ -165,6 +160,7 @@ type FighterMatchState = {
   firedHitDefs: Set<string>;
   soundEvents: RuntimeSoundEvent[];
   envShakeEvents: RuntimeEnvShakeEvent[];
+  envShakeWorld: RuntimeEnvShakeWorld;
   effectActorWorld: RuntimeEffectActorWorld;
   targetWorld: RuntimeTargetWorld;
   lastExecutedState?: number;
@@ -200,6 +196,7 @@ export class PlayableMatchRuntime {
   private readonly stage: MugenStageDefinition;
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly targetWorld: RuntimeTargetWorld;
+  private readonly envShakeWorld = new RuntimeEnvShakeWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
   private readonly envColorEvents: RuntimeEnvColorEvent[] = [];
   private toggles = {
@@ -228,6 +225,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p1.facing,
       this.effectActorWorld,
       this.targetWorld,
+      this.envShakeWorld,
     );
     this.p2 = createFighterState(
       "p2",
@@ -237,6 +235,7 @@ export class PlayableMatchRuntime {
       stage.playerStart.p2.facing,
       this.effectActorWorld,
       this.targetWorld,
+      this.envShakeWorld,
     );
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
@@ -430,7 +429,7 @@ export class PlayableMatchRuntime {
 
   getSnapshot(): MugenSnapshot {
     const center = cameraCenterX([this.p1, this.p2]);
-    const shake = calculateRuntimeCameraShake(this.tick, [this.p1, this.p2].flatMap((fighter) => fighter.envShakeEvents));
+    const shake = this.envShakeWorld.snapshotCameraShake(this.tick, [this.p1, this.p2]);
     const envColor = calculateRuntimeStageFlash(this.tick, this.envColorEvents);
     return {
       tick: this.tick,
@@ -529,6 +528,7 @@ function createFighterState(
   facing: 1 | -1,
   effectActorWorld = new RuntimeEffectActorWorld(),
   targetWorld = new RuntimeTargetWorld(),
+  envShakeWorld = new RuntimeEnvShakeWorld(),
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
@@ -592,6 +592,7 @@ function createFighterState(
     firedHitDefs: new Set(),
     soundEvents: [],
     envShakeEvents: [],
+    envShakeWorld,
     effectActorWorld,
     targetWorld,
     contact: createRuntimeContactMemory(),
@@ -1742,11 +1743,7 @@ function recordSoundEvent(
 }
 
 function recordEnvShakeEvent(fighter: FighterMatchState, controller: MugenStateController, runtimeTick: number): void {
-  const event = createRuntimeEnvShakeEvent(fighter, controller, runtimeTick);
-  if (!event) {
-    return;
-  }
-  pushRuntimeEnvShakeEvent(fighter.envShakeEvents, event);
+  fighter.envShakeWorld.emitController(fighter, controller, runtimeTick);
 }
 
 function activateHitDef(fighter: FighterMatchState, controller: MugenStateController, operation?: HitDefControllerOp): void {
@@ -2038,11 +2035,10 @@ function recordFallEnvShakeEvent(
   operation?: FallEnvShakeControllerOp,
 ): void {
   const hitFall = fighter.runtime.hitFall;
-  const event = createRuntimeFallEnvShakeEvent(fighter, runtimeTick);
+  const event = fighter.envShakeWorld.emitFall(fighter, runtimeTick);
   if (!event || !hitFall) {
     return;
   }
-  pushRuntimeEnvShakeEvent(fighter.envShakeEvents, event);
   fighter.runtime.hitFall = {
     ...hitFall,
     envShake: undefined,

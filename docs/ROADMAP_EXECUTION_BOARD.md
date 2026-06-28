@@ -59,7 +59,8 @@ Build next:
 - Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence. Current trace aggregate: 146/146 artifacts passed, 128 required and 18 optional.
 - Current proof: `RuntimeTargetWorld.snapshotRuntimeState` owns cloned target-memory snapshots consumed by `MatchWorld` actor records, with focused tests proving target refs, TargetBind bindings, and `BindToTarget` registry evidence remain stable.
 - Current proof: `RuntimePauseWorld` owns current match pause state, snapshot projection, source-movetime checks, countdown ticks, controller application, and reset while preserving existing `Pause`/`SuperPause` trace behavior.
-- Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, pause, or audio.
+- Current proof: `RuntimeEnvShakeWorld` owns bounded EnvShake/FallEnvShake event insertion plus deterministic multi-actor camera-shake projection consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
+- Move one mutable runtime area behind a named world/system boundary without changing behavior: target links, effects, helpers, projectiles, explods, audio, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 
 Acceptance:

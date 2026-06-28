@@ -7,6 +7,10 @@ export type RuntimeEnvShakeActor = {
   stateElapsed: number;
 };
 
+export type RuntimeEnvShakeWorldActor = RuntimeEnvShakeActor & {
+  envShakeEvents: RuntimeEnvShakeEvent[];
+};
+
 export type RuntimeCameraShake = {
   x: number;
   y: number;
@@ -58,6 +62,33 @@ export function createRuntimeFallEnvShakeEvent(
 export function pushRuntimeEnvShakeEvent(events: RuntimeEnvShakeEvent[], event: RuntimeEnvShakeEvent, maxEvents = 8): void {
   events.unshift(event);
   events.splice(maxEvents);
+}
+
+export class RuntimeEnvShakeWorld {
+  emitController(actor: RuntimeEnvShakeWorldActor, controller: MugenStateController, runtimeTick: number): RuntimeEnvShakeEvent | undefined {
+    const event = createRuntimeEnvShakeEvent(actor, controller, runtimeTick);
+    if (!event) {
+      return undefined;
+    }
+    pushRuntimeEnvShakeEvent(actor.envShakeEvents, event);
+    return event;
+  }
+
+  emitFall(actor: RuntimeEnvShakeWorldActor, runtimeTick: number): RuntimeEnvShakeEvent | undefined {
+    const event = createRuntimeFallEnvShakeEvent(actor, runtimeTick);
+    if (!event) {
+      return undefined;
+    }
+    pushRuntimeEnvShakeEvent(actor.envShakeEvents, event);
+    return event;
+  }
+
+  snapshotCameraShake(runtimeTick: number, actors: readonly RuntimeEnvShakeWorldActor[]): RuntimeCameraShake | undefined {
+    return calculateRuntimeCameraShake(
+      runtimeTick,
+      actors.flatMap((actor) => actor.envShakeEvents),
+    );
+  }
 }
 
 export function calculateRuntimeCameraShake(
