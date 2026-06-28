@@ -24779,3 +24779,156 @@ input {
     border-radius: 0;
   }
 }
+
+/* Desktop Build: release desk rows prioritize gate, action, and export state. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    --section-accent: #7f91a8;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right {
+    gap: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right > .section {
+    gap: 7px;
+    padding: 8px 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row .badge {
+    justify-content: center;
+    min-height: 23px;
+    min-width: 0;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row .badge:nth-child(4n),
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row .badge:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .compact-list,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .list {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-header {
+    grid-template-columns: minmax(0, 1fr) 86px;
+    min-height: 25px;
+    padding: 0 8px;
+    border: 1px solid var(--dcc-line-hard);
+    border-bottom: 0;
+    border-radius: 0;
+    background: var(--dcc-field);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record {
+    grid-template-columns: minmax(0, 1fr) minmax(82px, max-content);
+    min-height: 50px;
+    gap: 3px 8px;
+    padding: 6px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main {
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-kicker,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-kicker {
+    color: color-mix(in srgb, var(--build-accent) 58%, var(--subtle));
+    font-size: 11px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title {
+    font-size: 12px;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .record-route {
+    grid-column: 1 / -1;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 6px;
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side {
+    align-self: center;
+    min-width: 78px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .row-actions {
+    flex-wrap: nowrap;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .row-actions button {
+    min-height: 24px;
+    padding: 3px 6px;
+    border-radius: 0;
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-row {
+    grid-template-columns: minmax(0, 1fr) minmax(112px, max-content);
+    min-height: 42px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+  }
+
+}
