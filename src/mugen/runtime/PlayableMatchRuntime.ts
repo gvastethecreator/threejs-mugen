@@ -74,6 +74,7 @@ import {
 } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
+import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
@@ -666,7 +667,7 @@ function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState
 }
 
 function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState, tick: number): void {
-  if (fighter.hitStun > 0 || (fighter.runtime.guardStun ?? 0) > 0 || fighter.currentMove) {
+  if (hasRuntimeStun(fighter) || fighter.currentMove) {
     return;
   }
   if (!fighter.runtime.ctrl || shouldPreserveImportedStateMoveType(fighter)) {
@@ -727,7 +728,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
 }
 
 function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
-  if (fighter.hitStun > 0 || (fighter.runtime.guardStun ?? 0) > 0 || fighter.currentMove) {
+  if (hasRuntimeStun(fighter) || fighter.currentMove) {
     return;
   }
   if (!fighter.runtime.ctrl || shouldPreserveImportedStateMoveType(fighter)) {
@@ -769,21 +770,15 @@ function advanceFighter(
   fighter.runtime.playerPush = true;
   fighter.runtime.posFreeze = undefined;
   fighter.runtime.screenBound = undefined;
-  fighter.runtime.guarding = false;
   advanceHitFallRecoveryWindow(fighter);
   const tickStartPos = { ...fighter.runtime.pos };
-  if ((fighter.runtime.guardStun ?? 0) > 0) {
-    fighter.runtime.guardStun = Math.max(0, (fighter.runtime.guardStun ?? 0) - 1);
-    fighter.runtime.guarding = fighter.runtime.guardStun > 0;
-    fighter.runtime.moveType = fighter.runtime.guarding ? "H" : fighter.runtime.moveType;
-    fighter.runtime.vel.x *= 0.82;
+  const stunTick = tickRuntimeStun(fighter);
+  if (stunTick.guardActive) {
     if (!fighter.stateOwner && !shouldPreserveImportedStateMoveType(fighter)) {
       changeAction(fighter, fighter.definition.hitstunAction);
     }
   }
-  if (fighter.hitStun > 0) {
-    fighter.hitStun -= 1;
-    fighter.runtime.vel.x *= 0.88;
+  if (stunTick.hitActive) {
     if (!fighter.stateOwner && !shouldPreserveImportedStateMoveType(fighter)) {
       changeAction(fighter, fighter.definition.hitstunAction);
     }

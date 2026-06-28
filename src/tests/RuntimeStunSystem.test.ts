@@ -1,0 +1,58 @@
+import { describe, expect, it } from "vitest";
+import { hasRuntimeStun, tickRuntimeStun, type RuntimeStunActor } from "../mugen/runtime/RuntimeStunSystem";
+
+describe("RuntimeStunSystem", () => {
+  it("reports active hitstun or guardstun as runtime stun", () => {
+    expect(hasRuntimeStun(actor({ hitStun: 0, guardStun: 0 }))).toBe(false);
+    expect(hasRuntimeStun(actor({ hitStun: 2, guardStun: 0 }))).toBe(true);
+    expect(hasRuntimeStun(actor({ hitStun: 0, guardStun: 3 }))).toBe(true);
+  });
+
+  it("ticks guard stun, keeps guarding while frames remain, and applies guard friction", () => {
+    const fighter = actor({ hitStun: 0, guardStun: 2, velX: 10, moveType: "I" });
+
+    const first = tickRuntimeStun(fighter);
+    expect(first).toEqual({ guardActive: true, hitActive: false });
+    expect(fighter.runtime.guardStun).toBe(1);
+    expect(fighter.runtime.guarding).toBe(true);
+    expect(fighter.runtime.moveType).toBe("H");
+    expect(fighter.runtime.vel.x).toBeCloseTo(8.2);
+
+    tickRuntimeStun(fighter);
+    expect(fighter.runtime.guardStun).toBe(0);
+    expect(fighter.runtime.guarding).toBe(false);
+  });
+
+  it("ticks hit stun and applies hit friction", () => {
+    const fighter = actor({ hitStun: 2, guardStun: 0, velX: -10 });
+
+    const result = tickRuntimeStun(fighter);
+
+    expect(result).toEqual({ guardActive: false, hitActive: true });
+    expect(fighter.hitStun).toBe(1);
+    expect(fighter.runtime.vel.x).toBeCloseTo(-8.8);
+  });
+
+  it("applies both guard and hit friction when both timers are active", () => {
+    const fighter = actor({ hitStun: 1, guardStun: 1, velX: 10 });
+
+    const result = tickRuntimeStun(fighter);
+
+    expect(result).toEqual({ guardActive: true, hitActive: true });
+    expect(fighter.hitStun).toBe(0);
+    expect(fighter.runtime.guardStun).toBe(0);
+    expect(fighter.runtime.vel.x).toBeCloseTo(10 * 0.82 * 0.88);
+  });
+});
+
+function actor(options: { hitStun: number; guardStun: number; velX?: number; moveType?: "I" | "A" | "H" }): RuntimeStunActor {
+  return {
+    hitStun: options.hitStun,
+    runtime: {
+      guardStun: options.guardStun,
+      guarding: false,
+      moveType: options.moveType ?? "I",
+      vel: { x: options.velX ?? 0, y: 0 },
+    },
+  };
+}
