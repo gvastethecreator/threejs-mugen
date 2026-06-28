@@ -42,6 +42,8 @@ HitPause/Pause/SuperPause trace coverage now includes separate bounded TargetBin
   - `docs/APPROVED_HORIZON_PLAN.md`: approved construction contract for building the expanded runtime, Studio, generated-asset, IKEMEN, and modular-engine approach without splitting into disconnected prototypes.
   - `docs/FULL_BUILD_PROGRAM.md`: operating plan for building the full MUGEN/IKEMEN Three.js port, Creator Studio, generated-asset pipeline, QA evidence system, and later modular engine horizons.
   - `docs/BUILD_EXECUTION_BACKLOG.md`: actionable backlog with the construction campaign board, usable-MVP gate, and sequenced runtime kernel, compatibility compiler, Studio, generated-asset, IKEMEN, QA, and modular-engine work.
+  - `docs/PROGRESS_TRACKER.md`: compact truth board for current 0-100 progress, evidence snapshot, next required cuts, and closeout contract.
+  - `AGENTS.md` plus `docs/agents/`: local agent setup for issue tracking, triage labels, and domain-doc routing.
   - `docs/BUILD_PLAN.md`: construction master plan across the compatibility engine, creator studio, generated-asset pipeline, QA, and future modular engine.
   - `docs/CONSTRUCTION_PROGRAM.md`: execution program for building every horizon in dependency order.
   - `docs/PORTING_ROADMAP.md`: long-term MUGEN/IKEMEN-GO port roadmap.

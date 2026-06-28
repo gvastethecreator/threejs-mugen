@@ -135,6 +135,8 @@ Rules added by the review:
 
 This table is the tie-breaker when older roadmap docs repeat similar queues. Build from top to bottom unless a newer round explicitly documents why it is taking a parallel evidence-only slice. A row is not "done" because code exists; it is done when the acceptance artifact, closeout, allowed claim, and blocked claim language all line up.
 
+Progress control now also has a compact status board in `docs/PROGRESS_TRACKER.md`. Keep that file short: update it after meaningful milestones, score changes, or roadmap-order changes. Keep detailed evidence and historical claims here and in `docs/BUILD_EXECUTION_BACKLOG.md`.
+
 | Order | Build | Code Anchors | Acceptance Artifact | Required Closeout | Claim Allowed | Still Blocked |
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | Deepen `MatchWorld` lifecycle ownership for helpers/projectiles/explods/targets/effects. | `src/mugen/runtime/MatchWorld.ts`, `PlayableMatchRuntime`, `ProjectileSystem`, `HelperSystem`, `ExplodSystem`, `TargetSystem`, `RuntimeTrace`. | Trace artifacts and Debug Studio show actor/effect `ownerId`, `rootId`, `parentId`, lifecycle, and stable final snapshots. | Focused tests, `pnpm qa:trace`, docs if checksum drift is intentional. | `MatchWorld` owns a named lifecycle slice. | Generic ECS, broad SDK, full helper VM, or hidden raw-runtime side effects. |
