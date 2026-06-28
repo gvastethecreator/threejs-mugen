@@ -121,6 +121,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMatchContextTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-resource-max",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceMaxTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numtarget",
       required: true,
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
@@ -1101,6 +1106,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-match-context",
+    "synthetic-imported-resource-max",
     "synthetic-imported-hitdefattr",
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",

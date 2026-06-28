@@ -509,6 +509,29 @@ export function createSyntheticImportedMatchContextTraceArtifact(options: Runtim
   );
 }
 
+export function createSyntheticImportedResourceMaxTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource-max",
+      displayName: "Synthetic Imported Resource Max",
+      resourceMaxEntry: { lifeMax: 1000, powerMax: 3000, stateNo: 283 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-resource-max-golden",
+      targetLabel: "Synthetic imported LifeMax/PowerMax route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [283],
+      requiredExecutedStates: [283],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported LifeMax/PowerMax trace proves State -1 routing can branch on bounded default resource caps. Per-character [Data] life/power caps, lifebar scaling, team modes, and exact IKEMEN/MUGEN resource-cap semantics remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -5801,6 +5824,7 @@ export type SyntheticImportedTraceFighterOptions = {
   aliveStateEntry?: { stateNo: number };
   roundStateEntry?: { roundNo: number; roundState: number; stateNo: number };
   matchContextEntry?: { roundsExisted: number; stateNo: number };
+  resourceMaxEntry?: { lifeMax: number; powerMax: number; stateNo: number };
   withHelper?: boolean;
   helperVelocity?: [number, number];
   helperScale?: [number, number];
@@ -5956,6 +5980,7 @@ ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.s
 ${options.aliveStateEntry === undefined ? "" : aliveStateEntryBlock(options.aliveStateEntry)}
 ${options.roundStateEntry === undefined ? "" : roundStateEntryBlock(options.roundStateEntry)}
 ${options.matchContextEntry === undefined ? "" : matchContextEntryBlock(options.matchContextEntry)}
+${options.resourceMaxEntry === undefined ? "" : resourceMaxEntryBlock(options.resourceMaxEntry)}
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
@@ -6089,6 +6114,7 @@ ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I")
 ${options.aliveStateEntry ? simpleStateBlock(options.aliveStateEntry.stateNo, "I") : ""}
 ${options.roundStateEntry ? simpleStateBlock(options.roundStateEntry.stateNo, "I") : ""}
 ${options.matchContextEntry ? simpleStateBlock(options.matchContextEntry.stateNo, "I") : ""}
+${options.resourceMaxEntry ? simpleStateBlock(options.resourceMaxEntry.stateNo, "I") : ""}
 ${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
@@ -6234,6 +6260,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.matchContextEntry === undefined
         ? []
         : ([[options.matchContextEntry.stateNo, traceAction(options.matchContextEntry.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
+      ...(options.resourceMaxEntry === undefined
+        ? []
+        : ([[options.resourceMaxEntry.stateNo, traceAction(options.resourceMaxEntry.stateNo)]] as Array<
             [number, MugenAnimationAction]
           >)),
       ...(options.assertSpecialControlState === undefined
@@ -7869,6 +7900,18 @@ triggerall = command = "x"
 trigger1 = ctrl
 trigger1 = RoundsExisted = ${route.roundsExisted}
 trigger1 = !MatchOver
+`;
+}
+
+function resourceMaxEntryBlock(route: { lifeMax: number; powerMax: number; stateNo: number }): string {
+  return `
+[State -1, Resource Max Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = LifeMax = ${route.lifeMax}
+trigger1 = PowerMax = ${route.powerMax}
 `;
 }
 

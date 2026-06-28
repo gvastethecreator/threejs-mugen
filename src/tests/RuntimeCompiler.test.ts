@@ -35,7 +35,7 @@ time = 20
 
   it("classifies supported and unsupported trigger expressions before runtime evaluation", () => {
     const clean = compileExpression(
-      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver',
+      'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     const contact = compileExpression(
       "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1",
@@ -49,7 +49,7 @@ time = 20
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
 
     expect(clean.normalized).toBe(
-      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver',
+      'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     expect(clean.supportLevel).toBe("executable");
     expect(clean.functions).toEqual(["SelfAnimExist", "SelfStateNoExist"]);
@@ -60,6 +60,8 @@ time = 20
     expect(clean.identifiers).toContain("RoundState");
     expect(clean.identifiers).toContain("RoundsExisted");
     expect(clean.identifiers).toContain("MatchOver");
+    expect(clean.identifiers).toContain("LifeMax");
+    expect(clean.identifiers).toContain("PowerMax");
     expect(contact.supportLevel).toBe("executable");
     expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit", "ProjHitTime"]);
     expect(contact.identifiers).toEqual(["HitCount", "MoveGuarded", "MoveReversed", "ReceivedDamage", "ReceivedHits", "UniqHitCount"]);

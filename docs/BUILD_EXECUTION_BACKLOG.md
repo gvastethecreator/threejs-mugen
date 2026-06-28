@@ -802,6 +802,8 @@ Use this as the next practical queue.
 
 138. Done bounded `RoundsExisted` / `MatchOver` trigger evidence cut: `ExpressionEvaluator` and the compiler classify the current bounded match context as executable; the QA trace suite now requires `synthetic-imported-match-context.json`, proving a State -1 route can branch on `RoundsExisted = 0` and `!MatchOver` into state `282`. Focused runtime/compiler/trace tests cover the route. Claim allowed: imported routing can inspect current bounded non-matchover state. Claim blocked: multi-round accounting, win/loss bookkeeping, team modes, continue/rematch flow, pause/rollback accounting, and exact IKEMEN/MUGEN match lifecycle semantics.
 
+139. Done bounded `LifeMax` / `PowerMax` trigger evidence cut: `ExpressionEvaluator` and the compiler classify default resource caps as executable; the QA trace suite now requires `synthetic-imported-resource-max.json`, proving a State -1 route can branch on `LifeMax = 1000` and `PowerMax = 3000` into state `283`. Focused runtime/compiler/trace tests cover defaults plus evaluator overrides. Claim allowed: imported routing can inspect bounded default resource caps. Claim blocked: per-character `[Data]` cap wiring, lifebar/team scaling, power mode variants, and exact IKEMEN/MUGEN resource-cap semantics.
+
 ## Release Evidence Bundle
 
 Every milestone should leave a bundle under `.scratch/qa/<milestone-or-feature>/`:

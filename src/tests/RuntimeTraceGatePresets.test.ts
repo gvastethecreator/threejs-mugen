@@ -72,6 +72,7 @@ import {
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
+  createSyntheticImportedResourceMaxTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
@@ -701,6 +702,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([282]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([282]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 282)).toBe(true);
+  });
+
+  it("creates a synthetic imported LifeMax/PowerMax artifact with resource-cap branch evidence", () => {
+    const artifact = createSyntheticImportedResourceMaxTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-resource-max-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(283);
+    expect(evidence?.executedStates).toContain(283);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([283]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([283]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 283)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {

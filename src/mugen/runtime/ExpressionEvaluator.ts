@@ -35,6 +35,8 @@ export type ExpressionContext = {
   reportUnsupported?: (feature: string) => void;
   receivedDamage?: () => number;
   receivedHits?: () => number;
+  lifeMax?: number;
+  powerMax?: number;
   stageTime?: number;
   stateTime?: number;
   uniqueHitCount?: () => number;
@@ -264,8 +266,14 @@ class ExpressionParser {
     if (lower === "life") {
       return this.context.self.life;
     }
+    if (lower === "lifemax") {
+      return this.context.lifeMax ?? 1000;
+    }
     if (lower === "power") {
       return this.context.self.power;
+    }
+    if (lower === "powermax") {
+      return this.context.powerMax ?? 3000;
     }
     if (lower === "alive") {
       return this.context.self.life > 0 ? 1 : 0;

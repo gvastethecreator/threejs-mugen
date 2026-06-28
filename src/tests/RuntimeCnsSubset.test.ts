@@ -120,6 +120,10 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("RoundState = 2", { self: state })).toBe(1);
     expect(evaluateExpression("RoundsExisted = 0", { self: state })).toBe(1);
     expect(evaluateExpression("!MatchOver", { self: state })).toBe(1);
+    expect(evaluateExpression("LifeMax = 1000", { self: state })).toBe(1);
+    expect(evaluateExpression("PowerMax = 3000", { self: state })).toBe(1);
+    expect(evaluateExpression("LifeMax = 750", { self: state, lifeMax: 750 })).toBe(1);
+    expect(evaluateExpression("PowerMax = 1200", { self: state, powerMax: 1200 })).toBe(1);
     expect(evaluateExpression("ifelse(ctrl, 10, 20)", { self: state })).toBe(10);
     expect(
       evaluateExpression("Const(movement.down.bounce.offset.y) = 24", {
