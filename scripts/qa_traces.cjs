@@ -236,6 +236,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialUnguardableTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-control",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialControlTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-noko",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialNoKoTraceArtifact(),
@@ -1082,6 +1087,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-priority",
     "synthetic-imported-hitdef-kill",
     "synthetic-imported-hitdef-guard-kill",
+    "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-noko",
     "synthetic-imported-air-guard-state",
     "synthetic-imported-inguarddist-far",
@@ -1107,6 +1113,7 @@ function validateTraceCoverage(coverage) {
   }
   for (const name of requiredArtifactNames) {
     const hasArtifact =
+      Object.values(coverage.controllers).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.operations).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.effectKinds).some((entry) => entry.requiredArtifacts.includes(name)) ||
       Object.values(coverage.matchPauseAdvances).some((entry) => entry.requiredArtifacts.includes(name)) ||

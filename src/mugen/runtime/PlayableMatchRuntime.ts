@@ -705,6 +705,10 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
   }
 
   const direction = hasRuntimeDirection(input, "F") ? 1 : hasRuntimeDirection(input, "B") ? -1 : 0;
+  if (direction !== 0 && fighter.runtime.assertSpecial?.noWalk) {
+    fighter.runtime.vel.x = 0;
+    return;
+  }
   if (direction !== 0 && fighter.runtime.stateType === "A" && !fighter.runtime.assertSpecial?.noWalk) {
     fighter.runtime.vel.x = direction * fighter.runtime.facing * fighter.definition.speed;
     return;

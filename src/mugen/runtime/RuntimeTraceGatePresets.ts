@@ -1731,6 +1731,66 @@ export function createSyntheticImportedAssertSpecialNoKoTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedAssertSpecialControlTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? assertSpecialControlStage();
+  const script = importedAssertSpecialControlScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-control",
+    displayName: "Synthetic Imported AssertSpecial Control",
+    selfCommandEntry: { commandName: "holdback", stateNo: 201 },
+    assertSpecialControlState: { stateNo: 201, flags: ["NoAutoTurn", "NoWalk", "Invisible"] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-assertspecial-control-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-control-golden",
+      label: "Synthetic imported AssertSpecial control flags",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AssertSpecial control trace proves bounded NoWalk can suppress walk velocity without leaving a controlled imported state and Invisible can expose render-opacity telemetry. It does not claim exact NoAutoTurn tick order, AssertSpecial lifetime, global flag behavior, helper ownership, or full MUGEN/IKEMEN parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-control-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedStates: [201],
+        requiredExecutedControllers: ["AssertSpecial"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 201,
+            observedVelXAtLeast: 0,
+            observedVelXAtMost: 0,
+            observedPosXAtMost: 30,
+            observedOpacityAtMost: 0,
+            minFrames: 3,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 201,
+            ctrl: true,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedGuardTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-guard-attacker",
@@ -5131,6 +5191,18 @@ export function closeCombatStage(): MugenStageDefinition {
   };
 }
 
+export function assertSpecialControlStage(): MugenStageDefinition {
+  return {
+    ...trainingStage,
+    id: "trace-assertspecial-control-grid",
+    displayName: "Trace AssertSpecial Control Grid",
+    playerStart: {
+      p1: { x: 30, y: 0, facing: 1 },
+      p2: { x: -80, y: 0, facing: 1 },
+    },
+  };
+}
+
 export function screenBoundCameraStage(): MugenStageDefinition {
   return {
     ...trainingStage,
@@ -5528,6 +5600,13 @@ export function importedDelayedXScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedAssertSpecialControlScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "enter-assertspecial-control-state", frames: 2, p1: ["B"], p2: [] },
+    { label: "hold-forward-under-assertspecial", frames: 4, p1: ["F"], p2: [] },
+  ]);
+}
+
 export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
@@ -5710,6 +5789,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withAfterImageTime?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
+  assertSpecialControlState?: { stateNo: number; flags: string[] };
   sizeConstants?: {
     headPos?: [number, number];
     midPos?: [number, number];
@@ -5931,8 +6011,9 @@ ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) 
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
-${options.selfCommandEntry ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
+${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
+${options.assertSpecialControlState ? assertSpecialControlStateBlock(options.assertSpecialControlState) : ""}
 ${options.defaultGetHitState ? getHitStateBlock(options.defaultGetHitState) : ""}
 ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defaultGetHitProgression) : ""}
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
@@ -6066,6 +6147,11 @@ ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversal
       ...(options.stageTimeEntry === undefined
         ? []
         : ([[options.stageTimeEntry.stateNo, traceAction(options.stageTimeEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.assertSpecialControlState === undefined
+        ? []
+        : ([[options.assertSpecialControlState.stateNo, traceAction(options.assertSpecialControlState.stateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -6280,6 +6366,22 @@ function passiveAssertSpecialController(flags: string[]): string {
 type = AssertSpecial
 trigger1 = 1
 flag = ${flags.join(", ")}
+`;
+}
+
+function assertSpecialControlStateBlock(route: { stateNo: number; flags: string[] }): string {
+  return `
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = S
+anim = ${route.stateNo}
+ctrl = 1
+
+[State ${route.stateNo}, AssertSpecial Control Flags]
+type = AssertSpecial
+trigger1 = 1
+flag = ${route.flags.join(", ")}
 `;
 }
 

@@ -794,6 +794,8 @@ Use this as the next practical queue.
 
 134. Done MatchWorld lifecycle extraction cut: `MatchWorldLifecycleSystem` now owns actor/effect lifecycle records, spawn/active/remove events, live/removed lists, first/last seen ticks, age, and bounded recent-event history. `MatchWorld` consumes that system while continuing to build registry records from runtime snapshots and effect stores. Focused tests cover spawn, active, removal, removed-age, recent-event, and stateless synthetic registry paths. Claim allowed: lifecycle evidence now has a named MatchWorld-owned system boundary and focused tests. Claim blocked: full actor simulation ownership, exact helper/projectile/explod VM lifecycle parity, rollback/replay lifecycle authority, and parent/root ownership parity.
 
+135. Done bounded `AssertSpecial` control evidence cut: imported directional input now respects `NoWalk` by zeroing horizontal velocity and preserving the current controlled imported state instead of collapsing into sandbox walk/idle. `pnpm qa:trace` now requires `synthetic-imported-assertspecial-control.json`, proving `AssertSpecial` execution, state `201` control retention, no walk velocity/position drift under held-forward input, and `Invisible` render-opacity evidence. Claim allowed: bounded `NoWalk` plus `Invisible` behavior is protected by runtime trace evidence. Claim blocked: exact `NoAutoTurn` tick order, global AssertSpecial flags, helper-owned AssertSpecial behavior, pause-layer lifetimes, and full MUGEN/IKEMEN parity remain future work.
+
 ## Release Evidence Bundle
 
 Every milestone should leave a bundle under `.scratch/qa/<milestone-or-feature>/`:

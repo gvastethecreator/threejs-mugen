@@ -18,6 +18,7 @@ import {
   createSyntheticImportedHitstunTraceArtifact,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
+  createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
@@ -1515,6 +1516,43 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).not.toContain("guard");
     expect(artifact.trace.events.some((event) => event.category === "hit" && event.line.includes("hit"))).toBe(true);
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial control artifact with walk and invisible evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialControlTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-control-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-control-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    const actorFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.source === "imported" && actor.animNo === 201);
+    expect(actorFrame).toMatchObject({
+      animNo: 201,
+      maxOpacity: 0,
+      minOpacity: 0,
+    });
+    expect(actorFrame?.minVel.x).toBe(0);
+    expect(actorFrame?.maxVel.x).toBe(0);
+    expect(actorFrame?.minPos.x).toBe(30);
+    expect(actorFrame?.maxPos.x).toBe(30);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 201,
+      ctrl: true,
+    });
   });
 
   it("creates a synthetic imported AssertSpecial NoKO artifact with nonlethal hit evidence", () => {
