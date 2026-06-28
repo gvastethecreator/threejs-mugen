@@ -22609,7 +22609,7 @@ input {
 
   .app-shell.mode-studio .studio-chrome-brand small,
   .app-shell.mode-studio .studio-chrome-readout small {
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.03;
   }
 
@@ -22669,7 +22669,7 @@ input {
 
   .app-shell.mode-studio .workspace-eyebrow {
     color: color-mix(in srgb, var(--section-accent) 44%, var(--subtle));
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
     white-space: nowrap;
   }
@@ -22757,7 +22757,7 @@ input {
 
   .app-shell.mode-studio .workspace-summary small {
     font-family: var(--mono);
-    font-size: 10.8px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .mode-switch .mode-button-top,
@@ -22787,7 +22787,7 @@ input {
     padding-left: 20px;
     color: var(--subtle);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
   }
 
@@ -22834,7 +22834,7 @@ input {
   .app-shell.mode-studio .command-launcher small {
     color: var(--subtle);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .pane > #workspace-actions {
@@ -22926,7 +22926,7 @@ input {
     overflow: hidden;
     color: var(--subtle);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     -webkit-box-orient: initial;
     -webkit-line-clamp: initial;
     line-height: 1.05;
@@ -23006,7 +23006,7 @@ input {
   .app-shell.mode-studio .workspace-action-grid button small {
     max-width: 98px;
     color: var(--subtle);
-    font-size: 11px;
+    font-size: 12px;
     text-align: right;
   }
 
@@ -23054,7 +23054,7 @@ input {
     min-width: 0;
     overflow: hidden;
     color: color-mix(in srgb, var(--section-accent) 42%, var(--subtle));
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -23108,7 +23108,7 @@ input {
   .app-shell.mode-studio .asset-row-export {
     min-height: 18px;
     padding: 2px 5px;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
   }
 
@@ -23116,5 +23116,272 @@ input {
     border-color: var(--dcc-line-hard);
     background: var(--dcc-frame);
     box-shadow: var(--dcc-raise);
+  }
+}
+
+/* Desktop right-pane ledgers: flatten evidence/build/module records into dense inspection rows. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .pane-right .list,
+  .app-shell.mode-studio .pane-right .compact-list,
+  .app-shell.mode-studio .pane-right .evidence-record-list,
+  .app-shell.mode-studio .pane-right .engine-module-table,
+  .app-shell.mode-studio .pane-right .pipeline-list {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record,
+  .app-shell.mode-studio .pane-right .evidence-record,
+  .app-shell.mode-studio .pane-right .source-package-row,
+  .app-shell.mode-studio .pane-right .asset-row,
+  .app-shell.mode-studio .pane-right .engine-module-row:not(.engine-module-row-head),
+  .app-shell.mode-studio .pane-right .pipeline-step,
+  .app-shell.mode-studio .pane-right .list-item {
+    min-height: 36px;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record:nth-child(even),
+  .app-shell.mode-studio .pane-right .evidence-record:nth-child(even),
+  .app-shell.mode-studio .pane-right .source-package-row:nth-child(even),
+  .app-shell.mode-studio .pane-right .asset-row:nth-child(even),
+  .app-shell.mode-studio .pane-right .engine-module-row:not(.engine-module-row-head):nth-child(even),
+  .app-shell.mode-studio .pane-right .pipeline-step:nth-child(even),
+  .app-shell.mode-studio .pane-right .list-item:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record:last-child,
+  .app-shell.mode-studio .pane-right .evidence-record:last-child,
+  .app-shell.mode-studio .pane-right .source-package-row:last-child,
+  .app-shell.mode-studio .pane-right .asset-row:last-child,
+  .app-shell.mode-studio .pane-right .engine-module-row:last-child,
+  .app-shell.mode-studio .pane-right .pipeline-step:last-child,
+  .app-shell.mode-studio .pane-right .list-item:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record,
+  .app-shell.mode-studio .pane-right .evidence-record,
+  .app-shell.mode-studio .pane-right .source-package-row {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr) minmax(82px, max-content);
+    gap: 5px 8px;
+    padding: 6px 7px 6px 10px;
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record::before,
+  .app-shell.mode-studio .pane-right .evidence-record::before,
+  .app-shell.mode-studio .pane-right .source-package-row::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    background: var(--pending);
+    content: "";
+    opacity: 0.8;
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record.is-ok::before,
+  .app-shell.mode-studio .pane-right .evidence-record.is-ok::before,
+  .app-shell.mode-studio .pane-right .source-package-row.is-ok::before {
+    background: var(--ok);
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record.is-warn::before,
+  .app-shell.mode-studio .pane-right .build-readiness-record.is-planned::before,
+  .app-shell.mode-studio .pane-right .build-readiness-record.is-partial::before,
+  .app-shell.mode-studio .pane-right .evidence-record.is-warn::before,
+  .app-shell.mode-studio .pane-right .evidence-record.is-planned::before,
+  .app-shell.mode-studio .pane-right .evidence-record.is-partial::before,
+  .app-shell.mode-studio .pane-right .source-package-row.is-warn::before {
+    background: var(--warn);
+  }
+
+  .app-shell.mode-studio .pane-right .build-readiness-record.is-error::before,
+  .app-shell.mode-studio .pane-right .evidence-record.is-error::before,
+  .app-shell.mode-studio .pane-right .source-package-row.is-error::before {
+    background: var(--danger);
+  }
+
+  .app-shell.mode-studio .pane-right .evidence-record-main,
+  .app-shell.mode-studio .pane-right .build-readiness-main,
+  .app-shell.mode-studio .pane-right .asset-row-main,
+  .app-shell.mode-studio .pane-right .engine-module-name {
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio .pane-right .record-kicker {
+    display: block;
+    font-size: 12px;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .pane-right .list-title,
+  .app-shell.mode-studio .pane-right .asset-row-title strong,
+  .app-shell.mode-studio .pane-right .engine-module-name strong {
+    color: color-mix(in srgb, var(--text) 92%, var(--muted));
+    font-size: 12px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio .pane-right .list-meta,
+  .app-shell.mode-studio .pane-right .asset-row-detail,
+  .app-shell.mode-studio .pane-right .engine-module-contracts,
+  .app-shell.mode-studio .pane-right .engine-module-blocked {
+    color: var(--subtle);
+    font-size: 12px;
+    line-height: 1.16;
+  }
+
+  .app-shell.mode-studio .pane-right .record-route {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    min-width: 0;
+    gap: 5px;
+    margin-top: 1px;
+  }
+
+  .app-shell.mode-studio .pane-right .record-route b {
+    color: color-mix(in srgb, var(--section-accent) 44%, var(--subtle));
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.12;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .pane-right .record-route span {
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: color-mix(in srgb, var(--text) 72%, var(--muted));
+    font-size: 12px;
+    line-height: 1.14;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio .pane-right .record-route + .record-route span {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio .pane-right .record-side,
+  .app-shell.mode-studio .pane-right .asset-row-side {
+    align-self: start;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio .pane-right .badge,
+  .app-shell.mode-studio .pane-right .status-badge,
+  .app-shell.mode-studio .pane-right .asset-row-export {
+    min-height: 18px;
+    padding: 2px 5px;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-kv {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio .pane-right .studio-kv dt,
+  .app-shell.mode-studio .pane-right .studio-kv dd {
+    min-height: 25px;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--dcc-line);
+    font-size: 12px;
+    line-height: 1.16;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-kv dt {
+    background: var(--dcc-field);
+  }
+
+  .app-shell.mode-studio .pane-right .studio-kv dd {
+    background: var(--dcc-row);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat-grid,
+  .app-shell.mode-studio .pane-right .debug-lens-stat-grid {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--dcc-line-hard);
+    border-radius: 0;
+    background: var(--dcc-slot);
+    box-shadow: var(--dcc-inset);
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat {
+    min-height: 34px;
+    margin: 0;
+    align-content: center;
+    gap: 2px;
+    padding: 6px 7px;
+    border: 0;
+    border-right: 1px solid var(--dcc-line);
+    border-bottom: 1px solid var(--dcc-line);
+    border-radius: 0;
+    background: var(--dcc-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat:nth-child(even) {
+    background: var(--dcc-row-alt);
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat:last-child,
+  .app-shell.mode-studio .pane-right .studio-stat:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat:nth-last-child(-n + 4) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat strong,
+  .app-shell.mode-studio .pane-right .studio-stat span {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat strong {
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .app-shell.mode-studio .pane-right .studio-stat span {
+    color: var(--muted);
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio .pane-right .badge-row {
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .pane-right .badge-row .badge,
+  .app-shell.mode-studio .pane-right .badge-row .status-badge {
+    border-radius: 0;
+    box-shadow: none;
   }
 }

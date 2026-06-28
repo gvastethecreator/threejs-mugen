@@ -227,6 +227,32 @@ export function createSyntheticImportedVariableTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resource",
+      displayName: "Synthetic Imported Resource Ops",
+      action200Duration: 30,
+      withResourceOps: { stateNo: 289 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-resource-golden",
+      targetLabel: "Synthetic imported resource controller route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 289],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["hitdef", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredFinalActors: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 289, animNo: 289, life: 750, power: 900 },
+      ],
+      notes: [
+        "Synthetic imported resource trace proves static LifeAdd, LifeSet, PowerAdd, and PowerSet can execute as typed resource operations and drive a later Life/Power ChangeState branch in the owner state. Scaling, redirects, round/KO flow, helpers, teams, and exact MUGEN/IKEMEN resource semantics remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -6156,6 +6182,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withHitAdd?: number;
   hitAddStateNo?: number;
   withVariableOps?: { stateNo: number };
+  withResourceOps?: { stateNo: number };
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
   moveGuardStateNo?: number;
@@ -6439,6 +6466,7 @@ ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
+${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
@@ -6487,6 +6515,7 @@ ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) 
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
+${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -6564,6 +6593,7 @@ ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitAddStateNo === undefined ? [] : ([[options.hitAddStateNo, traceAction(options.hitAddStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
         ? []
         : ([
@@ -8125,6 +8155,38 @@ trigger1 = var(7) = 8
 trigger1 = var(2) = 9
 trigger1 = var(3) = 9
 trigger1 = var(4) = 9
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function resourceControllerBlock(stateNo: number): string {
+  return `
+[State 200, Life Add Probe]
+type = LifeAdd
+trigger1 = MoveHit >= 1
+value = -20
+kill = 0
+
+[State 200, Life Set Probe]
+type = LifeSet
+trigger1 = Life = 980
+value = 750
+
+[State 200, Power Add Probe]
+type = PowerAdd
+trigger1 = Life = 750
+value = 200
+
+[State 200, Power Set Probe]
+type = PowerSet
+trigger1 = Power >= 200
+value = 900
+
+[State 200, Resource Branch]
+type = ChangeState
+trigger1 = Life = 750
+trigger1 = Power = 900
 value = ${stateNo}
 ctrl = 0
 `;

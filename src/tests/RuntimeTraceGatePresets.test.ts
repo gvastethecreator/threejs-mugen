@@ -77,6 +77,7 @@ import {
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileTimeTraceArtifact,
   createSyntheticImportedProjectileVelMulTraceArtifact,
+  createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedResourceMaxTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
@@ -398,6 +399,59 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 288, animNo: 288 });
+  });
+
+  it("creates a synthetic imported resource artifact with typed resource operation evidence", () => {
+    const artifact = createSyntheticImportedResourceTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-resource-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 289]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "HitDef",
+      "LifeAdd",
+      "LifeSet",
+      "PowerAdd",
+      "PowerSet",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "resource:lifeadd",
+      "resource:lifeset",
+      "resource:poweradd",
+      "resource:powerset",
+    ]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 289]));
+    expect(evidence?.executedControllers.LifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.LifeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:poweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 289,
+      animNo: 289,
+      life: 750,
+      power: 900,
+    });
   });
 
   it("creates a synthetic imported ReceivedDamage artifact with defender-local branch evidence", () => {

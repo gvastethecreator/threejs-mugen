@@ -426,6 +426,7 @@ export type RuntimeTraceFinalActorRequirement = {
   stateNo?: number;
   animNo?: number;
   life?: number;
+  power?: number;
   ctrl?: boolean;
   stateType?: string;
   moveType?: string;
@@ -598,6 +599,7 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "stateNo"
   | "animNo"
   | "life"
+  | "power"
   | "ctrl"
   | "stateType"
   | "moveType"
@@ -1704,6 +1706,7 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     stateNo: actor.stateNo,
     animNo: actor.animNo,
     life: actor.life,
+    power: actor.power,
     ctrl: actor.ctrl,
     stateType: actor.stateType,
     moveType: actor.moveType,

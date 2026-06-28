@@ -61,6 +61,11 @@ async function main() {
       artifact: presets.createSyntheticImportedVariableTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-resource",
+      required: true,
+      artifact: presets.createSyntheticImportedResourceTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),
@@ -1096,6 +1101,10 @@ function validateTraceCoverage(coverage) {
     "damage-scale:defencemulset",
     "contact:movehitreset",
     "contact:hitadd",
+    "resource:lifeadd",
+    "resource:lifeset",
+    "resource:poweradd",
+    "resource:powerset",
     "variable:varset",
     "variable:varadd",
     "variable:varrangeset",
@@ -1150,6 +1159,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-movehitreset",
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",
+    "synthetic-imported-resource",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-match-context",

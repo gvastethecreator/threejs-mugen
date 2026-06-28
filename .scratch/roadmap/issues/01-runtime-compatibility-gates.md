@@ -10,6 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Add required traces for controller families currently covered only by unit/runtime tests.
+- Latest completed cut: `synthetic-imported-resource.json` gates typed `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` resource-controller evidence with checksum `7bbcb2e4`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.
 - Move mutable behavior behind named systems before adding broader parity claims.
 - Prefer KFM/Common1 precision when a synthetic gate already exists for the same family.
