@@ -3657,6 +3657,31 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5050/5200/5201/52 named ground-recovery controller and typed operation order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 5050, controller: "VelAdd", name: "Gravity" },
+          { stateNo: 5050, controller: "ChangeState", name: "Ground Recovery Input" },
+          { stateNo: 5200, controller: "VelAdd", name: "Gravity" },
+          { stateNo: 5200, controller: "SelfState", name: "Self Land" },
+          { stateNo: 5201, controller: "VelSet", name: "Ground Recovery Velocity" },
+          { stateNo: 5201, controller: "PosSet", name: "Ground Recovery Position" },
+          { stateNo: 5201, operation: "kinematic:posset" },
+          { stateNo: 5201, controller: "NotHitBy", name: "Safe Recovery" },
+          { stateNo: 5201, operation: "eligibility:nothitby" },
+          { stateNo: 5201, controller: "ChangeState", name: "Land" },
+          { stateNo: 52, controller: "VelSet", name: "Land Velocity" },
+          { stateNo: 52, operation: "kinematic:velset" },
+          { stateNo: 52, controller: "PosSet", name: "Land Position" },
+          { stateNo: 52, operation: "kinematic:posset" },
+          { stateNo: 52, controller: "CtrlSet", name: "Land Ctrl" },
+          { stateNo: 52, operation: "resource:ctrlset" },
+        ],
+      },
+    ]);
   });
 
   it("creates a synthetic imported default Common1 recovery-input too-early reject artifact", () => {
