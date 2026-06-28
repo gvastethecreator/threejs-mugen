@@ -191,6 +191,21 @@ export type RuntimeEnvShakeEvent = {
   runtimeTick: number;
 };
 
+export type RuntimeEnvColorEvent = {
+  type: "EnvColor";
+  color: [number, number, number];
+  time: number;
+  under: boolean;
+  runtimeTick: number;
+};
+
+export type RuntimeStageFlash = {
+  color: [number, number, number];
+  opacity: number;
+  remaining: number;
+  under: boolean;
+};
+
 export type RuntimeActorKind = "player" | "helper" | "projectile" | "explod";
 
 export type RuntimeActorIdentity = {
@@ -317,6 +332,7 @@ export type StageSnapshot = {
       amplitude: number;
     };
   };
+  envColor?: RuntimeStageFlash;
   layers?: MugenStageDefinition["layers"];
   animations?: MugenStageDefinition["animations"];
   bgControllers?: MugenStageDefinition["bgControllers"];

@@ -38,6 +38,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   playsnd: partial("audio events"),
   stopsnd: partial("audio events"),
   envshake: partial("camera shake"),
+  envcolor: partial("stage color flash"),
   palfx: partial("material tint"),
   afterimage: partial("sprite trails"),
   afterimagetime: partial("sprite trails"),

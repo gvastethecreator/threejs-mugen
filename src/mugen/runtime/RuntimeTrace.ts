@@ -194,6 +194,7 @@ export type RuntimeTraceStageSummary = {
     zoom: number;
     shake?: StageSnapshot["camera"]["shake"];
   };
+  envColor?: StageSnapshot["envColor"];
 };
 
 export type RuntimeTraceWorldSummary = {
@@ -555,6 +556,12 @@ export type RuntimeTraceStageFrameRequirement = {
   observedCameraYAtMost?: number;
   observedZoomAtLeast?: number;
   observedZoomAtMost?: number;
+  envColorR?: number;
+  envColorG?: number;
+  envColorB?: number;
+  envColorUnder?: boolean;
+  observedEnvColorOpacityAtLeast?: number;
+  observedEnvColorOpacityAtMost?: number;
   boundLeft?: number;
   boundRight?: number;
 };
@@ -565,6 +572,12 @@ export type RuntimeTraceGateStageFrameEvidence = {
   bounds?: StageSnapshot["bounds"];
   minCamera: { x: number; y: number; zoom: number };
   maxCamera: { x: number; y: number; zoom: number };
+  envColor?: {
+    color: [number, number, number];
+    under: boolean;
+    minOpacity: number;
+    maxOpacity: number;
+  };
   firstTick: number;
   lastTick: number;
   frames: number;
@@ -1794,6 +1807,7 @@ function summarizeStageFrameEvidence(stage: RuntimeTraceStageSummary, tick: numb
     bounds: stage.bounds ? { ...stage.bounds } : undefined,
     minCamera: { x: stage.camera.x, y: stage.camera.y, zoom: stage.camera.zoom },
     maxCamera: { x: stage.camera.x, y: stage.camera.y, zoom: stage.camera.zoom },
+    envColor: summarizeStageEnvColor(stage),
     firstTick: tick,
     lastTick: tick,
     frames: 1,
@@ -1820,11 +1834,53 @@ function mergeStageFrameEvidence(
       y: Math.max(current.maxCamera.y, stage.camera.y),
       zoom: Math.max(current.maxCamera.zoom, stage.camera.zoom),
     },
+    envColor: mergeStageEnvColor(current.envColor, stage.envColor),
+  };
+}
+
+function summarizeStageEnvColor(stage: RuntimeTraceStageSummary): RuntimeTraceGateStageFrameEvidence["envColor"] {
+  if (!stage.envColor) {
+    return undefined;
+  }
+  return {
+    color: [stage.envColor.color[0], stage.envColor.color[1], stage.envColor.color[2]],
+    under: stage.envColor.under,
+    minOpacity: stage.envColor.opacity,
+    maxOpacity: stage.envColor.opacity,
+  };
+}
+
+function mergeStageEnvColor(
+  current: RuntimeTraceGateStageFrameEvidence["envColor"],
+  next: RuntimeTraceStageSummary["envColor"],
+): RuntimeTraceGateStageFrameEvidence["envColor"] {
+  if (!next) {
+    return current;
+  }
+  if (!current) {
+    return {
+      color: [next.color[0], next.color[1], next.color[2]],
+      under: next.under,
+      minOpacity: next.opacity,
+      maxOpacity: next.opacity,
+    };
+  }
+  return {
+    color: [current.color[0], current.color[1], current.color[2]],
+    under: current.under,
+    minOpacity: Math.min(current.minOpacity, next.opacity),
+    maxOpacity: Math.max(current.maxOpacity, next.opacity),
   };
 }
 
 function stageFrameEvidenceKey(stage: RuntimeTraceStageSummary): string {
-  return [stage.id ?? "none", stage.bounds?.left ?? "*", stage.bounds?.right ?? "*", stage.camera.zoom].join(":");
+  return [
+    stage.id ?? "none",
+    stage.bounds?.left ?? "*",
+    stage.bounds?.right ?? "*",
+    stage.camera.zoom,
+    stage.envColor ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}` : "ec*",
+  ].join(":");
 }
 
 function stageFrameGateEvidenceKey(stage: RuntimeTraceGateStageFrameEvidence): string {
@@ -1834,6 +1890,7 @@ function stageFrameGateEvidenceKey(stage: RuntimeTraceGateStageFrameEvidence): s
     stage.bounds?.right ?? "*",
     stage.minCamera.zoom,
     stage.maxCamera.zoom,
+    stage.envColor ? `${stage.envColor.color.join(",")}:${stage.envColor.under ? 1 : 0}:${stage.envColor.minOpacity}:${stage.envColor.maxOpacity}` : "ec*",
   ].join(":");
 }
 
@@ -1850,6 +1907,14 @@ function matchesStageFrameRequirement(
     (requirement.observedCameraYAtMost === undefined || stage.minCamera.y <= requirement.observedCameraYAtMost) &&
     (requirement.observedZoomAtLeast === undefined || stage.maxCamera.zoom >= requirement.observedZoomAtLeast) &&
     (requirement.observedZoomAtMost === undefined || stage.minCamera.zoom <= requirement.observedZoomAtMost) &&
+    (requirement.envColorR === undefined || stage.envColor?.color[0] === requirement.envColorR) &&
+    (requirement.envColorG === undefined || stage.envColor?.color[1] === requirement.envColorG) &&
+    (requirement.envColorB === undefined || stage.envColor?.color[2] === requirement.envColorB) &&
+    (requirement.envColorUnder === undefined || stage.envColor?.under === requirement.envColorUnder) &&
+    (requirement.observedEnvColorOpacityAtLeast === undefined ||
+      (stage.envColor?.maxOpacity ?? Number.NEGATIVE_INFINITY) >= requirement.observedEnvColorOpacityAtLeast) &&
+    (requirement.observedEnvColorOpacityAtMost === undefined ||
+      (stage.envColor?.minOpacity ?? Number.POSITIVE_INFINITY) <= requirement.observedEnvColorOpacityAtMost) &&
     (requirement.boundLeft === undefined || sameTraceNumber(stage.bounds?.left ?? NaN, requirement.boundLeft)) &&
     (requirement.boundRight === undefined || sameTraceNumber(stage.bounds?.right ?? NaN, requirement.boundRight))
   );
@@ -2130,6 +2195,14 @@ function summarizeStage(stage: StageSnapshot): RuntimeTraceStageSummary {
           }
         : undefined,
     },
+    envColor: stage.envColor
+      ? {
+          color: [stage.envColor.color[0], stage.envColor.color[1], stage.envColor.color[2]],
+          opacity: roundTraceNumber(stage.envColor.opacity),
+          remaining: stage.envColor.remaining,
+          under: stage.envColor.under,
+        }
+      : undefined,
   };
 }
 

@@ -180,6 +180,13 @@ export type FallEnvShakeControllerOp = {
   kind: "fallenvshake";
 };
 
+export type EnvColorControllerOp = {
+  kind: "envcolor";
+  color: [number, number, number];
+  time: number;
+  under: boolean;
+};
+
 export type MovementKinematicControllerOp = {
   kind: "kinematic";
   controllerType: "velset" | "veladd" | "velmul" | "hitvelset" | "posset" | "posadd";
@@ -356,6 +363,7 @@ export type ControllerOp =
   | RemoveExplodControllerOp
   | HitFallControllerOp
   | FallEnvShakeControllerOp
+  | EnvColorControllerOp
   | KinematicControllerOp
   | BoundsControllerOp
   | CollisionControllerOp
@@ -457,6 +465,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "fallenvshake") {
     return { kind: "fallenvshake" };
+  }
+  if (type === "envcolor") {
+    return compileEnvColorControllerOp(controller);
   }
   return undefined;
 }
@@ -1101,6 +1112,15 @@ function compileHitFallControllerOp(
   return { kind: "hitfall", controllerType: type };
 }
 
+function compileEnvColorControllerOp(controller: MugenStateController): EnvColorControllerOp {
+  return {
+    kind: "envcolor",
+    color: strictNumberTripletOrDefault(findParam(controller, "value"), [255, 255, 255], 0, 255) ?? [255, 255, 255],
+    time: clampEnvColorTime(firstNumber(findParam(controller, "time")) ?? 1),
+    under: (firstNumber(findParam(controller, "under")) ?? 0) !== 0,
+  };
+}
+
 function findParam(controller: MugenStateController, key: string): string | undefined {
   const lower = key.toLowerCase();
   return Object.entries(controller.params).find(([candidate]) => candidate.toLowerCase() === lower)?.[1];
@@ -1356,6 +1376,10 @@ function normalizePaletteNumber(value: number): number {
 
 function clampNumber(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function clampEnvColorTime(value: number): number {
+  return Math.max(0, Math.min(240, Math.round(value)));
 }
 
 function controllerDuration(value: number): number {

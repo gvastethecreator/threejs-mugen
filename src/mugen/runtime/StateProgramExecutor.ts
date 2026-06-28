@@ -18,6 +18,7 @@ export type StateProgramSideEffect =
   | "bindtotarget"
   | "pause"
   | "sound"
+  | "envcolor"
   | "envshake"
   | "contact";
 
@@ -77,6 +78,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   superpause: "pause",
   playsnd: "sound",
   stopsnd: "sound",
+  envcolor: "envcolor",
   envshake: "envshake",
   movehitreset: "contact",
 };

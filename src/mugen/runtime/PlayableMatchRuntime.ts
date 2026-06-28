@@ -4,6 +4,7 @@ import type {
   CollisionControllerOp,
   ControllerOp,
   ExplodControllerOp,
+  EnvColorControllerOp,
   FallEnvShakeControllerOp,
   HelperControllerOp,
   HitDefControllerOp,
@@ -22,6 +23,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
+import { calculateRuntimeStageFlash, createRuntimeEnvColorEvent, pushRuntimeEnvColorEvent } from "./EnvColorSystem";
 import {
   applyRuntimeDamage,
   canRuntimeDamageKill,
@@ -85,6 +87,7 @@ import type {
   CharacterRuntimeState,
   RuntimeAfterImageSample,
   RuntimeEnvShakeEvent,
+  RuntimeEnvColorEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
@@ -176,6 +179,7 @@ type FighterContactState = {
 };
 
 type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
+type EnvColorControllerHandler = (controller: MugenStateController, operation?: EnvColorControllerOp) => void;
 
 type EnterStateOptions = {
   stateOwner?: FighterMatchState;
@@ -206,6 +210,7 @@ export class PlayableMatchRuntime {
   private readonly effectActorWorld: RuntimeEffectActorWorld;
   private readonly targetWorld: RuntimeTargetWorld;
   private matchPause?: RuntimeMatchPause;
+  private readonly envColorEvents: RuntimeEnvColorEvent[] = [];
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -316,10 +321,22 @@ export class PlayableMatchRuntime {
     } else {
       handleSimpleAi(this.p2, this.p1, this.tick);
     }
-    advanceFighter(this.p1, this.p2, this.tick, (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation));
+    advanceFighter(
+      this.p1,
+      this.p2,
+      this.tick,
+      (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+      (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+    );
     applyAutoGuardStart(this.p2, this.p1);
     if (!this.matchPause) {
-      advanceFighter(this.p2, this.p1, this.tick, (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation));
+      advanceFighter(
+        this.p2,
+        this.p1,
+        this.tick,
+        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+      );
       applyAutoGuardStart(this.p1, this.p2);
     }
     advanceTargetMemory(this.p1);
@@ -366,7 +383,13 @@ export class PlayableMatchRuntime {
       } else {
         handleSimpleAi(actor, opponent, this.tick);
       }
-      advanceFighter(actor, opponent, this.tick, (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation));
+      advanceFighter(
+        actor,
+        opponent,
+        this.tick,
+        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+      );
       advanceTargetMemory(actor);
       advanceActiveEffects(actor, this.stage);
       advancePresentationEffects(actor);
@@ -407,6 +430,7 @@ export class PlayableMatchRuntime {
   getSnapshot(): MugenSnapshot {
     const center = cameraCenterX([this.p1, this.p2]);
     const shake = calculateRuntimeCameraShake(this.tick, [this.p1, this.p2].flatMap((fighter) => fighter.envShakeEvents));
+    const envColor = calculateRuntimeStageFlash(this.tick, this.envColorEvents);
     return {
       tick: this.tick,
       selectedActionId: this.p1.runtime.animNo,
@@ -427,6 +451,7 @@ export class PlayableMatchRuntime {
           zoom: this.stage.camera.zoom,
           ...(shake ? { shake } : {}),
         },
+        ...(envColor ? { envColor } : {}),
         layers: this.stage.layers,
         animations: this.stage.animations,
         bgControllers: this.stage.bgControllers,
@@ -464,6 +489,7 @@ export class PlayableMatchRuntime {
     this.winner = undefined;
     this.playing = true;
     this.matchPause = undefined;
+    this.envColorEvents.length = 0;
     this.effectActorWorld.reset();
     Object.assign(
       this.p1,
@@ -507,6 +533,14 @@ export class PlayableMatchRuntime {
     }
     this.playing = false;
     this.logs.unshift(`${this.roundMessage()} - press Reset to fight again`);
+  }
+
+  private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
+    const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation);
+    if (!event) {
+      return;
+    }
+    pushRuntimeEnvColorEvent(this.envColorEvents, event);
   }
 
   private roundMessage(): string {
@@ -726,6 +760,7 @@ function advanceFighter(
   opponent: FighterMatchState,
   tick: number,
   onPauseController?: PauseControllerHandler,
+  onEnvColorController?: EnvColorControllerHandler,
 ): void {
   tickRuntimePaletteFx(fighter.runtime);
   tickRuntimeAfterImage(fighter.runtime, () => createAfterImageSample(fighter));
@@ -798,7 +833,7 @@ function advanceFighter(
   }
 
   advanceAnimation(fighter);
-  runActiveStateControllers(fighter, opponent, tick, onPauseController);
+  runActiveStateControllers(fighter, opponent, tick, onPauseController, onEnvColorController);
   advanceImportedGroundRecoveryLanding(fighter);
   advanceCommon1LieDownRecovery(fighter);
   const posFreeze = fighter.runtime.posFreeze as CharacterRuntimeState["posFreeze"];
@@ -950,6 +985,7 @@ function runActiveStateControllers(
   opponent: FighterMatchState,
   tick: number,
   onPauseController?: PauseControllerHandler,
+  onEnvColorController?: EnvColorControllerHandler,
 ): void {
   const owner = fighter.stateOwner ?? fighter;
   const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo);
@@ -1107,6 +1143,13 @@ function runActiveStateControllers(
       } else if (dispatch.effect === "sound") {
         recordControllerExecution(fighter, rawController);
         recordSoundEvent(fighter, rawController, tick);
+      } else if (dispatch.effect === "envcolor") {
+        recordControllerExecution(fighter, rawController);
+        const operation = controller.operation?.kind === "envcolor" ? controller.operation : undefined;
+        if (operation) {
+          recordControllerOperation(fighter, operation);
+        }
+        onEnvColorController?.(rawController, operation);
       } else if (dispatch.effect === "envshake") {
         recordControllerExecution(fighter, rawController);
         recordEnvShakeEvent(fighter, rawController, tick);

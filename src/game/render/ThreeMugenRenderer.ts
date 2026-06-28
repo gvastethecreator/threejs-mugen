@@ -25,6 +25,14 @@ export class ThreeMugenRenderer implements MugenRenderer {
     depthTest: false,
   });
   private readonly pauseOverlay = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.pauseOverlayMaterial);
+  private readonly envColorOverlayMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0,
+    depthWrite: false,
+    depthTest: false,
+  });
+  private readonly envColorOverlay = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), this.envColorOverlayMaterial);
   private target?: HTMLElement;
   private resizeObserver?: ResizeObserver;
   private size = { width: 640, height: 360 };
@@ -39,6 +47,9 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.pauseOverlay.visible = false;
     this.pauseOverlay.renderOrder = 1000;
     this.scene.add(this.pauseOverlay);
+    this.envColorOverlay.visible = false;
+    this.envColorOverlay.renderOrder = 1001;
+    this.scene.add(this.envColorOverlay);
   }
 
   setStageSpriteArchives(archives: Array<{ stageId: string; archive?: SffArchive }>): void {
@@ -83,6 +94,15 @@ export class ThreeMugenRenderer implements MugenRenderer {
     if (this.pauseOverlay.visible) {
       this.pauseOverlay.position.set(this.camera.position.x, this.camera.position.y, 9);
       this.pauseOverlay.scale.set(this.size.width / this.camera.zoom, this.size.height / this.camera.zoom, 1);
+    }
+    this.envColorOverlay.visible = Boolean(snapshot.stage.envColor);
+    if (snapshot.stage.envColor) {
+      const color = snapshot.stage.envColor.color;
+      this.envColorOverlayMaterial.color.setRGB(color[0] / 255, color[1] / 255, color[2] / 255);
+      this.envColorOverlayMaterial.opacity = snapshot.stage.envColor.opacity;
+      this.envColorOverlay.renderOrder = snapshot.stage.envColor.under ? 2 : 1002;
+      this.envColorOverlay.position.set(this.camera.position.x, this.camera.position.y, snapshot.stage.envColor.under ? -1 : 9.5);
+      this.envColorOverlay.scale.set(this.size.width / this.camera.zoom, this.size.height / this.camera.zoom, 1);
     }
     this.camera.updateProjectionMatrix();
     this.renderer.render(this.scene, this.camera);
@@ -139,6 +159,8 @@ export class ThreeMugenRenderer implements MugenRenderer {
     this.characters.dispose();
     this.pauseOverlay.geometry.dispose();
     this.pauseOverlayMaterial.dispose();
+    this.envColorOverlay.geometry.dispose();
+    this.envColorOverlayMaterial.dispose();
     this.textures.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();

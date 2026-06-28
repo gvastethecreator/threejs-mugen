@@ -105,6 +105,8 @@ time = 20
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
     expect(isRuntimeExecutableController("Trans")).toBe(true);
     expect(getControllerSupport("Trans").level).toBe("partial");
+    expect(isRuntimeExecutableController("EnvColor")).toBe(true);
+    expect(getControllerSupport("EnvColor").level).toBe("partial");
   });
 
   it("compiles HitDef params into a typed controller operation", () => {
@@ -560,6 +562,17 @@ time = 20
       controllerType: "trans",
       trans: "addalpha,128,128",
       opacity: 0.5,
+    });
+  });
+
+  it("compiles EnvColor controllers into typed stage flash operations", () => {
+    const envColor = compileControllerIr(controller(200, "EnvColor", [], { value: "16,96,300", time: "999", under: "1" }));
+
+    expect(envColor.operation).toEqual({
+      kind: "envcolor",
+      color: [16, 96, 255],
+      time: 240,
+      under: true,
     });
   });
 

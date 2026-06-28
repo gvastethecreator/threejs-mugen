@@ -186,6 +186,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTransTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envcolor",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvColorTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
@@ -1008,6 +1013,7 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:sprpriority",
     "sprite-effect:palfx",
     "sprite-effect:trans",
+    "envcolor",
     "sprite-effect:remappal",
     "sprite-effect:afterimage",
     "sprite-effect:afterimagetime",
@@ -1053,6 +1059,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-sprpriority",
     "synthetic-imported-palfx",
     "synthetic-imported-trans",
+    "synthetic-imported-envcolor",
     "synthetic-imported-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-hitdefattr",

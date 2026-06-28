@@ -1267,6 +1267,59 @@ export function createSyntheticImportedTransTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-envcolor",
+    displayName: "Synthetic Imported EnvColor",
+    withEnvColor: {
+      value: [16, 96, 255],
+      time: 12,
+      under: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-envcolor-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-envcolor-golden",
+      label: "Synthetic imported EnvColor route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported EnvColor trace proves static value/time/under lowers into typed envcolor operation evidence and reaches bounded stage-flash telemetry consumed by Three.js. It does not claim exact MUGEN/IKEMEN blend, layer, window, palette, or pause-timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-envcolor-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "EnvColor", "HitDef"],
+        requiredExecutedOperations: ["envcolor", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredStageFrames: [
+          {
+            stageId: stage.id,
+            envColorR: 16,
+            envColorG: 96,
+            envColorB: 255,
+            envColorUnder: false,
+            observedEnvColorOpacityAtLeast: 0.2,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -5555,6 +5608,11 @@ export type SyntheticImportedTraceFighterOptions = {
     invert?: boolean;
   };
   withTrans?: string;
+  withEnvColor?: {
+    value?: [number, number, number];
+    time?: number;
+    under?: boolean;
+  };
   withRemapPal?: {
     source: [number, number];
     dest: [number, number];
@@ -5704,6 +5762,7 @@ ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
+${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
@@ -6254,6 +6313,17 @@ function transControllerBlock(trans: string): string {
 type = Trans
 trigger1 = Time >= 0
 trans = ${trans}
+`;
+}
+
+function envColorControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvColor"]>): string {
+  return `
+[State 200, EnvColor Probe]
+type = EnvColor
+trigger1 = Time >= 0
+value = ${(options.value ?? [255, 255, 255]).join(",")}
+time = ${options.time ?? 1}
+under = ${options.under ? 1 : 0}
 `;
 }
 
