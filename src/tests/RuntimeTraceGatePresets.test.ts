@@ -54,6 +54,7 @@ import {
   createSyntheticImportedCrouchGuardStateTraceArtifact,
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
   createSyntheticImportedGuardTraceArtifact,
+  createSyntheticImportedHitDefHitSoundTraceArtifact,
   createSyntheticImportedHitDefHitSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSoundTraceArtifact,
@@ -2274,6 +2275,41 @@ describe("RuntimeTraceGatePresets", () => {
           actorKind: "player",
           type: "PlaySnd",
           group: 6,
+          index: 0,
+          stateNo: 200,
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef hit-sound artifact", () => {
+    const artifact = createSyntheticImportedHitDefHitSoundTraceArtifact({ generatedAt: "2026-06-28T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-hit-sound-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          type: "PlaySnd",
+          group: 5,
           index: 0,
           stateNo: 200,
         }),

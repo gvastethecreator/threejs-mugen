@@ -2538,6 +2538,35 @@ export function createSyntheticImportedHitDefGuardSoundTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHitDefHitSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-hit-sound-attacker",
+    displayName: "Synthetic Imported HitDef Hit Sound Attacker",
+    hitSound: "S5,0",
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-hit-sound-golden",
+    targetLabel: "Synthetic imported HitDef hit sound route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 5,
+        index: 0,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef hit-sound trace proves a direct HitDef hit can emit bounded PlaySnd telemetry from hitsound = S5,0 on the attacker actor. It does not claim exact SND playback, FightFX/common sound routing, channel priority, timing/mixing parity, or full MUGEN/IKEMEN hit-effect behavior.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefHitSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-hit-spark-attacker",

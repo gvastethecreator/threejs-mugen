@@ -32,14 +32,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Current R1 hit-eligibility slice completed:
+Current R1 HitDef hit-sound slice completed:
 
 ```txt
-R1 hit-eligibility oracle
-  -> required synthetic-imported-hitby-reject.json
-  -> checksum 65185fd1
-  -> proves HitBy value = S,NT rejects HitDef attr = S,NA
-  -> qa:trace aggregate 154/154, 136 required, 18 optional
+R1 HitDef effect oracle
+  -> required synthetic-imported-hitdef-hit-sound.json
+  -> checksum 6fc00d8a
+  -> proves hitsound = S5,0 emits attacker-side PlaySnd telemetry after direct hit
+  -> qa:trace aggregate 155/155, 137 required, 18 optional
 ```
 
 Default next implementation slice after this cut:
