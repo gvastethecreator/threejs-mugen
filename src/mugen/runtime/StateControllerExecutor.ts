@@ -238,6 +238,7 @@ export function executeControllerIr(
     type === "angledraw" ||
     type === "explod" ||
     type === "removeexplod" ||
+    type === "modifyexplod" ||
     type === "helper" ||
     type === "projectile" ||
     type === "sprpriority" ||

@@ -173,6 +173,23 @@ export type RemoveExplodControllerOp = {
   explodId?: number;
 };
 
+export type ModifyExplodControllerOp = {
+  kind: "modifyexplod";
+  explodId?: number;
+  bindTime?: number;
+  scale?: [number, number];
+  velocity?: [number, number];
+  acceleration?: [number, number];
+  facing?: number;
+  removeTime?: number;
+  removeOnGetHit?: boolean;
+  ignoreHitPause?: boolean;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
+  spritePriority?: number;
+  trans?: string;
+};
+
 export type HitFallControllerOp =
   | {
       kind: "hitfall";
@@ -389,6 +406,7 @@ export type ControllerOp =
   | HelperControllerOp
   | ExplodControllerOp
   | RemoveExplodControllerOp
+  | ModifyExplodControllerOp
   | HitFallControllerOp
   | FallEnvShakeControllerOp
   | EnvColorControllerOp
@@ -503,6 +521,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "removeexplod") {
     return compileRemoveExplodControllerOp(controller);
+  }
+  if (type === "modifyexplod") {
+    return compileModifyExplodControllerOp(controller);
   }
   if (type === "hitfallvel" || type === "hitfalldamage" || type === "hitfallset") {
     return compileHitFallControllerOp(controller, type);
@@ -1179,6 +1200,25 @@ function compileRemoveExplodControllerOp(controller: MugenStateController): Remo
   return definedObject({
     kind: "removeexplod" as const,
     explodId: firstNumber(findParam(controller, "id")),
+  });
+}
+
+function compileModifyExplodControllerOp(controller: MugenStateController): ModifyExplodControllerOp {
+  return definedObject({
+    kind: "modifyexplod" as const,
+    explodId: firstNumber(findParam(controller, "id")),
+    bindTime: firstNumber(findParam(controller, "bindtime")),
+    scale: scalePairWithDefaultOrUndefined(numberPair(findParam(controller, "scale"))),
+    velocity: pairWithDefaultOrUndefined(numberPair(findParam(controller, "vel") ?? findParam(controller, "velocity"))),
+    acceleration: pairWithDefaultOrUndefined(numberPair(findParam(controller, "accel"))),
+    facing: firstNumber(findParam(controller, "facing")),
+    removeTime: firstNumber(findParam(controller, "removetime")),
+    removeOnGetHit: booleanNumber(findParam(controller, "removeongethit")),
+    ignoreHitPause: booleanNumber(findParam(controller, "ignorehitpause")),
+    pauseMoveTime: firstNumber(findParam(controller, "pausemovetime")),
+    superMoveTime: firstNumber(findParam(controller, "supermovetime")),
+    spritePriority: firstNumber(findParam(controller, "sprpriority")),
+    trans: stripMugenString(findParam(controller, "trans")),
   });
 }
 

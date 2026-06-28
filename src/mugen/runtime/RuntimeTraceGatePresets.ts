@@ -6055,6 +6055,91 @@ export function createSyntheticImportedModifyProjectileTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedModifyExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedExplodScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyexplod-attacker",
+    displayName: "Synthetic Imported ModifyExplod Attacker",
+    withMovingExplod: true,
+    withModifyExplod: true,
+    modifyExplodTriggerTime: 4,
+    modifyExplodVelocity: [9, -1],
+    modifyExplodAccel: [0.5, 0.25],
+    modifyExplodScale: [2, 0.5],
+    modifyExplodRemoveTime: 24,
+    modifyExplodSpritePriority: 8,
+    modifyExplodRemoveOnGetHit: true,
+    modifyExplodIgnoreHitPause: true,
+    modifyExplodPauseMoveTime: 3,
+    modifyExplodSuperMoveTime: 4,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyexplod-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyexplod-golden",
+      label: "Synthetic imported ModifyExplod route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported ModifyExplod trace proves a bounded owner-side ModifyExplod controller can mutate a live visual Explod's static velocity, acceleration, scale, priority, pause budgets, removeongethit, and removetime through the shared effect actor world. It does not claim exact MUGEN/IKEMEN tick order, dynamic params, helper-owned Explods, position rebinding, remove triggers, FightFX routing, or full Explod lifecycle parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-modifyexplod-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Explod", "ModifyExplod"],
+        requiredExecutedOperations: ["hitdef", "explod", "modifyexplod"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minExplods: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "explod",
+            ownerId: "p1",
+            effectId: 9001,
+            minAge: 3,
+            minRemoveTime: 24,
+            minSpritePriority: 8,
+            removeOnGetHit: true,
+            ignoreHitPause: true,
+            minPauseMoveTime: 3,
+            minSuperMoveTime: 4,
+            scaleX: 2,
+            scaleY: 0.5,
+          },
+        ],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "explod",
+            ownerId: "p1",
+            animNo: 931,
+            minFrames: 3,
+            observedVelXAtLeast: 8,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -7728,6 +7813,17 @@ export type SyntheticImportedTraceFighterOptions = {
   withSuperMoveExplod?: boolean;
   withHitPauseExplods?: boolean;
   withMovingExplod?: boolean;
+  withModifyExplod?: boolean;
+  modifyExplodTriggerTime?: number;
+  modifyExplodVelocity?: [number, number];
+  modifyExplodAccel?: [number, number];
+  modifyExplodScale?: [number, number];
+  modifyExplodRemoveTime?: number;
+  modifyExplodSpritePriority?: number;
+  modifyExplodRemoveOnGetHit?: boolean;
+  modifyExplodIgnoreHitPause?: boolean;
+  modifyExplodPauseMoveTime?: number;
+  modifyExplodSuperMoveTime?: number;
   withBoundExplod?: boolean;
   withScaledExplod?: boolean;
   withRemoveExplod?: boolean;
@@ -8022,6 +8118,18 @@ ${options.withPauseMoveExplod ? pauseMoveExplodControllerBlock() : ""}
 ${options.withSuperMoveExplod ? superMoveExplodControllerBlock() : ""}
 ${options.withHitPauseExplods ? hitPauseExplodsControllerBlock() : ""}
 ${options.withMovingExplod ? movingExplodControllerBlock() : ""}
+${options.withModifyExplod ? modifyExplodControllerBlock({
+  triggerTime: options.modifyExplodTriggerTime,
+  velocity: options.modifyExplodVelocity,
+  accel: options.modifyExplodAccel,
+  scale: options.modifyExplodScale,
+  removeTime: options.modifyExplodRemoveTime,
+  spritePriority: options.modifyExplodSpritePriority,
+  removeOnGetHit: options.modifyExplodRemoveOnGetHit,
+  ignoreHitPause: options.modifyExplodIgnoreHitPause,
+  pauseMoveTime: options.modifyExplodPauseMoveTime,
+  superMoveTime: options.modifyExplodSuperMoveTime,
+}) : ""}
 ${options.withBoundExplod ? boundExplodControllerBlock() : ""}
 ${options.withScaledExplod ? scaledExplodControllerBlock() : ""}
 ${options.withRemoveExplod ? removeExplodControllerBlock() : ""}
@@ -10259,6 +10367,45 @@ facing = 1
 sprpriority = 6
 removetime = 30
 trans = add
+`;
+}
+
+function modifyExplodControllerBlock(input: {
+  triggerTime?: number;
+  velocity?: [number, number];
+  accel?: [number, number];
+  scale?: [number, number];
+  removeTime?: number;
+  spritePriority?: number;
+  removeOnGetHit?: boolean;
+  ignoreHitPause?: boolean;
+  pauseMoveTime?: number;
+  superMoveTime?: number;
+}): string {
+  const velocityLine = input.velocity === undefined ? "" : `vel = ${input.velocity[0]},${input.velocity[1]}`;
+  const accelLine = input.accel === undefined ? "" : `accel = ${input.accel[0]},${input.accel[1]}`;
+  const scaleLine = input.scale === undefined ? "" : `scale = ${input.scale[0]},${input.scale[1]}`;
+  const removeTimeLine = input.removeTime === undefined ? "" : `removetime = ${input.removeTime}`;
+  const spritePriorityLine = input.spritePriority === undefined ? "" : `sprpriority = ${input.spritePriority}`;
+  const removeOnGetHitLine = input.removeOnGetHit === undefined ? "" : `removeongethit = ${input.removeOnGetHit ? 1 : 0}`;
+  const ignoreHitPauseLine = input.ignoreHitPause === undefined ? "" : `ignorehitpause = ${input.ignoreHitPause ? 1 : 0}`;
+  const pauseMoveTimeLine = input.pauseMoveTime === undefined ? "" : `pausemovetime = ${input.pauseMoveTime}`;
+  const superMoveTimeLine = input.superMoveTime === undefined ? "" : `supermovetime = ${input.superMoveTime}`;
+  return `
+[State 200, Modify Moving Visual Explod]
+type = ModifyExplod
+trigger1 = Time = ${input.triggerTime ?? 4}
+id = 9001
+${velocityLine}
+${accelLine}
+${scaleLine}
+${removeTimeLine}
+${spritePriorityLine}
+${removeOnGetHitLine}
+${ignoreHitPauseLine}
+${pauseMoveTimeLine}
+${superMoveTimeLine}
+trans = none
 `;
 }
 

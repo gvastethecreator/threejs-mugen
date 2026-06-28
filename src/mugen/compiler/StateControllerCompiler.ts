@@ -44,6 +44,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   afterimagetime: partial("sprite trails"),
   explod: partial("effect actors"),
   removeexplod: partial("effect actors"),
+  modifyexplod: partial("effect actor mutation"),
   helper: partial("bounded visual helper"),
   projectile: partial("bounded projectile"),
   modifyprojectile: partial("bounded projectile mutation"),

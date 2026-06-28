@@ -99,6 +99,7 @@ import {
   createSyntheticImportedProjectileClashTraceArtifact,
   createSyntheticImportedProjectileContactTraceArtifact,
   createSyntheticImportedProjectileMotionTraceArtifact,
+  createSyntheticImportedModifyExplodTraceArtifact,
   createSyntheticImportedModifyProjectileTraceArtifact,
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileTimeTraceArtifact,
@@ -4841,6 +4842,51 @@ describe("RuntimeTraceGatePresets", () => {
       "hitdef",
       "projectile",
       "modifyprojectile",
+    ]);
+  });
+
+  it("creates a synthetic imported ModifyExplod artifact with live visual explod mutation evidence", () => {
+    const artifact = createSyntheticImportedModifyExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-modifyexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyExplod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyexplod).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "explod",
+          ownerId: "p1",
+          animNo: 931,
+          maxScale: expect.objectContaining({ x: 2 }),
+          minScale: expect.objectContaining({ y: 0.5 }),
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "HitDef",
+      "Explod",
+      "ModifyExplod",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "explod",
+      "modifyexplod",
     ]);
   });
 

@@ -1,4 +1,4 @@
-import type { ExplodControllerOp } from "../compiler/ControllerOps";
+import type { ExplodControllerOp, ModifyExplodControllerOp } from "../compiler/ControllerOps";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -72,6 +72,11 @@ export type RuntimeExplodSpawnInput = {
   defaultRemoveTime: number;
 };
 
+export type RuntimeExplodModifyInput = {
+  controller: MugenStateController;
+  operation?: ModifyExplodControllerOp;
+};
+
 export function createRuntimeExplod(input: RuntimeExplodSpawnInput): RuntimeExplod {
   const forcedFacing = input.operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
   const identity = resolveActorIdentity(input);
@@ -128,6 +133,72 @@ export function removeRuntimeExplods(explods: RuntimeExplod[], explodId: number 
 
 export function removeRuntimeExplodsOnGetHit(explods: RuntimeExplod[]): RuntimeExplod[] {
   return explods.filter((explod) => !explod.removeOnGetHit);
+}
+
+export function modifyRuntimeExplods(explods: RuntimeExplod[], input: RuntimeExplodModifyInput): number {
+  const operation = input.operation;
+  const explodId = operation?.explodId ?? firstNumber(findControllerParam(input.controller, "id"));
+  const bindTime = operation?.bindTime ?? firstNumber(findControllerParam(input.controller, "bindtime"));
+  const velocity = operation?.velocity ?? numberPair(findControllerParam(input.controller, "vel") ?? findControllerParam(input.controller, "velocity"));
+  const acceleration = operation?.acceleration ?? numberPair(findControllerParam(input.controller, "accel"));
+  const scale = operation?.scale ?? scalePair(findControllerParam(input.controller, "scale"));
+  const facing = operation?.facing ?? firstNumber(findControllerParam(input.controller, "facing"));
+  const removeTime = operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime"));
+  const removeOnGetHit = operation?.removeOnGetHit ?? booleanNumber(findControllerParam(input.controller, "removeongethit"));
+  const ignoreHitPause = operation?.ignoreHitPause ?? booleanNumber(findControllerParam(input.controller, "ignorehitpause"));
+  const pauseMoveTime = operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime"));
+  const superMoveTime = operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime"));
+  const spritePriority = operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority"));
+  const trans = operation?.trans ?? findControllerParam(input.controller, "trans");
+  let changed = 0;
+
+  for (const explod of explods) {
+    if (explodId !== undefined && explod.explodId !== explodId) {
+      continue;
+    }
+    if (velocity) {
+      explod.vel = pairToVector(velocity);
+    }
+    if (acceleration) {
+      explod.accel = pairToVector(acceleration);
+    }
+    if (scale) {
+      explod.scale = pairToScale(scale);
+    }
+    if (facing !== undefined && (facing === -1 || facing === 1)) {
+      explod.facing = facing;
+    }
+    if (removeTime !== undefined) {
+      explod.removeTime = clampExplodTime(removeTime);
+    }
+    if (removeOnGetHit !== undefined) {
+      explod.removeOnGetHit = removeOnGetHit;
+    }
+    if (ignoreHitPause !== undefined) {
+      explod.ignoreHitPause = ignoreHitPause;
+    }
+    if (pauseMoveTime !== undefined) {
+      explod.pauseMoveTime = clampExplodMoveTime(pauseMoveTime);
+    }
+    if (superMoveTime !== undefined) {
+      explod.superMoveTime = clampExplodMoveTime(superMoveTime);
+    }
+    if (spritePriority !== undefined) {
+      explod.spritePriority = Math.max(-5, Math.min(10, Math.round(spritePriority)));
+    }
+    if (trans !== undefined) {
+      explod.opacity = parseExplodOpacity(trans);
+    }
+    if (bindTime !== undefined && explod.bind) {
+      explod.bind.remaining = clampExplodBindTime(bindTime);
+      if (explod.bind.remaining === 0) {
+        explod.bind = undefined;
+      }
+    }
+    changed += 1;
+  }
+
+  return changed;
 }
 
 export function advanceRuntimeExplods(

@@ -42,6 +42,7 @@ Required artifacts should prove engine plumbing without private assets:
 - Projectile
 - Helper
 - Explod
+- ModifyExplod live-mutation
 
 These artifacts can prove regression stability and controller-system behavior. They do not prove official character parity.
 

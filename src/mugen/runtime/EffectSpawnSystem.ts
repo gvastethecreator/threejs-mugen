@@ -1,6 +1,7 @@
 import type {
   ExplodControllerOp,
   HelperControllerOp,
+  ModifyExplodControllerOp,
   ModifyProjectileControllerOp,
   ProjectileControllerOp,
   RemoveExplodControllerOp,
@@ -24,7 +25,7 @@ export type RuntimeEffectSpawnActor = {
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
-    "spawnExplod" | "removeExplods" | "spawnHelper" | "spawnProjectile" | "modifyProjectiles"
+    "spawnExplod" | "removeExplods" | "modifyExplods" | "spawnHelper" | "spawnProjectile" | "modifyProjectiles"
   >;
 };
 
@@ -72,6 +73,17 @@ export class RuntimeEffectSpawnWorld {
   ): boolean {
     fighter.effectActorWorld.removeExplods(fighter.id, operation?.explodId ?? firstNumber(findParam(controller, "id")));
     return true;
+  }
+
+  modifyExplods(
+    fighter: RuntimeEffectSpawnActor,
+    controller: MugenStateController,
+    operation?: ModifyExplodControllerOp,
+  ): number {
+    return fighter.effectActorWorld.modifyExplods(fighter.id, {
+      controller,
+      operation,
+    });
   }
 
   spawnHelper(

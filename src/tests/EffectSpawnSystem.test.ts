@@ -90,6 +90,26 @@ describe("EffectSpawnSystem", () => {
     expect(effectActorWorld.getStore("p1").explods).toHaveLength(0);
   });
 
+  it("owns ModifyExplod dispatch for live owner-side visual actors", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 200, y: 0 },
+      facing: -1,
+    });
+
+    spawnWorld.spawnExplod(fighter, opponent, controller("Explod", { anim: "910", id: "77", vel: "1,0", scale: "1,1" }));
+    const changed = spawnWorld.modifyExplods(fighter, controller("ModifyExplod", { id: "77", vel: "4,-2", scale: "2,.5", sprpriority: "8" }));
+
+    expect(changed).toBe(1);
+    expect(effectActorWorld.getStore("p1").explods[0]).toMatchObject({
+      vel: { x: 4, y: -2 },
+      scale: { x: 2, y: 0.5 },
+      spritePriority: 8,
+    });
+  });
+
   it("owns Helper and Projectile creation through state-owner sprite/action resolution", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

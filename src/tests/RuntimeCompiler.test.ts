@@ -798,7 +798,7 @@ time = 20
     });
   });
 
-  it("compiles Explod and RemoveExplod controllers into typed effect operations", () => {
+  it("compiles Explod, ModifyExplod, and RemoveExplod controllers into typed effect operations", () => {
     const explod = compileControllerIr(
       controller(200, "Explod", [], {
         id: "9000",
@@ -817,6 +817,23 @@ time = 20
         supermovetime: "4",
         sprpriority: "6",
         trans: "add",
+      }),
+    );
+    const modifyExplod = compileControllerIr(
+      controller(200, "ModifyExplod", [], {
+        id: "9000",
+        bindtime: "6",
+        scale: "2,0.5",
+        vel: "4,-2",
+        accel: "1,0.25",
+        facing: "1",
+        removetime: "24",
+        removeongethit: "1",
+        ignorehitpause: "1",
+        pausemovetime: "3",
+        supermovetime: "5",
+        sprpriority: "8",
+        trans: "none",
       }),
     );
     const removeExplod = compileControllerIr(controller(200, "RemoveExplod", [], { id: "9000" }));
@@ -843,6 +860,22 @@ time = 20
     expect(removeExplod.operation).toMatchObject({
       kind: "removeexplod",
       explodId: 9000,
+    });
+    expect(modifyExplod.operation).toMatchObject({
+      kind: "modifyexplod",
+      explodId: 9000,
+      bindTime: 6,
+      scale: [2, 0.5],
+      velocity: [4, -2],
+      acceleration: [1, 0.25],
+      facing: 1,
+      removeTime: 24,
+      removeOnGetHit: true,
+      ignoreHitPause: true,
+      pauseMoveTime: 3,
+      superMoveTime: 5,
+      spritePriority: 8,
+      trans: "none",
     });
   });
 

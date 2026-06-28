@@ -2,12 +2,14 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import {
   advanceRuntimeExplods,
   createRuntimeExplod,
+  modifyRuntimeExplods,
   removeRuntimeExplodsOnGetHit,
   removeRuntimeExplods,
   runtimeExplodsToSnapshots,
   type RuntimeExplod,
   type RuntimeExplodAdvanceOptions,
   type RuntimeExplodBindAnchor,
+  type RuntimeExplodModifyInput,
   type RuntimeExplodSpawnInput,
 } from "./ExplodSystem";
 import {
@@ -106,6 +108,10 @@ export class RuntimeEffectActorWorld {
 
   removeExplods(ownerId: string, explodId: number | undefined): void {
     removeRuntimeExplodActors(this.getStore(ownerId), explodId);
+  }
+
+  modifyExplods(ownerId: string, input: RuntimeExplodModifyInput): number {
+    return modifyRuntimeExplodActors(this.getStore(ownerId), input);
   }
 
   removeExplodsOnGetHit(ownerId: string): void {
@@ -275,6 +281,10 @@ export function spawnRuntimeExplodActor(
 
 export function removeRuntimeExplodActors(store: RuntimeEffectActorStore, explodId: number | undefined): void {
   store.explods = removeRuntimeExplods(store.explods, explodId);
+}
+
+export function modifyRuntimeExplodActors(store: RuntimeEffectActorStore, input: RuntimeExplodModifyInput): number {
+  return modifyRuntimeExplods(store.explods, input);
 }
 
 export function removeRuntimeExplodActorsOnGetHit(store: RuntimeEffectActorStore): void {

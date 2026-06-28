@@ -1172,6 +1172,12 @@ function runActiveStateControllers(
         if (effectSpawnWorld.removeExplods(fighter, rawController, operation) && operation) {
           recordControllerOperation(fighter, operation);
         }
+      } else if (dispatch.effect === "modifyexplod") {
+        recordControllerExecution(fighter, rawController);
+        const operation = controller.operation?.kind === "modifyexplod" ? controller.operation : undefined;
+        if (effectSpawnWorld.modifyExplods(fighter, rawController, operation) > 0 && operation) {
+          recordControllerOperation(fighter, operation);
+        }
       } else if (dispatch.effect === "helper") {
         recordControllerExecution(fighter, rawController);
         const operation = controller.operation?.kind === "helper" ? controller.operation : undefined;

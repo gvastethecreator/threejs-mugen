@@ -691,6 +691,11 @@ async function main() {
       artifact: presets.createSyntheticImportedExplodVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyexplod",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyExplodTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-explod-bind",
       required: true,
       artifact: presets.createSyntheticImportedExplodBindTraceArtifact(),
@@ -1263,6 +1268,7 @@ function validateTraceCoverage(coverage) {
     "modifyprojectile",
     "helper",
     "explod",
+    "modifyexplod",
     "removeexplod",
     "kinematic:velset",
     "kinematic:veladd",
@@ -1324,6 +1330,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-explod-velocity",
+    "synthetic-imported-modifyexplod",
     "synthetic-imported-explod-bind",
     "synthetic-imported-explod-scale",
     "synthetic-imported-explod-pausemovetime",

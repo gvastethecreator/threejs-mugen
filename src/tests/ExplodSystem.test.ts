@@ -5,6 +5,7 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   advanceRuntimeExplods,
   createRuntimeExplod,
+  modifyRuntimeExplods,
   removeRuntimeExplods,
   removeRuntimeExplodsOnGetHit,
   runtimeExplodsToSnapshots,
@@ -268,6 +269,50 @@ describe("ExplodSystem", () => {
 
     expect(removeRuntimeExplods([one, two], 1).map((explod) => explod.serialId)).toEqual(["two"]);
     expect(removeRuntimeExplods([one, two], undefined)).toEqual([]);
+  });
+
+  it("modifies live explod actors through bounded static params", () => {
+    const untouched = { ...baseExplod(), serialId: "untouched", explodId: 1 };
+    const changed = { ...baseExplod(), serialId: "changed", explodId: 2, bind: { localOffset: { x: 12, y: -4 }, remaining: 6 } };
+
+    expect(
+      modifyRuntimeExplods(
+        [untouched, changed],
+        {
+          controller: controller("ModifyExplod", {
+            id: "2",
+            vel: "6,-2",
+            accel: "1,0.5",
+            scale: "2,0.5",
+            facing: "-1",
+            removetime: "24",
+            removeongethit: "1",
+            ignorehitpause: "1",
+            pausemovetime: "3",
+            supermovetime: "4",
+            sprpriority: "8",
+            bindtime: "2",
+            trans: "none",
+          }),
+        },
+      ),
+    ).toBe(1);
+
+    expect(untouched).toMatchObject({ vel: { x: 0, y: 0 }, scale: { x: 1, y: 1 }, spritePriority: 6 });
+    expect(changed).toMatchObject({
+      vel: { x: 6, y: -2 },
+      accel: { x: 1, y: 0.5 },
+      scale: { x: 2, y: 0.5 },
+      facing: -1,
+      removeTime: 24,
+      removeOnGetHit: true,
+      ignoreHitPause: true,
+      pauseMoveTime: 3,
+      superMoveTime: 4,
+      spritePriority: 8,
+      bind: { remaining: 2 },
+      opacity: 0.9,
+    });
   });
 
   it("removes only explods flagged with removeongethit", () => {

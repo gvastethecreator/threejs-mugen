@@ -12,6 +12,7 @@ export type StateProgramSideEffect =
   | "angle"
   | "explod"
   | "removeexplod"
+  | "modifyexplod"
   | "helper"
   | "projectile"
   | "modifyprojectile"
@@ -74,6 +75,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   angledraw: "angle",
   explod: "explod",
   removeexplod: "removeexplod",
+  modifyexplod: "modifyexplod",
   helper: "helper",
   projectile: "projectile",
   modifyprojectile: "modifyprojectile",
