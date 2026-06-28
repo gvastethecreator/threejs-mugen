@@ -10,6 +10,54 @@ export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
 
+export class RuntimeSpriteEffectWorld {
+  applySpritePriority(
+    state: CharacterRuntimeState,
+    controller: MugenStateController,
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
+  ): void {
+    applyRuntimeSpritePriorityController(state, controller, operation);
+  }
+
+  applyPaletteFx(
+    state: CharacterRuntimeState,
+    controller: MugenStateController,
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
+  ): void {
+    applyRuntimePaletteFxController(state, controller, operation);
+  }
+
+  applyAfterImage(
+    state: CharacterRuntimeState,
+    controller: MugenStateController,
+    sampleFactory: RuntimeAfterImageSampleFactory,
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
+  ): void {
+    applyRuntimeAfterImageController(state, controller, sampleFactory, operation);
+  }
+
+  applyAfterImageTime(
+    state: CharacterRuntimeState,
+    controller: MugenStateController,
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
+  ): void {
+    applyRuntimeAfterImageTimeController(state, controller, operation);
+  }
+
+  applyAngle(
+    state: CharacterRuntimeState,
+    controller: { type: string; params: Record<string, string> },
+    operation?: RuntimeAngleSpriteEffectOp,
+  ): void {
+    applyRuntimeAngleController(state, controller, operation);
+  }
+
+  tick(state: CharacterRuntimeState, sampleFactory: RuntimeAfterImageSampleFactory): void {
+    tickRuntimePaletteFx(state);
+    tickRuntimeAfterImage(state, sampleFactory);
+  }
+}
+
 export function applyRuntimeSpritePriorityController(
   state: CharacterRuntimeState,
   controller: MugenStateController,

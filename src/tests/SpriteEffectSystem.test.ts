@@ -7,6 +7,7 @@ import {
   applyRuntimePaletteFxController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  RuntimeSpriteEffectWorld,
   tickRuntimeAfterImage,
   tickRuntimePaletteFx,
 } from "../mugen/runtime/SpriteEffectSystem";
@@ -236,6 +237,37 @@ describe("SpriteEffectSystem", () => {
       time: 20,
       length: 4,
     });
+  });
+
+  it("wraps runtime sprite effect mutation and ticking behind RuntimeSpriteEffectWorld", () => {
+    const world = new RuntimeSpriteEffectWorld();
+    const state = runtimeState();
+    let serial = 0;
+
+    world.applySpritePriority(state, controller("SprPriority", { value: "1" }), {
+      kind: "sprite-effect",
+      controllerType: "sprpriority",
+      priority: 4,
+    });
+    world.applyPaletteFx(state, controller("PalFX", { time: "2", add: "10,20,30" }));
+    world.applyAfterImage(
+      state,
+      controller("AfterImage", { time: "3", length: "2", timegap: "1", framegap: "1" }),
+      () => sample(serial++),
+    );
+    world.applyAngle(state, controller("AngleSet", { value: "35" }));
+    world.applyAngle(state, controller("AngleDraw", {}));
+
+    expect(state.spritePriority).toBe(4);
+    expect(state.paletteFx).toMatchObject({ remaining: 2, time: 2, add: [10, 20, 30] });
+    expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
+    expect(state.renderAngle).toBe(35);
+
+    world.tick(state, () => sample(serial++));
+
+    expect(state.paletteFx?.remaining).toBe(1);
+    expect(state.afterImage).toMatchObject({ remaining: 2, time: 3 });
+    expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([1, 0]);
   });
 });
 

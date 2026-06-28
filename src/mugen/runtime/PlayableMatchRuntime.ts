@@ -75,14 +75,8 @@ import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
 import {
-  applyRuntimeAfterImageController,
-  applyRuntimeAfterImageTimeController,
-  applyRuntimeAngleController,
-  applyRuntimePaletteFxController,
-  applyRuntimeSpritePriorityController,
+  RuntimeSpriteEffectWorld,
   type RuntimeAngleSpriteEffectOp,
-  tickRuntimeAfterImage,
-  tickRuntimePaletteFx,
 } from "./SpriteEffectSystem";
 import {
   createRuntimeTargetBinding,
@@ -200,6 +194,7 @@ export class PlayableMatchRuntime {
   private readonly envShakeWorld = new RuntimeEnvShakeWorld();
   private readonly envColorWorld = new RuntimeEnvColorWorld();
   private readonly pauseWorld = new RuntimePauseWorld();
+  private readonly spriteEffectWorld = new RuntimeSpriteEffectWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -323,6 +318,7 @@ export class PlayableMatchRuntime {
     advanceFighter(
       this.p1,
       this.p2,
+      this.spriteEffectWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -332,6 +328,7 @@ export class PlayableMatchRuntime {
       advanceFighter(
         this.p2,
         this.p1,
+        this.spriteEffectWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -390,6 +387,7 @@ export class PlayableMatchRuntime {
       advanceFighter(
         actor,
         opponent,
+        this.spriteEffectWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -743,12 +741,12 @@ function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState,
 function advanceFighter(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
-  tickRuntimePaletteFx(fighter.runtime);
-  tickRuntimeAfterImage(fighter.runtime, () => createAfterImageSample(fighter));
+  spriteEffectWorld.tick(fighter.runtime, () => createAfterImageSample(fighter));
   tickHitBySlots(fighter.runtime);
   tickHitOverrideSlots(fighter.runtime);
   advanceContactTimers(fighter);
@@ -812,7 +810,7 @@ function advanceFighter(
   }
 
   advanceAnimation(fighter);
-  runActiveStateControllers(fighter, opponent, tick, onPauseController, onEnvColorController);
+  runActiveStateControllers(fighter, opponent, spriteEffectWorld, tick, onPauseController, onEnvColorController);
   advanceImportedGroundRecoveryLanding(fighter);
   advanceCommon1LieDownRecovery(fighter);
   const posFreeze = fighter.runtime.posFreeze as CharacterRuntimeState["posFreeze"];
@@ -962,6 +960,7 @@ function advanceAnimation(fighter: FighterMatchState): void {
 function runActiveStateControllers(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -1060,7 +1059,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applySprPriorityController(fighter, rawController, operation);
+        applySprPriorityController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "palfx") {
         recordControllerExecution(fighter, rawController);
         const operation =
@@ -1070,7 +1069,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applyPalFxController(fighter, rawController, operation);
+        applyPalFxController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "afterimage") {
         recordControllerExecution(fighter, rawController);
         const operation =
@@ -1080,7 +1079,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applyAfterImageController(fighter, rawController, operation);
+        applyAfterImageController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "afterimagetime") {
         recordControllerExecution(fighter, rawController);
         const operation =
@@ -1090,7 +1089,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applyAfterImageTimeController(fighter, rawController, operation);
+        applyAfterImageTimeController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "angle") {
         recordControllerExecution(fighter, rawController);
         const operation =
@@ -1103,7 +1102,7 @@ function runActiveStateControllers(
         if (operation) {
           recordControllerOperation(fighter, operation);
         }
-        applyAngleController(fighter, rawController, operation);
+        applyAngleController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "explod") {
         recordControllerExecution(fighter, rawController);
         createExplod(fighter, opponent, rawController, controller.operation?.kind === "explod" ? controller.operation : undefined);
@@ -1198,18 +1197,20 @@ function applyWidthController(
 
 function applySprPriorityController(
   fighter: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
 ): void {
-  applyRuntimeSpritePriorityController(fighter.runtime, controller, operation);
+  spriteEffectWorld.applySpritePriority(fighter.runtime, controller, operation);
 }
 
 function applyPalFxController(
   fighter: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
 ): void {
-  applyRuntimePaletteFxController(fighter.runtime, controller, operation);
+  spriteEffectWorld.applyPaletteFx(fighter.runtime, controller, operation);
 }
 
 function tickHitBySlots(state: CharacterRuntimeState): void {
@@ -1255,26 +1256,29 @@ function resetAssertSpecial(state: CharacterRuntimeState): void {
 
 function applyAfterImageController(
   fighter: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
 ): void {
-  applyRuntimeAfterImageController(fighter.runtime, controller, () => createAfterImageSample(fighter), operation);
+  spriteEffectWorld.applyAfterImage(fighter.runtime, controller, () => createAfterImageSample(fighter), operation);
 }
 
 function applyAfterImageTimeController(
   fighter: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
 ): void {
-  applyRuntimeAfterImageTimeController(fighter.runtime, controller, operation);
+  spriteEffectWorld.applyAfterImageTime(fighter.runtime, controller, operation);
 }
 
 function applyAngleController(
   fighter: FighterMatchState,
+  spriteEffectWorld: RuntimeSpriteEffectWorld,
   controller: MugenStateController,
   operation?: RuntimeAngleSpriteEffectOp,
 ): void {
-  applyRuntimeAngleController(fighter.runtime, controller, operation);
+  spriteEffectWorld.applyAngle(fighter.runtime, controller, operation);
 }
 
 function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSample | undefined {

@@ -135,6 +135,7 @@ MatchWorld
   AudioEventQueue
   EnvShakeSystem
   RuntimeEnvColorWorld
+  RuntimeSpriteEffectWorld
   SpriteEffectSystem
   EffectActorSystem
   ExplodSystem
@@ -161,7 +162,7 @@ The current extraction order is:
 3. `RuntimeAudioWorld` / `AudioEventSystem`: own sound controller event insertion outside the match runtime, while `MugenAudioSystem` stays the browser adapter.
 4. `EnvShakeSystem`: own camera-shake events and snapshot math outside the match runtime, while Three.js stays the renderer.
 5. `RuntimeEnvColorWorld` / `EnvColorSystem`: own stage-flash event history and snapshot math outside the match runtime, while Three.js applies the bounded overlay.
-6. `SpriteEffectSystem`: own `SprPriority`, `PalFX`, `Trans`, `AngleSet`/`AngleAdd`/`AngleDraw`, `AfterImage`, and `AfterImageTime` parsing/ticking, while Three.js applies snapshot material and rotation changes.
+6. `RuntimeSpriteEffectWorld` / `SpriteEffectSystem`: own match-runtime `SprPriority`, `PalFX`, `AngleSet`/`AngleAdd`/`AngleDraw`, `AfterImage`, and `AfterImageTime` mutation/ticking, while `SpriteEffectSystem` also keeps lower-level `Trans` and helper functions and Three.js applies snapshot material, trail, and rotation changes.
 6. `ExplodSystem`: own non-colliding effect actor lifecycle and snapshots.
 7. `HelperSystem`: own the current visual helper actor lifecycle and snapshots.
 8. `ProjectileSystem`: own the current colliding projectile lifecycle, hitbox projection, bounded hit-count/cooldown state, and snapshots.
@@ -189,7 +190,7 @@ Three.js must consume snapshots and asset providers. It should not evaluate CNS,
 
 `EnvShakeSystem` sits on the runtime side of that boundary. It converts `EnvShake` and `FallEnvShake` into bounded runtime events, records typed `fallenvshake` evidence for compiled fall-shake controllers, and resolves the camera shake vector; Three.js only applies the snapshot values. `RuntimeEnvColorWorld` follows the same boundary for `EnvColor`: it uses `EnvColorSystem` helpers to convert static `value`/`time`/`under` params into bounded stage-flash snapshots plus typed `envcolor` evidence, and Three.js only renders the overlay. Exact stage layer/window/blend parity remains future work.
 
-`SpriteEffectSystem` also sits on the runtime side of that boundary. It resolves legacy visual-controller params into actor snapshot state; Three.js should render those state values without parsing CNS. Current `AngleDraw` support rotates the rendered sprite quad from bounded `renderAngle` telemetry; exact MUGEN/IKEMEN axis pivot, collision-box rotation, draw-order interaction, and dynamic expression parity remain future work.
+`RuntimeSpriteEffectWorld` / `SpriteEffectSystem` also sit on the runtime side of that boundary. They resolve legacy visual-controller params into actor snapshot state; Three.js should render those state values without parsing CNS. Current `AngleDraw` support rotates the rendered sprite quad from bounded `renderAngle` telemetry, and current `PalFX` / `AfterImage` support exposes bounded material and trail telemetry. Exact MUGEN/IKEMEN axis pivot, collision-box rotation, draw-order interaction, palette/remap interaction, trail cadence, material math, and dynamic expression parity remain future work.
 
 `ExplodSystem` produces effect actor snapshots from already-resolved animation, owner, typed operation, and position data, including explicit `explod` actor identity, typed `explod` operation evidence for compiled imported controllers, bounded owner-side `bindtime`, bounded `vel`/`accel` movement, bounded static render scale, bounded hit-pause advance for `ignorehitpause`, and bounded `pausemovetime`/`supermovetime` advance budgets. It does not yet implement exact binding/tick-order parity, `p2` binding, exact velocity/accel parity, exact scaling parity, exact pause layering, ownpal/remappal, remove-trigger parity, or FightFX/common animation routing.
 
