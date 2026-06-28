@@ -25,6 +25,7 @@ import {
   createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialGuardDenyTraceArtifact,
+  createSyntheticImportedAssertSpecialLifetimeTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
@@ -2215,6 +2216,41 @@ describe("RuntimeTraceGatePresets", () => {
       expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", stateType: "A", moveType: "H" })]),
     );
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial lifetime artifact where expired NoStandGuard allows later guard", () => {
+    const artifact = createSyntheticImportedAssertSpecialLifetimeTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-lifetime-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-lifetime-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.eventCategories).not.toContain("hit");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.combatReasons).not.toContain("hit");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 995,
+    });
+    expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(true);
+    expect(artifact.trace.events.some((event) => event.category === "hit")).toBe(false);
   });
 
   it("creates a synthetic imported AssertSpecial control artifact with facing, walk, and invisible evidence", () => {

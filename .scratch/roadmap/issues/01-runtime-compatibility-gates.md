@@ -9,8 +9,8 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 
 ## Next Useful Cuts
 
-- Latest completed cut: `synthetic-imported-assertspecial-guarddeny.json` checksum `f636748d`, `synthetic-imported-assertspecial-crouch-guarddeny.json` checksum `e47a0cb1`, and `synthetic-imported-assertspecial-air-guarddeny.json` checksum `62179385` gate bounded defender-side `NoStandGuard` / `NoCrouchGuard` / `NoAirGuard` hit-over-guard evidence.
-- Next recommended gate: exact-enough `AssertSpecial` lifetime/priority/KFM confirmation, fall-recovery precision against KFM/Common1, or a narrower raw-controller family promotion to required trace evidence.
+- Latest completed cut: `synthetic-imported-assertspecial-guarddeny.json` checksum `f636748d`, `synthetic-imported-assertspecial-crouch-guarddeny.json` checksum `e47a0cb1`, `synthetic-imported-assertspecial-air-guarddeny.json` checksum `62179385`, and `synthetic-imported-assertspecial-lifetime.json` checksum `181ded30` gate bounded defender-side `NoStandGuard` / `NoCrouchGuard` / `NoAirGuard` hit-over-guard evidence plus one-frame `NoStandGuard` expiry into later guard.
+- Next recommended gate: broader `AssertSpecial` priority/KFM confirmation/pause layering, fall-recovery precision against KFM/Common1, or a narrower raw-controller family promotion to required trace evidence.
 - Add required traces for controller families currently covered only by unit/runtime tests.
 - Previous completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.

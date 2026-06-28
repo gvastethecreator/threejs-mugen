@@ -2514,6 +2514,63 @@ export function createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact(
   });
 }
 
+export function createSyntheticImportedAssertSpecialLifetimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedP2AssertSpecialExpiredGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-lifetime-attacker",
+    displayName: "Synthetic Imported AssertSpecial Lifetime Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-lifetime-defender",
+    displayName: "Synthetic Imported AssertSpecial Lifetime Defender",
+    passiveAssertSpecialFlags: ["NoWalk", "NoStandGuard"],
+    passiveAssertSpecialTrigger: "Time < 1",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: defender, p2: attacker, stage }), script, {
+    label: "synthetic-imported-assertspecial-lifetime-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-lifetime-golden",
+      label: "Synthetic imported AssertSpecial one-frame lifetime route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AssertSpecial lifetime trace proves a defender-owned NoStandGuard flag gated by Time < 1 does not leak after its trigger stops passing: the later held-back contact resolves as a guard. It does not claim exact persistence layering, pause interaction, helper/global ownership, or full MUGEN/IKEMEN AssertSpecial parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-lifetime-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["holdback", "x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            life: 995,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-default-guard-state",
@@ -6395,6 +6452,14 @@ export function importedP2AirGuardDenyScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedP2AssertSpecialExpiredGuardScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "assertspecial-lifetime-expire", frames: 3, p1: [], p2: [] },
+    { label: "assertspecial-expired-guard-x", frames: 14, p1: ["B"], p2: ["x"] },
+    { label: "assertspecial-expired-guard-settle", frames: 4, p1: ["B"], p2: [] },
+  ]);
+}
+
 export function importedDefaultGuardStateScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-default-guard-state-x", frames: 14, p1: ["x"], p2: ["B"] },
@@ -6674,6 +6739,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withAfterImageTime?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
+  passiveAssertSpecialTrigger?: string;
   assertSpecialControlState?: {
     stateNo: number;
     flags: string[];
@@ -6804,7 +6870,7 @@ ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", o
 ${options.passiveHitBy ? passiveHitByController("HitBy", "Allow Attrs", options.passiveHitBy) : ""}
 ${options.passiveHitOverride ? passiveHitOverrideController(options.passiveHitOverride) : ""}
 ${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
-${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags) : ""}
+${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger) : ""}
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}
 ${options.passiveRemoveOnGetHitExplod ? passiveRemoveOnGetHitExplodControllerBlock() : ""}
 
@@ -7350,11 +7416,11 @@ ctrl = 0
 `;
 }
 
-function passiveAssertSpecialController(flags: string[]): string {
+function passiveAssertSpecialController(flags: string[], trigger = "1"): string {
   return `
 [State 0, Passive AssertSpecial]
 type = AssertSpecial
-trigger1 = 1
+trigger1 = ${trigger}
 flag = ${flags.join(", ")}
 `;
 }

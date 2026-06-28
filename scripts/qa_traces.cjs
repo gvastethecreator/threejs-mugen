@@ -341,6 +341,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-lifetime",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialLifetimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-control",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialControlTraceArtifact(),
@@ -1243,6 +1248,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-crouch-guarddeny",
     "synthetic-imported-assertspecial-air-guarddeny",
+    "synthetic-imported-assertspecial-lifetime",
     "synthetic-imported-assertspecial-guarddeny",
     "synthetic-imported-assertspecial-noko",
     "synthetic-imported-air-guard-state",
