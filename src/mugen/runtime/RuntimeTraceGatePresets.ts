@@ -5,6 +5,7 @@ import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { MatchWorld } from "./MatchWorld";
 import type {
+  RuntimeTraceActorFrameRequirement,
   RuntimeTraceControllerEventSequenceRequirement,
   RuntimeTraceFinalActorRequirement,
   RuntimeTraceGate,
@@ -2805,6 +2806,132 @@ export function officialKfmAutoGuardEndControllerSequence(): RuntimeTraceControl
   };
 }
 
+export function officialKfmStandGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 150,
+      animNo: 150,
+      stateType: "S",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 151,
+      animNo: 150,
+      stateType: "S",
+      moveType: "H",
+      physics: "S",
+      minFrames: 8,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
+}
+
+export function officialKfmCrouchGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 152,
+      animNo: 152,
+      stateType: "C",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 153,
+      animNo: 151,
+      stateType: "C",
+      moveType: "H",
+      physics: "C",
+      minFrames: 8,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
+}
+
+export function officialKfmAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 154,
+      animNo: 132,
+      stateType: "A",
+      moveType: "H",
+      physics: "N",
+      minFrames: 5,
+      observedPosYAtMost: -35,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 155,
+      animNo: 152,
+      stateType: "A",
+      moveType: "H",
+      physics: "N",
+      minFrames: 10,
+      observedPosYAtMost: -35,
+      observedVelXAtLeast: 2,
+      observedVelYAtLeast: 8,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 52,
+      animNo: 47,
+      stateType: "S",
+      physics: "S",
+      minFrames: 1,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+  ];
+}
+
 export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-crouch-guard-state",
@@ -4608,6 +4735,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
     requiredExecutedControllers?: string[];
     requiredExecutedOperations?: string[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
     requiredActiveCommands?: string[];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
   } = {},
@@ -4647,6 +4775,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef", "HitVelSet"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "resource:ctrlset"],
         requiredControllerEventSequences: options.requiredControllerEventSequences,
+        requiredActorFrames: options.requiredActorFrames,
         requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],

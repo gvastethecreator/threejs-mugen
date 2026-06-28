@@ -78,7 +78,7 @@ Official KFM recovery completion requires a trace naming `5000 -> 5030 -> 5050 -
 
 ## Guard Order
 
-Current guard behavior is useful but not parity. A bounded auto guard-start bridge now runs after the attacker advances and before the defender advances, so imported defenders holding back can enter defender-owned Common1-style `120 -> 130` when `InGuardDist` is true before contact. A bounded guard-end bridge can then leave through `140` and return to idle/control after `InGuardDist` is no longer true. Optional KFM fixture auto guard gates now require matching real Common1 controller/operation order for `120 -> 130 -> 140 -> 0`, including `StateTypeSet` / `metadata:statetypeset` and return-to-idle `VelSet` / `kinematic:velset` evidence when the private fixture is present. The required synthetic stand, crouch, atomic-`DB`, and air guard-hit gates now also prove ordered named controller/typed-operation evidence for `150 -> 151`, `152 -> 153`, and `154 -> 155`: `ChangeAnim` -> `ChangeState` -> `HitVelSet` -> `kinematic:hitvelset` -> optional air `VelAdd` -> `CtrlSet` -> `resource:ctrlset` -> `ChangeState`. Optional KFM fixture guard-hit gates require matching real Common1 controller/operation order for `150 -> 151`, `152 -> 153`, and air `154 -> 155 -> 52` including landing `VelSet`/`PosSet` operations when the private fixture is present.
+Current guard behavior is useful but not parity. A bounded auto guard-start bridge now runs after the attacker advances and before the defender advances, so imported defenders holding back can enter defender-owned Common1-style `120 -> 130` when `InGuardDist` is true before contact. A bounded guard-end bridge can then leave through `140` and return to idle/control after `InGuardDist` is no longer true. Optional KFM fixture auto guard gates now require matching real Common1 controller/operation order for `120 -> 130 -> 140 -> 0`, including `StateTypeSet` / `metadata:statetypeset` and return-to-idle `VelSet` / `kinematic:velset` evidence when the private fixture is present. The required synthetic stand, crouch, atomic-`DB`, and air guard-hit gates now also prove ordered named controller/typed-operation evidence for `150 -> 151`, `152 -> 153`, and `154 -> 155`: `ChangeAnim` -> `ChangeState` -> `HitVelSet` -> `kinematic:hitvelset` -> optional air `VelAdd` -> `CtrlSet` -> `resource:ctrlset` -> `ChangeState`. Optional KFM fixture guard-hit gates require matching real Common1 controller/operation order and actor-frame state/physics/body telemetry for `150 -> 151`, `152 -> 153`, and air `154 -> 155 -> 52` including landing `VelSet`/`PosSet` operations and bounded velocity/landing frames when the private fixture is present.
 
 The remaining exact guard-state gate must prove:
 
@@ -89,6 +89,7 @@ The remaining exact guard-state gate must prove:
 - parsed `guard.dist` where present, with bounded fallback distance
 - guard damage/stun/push
 - state/anim/controller/typed-operation route where supported
+- actor-frame state/physics/body/velocity telemetry where supported
 - unsupported guard-state params
 - final control/recovery constraints
 

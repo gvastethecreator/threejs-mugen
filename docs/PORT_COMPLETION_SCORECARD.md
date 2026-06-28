@@ -59,7 +59,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
-Latest trace aggregate: `pnpm qa:trace` passes 146/146 artifacts, with 128 required and 18 optional local-fixture artifacts. The latest optional official KFM oracle is `kfm-official-default-fall-recovery-threshold.json` checksum `891d0f6d`, proving a bounded private-fixture Common1 recovery threshold route through `5050 -> 5200 -> 5201 -> 52 -> 0`.
+Latest trace aggregate: `pnpm qa:trace` passes 146/146 artifacts, with 128 required and 18 optional local-fixture artifacts. The latest optional official KFM guard-hit oracles are `kfm-official-default-guard-state.json` checksum `885bb1da`, `kfm-official-default-crouch-guard-state.json` checksum `d11153d0`, and `kfm-official-default-air-guard-state.json` checksum `f4378971`, proving bounded private-fixture Common1 guard-hit controller/order plus actor-frame state/physics/body telemetry for stand, crouch, and air routes.
 
 ## Gap To Full Port
 
@@ -76,7 +76,7 @@ Practical reading: from today's evidence, a private playable sandbox is roughly 
 
 ## Next Ten Gates
 
-1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial plus one-frame expiry traces.
+1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, guard effects, proximity rules, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial, one-frame expiry traces, and optional guard-hit actor-frame physics telemetry.
 2. Exact-enough fall/recovery tick order, optional fixture threshold oracles, and broader recovery parity beyond the current synthetic threshold handoff, summarized actor-frame tick-order gate, bounded synthetic air/ground velocity gates, and synthetic/official early recovery-input reject gates.
 3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
 4. Projectile parity slice beyond current bounded hit/guard/clash routes.

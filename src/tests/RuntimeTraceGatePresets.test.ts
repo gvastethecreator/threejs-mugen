@@ -27,10 +27,13 @@ import {
   createImportedGuardTraceArtifact,
   createSyntheticImportedHitstunTraceArtifact,
   officialKfmAirGuardHitControllerSequence,
+  officialKfmAirGuardHitPhysicsFrames,
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
+  officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
+  officialKfmStandGuardHitPhysicsFrames,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialAirGuardDenyTraceArtifact,
@@ -2561,6 +2564,32 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 130, controller: "ChangeState" },
       { stateNo: 0, controller: "VelSet" },
       { stateNo: 0, operation: "kinematic:velset" },
+    ]);
+  });
+
+  it("exports official KFM guard-hit actor-frame physics requirements", () => {
+    expect(officialKfmStandGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 150, animNo: 150, stateType: "S", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({ actorId: "p2", stateNo: 151, animNo: 150, stateType: "S", moveType: "H", physics: "S", minFrames: 8 }),
+    ]);
+    expect(officialKfmCrouchGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 152, animNo: 152, stateType: "C", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({ actorId: "p2", stateNo: 153, animNo: 151, stateType: "C", moveType: "H", physics: "C", minFrames: 8 }),
+    ]);
+    expect(officialKfmAirGuardHitPhysicsFrames()).toEqual([
+      expect.objectContaining({ actorId: "p2", stateNo: 154, animNo: 132, stateType: "A", moveType: "H", physics: "N", minFrames: 5 }),
+      expect.objectContaining({
+        actorId: "p2",
+        stateNo: 155,
+        animNo: 152,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 10,
+        observedVelXAtLeast: 2,
+        observedVelYAtLeast: 8,
+      }),
+      expect.objectContaining({ actorId: "p2", stateNo: 52, animNo: 47, stateType: "S", physics: "S", minFrames: 1 }),
     ]);
   });
 
