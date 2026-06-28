@@ -420,7 +420,7 @@ export class PlayableMatchRuntime {
       recordControllerOperation(fighter, operation);
     }
     if (result.powerDelta !== 0) {
-      fighter.runtime.power = clampNumber(fighter.runtime.power + result.powerDelta, 0, 3000);
+      fighter.runtime.power = clampNumber(fighter.runtime.power + result.powerDelta, 0, runtimePowerMax(fighter.definition));
     }
     this.matchPause = result.pause;
     this.logs.unshift(
@@ -566,6 +566,8 @@ function createFighterState(
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
+  const lifeMax = runtimeLifeMax(definition);
+  const powerMax = runtimePowerMax(definition);
   return {
     id,
     label: definition.displayName,
@@ -584,7 +586,9 @@ function createFighterState(
       animNo: definition.idleAction,
       animTime: 0,
       frameIndex: 0,
-      life: 1000,
+      lifeMax,
+      life: lifeMax,
+      powerMax,
       power: 0,
       ctrl: true,
       guardStun: 0,
@@ -2004,7 +2008,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     }
     markFighterGotHit(defender);
     defender.runtime.ctrl = false;
-    attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
+    attacker.runtime.power = Math.min(runtimePowerMax(attacker.definition), attacker.runtime.power + result.powerGain);
     applyDefaultGuardHitState(defender);
     log(`${defender.label} guarded ${attacker.label} for ${result.damage}`);
     return;
@@ -2027,7 +2031,7 @@ function resolveCombat(attacker: FighterMatchState, defender: FighterMatchState,
     defender.runtime.vel.y = result.hitVelocityY;
   }
   markFighterGotHit(defender);
-  attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
+  attacker.runtime.power = Math.min(runtimePowerMax(attacker.definition), attacker.runtime.power + result.powerGain);
   applyHitStateTransitions(attacker, defender, move);
   applyDefaultGetHitState(defender, move);
   markReceivedDamage(defender, result.damage);
@@ -2282,7 +2286,7 @@ function applyReversal(
   attacker.runtime.guardControlTime = 0;
   attacker.runtime.guarding = false;
   markFighterGotHit(attacker);
-  reverser.runtime.power = Math.min(3000, reverser.runtime.power + 25);
+  reverser.runtime.power = Math.min(runtimePowerMax(reverser.definition), reverser.runtime.power + 25);
 
   const p1StateNo = reversal.p1StateNo;
   const p2StateNo = reversal.p2StateNo;
@@ -2893,6 +2897,21 @@ function fighterHasState(fighter: FighterMatchState, stateNo: number): boolean {
 
 function runtimeConst(definition: DemoFighterDefinition, name: string): number | undefined {
   return definition.constants?.[name.trim().toLowerCase()];
+}
+
+function runtimeLifeMax(definition: DemoFighterDefinition): number {
+  return boundedRuntimeResourceMax(definition.constants?.["data.life"], 1000);
+}
+
+function runtimePowerMax(definition: DemoFighterDefinition): number {
+  return boundedRuntimeResourceMax(definition.constants?.["data.power"], 3000);
+}
+
+function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
+  if (value === undefined || !Number.isFinite(value)) {
+    return fallback;
+  }
+  return Math.max(1, Math.round(value));
 }
 
 function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {

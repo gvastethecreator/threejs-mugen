@@ -146,13 +146,13 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       target.runtime.life =
         delta < 0
           ? applyRuntimeDamage(target.runtime.life, Math.abs(delta), canRuntimeDamageKill(target.runtime, kill))
-          : Math.max(0, target.runtime.life + delta);
+          : Math.max(0, Math.min(target.runtime.lifeMax ?? Number.POSITIVE_INFINITY, target.runtime.life + delta));
     } else if (type === "targetpoweradd") {
       const value =
         options.operation?.controllerType === "targetpoweradd"
           ? options.operation.value
           : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
-      target.runtime.power = Math.max(0, Math.min(3000, target.runtime.power + value));
+      target.runtime.power = Math.max(0, Math.min(target.runtime.powerMax ?? 3000, target.runtime.power + value));
     } else if (type === "targetfacing") {
       const value =
         options.operation?.controllerType === "targetfacing"

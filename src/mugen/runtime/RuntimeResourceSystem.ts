@@ -30,21 +30,21 @@ export function applyRuntimeResourceController(
     return;
   }
   if (operation.controllerType === "lifeset") {
-    state.life = Math.max(0, operation.value);
+    state.life = clampRuntimeResource(operation.value, 0, state.lifeMax);
     return;
   }
   if (operation.controllerType === "poweradd") {
-    state.power = Math.max(0, state.power + operation.value);
+    state.power = clampRuntimeResource(state.power + operation.value, 0, state.powerMax);
     return;
   }
-  state.power = Math.max(0, operation.value);
+  state.power = clampRuntimeResource(operation.value, 0, state.powerMax);
 }
 
 export function applyRuntimeLifeAdd(state: CharacterRuntimeState, value: number, kill: boolean): void {
   state.life =
     value < 0
       ? applyRuntimeDamage(state.life, Math.abs(value), canRuntimeDamageKill(state, kill))
-      : Math.max(0, state.life + value);
+      : clampRuntimeResource(state.life + value, 0, state.lifeMax);
 }
 
 export function applyRuntimeVariableAssignment(
@@ -91,4 +91,9 @@ function runtimeVariableTarget(state: CharacterRuntimeState, variableType: Runti
 
 function clampIndex(value: number, max: number): number {
   return Math.max(0, Math.min(max, value));
+}
+
+function clampRuntimeResource(value: number, min: number, max?: number): number {
+  const lowerBounded = Math.max(min, value);
+  return max === undefined ? lowerBounded : Math.min(max, lowerBounded);
 }

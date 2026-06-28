@@ -267,13 +267,13 @@ class ExpressionParser {
       return this.context.self.life;
     }
     if (lower === "lifemax") {
-      return this.context.lifeMax ?? 1000;
+      return this.context.lifeMax ?? this.context.self.lifeMax ?? 1000;
     }
     if (lower === "power") {
       return this.context.self.power;
     }
     if (lower === "powermax") {
-      return this.context.powerMax ?? 3000;
+      return this.context.powerMax ?? this.context.self.powerMax ?? 3000;
     }
     if (lower === "alive") {
       return this.context.self.life > 0 ? 1 : 0;

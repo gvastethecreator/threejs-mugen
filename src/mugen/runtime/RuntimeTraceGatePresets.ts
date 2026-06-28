@@ -514,7 +514,7 @@ export function createSyntheticImportedResourceMaxTraceArtifact(options: Runtime
     createSyntheticImportedTraceFighter({
       id: "synthetic-imported-resource-max",
       displayName: "Synthetic Imported Resource Max",
-      resourceMaxEntry: { lifeMax: 1000, powerMax: 3000, stateNo: 283 },
+      resourceMaxEntry: { lifeMax: 750, powerMax: 1200, stateNo: 283 },
     }),
     {
       ...options,
@@ -525,8 +525,9 @@ export function createSyntheticImportedResourceMaxTraceArtifact(options: Runtime
       requiredExecutedStates: [283],
       requiredExecutedControllers: ["ChangeState"],
       requiredExecutedOperations: [],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 283, life: 750 }],
       notes: [
-        "Synthetic imported LifeMax/PowerMax trace proves State -1 routing can branch on bounded default resource caps. Per-character [Data] life/power caps, lifebar scaling, team modes, and exact IKEMEN/MUGEN resource-cap semantics remain future work.",
+        "Synthetic imported LifeMax/PowerMax trace proves State -1 routing can branch on per-character [Data] life/power caps parsed from CNS and carried into runtime state. Lifebar scaling, team modes, and exact IKEMEN/MUGEN resource-cap semantics remain future work.",
       ],
     },
   );
@@ -736,6 +737,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedStates?: number[];
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
@@ -768,6 +770,7 @@ export function createImportedXTraceArtifact(
         requiredActiveCommands: ["x"],
         ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const] } : {}),
         ...(options.requireHitEvent ? { requiredCombatReasons: ["hit" as const] } : {}),
+        requiredFinalActors: options.requiredFinalActors,
       },
     ],
   });
@@ -5988,6 +5991,7 @@ triggerall = command = "x"
 trigger1 = ctrl
 `).controllers;
   const stateFile = parseCns(`
+${dataConstantsBlock(options.resourceMaxEntry)}
 ${sizeConstantsBlock(options.sizeConstants)}
 [Statedef 0]
 type = S
@@ -6421,6 +6425,17 @@ function sizeConstantsBlock(size: SyntheticImportedTraceFighterOptions["sizeCons
 [Size]
 ${size.headPos ? `head.pos = ${size.headPos[0]},${size.headPos[1]}` : ""}
 ${size.midPos ? `mid.pos = ${size.midPos[0]},${size.midPos[1]}` : ""}
+`;
+}
+
+function dataConstantsBlock(resourceMaxEntry: SyntheticImportedTraceFighterOptions["resourceMaxEntry"]): string {
+  if (!resourceMaxEntry) {
+    return "";
+  }
+  return `
+[Data]
+life = ${resourceMaxEntry.lifeMax}
+power = ${resourceMaxEntry.powerMax}
 `;
 }
 

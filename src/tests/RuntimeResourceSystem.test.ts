@@ -31,6 +31,22 @@ describe("RuntimeResourceSystem", () => {
     expect(state.power).toBe(4500);
   });
 
+  it("clamps life and power to runtime max values when available", () => {
+    const state = runtimeState({ life: 740, lifeMax: 750, power: 1190, powerMax: 1200 });
+
+    applyRuntimeLifeAdd(state, 50, true);
+    expect(state.life).toBe(750);
+
+    applyRuntimeResourceController(state, { kind: "resource", controllerType: "lifeset", value: 999 });
+    expect(state.life).toBe(750);
+
+    applyRuntimeResourceController(state, { kind: "resource", controllerType: "poweradd", value: 80 });
+    expect(state.power).toBe(1200);
+
+    applyRuntimeResourceController(state, { kind: "resource", controllerType: "powerset", value: 9999 });
+    expect(state.power).toBe(1200);
+  });
+
   it("applies var, fvar, and sysvar assignments", () => {
     const state = runtimeState({ vars: [2], fvars: [0.5] });
 

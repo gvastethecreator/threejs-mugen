@@ -180,6 +180,7 @@ damage = 30
     const parsed = parseCns(`
 [Data]
 life = 1000
+power = 3000
 liedown.time = 60
 
 [Movement]
@@ -197,6 +198,7 @@ mid.pos = 2,-64
 `);
 
     expect(parsed.constants["data.life"]).toBe(1000);
+    expect(parsed.constants["data.power"]).toBe(3000);
     expect(parsed.constants["data.liedown.time"]).toBe(60);
     expect(parsed.constants["movement.yaccel"]).toBe(0.44);
     expect(parsed.constants["movement.down.bounce.offset.x"]).toBe(0);

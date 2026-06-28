@@ -124,7 +124,7 @@ export function resolveRuntimeProjectileCombat<TActor extends RuntimeProjectileC
     } else {
       defender.runtime.moveType = "H";
     }
-    attacker.runtime.power = Math.min(3000, attacker.runtime.power + result.powerGain);
+    attacker.runtime.power = Math.min(attacker.runtime.powerMax ?? 3000, attacker.runtime.power + result.powerGain);
     if (result.kind === "guard") {
       input.recordProjectileContact?.(attacker, defender, projectile, "guard");
       defender.runtime.guardStun = result.stun;

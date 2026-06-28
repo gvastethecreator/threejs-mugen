@@ -727,7 +727,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).toContain(283);
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([283]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([283]);
-    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 283)).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p1", stateNo: 283, life: 750 }),
+    ]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 283 && actor.life === 750)).toBe(true);
   });
 
   it("creates a synthetic imported NumTarget artifact with target-memory branch evidence", () => {

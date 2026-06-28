@@ -62,7 +62,9 @@ export type CharacterRuntimeState = {
   animNo: number;
   animTime: number;
   frameIndex: number;
+  lifeMax?: number;
   life: number;
+  powerMax?: number;
   power: number;
   ctrl: boolean;
   guardStun?: number;
