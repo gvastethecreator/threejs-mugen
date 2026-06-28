@@ -9,8 +9,8 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 
 ## Next Useful Cuts
 
-- Latest completed cut: `synthetic-imported-animation.json` gates bounded `ChangeAnim` / partial `ChangeAnim2` active AIR retargeting evidence with checksum `ee651cbc`.
-- Next recommended gate: exact-enough `AssertSpecial` / guard or fall-recovery precision against KFM/Common1, unless a narrower raw-controller family can be promoted to required trace evidence first.
+- Latest completed cut: `synthetic-imported-assertspecial-guarddeny.json` gates bounded defender-side `NoWalk` + `NoStandGuard` hit-over-guard evidence with checksum `f636748d`.
+- Next recommended gate: exact-enough `AssertSpecial` crouch/air denial, lifetime, or fall-recovery precision against KFM/Common1, unless a narrower raw-controller family can be promoted to required trace evidence first.
 - Add required traces for controller families currently covered only by unit/runtime tests.
 - Previous completed cut: `synthetic-imported-control.json` gates partial static `CtrlSet` typed control evidence and final owner-control telemetry with checksum `80c4c446`; previous `synthetic-imported-kinematic.json` gates partial static `VelSet` / `VelAdd` / `VelMul` / `PosSet` / `PosAdd` typed kinematic evidence and bounded actor position/velocity telemetry with checksum `92804390`.
 - Continue shrinking raw controller fallback paths into typed `ControllerOp` execution.

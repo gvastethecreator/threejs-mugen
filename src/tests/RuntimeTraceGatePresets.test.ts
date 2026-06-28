@@ -22,6 +22,7 @@ import {
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
   createSyntheticImportedAssertSpecialControlTraceArtifact,
+  createSyntheticImportedAssertSpecialGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
@@ -2101,6 +2102,42 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.combatReasons).toContain("hit");
     expect(evidence?.combatReasons).not.toContain("guard");
     expect(artifact.trace.events.some((event) => event.category === "hit" && event.line.includes("hit"))).toBe(true);
+    expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial guard-deny artifact with NoStandGuard hit evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialGuardDenyTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-guarddeny-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-guarddeny-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.eventCategories).not.toContain("guard");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.combatReasons).not.toContain("guard");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      life: 963,
+    });
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p1", source: "imported", moveType: "H" })]),
+    );
     expect(artifact.trace.events.some((event) => event.category === "guard")).toBe(false);
   });
 

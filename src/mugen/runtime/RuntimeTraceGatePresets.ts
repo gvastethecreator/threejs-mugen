@@ -2339,6 +2339,63 @@ export function createSyntheticImportedAssertSpecialUnguardableTraceArtifact(
   });
 }
 
+export function createSyntheticImportedAssertSpecialGuardDenyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedP2GuardDenyScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-guarddeny-attacker",
+    displayName: "Synthetic Imported AssertSpecial Guard-Deny Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-guarddeny-defender",
+    displayName: "Synthetic Imported AssertSpecial Guard-Deny Defender",
+    passiveAssertSpecialFlags: ["NoWalk", "NoStandGuard"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: defender, p2: attacker, stage }), script, {
+    label: "synthetic-imported-assertspecial-guarddeny-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-guarddeny-golden",
+      label: "Synthetic imported AssertSpecial NoStandGuard route",
+      source: "imported",
+      notes: [
+        "Synthetic imported AssertSpecial guard-deny trace proves defender-owned NoWalk + NoStandGuard flags can keep a held-back standing defender in its owner state, deny standing guard, and resolve the same A-guardable HitDef as a hit. It does not claim exact guard priority, crouch/air variants, global lifetime, helper/custom-state ownership, or full MUGEN/IKEMEN guard parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-guarddeny-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [{ actorId: "p1", source: "imported", actorKind: "player", moveType: "H", minFrames: 1 }],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            life: 963,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-default-guard-state",
@@ -6194,6 +6251,13 @@ export function importedGuardScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-guard-x", frames: 14, p1: ["x"], p2: ["B"] },
     { label: "guard-settle", frames: 4, p1: [], p2: ["B"] },
+  ]);
+}
+
+export function importedP2GuardDenyScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-guarddeny-x", frames: 14, p1: ["B"], p2: ["x"] },
+    { label: "guarddeny-settle", frames: 4, p1: ["B"], p2: [] },
   ]);
 }
 
