@@ -201,6 +201,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRejectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitby-allow",
+      required: true,
+      artifact: presets.createSyntheticImportedHitByAllowTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitoverride",
       required: true,
       artifact: presets.createSyntheticImportedHitOverrideTraceArtifact(),
@@ -1303,6 +1308,8 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:remappal",
     "sprite-effect:afterimage",
     "sprite-effect:afterimagetime",
+    "eligibility:hitby",
+    "eligibility:nothitby",
     "hitoverride",
     "reversaldef",
     "damage-scale:attackmulset",
@@ -1368,6 +1375,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-removeexplod",
     "synthetic-imported-reversal",
     "synthetic-imported-hitoverride",
+    "synthetic-imported-hitby-allow",
     "synthetic-imported-damage-scale",
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",
