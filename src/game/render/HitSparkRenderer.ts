@@ -34,6 +34,17 @@ export type HitSparkPresentation = {
   assetFrame?: RuntimeHitEffectAssetFrame;
   layer: HitSparkRenderLayer;
   renderOrder: number;
+  resolvedSprite?: HitSparkResolvedSpriteDiagnostic;
+  spriteLocalPosition?: { x: number; y: number };
+};
+
+export type HitSparkResolvedSpriteDiagnostic = {
+  group: number;
+  index: number;
+  width: number;
+  height: number;
+  axisX: number;
+  axisY: number;
 };
 
 type SparkMeshSet = {
@@ -108,6 +119,18 @@ export class HitSparkRenderer {
       lookupStatus: HitSparkLookupStatus;
       layer: HitSparkRenderLayer;
       renderOrder: number;
+      assetFrame?: {
+        source: HitSparkAssetSource;
+        actionId: number;
+        frameIndex: number;
+        spriteGroup: number;
+        spriteIndex: number;
+        offsetX: number;
+        offsetY: number;
+        duration: number;
+      };
+      sprite?: HitSparkResolvedSpriteDiagnostic;
+      spriteLocalPosition?: { x: number; y: number };
     }>;
   } {
     const presentations = [...this.activePresentations.values()];
@@ -128,6 +151,20 @@ export class HitSparkRenderer {
         lookupStatus: presentation.asset.lookupStatus,
         layer: presentation.layer,
         renderOrder: presentation.renderOrder,
+        assetFrame: presentation.assetFrame
+          ? {
+              source: presentation.assetFrame.source,
+              actionId: presentation.assetFrame.actionId,
+              frameIndex: presentation.assetFrame.frameIndex,
+              spriteGroup: presentation.assetFrame.spriteGroup,
+              spriteIndex: presentation.assetFrame.spriteIndex,
+              offsetX: presentation.assetFrame.offsetX,
+              offsetY: presentation.assetFrame.offsetY,
+              duration: presentation.assetFrame.duration,
+            }
+          : undefined,
+        sprite: presentation.resolvedSprite,
+        spriteLocalPosition: presentation.spriteLocalPosition,
       })),
     };
   }
@@ -161,6 +198,8 @@ export class HitSparkRenderer {
       spriteMesh.scale.set(sprite.width / Math.max(1, presentation.size), sprite.height / Math.max(1, presentation.size), 1);
       const localPosition = projectHitSparkSpriteLocalPosition(sprite, presentation.assetFrame, actor.runtime.facing, presentation.size);
       spriteMesh.position.set(localPosition.x, localPosition.y, 0.01);
+      presentation.resolvedSprite = hitSparkSpriteDiagnostic(sprite);
+      presentation.spriteLocalPosition = localPosition;
       presentation.asset.lookupStatus = "resolved-sprite";
       presentation.asset.fallbackReason = `Resolved ${hitSparkAssetSourceLabel(presentation.asset.source)} spark frame into a sprite texture.`;
     } else if (spark.sprite) {
@@ -418,6 +457,17 @@ function hitSparkAssetSourceLabel(source: HitSparkAssetSource): string {
     return "FightFX";
   }
   return "unknown";
+}
+
+function hitSparkSpriteDiagnostic(sprite: MugenSprite): HitSparkResolvedSpriteDiagnostic {
+  return {
+    group: sprite.group,
+    index: sprite.index,
+    width: sprite.width,
+    height: sprite.height,
+    axisX: sprite.axisX,
+    axisY: sprite.axisY,
+  };
 }
 
 export function projectHitSparkSpriteLocalPosition(

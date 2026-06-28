@@ -378,6 +378,34 @@ describe("HitSparkRenderer helpers", () => {
         common: 1,
         fightfx: 1,
       },
+      presentations: [
+        {
+          source: "common",
+          assetFrame: {
+            spriteGroup: 14201,
+            spriteIndex: 3,
+          },
+          sprite: {
+            group: 14201,
+            index: 3,
+            axisX: 9,
+            axisY: 9,
+          },
+        },
+        {
+          source: "fightfx",
+          assetFrame: {
+            spriteGroup: 15302,
+            spriteIndex: 4,
+          },
+          sprite: {
+            group: 15302,
+            index: 4,
+            axisX: 9,
+            axisY: 9,
+          },
+        },
+      ],
     });
     expect(provider.lookups).toEqual([
       { group: 14201, index: 3, ownerId: undefined },
@@ -502,6 +530,26 @@ describe("HitSparkRenderer helpers", () => {
     expect(spriteMesh.position.y).toBeGreaterThan(0);
     expect(Math.abs(spriteMesh.position.x)).toBeCloseTo(18 / expectedSize, 3);
     expect(spriteMesh.position.y).toBeCloseTo(12 / expectedSize, 3);
+    expect(renderer.getDiagnostics().presentations[0]).toMatchObject({
+      assetFrame: {
+        spriteGroup: 14201,
+        spriteIndex: 0,
+        offsetX: 12,
+        offsetY: -6,
+      },
+      sprite: {
+        group: 14201,
+        index: 0,
+        width: 32,
+        height: 24,
+        axisX: 10,
+        axisY: 18,
+      },
+      spriteLocalPosition: {
+        x: spriteMesh.position.x,
+        y: spriteMesh.position.y,
+      },
+    });
     renderer.dispose();
   });
 });

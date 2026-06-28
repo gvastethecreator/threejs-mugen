@@ -1432,6 +1432,19 @@ function assertSmoke(diagnostics) {
     if ((runtime.hitSparkResolvedSprites ?? 0) < 1) {
       failures.push(`${runtime.label}: native hit spark renderer did not resolve a player AIR spark sprite`);
     }
+    const resolvedPresentation = runtime.hitSparkPresentations.find(
+      (presentation) =>
+        presentation.lookupStatus === "resolved-sprite" &&
+        presentation.assetFrame?.spriteGroup !== undefined &&
+        presentation.assetFrame?.spriteIndex !== undefined &&
+        presentation.sprite?.axisX !== undefined &&
+        presentation.sprite?.axisY !== undefined &&
+        presentation.spriteLocalPosition?.x !== undefined &&
+        presentation.spriteLocalPosition?.y !== undefined,
+    );
+    if (!resolvedPresentation) {
+      failures.push(`${runtime.label}: native hit spark renderer did not expose resolved sprite frame/axis diagnostics`);
+    }
     const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
       (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
     );
