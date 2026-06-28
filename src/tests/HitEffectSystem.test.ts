@@ -9,6 +9,7 @@ import type { RuntimeHitEffectEvent } from "../mugen/runtime/types";
 describe("HitEffectSystem", () => {
   it("parses prefixed MUGEN spark values", () => {
     expect(parseMugenSparkValue("S7000")).toEqual({ sparkNo: 7000, rawPrefix: "S" });
+    expect(parseMugenSparkValue("f7001")).toEqual({ sparkNo: 7001, rawPrefix: "F" });
     expect(parseMugenSparkValue("  42")).toEqual({ sparkNo: 42, rawPrefix: undefined });
     expect(parseMugenSparkValue("bad")).toBeUndefined();
   });

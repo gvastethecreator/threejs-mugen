@@ -84,6 +84,7 @@ Required public-facing wording:
 Use `docs/ROADMAP_EXECUTION_BOARD.md` for exact queue status. The safe next slices are:
 
 - R1: exact controller/VM tick-order inside Common1 recovery loop, or broader guard/Common1 confirmation.
+- R1 presentation: first real FightFX/common spark asset lookup beyond the current `S`/`F`/unprefixed source metadata and fallback geometry.
 - R2: one more mutable effect/helper/projectile/explod ownership boundary with focused tests and stable trace behavior.
 - S1: shared Build/Evidence status contract with visual QA.
 - A1: generated asset provenance plus motion/scale/baseline QA record.

@@ -6,6 +6,7 @@ This is a single-context repo for a Three.js-based progressive MUGEN/Ikemen-GO p
 
 Read these first when the task is architectural, compatibility-sensitive, or cross-cutting:
 
+- `AGENTS.md`
 - `CONTEXT.md`
 - `README.md`
 - `docs/ROADMAP_PROGRESS_SYSTEM.md`
@@ -47,3 +48,10 @@ Use `docs/adr/` for durable decisions that constrain future agents. Start with `
 Use `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` as local markdown slicing aids. They do not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/WORKPLAN.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; they help agents pick the next small, evidence-backed cut.
 
 When a user asks "how far are we?" or "0 to 100?", answer from `docs/PORT_COMPLETION_SCORECARD.md` first, then qualify with the latest trace/build evidence.
+
+## Skill Routing Notes
+
+- `setup-project` output for this repo is local markdown issues, canonical labels, and single-context docs.
+- Product/interface skills should improve Studio/workbench usability without inventing status not backed by runtime/project/evidence data.
+- `imagegen` and `sprite-atlas-builder` work belongs to generated/native assets. Keep provenance, QA, and bad-source regeneration rules visible.
+- Runtime/Three.js skills must preserve the playable match and close visible changes with browser smoke plus visual inspection.

@@ -10,6 +10,15 @@
 - Do not hardcode one character, one stage, or one fixture path into runtime behavior.
 - Preserve user work. Never revert unrelated changes.
 
+## Skill Routing
+
+- If the user names a skill or plugin, read its `SKILL.md` before acting and apply only the parts relevant to this repo task.
+- Use `setup-project` when agent/project context, local issue tracking, triage labels, or domain-doc routing drift.
+- Use `caveman` for solo implementation/documentation rounds; temporarily expand only when clarity or safety would suffer.
+- Use product/interface skills for Studio or product-surface planning, but shipped UI must bind to real runtime/project/evidence data and pass visual QA.
+- Use `imagegen` and `sprite-atlas-builder` only with provenance and QA records. Bad walk, crouch, jump, or scale source art requires regenerated source sprites, not cosmetic atlas slicing.
+- Use runtime/game/Three.js skills for visual runtime work, then close with `pnpm qa:smoke` plus screenshot inspection.
+
 ## Repo Entry Points
 
 - This git repo root is `mugen-web-sandbox`. If the shell starts in `D:\DEV\mugen-sandbox-prototypes`, enter `mugen-web-sandbox` before running git, pnpm, or repo-wide searches.

@@ -4,6 +4,19 @@ import { projectHitSpark } from "./projection";
 
 export const HIT_SPARK_LIFETIME_FRAMES = 120;
 
+export type HitSparkAssetSource = "system" | "fightfx" | "character-or-common" | "unknown";
+export type HitSparkLookupStatus = "fallback-geometry" | "missing-id";
+export type HitSparkRenderLayer = "hit-spark" | "guard-spark";
+
+export type HitSparkAssetRef = {
+  source: HitSparkAssetSource;
+  actionId?: number;
+  rawPrefix?: string;
+  lookupKey?: string;
+  lookupStatus: HitSparkLookupStatus;
+  fallbackReason: string;
+};
+
 export type HitSparkPresentation = {
   key: string;
   x: number;
@@ -13,6 +26,9 @@ export type HitSparkPresentation = {
   rotation: number;
   color: number;
   age: number;
+  asset: HitSparkAssetRef;
+  layer: HitSparkRenderLayer;
+  renderOrder: number;
 };
 
 type SparkMeshSet = {
@@ -25,10 +41,12 @@ export class HitSparkRenderer {
   readonly group = new THREE.Group();
   private readonly sparks = new Map<string, SparkMeshSet>();
   private readonly firstSeenTicks = new Map<string, number>();
+  private readonly activePresentations = new Map<string, HitSparkPresentation>();
 
   update(actors: ActorSnapshot[], currentTick: number): void {
     const activeKeys = new Set<string>();
     const observedKeys = new Set<string>();
+    const nextPresentations = new Map<string, HitSparkPresentation>();
     for (const actor of actors) {
       const events = actor.hitEffectEvents ?? [];
       events.forEach((event, index) => {
@@ -41,6 +59,7 @@ export class HitSparkRenderer {
           return;
         }
         activeKeys.add(presentation.key);
+        nextPresentations.set(presentation.key, presentation);
         this.updateSpark(presentation);
       });
     }
@@ -55,10 +74,49 @@ export class HitSparkRenderer {
         this.firstSeenTicks.delete(key);
       }
     }
+    this.activePresentations.clear();
+    for (const [key, presentation] of nextPresentations) {
+      this.activePresentations.set(key, presentation);
+    }
   }
 
   getActiveCount(): number {
     return this.sparks.size;
+  }
+
+  getDiagnostics(): {
+    active: number;
+    fallbackGeometry: boolean;
+    sources: Partial<Record<HitSparkAssetSource, number>>;
+    presentations: Array<{
+      key: string;
+      kind: RuntimeHitEffectEvent["kind"];
+      source: HitSparkAssetSource;
+      actionId?: number;
+      lookupStatus: HitSparkLookupStatus;
+      layer: HitSparkRenderLayer;
+      renderOrder: number;
+    }>;
+  } {
+    const presentations = [...this.activePresentations.values()];
+    const sources: Partial<Record<HitSparkAssetSource, number>> = {};
+    for (const presentation of presentations) {
+      sources[presentation.asset.source] = (sources[presentation.asset.source] ?? 0) + 1;
+    }
+    return {
+      active: this.sparks.size,
+      fallbackGeometry: presentations.length > 0,
+      sources,
+      presentations: presentations.map((presentation) => ({
+        key: presentation.key,
+        kind: presentation.layer === "guard-spark" ? "guard" : "hit",
+        source: presentation.asset.source,
+        actionId: presentation.asset.actionId,
+        lookupStatus: presentation.asset.lookupStatus,
+        layer: presentation.layer,
+        renderOrder: presentation.renderOrder,
+      })),
+    };
   }
 
   dispose(): void {
@@ -67,6 +125,7 @@ export class HitSparkRenderer {
     }
     this.sparks.clear();
     this.firstSeenTicks.clear();
+    this.activePresentations.clear();
   }
 
   private updateSpark(presentation: HitSparkPresentation): void {
@@ -74,7 +133,7 @@ export class HitSparkRenderer {
     spark.group.position.set(presentation.x, presentation.y, 6);
     spark.group.rotation.z = presentation.rotation;
     spark.group.scale.set(presentation.size, presentation.size, 1);
-    spark.group.renderOrder = 700;
+    spark.group.renderOrder = presentation.renderOrder;
     spark.flare.material.color.setHex(presentation.color);
     spark.flare.material.opacity = presentation.opacity * 0.42;
     spark.core.material.opacity = Math.min(1, presentation.opacity * 1.12);
@@ -141,6 +200,8 @@ export function resolveHitSparkPresentation(
   const projected = projectHitSpark(actor, event);
   const baseSize = event.kind === "guard" ? 38 : 44;
   const sparkBias = event.sparkNo === undefined ? 0 : Math.abs(event.sparkNo % 5);
+  const asset = resolveHitSparkAssetRef(event);
+  const layer = event.kind === "guard" ? "guard-spark" : "hit-spark";
   return {
     key: hitSparkKey(actor, event, eventIndex),
     x: projected.x,
@@ -150,7 +211,44 @@ export function resolveHitSparkPresentation(
     rotation: Math.PI / 4 + age * 0.18 + sparkBias * 0.07,
     color: event.kind === "guard" ? 0x68d8ff : 0xffc247,
     age,
+    asset,
+    layer,
+    renderOrder: event.kind === "guard" ? 710 : 720,
   };
+}
+
+export function resolveHitSparkAssetRef(event: RuntimeHitEffectEvent): HitSparkAssetRef {
+  if (event.sparkNo === undefined) {
+    return {
+      source: "unknown",
+      rawPrefix: event.rawPrefix,
+      lookupStatus: "missing-id",
+      fallbackReason: "HitSpark event has no numeric spark id.",
+    };
+  }
+  const rawPrefix = event.rawPrefix?.toUpperCase();
+  const source = hitSparkAssetSource(rawPrefix);
+  return {
+    source,
+    actionId: event.sparkNo,
+    rawPrefix,
+    lookupKey: `${source}:${event.sparkNo}`,
+    lookupStatus: "fallback-geometry",
+    fallbackReason: "FightFX/common sprite lookup is not wired yet; using bounded Three.js fallback geometry.",
+  };
+}
+
+function hitSparkAssetSource(rawPrefix: string | undefined): HitSparkAssetSource {
+  if (rawPrefix === "S") {
+    return "system";
+  }
+  if (rawPrefix === "F") {
+    return "fightfx";
+  }
+  if (rawPrefix === undefined) {
+    return "character-or-common";
+  }
+  return "unknown";
 }
 
 export function hitSparkKey(actor: ActorSnapshot, event: RuntimeHitEffectEvent, eventIndex = 0): string {

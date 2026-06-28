@@ -89,7 +89,7 @@ The command starts a local Vite server automatically. Set `QA_BASE_URL=http://ho
 
 Feature-specific milestone closeout can still use focused Playwright scripts when a deeper fixture or interaction is required, but `pnpm qa:smoke` is now the first reusable gate for the default Runtime and Studio Build/Evidence paths. Runtime Debug Studio smoke also validates URL-backed debug lenses, including the effects drilldown contract and the Pause / HitPause panel contract even when no live effect or active hitpause frame is captured.
 
-For Runtime Mode, `pnpm qa:smoke` warms the Three.js renderer, resets the round, drives a native close-contact attack route, and requires `renderer.hitSparks.active > 0` on both desktop and mobile captures. This proves the bounded fallback `HitSparkRenderer` path is visible from snapshot `HitSpark` events; it does not prove exact FightFX/common asset lookup, binding, layering, timing, scale, palette, or full MUGEN/IKEMEN spark parity.
+For Runtime Mode, `pnpm qa:smoke` warms the Three.js renderer, resets the round, drives a native close-contact attack route, and requires `renderer.hitSparks.active > 0` plus `renderer.hitSparks.sources.system > 0` on both desktop and mobile captures. This proves the bounded fallback `HitSparkRenderer` path is visible from snapshot `HitSpark` events and that prefixed spark refs reach presentation source metadata; it does not prove exact FightFX/common asset lookup, binding, layering, timing, scale, palette, or full MUGEN/IKEMEN spark parity.
 
 ## Compatibility Acceptance Levels
 

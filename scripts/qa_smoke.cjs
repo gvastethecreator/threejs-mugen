@@ -276,6 +276,8 @@ async function captureRuntime(page, baseUrl, options) {
         })),
         renderer: bridge?.renderer,
         activeHitSparks: bridge?.renderer?.hitSparks?.active ?? 0,
+        hitSparkSources: bridge?.renderer?.hitSparks?.sources ?? {},
+        hitSparkPresentations: bridge?.renderer?.hitSparks?.presentations ?? [],
         recentHitEffects:
           bridge?.snapshot?.actors?.flatMap((actor) =>
             (actor.hitEffectEvents ?? []).map((event) => ({
@@ -1410,6 +1412,9 @@ function assertSmoke(diagnostics) {
     if (runtime.activeHitSparks < 1) {
       failures.push(`${runtime.label}: native hit spark renderer did not expose an active spark after KeyA`);
     }
+    if ((runtime.hitSparkSources?.system ?? 0) < 1) {
+      failures.push(`${runtime.label}: native hit spark renderer did not expose system spark source metadata`);
+    }
     const unreadyVisibleAtlases = runtime.selectedRosterAtlasStatuses.filter(
       (entry) => entry.atlasStatus !== "loaded" && entry.atlasStatus !== "imported",
     );
@@ -1857,11 +1862,13 @@ function summarizeDiagnostics(diagnostics) {
       actors: diagnostics.checks.runtimeDesktop.actorCount,
       uniqueColors: diagnostics.checks.runtimeDesktop.canvasPixels.uniqueColors,
       hitSparks: diagnostics.checks.runtimeDesktop.activeHitSparks,
+      hitSparkSources: diagnostics.checks.runtimeDesktop.hitSparkSources,
     },
     runtimeMobile: {
       actors: diagnostics.checks.runtimeMobile.actorCount,
       uniqueColors: diagnostics.checks.runtimeMobile.canvasPixels.uniqueColors,
       hitSparks: diagnostics.checks.runtimeMobile.activeHitSparks,
+      hitSparkSources: diagnostics.checks.runtimeMobile.hitSparkSources,
     },
     studioWorkbench: {
       tab: diagnostics.checks.studioWorkbench.studioTab,

@@ -139,7 +139,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
     pixelRatio: number;
     render: { calls: number; triangles: number; points: number; lines: number };
     memory: { geometries: number; textures: number };
-    hitSparks: { active: number };
+    hitSparks: ReturnType<HitSparkRenderer["getDiagnostics"]>;
   } {
     return {
       size: this.size,
@@ -154,9 +154,7 @@ export class ThreeMugenRenderer implements MugenRenderer {
         geometries: this.renderer.info.memory.geometries,
         textures: this.renderer.info.memory.textures,
       },
-      hitSparks: {
-        active: this.hitSparks.getActiveCount(),
-      },
+      hitSparks: this.hitSparks.getDiagnostics(),
     };
   }
 

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { hitSparkKey, HIT_SPARK_LIFETIME_FRAMES, resolveHitSparkPresentation } from "../game/render/HitSparkRenderer";
+import {
+  hitSparkKey,
+  HIT_SPARK_LIFETIME_FRAMES,
+  resolveHitSparkAssetRef,
+  resolveHitSparkPresentation,
+} from "../game/render/HitSparkRenderer";
 import type { ActorSnapshot, RuntimeHitEffectEvent } from "../mugen/runtime/types";
 
 const actor: ActorSnapshot = {
@@ -65,6 +70,14 @@ describe("HitSparkRenderer helpers", () => {
       y: 72,
       age: 4,
       color: 0xffc247,
+      asset: {
+        source: "system",
+        actionId: 7001,
+        lookupKey: "system:7001",
+        lookupStatus: "fallback-geometry",
+      },
+      layer: "hit-spark",
+      renderOrder: 720,
     });
     expect(presentation?.opacity).toBeGreaterThan(0);
     expect(presentation?.size).toBeGreaterThan(44);
@@ -104,5 +117,28 @@ describe("HitSparkRenderer helpers", () => {
       y: 44,
     });
     expect(resolveHitSparkPresentation(actor, event, 200 + HIT_SPARK_LIFETIME_FRAMES, 0, HIT_SPARK_LIFETIME_FRAMES, 200)).toBeUndefined();
+  });
+
+  it("maps MUGEN spark prefixes into explicit presentation asset refs", () => {
+    expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, rawPrefix: "S", stateNo: 200, tick: 1 })).toMatchObject({
+      source: "system",
+      actionId: 7000,
+      lookupKey: "system:7000",
+      lookupStatus: "fallback-geometry",
+    });
+    expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, rawPrefix: "F", stateNo: 200, tick: 1 })).toMatchObject({
+      source: "fightfx",
+      actionId: 7000,
+      lookupKey: "fightfx:7000",
+    });
+    expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", sparkNo: 7000, stateNo: 200, tick: 1 })).toMatchObject({
+      source: "character-or-common",
+      actionId: 7000,
+      lookupKey: "character-or-common:7000",
+    });
+    expect(resolveHitSparkAssetRef({ type: "HitSpark", kind: "hit", rawPrefix: "Q", stateNo: 200, tick: 1 })).toMatchObject({
+      source: "unknown",
+      lookupStatus: "missing-id",
+    });
   });
 });
