@@ -19,6 +19,40 @@ export type MatchPauseActor = {
   };
 };
 
+export type RuntimePausedMatchActor = {
+  id: string;
+};
+
+export type RuntimePausedMatchWorldInput<TActor extends RuntimePausedMatchActor> = {
+  p1: TActor;
+  p2: TActor;
+  p1Input: Set<string>;
+  p2Input: Set<string>;
+  p2Controlled: boolean;
+  currentPause: () => RuntimeMatchPause | undefined;
+  canActorMove: (actorId: string) => boolean;
+  pushCommandBuffer: (actor: TActor, input: Set<string>) => void;
+  handlePlayerInput: (actor: TActor, input: Set<string>, opponent: TActor) => void;
+  handleAi: (actor: TActor, opponent: TActor) => void;
+  advanceFighter: (actor: TActor, opponent: TActor) => void;
+  advanceTargetMemory: (actor: TActor) => void;
+  advanceActiveEffects: (actor: TActor) => void;
+  advancePresentationEffects: (actor: TActor) => void;
+  applyTargetBindings: (actor: TActor, opponent: TActor) => void;
+  applyBindToTarget: (actor: TActor, opponent: TActor) => void;
+  clampToStage: (actor: TActor) => void;
+  advancePausedPresentation: (actor: TActor, pause: RuntimeMatchPause) => void;
+  tickPause: () => RuntimeMatchPause | undefined;
+};
+
+export type RuntimePausedMatchAdvanceResult = {
+  paused: boolean;
+  sourceActorId?: string;
+  actorMoved: boolean;
+  interrupted: boolean;
+  ticked: boolean;
+};
+
 export class RuntimePauseWorld {
   private pause?: RuntimeMatchPause;
 
@@ -54,6 +88,51 @@ export class RuntimePauseWorld {
       this.pause = result.pause;
     }
     return result;
+  }
+}
+
+export class RuntimePausedMatchWorld {
+  advance<TActor extends RuntimePausedMatchActor>(input: RuntimePausedMatchWorldInput<TActor>): RuntimePausedMatchAdvanceResult {
+    const pause = input.currentPause();
+    if (!pause) {
+      return { paused: false, actorMoved: false, interrupted: false, ticked: false };
+    }
+
+    input.pushCommandBuffer(input.p1, input.p1Input);
+    input.pushCommandBuffer(input.p2, input.p2Input);
+
+    const actor = pause.actorId === input.p2.id ? input.p2 : input.p1;
+    const opponent = actor === input.p1 ? input.p2 : input.p1;
+    const actorInput = actor === input.p1 ? input.p1Input : input.p2Input;
+    const actorMoved = input.canActorMove(actor.id);
+
+    if (actorMoved) {
+      if (actor === input.p1 || input.p2Controlled) {
+        input.handlePlayerInput(actor, actorInput, opponent);
+      } else {
+        input.handleAi(actor, opponent);
+      }
+      input.advanceFighter(actor, opponent);
+      input.advanceTargetMemory(actor);
+      input.advanceActiveEffects(actor);
+      input.advancePresentationEffects(actor);
+      input.applyTargetBindings(actor, opponent);
+      input.applyBindToTarget(actor, opponent);
+      input.clampToStage(actor);
+    }
+
+    if (input.currentPause() !== pause) {
+      return { paused: true, sourceActorId: actor.id, actorMoved, interrupted: true, ticked: false };
+    }
+
+    if (!actorMoved || actor.id !== input.p1.id) {
+      input.advancePausedPresentation(input.p1, pause);
+    }
+    if (!actorMoved || actor.id !== input.p2.id) {
+      input.advancePausedPresentation(input.p2, pause);
+    }
+    input.tickPause();
+    return { paused: true, sourceActorId: actor.id, actorMoved, interrupted: false, ticked: true };
   }
 }
 

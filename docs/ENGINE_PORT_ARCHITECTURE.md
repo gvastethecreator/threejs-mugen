@@ -100,6 +100,8 @@ The compiler classifies each piece as:
 
 `VarRandom` now compiles into typed `variable:varrandom` operation evidence and runs through the same runtime-controller dispatch as `VarSet`, `VarAdd`, and `VarRangeSet`. `RuntimeRandomSystem` owns deterministic per-actor seed creation, LCG advance, controller-safe unit clamping, and fallback random-unit derivation for trace-stable controller/trigger expression evaluation. `PlayableMatchRuntime` stores the current seed on each actor and delegates advance to that system. This is not exact MUGEN random stream parity and does not solve helper/parent/root variable scopes.
 
+`RuntimePausedMatchWorld` owns the bounded regular `Pause` / `SuperPause` mini-loop that used to live inline in `PlayableMatchRuntime`: hitpause-style command buffering during match pause, source-actor `movetime` checks, player/AI source advancement, active effect/presentation effect advancement for the moving source, target binding application, stage clamp, frozen-actor paused-presentation ticking, pause replacement interruption, and pause countdown ticking. `RuntimePauseWorld` still owns the current pause state/controller application/snapshot; `RuntimePausedMatchWorld` owns the per-tick paused-match ordering around that state. This is ownership cleanup for the current sandbox pause route, not exact super backgrounds, pause layering, helper VM pause behavior, rollback timing, or MUGEN/IKEMEN pause parity.
+
 `RuntimeEffectSpawnWorld` now owns the bounded spawn/dispatch bridge from active CNS controllers into the effect actor world: Explod action/position/bind/default duration resolution, Helper state/action resolution including state-owner sprite/action lookup, Projectile action/offset/terminal-action resolution, RemoveExplod dispatch, and ModifyProjectile dispatch. `PlayableMatchRuntime` still records controller execution/operation evidence and owns match orchestration, so this is an ownership cleanup rather than exact effect spawn timing, helper VM, parent/root redirect, or FightFX/Common animation parity.
 
 `RuntimeEffectLifecycleWorld` now owns the bounded lifecycle orchestration that happens after those effect actors exist: active-effect ticks, presentation ticks, paused presentation ticks, effect snapshot grouping, and shared get-hit cleanup. `PlayableMatchRuntime` delegates current effect lifecycle passes and projectile get-hit cleanup to that boundary, while direct combat, HitOverride, and Reversal share the same effect get-hit cleanup helper. This is current-behavior ownership, not exact helper VM lifecycle, pause/combat ordering, advanced remove-trigger timing, parent/root/redirect parity, or full MUGEN/IKEMEN effect lifecycle parity.
@@ -176,6 +178,7 @@ MatchWorld
   RuntimeHitEligibilityWorld
   RuntimeOrientationWorld
   RuntimeStunWorld
+  RuntimePausedMatchWorld
   RuntimeRoundSystem
   CommandSystem
 ```
@@ -189,7 +192,7 @@ Every `ActorSnapshot` now carries `actorKind`, `ownerId`, `rootId`, and `parentI
 The current extraction order is:
 
 1. `StateProgramExecutor`: classify compiled CNS controllers.
-2. `PauseSystem`: own match-freeze semantics outside the match runtime.
+2. `PauseSystem`: own current match-freeze state through `RuntimePauseWorld` and bounded paused-match ordering through `RuntimePausedMatchWorld` outside the match runtime.
 3. `RuntimeAudioWorld` / `AudioEventSystem`: own sound controller event insertion outside the match runtime, while `MugenAudioSystem` stays the browser adapter.
 4. `RuntimeHitEffectWorld` / `HitEffectSystem`: own bounded direct `HitDef` spark telemetry outside the match runtime; `HitSparkRenderer` owns player AIR first-frame sprite lookup, the current 180-frame fallback visual projection, and spark source metadata while exact common/FightFX/render binding stays future work.
 5. `EnvShakeSystem`: own camera-shake events and snapshot math outside the match runtime, while Three.js stays the renderer.
@@ -218,6 +221,7 @@ The current extraction order is:
 28. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
 29. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
 30. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+31. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
 31. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
 32. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 

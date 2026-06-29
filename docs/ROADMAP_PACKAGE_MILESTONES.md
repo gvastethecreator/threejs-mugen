@@ -55,6 +55,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimePausedMatchWorld ownership extraction
+  -> regular Pause/SuperPause paused-match ordering moved out of PlayableMatchRuntime
+  -> focused PauseSystem tests cover source movetime ordering, frozen actor presentation, pause replacement interruption, and pause countdown ticking
+  -> trace behavior expected unchanged; no new parity or score claim
 R2 RuntimeStunWorld presentation ownership extraction
   -> hitstun/guardstun advance plus presentation/recovery glue moved out of PlayableMatchRuntime
   -> focused RuntimeStunSystem tests cover guard+hit callback behavior, imported hit-state preservation, current-move guardrails, and state-owner presentation suppression
@@ -142,12 +146,13 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitStateTransitionWorld` ownership extraction
 - `RuntimeStateAvailabilityWorld` ownership extraction
 - `RuntimeStunWorld` ownership extraction
+- `RuntimePausedMatchWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after state-availability ownership.
+3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after paused-match ownership.
 
 ## Package Closeout Contract
 

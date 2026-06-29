@@ -3,9 +3,11 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
+  RuntimePausedMatchWorld,
   RuntimePauseWorld,
   tickMatchPause,
   toMatchPauseSnapshot,
+  type RuntimeMatchPause,
 } from "../mugen/runtime/PauseSystem";
 
 describe("PauseSystem", () => {
@@ -144,10 +146,163 @@ describe("PauseSystem", () => {
     expect(world.current()).toBeUndefined();
     expect(world.snapshot()).toBeUndefined();
   });
+
+  it("owns paused-match source movetime ordering and freezes the non-moving actor", () => {
+    const world = new RuntimePausedMatchWorld();
+    const calls: string[] = [];
+    const pause = runtimePause("p1", { remaining: 3, moveTime: 1 });
+    const p1 = pausedActor("p1");
+    const p2 = pausedActor("p2");
+
+    const result = world.advance({
+      p1,
+      p2,
+      p1Input: new Set(["F"]),
+      p2Input: new Set(["B"]),
+      p2Controlled: false,
+      currentPause: () => pause,
+      canActorMove: (actorId) => actorId === "p1",
+      pushCommandBuffer: (actor, input) => calls.push(`buffer:${actor.id}:${[...input].join("+")}`),
+      handlePlayerInput: (actor, _input, opponent) => calls.push(`player:${actor.id}:${opponent.id}`),
+      handleAi: (actor, opponent) => calls.push(`ai:${actor.id}:${opponent.id}`),
+      advanceFighter: (actor, opponent) => calls.push(`fighter:${actor.id}:${opponent.id}`),
+      advanceTargetMemory: (actor) => calls.push(`target-memory:${actor.id}`),
+      advanceActiveEffects: (actor) => calls.push(`active-effects:${actor.id}`),
+      advancePresentationEffects: (actor) => calls.push(`presentation:${actor.id}`),
+      applyTargetBindings: (actor, opponent) => calls.push(`target-bind:${actor.id}:${opponent.id}`),
+      applyBindToTarget: (actor, opponent) => calls.push(`bind-to-target:${actor.id}:${opponent.id}`),
+      clampToStage: (actor) => calls.push(`clamp:${actor.id}`),
+      advancePausedPresentation: (actor, activePause) => calls.push(`paused-presentation:${actor.id}:${activePause.type}`),
+      tickPause: () => {
+        calls.push("tick-pause");
+        return undefined;
+      },
+    });
+
+    expect(result).toEqual({ paused: true, sourceActorId: "p1", actorMoved: true, interrupted: false, ticked: true });
+    expect(calls).toEqual([
+      "buffer:p1:F",
+      "buffer:p2:B",
+      "player:p1:p2",
+      "fighter:p1:p2",
+      "target-memory:p1",
+      "active-effects:p1",
+      "presentation:p1",
+      "target-bind:p1:p2",
+      "bind-to-target:p1:p2",
+      "clamp:p1",
+      "paused-presentation:p2:Pause",
+      "tick-pause",
+    ]);
+  });
+
+  it("ticks paused presentation for both actors when source movetime is spent", () => {
+    const world = new RuntimePausedMatchWorld();
+    const calls: string[] = [];
+    const pause = runtimePause("p2", { remaining: 2, moveTime: 0 });
+    const p1 = pausedActor("p1");
+    const p2 = pausedActor("p2");
+
+    const result = world.advance({
+      p1,
+      p2,
+      p1Input: new Set(),
+      p2Input: new Set(["x"]),
+      p2Controlled: true,
+      currentPause: () => pause,
+      canActorMove: () => false,
+      pushCommandBuffer: (actor) => calls.push(`buffer:${actor.id}`),
+      handlePlayerInput: (actor) => calls.push(`player:${actor.id}`),
+      handleAi: (actor) => calls.push(`ai:${actor.id}`),
+      advanceFighter: (actor) => calls.push(`fighter:${actor.id}`),
+      advanceTargetMemory: (actor) => calls.push(`target-memory:${actor.id}`),
+      advanceActiveEffects: (actor) => calls.push(`active-effects:${actor.id}`),
+      advancePresentationEffects: (actor) => calls.push(`presentation:${actor.id}`),
+      applyTargetBindings: (actor) => calls.push(`target-bind:${actor.id}`),
+      applyBindToTarget: (actor) => calls.push(`bind-to-target:${actor.id}`),
+      clampToStage: (actor) => calls.push(`clamp:${actor.id}`),
+      advancePausedPresentation: (actor) => calls.push(`paused-presentation:${actor.id}`),
+      tickPause: () => {
+        calls.push("tick-pause");
+        return undefined;
+      },
+    });
+
+    expect(result).toEqual({ paused: true, sourceActorId: "p2", actorMoved: false, interrupted: false, ticked: true });
+    expect(calls).toEqual(["buffer:p1", "buffer:p2", "paused-presentation:p1", "paused-presentation:p2", "tick-pause"]);
+  });
+
+  it("stops paused-match presentation ticking when callbacks replace the active pause", () => {
+    const world = new RuntimePausedMatchWorld();
+    const calls: string[] = [];
+    const firstPause = runtimePause("p1", { remaining: 4, moveTime: 2 });
+    let currentPause: RuntimeMatchPause | undefined = firstPause;
+    const p1 = pausedActor("p1");
+    const p2 = pausedActor("p2");
+
+    const result = world.advance({
+      p1,
+      p2,
+      p1Input: new Set(),
+      p2Input: new Set(),
+      p2Controlled: false,
+      currentPause: () => currentPause,
+      canActorMove: () => true,
+      pushCommandBuffer: (actor) => calls.push(`buffer:${actor.id}`),
+      handlePlayerInput: (actor) => calls.push(`player:${actor.id}`),
+      handleAi: (actor) => calls.push(`ai:${actor.id}`),
+      advanceFighter: (actor) => {
+        calls.push(`fighter:${actor.id}`);
+        currentPause = runtimePause("p2", { remaining: 6, moveTime: 0 });
+      },
+      advanceTargetMemory: (actor) => calls.push(`target-memory:${actor.id}`),
+      advanceActiveEffects: (actor) => calls.push(`active-effects:${actor.id}`),
+      advancePresentationEffects: (actor) => calls.push(`presentation:${actor.id}`),
+      applyTargetBindings: (actor) => calls.push(`target-bind:${actor.id}`),
+      applyBindToTarget: (actor) => calls.push(`bind-to-target:${actor.id}`),
+      clampToStage: (actor) => calls.push(`clamp:${actor.id}`),
+      advancePausedPresentation: (actor) => calls.push(`paused-presentation:${actor.id}`),
+      tickPause: () => {
+        calls.push("tick-pause");
+        return currentPause;
+      },
+    });
+
+    expect(result).toEqual({ paused: true, sourceActorId: "p1", actorMoved: true, interrupted: true, ticked: false });
+    expect(calls).toEqual([
+      "buffer:p1",
+      "buffer:p2",
+      "player:p1",
+      "fighter:p1",
+      "target-memory:p1",
+      "active-effects:p1",
+      "presentation:p1",
+      "target-bind:p1",
+      "bind-to-target:p1",
+      "clamp:p1",
+    ]);
+  });
 });
 
 function actor(id: string, stateNo: number) {
   return { id, runtime: { stateNo } };
+}
+
+function pausedActor(id: string) {
+  return { id };
+}
+
+function runtimePause(actorId: string, overrides: Partial<RuntimeMatchPause> = {}): RuntimeMatchPause {
+  return {
+    type: "Pause",
+    remaining: 3,
+    moveTime: 0,
+    actorId,
+    darken: false,
+    sourceStateNo: 200,
+    startedAt: 10,
+    ...overrides,
+  };
 }
 
 function controller(type: string, params: Record<string, string>): MugenStateController {

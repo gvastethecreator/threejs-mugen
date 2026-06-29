@@ -64,7 +64,7 @@ import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
-import { RuntimePauseWorld } from "./PauseSystem";
+import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
 import {
@@ -215,6 +215,7 @@ export class PlayableMatchRuntime {
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private readonly stunWorld = new RuntimeStunWorld();
+  private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -453,57 +454,42 @@ export class PlayableMatchRuntime {
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
-    const pause = this.pauseWorld.current();
-    if (!pause) {
-      return;
-    }
-
-    this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
-    this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
-
-    const actor = pause.actorId === this.p2.id ? this.p2 : this.p1;
-    const opponent = actor === this.p1 ? this.p2 : this.p1;
-    const actorInput = actor === this.p1 ? p1Input : p2Input;
-    const actorMoved = this.pauseWorld.canActorMove(actor.id);
-    if (actorMoved) {
-      if (actor === this.p1 || input.p2) {
-        handlePlayerInput(actor, actorInput, opponent, this.tick);
-      } else {
-        handleSimpleAi(actor, opponent, this.tick);
-      }
-      advanceFighter(
-        actor,
-        opponent,
-        this.actorConstraintWorld,
-        this.spriteEffectWorld,
-        this.hitOverrideWorld,
-        this.reversalWorld,
-        this.effectSpawnWorld,
-        this.recoveryWorld,
-        this.hitEligibilityWorld,
-        this.stunWorld,
-        this.tick,
-        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-      );
-      advanceTargetMemory(actor);
-      this.effectLifecycleWorld.advanceActive(actor, this.stage);
-      this.effectLifecycleWorld.advancePresentation(actor);
-      applyTargetBindings(actor, opponent);
-      applyBindToTarget(actor, opponent);
-      this.actorConstraintWorld.clampToStage(actor.runtime, this.stage);
-    }
-
-    if (this.pauseWorld.current() !== pause) {
-      return;
-    }
-    if (!actorMoved || actor.id !== this.p1.id) {
-      this.effectLifecycleWorld.advancePausedPresentation(this.p1, pause.type, this.stage);
-    }
-    if (!actorMoved || actor.id !== this.p2.id) {
-      this.effectLifecycleWorld.advancePausedPresentation(this.p2, pause.type, this.stage);
-    }
-    this.pauseWorld.tick();
+    this.pausedMatchWorld.advance({
+      p1: this.p1,
+      p2: this.p2,
+      p1Input,
+      p2Input,
+      p2Controlled: input.p2 !== undefined,
+      currentPause: () => this.pauseWorld.current(),
+      canActorMove: (actorId) => this.pauseWorld.canActorMove(actorId),
+      pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(this.tick, actorInput, { hitPause: true }),
+      handlePlayerInput: (actor, actorInput, opponent) => handlePlayerInput(actor, actorInput, opponent, this.tick),
+      handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick),
+      advanceFighter: (actor, opponent) =>
+        advanceFighter(
+          actor,
+          opponent,
+          this.actorConstraintWorld,
+          this.spriteEffectWorld,
+          this.hitOverrideWorld,
+          this.reversalWorld,
+          this.effectSpawnWorld,
+          this.recoveryWorld,
+          this.hitEligibilityWorld,
+          this.stunWorld,
+          this.tick,
+          (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+          (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+        ),
+      advanceTargetMemory,
+      advanceActiveEffects: (actor) => this.effectLifecycleWorld.advanceActive(actor, this.stage),
+      advancePresentationEffects: (actor) => this.effectLifecycleWorld.advancePresentation(actor),
+      applyTargetBindings,
+      applyBindToTarget,
+      clampToStage: (actor) => this.actorConstraintWorld.clampToStage(actor.runtime, this.stage),
+      advancePausedPresentation: (actor, pause) => this.effectLifecycleWorld.advancePausedPresentation(actor, pause.type, this.stage),
+      tickPause: () => this.pauseWorld.tick(),
+    });
   }
 
   private applyMatchPauseController(fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp): void {

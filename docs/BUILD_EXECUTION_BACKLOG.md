@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimePausedMatchWorld ownership extraction
+
+Changed:
+
+- Added `RuntimePausedMatchWorld` as the named owner for the regular `Pause` / `SuperPause` paused-match mini-loop: paused command buffering, source `movetime` advancement, active/presentation effect advancement, target bindings, stage clamp, frozen actor presentation, pause replacement interruption, and pause countdown ticking.
+- Replaced inline `PlayableMatchRuntime.advancePausedMatch` branching with the new paused-match world boundary while keeping fighting-specific callbacks in the match runtime.
+- Added focused `PauseSystem` coverage for source movetime ordering, frozen-actor presentation ticks, pause replacement interruption, and pause countdown behavior.
+
+Evidence:
+
+- `pnpm vitest run src/tests/PauseSystem.test.ts` passes: 1 file, 12 tests.
+- `pnpm test` passes: 69 files, 612 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-superpause.json` remains checksum `f78c0366`, `synthetic-imported-superpause-projectile-freeze.json` remains `b68cc36c`, `synthetic-imported-superpause-effect-freeze.json` remains `1ec6871f`, `synthetic-imported-targetbind-pause.json` remains `df621628`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` is not required for this checkpoint because the runtime ownership cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded regular match-pause ordering now has a named runtime boundary separate from current pause state storage/controller application.
+
+Claim blocked:
+
+- This is ownership cleanup only. Exact MUGEN/IKEMEN pause layering, super backgrounds, helper VM pause behavior, pause-specific helper/explod/projectile VM ownership, rollback timing, and full pause parity remain unsupported.
+
 ## 2026-06-29 - Setup-project lane checkpoint taxonomy
 
 Changed:
