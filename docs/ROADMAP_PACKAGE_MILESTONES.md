@@ -35,11 +35,11 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest implementation checkpoint:
 
 ```txt
-R1 MakeDust no-op compatibility
-  -> deprecated MUGEN MakeDust accepted as presentation no-op
-  -> synthetic-imported-noop.json checksum a5fe169e
-  -> proves controller recognition/execution telemetry only, no dust rendering
-  -> qa:trace aggregate 156/156, 138 required, 18 optional, 76 controller families
+R1 VarRandom variable compatibility
+  -> MUGEN VarRandom accepted as partial owner-local int var controller
+  -> synthetic-imported-variable.json checksum 3b33f7a8
+  -> proves typed variable:varrandom execution plus var(...) branch routing
+  -> qa:trace aggregate 156/156, 138 required, 18 optional, 77 controller families
 ```
 
 Default next implementation slice after docs/setup work:

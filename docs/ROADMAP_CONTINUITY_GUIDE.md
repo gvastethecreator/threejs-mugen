@@ -55,7 +55,7 @@ Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack pari
 
 The compact package ladder and current default next slice live in `docs/ROADMAP_PACKAGE_MILESTONES.md`. After docs/setup work, return there before choosing code.
 
-Latest closed implementation checkpoint: `MakeDust` is accepted as a deprecated dust presentation no-op through required `synthetic-imported-noop.json` checksum `a5fe169e`. Do not reselect `MakeDust` or the previous `RuntimeContactMemoryWorld` extraction as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
+Latest closed implementation checkpoint: `VarRandom` is accepted as partial owner-local int variable support through required `synthetic-imported-variable.json` checksum `3b33f7a8`. Do not reselect `VarRandom`, `MakeDust`, or the previous `RuntimeContactMemoryWorld` extraction as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
 
 ## Next Useful Studio Gates
 

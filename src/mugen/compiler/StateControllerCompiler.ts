@@ -69,6 +69,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   powerset: partial("power"),
   varset: partial("variables"),
   varadd: partial("variables"),
+  varrandom: partial("variables"),
   varrangeset: partial("variables"),
   hitby: partial("hit eligibility"),
   nothitby: partial("hit eligibility"),

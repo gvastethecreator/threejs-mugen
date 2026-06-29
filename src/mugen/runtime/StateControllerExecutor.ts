@@ -33,6 +33,7 @@ type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
   hitPauseTime?: () => number;
+  random?: () => number;
   stageTime?: number;
 };
 
@@ -169,6 +170,8 @@ export function executeControllerIr(
     }
   } else if (type === "varset" || type === "varadd") {
     applyVariableController(next, controller, context, type === "varadd", variableOperation(controller, type));
+  } else if (type === "varrandom") {
+    applyVariableRandomController(next, controller, context, variableOperation(controller, "varrandom"));
   } else if (type === "varrangeset") {
     applyVariableRangeSet(next, controller, context, variableOperation(controller, "varrangeset"));
   } else if (type === "playerpush") {
@@ -510,6 +513,49 @@ function applyVariableRangeSet(
   applyRuntimeVariableRangeAssignment(state, { variableType: isFloat ? "fvar" : "var", first, last, value });
 }
 
+function applyVariableRandomController(
+  state: CharacterRuntimeState,
+  controller: ControllerExecutionSource,
+  context: RuntimeControllerEvaluationContext,
+  operation?: Extract<VariableControllerOp, { controllerType: "varrandom" }>,
+): void {
+  const rawIndex = operation?.index ?? numberParam(controller, state, context, "v", "var");
+  if (rawIndex === undefined || rawIndex < 0) {
+    return;
+  }
+  const index = clampIndex(Math.round(rawIndex), 59);
+  const range = operation ? [operation.min, operation.max] : variableRandomRange(controller, state, context);
+  if (!range) {
+    return;
+  }
+  const lower = Math.round(Math.min(range[0], range[1]));
+  const upper = Math.round(Math.max(range[0], range[1]));
+  const span = Math.max(1, upper - lower + 1);
+  const unit = clampRandomUnit(context.random?.() ?? fallbackRandomUnit(state, index, lower, upper, context.stageTime));
+  applyRuntimeVariableAssignment(state, { variableType: "var", index, value: lower + Math.floor(unit * span) }, false);
+}
+
+function variableRandomRange(
+  controller: ControllerExecutionSource,
+  state: CharacterRuntimeState,
+  context: RuntimeControllerEvaluationContext,
+): [number, number] | undefined {
+  const raw = findParam(controller, "range");
+  if (raw === undefined) {
+    return [0, 1000];
+  }
+  const values = raw.split(",").map((part) => evaluateNumber(part.trim(), state, context));
+  const first = values[0];
+  if (first === undefined) {
+    return undefined;
+  }
+  const second = values.length > 1 ? values[1] : first;
+  if (second === undefined) {
+    return undefined;
+  }
+  return values.length > 1 ? [first, second] : [0, first];
+}
+
 function applyHitByController(
   state: CharacterRuntimeState,
   controller: ControllerExecutionSource,
@@ -654,6 +700,35 @@ function clampIndex(value: number, max: number): number {
   return Math.max(0, Math.min(max, value));
 }
 
+function clampRandomUnit(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(0.999999999, value));
+}
+
+function fallbackRandomUnit(
+  state: CharacterRuntimeState,
+  index: number,
+  lower: number,
+  upper: number,
+  stageTime = 0,
+): number {
+  let seed = 2166136261;
+  seed = mixSeed(seed, state.stateNo);
+  seed = mixSeed(seed, state.animNo);
+  seed = mixSeed(seed, state.animTime);
+  seed = mixSeed(seed, stageTime);
+  seed = mixSeed(seed, index);
+  seed = mixSeed(seed, lower);
+  seed = mixSeed(seed, upper);
+  return (seed >>> 0) / 0x100000000;
+}
+
+function mixSeed(seed: number, value: number): number {
+  return Math.imul(seed ^ Math.trunc(value), 16777619) >>> 0;
+}
+
 function variableAssignmentParam(
   controller: ControllerExecutionSource,
   state: CharacterRuntimeState,
@@ -694,6 +769,7 @@ function evaluateNumber(
     getConst: context.getConst,
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,
+    random: context.random,
     stageTime: context.stageTime,
   });
   const value = Number(evaluated);

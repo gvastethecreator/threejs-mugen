@@ -352,6 +352,14 @@ export type VariableControllerOp =
     }
   | {
       kind: "variable";
+      controllerType: "varrandom";
+      variableType: "var";
+      index: number;
+      min: number;
+      max: number;
+    }
+  | {
+      kind: "variable";
       controllerType: "varrangeset";
       variableType: "var" | "fvar";
       first: number;
@@ -795,10 +803,26 @@ function compileResourceControllerOp(controller: MugenStateController, type: Res
 }
 
 function isVariableController(type: string): type is VariableControllerOp["controllerType"] {
-  return type === "varset" || type === "varadd" || type === "varrangeset";
+  return type === "varset" || type === "varadd" || type === "varrandom" || type === "varrangeset";
 }
 
 function compileVariableControllerOp(controller: MugenStateController, type: VariableControllerOp["controllerType"]): VariableControllerOp | undefined {
+  if (type === "varrandom") {
+    const index = firstNumber(findParam(controller, "v") ?? findParam(controller, "var"));
+    const range = staticVariableRandomRange(findParam(controller, "range"));
+    if (index === undefined || index < 0 || !range) {
+      return undefined;
+    }
+    return {
+      kind: "variable",
+      controllerType: "varrandom",
+      variableType: "var",
+      index: Math.round(index),
+      min: range[0],
+      max: range[1],
+    };
+  }
+
   if (type === "varrangeset") {
     const isFloat = findParam(controller, "fvalue") !== undefined;
     const value = firstNumber(findParam(controller, isFloat ? "fvalue" : "value"));
@@ -848,6 +872,22 @@ function staticVariableAssignmentParam(controller: MugenStateController): { vari
     };
   }
   return undefined;
+}
+
+function staticVariableRandomRange(value: string | undefined): [number, number] | undefined {
+  if (value === undefined) {
+    return [0, 1000];
+  }
+  const values = value
+    .split(",")
+    .map((part) => Number(part.trim()))
+    .filter(Number.isFinite);
+  if (values.length === 0 || values[0] === undefined) {
+    return undefined;
+  }
+  const first = values.length > 1 && values[1] !== undefined ? values[0] : 0;
+  const second = values.length > 1 && values[1] !== undefined ? values[1] : values[0];
+  return normalizeRandomRange(first, second);
 }
 
 function compileHitEligibilityControllerOp(
@@ -1550,6 +1590,12 @@ function normalizePaletteNumber(value: number): number {
 
 function clampNumber(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function normalizeRandomRange(first: number, second: number): [number, number] {
+  const lower = Math.round(Math.min(first, second));
+  const upper = Math.round(Math.max(first, second));
+  return [lower, upper];
 }
 
 function clampEnvColorTime(value: number): number {

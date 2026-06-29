@@ -226,11 +226,11 @@ export function createSyntheticImportedVariableTraceArtifact(options: RuntimeTra
       targetLabel: "Synthetic imported variable controller route",
       requireHitEvent: true,
       requiredExecutedStates: [200, 288],
-      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "VarAdd", "VarRangeSet"],
-      requiredExecutedOperations: ["hitdef", "variable:varset", "variable:varadd", "variable:varrangeset"],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet", "VarAdd", "VarRandom", "VarRangeSet"],
+      requiredExecutedOperations: ["hitdef", "variable:varset", "variable:varadd", "variable:varrandom", "variable:varrangeset"],
       requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 288, animNo: 288 }],
       notes: [
-        "Synthetic imported variable trace proves static VarSet, VarAdd, and VarRangeSet can execute as typed variable operations and drive a later var(...) ChangeState branch in the owner state. Dynamic variable expressions, helper/redirect variable scopes, sysvar/fvar parity, map vars, and exact MUGEN/IKEMEN VM semantics remain future work.",
+        "Synthetic imported variable trace proves static VarSet, VarAdd, VarRandom, and VarRangeSet can execute as typed variable operations and drive a later var(...) ChangeState branch in the owner state. Dynamic variable expressions, exact random stream parity, helper/redirect variable scopes, sysvar/fvar parity, map vars, and exact MUGEN/IKEMEN VM semantics remain future work.",
       ],
     },
   );
@@ -10419,12 +10419,19 @@ first = 2
 last = 4
 value = 9
 
+[State 200, Var Random Roll]
+type = VarRandom
+trigger1 = var(4) = 9
+v = 5
+range = 12,12
+
 [State 200, Variable Branch]
 type = ChangeState
 trigger1 = var(7) = 8
 trigger1 = var(2) = 9
 trigger1 = var(3) = 9
 trigger1 = var(4) = 9
+trigger1 = var(5) = 12
 value = ${stateNo}
 ctrl = 0
 `;

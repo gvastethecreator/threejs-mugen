@@ -109,6 +109,7 @@ const runtimeControllers = new Set([
   "powerset",
   "varset",
   "varadd",
+  "varrandom",
   "varrangeset",
   "playerpush",
   "turn",
@@ -199,7 +200,7 @@ export function isStateEntrySetupDispatch(dispatch: StateProgramDispatch): boole
   return stateEntrySetupControllers.has(dispatch.controller.normalizedType);
 }
 
-const stateEntrySetupControllers = new Set(["varset", "varadd", "ctrlset", "poweradd", "powerset", "lifeadd", "lifeset"]);
+const stateEntrySetupControllers = new Set(["varset", "varadd", "varrandom", "ctrlset", "poweradd", "powerset", "lifeadd", "lifeset"]);
 
 export function findControllerParam(controller: { params: Record<string, string> }, key: string): string | undefined {
   const lower = key.toLowerCase();

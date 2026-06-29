@@ -69,9 +69,11 @@ describe("StateProgramExecutor dispatch", () => {
 
   it("marks State -1 setup controllers explicitly", () => {
     const setup = dispatchStateProgramController(compileControllerIr(controller("VarSet", { v: "1", value: "3" })));
+    const randomSetup = dispatchStateProgramController(compileControllerIr(controller("VarRandom", { v: "2", range: "4,6" })));
     const movement = dispatchStateProgramController(compileControllerIr(controller("VelAdd", { x: "1" })));
 
     expect(isStateEntrySetupDispatch(setup)).toBe(true);
+    expect(isStateEntrySetupDispatch(randomSetup)).toBe(true);
     expect(isStateEntrySetupDispatch(movement)).toBe(false);
   });
 });

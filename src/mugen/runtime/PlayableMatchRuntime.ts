@@ -142,6 +142,7 @@ type FighterMatchState = {
   controllerEvents: RuntimeControllerTraceEvent[];
   nextControllerEventSequence: number;
   compatibilityTick: number;
+  rngSeed: number;
   firedHitDefs: Set<string>;
   soundEvents: RuntimeSoundEvent[];
   audioWorld: RuntimeAudioWorld;
@@ -654,6 +655,7 @@ function createFighterState(
     controllerEvents: [],
     nextControllerEventSequence: 0,
     compatibilityTick: 0,
+    rngSeed: initialFighterRandomSeed(id, definition.id),
     firedHitDefs: new Set(),
     soundEvents: [],
     audioWorld,
@@ -666,6 +668,19 @@ function createFighterState(
     contactWorld,
     contact: contactWorld.create(),
   };
+}
+
+function initialFighterRandomSeed(id: string, definitionId: string): number {
+  let seed = 2166136261;
+  for (const char of `${id}:${definitionId}`) {
+    seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
+  }
+  return seed || 1;
+}
+
+function nextRuntimeRandom(fighter: FighterMatchState): number {
+  fighter.rngSeed = (Math.imul(fighter.rngSeed, 1664525) + 1013904223) >>> 0;
+  return fighter.rngSeed / 0x100000000;
 }
 
 function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr | undefined {
@@ -1127,6 +1142,7 @@ function runActiveStateControllers(
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         getConst: (name) => runtimeConst(owner.definition, name),
         hitPauseTime: () => fighter.hitPause,
+        random: () => nextRuntimeRandom(fighter),
         stageTime: tick,
       });
       if (controller.operation) {
@@ -1305,6 +1321,7 @@ function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: Fight
     fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
       getConst: (name) => runtimeConst(owner.definition, name),
       hitPauseTime: () => fighter.hitPause,
+      random: () => nextRuntimeRandom(fighter),
       stageTime: tick,
     });
   }
@@ -2340,6 +2357,7 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
       recordControllerExecution(fighter, controller.source);
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         hitPauseTime: () => fighter.hitPause,
+        random: () => nextRuntimeRandom(fighter),
         stageTime: tick,
       });
     }
@@ -2552,6 +2570,7 @@ function resolveDispatchNumber(
     opponent: opponent.runtime,
     stageTime,
     stateTime: fighter.stateElapsed,
+    random: () => nextRuntimeRandom(fighter),
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
     animExists: (animationId) => fighter.definition.animations.has(animationId),
@@ -2614,6 +2633,7 @@ function evaluateRuntimeTrigger(
     opponent: opponent.runtime,
     stageTime,
     stateTime: fighter.stateElapsed,
+    random: () => nextRuntimeRandom(fighter),
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
     animExists: (animationId) => fighter.definition.animations.has(animationId),

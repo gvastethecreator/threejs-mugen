@@ -475,14 +475,29 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 288]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "VarSet", "VarAdd", "VarRangeSet"]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef", "variable:varset", "variable:varadd", "variable:varrangeset"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "HitDef",
+      "VarSet",
+      "VarAdd",
+      "VarRandom",
+      "VarRangeSet",
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "variable:varset",
+      "variable:varadd",
+      "variable:varrandom",
+      "variable:varrangeset",
+    ]);
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 288]));
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VarAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VarRandom).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VarRangeSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varrandom"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["variable:varrangeset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");

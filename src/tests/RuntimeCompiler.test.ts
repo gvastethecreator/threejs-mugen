@@ -122,6 +122,8 @@ time = 20
     expect(getControllerSupport("MoveHitReset").runtimeLabel).toBe("contact memory");
     expect(isRuntimeExecutableController("HitAdd")).toBe(true);
     expect(getControllerSupport("HitAdd").runtimeLabel).toBe("contact memory");
+    expect(isRuntimeExecutableController("VarRandom")).toBe(true);
+    expect(getControllerSupport("VarRandom").runtimeLabel).toBe("variables");
     expect(isRuntimeExecutableController("ForceFeedback")).toBe(true);
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
     expect(isRuntimeExecutableController("MakeDust")).toBe(true);
@@ -500,6 +502,7 @@ time = 20
     const fvarSet = compileControllerIr(controller(200, "VarSet", [], { fv: "2", value: "1.5" }));
     const sysvarSet = compileControllerIr(controller(200, "VarSet", [], { "sysvar(0)": "1" }));
     const sysvarAdd = compileControllerIr(controller(200, "VarAdd", [], { "sysvar(0)": "2" }));
+    const varRandom = compileControllerIr(controller(200, "VarRandom", [], { v: "5", range: "10,12" }));
     const range = compileControllerIr(controller(200, "VarRangeSet", [], { first: "2", last: "4", value: "9" }));
     const dynamic = compileControllerIr(controller(200, "PowerAdd", [], { value: "Const(data.power)" }));
 
@@ -511,6 +514,7 @@ time = 20
     expect(fvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "fvar", index: 2, value: 1.5 });
     expect(sysvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "sysvar", index: 0, value: 1 });
     expect(sysvarAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "sysvar", index: 0, value: 2 });
+    expect(varRandom.operation).toEqual({ kind: "variable", controllerType: "varrandom", variableType: "var", index: 5, min: 10, max: 12 });
     expect(range.operation).toEqual({ kind: "variable", controllerType: "varrangeset", variableType: "var", first: 2, last: 4, value: 9 });
     expect(dynamic.operation).toBeUndefined();
   });

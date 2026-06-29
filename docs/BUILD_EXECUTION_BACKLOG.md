@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-28 - VarRandom variable compatibility cut
+
+Changed:
+
+- Added MUGEN `VarRandom` to the controller support registry as partial variable support.
+- Compiled static `VarRandom` into typed `variable:varrandom` operations with owner-local int var index and inclusive range metadata.
+- Routed `VarRandom` through shared runtime-controller dispatch, State -1 setup dispatch, and `StateControllerExecutor`.
+- Added deterministic sandbox-side actor RNG for playable imported runtime expression/controller evaluation so trace output does not depend on `Math.random`.
+- Extended `synthetic-imported-variable.json` to execute `VarRandom` and branch through `var(5)`.
+- Added focused compiler/runtime/dispatch/preset tests for `VarRandom`.
+- Updated compatibility docs and roadmap docs to name `VarRandom` as partial owner-local int variable support only.
+
+Evidence:
+
+- `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional.
+- `synthetic-imported-variable.json` checksum is now `3b33f7a8`.
+- Controller-family coverage rises to 77.
+
+Claim allowed:
+
+- Imported CNS `VarRandom` controllers can write bounded owner-local int vars and appear as typed `variable:varrandom` telemetry in required trace evidence.
+
+Claim blocked:
+
+- Exact MUGEN random stream parity, helper/parent/root variable scopes, fvar/sysvar `VarRandom`, persistent/tick-order edge cases, IKEMEN map vars, and full CNS VM parity remain unsupported.
+
 ## 2026-06-28 - MakeDust no-op compatibility cut
 
 Changed:
@@ -1086,3 +1112,5 @@ These are future horizons, not blockers for the private usable MVP.
 223. Done contact-memory world ownership cut: `RuntimeContactMemoryWorld` now owns bounded direct/projectile contact-memory creation, reset, mutation, and readback for `MoveContact`/`MoveHit`/`MoveGuarded`, `HitCount`/`UniqHitCount`, `HitAdd`, `MoveReversed`, `ReceivedDamage`/`ReceivedHits`, and projectile contact/time markers. `PlayableMatchRuntime` injects the world into fighter state; `RuntimeDirectCombatWorld` and `RuntimeReversalWorld` now receive the same boundary for direct hit/guard, received-damage, and reversal marker writes. Focused tests prove world readback and injected boundary calls. `pnpm test` passes 60 files / 568 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, and `pnpm qa:trace` remains stable at 156/156 artifacts, 138 required and 18 optional. Claim allowed: bounded contact-memory mutation has a world-style runtime boundary consumed by the main match loop plus direct-combat/reversal systems without trace drift. Claim blocked: exact contact/combo lifetime, helper/redirect/team ownership, hitpause/tick-order accounting, multi-target lifetime, and full MUGEN/IKEMEN contact-memory parity.
 
 224. Done MakeDust no-op compatibility cut: the controller registry now accepts deprecated MUGEN `MakeDust` as a presentation no-op, `StateProgramExecutor` routes it through runtime-controller dispatch, and `StateControllerExecutor` leaves runtime state unchanged. `synthetic-imported-noop.json` now requires `MakeDust` next to `Null`, browser no-op `ForceFeedback`, and debug clipboard no-ops before the same simple `HitDef` route; focused tests assert registry metadata, runtime immutability, and trace requirements. `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-noop.json` checksum is now `a5fe169e`, and controller-family coverage rises to 76. Claim allowed: imported CNS/Common1 `MakeDust` controllers are accepted and counted in no-op compatibility telemetry without crashing imported flow. Claim blocked: dust rendering, FightFX/common dust lookup, visual spacing/pos timing, helper/redirect ownership, exact no-op timing, and full CNS VM parity.
+
+225. Done VarRandom variable compatibility cut: the controller registry now accepts MUGEN `VarRandom` as partial owner-local int variable support, `ControllerOps` lowers static `v`/`range` params into typed `variable:varrandom` operations, `StateProgramExecutor` routes it through runtime-controller and State -1 setup dispatch, and `StateControllerExecutor` writes a bounded inclusive random value to `var(n)`. `PlayableMatchRuntime` now provides deterministic per-actor sandbox RNG to controller and trigger expression evaluation so traces stay stable. `synthetic-imported-variable.json` now requires `VarRandom` and `variable:varrandom` alongside `VarSet`, `VarAdd`, and `VarRangeSet`; focused tests assert registry, compile, runtime, dispatch, and trace requirements. `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-variable.json` checksum is now `3b33f7a8`, and controller-family coverage rises to 77. Claim allowed: imported CNS `VarRandom` can execute as typed owner-local int var telemetry and drive later `var(...)` branches. Claim blocked: exact MUGEN random stream parity, helper/parent/root variable scopes, fvar/sysvar `VarRandom`, persistent/tick-order edge cases, IKEMEN map vars, and full CNS VM parity.

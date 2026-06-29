@@ -327,6 +327,7 @@ describe("StateControllerExecutor", () => {
     const compiledLife = compileControllerIr(controller("LifeAdd", { value: "-50" }));
     const compiledSysvarSet = compileControllerIr(controller("VarSet", { "sysvar(0)": "1" }));
     const compiledSysvarAdd = compileControllerIr(controller("VarAdd", { "sysvar(0)": "2" }));
+    const compiledVarRandom = compileControllerIr(controller("VarRandom", { v: "5", range: "10,12" }));
 
     state = executeControllerIr(compiledLife, state, () => undefined);
     state = executeStateController(controller("PowerAdd", { value: "75" }), state, () => undefined);
@@ -335,16 +336,19 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("VarSet", { "var(1)": "7" }), state, () => undefined);
     state = executeControllerIr(compiledSysvarSet, state, () => undefined);
     state = executeControllerIr(compiledSysvarAdd, state, () => undefined);
+    state = executeControllerIr(compiledVarRandom, state, () => undefined, { random: () => 0.5 });
     state = executeStateController(controller("VarSet", { "sysvar(1)": "4" }), state, () => undefined);
     state = executeStateController(controller("VarSet", { fv: "2", value: "1.5" }), state, () => undefined);
 
     expect(compiledLife.operation).toEqual({ kind: "resource", controllerType: "lifeadd", value: -50 });
     expect(compiledSysvarSet.operation).toEqual({ kind: "variable", controllerType: "varset", variableType: "sysvar", index: 0, value: 1 });
     expect(compiledSysvarAdd.operation).toEqual({ kind: "variable", controllerType: "varadd", variableType: "sysvar", index: 0, value: 2 });
+    expect(compiledVarRandom.operation).toEqual({ kind: "variable", controllerType: "varrandom", variableType: "var", index: 5, min: 10, max: 12 });
     expect(state.life).toBe(850);
     expect(state.power).toBe(175);
     expect(state.vars[3]).toBe(10);
     expect(state.vars[1]).toBe(7);
+    expect(state.vars[5]).toBe(11);
     expect(state.sysvars?.[0]).toBe(3);
     expect(state.sysvars?.[1]).toBe(4);
     expect(state.fvars[2]).toBe(1.5);
