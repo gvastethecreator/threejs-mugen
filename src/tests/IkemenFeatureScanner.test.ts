@@ -157,7 +157,7 @@ describe("scanIkemenFeatures", () => {
       ],
       [
         "data/action.zss",
-        'lifeBarAction{spr: const(MsgFirstAttack), 0; top: 1}\ngameMakeAnim{value: F60; pos: 0,0}\ntext{text: "Ready"; layerno: 1}\nredLifeSet{value: lifeMax}\n',
+        'lifeBarAction{spr: const(MsgFirstAttack), 0; top: 1}\ngameMakeAnim{value: F60; pos: 0,0}\ntext{text: "Ready"; layerno: 1}\nremoveText{id: 4}\nredLifeSet{value: lifeMax}\nif NumText(4) > 0 { removeText{id: 4} }\n',
       ],
       [
         "data/system.def",
@@ -191,7 +191,9 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN controller LifeBarAction"]).toBe(1);
     expect(report.features["IKEMEN controller MapSet"]).toBe(1);
     expect(report.features["IKEMEN controller RedLifeSet"]).toBe(1);
+    expect(report.features["IKEMEN controller RemoveText"]).toBe(2);
     expect(report.features["IKEMEN controller Text"]).toBe(1);
+    expect(report.features["IKEMEN extended trigger NumText"]).toBe(1);
     expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN screenpack menu item"]).toBe(3);
     expect(report.features["IKEMEN extra menu mode freebattle"]).toBe(1);

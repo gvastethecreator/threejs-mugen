@@ -195,7 +195,7 @@ Issue: `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
 
 Build next:
 
-- Current proof: `IkemenFeatureScanner` recognizes IKEMEN-GO data ZSS presentation/system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, and `RedLifeSet` as scanner-only unsupported findings, with focused scanner coverage.
+- Current proof: `IkemenFeatureScanner` recognizes IKEMEN-GO data ZSS presentation/system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as scanner-only unsupported findings, with focused scanner coverage.
 - Map more Ikemen-GO source/docs signals into scanner-only findings.
 - Keep every finding classified as recognized, unsupported, or unknown unless runtime execution is gated.
 

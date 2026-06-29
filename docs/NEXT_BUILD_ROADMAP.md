@@ -94,6 +94,15 @@ R2 RuntimeGuardWorld ownership extraction
   -> proves named guard ownership only
 ```
 
+Latest IKEMEN scanner truth:
+
+```txt
+I1 text-system scanner expansion
+  -> IkemenFeatureScanner recognizes RemoveText and NumText as report-only IKEMEN text-system signals
+  -> focused scanner test coverage proves recognized/unsupported classification
+  -> no ZSS/Lua/text rendering/runtime execution claim
+```
+
 Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
