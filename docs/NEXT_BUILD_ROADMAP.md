@@ -27,6 +27,11 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
+S1 CSS overlap audit guard
+  -> pnpm qa:css now reports cross-file selector overlap and src/style.css/module overlap, not only per-file duplicate selectors
+  -> current working tree audit reports 2,662 scanned rules, 126 duplicate selector keys / 289 instances, 0 exact duplicate rules, 217 repeated declaration groups, 62 cross-file duplicate selectors, and 42 selectors shared with src/style.css
+  -> largest src/style.css overlaps are studio-command-center.css, studio-shell-overrides.css, studio-desktop-foundation.css, runtime-command-deck.css, and studio-primitives.css
+  -> tooling/control only; visual CSS migration still needs qa:smoke and screenshot inspection
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
   -> src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css now own their desktop surfaces after the shared Studio modules

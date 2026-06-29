@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-06-29 - CSS overlap audit guard
+
+Changed:
+
+- Extended `scripts/audit_css_duplication.cjs` / `pnpm qa:css` so the CSS audit now reports duplicate selectors across files and selectors shared between legacy `src/style.css` and imported `src/styles/*` modules.
+- Added `--detail-overlaps` output for targeted cleanup slices that need line-level overlap samples before moving or deleting selectors.
+- Updated interface and roadmap docs to treat current CSS duplication as legacy cascade debt, not exact duplicate-rule garbage.
+
+Evidence:
+
+- `pnpm qa:css` passes on the current working tree: 2,662 scanned rules, 126 duplicate selector keys / 289 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 217 repeated declaration groups, 62 cross-file duplicate selectors, and 42 selectors shared with `src/style.css`.
+
+Claim allowed:
+
+- Future CSS cleanup can now identify which modules still overlap legacy `src/style.css` before a visual migration pass.
+
+Claim blocked:
+
+- This is tooling/docs control only. It does not remove visible CSS, prove a new UI layout, change runtime compatibility, move port scores, or replace required `pnpm qa:smoke` plus screenshot inspection for any real frontend/style migration.
+
 ## 2026-06-29 - Required Common1 stand get-hit progression order gate
 
 Changed:

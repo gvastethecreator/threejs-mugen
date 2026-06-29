@@ -6,6 +6,7 @@ const args = process.argv.slice(2);
 const shouldFix = args.includes("--fix-exact");
 const shouldFixShadowed = args.includes("--fix-shadowed");
 const shouldFixEmptyAtRules = args.includes("--fix-empty-at-rules");
+const shouldPrintOverlapDetails = args.includes("--detail-overlaps");
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
   .map((arg) => arg.slice("--prune-selector=".length))
@@ -457,6 +458,50 @@ const currentSummaries =
     ? new Map(files.map((file) => [file, summarize(file)]))
     : summaries;
 
+function selectorKeyForRule(rule) {
+  return rule.context ? `${rule.context} || ${rule.selector}` : rule.selector;
+}
+
+function fileSummaryLabel(file) {
+  return path.relative(repoRoot, file);
+}
+
+function collectCrossFileOverlaps(summaryMap) {
+  const selectorFiles = new Map();
+
+  for (const [file, summary] of summaryMap) {
+    for (const rule of summary.rules) {
+      const selectorKey = selectorKeyForRule(rule);
+      let filesForSelector = selectorFiles.get(selectorKey);
+      if (!filesForSelector) {
+        filesForSelector = new Map();
+        selectorFiles.set(selectorKey, filesForSelector);
+      }
+      filesForSelector.set(file, [...(filesForSelector.get(file) ?? []), rule.line]);
+    }
+  }
+
+  const groups = [...selectorFiles.entries()].filter(([, fileMap]) => fileMap.size > 1);
+  const legacyStyleFile = path.join(repoRoot, "src", "style.css");
+  const legacyGroups = groups.filter(([, fileMap]) => fileMap.has(legacyStyleFile));
+  const legacyModuleCounts = new Map();
+
+  for (const [, fileMap] of legacyGroups) {
+    for (const file of fileMap.keys()) {
+      if (file === legacyStyleFile) {
+        continue;
+      }
+      legacyModuleCounts.set(file, (legacyModuleCounts.get(file) ?? 0) + 1);
+    }
+  }
+
+  return {
+    groups,
+    legacyGroups,
+    legacyModuleCounts: [...legacyModuleCounts.entries()].sort((a, b) => b[1] - a[1]),
+  };
+}
+
 for (const [file, summary] of currentSummaries) {
   const rel = path.relative(repoRoot, file);
   console.log(`${rel}`);
@@ -474,3 +519,21 @@ console.log(`  rules ${total.rules}`);
 console.log(`  duplicate selectors ${total.duplicateSelectorKeys} keys / ${total.duplicateSelectorInstances} instances`);
 console.log(`  exact duplicate rules ${total.exactDuplicateRuleKeys} keys / ${total.exactDuplicateRuleInstances} instances`);
 console.log(`  repeated declaration groups ${total.repeatedDeclarationKeys}`);
+
+const crossFileOverlaps = collectCrossFileOverlaps(currentSummaries);
+console.log("cross-file overlap");
+console.log(`  duplicate selectors across files ${crossFileOverlaps.groups.length}`);
+console.log(`  selectors shared with src\\style.css ${crossFileOverlaps.legacyGroups.length}`);
+for (const [file, count] of crossFileOverlaps.legacyModuleCounts.slice(0, 8)) {
+  console.log(`  ${fileSummaryLabel(file)} ${count}`);
+}
+
+if (shouldPrintOverlapDetails && crossFileOverlaps.legacyGroups.length) {
+  console.log("src\\style.css overlap details");
+  for (const [selector, fileMap] of crossFileOverlaps.legacyGroups.slice(0, 30)) {
+    const fileList = [...fileMap.entries()]
+      .map(([file, lines]) => `${fileSummaryLabel(file)}:${lines.slice(0, 3).join(",")}`)
+      .join(" | ");
+    console.log(`  ${fileList} :: ${selector}`);
+  }
+}
