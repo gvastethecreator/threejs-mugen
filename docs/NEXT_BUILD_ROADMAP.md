@@ -81,9 +81,9 @@ Latest implementation truth:
 R2 helper-local micro-VM ownership
   -> HelperSystem runs a bounded helper-local micro-VM for current visual Helper actors spawned with owner runtime-program data
   -> RuntimeEffectSpawnWorld passes owner runtimeProgram and animation maps into HelperSystem
-  -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, and DestroySelf removal on helper actors
+  -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, DestroySelf removal, helper-local CtrlSet/StateTypeSet, and helper-local VarSet/VarAdd/VarRangeSet trigger branches on helper actors
   -> focused EffectSpawnSystem tests prove the handoff
-  -> no redirects, parent/root/team/keyctrl, helper variables/resources/audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
+  -> no redirects, parent/root/team/keyctrl, helper life/power resources, VarRandom, helper audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns the p1/p2-isolated store mutation and reports removed counts

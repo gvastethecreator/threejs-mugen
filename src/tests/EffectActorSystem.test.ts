@@ -250,6 +250,57 @@ describe("EffectActorSystem", () => {
     expect(store.helpers).toEqual([]);
   });
 
+  it("persists helper-local metadata, control, and variables for later triggers", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("StateTypeSet", { statetype: "A", movetype: "A", physics: "N" }, ["Time = 0"]),
+              controller("CtrlSet", { value: "1" }, ["Time = 0"]),
+              controller("VarSet", { v: "3", value: "7" }, ["Time = 0"]),
+              controller("VarAdd", { v: "3", value: "5" }, ["Time = 0"]),
+              controller("VarRangeSet", { first: "5", last: "6", value: "9" }, ["Time = 0"]),
+              controller("VarSet", { fv: "2", value: "1.5" }, ["Time = 0"]),
+              controller(
+                "ChangeState",
+                { value: "6002" },
+                ["var(3) = 12", "var(5) = 9", "fvar(2) = 1.5", "ctrl", "statetype = A", "movetype = A", "physics = N"],
+              ),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["StateTypeSet", "CtrlSet", "VarSet", "VarAdd", "VarRangeSet", "VarSet", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      ctrl: true,
+      stateType: "A",
+      moveType: "A",
+      physics: "N",
+      stateTime: 1,
+      age: 1,
+    });
+    expect(helper.vars[3]).toBe(12);
+    expect(helper.vars.slice(5, 7)).toEqual([9, 9]);
+    expect(helper.fvars[2]).toBe(1.5);
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

@@ -29,6 +29,13 @@ export type RuntimeHelper = {
   vel: { x: number; y: number };
   scale: { x: number; y: number };
   facing: 1 | -1;
+  ctrl: boolean;
+  stateType: CharacterRuntimeState["stateType"];
+  moveType: CharacterRuntimeState["moveType"];
+  physics: CharacterRuntimeState["physics"];
+  vars: number[];
+  sysvars: number[];
+  fvars: number[];
   frameIndex: number;
   frameElapsed: number;
   age: number;
@@ -94,6 +101,13 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     vel: helperVelocity(input.controller, operation),
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
+    ctrl: false,
+    stateType: "S",
+    moveType: "I",
+    physics: "N",
+    vars: Array.from({ length: 60 }, () => 0),
+    sysvars: [],
+    fvars: Array.from({ length: 40 }, () => 0),
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
@@ -242,12 +256,13 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           frameIndex: helper.frameIndex,
           life: 0,
           power: 0,
-          ctrl: false,
-          stateType: "S",
-          moveType: "I",
-          physics: "N",
-          vars: [],
-          fvars: [],
+          ctrl: helper.ctrl,
+          stateType: helper.stateType,
+          moveType: helper.moveType,
+          physics: helper.physics,
+          vars: [...helper.vars],
+          sysvars: [...helper.sysvars],
+          fvars: [...helper.fvars],
           ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
         },
         frame,
@@ -268,7 +283,20 @@ function matchesRuntimeHelperRemovalFilter(helper: RuntimeHelper, filter: Runtim
   return true;
 }
 
-const helperRuntimeControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "statetypeset", "null"]);
+const helperRuntimeControllers = new Set([
+  "velset",
+  "veladd",
+  "velmul",
+  "posset",
+  "posadd",
+  "gravity",
+  "ctrlset",
+  "statetypeset",
+  "varset",
+  "varadd",
+  "varrangeset",
+  "null",
+]);
 
 function helperTriggersPass(helper: RuntimeHelper, controller: ControllerIr, stageTime?: number): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
@@ -351,12 +379,13 @@ function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
     frameIndex: helper.frameIndex,
     life: 0,
     power: 0,
-    ctrl: false,
-    stateType: "S",
-    moveType: "I",
-    physics: "N",
-    vars: [],
-    fvars: [],
+    ctrl: helper.ctrl,
+    stateType: helper.stateType,
+    moveType: helper.moveType,
+    physics: helper.physics,
+    vars: [...helper.vars],
+    sysvars: [...helper.sysvars],
+    fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
   };
 }
@@ -368,6 +397,13 @@ function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRunt
   helper.stateNo = runtime.stateNo;
   helper.animNo = runtime.animNo;
   helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
+  helper.ctrl = runtime.ctrl;
+  helper.stateType = runtime.stateType;
+  helper.moveType = runtime.moveType;
+  helper.physics = runtime.physics;
+  helper.vars = [...runtime.vars];
+  helper.sysvars = [...(runtime.sysvars ?? [])];
+  helper.fvars = [...runtime.fvars];
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper): void {

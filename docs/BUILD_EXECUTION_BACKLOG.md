@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Helper-local metadata and variable VM cut
+
+Changed:
+
+- Extended the bounded `HelperSystem` helper-local micro-VM with helper-local runtime metadata/control/variable state.
+- Helpers now persist `CtrlSet`, `StateTypeSet`, `VarSet`, `VarAdd`, and `VarRangeSet` mutations through `CharacterRuntimeState` snapshots.
+- Helper-local trigger evaluation can branch on `ctrl`, `statetype`, `movetype`, `physics`, `var(n)`, and `fvar(n)` after those controllers execute.
+- Helper actor snapshots now expose the helper-local `ctrl`, state metadata, and cloned `vars` / `fvars` / `sysvars` arrays instead of hard-coded empty/default values.
+
+Evidence:
+
+- Focused `EffectActorSystem` coverage proves helper-local `StateTypeSet`, `CtrlSet`, `VarSet`, `VarAdd`, `VarRangeSet`, and `fvar` assignment can drive a later `ChangeState` trigger inside the helper VM.
+- Focused `HelperSystem` coverage proves helper snapshots preserve helper-local runtime metadata.
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/HelperSystem.test.ts` passes: 2 files / 22 tests.
+- `pnpm test` passes: 73 files / 655 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:smoke` passes; visual inspection covered regenerated runtime desktop, Studio Workbench, Studio Build, and Studio Debug screenshots.
+- `pnpm qa:css:budget` passes at the current 2,467-rule / 138-repeated-group / 113-overlap ceiling.
+
+Claim allowed:
+
+- Current visual Helper actors can persist a small local runtime state and use helper-local control/metadata/variables for later helper trigger branches inside the bounded micro-VM.
+
+Claim blocked:
+
+- Parent/root/team redirects, `keyctrl`, helper life/power resources, `VarRandom`, audio/effects from helper states, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, broad imported Helper parity, and score movement remain blocked.
+
 ## 2026-06-29 - Helper-local VM and CSS overlap prune
 
 Changed:
@@ -29,7 +58,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Redirects, parent/root/team/keyctrl, helper variables/resources/audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, broader CSS primitive extraction, and score movement remain blocked.
+- Redirects, parent/root/team/keyctrl, helper life/power resources/audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, broader CSS primitive extraction, and score movement remain blocked.
 
 ## 2026-06-29 - Visual helper removal ownership
 
