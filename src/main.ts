@@ -1,4 +1,9 @@
 import "./style.css";
+import "./styles/app-shell.css";
+import "./styles/studio-legacy-surfaces.css";
+import "./styles/studio-editor-cascade.css";
+import "./styles/studio-ui-hardening.css";
+import "./styles/studio-desktop-authority.css";
 import "./styles/runtime-command-deck.css";
 import "./styles/studio-shell-overrides.css";
 import "./styles/studio-desktop-foundation.css";
