@@ -4294,6 +4294,8 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
         requiredExecutedStates: [0, 200, 5000, 5001],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence()],
+        requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence()],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -4310,6 +4312,48 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
       },
     ],
   });
+}
+
+export function defaultGetHitProgressionControllerSequence(
+  shakeStateNo = 5000,
+  slideStateNo = 5001,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${slideStateNo}/0 HitShakeOver and HitOver controller order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState" },
+      { stateNo: slideStateNo, controller: "ChangeState" },
+    ],
+  };
+}
+
+export function defaultGetHitProgressionActorFrameSequence(
+  shakeStateNo = 5000,
+  slideStateNo = 5001,
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${shakeStateNo} shake before ${slideStateNo} slide`,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: shakeStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: slideStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+    ],
+  };
 }
 
 export function createImportedDefaultFallGetHitTraceArtifact(

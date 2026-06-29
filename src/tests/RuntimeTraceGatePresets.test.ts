@@ -24,6 +24,8 @@ import {
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultGetHitProgressionActorFrameSequence,
+  defaultGetHitProgressionControllerSequence,
   createImportedDefaultGuardStateTraceArtifact,
   createImportedGuardTraceArtifact,
   createSyntheticImportedHitstunTraceArtifact,
@@ -3769,6 +3771,15 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([0, 200, 5000, 5001]));
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultGetHitProgressionControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultGetHitProgressionActorFrameSequence(),
+    ]);
+    expect(
+      evidence?.controllerEvents.filter((event) => event.actorId === "p2").map((event) => `${event.stateNo}:${event.controller}`),
+    ).toEqual(expect.arrayContaining(["5000:ChangeState", "5001:ChangeState"]));
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,

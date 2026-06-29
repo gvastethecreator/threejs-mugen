@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Required Common1 stand get-hit progression order gate
+
+Changed:
+
+- Strengthened `synthetic-imported-default-gethit-progression.json` so its required gate now checks ordered P2 controller events for defender-owned `5000` `ChangeState` before `5001` `ChangeState`.
+- Added required actor-frame sequence evidence that imported P2 is observed in state `5000` before state `5001`; final actor evidence still proves return to idle/control.
+- Added reusable helpers for default get-hit progression controller and actor-frame sequence requirements.
+
+Evidence:
+
+- Focused test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file, 155 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- Strengthened required checksum remains `synthetic-imported-default-gethit-progression.json` `ef2a67f8`.
+
+Claim allowed:
+
+- The bounded imported Common1-style stand get-hit progression now requires trace evidence for `HitShakeOver` routing state `5000 -> 5001` before `HitOver` returns the defender to idle/control.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN controller tick order, exact `HitShakeOver` / `HitOver` timing, fall/bounce/liedown/recovery parity, helper/custom-state ownership breadth, and full Common1 VM parity remain blocked.
+
 ## 2026-06-29 - Required common/FightFX HitSpark asset-frame trace gates
 
 Changed:

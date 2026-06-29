@@ -62,6 +62,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 required Common1 stand get-hit progression trace strengthening
+  -> synthetic-imported-default-gethit-progression.json checksum ef2a67f8 gates ordered 5000 ChangeState before 5001 ChangeState
+  -> actor-frame evidence now requires imported P2 5000 before 5001, with final idle/control evidence
+  -> no exact HitShakeOver/HitOver timing, fall/bounce/liedown/recovery, helper/custom-state breadth, or full Common1 VM claim
 R1 required common/FightFX HitSpark asset-frame trace strengthening
   -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame metadata for sparkno 7001
   -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame metadata for sparkno F7002
@@ -169,6 +173,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitdef-hit-sound.json`
 - `synthetic-imported-hitdef-common-spark.json`
 - `synthetic-imported-hitdef-fightfx-spark.json`
+- `synthetic-imported-default-gethit-progression.json` controller/frame order
 - `synthetic-imported-target.json` final Target* side-effect evidence
 - `synthetic-imported-target-noko.json` TargetLifeAdd defender-side NoKO evidence
 - `synthetic-imported-target-owned-custom-state.json`

@@ -343,14 +343,33 @@ function findShadowedSameSelectorRules(summary) {
 }
 
 function removeEmptyAtRules(css) {
+  const edits = [];
   let removed = 0;
-  let nextCss = css;
-  const emptyAtRule = /(?:\r?\n){0,2}[ \t]*@[^{]+\{\s*\}/g;
-  nextCss = nextCss.replace(emptyAtRule, (match) => {
-    removed += 1;
-    return match.startsWith("\r\n\r\n") ? "\r\n" : match.startsWith("\n\n") ? "\n" : "";
-  });
-  return { css: nextCss, removed };
+
+  let position = 0;
+  while (position < css.length) {
+    const open = css.indexOf("{", position);
+    if (open < 0) {
+      break;
+    }
+
+    const previousClose = css.lastIndexOf("}", open - 1);
+    const preludeStart = Math.max(position, previousClose + 1);
+    const prelude = cleanPrelude(css.slice(preludeStart, open));
+    const close = matchingClose(css, open);
+    if (close < 0) {
+      break;
+    }
+
+    if (prelude.startsWith("@") && !css.slice(open + 1, close).trim()) {
+      edits.push({ start: preludeStart, end: close + 1, text: "" });
+      removed += 1;
+    }
+
+    position = close + 1;
+  }
+
+  return { css: applyEdits(css, edits), removed };
 }
 
 function detectLineEnding(input) {
