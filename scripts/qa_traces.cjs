@@ -576,6 +576,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-noko",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetNoKoTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-bindtotarget-head",
       required: true,
       artifact: presets.createSyntheticImportedBindToTargetHeadTraceArtifact(),
@@ -1368,6 +1373,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-custom-state",
     "synthetic-imported-target-owned-custom-state",
     "synthetic-imported-targetstate-custom",
+    "synthetic-imported-target-noko",
     "synthetic-imported-bindtotarget-head",
     "synthetic-imported-bindtotarget-mid",
     "synthetic-imported-targetbind-pause",

@@ -133,6 +133,7 @@ import {
   createSyntheticImportedBindToTargetHeadTraceArtifact,
   createSyntheticImportedBindToTargetMidTraceArtifact,
   createSyntheticImportedTargetStateCustomTraceArtifact,
+  createSyntheticImportedTargetNoKoTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
@@ -4490,6 +4491,48 @@ describe("RuntimeTraceGatePresets", () => {
       power: 40,
     });
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
+  });
+
+  it("creates a synthetic imported TargetLifeAdd NoKO artifact", () => {
+    const artifact = createSyntheticImportedTargetNoKoTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-target-noko-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-target-noko-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "NoKO defender AssertSpecial before lethal TargetLifeAdd",
+        allowSameTick: true,
+        steps: [
+          { actorId: "p2", stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+          { actorId: "p1", stateNo: 200, controller: "HitDef" },
+          { actorId: "p1", stateNo: 200, controller: "TargetLifeAdd", name: "Target Damage" },
+        ],
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      actorKind: "player",
+      source: "imported",
+      life: 1,
+    });
   });
 
   it("creates a synthetic imported TargetState artifact with owner-backed SelfState evidence", () => {

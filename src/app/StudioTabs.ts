@@ -18,5 +18,8 @@ export const STUDIO_TABS: StudioTabDefinition[] = [
 ];
 
 export function parseStudioTab(value: string | null | undefined): StudioTab | undefined {
+  if (value === "inspect") {
+    return "inspector";
+  }
   return STUDIO_TABS.find((tab) => tab.id === value)?.id;
 }

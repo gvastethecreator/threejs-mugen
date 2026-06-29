@@ -27,10 +27,11 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
-S1 Studio trust-ledger CSS extraction
-  -> Build/Evidence right-rail ownership moved into src/styles/studio-trust-ledgers.css
-  -> qa:css reports 4,022 rules, 390 duplicate selector keys, and 0 exact duplicate rules
-  -> qa:smoke plus screenshots inspected studio-build, studio-evidence, and studio-evidence-world-delta
+S1 Studio trust/system-ledger CSS extraction
+  -> Build/Evidence ownership lives in src/styles/studio-trust-ledgers.css
+  -> Modules/Debug ownership lives in src/styles/studio-system-ledgers.css
+  -> qa:css reports 4,048 rules, 372 duplicate selector keys, and 0 exact duplicate rules
+  -> qa:smoke plus screenshots inspected studio-modules, studio-debug, studio-build, and studio-evidence
   -> product-surface hygiene only; it does not change the next runtime/port slice
 S1 Studio chrome CSS containment
   -> duplicate desktop command-chrome correction block removed and merged into the main desktop command-desk block
@@ -46,6 +47,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 synthetic TargetLifeAdd NoKO trace strengthening
+  -> synthetic-imported-target-noko.json checksum 28ac8636
+  -> required trace gates defender-side AssertSpecial NoKO before HitDef and lethal TargetLifeAdd
+  -> evidence includes target link id 77 and final P2 life 1
+  -> proves bounded target-controller NoKO clamp only; no exact NoKO lifetime, helpers, teams, multi-target, round-flow, or target parity claim
 R1 synthetic Target* side-effect trace strengthening
   -> synthetic-imported-target.json checksum f5a16dc9
   -> required trace now gates TargetLifeAdd/TargetPowerAdd/TargetVel*/TargetFacing/TargetBind/BindToTarget/TargetDrop typed ops

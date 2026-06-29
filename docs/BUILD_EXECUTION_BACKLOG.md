@@ -1,5 +1,55 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio system-ledger CSS extraction
+
+Changed:
+
+- Added `src/styles/studio-system-ledgers.css` and imported it after the existing Studio modules.
+- Moved dense Modules/Debug system-ledger rows, contracts, runtime focus, actor/debug lenses, target/effect/pause/audio rows, and execution-evidence styling out of tail-end `src/style.css`.
+- Kept Build/Evidence ownership in `src/styles/studio-trust-ledgers.css` and documented the current Studio CSS ownership split.
+- Added `inspect` as a compatibility alias for the canonical `inspector` Studio tab id.
+
+Evidence:
+
+- `pnpm qa:css` passes: 4,048 scanned rules, 372 duplicate selector keys / 1,172 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, and 314 repeated declaration groups.
+- `pnpm qa:smoke` passes in started-Vite mode with runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, Assets, Evidence, Debug, Stage, IKEMEN scan, and replacement flow.
+- Visual inspection checked `.scratch/qa/qa-smoke/studio-modules.png`, `.scratch/qa/qa-smoke/studio-debug.png`, `.scratch/qa/qa-smoke/studio-build.png`, and `.scratch/qa/qa-smoke/studio-evidence.png` for readability and obvious overflow.
+- `pnpm qa:trace` passes: 157/157 artifacts, 139 required and 18 optional; latest required checksum remains `synthetic-imported-target-noko.json` `28ac8636`.
+
+Claim allowed:
+
+- Modules/Debug desktop ledger styling has a named CSS ownership module, while scanned CSS still has zero exact duplicate rule groups.
+
+Claim blocked:
+
+- Duplicate selector cascade remains in legacy `src/style.css`, repeated declaration groups remain, and this does not finish token consolidation, mobile Studio redesign, new editing workflows, runtime compatibility, or score movement.
+
+## 2026-06-29 - TargetLifeAdd NoKO required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedTargetNoKoTraceArtifact` and required `synthetic-imported-target-noko.json` to the trace gate suite.
+- Made the synthetic imported target-controller block accept a configurable `TargetLifeAdd` value so the existing Target* route stays checksum-stable while the new NoKO route can be lethal.
+- Added focused preset coverage for ordered P2 `AssertSpecial NoKO` -> P1 `HitDef` -> P1 `TargetLifeAdd`, target-link id `77`, typed `target:targetlifeadd` evidence, and final P2 life `1`.
+- Updated support, controller registry, QA, roadmap, progress, scorecard, and runtime issue docs with claim allowed / blocked wording.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "TargetLifeAdd NoKO"` passes.
+- `pnpm test` passes: 73 files, 629 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 157/157 artifacts, 139 required and 18 optional; new `synthetic-imported-target-noko.json` checksum is `28ac8636`.
+- `pnpm qa:smoke` is not required because this runtime trace/docs cut does not change frontend, renderer, stage, sprite, CSS, or visible UI behavior.
+
+Claim allowed:
+
+- The bounded two-player imported target-controller route applies defender-side `AssertSpecial NoKO` before lethal `TargetLifeAdd` target damage and clamps the target to life `1`.
+
+Claim blocked:
+
+- Exact NoKO lifetime, KO/round flow, shadows, helper/root/parent redirects, teams, multi-target behavior, exact target lifetime/tick-order, and full MUGEN/IKEMEN target/no-KO parity.
+
 ## 2026-06-29 - Studio CSS module ownership cleanup
 
 Changed:
@@ -1818,3 +1868,7 @@ These are future horizons, not blockers for the private usable MVP.
 229. Done Target* side-effect trace-strengthening cut: `synthetic-imported-target.json` checksum is now `f5a16dc9` and requires typed TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/BindToTarget/TargetDrop operation evidence, world-visible target-link/binding evidence, actor-frame P2 `facing = 1` plus velocity telemetry, final P1 `targetCount = 0`, and final P2 `life = 943` / `power = 40`. `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional. Claim allowed: the bounded two-actor Target* route proves observable target resource, facing, velocity, binding, and drop effects instead of only controller/op counters. Claim blocked: full target redirects, helper/root/parent ownership, teams, multi-target behavior, exact target lifetime/drop semantics, exact bind tick-order, and full MUGEN/IKEMEN target parity.
 
 230. Done Studio trust-ledger CSS extraction: `src/styles/studio-trust-ledgers.css` now owns the desktop Build/Evidence right-rail rows, status cells, key-value tables, trace strips, Impact/Next copy, and dense trust-panel tokens that previously lived as tail-end blocks in `src/style.css`; `src/main.ts` imports the module after Workbench/Assets styles and `docs/INTERFACE_SYSTEM.md` documents the ownership split. `pnpm qa:css` reports 4,022 scanned rules, 390 duplicate selector keys, 0 exact duplicate rules, and 308 repeated declaration groups. `pnpm qa:smoke` passes in started-Vite mode with Build checksum `9c9f205b`; screenshots `studio-build.png`, `studio-evidence.png`, and `studio-evidence-world-delta.png` were visually inspected. `pnpm test` passes 73 files / 628 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing large-chunk warning, and `git diff --check` passes. Claim allowed: Build/Evidence trust-ledger styling has a named CSS ownership module and the visible surfaces remain usable under smoke. Claim blocked: no new Studio workflow, no production export, no runtime compatibility change, no score movement, and broader legacy selector-cascade cleanup remains open.
+
+231. Done Studio system-ledger CSS extraction: `src/styles/studio-system-ledgers.css` now owns the desktop Modules/Debug contracts, runtime focus, compact rows, target/effect/pause/audio lenses, and execution-evidence rows that previously lived in tail-end `src/style.css`; `StudioTabs.parseStudioTab` also accepts legacy `inspect` URLs as `inspector`. `pnpm qa:css` reports 4,048 scanned rules, 372 duplicate selector keys, 0 exact duplicate rules, and 314 repeated declaration groups. `pnpm qa:smoke` passes in started-Vite mode; screenshots `studio-modules.png`, `studio-debug.png`, `studio-build.png`, and `studio-evidence.png` were visually inspected. Claim allowed: Modules/Debug ledger styling has a named CSS ownership module while exact duplicate CSS rules stay at zero. Claim blocked: legacy `src/style.css` still owns most remaining duplicate selector cascade, repeated declaration groups remain, and this does not add new Studio workflows or move runtime scores.
+
+232. Done TargetLifeAdd NoKO required trace gate: required `synthetic-imported-target-noko.json` checksum `28ac8636` now proves a bounded two-player imported route where P2 state `0` `AssertSpecial NoKO` executes before P1 state `200` `HitDef`, P1 later applies lethal `TargetLifeAdd` through target id `77`, and final P2 life clamps to `1`. `pnpm qa:trace` passes 157/157 artifacts, 139 required and 18 optional. Claim allowed: defender-side NoKO can clamp lethal target-controller damage in the bounded imported Target* route. Claim blocked: exact NoKO lifetime, KO/round flow, helper/root/parent redirects, teams, multi-target behavior, exact target lifetime/tick order, and full MUGEN/IKEMEN target/no-KO parity remain open.

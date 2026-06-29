@@ -5633,6 +5633,72 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedTargetNoKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-noko-attacker",
+    displayName: "Synthetic Imported Target NoKO Attacker",
+    withTargetControllers: true,
+    targetLifeAddValue: -2000,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-noko-defender",
+    displayName: "Synthetic Imported Target NoKO Defender",
+    passiveAssertSpecialFlags: ["NoKO"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-target-noko-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-noko-golden",
+      label: "Synthetic imported TargetLifeAdd NoKO route",
+      source: "imported",
+      notes: [
+        "Synthetic imported TargetLifeAdd NoKO trace proves a bounded target-controller damage route clamps lethal target damage to 1 life when the target has defender-side NoKO. It does not claim exact NoKO lifetime, helper/root/parent redirects, team targets, round flow, or full MUGEN/IKEMEN target parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-noko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AssertSpecial", "HitDef", "TargetLifeAdd"],
+        requiredExecutedOperations: ["hitdef", "target:targetlifeadd"],
+        requiredControllerEventSequences: [
+          {
+            label: "NoKO defender AssertSpecial before lethal TargetLifeAdd",
+            allowSameTick: true,
+            steps: [
+              { actorId: "p2", stateNo: 0, controller: "AssertSpecial", name: "Passive AssertSpecial" },
+              { actorId: "p1", stateNo: 200, controller: "HitDef" },
+              { actorId: "p1", stateNo: 200, controller: "TargetLifeAdd", name: "Target Damage" },
+            ],
+          },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetStateCustomTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetScript();
@@ -8278,6 +8344,7 @@ export type SyntheticImportedTraceFighterOptions = {
     includeGroundRecovery?: boolean;
   };
   withTargetControllers?: boolean;
+  targetLifeAddValue?: number;
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
   withTargetDrop?: boolean;
@@ -8614,7 +8681,7 @@ ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevSt
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
-${options.withTargetControllers ? targetControllerBlock(77) : ""}
+${options.withTargetControllers ? targetControllerBlock(77, options.targetLifeAddValue) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(77, options.targetStateRoute.startStateNo) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock() : ""}
@@ -9390,13 +9457,13 @@ time = ${time}
 `;
 }
 
-function targetControllerBlock(targetId: number): string {
+function targetControllerBlock(targetId: number, lifeAddValue = -20): string {
   return `
 [State 200, Target Damage]
 type = TargetLifeAdd
 trigger1 = Time = 2
 id = ${targetId}
-value = -20
+value = ${lifeAddValue}
 
 [State 200, Target Meter]
 type = TargetPowerAdd

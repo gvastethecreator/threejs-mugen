@@ -55,6 +55,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 synthetic TargetLifeAdd NoKO trace strengthening
+  -> synthetic-imported-target-noko.json checksum 28ac8636 gates ordered P2 AssertSpecial NoKO -> P1 HitDef -> P1 TargetLifeAdd evidence
+  -> trace evidence includes target link id 77 and final P2 life 1 after lethal target-controller damage
+  -> no exact NoKO lifetime, helpers/root/parent, teams, multi-target lifetime, round flow, exact target timing, or target parity claim
 R1 synthetic Target* side-effect trace strengthening
   -> synthetic-imported-target.json checksum f5a16dc9 now gates TargetLifeAdd/TargetPowerAdd/TargetVel*/TargetFacing/TargetBind/BindToTarget/TargetDrop typed ops
   -> trace evidence includes target links, P2 facing/velocity actor-frame telemetry, final P1 targetCount 0, final P2 life 943 and power 40
@@ -149,6 +153,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitby-reject.json`
 - `synthetic-imported-hitdef-hit-sound.json`
 - `synthetic-imported-target.json` final Target* side-effect evidence
+- `synthetic-imported-target-noko.json` TargetLifeAdd defender-side NoKO evidence
 - `synthetic-imported-target-owned-custom-state.json`
 - `synthetic-imported-default-guard-state.json` actor-frame telemetry
 - `synthetic-imported-crouch-guard-state.json` actor-frame telemetry
