@@ -30,7 +30,7 @@ Latest Studio/UI truth:
 S1 Studio trust/system-ledger CSS extraction
   -> Build/Evidence ownership lives in src/styles/studio-trust-ledgers.css
   -> Modules/Debug ownership lives in src/styles/studio-system-ledgers.css
-  -> qa:css reports 4,048 rules, 372 duplicate selector keys, and 0 exact duplicate rules
+  -> qa:css reports 4,035 rules, 372 duplicate selector keys, and 0 exact duplicate rules
   -> qa:smoke plus screenshots inspected studio-modules, studio-debug, studio-build, and studio-evidence
   -> product-surface hygiene only; it does not change the next runtime/port slice
 S1 Studio chrome CSS containment

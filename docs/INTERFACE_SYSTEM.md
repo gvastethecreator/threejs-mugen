@@ -78,7 +78,7 @@ pnpm qa:smoke
 ## Next Interface Cuts
 
 - Expand command palette coverage with trace frame jumps and Stage Studio jumps for specific layer/report rows.
-- Continue reducing duplicated global Studio CSS into reusable chrome, ledger-row, status-cell, and command-action primitives. The latest trust/system-ledger extraction moved Build/Evidence ownership into `src/styles/studio-trust-ledgers.css` and Modules/Debug ownership into `src/styles/studio-system-ledgers.css`, kept exact duplicate rules at zero, and reduced duplicate selector keys from 409 to 372.
+- Continue reducing duplicated global Studio CSS into reusable chrome, ledger-row, status-cell, and command-action primitives. The latest trust/system-ledger extraction moved Build/Evidence ownership into `src/styles/studio-trust-ledgers.css` and Modules/Debug ownership into `src/styles/studio-system-ledgers.css`, kept exact duplicate rules at zero, reduced duplicate selector keys from 409 to 372, and reduced repeated declaration groups to 305.
 - Add persistent panel density controls once there is enough repeated daily use to justify them.
 - Add deeper Runtime Debug drilldowns for helper/projectile/explod internals and state/controller watch lists. Actor selection, trace-frame jump, state-filter jump, controller/filter jump, execution-evidence rail, exact CNS state/controller row deep-link, command-buffer history, command-to-CMD Browser deep-link, targets/effects/pause/audio lenses, and first trace-world evidence rows already exist.
 - Add persistent browser source handles/IndexedDB metadata after the first manual source-package relink flow proves stable.

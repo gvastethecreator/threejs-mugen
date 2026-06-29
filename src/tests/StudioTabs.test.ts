@@ -6,6 +6,8 @@ describe("StudioTabs", () => {
     expect(STUDIO_TABS.map((tab) => tab.id)).toEqual(["workbench", "assets", "inspector", "stage", "debug", "evidence", "modules", "build"]);
     expect(parseStudioTab("workbench")).toBe("workbench");
     expect(parseStudioTab("assets")).toBe("assets");
+    expect(parseStudioTab("inspector")).toBe("inspector");
+    expect(parseStudioTab("inspect")).toBe("inspector");
     expect(parseStudioTab("stage")).toBe("stage");
     expect(parseStudioTab("debug")).toBe("debug");
     expect(parseStudioTab("evidence")).toBe("evidence");

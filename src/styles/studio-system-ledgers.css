@@ -156,16 +156,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:nth-child(even) {
-    background: var(--system-row-alt);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:last-child,
-  .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:last-child {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat strong,
   .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat strong {
     color: var(--system-text);
@@ -216,13 +206,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     box-shadow: none;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .badge-row .badge:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .badge-row .badge:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="modules"] .contract-pill-row .badge:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .contract-pill-row .badge:nth-child(even) {
-    background: var(--system-row-alt);
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .badge.ok,
@@ -306,7 +289,8 @@
   .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-list,
   .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-list,
   .app-shell.mode-studio[data-studio-tab="modules"] .compact-list,
-  .app-shell.mode-studio[data-studio-tab="debug"] .compat-list {
+  .app-shell.mode-studio[data-studio-tab="debug"] .compat-list,
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-table {
     display: grid;
     gap: 0;
     margin: 0;
@@ -343,22 +327,6 @@
     grid-template-columns: minmax(0, 1fr) max-content max-content;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-node:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="modules"] .list-item:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .compact-debug-row:nth-child(even) {
-    background: var(--system-row-alt);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-node:last-child,
-  .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step:last-child,
-  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step:last-child,
-  .app-shell.mode-studio[data-studio-tab="modules"] .list-item:last-child,
-  .app-shell.mode-studio[data-studio-tab="debug"] .compact-debug-row:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="modules"] .module-node.is-active,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-node.is-planned {
     background: var(--system-row-hot);
@@ -373,7 +341,11 @@
   .app-shell.mode-studio[data-studio-tab="modules"] .list-title,
   .app-shell.mode-studio[data-studio-tab="modules"] .list-meta,
   .app-shell.mode-studio[data-studio-tab="debug"] .list-title,
-  .app-shell.mode-studio[data-studio-tab="debug"] .list-meta {
+  .app-shell.mode-studio[data-studio-tab="debug"] .list-meta,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note {
     min-width: 0;
     overflow: hidden;
     line-height: 1.12;
@@ -382,7 +354,8 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step small,
-  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step small {
+  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button small {
     color: var(--system-dim);
     font-family: var(--mono);
     font-size: 10px;
@@ -390,18 +363,6 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-modules-panel {
     gap: 0;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-table {
-    display: grid;
-    gap: 0;
-    margin: 0;
-    overflow: hidden;
-    border: 0;
-    border-bottom: 1px solid var(--system-edge);
-    border-radius: 0;
-    background: var(--system-bg);
-    box-shadow: none;
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row {
@@ -420,14 +381,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:nth-child(even) {
-    background: var(--system-row-alt);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head {
     display: grid;
     min-height: 28px;
@@ -444,10 +397,6 @@
     align-content: center;
     padding: 5px 7px;
     border-right: 1px solid var(--system-edge);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row > span:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-icon {
@@ -481,7 +430,11 @@
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong,
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name small,
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-contracts,
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked {
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
     min-width: 0;
     overflow: hidden;
     line-height: 1.08;
@@ -489,14 +442,20 @@
     white-space: nowrap;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong {
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong {
     color: var(--system-text);
     font-size: 11.5px;
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name small,
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-contracts,
-  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked {
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
     color: var(--system-muted);
     font-family: var(--mono);
     font-size: 10px;
@@ -542,30 +501,6 @@
     background: var(--system-row-alt);
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1.12;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b {
-    color: var(--system-text);
-    font-size: 11.5px;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note {
-    color: var(--system-muted);
-    font-family: var(--mono);
-    font-size: 10px;
-  }
-
   .app-shell.mode-studio[data-studio-tab="modules"] .full-width-action,
   .app-shell.mode-studio[data-studio-tab="debug"] .full-width-action {
     min-height: 31px;
@@ -583,7 +518,9 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .debug-filter-grid,
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-grid {
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-grid,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0;
@@ -624,21 +561,6 @@
     background: var(--system-row-hot);
     color: var(--system-text);
     box-shadow: inset 3px 0 0 color-mix(in srgb, var(--system-accent) 72%, var(--system-edge-strong));
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button strong,
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1.08;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button small {
-    color: var(--system-dim);
-    font-family: var(--mono);
-    font-size: 10px;
   }
 
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button b {
@@ -711,14 +633,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:nth-child(even) {
-    background: var(--system-row-alt);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:hover,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:focus-visible {
     background: var(--system-row-hot);
@@ -736,26 +650,6 @@
     min-width: 0;
   }
 
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong,
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1.08;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong {
-    color: var(--system-text);
-    font-size: 11.5px;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
-    color: var(--system-muted);
-    font-family: var(--mono);
-    font-size: 10px;
-  }
-
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics {
     display: grid;
     grid-auto-flow: column;
@@ -771,18 +665,6 @@
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-section > .section-heading-row + .debug-lens-grid,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-section > .section-heading-row + .debug-lens-stat-grid {
     margin-top: 0;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid,
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    margin: 0;
-    overflow: hidden;
-    border: 0;
-    border-bottom: 1px solid var(--system-edge);
-    background: var(--system-bg);
   }
 
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter,
@@ -856,14 +738,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="debug"] .compat-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-target-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-event-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="debug"] .debug-world-frame-row:nth-child(even) {
-    background: var(--system-row-alt);
-  }
-
   .app-shell.mode-studio[data-studio-tab="debug"] .compat-row:hover,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-target-row:hover,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-row:hover,
@@ -872,12 +746,46 @@
     color: var(--system-text);
   }
 
+  .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .badge-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .badge-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .contract-pill-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .contract-pill-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-node:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .list-item:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .compact-debug-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .compat-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-target-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-event-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-world-frame-row:nth-child(even) {
+    background: var(--system-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-node:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step:last-child,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .list-item:last-child,
+  .app-shell.mode-studio[data-studio-tab="debug"] .compact-debug-row:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:last-child,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .compat-row:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-target-row:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-row:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-event-row:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-world-frame-row:last-child {
     border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:last-child,
+  .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row > span:last-child {
+    border-right: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-list {
