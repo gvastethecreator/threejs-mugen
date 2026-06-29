@@ -5973,6 +5973,27 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 272]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7002,
+            raw: "F7002",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7002,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+          }),
+        }),
+      ]),
+    );
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
@@ -6046,6 +6067,27 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 271]);
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+          hitEffect: expect.objectContaining({
+            kind: "guard",
+            sparkNo: 7004,
+            raw: "F7004",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7004,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+          }),
+        }),
+      ]),
+    );
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );

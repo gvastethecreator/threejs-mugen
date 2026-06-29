@@ -33,6 +33,7 @@ describe("ProjectileCombatSystem", () => {
     const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
     const logs: string[] = [];
     const targets: string[] = [];
+    const effects: string[] = [];
     let receivedDamage = 0;
     const world = new RuntimeProjectileCombatWorld();
 
@@ -44,6 +45,7 @@ describe("ProjectileCombatSystem", () => {
       holdingBack: false,
       log: (line) => logs.push(line),
       rememberTarget: (_attacker, target, targetId) => targets.push(`${target.id}:${targetId ?? "none"}`),
+      emitProjectileContactEffects: (source, target, entry, kind) => effects.push(`${source.id}:${target.id}:${entry.serialId}:${kind}`),
       applyHitOverride: () => {
         throw new Error("unexpected hit override");
       },
@@ -63,6 +65,7 @@ describe("ProjectileCombatSystem", () => {
     expect(receivedDamage).toBe(42);
     expect(attacker.runtime.power).toBe(40);
     expect(targets).toEqual(["p2:77"]);
+    expect(effects).toEqual(["p1:p2:projectile-0:hit"]);
     expect(logs).toEqual(["P1 projectile hit P2 for 42; hits remaining 0, miss 0; hit removal anim none"]);
     expect(projectiles).toEqual([]);
   });
@@ -72,6 +75,7 @@ describe("ProjectileCombatSystem", () => {
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 2990 }));
     const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000, ctrl: true }));
     const logs: string[] = [];
+    const effects: string[] = [];
 
     new RuntimeProjectileCombatWorld().resolveCombat({
       attacker,
@@ -82,6 +86,7 @@ describe("ProjectileCombatSystem", () => {
       log: (line) => logs.push(line),
       rememberTarget: () => undefined,
       applyHitOverride: () => undefined,
+      emitProjectileContactEffects: (source, target, entry, kind) => effects.push(`${source.id}:${target.id}:${entry.serialId}:${kind}`),
       removeProjectilesMarkedForRemoval: () => {
         projectiles = projectiles.filter((entry) => !entry.removalReason);
       },
@@ -91,6 +96,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.guarding).toBe(true);
     expect(attacker.runtime.power).toBe(3000);
+    expect(effects).toEqual(["p1:p2:projectile-0:guard"]);
     expect(logs).toEqual(["P2 guarded P1 projectile for 4; hits remaining 0, miss 0; hit removal anim none"]);
     expect(projectiles).toEqual([]);
   });

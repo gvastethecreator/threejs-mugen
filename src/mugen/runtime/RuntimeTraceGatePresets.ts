@@ -7389,7 +7389,11 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
     displayName: "Synthetic Imported Projectile Contact Attacker",
     withProjectile: true,
     projectileHitAnim: 911,
+    projectileHitSound: "S5,0",
+    projectileHitSpark: "F7002",
+    projectileSparkXy: [18, -68],
     projContactStateNo: 272,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-projectile-contact-golden",
@@ -7403,7 +7407,7 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
       label: "Synthetic imported Projectile contact route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile contact trace proves a bounded Projectile contact can evaluate a ProjContact(77) branch back in the owner state. Exact trigger timing, multi-target lifetime, helper ownership, and IKEMEN projectile parity remain future work.",
+        "Synthetic imported Projectile contact trace proves a bounded Projectile contact can evaluate a ProjContact(77) branch back in the owner state and emit attacker-side hitsound plus FightFX hit-spark package metadata tied to the same projectile contact. Exact trigger timing, multi-target lifetime, helper ownership, audio playback, spark layering, and IKEMEN projectile parity remain future work.",
       ],
     },
     gates: [
@@ -7419,6 +7423,39 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 0,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -7492,7 +7529,11 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
     id: "synthetic-imported-projectile-guard-attacker",
     displayName: "Synthetic Imported Projectile Guard Attacker",
     withProjectile: true,
+    projectileGuardSound: "S6,0",
+    projectileGuardSpark: "F7004",
+    projectileSparkXy: [15, -63],
     projGuardStateNo: 271,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-projectile-guard-golden",
@@ -7506,7 +7547,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
       label: "Synthetic imported Projectile guard route",
       source: "mixed",
       notes: [
-        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params, resolve a held-back projectile block through the shared partial hit/guard combat path, and evaluate a bounded ProjGuarded(77) branch back in the owner state. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact trigger timing, guard-state timing, sparks, sounds, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
+        "Synthetic imported Projectile guard trace verifies that Projectile controllers can carry typed guard params, resolve a held-back projectile block through the shared partial hit/guard combat path, evaluate a bounded ProjGuarded(77) branch back in the owner state, and emit attacker-side guardsound plus FightFX guard-spark package metadata tied to the same projectile contact. Projectile-vs-projectile trade/cancel is covered by a separate bounded clash gate; exact trigger timing, guard-state timing, audio playback, spark layering, cancel animations, remove animations, and IKEMEN projectile parity remain future work.",
       ],
     },
     gates: [
@@ -7522,6 +7563,39 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7004,
+              raw: "F7004",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7004,
+              assetFrameIndex: 0,
+              assetSpriteGroup: 8104,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
           { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -9006,6 +9080,11 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileHitAnim?: number;
   projectileRemoveAnim?: number;
   projectileCancelAnim?: number;
+  projectileHitSound?: string;
+  projectileGuardSound?: string;
+  projectileHitSpark?: string;
+  projectileGuardSpark?: string;
+  projectileSparkXy?: [number, number];
   projContactStateNo?: number;
   projHitStateNo?: number;
   projHitTimeStateNo?: number;
@@ -9319,7 +9398,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -10990,6 +11069,11 @@ function projectileControllerBlock(
   accel?: [number, number],
   velocityMultiplier?: [number, number],
   scale?: [number, number],
+  hitSound?: string,
+  guardSound?: string,
+  hitSpark?: string,
+  guardSpark?: string,
+  sparkXy?: [number, number],
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
@@ -10997,6 +11081,11 @@ function projectileControllerBlock(
   const accelLine = accel === undefined ? "" : `accel = ${accel[0]},${accel[1]}`;
   const velocityMultiplierLine = velocityMultiplier === undefined ? "" : `velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}`;
   const scaleLine = scale === undefined ? "" : `projscale = ${scale[0]},${scale[1]}`;
+  const hitSoundLine = hitSound === undefined ? "" : `hitsound = ${hitSound}`;
+  const guardSoundLine = guardSound === undefined ? "" : `guardsound = ${guardSound}`;
+  const hitSparkLine = hitSpark === undefined ? "" : `sparkno = ${hitSpark}`;
+  const guardSparkLine = guardSpark === undefined ? "" : `guard.sparkno = ${guardSpark}`;
+  const sparkXyLine = sparkXy === undefined ? "" : `sparkxy = ${sparkXy[0]},${sparkXy[1]}`;
   return `
 [State 200, Fast Projectile]
 type = Projectile
@@ -11019,6 +11108,11 @@ damage = 31,4
 pausetime = 4,4
 ground.hittime = 13
 ground.velocity = ${groundVelocity.join(",")}
+${hitSoundLine}
+${guardSoundLine}
+${hitSparkLine}
+${guardSparkLine}
+${sparkXyLine}
 guardflag = MA
 guard.pausetime = 3,3
 guard.hittime = 8

@@ -47,6 +47,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   applyHitState?: (defender: TActor) => void;
   markDefenderGotHit?: (defender: TActor) => void;
   recordProjectileContact?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
+  emitProjectileContactEffects?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
   recordReceivedDamage?: (defender: TActor, damage: number) => void;
   removeProjectilesMarkedForRemoval: () => void;
 };
@@ -129,6 +130,7 @@ export class RuntimeProjectileCombatWorld {
       applyRuntimePowerDelta(attacker.runtime, result.powerGain);
       if (result.kind === "guard") {
         input.recordProjectileContact?.(attacker, defender, projectile, "guard");
+        input.emitProjectileContactEffects?.(attacker, defender, projectile, "guard");
         defender.runtime.guardStun = result.stun;
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
@@ -141,6 +143,7 @@ export class RuntimeProjectileCombatWorld {
         continue;
       }
       input.recordProjectileContact?.(attacker, defender, projectile, "hit");
+      input.emitProjectileContactEffects?.(attacker, defender, projectile, "hit");
       defender.hitStun = result.stun;
       defender.runtime.guardStun = 0;
       defender.runtime.guardSlideTime = 0;

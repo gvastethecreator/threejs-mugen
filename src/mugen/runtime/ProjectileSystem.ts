@@ -57,6 +57,11 @@ export type RuntimeProjectile = {
   guardControlTime?: number;
   guardPush: number;
   guardVelocityY?: number;
+  hitSound?: string;
+  guardSound?: string;
+  hitSpark?: string;
+  guardSpark?: string;
+  sparkXy?: [number, number];
   hitbox: CollisionBox;
   removeOnHit: boolean;
   hasHit: boolean;
@@ -126,6 +131,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   );
   const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime"));
   const guardControlTime = operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime"));
+  const hitSound = operation?.hitSound ?? stripMugenString(findControllerParam(input.controller, "hitsound"));
+  const guardSound = operation?.guardSound ?? stripMugenString(findControllerParam(input.controller, "guardsound"));
+  const hitSpark = operation?.hitSpark ?? stripMugenString(findControllerParam(input.controller, "sparkno"));
+  const guardSpark = operation?.guardSpark ?? stripMugenString(findControllerParam(input.controller, "guard.sparkno"));
+  const sparkXy = operation?.sparkXy ?? numberPair(findControllerParam(input.controller, "sparkxy"));
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -172,6 +182,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardControlTime,
     guardPush: Math.abs(guardVelocity?.[0] ?? Math.max(1, Math.round(push * 0.55))),
     guardVelocityY: guardVelocity?.[1],
+    hitSound,
+    guardSound,
+    hitSpark,
+    guardSpark,
+    sparkXy,
     hitbox: cloneBox(frame?.clsn1[0] ?? { x1: 8, y1: -48, x2: 56, y2: -18 }),
     removeOnHit: operation?.removeOnHit ?? (firstNumber(findControllerParam(input.controller, "projremove")) ?? 1) !== 0,
     hasHit: false,

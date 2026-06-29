@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Projectile contact-effect package trace cut
+
+Changed:
+
+- `ProjectileControllerOp` and `RuntimeProjectile` now carry bounded `hitsound`, `guardsound`, `sparkno`, `guard.sparkno`, and `sparkxy` metadata from imported Projectile controllers.
+- `RuntimeProjectileCombatWorld` exposes an optional contact-presentation callback for resolved projectile hit/guard contacts, while `PlayableMatchRuntime` routes it through the existing `RuntimeAudioWorld`, `RuntimeHitEffectWorld`, and `HitSparkAssetSystem` paths.
+- Strengthened `synthetic-imported-projectile-contact.json` and `synthetic-imported-projectile-guard.json` so required gates demand shared contact-effect packages tying attacker-side sound telemetry and FightFX multi-frame spark metadata to the same projectile contact id/tick/kind.
+- Updated runtime support docs, controller registry, QA gates, workplan, execution board, and the runtime compatibility issue with allowed/blocked wording.
+
+Evidence:
+
+- Focused Projectile verification passes: `pnpm vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t Projectile` -> 2 files, 17 tests.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- Affected required checksums remain `synthetic-imported-projectile-contact.json` `ba22ed74` and `synthetic-imported-projectile-guard.json` `4bcc5650`; telemetry evidence is inspection/package data and does not alter behavior checksums.
+
+Claim allowed:
+
+- Bounded imported Projectile hit and guard contacts can emit shared contact package telemetry before handoff: `hitsound = S5,0` plus FightFX `sparkno = F7002` for hit, and `guardsound = S6,0` plus FightFX `guard.sparkno = F7004` for guard, each with non-empty projectile contact id/tick/kind metadata.
+
+Claim blocked:
+
+- Exact projectile effect timing, SND playback/mixing, channel priority, FightFX/common renderer lookup, binding, layering, scale, palette, helper-owned projectile effects, multi-target presentation, and full MUGEN/IKEMEN Projectile parity remain blocked. No score movement.
+
 ## 2026-06-29 - Studio unused CSS selector prune
 
 Changed:

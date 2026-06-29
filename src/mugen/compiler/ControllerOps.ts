@@ -112,6 +112,11 @@ export type ProjectileControllerOp = {
   guardSlideTime?: number;
   guardControlTime?: number;
   guardVelocity?: [number, number?];
+  hitSound?: string;
+  guardSound?: string;
+  hitSpark?: string;
+  guardSpark?: string;
+  sparkXy?: [number, number];
   removeOnHit: boolean;
 };
 
@@ -1163,6 +1168,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity: numberPair(findParam(controller, "guard.velocity")),
+    hitSound: stripMugenString(findParam(controller, "hitsound")),
+    guardSound: stripMugenString(findParam(controller, "guardsound")),
+    hitSpark: stripMugenString(findParam(controller, "sparkno")),
+    guardSpark: stripMugenString(findParam(controller, "guard.sparkno")),
+    sparkXy: pairWithDefaultOrUndefined(numberPair(findParam(controller, "sparkxy"))),
     removeOnHit: (firstNumber(findParam(controller, "projremove")) ?? 1) !== 0,
   });
 }
