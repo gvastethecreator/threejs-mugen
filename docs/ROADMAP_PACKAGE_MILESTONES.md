@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 visual-helper removal ownership
+  -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
+  -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
+  -> RuntimeEffectSpawnWorld exposes the same handoff for future controller dispatch
+  -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
+  -> no helper VM execution, real DestroySelf semantics, redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, exact lifecycle tick-order parity, or score claim
 R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
@@ -224,7 +230,7 @@ R1 Common1/FightFX precision
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
 ```
 
-Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
+Alternate next slice: R2 `MatchWorld` ownership around deeper helper VM boundaries, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
 
 ## Slice Selection Guardrails
 
@@ -266,6 +272,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeStunWorld` ownership extraction
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
+- visual-helper removal ownership
 - `RuntimeAssertSpecialWorld` ownership extraction
 - `RuntimeSnapshotWorld` ownership extraction
 - `RuntimeSnapshotWorld` player actor projection
@@ -275,7 +282,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after AssertSpecial ownership.
+3. R2 `MatchWorld` ownership around deeper helper VM boundaries or effect/combat ordering with stable or documented trace behavior after the visual-helper removal ownership cut.
 
 ## Package Closeout Contract
 

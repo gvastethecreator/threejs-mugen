@@ -25,7 +25,7 @@ export type RuntimeEffectSpawnActor = {
   stateOwner?: RuntimeEffectSpawnActor;
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
-    "spawnExplod" | "removeExplods" | "modifyExplods" | "spawnHelper" | "spawnProjectile" | "modifyProjectiles"
+    "spawnExplod" | "removeExplods" | "modifyExplods" | "spawnHelper" | "removeHelpers" | "spawnProjectile" | "modifyProjectiles"
   >;
 };
 
@@ -117,6 +117,10 @@ export class RuntimeEffectSpawnWorld {
       fallbackFacing: fighter.runtime.facing,
     });
     return true;
+  }
+
+  removeHelpers(fighter: RuntimeEffectSpawnActor, helperId?: number): number {
+    return fighter.effectActorWorld.removeHelpers(fighter.id, helperId);
   }
 
   spawnProjectile(

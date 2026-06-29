@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Visual helper removal ownership
+
+Changed:
+
+- Added pure `HelperSystem` removal for current visual helper actors by helper id, runtime serial, or owner-wide clear.
+- Routed helper removal through `RuntimeEffectActorWorld` with p1/p2 store isolation and removed-count reporting.
+- Exposed the bounded helper-removal handoff through `RuntimeEffectSpawnWorld` for future controller dispatch.
+- Updated runtime architecture/support docs and the R1/R2 local issue with explicit allowed/blocked wording.
+
+Evidence:
+
+- Focused coverage added in `EffectActorSystem` and `EffectSpawnSystem` for id removal, serial removal, owner-wide clear, and p1/p2 isolation.
+- `pnpm test` passes: 73 files / 652 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current visual helper actors can be removed through one named effect-actor world boundary by helper id or runtime serial without mutating owner stores directly.
+
+Claim blocked:
+
+- Helper VM execution, real `DestroySelf`, redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, custom-state helper lifecycle, exact lifecycle tick-order parity, and full MUGEN/IKEMEN helper parity remain blocked. No score movement.
+
 ## 2026-06-29 - Studio legacy CSS atom prune
 
 Changed:

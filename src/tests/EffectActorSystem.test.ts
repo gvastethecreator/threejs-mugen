@@ -6,6 +6,7 @@ import {
   advanceRuntimeExplodActors,
   advanceRuntimeHelperActors,
   createRuntimeEffectActorStore,
+  removeRuntimeHelperActors,
   removeRuntimeExplodActors,
   removeRuntimeExplodActorsOnGetHit,
   removeRuntimeProjectilesMarkedForRemoval,
@@ -104,6 +105,26 @@ describe("EffectActorSystem", () => {
     expect(store.explods.map((actor) => actor.explodId)).toEqual([11]);
   });
 
+  it("owns explicit helper removal by id, serial, and owner store", () => {
+    const store = createRuntimeEffectActorStore();
+
+    spawnRuntimeHelperActor(store, "p1", helperInput({ id: "20", name: '"First"' }));
+    spawnRuntimeHelperActor(store, "p1", helperInput({ id: "20", name: '"Second"' }));
+    spawnRuntimeHelperActor(store, "p1", helperInput({ id: "21", name: '"Third"' }));
+
+    expect(removeRuntimeHelperActors(store, { helperId: 20 })).toBe(2);
+    expect(store.helpers.map((helper) => helper.helperId)).toEqual([21]);
+
+    const serialId = store.helpers[0]!.serialId;
+    expect(removeRuntimeHelperActors(store, { serialId })).toBe(1);
+    expect(store.helpers).toEqual([]);
+
+    spawnRuntimeHelperActor(store, "p1", helperInput({ id: "22" }));
+    spawnRuntimeHelperActor(store, "p1", helperInput({ id: "23" }));
+    expect(removeRuntimeHelperActors(store)).toBe(2);
+    expect(store.helpers).toEqual([]);
+  });
+
   it("wraps per-fighter effect stores behind a runtime world contract", () => {
     const world = new RuntimeEffectActorWorld();
     const p1Store = world.getStore("p1");
@@ -138,6 +159,27 @@ describe("EffectActorSystem", () => {
       projectiles: [],
       nextSerials: { explod: 0, helper: 0, projectile: 0 },
     });
+  });
+
+  it("removes helpers through the runtime world without crossing owner stores", () => {
+    const world = new RuntimeEffectActorWorld();
+
+    world.spawnHelper("p1", helperInput({ id: "42", name: '"P1 A"' }));
+    world.spawnHelper("p1", helperInput({ id: "43", name: '"P1 B"' }));
+    world.spawnHelper("p2", helperInput({ id: "42", name: '"P2 A"' }));
+
+    expect(world.removeHelpers("p1", 42)).toBe(1);
+    expect(world.countActors("p1", "helper")).toBe(1);
+    expect(world.countActors("p2", "helper")).toBe(1);
+
+    const p1Serial = world.getStore("p1").helpers[0]!.serialId;
+    expect(world.destroyHelper("p1", p1Serial)).toBe(true);
+    expect(world.destroyHelper("p1", p1Serial)).toBe(false);
+    expect(world.countActors("p1", "helper")).toBe(0);
+    expect(world.countActors("p2", "helper", 42)).toBe(1);
+
+    expect(world.removeHelpers("p2")).toBe(1);
+    expect(world.countActors("p2", "helper")).toBe(0);
   });
 
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {

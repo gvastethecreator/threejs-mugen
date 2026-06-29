@@ -158,6 +158,25 @@ describe("EffectSpawnSystem", () => {
     });
   });
 
+  it("owns helper removal dispatch for current visual helper actors", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 200, y: 0 },
+      facing: -1,
+    });
+
+    spawnWorld.spawnHelper(fighter, opponent, controller("Helper", { id: "42", anim: "920" }));
+    spawnWorld.spawnHelper(fighter, opponent, controller("Helper", { id: "43", anim: "920" }));
+
+    expect(spawnWorld.removeHelpers(fighter, 42)).toBe(1);
+    expect(effectActorWorld.getStore("p1").helpers.map((helper) => helper.helperId)).toEqual([43]);
+
+    expect(spawnWorld.removeHelpers(fighter)).toBe(1);
+    expect(effectActorWorld.getStore("p1").helpers).toEqual([]);
+  });
+
   it("owns ModifyProjectile dispatch and keeps position helper behavior explicit", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();

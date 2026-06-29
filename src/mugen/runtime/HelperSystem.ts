@@ -39,6 +39,11 @@ export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
 };
 
+export type RuntimeHelperRemovalFilter = {
+  helperId?: number;
+  serialId?: string;
+};
+
 export type RuntimeHelperSpawnInput = {
   serialId: string;
   controller: MugenStateController;
@@ -111,6 +116,10 @@ export function advanceRuntimeHelpers(
   });
 }
 
+export function removeRuntimeHelpers(helpers: RuntimeHelper[], filter: RuntimeHelperRemovalFilter = {}): RuntimeHelper[] {
+  return helpers.filter((helper) => !matchesRuntimeHelperRemovalFilter(helper, filter));
+}
+
 export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateNo: number): ActorSnapshot[] {
   return helpers
     .map((helper): ActorSnapshot | undefined => {
@@ -167,6 +176,16 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
+}
+
+function matchesRuntimeHelperRemovalFilter(helper: RuntimeHelper, filter: RuntimeHelperRemovalFilter): boolean {
+  if (filter.serialId !== undefined) {
+    return helper.serialId === filter.serialId;
+  }
+  if (filter.helperId !== undefined) {
+    return helper.helperId === filter.helperId;
+  }
+  return true;
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper): void {

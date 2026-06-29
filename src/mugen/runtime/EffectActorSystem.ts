@@ -15,9 +15,11 @@ import {
 import {
   advanceRuntimeHelpers,
   createRuntimeHelper,
+  removeRuntimeHelpers,
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
   type RuntimeHelperAdvanceOptions,
+  type RuntimeHelperRemovalFilter,
   type RuntimeHelperSpawnInput,
 } from "./HelperSystem";
 import {
@@ -156,6 +158,14 @@ export class RuntimeEffectActorWorld {
 
   spawnHelper(ownerId: string, input: Omit<RuntimeHelperSpawnInput, "serialId">): RuntimeHelper {
     return spawnRuntimeHelperActor(this.getStore(ownerId), ownerId, input);
+  }
+
+  removeHelpers(ownerId: string, helperId?: number): number {
+    return removeRuntimeHelperActors(this.getStore(ownerId), { helperId });
+  }
+
+  destroyHelper(ownerId: string, serialId: string): boolean {
+    return removeRuntimeHelperActors(this.getStore(ownerId), { serialId }) > 0;
   }
 
   advanceHelpers(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
@@ -335,6 +345,12 @@ export function advanceRuntimeHelperActors(
   options?: RuntimeHelperAdvanceOptions,
 ): void {
   store.helpers = advanceRuntimeHelpers(store.helpers, stage, options);
+}
+
+export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
+  const before = store.helpers.length;
+  store.helpers = removeRuntimeHelpers(store.helpers, filter);
+  return before - store.helpers.length;
 }
 
 export function runtimeHelperActorsToSnapshots(store: RuntimeEffectActorStore, sourceStateNo: number): ActorSnapshot[] {
