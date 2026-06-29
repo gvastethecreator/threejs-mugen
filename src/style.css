@@ -31728,6 +31728,38 @@ input {
     text-overflow: ellipsis;
   }
 
+  .app-shell.mode-studio .round-hud-panel {
+    grid-template-columns: minmax(148px, 1fr) 60px minmax(148px, 1fr);
+    gap: 12px;
+    max-width: min(620px, calc(100% - 22px));
+  }
+
+  .app-shell.mode-studio .round-center {
+    min-width: 60px;
+    border-inline: 1px solid var(--desk-edge);
+  }
+
+  .app-shell.mode-studio .hud-fighter-top,
+  .app-shell.mode-studio .hud-fighter.right .hud-fighter-top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio .hud-fighter-name {
+    display: block;
+    max-width: 100%;
+  }
+
+  .app-shell.mode-studio .hud-fighter.right .hud-fighter-name,
+  .app-shell.mode-studio .hud-fighter.right .hud-fighter-top strong {
+    grid-column: 1;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .hud-fighter-top .mono {
+    display: none;
+  }
+
   .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate {
     grid-template-columns: minmax(0, 1fr);
     padding: 7px 8px;
