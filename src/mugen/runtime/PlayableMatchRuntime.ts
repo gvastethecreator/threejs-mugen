@@ -1513,16 +1513,12 @@ function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): num
   return fighter.targetWorld.count(fighter, targetId);
 }
 
-function countRuntimeExplods(fighter: FighterMatchState, explodId?: number): number {
-  return fighter.effectActorWorld.countExplods(fighter.id, explodId);
-}
-
-function countRuntimeHelpers(fighter: FighterMatchState, helperId?: number): number {
-  return fighter.effectActorWorld.countHelpers(fighter.id, helperId);
-}
-
-function countRuntimeProjectiles(fighter: FighterMatchState, projectileId?: number): number {
-  return fighter.effectActorWorld.countProjectiles(fighter.id, projectileId);
+function countRuntimeEffectActors(
+  fighter: FighterMatchState,
+  kind: "explod" | "helper" | "projectile",
+  actorId?: number,
+): number {
+  return fighter.effectActorWorld.countActors(fighter.id, kind, actorId);
 }
 
 function resolveProjectileCombat(
@@ -2151,9 +2147,9 @@ function resolveDispatchNumber(
     moveReversed: () => moveReversedValue(fighter),
     receivedDamage: () => receivedDamageValue(fighter),
     receivedHits: () => receivedHitsValue(fighter),
-    numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
-    numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
-    numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
+    numExplod: (explodId) => countRuntimeEffectActors(fighter, "explod", explodId),
+    numHelper: (helperId) => countRuntimeEffectActors(fighter, "helper", helperId),
+    numProj: (projectileId) => countRuntimeEffectActors(fighter, "projectile", projectileId),
     numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
     projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
     projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
@@ -2214,9 +2210,9 @@ function evaluateRuntimeTrigger(
     moveReversed: () => moveReversedValue(fighter),
     receivedDamage: () => receivedDamageValue(fighter),
     receivedHits: () => receivedHitsValue(fighter),
-    numExplod: (explodId) => countRuntimeExplods(fighter, explodId),
-    numHelper: (helperId) => countRuntimeHelpers(fighter, helperId),
-    numProj: (projectileId) => countRuntimeProjectiles(fighter, projectileId),
+    numExplod: (explodId) => countRuntimeEffectActors(fighter, "explod", explodId),
+    numHelper: (helperId) => countRuntimeEffectActors(fighter, "helper", helperId),
+    numProj: (projectileId) => countRuntimeEffectActors(fighter, "projectile", projectileId),
     numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
     projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
     projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),

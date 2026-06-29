@@ -66,6 +66,8 @@ export type RuntimeEffectActorStoreSummary = {
   };
 };
 
+export type RuntimeEffectActorCountKind = "explod" | "helper" | "projectile";
+
 export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions & {
   stage?: Pick<MugenStageDefinition, "bounds">;
 };
@@ -140,6 +142,16 @@ export class RuntimeEffectActorWorld {
 
   countExplods(ownerId: string, explodId?: number): number {
     return this.getStore(ownerId).explods.filter((explod) => explodId === undefined || explod.explodId === explodId).length;
+  }
+
+  countActors(ownerId: string, kind: RuntimeEffectActorCountKind, actorId?: number): number {
+    if (kind === "explod") {
+      return this.countExplods(ownerId, actorId);
+    }
+    if (kind === "helper") {
+      return this.countHelpers(ownerId, actorId);
+    }
+    return this.countProjectiles(ownerId, actorId);
   }
 
   spawnHelper(ownerId: string, input: Omit<RuntimeHelperSpawnInput, "serialId">): RuntimeHelper {

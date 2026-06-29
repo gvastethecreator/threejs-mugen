@@ -140,6 +140,26 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
+    const world = new RuntimeEffectActorWorld();
+
+    world.spawnExplod("p1", explodInput({ id: "9000" }));
+    world.spawnExplod("p1", explodInput({ id: "9001" }));
+    world.spawnHelper("p1", helperInput({ id: "42" }));
+    world.spawnProjectile("p1", projectileInput({ projid: "77", projanim: "900" }));
+    world.spawnProjectile("p1", projectileInput({ projid: "78", projanim: "900" }));
+    const removedProjectile = world.projectiles("p1").find((projectile) => projectile.projectileId === 78)!;
+    markRuntimeProjectileForRemoval(removedProjectile, "hit");
+
+    expect(world.countActors("p1", "explod")).toBe(2);
+    expect(world.countActors("p1", "explod", 9000)).toBe(1);
+    expect(world.countActors("p1", "helper")).toBe(1);
+    expect(world.countActors("p1", "helper", 42)).toBe(1);
+    expect(world.countActors("p1", "projectile")).toBe(1);
+    expect(world.countActors("p1", "projectile", 77)).toBe(1);
+    expect(world.countActors("p1", "projectile", 78)).toBe(0);
+  });
+
   it("separates active effect ticks from presentation effect ticks", () => {
     const world = new RuntimeEffectActorWorld();
 
