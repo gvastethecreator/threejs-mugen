@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeMatchInteraction runtime-system bridge
+
+Changed:
+
+- Added `RuntimeMatchInteractionWorld.advanceRuntime(...)` as the concrete match-runtime bridge for post-fighter target/effect/constraint/projectile-clash orchestration.
+- Moved main `PlayableMatchRuntime` post-fighter interaction glue for target-memory aging, active-effect advance, projectile clash, body separation, target binding, stage clamp, and presentation-effect advance behind that named bridge.
+- Kept the existing generic `advance(...)` ordering API for pure order tests and future non-runtime call sites.
+- Removed the now-dead local projectile-clash wrapper from `PlayableMatchRuntime`.
+- Extended `MatchInteractionSystem` tests to prove the runtime bridge wires actor-local `targetWorld`, `effectLifecycleWorld`, `effectActorWorld.resolveProjectileClashes(...)`, and `RuntimeActorConstraintWorld` in the same bounded post-fighter order.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/MatchInteractionSystem.test.ts` passes: 1 file / 2 tests.
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 640 tests.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+
+Claim allowed:
+
+- `RuntimeMatchInteractionWorld` now owns both the bounded post-fighter ordering contract and the runtime-system bridge for current target/effect/constraint/projectile-clash side effects in the normal match loop.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add helper VM execution, new target/projectile/effect semantics, exact post-fighter tick-order parity, exact pause-specific ordering, parent/root/team redirects, or full MUGEN/IKEMEN interaction parity.
+
 ## 2026-06-29 - Studio Assets drawer primitive cleanup
 
 Changed:

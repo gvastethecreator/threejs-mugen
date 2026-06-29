@@ -404,15 +404,12 @@ export class PlayableMatchRuntime {
       );
       applyAutoGuardStart(this.p1, this.p2, this.guardWorld);
     }
-    this.matchInteractionWorld.advance({
+    this.matchInteractionWorld.advanceRuntime({
       p1: this.p1,
       p2: this.p2,
-      advanceTargetMemory,
-      advanceActiveEffects: (fighter) => this.effectLifecycleWorld.advanceActive(fighter, this.stage),
-      resolveProjectileClashes: (left, right) => resolveProjectileClashes(left, right, (line) => this.logs.unshift(line)),
-      separateActors: (left, right) => this.actorConstraintWorld.separate(left.runtime, right.runtime),
-      applyTargetBindings,
-      applyBindToTarget,
+      stage: this.stage,
+      actorConstraintWorld: this.actorConstraintWorld,
+      effectLifecycleWorld: this.effectLifecycleWorld,
       resolvePriorityClash: (left, right) =>
         this.directCombatWorld.resolvePriorityClash(left, right, {
           isMoveActive,
@@ -442,8 +439,6 @@ export class PlayableMatchRuntime {
           this.getHitStateWorld,
           (line) => this.logs.unshift(line),
         ),
-      clampToStage: (fighter) => this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage),
-      advancePresentationEffects: (fighter) => this.effectLifecycleWorld.advancePresentation(fighter),
       log: (line) => this.logs.unshift(line),
     });
 
@@ -1550,14 +1545,6 @@ function resolveProjectileCombat(
     markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
     recordReceivedDamage: markReceivedDamage,
-  });
-}
-
-function resolveProjectileClashes(left: FighterMatchState, right: FighterMatchState, log: (line: string) => void): void {
-  left.effectActorWorld.resolveProjectileClashes(left.id, right.id, {
-    leftLabel: left.label,
-    rightLabel: right.label,
-    log,
   });
 }
 

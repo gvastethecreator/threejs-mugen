@@ -1,3 +1,9 @@
+import type { MugenStageDefinition } from "../model/MugenStage";
+import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
+import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
+
 export type RuntimeMatchInteractionFighterPair<TFighter> = {
   p1: TFighter;
   p2: TFighter;
@@ -17,6 +23,24 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   advancePresentationEffects: (fighter: TFighter) => void;
   log: (line: string) => void;
 };
+
+export type RuntimeMatchInteractionRuntimeActor = RuntimeEffectLifecycleActor &
+  RuntimeTargetWorldActor & {
+    label: string;
+    targetWorld: Pick<RuntimeTargetWorld, "advance" | "applyTargetBindings" | "applyBindToTarget">;
+    effectActorWorld: RuntimeEffectLifecycleActor["effectActorWorld"] & Pick<RuntimeEffectActorWorld, "resolveProjectileClashes">;
+  };
+
+export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMatchInteractionRuntimeActor> =
+  RuntimeMatchInteractionFighterPair<TFighter> & {
+    stage: Pick<MugenStageDefinition, "bounds">;
+    actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
+    effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation">;
+    resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
+    resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
+    resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
+    log: (line: string) => void;
+  };
 
 export class RuntimeMatchInteractionWorld {
   advance<TFighter>(input: RuntimeMatchInteractionWorldInput<TFighter>): void {
@@ -46,5 +70,33 @@ export class RuntimeMatchInteractionWorld {
     input.clampToStage(p2);
     input.advancePresentationEffects(p1);
     input.advancePresentationEffects(p2);
+  }
+
+  advanceRuntime<TFighter extends RuntimeMatchInteractionRuntimeActor>(
+    input: RuntimeMatchInteractionRuntimeWorldInput<TFighter>,
+  ): void {
+    const { actorConstraintWorld, effectLifecycleWorld, p1, p2, stage } = input;
+
+    this.advance({
+      p1,
+      p2,
+      advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
+      advanceActiveEffects: (fighter) => effectLifecycleWorld.advanceActive(fighter, stage),
+      resolveProjectileClashes: (left, right) =>
+        left.effectActorWorld.resolveProjectileClashes(left.id, right.id, {
+          leftLabel: left.label,
+          rightLabel: right.label,
+          log: input.log,
+        }),
+      separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
+      applyTargetBindings: (fighter, opponent) => fighter.targetWorld.applyTargetBindings(fighter, [opponent]),
+      applyBindToTarget: (fighter, opponent) => fighter.targetWorld.applyBindToTarget(fighter, [opponent]),
+      resolvePriorityClash: input.resolvePriorityClash,
+      resolveDirectCombat: input.resolveDirectCombat,
+      resolveProjectileCombat: input.resolveProjectileCombat,
+      clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
+      advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),
+      log: input.log,
+    });
   }
 }
