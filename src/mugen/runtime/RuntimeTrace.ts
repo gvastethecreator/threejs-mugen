@@ -696,6 +696,9 @@ export type RuntimeTraceHitEffectEventRequirement = {
   assetFrameIndex?: number;
   assetSpriteGroup?: number;
   assetSpriteIndex?: number;
+  minAssetFrameCount?: number;
+  minAssetTotalDuration?: number;
+  requiredAssetFrameIndices?: number[];
   stateNo?: number;
   minCount?: number;
 };
@@ -716,6 +719,9 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   assetFrameIndex?: number;
   assetSpriteGroup?: number;
   assetSpriteIndex?: number;
+  assetFrameCount?: number;
+  assetTotalDuration?: number;
+  assetFrameIndices?: number[];
   stateNo: number;
   eventTick: number;
   runtimeTick?: number;
@@ -2051,6 +2057,7 @@ function summarizeHitEffectEventEvidence(
   actor: RuntimeTraceActor,
   event: NonNullable<RuntimeTraceActor["hitEffectEvents"]>[number],
 ): RuntimeTraceGateHitEffectEventEvidence {
+  const assetFrameSummary = summarizeHitEffectAssetFrames(event.assetFrames);
   return {
     actorId: actor.id,
     label: actor.label,
@@ -2067,6 +2074,9 @@ function summarizeHitEffectEventEvidence(
     assetFrameIndex: event.assetFrame?.frameIndex,
     assetSpriteGroup: event.assetFrame?.spriteGroup,
     assetSpriteIndex: event.assetFrame?.spriteIndex,
+    assetFrameCount: assetFrameSummary?.count,
+    assetTotalDuration: assetFrameSummary?.totalDuration,
+    assetFrameIndices: assetFrameSummary?.indices,
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
@@ -2091,6 +2101,9 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.assetFrameIndex ?? "",
     event.assetSpriteGroup ?? "",
     event.assetSpriteIndex ?? "",
+    event.assetFrameCount ?? "",
+    event.assetTotalDuration ?? "",
+    event.assetFrameIndices?.join(",") ?? "",
     event.stateNo,
     event.eventTick,
     event.runtimeTick ?? "",
@@ -2114,6 +2127,10 @@ function matchesHitEffectEventRequirement(
     (requirement.assetFrameIndex === undefined || event.assetFrameIndex === requirement.assetFrameIndex) &&
     (requirement.assetSpriteGroup === undefined || event.assetSpriteGroup === requirement.assetSpriteGroup) &&
     (requirement.assetSpriteIndex === undefined || event.assetSpriteIndex === requirement.assetSpriteIndex) &&
+    (requirement.minAssetFrameCount === undefined || (event.assetFrameCount ?? 0) >= requirement.minAssetFrameCount) &&
+    (requirement.minAssetTotalDuration === undefined || (event.assetTotalDuration ?? 0) >= requirement.minAssetTotalDuration) &&
+    (requirement.requiredAssetFrameIndices === undefined ||
+      requirement.requiredAssetFrameIndices.every((frameIndex) => event.assetFrameIndices?.includes(frameIndex))) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
   );
 }
@@ -2123,6 +2140,19 @@ function describeHitEffectEventRequirement(requirement: RuntimeTraceHitEffectEve
     .filter(([key, value]) => value !== undefined && key !== "minCount")
     .map(([key, value]) => `${key}=${String(value)}`)
     .join(", ");
+}
+
+function summarizeHitEffectAssetFrames(
+  frames: RuntimeTraceHitEffectEvent["assetFrames"] | undefined,
+): { count: number; totalDuration: number; indices: number[] } | undefined {
+  if (!frames?.length) {
+    return undefined;
+  }
+  return {
+    count: frames.length,
+    totalDuration: frames.reduce((total, frame) => total + Math.max(0, Math.round(frame.duration)), 0),
+    indices: frames.map((frame) => frame.frameIndex),
+  };
 }
 
 function summarizeEnvShakeEventEvidence(

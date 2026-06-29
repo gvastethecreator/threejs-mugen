@@ -34,6 +34,10 @@ Every controller family should have:
 - Required synthetic auto guard-start/end gates now include minimum controller-event and actor-frame state-order evidence: `synthetic-imported-auto-guard-start.json` checksum `0c734290` requires P2 state `120` `ChangeState` `Guard Start Done` plus actor-frame `120` before `130`, and `synthetic-imported-auto-guard-end.json` checksum `d1dc0aa3` requires P2 state `120` `Guard Start Done` before state `130` `ChangeState` `Stop Guarding`, actor-frame `120 -> 130 -> 140`, and final idle/control evidence. This strengthens bounded guard-start/end trace evidence without claiming exact proximity guard, guard-end timing, full Common1 controller loop, or full MUGEN/IKEMEN guard VM parity.
 - Required synthetic guard-hit gates now also include actor-frame state/physics/body/push telemetry: `synthetic-imported-default-guard-state.json` checksum `016938a1` gates stand `150 -> 151`, `synthetic-imported-crouch-guard-state.json` checksum `6c4321af` and `synthetic-imported-diagonal-crouch-guard-state.json` checksum `1dd33fb5` gate crouch `152 -> 153`, and `synthetic-imported-air-guard-state.json` checksum `ce9cc9ba` gates air `154 -> 155` with bounded air velocity telemetry. This strengthens synthetic Common1-style guard-hit evidence without claiming exact proximity guard, guard effects, air landing parity, controller-loop parity, or full guard VM parity.
 
+## Current HitDef Presentation Notes
+
+- Required common/default and FightFX spark gates now require multi-frame AIR metadata in addition to first resolved frame metadata: `synthetic-imported-hitdef-common-spark.json` checksum `5ea054d7` and `synthetic-imported-hitdef-fightfx-spark.json` checksum `11537b56` require at least two asset frames, frame indices `[0, 1]`, and total authored duration `11` before renderer handoff. This keeps `HitDef` presentation at `executed-partial`: exact FightFX/common sprite lookup, render timing, binding, layering, scale, palette, motif/screenpack ownership, and full spark parity remain partial.
+
 ## Current Registry
 
 | Controller Family | Current Level | Evidence | Notes |

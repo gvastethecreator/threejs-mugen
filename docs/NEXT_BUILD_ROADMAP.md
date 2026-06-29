@@ -27,6 +27,13 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
+S1 Studio command chrome label/grid follow-up
+  -> compact command rail compile-project action now says Build
+  -> utility action cells keep fixed desktop tracks and visible truncated labels instead of icon-only buttons
+  -> Workbench Project Health now shows text Readiness state beside the score
+  -> app shell and remaining legacy Studio cascade moved out of src/style.css into app-shell, studio-legacy-surfaces, studio-editor-cascade, studio-ui-hardening, and studio-desktop-authority modules
+  -> qa:css reports 2,618 rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rules, 198 repeated declaration groups, 78 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> requires qa:smoke and visual inspection; product-surface hygiene only
 S1 Studio command-center CSS overlap prune
   -> legacy src/style.css no longer carries command-center desktop overrides for chrome, compact tabs, stage, console, round HUD, and mission-node fragments
   -> src/styles/studio-command-center.css owns Studio chrome, mission strip, viewport framing, HUD, toolbar, and console
@@ -79,8 +86,9 @@ R1 required Common1 stand get-hit progression trace strengthening
 R1 required common/FightFX HitSpark asset-frame trace strengthening
   -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7
   -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56
-  -> required traces prove bounded source-frame metadata for unprefixed common/default and F-prefixed FightFX spark refs
-  -> no exact renderer lookup, layering, scale, palette, motif/screenpack ownership, or score movement claim
+  -> required traces prove bounded source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX spark refs
+  -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
+  -> no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, or score movement claim
 R1 optional KFM x HitDef presentation trace strengthening
   -> kfm-official-x-hit-sound.json checksum 9668e88a
   -> kfm-official-x-hit-spark.json checksum 9668e88a
@@ -178,14 +186,14 @@ I1 text-system scanner expansion
   -> no ZSS/Lua/text rendering/runtime execution claim
 ```
 
-Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, common/FightFX HitSpark source-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, common/FightFX HitSpark source-frame plus multi-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
 | Order | Lane | Slice | Evidence | Score impact |
 | ---: | --- | --- | --- | --- |
 | 1 | R1 runtime | Deepen Common1 recovery/guard loop precision beyond current frame/order summaries. | Required trace or official KFM optional fixture gate. | Possible MUGEN-lite movement only if scorecard threshold is met. |
-| 2 | R1 presentation | Improve FightFX/common spark/dust/sound presentation evidence after current package-frame handoff and source-frame trace metadata. | `pnpm qa:trace` if telemetry changes; `pnpm qa:smoke` plus screenshots if visible. | Possible playable/visual confidence, not full screenpack parity. |
+| 2 | R1 presentation | Improve FightFX/common spark/dust/sound presentation evidence after current package-frame handoff and source-frame plus multi-frame trace metadata. | `pnpm qa:trace` if telemetry changes; `pnpm qa:smoke` plus screenshots if visible. | Possible playable/visual confidence, not full screenpack parity. |
 | 3 | R2 ownership | Move helper/effect/target ordering into a tighter named world boundary. | Focused world tests; stable or documented trace checksum behavior. | Debt reduction; score movement only with behavior evidence. |
 | 4 | S1 Studio | Build one shared Evidence/Build status contract for stale, blocked, missing, partial, unsupported, and exportable states. | `pnpm qa:smoke` plus visual inspection using real rows. | Possible Studio score movement. |
 | 5 | A1 assets | Store generated asset source prompt, sheet, atlas, QA, collision, and playtest provenance as one record. | Asset QA record; visual QA if shown. | Generated/native pipeline confidence only. |

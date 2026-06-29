@@ -16,6 +16,8 @@ Current variable/random cut: `VarRandom` is now a bounded `StateControllerExecut
 
 Current presentation cut: `HitSparkAssetSystem` owns bounded HitDef spark asset-frame resolution from player AIR (`S`), common, and FightFX sources before the match loop emits `RuntimeHitEffectWorld` events. `RuntimeTraceGate.requiredHitEffectEvents` can require source/action/frame/sprite metadata for supplied common/default and FightFX libraries, which keeps package-backed spark lookup out of `PlayableMatchRuntime` without claiming exact lookup, layering, scale, palette, timing, or motif parity.
 
+Current trace-gate addendum: required common/default and FightFX spark traces can also require multi-frame AIR metadata (`minAssetFrameCount`, `minAssetTotalDuration`, `requiredAssetFrameIndices`) and summarize `assetFrameCount`, `assetTotalDuration`, and `assetFrameIndices` in trace evidence. This proves bounded authored AIR frame lists before renderer handoff; exact visual frame advance, sprite lookup, binding, layering, palette, and motif ownership remain outside the claim.
+
 Gate: every extraction must preserve deterministic trace checksums unless the behavior change is intentional and documented.
 
 Blocker rule: new gameplay lifecycle work should be routed through `MatchWorld` or a system behind it. Adding broad behavior directly to `PlayableMatchRuntime` is allowed only for a bounded bridge cut with a follow-up extraction note.

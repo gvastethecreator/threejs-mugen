@@ -2636,11 +2636,14 @@ export function createSyntheticImportedHitDefCommonSparkTraceArtifact(options: R
         assetFrameIndex: 0,
         assetSpriteGroup: 7101,
         assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
         stateNo: 200,
       },
     ],
     notes: [
-      "Synthetic imported HitDef common-spark trace proves an unprefixed sparkno can resolve bounded common/default asset-frame metadata from runtime hit-spark libraries. It does not claim exact common sprite lookup, render timing, layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
+      "Synthetic imported HitDef common-spark trace proves an unprefixed sparkno can resolve bounded common/default multi-frame AIR metadata from runtime hit-spark libraries, including frame count, frame indices, and total authored frame duration before renderer handoff. It does not claim exact common sprite lookup, render timing, layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
     ],
   });
 }
@@ -2674,11 +2677,14 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
         assetFrameIndex: 0,
         assetSpriteGroup: 8102,
         assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
         stateNo: 200,
       },
     ],
     notes: [
-      "Synthetic imported HitDef FightFX-spark trace proves an F-prefixed sparkno can resolve bounded FightFX asset-frame metadata from runtime hit-spark libraries. It does not claim exact FightFX sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN hit-effect parity.",
+      "Synthetic imported HitDef FightFX-spark trace proves an F-prefixed sparkno can resolve bounded FightFX multi-frame AIR metadata from runtime hit-spark libraries, including frame count, frame indices, and total authored frame duration before renderer handoff. It does not claim exact FightFX sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN hit-effect parity.",
     ],
   });
 }

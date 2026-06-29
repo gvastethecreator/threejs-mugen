@@ -3234,7 +3234,7 @@ export class App {
     return this.lastCompiledProject ? { label: "compiled", tone: "ok" } : { label: "compile", tone: "warn" };
   }
 
-  private compactTabStatusLabel(label: string, tone: "ok" | "warn" | "error" | "neutral"): string {
+  private compactTabStatusLabel(_label: string, tone: "ok" | "warn" | "error" | "neutral"): string {
     if (tone === "ok") {
       return "OK";
     }
@@ -3242,10 +3242,9 @@ export class App {
       return "ERR";
     }
     if (tone === "warn") {
-      const count = label.match(/\d+/)?.[0];
-      return count ? `${count}!` : "WARN";
+      return "WARN";
     }
-    return label.length > 4 ? label.slice(0, 4).toUpperCase() : label.toUpperCase();
+    return "INFO";
   }
 
   private renderStudioWorkbenchNavigator(): string {

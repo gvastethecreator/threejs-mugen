@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Required common/FightFX HitSpark multi-frame trace metadata
+
+Changed:
+
+- Extended `RuntimeTraceGate.requiredHitEffectEvents` with bounded asset-frame sequence requirements: `minAssetFrameCount`, `minAssetTotalDuration`, and `requiredAssetFrameIndices`.
+- Extended hit-effect gate evidence with `assetFrameCount`, `assetTotalDuration`, and `assetFrameIndices`, then preserved those arrays through `RuntimeTraceArtifact` cloning.
+- Strengthened required `synthetic-imported-hitdef-common-spark.json` and `synthetic-imported-hitdef-fightfx-spark.json` so supplied common/default and FightFX libraries must prove two AIR frames, frame indices `[0, 1]`, and total authored duration `11` before renderer handoff.
+- Kept the Studio chrome/workbench/CSS follow-ups in this checkpoint: the compile action label now reads `Build`, compact utility buttons use a fixed grid with visible truncated labels instead of icon-only desktop actions, Project Health now exposes a text `Readiness` band (`Ready` / `Review` / `Critical`) next to the numeric score, and the remaining app shell plus legacy Studio cascade was extracted from `src/style.css` into `src/styles/app-shell.css`, `src/styles/studio-legacy-surfaces.css`, `src/styles/studio-editor-cascade.css`, `src/styles/studio-ui-hardening.css`, and `src/styles/studio-desktop-authority.css`.
+
+Evidence:
+
+- Focused runtime preset test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file, 157 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- Required presentation checksums remain `synthetic-imported-hitdef-common-spark.json` `5ea054d7` and `synthetic-imported-hitdef-fightfx-spark.json` `11537b56`.
+- `pnpm qa:css` passes: 2,618 scanned rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 198 repeated declaration groups, 78 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, and 0 legacy `src/style.css` rules fully shadowed by later imports.
+- Final full-round gates were run after docs/code: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm qa:css`, `pnpm qa:smoke`, and `git diff --check`.
+
+Claim allowed:
+
+- Required common/default and FightFX HitSpark traces now prove bounded multi-frame AIR metadata before renderer handoff for supplied libraries, including frame count, frame indices, and authored total duration.
+- Studio chrome/workbench actions are clearer in the compact desktop command rail, Project Health is less number-only, and legacy `src/style.css` is now a small base stylesheet with only 7 selectors still shared against imported CSS modules while exact duplicate rules remain zero.
+
+Claim blocked:
+
+- Exact common/FightFX lookup, render timing, binding, layering, scale, palette, motif/screenpack ownership, SND playback, and full HitSpark parity remain blocked.
+- The Studio chrome tweak does not prove new Studio workflows, export readiness, CSS-debt completion, or score movement.
+
 ## 2026-06-29 - Studio command-center CSS overlap prune
 
 Changed:

@@ -2433,11 +2433,22 @@ describe("RuntimeTraceGatePresets", () => {
           assetFrameIndex: 0,
           assetSpriteGroup: 7101,
           assetSpriteIndex: 0,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          assetFrameIndices: [0, 1],
           offset: { x: 16, y: -66 },
           stateNo: 200,
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        assetSource: "common",
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
   });
 
   it("creates a synthetic imported HitDef FightFX-spark artifact with asset-frame evidence", () => {
@@ -2474,11 +2485,22 @@ describe("RuntimeTraceGatePresets", () => {
           assetFrameIndex: 0,
           assetSpriteGroup: 8102,
           assetSpriteIndex: 0,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          assetFrameIndices: [0, 1],
           offset: { x: 18, y: -68 },
           stateNo: 200,
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        assetSource: "fightfx",
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
   });
 
   it("creates a synthetic imported HitDef guard-spark artifact", () => {

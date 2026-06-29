@@ -46,6 +46,13 @@ G1 setup-project refresh
 Latest Studio/UI checkpoint:
 
 ```txt
+S1 Studio command chrome label/grid follow-up
+  -> compile-project action now reads Build in the compact command rail
+  -> desktop utility buttons keep visible truncated labels inside fixed grid tracks instead of becoming icon-only
+  -> Workbench Project Health now exposes a text Readiness band beside the numeric score
+  -> app shell and remaining legacy Studio cascade moved out of src/style.css into app-shell, studio-legacy-surfaces, studio-editor-cascade, studio-ui-hardening, and studio-desktop-authority modules
+  -> qa:css reports 2,618 rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rules, 198 repeated declaration groups, 78 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> visual QA required because this is visible chrome; no new Studio workflow or score claim
 S1 Studio command-center CSS overlap prune
   -> command-center desktop overrides for chrome, compact tabs, stage, console, round HUD, and mission-node fragments pruned from legacy src/style.css
   -> src/styles/studio-command-center.css owns Studio chrome, mission strip, viewport framing, HUD, toolbar, and console
@@ -83,9 +90,10 @@ R1 required Common1 stand get-hit progression trace strengthening
   -> actor-frame evidence now requires imported P2 5000 before 5001, with final idle/control evidence
   -> no exact HitShakeOver/HitOver timing, fall/bounce/liedown/recovery, helper/custom-state breadth, or full Common1 VM claim
 R1 required common/FightFX HitSpark asset-frame trace strengthening
-  -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame metadata for sparkno 7001
-  -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame metadata for sparkno F7002
-  -> required trace evidence only; no exact renderer lookup, layering, scale, palette, motif/screenpack ownership, or full spark parity claim
+  -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame plus multi-frame AIR metadata for sparkno 7001
+  -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for sparkno F7002
+  -> required traces now require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
+  -> required trace evidence only; no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, or full spark parity claim
 R1 optional KFM x HitDef presentation trace strengthening
   -> kfm-official-x-hit-sound.json checksum 9668e88a gates bounded real KFM x hitsound S5,0 telemetry
   -> kfm-official-x-hit-spark.json checksum 9668e88a gates bounded real KFM x sparkno 0 telemetry
@@ -172,7 +180,7 @@ Default next implementation slice after docs/setup work:
 
 ```txt
 R1 Common1/FightFX precision
-  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame evidence
+  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame plus multi-frame AIR evidence
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
 ```
 
@@ -224,7 +232,7 @@ Current closed gates that must not be reselected as "next":
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
-2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame trace metadata.
+2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
 3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after AssertSpecial ownership.
 
 ## Package Closeout Contract

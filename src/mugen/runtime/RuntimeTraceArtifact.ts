@@ -178,6 +178,7 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
         hitEffectEvents: gate.evidence.hitEffectEvents.map((event) => ({
           ...event,
           offset: event.offset ? { ...event.offset } : undefined,
+          assetFrameIndices: event.assetFrameIndices ? [...event.assetFrameIndices] : undefined,
         })),
         envShakeEvents: gate.evidence.envShakeEvents.map((event) => ({ ...event })),
         targetLinks: gate.evidence.targetLinks.map((link) => ({
@@ -549,7 +550,10 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredMatchPauseFreezes: gate.requiredMatchPauseFreezes?.map((requirement) => ({ ...requirement })),
     requiredMatchPauseAdvances: gate.requiredMatchPauseAdvances?.map((requirement) => ({ ...requirement })),
     requiredSoundEvents: gate.requiredSoundEvents?.map((requirement) => ({ ...requirement })),
-    requiredHitEffectEvents: gate.requiredHitEffectEvents?.map((requirement) => ({ ...requirement })),
+    requiredHitEffectEvents: gate.requiredHitEffectEvents?.map((requirement) => ({
+      ...requirement,
+      requiredAssetFrameIndices: requirement.requiredAssetFrameIndices ? [...requirement.requiredAssetFrameIndices] : undefined,
+    })),
     requiredEnvShakeEvents: gate.requiredEnvShakeEvents?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),
     requiredRoundFrames: gate.requiredRoundFrames?.map((requirement) => ({ ...requirement })),
