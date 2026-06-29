@@ -335,20 +335,21 @@
     color: #d6e9ff;
   }
 
-  .app-shell.mode-studio .studio-chrome-utility {
-    width: 34px;
-    min-width: 34px;
+  .app-shell.mode-studio .studio-chrome-actions .studio-chrome-utility {
+    grid-template-columns: 1fr;
+    gap: 0;
+    width: 42px;
+    min-width: 42px;
     height: 40px;
     padding: 0;
   }
 
-  .app-shell.mode-studio .studio-chrome-utility span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
+  .app-shell.mode-studio .studio-chrome-actions .studio-chrome-utility .ui-icon {
+    justify-self: center;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions .studio-chrome-utility span {
+    display: none;
   }
 
   .app-shell.mode-studio .studio-chrome-actions .studio-chrome-utility[data-action="toggle-left-dock"],

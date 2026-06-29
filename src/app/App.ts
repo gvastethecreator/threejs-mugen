@@ -3534,7 +3534,7 @@ export class App {
               : `<div class="empty-state">No assets match ${escapeHtml(library.activeFilter)}.</div>`
           }
         </div>
-      </section>
+      </div>
       <section class="asset-side-panel asset-provenance-panel">
         <h2>Asset Provenance</h2>
         <dl class="kv studio-kv">
