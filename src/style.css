@@ -26917,3 +26917,355 @@ input {
     color: #c59a68;
   }
 }
+
+/* Desktop Studio right inspector: denser QA desk, clearer ledgers, less backlog-card feel. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right {
+    gap: 0;
+    padding: 0;
+    border-left: 1px solid #303842;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .section,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .acceptance-gates-section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #303842;
+    border-radius: 0;
+    background: #080b0f;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .section:last-child,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .acceptance-gates-section:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .acceptance-gate-heading {
+    min-height: 31px;
+    margin: 0;
+    padding: 5px 7px;
+    border-bottom: 1px solid #252c34;
+    background: #0d1116;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .section-heading-row h2,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .acceptance-gate-heading h2,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .section > h2 {
+    margin: 0;
+    color: #eef2f5;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .section > h2 {
+    min-height: 31px;
+    align-content: center;
+    padding: 0 7px;
+    border-bottom: 1px solid #252c34;
+    background: #0d1116;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .badge,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .status-badge {
+    min-height: 18px;
+    border: 1px solid #343d47;
+    border-radius: 0;
+    background: #0a0d11;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    line-height: 1;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid #252c34;
+    background: #05070a;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid span,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat {
+    display: grid;
+    min-height: 36px;
+    align-content: center;
+    gap: 3px;
+    padding: 5px 7px;
+    border: 0;
+    border-right: 1px solid #252c34;
+    border-radius: 0;
+    background: #0b0f14;
+    color: #9aa5b1;
+    font-size: 10px;
+    text-transform: uppercase;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid span:last-child,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid b,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat strong {
+    color: #eef2f5;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid .is-ok b,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat.is-ok strong {
+    color: #8fb28f;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid .is-warn b,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat.is-warn strong {
+    color: #c59a68;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next {
+    display: grid;
+    grid-template-columns: minmax(78px, max-content) minmax(0, 1fr);
+    gap: 8px;
+    min-height: 44px;
+    margin: 0;
+    padding: 7px 8px;
+    border: 0;
+    border-bottom: 1px solid #252c34;
+    border-radius: 0;
+    background: #10161d;
+    text-align: left;
+    box-shadow: inset 3px 0 0 #c59a68;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next:hover,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next:focus-visible {
+    background: #17202a;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next > div,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-main,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-meta {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next strong,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-main strong,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-main small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-next {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next strong,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-main strong {
+    color: #f1f4f6;
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-primary-next small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-main small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-next {
+    color: #9aa5b1;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue {
+    gap: 0;
+    margin: 0;
+    border: 0;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(66px, max-content);
+    gap: 8px;
+    min-height: 36px;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid #252c34;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-row:nth-child(even) {
+    background: #0a0e13;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-row:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-row:hover,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-queue-row:focus-visible {
+    background: #171e26;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .empty-state,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .empty-state.compact {
+    margin: 8px;
+    border: 1px solid #252c34;
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-table {
+    gap: 0;
+    margin: 0;
+    border: 0;
+    background: #05070a;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1.35fr) 76px 72px minmax(52px, 0.75fr);
+    gap: 0;
+    min-height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #252c34;
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row:nth-child(even) {
+    background: #0a0e13;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row-head {
+    min-height: 26px;
+    background: #11161c;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row > span {
+    min-width: 0;
+    align-content: center;
+    padding: 5px 7px;
+    border-right: 1px solid #252c34;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row > span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row-head span {
+    color: #98a3af;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-icon {
+    display: grid;
+    justify-items: center;
+    color: #9aa6b3;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-icon .ui-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name {
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name strong,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-contracts,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-blocked {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name strong {
+    color: #edf1f5;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name small,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-contracts,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-blocked {
+    color: #9aa5b1;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-status {
+    justify-items: start;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-ok .engine-module-icon,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-ok .engine-module-status .status-badge {
+    color: #8fb28f;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-warn .engine-module-icon,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-partial .engine-module-icon,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-planned .engine-module-icon,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-warn .engine-module-status .status-badge,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-partial .engine-module-status .status-badge,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-row.is-planned .engine-module-status .status-badge {
+    color: #c59a68;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .full-width-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 32px;
+    align-items: center;
+    justify-items: start;
+    margin: 0;
+    padding: 0 8px;
+    border: 0;
+    border-top: 1px solid #303842;
+    border-radius: 0;
+    background: #0d1116;
+    color: #dce3ea;
+    font-size: 11px;
+    line-height: 1;
+    text-align: left;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .full-width-action:hover,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .full-width-action:focus-visible {
+    background: #171e26;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+}
