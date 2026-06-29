@@ -4,6 +4,7 @@ import "./styles/studio-shell-overrides.css";
 import "./styles/studio-desktop-foundation.css";
 import "./styles/studio-primitives.css";
 import "./styles/studio-command-center.css";
+import "./styles/stage-toolbar-controls.css";
 import "./styles/studio-command-palette.css";
 import "./styles/studio-workbench.css";
 import "./styles/studio-assets.css";

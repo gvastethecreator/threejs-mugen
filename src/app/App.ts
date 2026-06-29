@@ -722,10 +722,10 @@ export class App {
           <div class="stage-toolbar" aria-label="Runtime controls">
             <div class="toolbar-group toolbar-run-group">
               <span class="toolbar-label">Run</span>
-              <button type="button" data-action="play-pause" data-runtime-state="pause" aria-label="Pause or resume simulation">${runtimeControlContent("pause", "Pause")}</button>
-              <button type="button" data-action="step" aria-label="Advance one frame">${runtimeControlContent("step", "1F")}</button>
-              <button type="button" data-action="reset-round" aria-label="Reset current round">${runtimeControlContent("reset", "Reset")}</button>
-              <label class="speed-control">${runtimeControlContent("activity", "Speed")}
+              <button type="button" data-action="play-pause" data-runtime-state="pause" aria-label="Pause or resume simulation" title="Pause or resume simulation">${runtimeControlContent("pause", "Pause")}</button>
+              <button type="button" data-action="step" aria-label="Advance one frame" title="Advance one frame">${runtimeControlContent("step", "1F")}</button>
+              <button type="button" data-action="reset-round" aria-label="Reset current round" title="Reset current round">${runtimeControlContent("reset", "Reset")}</button>
+              <label class="speed-control" title="Playback speed">${runtimeControlContent("activity", "Speed")}
                 <select data-action="speed">
                   <option value="0.5">0.5x</option>
                   <option value="1" selected>1x</option>

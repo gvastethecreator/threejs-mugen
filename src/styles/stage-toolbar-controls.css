@@ -1,0 +1,171 @@
+/* Shared stage toolbar controls.
+   Mode files own placement and skin vars; this file owns hit area, grouping,
+   icon-only behavior, and speed select sizing for playfield-safe toolbars. */
+
+@media (min-width: 1024px) {
+  .app-shell.mode-match .stage-toolbar,
+  .app-shell.mode-inspect .stage-toolbar,
+  .app-shell.mode-studio .stage-toolbar {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    width: max-content;
+    max-width: var(--stage-toolbar-max-width, min(452px, calc(100% - 28px)));
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: var(--stage-toolbar-justify, flex-end);
+    gap: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--stage-toolbar-edge, var(--border));
+    border-radius: 0;
+    background: var(--stage-toolbar-bg, rgba(4, 6, 8, 0.96));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.86);
+    pointer-events: none;
+    scrollbar-width: none;
+  }
+
+  .app-shell.mode-match .stage-toolbar::-webkit-scrollbar,
+  .app-shell.mode-inspect .stage-toolbar::-webkit-scrollbar,
+  .app-shell.mode-studio .stage-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-shell.mode-match .stage-toolbar > *,
+  .app-shell.mode-inspect .stage-toolbar > *,
+  .app-shell.mode-studio .stage-toolbar > * {
+    pointer-events: auto;
+  }
+
+  .app-shell.mode-match .stage-toolbar .toolbar-group,
+  .app-shell.mode-inspect .stage-toolbar .toolbar-group,
+  .app-shell.mode-studio .stage-toolbar .toolbar-group {
+    width: max-content;
+    max-width: none;
+    min-height: 40px;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-right: 1px solid var(--stage-toolbar-edge, var(--border));
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-match .stage-toolbar .toolbar-group:last-child,
+  .app-shell.mode-inspect .stage-toolbar .toolbar-group:last-child,
+  .app-shell.mode-studio .stage-toolbar .toolbar-group:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-match .stage-toolbar .toolbar-label,
+  .app-shell.mode-inspect .stage-toolbar .toolbar-label,
+  .app-shell.mode-studio .stage-toolbar .toolbar-label {
+    display: inline-grid;
+    min-width: 34px;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    padding: 0 6px;
+    border-right: 1px solid var(--stage-toolbar-line, var(--border));
+    background: var(--stage-toolbar-label-bg, #06080b);
+    color: var(--stage-toolbar-muted, var(--muted));
+    font-size: 12px;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-match .stage-toolbar button,
+  .app-shell.mode-match .stage-toolbar .toggle-pill,
+  .app-shell.mode-match .stage-toolbar .speed-control,
+  .app-shell.mode-inspect .stage-toolbar button,
+  .app-shell.mode-inspect .stage-toolbar .toggle-pill,
+  .app-shell.mode-inspect .stage-toolbar .speed-control,
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill,
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--stage-toolbar-line, var(--border));
+    border-radius: 0;
+    background: var(--stage-toolbar-cell-bg, #0b0f14);
+    color: var(--stage-toolbar-text, #dce3ea);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-match .stage-toolbar .toolbar-group > :last-child,
+  .app-shell.mode-inspect .stage-toolbar .toolbar-group > :last-child,
+  .app-shell.mode-studio .stage-toolbar .toolbar-group > :last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-match .stage-toolbar button:hover,
+  .app-shell.mode-match .stage-toolbar .toggle-pill:hover,
+  .app-shell.mode-match .stage-toolbar .speed-control:hover,
+  .app-shell.mode-inspect .stage-toolbar button:hover,
+  .app-shell.mode-inspect .stage-toolbar .toggle-pill:hover,
+  .app-shell.mode-inspect .stage-toolbar .speed-control:hover,
+  .app-shell.mode-studio .stage-toolbar button:hover,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill:hover,
+  .app-shell.mode-studio .stage-toolbar .speed-control:hover {
+    background: var(--stage-toolbar-hover-bg, #151b22);
+  }
+
+  .app-shell.mode-match .stage-toolbar button > span,
+  .app-shell.mode-match .stage-toolbar .toggle-pill > span,
+  .app-shell.mode-match .stage-toolbar .speed-control > span,
+  .app-shell.mode-inspect .stage-toolbar button > span,
+  .app-shell.mode-inspect .stage-toolbar .toggle-pill > span,
+  .app-shell.mode-inspect .stage-toolbar .speed-control > span,
+  .app-shell.mode-studio .stage-toolbar button > span,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill > span,
+  .app-shell.mode-studio .stage-toolbar .speed-control > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-match .stage-toolbar .runtime-control-icon,
+  .app-shell.mode-inspect .stage-toolbar .runtime-control-icon,
+  .app-shell.mode-studio .stage-toolbar .runtime-control-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--stage-toolbar-icon, var(--stage-toolbar-text, #dce3ea));
+  }
+
+  .app-shell.mode-match .stage-toolbar .speed-control,
+  .app-shell.mode-inspect .stage-toolbar .speed-control,
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    display: grid;
+    grid-template-columns: 34px 56px;
+    width: 90px;
+    align-items: center;
+  }
+
+  .app-shell.mode-match .stage-toolbar .speed-control select,
+  .app-shell.mode-inspect .stage-toolbar .speed-control select,
+  .app-shell.mode-studio .stage-toolbar .speed-control select {
+    width: 56px;
+    min-width: 0;
+    min-height: 28px;
+    padding: 1px 14px 1px 5px;
+    border: 1px solid var(--stage-toolbar-line, var(--border));
+    border-radius: 0;
+    background: var(--stage-toolbar-select-bg, #05070a);
+    color: var(--stage-toolbar-text, #edf1f5);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+}
