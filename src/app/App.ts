@@ -3402,7 +3402,7 @@ export class App {
 
   private renderStudioWorkbenchDetails(title: string, badge: string, body: string, open = false): string {
     return `
-      <details class="section collapsible-section studio-workbench-details" ${open ? "open" : ""}>
+      <details class="studio-workbench-details" ${open ? "open" : ""}>
         <summary>
           <span>${escapeHtml(title)}</span>
           <small>${escapeHtml(badge)}</small>
@@ -3416,7 +3416,7 @@ export class App {
     const library = this.getStudioAssetLibrarySummary();
     return `
       ${this.renderStudioAssetsCommandCenter(library)}
-      <div class="section">
+      <section class="asset-browser-panel">
         <div class="section-heading-row">
           <h2>Project Assets</h2>
           <span class="badge">${library.visibleAssets.length} visible</span>
@@ -3431,7 +3431,7 @@ export class App {
                 .join("")}</div>`
             : `<div class="empty-state">No assets match this filter.</div>`
         }
-      </div>
+      </section>
     `;
   }
 
@@ -3447,7 +3447,7 @@ export class App {
       (sourceCounts.get("runtime-demo") ?? 0);
     const qaMapped = library.sourceRuntimeMap.lanes.qa ?? 0;
     return `
-      <div class="section section-emphasis studio-command-center asset-command-center">
+      <section class="asset-command-center">
         <div class="command-center-header">
           <div>
             <span class="panel-kicker">Asset workbench</span>
@@ -3511,7 +3511,7 @@ export class App {
             <button type="button" data-studio-tab="evidence">Open Evidence</button>
           </div>
         </div>
-      </div>
+      </section>
     `;
   }
 
@@ -3534,8 +3534,8 @@ export class App {
               : `<div class="empty-state">No assets match ${escapeHtml(library.activeFilter)}.</div>`
           }
         </div>
-      </div>
-      <div class="section">
+      </section>
+      <section class="asset-side-panel asset-provenance-panel">
         <h2>Asset Provenance</h2>
         <dl class="kv studio-kv">
           <dt>Filter</dt><dd class="mono">${escapeHtml(library.activeFilter)}</dd>
@@ -3547,8 +3547,8 @@ export class App {
         <div class="badge-row">
           ${[...statusCounts.entries()].map(([status, count]) => `<span class="badge">${escapeHtml(status)} ${count}</span>`).join("")}
         </div>
-      </div>
-      <div class="section">
+      </section>
+      <section class="asset-side-panel asset-entry-panel">
         <h2>Playtest Entry Assets</h2>
         <div class="list compact-list">
           ${
@@ -3557,8 +3557,8 @@ export class App {
               : `<div class="empty-state">Current P1/P2/stage IDs are not represented in asset records.</div>`
           }
         </div>
-      </div>
-      <div class="section">
+      </section>
+      <section class="asset-side-panel asset-attention-panel">
         <h2>Asset Attention Queue</h2>
         <div class="list compact-list">
           ${
@@ -3567,7 +3567,7 @@ export class App {
               : `<div class="empty-state">No pending, partial, warning, or failed asset records.</div>`
           }
         </div>
-      </div>
+      </section>
     `;
   }
 
@@ -3576,7 +3576,7 @@ export class App {
     const exportable = library.assets.filter((asset) => asset.canExport).length;
     const selected = library.selectedAsset;
     return `
-      <div class="section asset-triage-section">
+      <section class="asset-side-panel asset-triage-section">
         <div class="section-heading-row">
           <h2>Asset Triage</h2>
           <span class="badge ${attentionAssets.length ? "warn" : "ok"}">${attentionAssets.length} attention</span>
@@ -3614,7 +3614,7 @@ export class App {
               `
           }
         </div>
-      </div>
+      </section>
     `;
   }
 
@@ -3622,10 +3622,10 @@ export class App {
     const asset = library.selectedAsset;
     if (!asset) {
       return `
-        <div class="section">
+        <section class="asset-side-panel asset-detail-panel">
           <h2>Asset Detail</h2>
           <div class="empty-state">Select an asset to inspect provenance, status, tags, and related evidence.</div>
-        </div>
+        </section>
       `;
     }
     const replacementFlow = this.renderStudioAssetInspectorDrawer("Replacement Flow", this.renderAssetReplacementFlow(library), {
@@ -3678,7 +3678,7 @@ export class App {
       { badge: `${library.relatedEvidence.length} records` },
     );
     return `
-      <div class="section">
+      <section class="asset-side-panel asset-detail-panel">
         <div class="section-heading-row">
           <h2>Asset Detail</h2>
           ${this.statusBadge(asset.status)}
@@ -3705,7 +3705,7 @@ export class App {
           <span class="badge">${escapeHtml(asset.severity)}</span>
           ${asset.blockedBy.map((id) => `<span class="badge warn">blocked by ${escapeHtml(id)}</span>`).join("")}
         </div>
-      </div>
+      </section>
       ${replacementFlow}
       ${sourceRuntimeMap}
       ${dependencyGraph}
@@ -3717,7 +3717,7 @@ export class App {
 
   private renderStudioAssetInspectorDrawer(title: string, body: string, options: { badge?: string; open?: boolean } = {}): string {
     return `
-      <details class="section collapsible-section asset-inspector-drawer" ${options.open ? "open" : ""}>
+      <details class="asset-inspector-drawer" ${options.open ? "open" : ""}>
         <summary>
           <span>${escapeHtml(title)}</span>
           ${options.badge ? `<small>${escapeHtml(options.badge)}</small>` : ""}
@@ -3943,7 +3943,7 @@ export class App {
       ? `data-studio-tab="assets" data-studio-asset-id="${escapeHtml(selectedAsset.id)}" data-asset-filter="selected"`
       : 'data-studio-tab="assets"';
     return `
-      <div class="section section-emphasis workbench-inspector-panel">
+      <section class="workbench-ledger-panel workbench-inspector-panel">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Command inspector</span>
@@ -3974,14 +3974,14 @@ export class App {
           <span class="${statusCounts.get("error") ? "is-error" : ""}"><b>${statusCounts.get("error") ?? 0}</b><small>blocked</small></span>
           <span class="${summary.assets.some((asset) => isAttentionStatus(asset.status)) ? "is-warn" : "is-ok"}"><b>${summary.assets.length}</b><small>assets</small></span>
         </div>
-      </div>
+      </section>
     `;
   }
 
   private renderWorkbenchWarningQueue(summary: StudioProjectSummary): string {
     const rows = this.getWorkbenchWarningRows(summary).slice(0, 4);
     return `
-      <div class="section workbench-warning-panel">
+      <section class="workbench-ledger-panel workbench-warning-panel">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Attention queue</span>
@@ -4007,7 +4007,7 @@ export class App {
                 .join("")}</div>`
             : `<div class="empty-state compact">No gate, asset, trace, or build warnings are active for the current project.</div>`
         }
-      </div>
+      </section>
     `;
   }
 
@@ -4015,7 +4015,7 @@ export class App {
     const compiled = this.lastCompiledProject;
     const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
     return `
-      <div class="section workbench-action-panel">
+      <section class="workbench-ledger-panel workbench-action-panel">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Action bank</span>
@@ -4029,7 +4029,7 @@ export class App {
           ${this.renderWorkbenchActionTile("Export Trace", this.lastTraceArtifact ? "refresh runtime evidence" : "capture smoke evidence", "evidence", 'data-action="export-trace-artifact"', this.lastTraceArtifact ? "ok" : "pending")}
           ${this.renderWorkbenchActionTile("Module Graph", `${summary.modules.length} engine contracts`, "modules", 'data-studio-tab="modules"', "ok")}
         </div>
-      </div>
+      </section>
     `;
   }
 
@@ -4044,7 +4044,7 @@ export class App {
         ? "warn"
         : "ok";
     return `
-      <div class="section workbench-output-panel">
+      <section class="workbench-ledger-panel workbench-output-panel">
         <div class="section-heading-row">
           <div>
             <span class="panel-kicker">Files and outputs</span>
@@ -4059,7 +4059,7 @@ export class App {
           ${this.renderWorkbenchOutputRow("Trace Evidence", traceCount ? `${traceCount} stored/current artifact(s)` : "no trace artifact exported", "evidence", traceCount ? "ok" : "pending", traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"')}
           ${this.renderWorkbenchOutputRow("Project Package", bundle ? `${bundle.manifest.files.length} files / ${formatBytes(bundle.manifest.assets.binaryBytes)}` : "package ZIP not exported", "package", bundle ? "ok" : compiled ? "partial" : "pending", compiled ? 'data-action="export-package"' : 'data-action="compile-project"')}
         </div>
-      </div>
+      </section>
     `;
   }
 

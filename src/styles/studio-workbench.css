@@ -1,0 +1,312 @@
+/* Studio workbench ledger panels. Shell, stage, and mission strip live in studio-command-center.css. */
+
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right {
+    gap: 0;
+    border-left: 1px solid var(--studio-ledge-edge-strong);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .workbench-ledger-panel {
+    margin: 0;
+    padding: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right > .workbench-output-panel {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workbench-health-meter {
+    display: grid;
+    grid-template-columns: 68px minmax(0, 1fr);
+    gap: 0 9px;
+    align-items: center;
+    margin: 0;
+    padding: 7px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio .workbench-health-score {
+    display: grid;
+    grid-row: 1 / span 2;
+    min-height: 48px;
+    align-content: center;
+    justify-content: center;
+    border: 1px solid var(--studio-ledge-edge-strong);
+    background: var(--studio-ledge-control);
+  }
+
+  .app-shell.mode-studio .workbench-health-score b {
+    color: var(--studio-ledge-text);
+    font-size: 23px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio .workbench-health-score small,
+  .app-shell.mode-studio .workbench-health-next small {
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .workbench-health-track {
+    display: block;
+    height: 9px;
+    overflow: hidden;
+    border: 1px solid var(--studio-ledge-edge-strong);
+    background: var(--studio-ledge-stage-track);
+  }
+
+  .app-shell.mode-studio .workbench-health-track i {
+    display: block;
+    width: var(--health-score);
+    height: 100%;
+    background: var(--studio-ledge-ok);
+  }
+
+  .app-shell.mode-studio .workbench-health-next {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio .workbench-health-next b,
+  .app-shell.mode-studio .workbench-warning-main small {
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.16;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio .workbench-active-asset,
+  .app-shell.mode-studio .workbench-warning-row,
+  .app-shell.mode-studio .workbench-action-tile,
+  .app-shell.mode-studio .workbench-output-row {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    border-radius: 0;
+    background: var(--studio-ledge-row);
+    color: var(--studio-ledge-text);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workbench-active-asset {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) max-content;
+    gap: 8px;
+    align-items: center;
+    min-height: 48px;
+    margin: 0;
+    padding: 7px 8px;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .workbench-warning-list,
+  .app-shell.mode-studio .workbench-output-list,
+  .app-shell.mode-studio .workbench-action-grid {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio .workbench-warning-row,
+  .app-shell.mode-studio .workbench-output-row {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) minmax(74px, max-content);
+    gap: 8px;
+    align-items: center;
+    min-height: 39px;
+    padding: 6px 8px;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .workbench-warning-row:nth-child(even),
+  .app-shell.mode-studio .workbench-output-row:nth-child(even),
+  .app-shell.mode-studio .workbench-action-tile:nth-child(even) {
+    background: var(--studio-ledge-row-alt);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset .asset-row-icon,
+  .app-shell.mode-studio .workbench-warning-icon,
+  .app-shell.mode-studio .workbench-output-icon {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid var(--studio-ledge-edge-strong);
+    background: var(--studio-ledge-control);
+    color: color-mix(in srgb, var(--section-accent) 76%, var(--studio-ledge-muted));
+  }
+
+  .app-shell.mode-studio .workbench-active-asset-main,
+  .app-shell.mode-studio .workbench-warning-main,
+  .app-shell.mode-studio .workbench-output-main,
+  .app-shell.mode-studio .workbench-action-tile span {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio .workbench-active-asset-main strong,
+  .app-shell.mode-studio .workbench-warning-main strong,
+  .app-shell.mode-studio .workbench-output-main strong,
+  .app-shell.mode-studio .workbench-action-tile strong {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-text);
+    font-size: 12px;
+    line-height: 1.08;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workbench-active-asset-main small,
+  .app-shell.mode-studio .workbench-active-asset-main span,
+  .app-shell.mode-studio .workbench-warning-meta,
+  .app-shell.mode-studio .workbench-output-main small,
+  .app-shell.mode-studio .workbench-action-tile small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-muted);
+    font-size: 10.5px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workbench-warning-meta {
+    max-width: 96px;
+    justify-self: end;
+    color: var(--studio-ledge-muted);
+    font-size: 10.5px;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .workbench-output-row .status-badge {
+    justify-self: end;
+  }
+
+  .app-shell.mode-studio .workbench-health-counts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-top: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio .workbench-health-counts span {
+    display: grid;
+    min-width: 0;
+    min-height: 32px;
+    align-content: center;
+    gap: 2px;
+    padding: 5px 7px;
+    border-right: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-row);
+  }
+
+  .app-shell.mode-studio .workbench-health-counts span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workbench-health-counts b {
+    color: var(--studio-ledge-text);
+    font-size: 13px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio .workbench-health-counts small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workbench-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio .workbench-action-tile {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    min-height: 48px;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 8px;
+    border-right: 1px solid var(--studio-ledge-edge);
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .workbench-action-tile:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workbench-action-tile .action-icon {
+    width: 18px;
+    height: 18px;
+    color: color-mix(in srgb, var(--section-accent) 75%, var(--studio-ledge-muted));
+  }
+
+  .app-shell.mode-studio .workbench-action-tile.is-primary {
+    background: var(--studio-ledge-primary);
+    box-shadow: inset 0 2px 0 color-mix(in srgb, var(--section-accent) 72%, transparent);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset:hover,
+  .app-shell.mode-studio .workbench-active-asset:focus-visible,
+  .app-shell.mode-studio .workbench-warning-row:hover,
+  .app-shell.mode-studio .workbench-warning-row:focus-visible,
+  .app-shell.mode-studio .workbench-action-tile:hover,
+  .app-shell.mode-studio .workbench-action-tile:focus-visible,
+  .app-shell.mode-studio .workbench-output-row:hover,
+  .app-shell.mode-studio .workbench-output-row:focus-visible {
+    background: var(--studio-ledge-row-hot);
+    outline: 2px solid color-mix(in srgb, var(--section-accent) 46%, transparent);
+    outline-offset: -2px;
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-ok .asset-row-icon,
+  .app-shell.mode-studio .workbench-warning-row.is-ok .workbench-warning-icon,
+  .app-shell.mode-studio .workbench-output-row.is-ok .workbench-output-icon,
+  .app-shell.mode-studio .workbench-health-counts .is-ok b {
+    color: var(--desk-ok);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-warn .asset-row-icon,
+  .app-shell.mode-studio .workbench-warning-row.is-warn .workbench-warning-icon,
+  .app-shell.mode-studio .workbench-output-row.is-warn .workbench-output-icon,
+  .app-shell.mode-studio .workbench-health-counts .is-warn b {
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-error .asset-row-icon,
+  .app-shell.mode-studio .workbench-warning-row.is-error .workbench-warning-icon,
+  .app-shell.mode-studio .workbench-output-row.is-error .workbench-output-icon,
+  .app-shell.mode-studio .workbench-health-counts .is-error b {
+    color: var(--desk-danger);
+  }
+}

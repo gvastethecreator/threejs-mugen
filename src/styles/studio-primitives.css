@@ -1,0 +1,142 @@
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --studio-ledge-bg: #05070a;
+    --studio-ledge-panel: #090d12;
+    --studio-ledge-header: #0e1318;
+    --studio-ledge-row: #0c1116;
+    --studio-ledge-row-alt: #090d11;
+    --studio-ledge-row-hot: #141a21;
+    --studio-ledge-control: #070b10;
+    --studio-ledge-control-alt: #080b0f;
+    --studio-ledge-stage: #020304;
+    --studio-ledge-stage-track: #040608;
+    --studio-ledge-action: #0d1217;
+    --studio-ledge-primary: #11171d;
+    --studio-ledge-edge: #252c34;
+    --studio-ledge-edge-strong: #39424b;
+    --studio-ledge-toolbar-edge: #3f4a55;
+    --studio-ledge-text: #eef2f4;
+    --studio-ledge-muted: #9aa5af;
+    --studio-ledge-dim: #707b85;
+    --studio-ledge-icon-muted: #a0aab4;
+    --studio-ledge-ok: #8ca286;
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel,
+  .app-shell.mode-studio .asset-command-center,
+  .app-shell.mode-studio .asset-browser-panel,
+  .app-shell.mode-studio .asset-side-panel,
+  .app-shell.mode-studio .asset-inspector-drawer,
+  .app-shell.mode-studio .studio-workbench-details {
+    min-width: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge-strong);
+    border-radius: 0;
+    background: var(--studio-ledge-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel > .section-heading-row,
+  .app-shell.mode-studio .asset-side-panel > .section-heading-row,
+  .app-shell.mode-studio .asset-browser-panel > .section-heading-row,
+  .app-shell.mode-studio .asset-command-center > .command-center-header,
+  .app-shell.mode-studio .asset-side-panel > h2,
+  .app-shell.mode-studio .asset-inspector-drawer > summary,
+  .app-shell.mode-studio .studio-workbench-details > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 32px;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 9px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    border-radius: 0;
+    background: var(--studio-ledge-header);
+    color: var(--studio-ledge-text);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--section-accent) 72%, var(--studio-ledge-edge-strong));
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel h2,
+  .app-shell.mode-studio .asset-side-panel h2,
+  .app-shell.mode-studio .asset-browser-panel h2,
+  .app-shell.mode-studio .asset-command-center h2,
+  .app-shell.mode-studio .studio-workbench-details summary span {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-text);
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel .panel-kicker,
+  .app-shell.mode-studio .asset-side-panel .panel-kicker,
+  .app-shell.mode-studio .asset-browser-panel .panel-kicker,
+  .app-shell.mode-studio .asset-command-center .panel-kicker,
+  .app-shell.mode-studio .studio-workbench-details summary small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.05;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .asset-inspector-drawer > summary {
+    grid-template-columns: minmax(0, 1fr) max-content 16px;
+    cursor: pointer;
+  }
+
+  .app-shell.mode-studio .asset-inspector-drawer > summary::after {
+    justify-self: end;
+    color: var(--studio-ledge-muted);
+    content: "+";
+  }
+
+  .app-shell.mode-studio .asset-inspector-drawer[open] > summary::after {
+    content: "-";
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel button,
+  .app-shell.mode-studio .asset-side-panel button,
+  .app-shell.mode-studio .asset-browser-panel button,
+  .app-shell.mode-studio .asset-command-center button,
+  .app-shell.mode-studio .asset-inspector-drawer button {
+    transition:
+      background-color 120ms ease-out,
+      border-color 120ms ease-out,
+      color 120ms ease-out,
+      outline-color 120ms ease-out;
+  }
+
+  .app-shell.mode-studio .workbench-ledger-panel button:focus-visible,
+  .app-shell.mode-studio .asset-side-panel button:focus-visible,
+  .app-shell.mode-studio .asset-browser-panel button:focus-visible,
+  .app-shell.mode-studio .asset-command-center button:focus-visible,
+  .app-shell.mode-studio .asset-inspector-drawer button:focus-visible,
+  .app-shell.mode-studio .asset-inspector-drawer summary:focus-visible,
+  .app-shell.mode-studio .studio-workbench-details summary:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--section-accent) 56%, transparent);
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .app-shell.mode-studio .workbench-ledger-panel button,
+    .app-shell.mode-studio .asset-side-panel button,
+    .app-shell.mode-studio .asset-browser-panel button,
+    .app-shell.mode-studio .asset-command-center button,
+    .app-shell.mode-studio .asset-inspector-drawer button {
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,510 @@
+/* Studio desktop foundation.
+   Shared neutral tokens and compact atoms. Shell, stage, mission, and compact-tab layout live in studio-command-center.css. */
+
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --desk-bg: #030405;
+    --desk-panel: #080a0d;
+    --desk-panel-hi: #0d1014;
+    --desk-panel-low: #050608;
+    --desk-row: #0c1015;
+    --desk-row-alt: #090d11;
+    --desk-row-hot: #151b22;
+    --desk-edge: #252b32;
+    --desk-edge-strong: #343c45;
+    --desk-text: #eef2f5;
+    --desk-muted: #9aa4ae;
+    --desk-dim: #6f7a85;
+    --desk-ok: #8ca783;
+    --desk-warn: #b87986;
+    --desk-danger: #c36e6c;
+    --desk-active: #8d9eb0;
+    --desk-build: #a19d93;
+    --desk-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.042), inset 0 -1px 0 rgba(0, 0, 0, 0.82);
+    --ok: var(--desk-ok);
+    --warn: var(--desk-warn);
+    --danger: var(--desk-danger);
+    --station-warn: var(--desk-warn);
+    --release-desk-warn: var(--desk-warn);
+    --evidence-audit-warn: var(--desk-warn);
+    --studio-panel: var(--desk-panel);
+    --studio-panel-low: var(--desk-panel-low);
+    --studio-panel-raised: var(--desk-panel-hi);
+    --studio-row: var(--desk-row);
+    --studio-row-alt: var(--desk-row-alt);
+    --studio-row-hot: var(--desk-row-hot);
+    --studio-line: var(--desk-edge);
+    --studio-line-strong: var(--desk-edge-strong);
+    --studio-text: var(--desk-text);
+    --studio-muted: var(--desk-muted);
+    --studio-dim: var(--desk-dim);
+  }
+
+  .app-shell.mode-studio[data-studio-tab] {
+    --surface-accent: var(--section-accent);
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"] .ui-icon {
+    color: var(--desk-build);
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"].is-active .ui-icon {
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .section-heading-row,
+  .app-shell.mode-studio .command-center-header,
+  .app-shell.mode-studio .workbench-ops-head,
+  .app-shell.mode-studio .acceptance-gate-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 31px;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .app-shell.mode-studio .section-heading-row > div,
+  .app-shell.mode-studio .command-center-header > div,
+  .app-shell.mode-studio .workbench-ops-head > div,
+  .app-shell.mode-studio .studio-chrome-brand span {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .panel-kicker,
+  .app-shell.mode-studio .workspace-eyebrow,
+  .app-shell.mode-studio .gate-kicker,
+  .app-shell.mode-studio .stage-status-mode {
+    color: color-mix(in srgb, var(--section-accent) 82%, var(--desk-muted));
+    letter-spacing: 0;
+  }
+
+  .app-shell.mode-studio h2,
+  .app-shell.mode-studio h3,
+  .app-shell.mode-studio .section-heading-row strong,
+  .app-shell.mode-studio .command-center-header h2,
+  .app-shell.mode-studio .workbench-ops-head h2 {
+    margin: 0;
+    color: var(--desk-text);
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .badge,
+  .app-shell.mode-studio .status-badge {
+    display: inline-grid;
+    grid-auto-flow: column;
+    max-width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    overflow: hidden;
+    border-color: var(--desk-edge-strong);
+    background: #07090c;
+    color: var(--desk-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .badge .ui-icon,
+  .app-shell.mode-studio .status-badge .ui-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .app-shell.mode-studio .badge.warn,
+  .app-shell.mode-studio .status-badge.warn,
+  .app-shell.mode-studio .is-warn b,
+  .app-shell.mode-studio .is-warn strong,
+  .app-shell.mode-studio .is-partial b,
+  .app-shell.mode-studio .is-pending b,
+  .app-shell.mode-studio .is-planned b,
+  .app-shell.mode-studio .tab-dot-warn,
+  .app-shell.mode-studio .mode-dot.is-warn {
+    border-color: color-mix(in srgb, var(--desk-warn) 38%, var(--desk-edge));
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .badge.warn,
+  .app-shell.mode-studio .status-badge.warn {
+    background: #100b0e;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn,
+  .app-shell.mode-studio .studio-mission-node.is-partial,
+  .app-shell.mode-studio .studio-mission-node.is-pending,
+  .app-shell.mode-studio .workbench-route-button.is-warn,
+  .app-shell.mode-studio .health-queue-row.is-warn,
+  .app-shell.mode-studio .acceptance-gate-row.is-warn,
+  .app-shell.mode-studio .engine-module-row.is-warn,
+  .app-shell.mode-studio .asset-row.is-warn,
+  .app-shell.mode-studio .build-readiness-record.is-warn,
+  .app-shell.mode-studio .evidence-record.is-warn,
+  .app-shell.mode-studio .stage-layer-row.is-warn {
+    border-color: color-mix(in srgb, var(--desk-warn) 34%, var(--desk-edge));
+    box-shadow: inset 2px 0 0 var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .studio-primary-next,
+  .app-shell.mode-studio .workbench-directive.is-warn,
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    box-shadow: inset 3px 0 0 var(--section-accent);
+  }
+
+  .app-shell.mode-studio .stage-canvas {
+    filter: brightness(1.05) contrast(1.02) saturate(0.96);
+  }
+
+  .app-shell.mode-studio .round-hud-panel,
+  .app-shell.mode-studio .stage-status-card {
+    border-color: var(--desk-edge-strong);
+    border-radius: 0;
+    background: rgba(5, 7, 10, 0.92);
+    box-shadow: var(--desk-shadow);
+  }
+
+  .app-shell.mode-studio .stage-toolbar > * {
+    pointer-events: auto;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-label {
+    min-width: 32px;
+    align-self: stretch;
+    align-content: center;
+    padding: 0 7px;
+    border-right: 1px solid var(--desk-edge);
+    background: #07090c;
+    color: var(--desk-dim);
+    text-align: center;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .stage-toolbar select,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill {
+    min-height: 30px;
+    border: 0;
+    border-right: 1px solid var(--desk-edge);
+    background: var(--desk-row);
+  }
+
+  .app-shell.mode-studio .stage-toolbar button,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill {
+    width: 30px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button > span,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill > span,
+  .app-shell.mode-studio .stage-toolbar .speed-control > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control {
+    display: grid;
+    grid-template-columns: 16px 50px;
+    width: 74px;
+    align-items: center;
+    gap: 2px;
+    padding: 0 4px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .speed-control select {
+    width: 50px;
+    min-width: 0;
+    padding: 0 4px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button:last-child,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .stage-toolbar button:hover,
+  .app-shell.mode-studio .stage-toolbar .toggle-pill:hover,
+  .app-shell.mode-studio .stage-toolbar select:hover {
+    background: var(--desk-row-hot);
+  }
+
+  .app-shell.mode-studio .stage-status-card {
+    grid-template-columns: 124px minmax(0, 1fr);
+    min-height: 44px;
+    border-color: #45505b;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio .stage-status-main {
+    gap: 2px;
+    padding: 6px 9px;
+    border-right: 1px solid var(--desk-edge);
+    background: #07090c;
+  }
+
+  .app-shell.mode-studio .stage-status-main strong {
+    color: var(--desk-text);
+    font-size: 12px;
+  }
+
+  .app-shell.mode-studio .stage-status-main small {
+    color: var(--desk-muted);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .stage-status-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio .stage-status-metric {
+    min-height: 44px;
+    align-content: center;
+    gap: 1px;
+    padding: 5px 6px;
+    background: var(--desk-row);
+  }
+
+  .app-shell.mode-studio .stage-status-metric.has-icon {
+    grid-template-columns: 15px minmax(0, 1fr);
+    grid-template-rows: 12px 14px;
+    column-gap: 5px;
+  }
+
+  .app-shell.mode-studio .stage-status-icon {
+    grid-row: 1 / span 2;
+    width: 14px;
+    height: 14px;
+    align-self: center;
+    color: color-mix(in srgb, var(--section-accent) 72%, var(--desk-muted));
+  }
+
+  .app-shell.mode-studio .stage-status-metric small,
+  .app-shell.mode-studio .stage-status-metric b {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .stage-status-metric small {
+    color: #a7b0ba;
+  }
+
+  .app-shell.mode-studio .stage-status-metric b {
+    color: #f0f3f6;
+  }
+
+  .app-shell.mode-studio .stage-status-metric.is-active .stage-status-icon,
+  .app-shell.mode-studio .stage-status-metric.is-active b {
+    color: var(--desk-active);
+  }
+
+  .app-shell.mode-studio .stage-status-metric.is-ok .stage-status-icon,
+  .app-shell.mode-studio .stage-status-metric.is-ok b {
+    color: var(--desk-ok);
+  }
+
+  .app-shell.mode-studio .stage-status-metric.is-warn .stage-status-icon,
+  .app-shell.mode-studio .stage-status-metric.is-warn b {
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .studio-kv dt,
+  .app-shell.mode-studio .kv dt {
+    padding-right: 9px;
+    color: var(--desk-dim);
+  }
+
+  .app-shell.mode-studio .studio-kv dd,
+  .app-shell.mode-studio .kv dd {
+    color: var(--desk-text);
+  }
+
+  .app-shell.mode-studio .list-item,
+  .app-shell.mode-studio .pipeline-step,
+  .app-shell.mode-studio .compat-row {
+    min-height: 32px;
+    padding: 6px 8px;
+  }
+
+  .app-shell.mode-studio .list-title,
+  .app-shell.mode-studio .asset-row-title .list-title,
+  .app-shell.mode-studio .health-queue-main strong,
+  .app-shell.mode-studio .engine-module-name strong {
+    color: var(--desk-text);
+  }
+
+  .app-shell.mode-studio .list-meta,
+  .app-shell.mode-studio .asset-row-detail,
+  .app-shell.mode-studio .asset-row-kind,
+  .app-shell.mode-studio .health-queue-main small,
+  .app-shell.mode-studio .engine-module-name small {
+    color: var(--desk-muted);
+  }
+
+  .app-shell.mode-studio .mode-switch {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--desk-edge-strong);
+    background: var(--desk-panel-low);
+  }
+
+  .app-shell.mode-studio .mode-switch button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+    min-height: 34px;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--desk-edge);
+    background: var(--desk-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-button-top {
+    display: grid;
+    grid-template-columns: 15px minmax(0, 1fr) 5px;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 0 7px;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 14px;
+    height: 14px;
+    color: color-mix(in srgb, var(--section-accent) 64%, var(--desk-muted));
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-label {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--desk-text);
+    font-size: 11px;
+    font-weight: 780;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-hint,
+  .app-shell.mode-studio .mode-switch .mode-status {
+    display: none;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-dot {
+    grid-column: 3;
+    grid-row: 1;
+    width: 5px;
+    height: 18px;
+    border: 1px solid var(--desk-edge-strong);
+    border-radius: 0;
+    background: var(--desk-muted);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--desk-edge-strong);
+    background: var(--desk-panel-low);
+  }
+
+  .app-shell.mode-studio .workspace-summary span {
+    min-height: 36px;
+    padding: 5px 8px;
+    border: 0;
+    border-right: 1px solid var(--desk-edge);
+    border-radius: 0;
+    background: var(--desk-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .workspace-summary small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-summary b {
+    color: var(--desk-text);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio .workspace-summary small {
+    color: var(--desk-muted);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio #left-pane .section-heading-row > div,
+  .app-shell.mode-studio #left-pane .command-center-header > div {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1px;
+  }
+
+  .app-shell.mode-studio #left-pane .section-heading-row h2,
+  .app-shell.mode-studio #left-pane .command-center-header h2 {
+    order: 1;
+    font-size: 12.5px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio #left-pane .section-heading-row .panel-kicker,
+  .app-shell.mode-studio #left-pane .command-center-header .panel-kicker {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    color: color-mix(in srgb, var(--section-accent) 34%, var(--desk-muted));
+    font-size: 9.5px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+  }
+
+  .app-shell.mode-studio #left-pane .workspace-brand {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1px;
+  }
+
+  .app-shell.mode-studio #left-pane .workspace-brand h1 {
+    order: 1;
+    font-size: 13px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio #left-pane .workspace-brand .workspace-eyebrow {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    color: color-mix(in srgb, var(--section-accent) 34%, var(--desk-muted));
+    font-size: 9.5px;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+  }
+}
