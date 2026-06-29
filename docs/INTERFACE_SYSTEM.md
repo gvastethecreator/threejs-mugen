@@ -22,6 +22,7 @@ Brand expression is allowed only as orientation between surfaces. Repeated contr
   - Studio: project workbench.
 - Studio keeps a persistent decision area in the focus panel: a current-decision hero plus a compact readiness rail. The rail must expose gate priority, asset attention, trace evidence, and build/manifest status as direct actions, not passive decoration.
 - Studio left header includes a compact mission strip for the project flow: Import, Validate, Map Assets, Playtest, Package. Each step must be actionable and reflect real source/runtime/evidence/build state.
+- The mission strip must expose status as text, not color alone. Pending/planned work stays neutral; warn/error colors are reserved for real attention states.
 - Studio Workbench starts with a command center, not a passive summary. It must show project readiness lanes, the current operator priority, direct jumps to Assets/Evidence/Build/Debug, and primary actions for Playtest, MUGEN intake, trace export, and runtime compile.
 - Inside non-Workbench Studio surfaces, the active task navigator appears before the general Studio surface grid, and the surface grid stays compact so diagnostics and next actions are not buried below global navigation.
 - Studio Evidence desktop surfaces use dense audit-ledger layouts for trace summaries, QA evidence, persisted history, frame deltas, world deltas, and compatibility rows. They must stay tied to real trace/project evidence and never imply more replay/diff support than the data proves.

@@ -437,19 +437,20 @@
 
   .app-shell.mode-studio .studio-mission-node {
     display: grid;
-    grid-template-columns: 34px minmax(0, 1fr) 12px;
-    min-height: 76px;
+    grid-template-columns: 30px minmax(0, 1fr) 44px;
+    grid-template-rows: minmax(28px, auto) minmax(16px, auto);
+    min-height: 63px;
     width: 100%;
-    gap: 5px 8px;
-    align-items: start;
-    padding: 8px 9px;
+    gap: 3px 8px;
+    align-items: center;
+    padding: 7px 8px;
     border: 0;
     border-bottom: 1px solid var(--command-edge);
     border-radius: 0;
     background: var(--command-row);
     color: var(--command-text);
     text-align: left;
-    box-shadow: none;
+    box-shadow: none !important;
   }
 
   .app-shell.mode-studio .studio-mission-node:nth-child(even) {
@@ -466,16 +467,7 @@
   }
 
   .app-shell.mode-studio .studio-mission-node::before {
-    display: block;
-    grid-column: 3;
-    grid-row: 1;
-    width: 9px;
-    height: 9px;
-    align-self: center;
-    justify-self: center;
-    border: 1px solid var(--command-edge-strong);
-    border-radius: 999px;
-    background: var(--command-dim);
+    display: none;
     content: "";
   }
 
@@ -495,20 +487,20 @@
     grid-column: 1;
     grid-row: 1 / 3;
     display: grid;
-    width: 28px;
-    height: 28px;
-    min-height: 28px;
+    width: 24px;
+    height: 24px;
+    min-height: 24px;
     place-items: center;
-    align-self: start;
+    align-self: center;
     border: 1px solid var(--command-edge);
-    border-radius: 4px;
+    border-radius: 2px;
     background: #070a0e;
     color: var(--section-accent);
   }
 
   .app-shell.mode-studio .mission-icon {
-    width: 17px;
-    height: 17px;
+    width: 15px;
+    height: 15px;
   }
 
   .app-shell.mode-studio .studio-mission-main {
@@ -531,7 +523,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--command-text);
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 850;
     line-height: 1.1;
     text-overflow: ellipsis;
@@ -552,6 +544,7 @@
   }
 
   .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-state,
   .app-shell.mode-studio .studio-mission-detail {
     display: block;
     min-width: 0;
@@ -578,6 +571,48 @@
     font-size: 9.5px;
     justify-self: start;
     text-align: left;
+  }
+
+  .app-shell.mode-studio .studio-mission-state {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    min-width: 38px;
+    padding: 3px 5px;
+    border: 1px solid var(--command-edge-strong);
+    border-radius: 2px;
+    background: #06080b;
+    color: var(--command-muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-ok) 46%, var(--command-edge-strong));
+    color: var(--command-ok);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.is-partial .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-warn) 48%, var(--command-edge-strong));
+    color: var(--command-warn);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.status-pending .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.status-planned .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.status-unknown .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-dim) 54%, var(--command-edge-strong));
+    color: color-mix(in srgb, var(--command-muted) 80%, var(--command-dim));
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-error .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-risk) 52%, var(--command-edge-strong));
+    color: var(--command-risk);
   }
 
   .app-shell.mode-studio .workspace-action-grid {

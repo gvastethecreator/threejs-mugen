@@ -2990,7 +2990,7 @@ export class App {
           step: "02",
           icon: "shield",
           label: "Validate",
-          value: "check characters, stages, atlases",
+          value: "validate roster and files",
           detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages / ${summary.stats.generatedAtlases} atlases`,
           status: assembleStatus,
           attribute: 'data-studio-tab="workbench"',
@@ -2999,7 +2999,7 @@ export class App {
           step: "03",
           icon: "route",
           label: "Map Assets",
-          value: "link assets and dependencies",
+          value: "resolve asset links",
           detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
           status: assembleStatus,
           attribute: 'data-studio-tab="assets"',
@@ -3035,16 +3035,45 @@ export class App {
     status: StudioStatus;
     attribute: string;
   }): string {
+    const statusLabel = this.missionStatusLabel(input.status);
+    const ariaLabel = `${input.step} ${input.label}: ${input.value}. Status ${statusLabel}. ${input.detail}`;
     return `
-      <button type="button" class="studio-mission-node is-${this.statusClassName(input.status)}" ${input.attribute}>
+      <button type="button" class="studio-mission-node is-${this.statusClassName(input.status)} status-${escapeHtml(input.status)}" ${input.attribute} aria-label="${escapeHtml(ariaLabel)}">
         <span class="studio-mission-step">${tablerIcon(input.icon, "ui-icon mission-icon")}</span>
         <span class="studio-mission-main">
           <strong><em>${escapeHtml(input.step)}</em>${escapeHtml(input.label)}</strong>
           <small>${escapeHtml(input.value)}</small>
         </span>
+        <span class="studio-mission-state">${escapeHtml(statusLabel)}</span>
         <span class="studio-mission-detail">${escapeHtml(input.detail)}</span>
       </button>
     `;
+  }
+
+  private missionStatusLabel(status: StudioStatus): string {
+    switch (status) {
+      case "ok":
+        return "OK";
+      case "active":
+        return "LIVE";
+      case "fail":
+        return "FAIL";
+      case "blocked":
+        return "BLOCK";
+      case "unsupported":
+        return "NO";
+      case "pending":
+        return "TODO";
+      case "partial":
+        return "PART";
+      case "planned":
+        return "PLAN";
+      case "unknown":
+        return "UNK";
+      case "warn":
+      default:
+        return "WARN";
+    }
   }
 
   private getPrimaryStudioGate(summary: StudioProjectSummary): StudioProjectSummary["gates"][number] | undefined {
