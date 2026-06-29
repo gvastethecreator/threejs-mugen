@@ -58,9 +58,10 @@ Use this checklist when resuming the goal or starting a new autonomous pass:
 6. Read `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming autonomous work or converting roadmap language into the next implementation cut.
 7. Read `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` before choosing verification gates.
 8. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
-9. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
-10. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
-11. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
+9. Read the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` before calling anything "latest".
+10. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
+11. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
+12. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
 
 ## Roadmap Update Protocol
 
@@ -113,11 +114,12 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Last audited: 2026-06-28 during the setup-project refresh and roadmap-control pass.
+- Last audited: 2026-06-28 during the setup-project refresh and roadmap-control pass after the `RuntimeContactMemoryWorld` checkpoint.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
 - Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
+- Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
 
 ## Roadmap Slice Selection
@@ -138,7 +140,7 @@ Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `doc
 
 - Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
 - Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
-- Immediate next slice after the synthetic auto-guard controller-order gate: R1 Common1/FightFX precision or R2 MatchWorld ownership, whichever can produce focused evidence without broad drift.
+- Immediate next slice after the contact-memory world ownership checkpoint: R1 Common1/FightFX precision or R2 MatchWorld helper/effect/target ownership, whichever can produce focused evidence without broad drift.
 - Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
 - Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 

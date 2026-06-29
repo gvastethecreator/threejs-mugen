@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-28 - Setup-project AGENTS and roadmap sync refresh
+
+Changed:
+
+- Refreshed repo `AGENTS.md` without creating a duplicate agent contract; the setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs.
+- Tightened `docs/agents/issue-tracker.md` and `docs/agents/domain.md` so setup-project consumers know where roadmap-control refreshes live and how to resolve stale "next" gates.
+- Updated roadmap control docs to recognize the latest implementation checkpoint: `RuntimeContactMemoryWorld` ownership extraction passed normal gates and kept `pnpm qa:trace` stable at 156/156 artifacts, 138 required and 18 optional.
+- Updated `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_CONTINUITY_GUIDE.md`, `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`, `docs/PROGRESS_TRACKER.md`, `docs/PORT_COMPLETION_SCORECARD.md`, and `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` so future agents return to R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership after docs-only work.
+
+Evidence:
+
+- Docs/setup-project control pass only.
+- No runtime, renderer, Studio, asset, IKEMEN, or modular-engine behavior changed.
+- No score movement.
+
+Claim allowed:
+
+- Future agents have a fresher setup-project contract and roadmap route that starts from the latest backlog truth before selecting the next implementation slice.
+
+Claim blocked:
+
+- This pass does not prove new compatibility, rendering, Studio, generated-asset, IKEMEN, or modular-engine support.
+
 ## 2026-06-28 - Setup-project continuity pass
 
 Changed:

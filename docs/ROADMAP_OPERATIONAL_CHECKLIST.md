@@ -151,6 +151,7 @@ Run at end:
 pnpm test
 pnpm typecheck
 pnpm build
+git diff --check
 ```
 
 `pnpm qa:trace` and `pnpm qa:smoke` are not required for docs-only work unless docs changed generated gates, trace fixtures, or visible UI.

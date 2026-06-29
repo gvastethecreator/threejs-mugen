@@ -9,6 +9,8 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
+- Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `RuntimeContactMemoryWorld` checkpoint instead of older closed gates.
+- Current roadmap sync: `docs/ROADMAP_PACKAGE_MILESTONES.md` now names the latest R2 ownership checkpoint and the next evidence-producing options: R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership. This is docs/control only and does not move scores.
 - Current setup-project refresh: parent workspace `AGENTS.md` now routes agents into `mugen-web-sandbox`; repo `AGENTS.md` remains authoritative and records setup-project defaults, slice-selection priority, verification baseline, and docs-only no-score rule.
 - Current setup-project verification: repo setup already exists (`AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/adr/`, local `.scratch/roadmap/`, GitHub remote). This pass refreshes alignment rather than creating a duplicate agent contract.
 - Current roadmap drift fix: `docs/ROADMAP_PROGRESS_SYSTEM.md` no longer points future docs-only closeout to the already-closed `HitBy` mismatch-reject gate; it now routes back to R1 Common1/FightFX precision or R2 `MatchWorld` ownership after the target-owned custom-state gate.
@@ -55,10 +57,11 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including FightFX/common spark lookup after the current fallback/source-metadata route.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
+- Latest implementation truth before this docs refresh comes from `docs/BUILD_EXECUTION_BACKLOG.md` entry 223: `RuntimeContactMemoryWorld` ownership extraction passed `pnpm test`, `pnpm typecheck`, `pnpm build`, and `pnpm qa:trace` with stable 156/156 artifacts.
 
 ## Claim Allowed
 
-Project-control setup is explicit enough for future agents to resume, pick the next roadmap issue, choose the next package, and close work with the correct gates.
+Project-control setup is explicit enough for future agents to resume, pick the next roadmap issue, choose the next package, check the latest implementation checkpoint, and close work with the correct gates.
 
 ## Claim Blocked
 

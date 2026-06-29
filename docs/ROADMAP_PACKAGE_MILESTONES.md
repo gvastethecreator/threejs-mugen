@@ -32,17 +32,17 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
-Current R1 synthetic auto-guard controller-order slice completed:
+Latest implementation checkpoint:
 
 ```txt
-R1 synthetic auto guard-start/end controller-order evidence
-  -> required synthetic-imported-auto-guard-start.json / synthetic-imported-auto-guard-end.json
-  -> checksums 0c734290 / d1dc0aa3
-  -> proves bounded 120/130/140 auto-guard route with P2 controller events plus actor-frame state order
-  -> qa:trace aggregate 156/156, 138 required, 18 optional
+R2 RuntimeContactMemoryWorld ownership
+  -> contact-memory creation/reset/mutation/readback moved behind a named runtime world
+  -> consumed by PlayableMatchRuntime, RuntimeDirectCombatWorld, and RuntimeReversalWorld
+  -> pnpm test 60 files / 568 tests, pnpm typecheck, pnpm build, pnpm qa:trace
+  -> qa:trace aggregate stable at 156/156, 138 required, 18 optional
 ```
 
-Default next implementation slice after this cut:
+Default next implementation slice after docs/setup work:
 
 ```txt
 R1 Common1/FightFX precision
@@ -50,7 +50,7 @@ R1 Common1/FightFX precision
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or visible package presentation evidence
 ```
 
-Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, or effect/combat ordering if it can preserve trace behavior.
+Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior.
 
 ## Slice Selection Guardrails
 
@@ -68,6 +68,8 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-air-guard-state.json` actor-frame telemetry
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
+- `synthetic-imported-noop.json` debug clipboard no-op coverage
+- `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

@@ -32,6 +32,17 @@ Also read relevant ADRs under:
 
 - `docs/adr/`
 
+## Conflict Resolution
+
+When docs disagree, prefer this order for current implementation truth:
+
+1. Latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md`.
+2. `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+3. `docs/ROADMAP_EXECUTION_BOARD.md`.
+4. `.scratch/roadmap/issues/<NN>-*.md`.
+
+Then update stale roadmap docs in the same pass. Do not preserve an older "next" gate if the backlog proves it already closed.
+
 ## Domain Vocabulary
 
 Use these terms consistently:

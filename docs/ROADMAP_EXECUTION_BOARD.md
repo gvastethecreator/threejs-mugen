@@ -29,6 +29,8 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
+Latest implementation checkpoint before this setup refresh: `RuntimeContactMemoryWorld` owns bounded direct/projectile contact-memory creation, reset, mutation, and readback; `pnpm qa:trace` stayed stable at 156/156 artifacts, with 138 required and 18 optional. This is an R2 ownership/debt-reduction proof, not new MUGEN parity.
+
 ## Operating Snapshot
 
 | Priority | Workstream | Next shippable proof | Evidence gate | Score effect |
@@ -218,6 +220,7 @@ Before closing a round:
 - State exact files changed.
 - State checks run.
 - State why `pnpm qa:trace` or `pnpm qa:smoke` was or was not required.
+- State whether the round was docs-only/setup and therefore had no score movement.
 - Do not mark an issue done unless evidence exists and docs name the blocked scope.
 - Do not raise scores from docs-only changes.
 

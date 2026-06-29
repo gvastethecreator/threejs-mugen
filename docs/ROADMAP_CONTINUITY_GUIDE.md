@@ -55,6 +55,8 @@ Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack pari
 
 The compact package ladder and current default next slice live in `docs/ROADMAP_PACKAGE_MILESTONES.md`. After docs/setup work, return there before choosing code.
 
+Latest closed implementation checkpoint before this docs refresh: `RuntimeContactMemoryWorld` extracted bounded contact-memory ownership and kept trace behavior stable. Do not reselect that ownership extraction as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
+
 ## Next Useful Studio Gates
 
 Studio should become a production workbench, not a static dashboard. Good next slices:

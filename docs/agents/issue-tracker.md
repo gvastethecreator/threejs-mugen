@@ -29,6 +29,12 @@ Do not treat `.scratch/fixtures/` or `.scratch/external/` as redistributable sou
 
 Do not use the GitHub remote as the active issue tracker unless the user explicitly asks for GitHub Issues. Local markdown remains the working queue for autonomous agent passes.
 
+## Roadmap Control Ledger
+
+Use `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` for setup-project, AGENTS, roadmap-routing, and QA-ledger refreshes. Append evidence there instead of creating duplicate setup issues unless the tracker layout, triage vocabulary, or domain-doc model changes.
+
+Before choosing a new implementation issue, compare `docs/BUILD_EXECUTION_BACKLOG.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and the linked roadmap issue so an already-closed gate is not reselected as "next".
+
 ## Roadmap Issue Schema
 
 Use this minimum shape for roadmap work:
