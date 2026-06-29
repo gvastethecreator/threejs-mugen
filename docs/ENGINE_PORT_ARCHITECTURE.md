@@ -102,6 +102,8 @@ The compiler classifies each piece as:
 
 `RuntimePausedMatchWorld` owns the bounded regular `Pause` / `SuperPause` mini-loop that used to live inline in `PlayableMatchRuntime`: hitpause-style command buffering during match pause, source-actor `movetime` checks, player/AI source advancement, active effect/presentation effect advancement for the moving source, target binding application, stage clamp, frozen-actor paused-presentation ticking, pause replacement interruption, and pause countdown ticking. `RuntimePauseWorld` still owns the current pause state/controller application/snapshot; `RuntimePausedMatchWorld` owns the per-tick paused-match ordering around that state. This is ownership cleanup for the current sandbox pause route, not exact super backgrounds, pause layering, helper VM pause behavior, rollback timing, or MUGEN/IKEMEN pause parity.
 
+`RuntimeHitPauseWorld` owns the bounded global hitpause mini-loop that used to live inline in `PlayableMatchRuntime`: hitpause command buffering, `ignorehitpause` active-state controller dispatch for both actors, paused presentation advancement, and per-actor hitpause countdown. `PlayableMatchRuntime` still supplies controller execution callbacks and presentation hooks, so this is current-order ownership cleanup, not exact persistent controller execution, helper-owned hitpause, broad side-effect ordering, or MUGEN/IKEMEN hitpause tick parity.
+
 `RuntimeEffectSpawnWorld` now owns the bounded spawn/dispatch bridge from active CNS controllers into the effect actor world: Explod action/position/bind/default duration resolution, Helper state/action resolution including state-owner sprite/action lookup, Projectile action/offset/terminal-action resolution, RemoveExplod dispatch, and ModifyProjectile dispatch. `PlayableMatchRuntime` still records controller execution/operation evidence and owns match orchestration, so this is an ownership cleanup rather than exact effect spawn timing, helper VM, parent/root redirect, or FightFX/Common animation parity.
 
 `RuntimeEffectLifecycleWorld` now owns the bounded lifecycle orchestration that happens after those effect actors exist: active-effect ticks, presentation ticks, paused presentation ticks, effect snapshot grouping, and shared get-hit cleanup. `PlayableMatchRuntime` delegates current effect lifecycle passes and projectile get-hit cleanup to that boundary, while direct combat, HitOverride, and Reversal share the same effect get-hit cleanup helper. This is current-behavior ownership, not exact helper VM lifecycle, pause/combat ordering, advanced remove-trigger timing, parent/root/redirect parity, or full MUGEN/IKEMEN effect lifecycle parity.
@@ -179,6 +181,7 @@ MatchWorld
   RuntimeOrientationWorld
   RuntimeStunWorld
   RuntimePausedMatchWorld
+  RuntimeHitPauseWorld
   RuntimeRoundSystem
   CommandSystem
 ```
@@ -222,6 +225,7 @@ The current extraction order is:
 29. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
 30. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
 31. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
+32. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
 31. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
 32. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 

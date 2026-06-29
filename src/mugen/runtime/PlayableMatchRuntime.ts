@@ -63,6 +63,7 @@ import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
+import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -214,6 +215,7 @@ export class PlayableMatchRuntime {
   private readonly guardWorld = new RuntimeGuardWorld();
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
+  private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private toggles = {
@@ -319,36 +321,28 @@ export class PlayableMatchRuntime {
     this.orientationWorld.updateAutoFacing(this.p1.runtime, this.p2.runtime);
     this.orientationWorld.updateAutoFacing(this.p2.runtime, this.p1.runtime);
 
-    const globalPause = Math.max(this.p1.hitPause, this.p2.hitPause);
-    if (globalPause > 0) {
-      this.p1.commandBuffer.push(this.tick, p1Input, { hitPause: true });
-      this.p2.commandBuffer.push(this.tick, p2Input, { hitPause: true });
-      runHitPauseIgnoredControllers(
-        this.p1,
-        this.p2,
-        this.actorConstraintWorld,
-        this.spriteEffectWorld,
-        this.reversalWorld,
-        this.effectSpawnWorld,
-        this.tick,
-        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-      );
-      runHitPauseIgnoredControllers(
-        this.p2,
-        this.p1,
-        this.actorConstraintWorld,
-        this.spriteEffectWorld,
-        this.reversalWorld,
-        this.effectSpawnWorld,
-        this.tick,
-        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-      );
-      this.effectLifecycleWorld.advancePausedPresentation(this.p1, "hitpause", this.stage);
-      this.effectLifecycleWorld.advancePausedPresentation(this.p2, "hitpause", this.stage);
-      this.p1.hitPause = Math.max(0, this.p1.hitPause - 1);
-      this.p2.hitPause = Math.max(0, this.p2.hitPause - 1);
+    if (
+      this.hitPauseWorld.advance({
+        p1: this.p1,
+        p2: this.p2,
+        p1Input,
+        p2Input,
+        pushCommandBuffer: (fighter, fighterInput) => fighter.commandBuffer.push(this.tick, fighterInput, { hitPause: true }),
+        runIgnoredControllers: (fighter, opponent) =>
+          runHitPauseIgnoredControllers(
+            fighter,
+            opponent,
+            this.actorConstraintWorld,
+            this.spriteEffectWorld,
+            this.reversalWorld,
+            this.effectSpawnWorld,
+            this.tick,
+            (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
+            (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+          ),
+        advancePausedPresentation: (fighter) => this.effectLifecycleWorld.advancePausedPresentation(fighter, "hitpause", this.stage),
+      }).paused
+    ) {
       return;
     }
 

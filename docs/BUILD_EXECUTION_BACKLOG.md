@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeHitPauseWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHitPauseWorld` as the named owner for the global hitpause mini-loop: hitpause command buffering, `ignorehitpause` controller dispatch for both actors, paused presentation advancement, and per-actor hitpause countdown.
+- Replaced inline `PlayableMatchRuntime` hitpause branching with the new hitpause world boundary while keeping controller execution and presentation callbacks in the match runtime.
+- Added focused `RuntimeHitPauseSystem` coverage for order, countdown, and no-op behavior outside hitpause.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeHitPauseSystem.test.ts` passes: 1 file, 2 tests.
+- `pnpm test` passes: 70 files, 614 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-hitpausetime-ignorehitpause.json` remains checksum `a3a78bb8`, `synthetic-imported-hitstun.json` remains `d739e194`, `synthetic-imported-superpause.json` remains `f78c0366`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes, with the unrelated unstaged `src/style.css` CRLF warning still reported by Git.
+- `pnpm qa:smoke` is not required for this checkpoint because the runtime ownership cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded global hitpause ordering now has a named runtime boundary separate from regular match pause and stun ownership.
+
+Claim blocked:
+
+- This is ownership cleanup only. Persistent controller semantics, helper-owned hitpause counters, broad side-effect ordering during hitpause, exact first-frame decrement order, and full MUGEN/IKEMEN hitpause parity remain unsupported.
+
 ## 2026-06-29 - RuntimePausedMatchWorld ownership extraction
 
 Changed:
