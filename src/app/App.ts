@@ -3048,10 +3048,10 @@ export class App {
     const compactLabels: Record<StudioTab, string> = {
       workbench: "Work",
       assets: "Assets",
-      inspector: "Data",
+      inspector: "Inspect",
       stage: "Stage",
       debug: "Debug",
-      evidence: "Trace",
+      evidence: "Evidence",
       modules: "Modules",
       build: "Build",
     };
@@ -3874,59 +3874,284 @@ export class App {
   private renderStudioWorkbenchRightPane(): string {
     const summary = this.getStudioProjectSummary();
     return `
-      ${this.renderStudioHealthPanel(summary)}
-      ${this.renderRuntimeManifestPanel()}
-      ${this.renderEngineModulesPanel(summary)}
-      ${this.renderAcceptanceGatesPanel(summary)}
-      ${this.renderNextStudioCutsPanel(summary)}
+      ${this.renderWorkbenchCommandInspector(summary)}
+      ${this.renderWorkbenchWarningQueue(summary)}
+      ${this.renderWorkbenchActionBank(summary)}
+      ${this.renderWorkbenchOutputLedger(summary)}
     `;
   }
 
-  private renderStudioHealthPanel(summary: StudioProjectSummary): string {
+  private renderWorkbenchCommandInspector(summary: StudioProjectSummary): string {
+    const score = this.getWorkbenchHealthScore(summary);
     const statusCounts = countBy(summary.gates, (gate) => this.statusClassName(gate.status));
     const primaryGate = this.getPrimaryStudioGate(summary);
-    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).slice(0, 3);
+    const selectedAsset = this.getWorkbenchSelectedAsset(summary);
+    const selectedAssetAttribute = selectedAsset
+      ? `data-studio-tab="assets" data-studio-asset-id="${escapeHtml(selectedAsset.id)}" data-asset-filter="selected"`
+      : 'data-studio-tab="assets"';
     return `
-      <div class="section section-emphasis studio-health-panel">
+      <div class="section section-emphasis workbench-inspector-panel">
         <div class="section-heading-row">
-          <h2>Project Health</h2>
-          <span class="badge ${primaryGate && isAttentionStatus(primaryGate.status) ? "warn" : "ok"}">${primaryGate && isAttentionStatus(primaryGate.status) ? "needs action" : "steady"}</span>
-        </div>
-        <div class="health-grid">
-          <span class="is-ok"><b>${statusCounts.get("ok") ?? 0}</b> ok</span>
-          <span class="${statusCounts.get("warn") ? "is-warn" : ""}"><b>${statusCounts.get("warn") ?? 0}</b> warn</span>
-          <span class="${statusCounts.get("error") ? "is-error" : ""}"><b>${statusCounts.get("error") ?? 0}</b> blocked</span>
-          <span class="${summary.assets.some((asset) => isAttentionStatus(asset.status)) ? "is-warn" : "is-ok"}"><b>${summary.assets.length}</b> assets</span>
-        </div>
-        <button type="button" class="studio-primary-next" ${primaryGate ? this.studioNextActionAttribute(primaryGate.nextAction) : 'data-studio-tab="workbench"'}>
-          ${this.statusBadge(primaryGate?.status ?? "unknown")}
           <div>
-            <strong>${escapeHtml(primaryGate?.label ?? "No active gate")}</strong>
-            <small>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</small>
+            <span class="panel-kicker">Command inspector</span>
+            <h2>Project Health</h2>
           </div>
+          <span class="badge ${score >= 82 ? "ok" : score >= 58 ? "warn" : "error"}">${score}/100</span>
+        </div>
+        <div class="workbench-health-meter" style="--health-score: ${score}%">
+          <span class="workbench-health-score"><b>${score}</b><small>/ 100</small></span>
+          <span class="workbench-health-track" aria-hidden="true"><i></i></span>
+          <span class="workbench-health-next">
+            <small>Next</small>
+            <b>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</b>
+          </span>
+        </div>
+        <button type="button" class="workbench-active-asset is-${this.statusClassName(selectedAsset?.status ?? "unknown")}" ${selectedAssetAttribute}>
+          <span class="asset-row-icon">${tablerIcon(selectedAsset ? iconForAssetRecord(selectedAsset) : "assets", "ui-icon")}</span>
+          <span class="workbench-active-asset-main">
+            <small>Selected asset</small>
+            <strong>${escapeHtml(selectedAsset?.label ?? "No selected asset")}</strong>
+            <span>${escapeHtml(selectedAsset ? `${selectedAsset.kind} / ${selectedAsset.source}` : "Open the asset desk")}</span>
+          </span>
+          ${this.statusBadge(selectedAsset?.status ?? "unknown")}
         </button>
+        <div class="workbench-health-counts" aria-label="Workbench health counts">
+          <span class="is-ok"><b>${statusCounts.get("ok") ?? 0}</b><small>ok</small></span>
+          <span class="${statusCounts.get("warn") ? "is-warn" : ""}"><b>${statusCounts.get("warn") ?? 0}</b><small>warn</small></span>
+          <span class="${statusCounts.get("error") ? "is-error" : ""}"><b>${statusCounts.get("error") ?? 0}</b><small>blocked</small></span>
+          <span class="${summary.assets.some((asset) => isAttentionStatus(asset.status)) ? "is-warn" : "is-ok"}"><b>${summary.assets.length}</b><small>assets</small></span>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderWorkbenchWarningQueue(summary: StudioProjectSummary): string {
+    const rows = this.getWorkbenchWarningRows(summary).slice(0, 4);
+    return `
+      <div class="section workbench-warning-panel">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Attention queue</span>
+            <h2>Warnings</h2>
+          </div>
+          <span class="badge ${rows.length ? "warn" : "ok"}">${rows.length ? `${rows.length} active` : "clear"}</span>
+        </div>
         ${
-          attentionAssets.length
-            ? `<div class="health-queue" aria-label="Asset attention queue">${attentionAssets.map((asset) => this.renderStudioHealthAsset(asset)).join("")}</div>`
-            : `<div class="empty-state compact">No asset records currently need attention.</div>`
+          rows.length
+            ? `<div class="workbench-warning-list">${rows
+                .map(
+                  (row) => `
+                    <button type="button" class="workbench-warning-row is-${this.statusClassName(row.status)}" ${row.attribute}>
+                      <span class="workbench-warning-icon">${tablerIcon(row.icon, "ui-icon")}</span>
+                      <span class="workbench-warning-main">
+                        <strong>${escapeHtml(row.label)}</strong>
+                        <small>${escapeHtml(row.detail)}</small>
+                      </span>
+                      <span class="workbench-warning-meta">${escapeHtml(row.meta)}</span>
+                    </button>
+                  `,
+                )
+                .join("")}</div>`
+            : `<div class="empty-state compact">No gate, asset, trace, or build warnings are active for the current project.</div>`
         }
       </div>
     `;
   }
 
-  private renderStudioHealthAsset(asset: StudioProjectSummary["assets"][number]): string {
+  private renderWorkbenchActionBank(summary: StudioProjectSummary): string {
+    const compiled = this.lastCompiledProject;
+    const attentionAssets = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
     return `
-      <button type="button" class="health-queue-row is-${this.statusClassName(asset.status)}" data-studio-tab="assets" data-studio-asset-id="${escapeHtml(asset.id)}" data-asset-filter="attention">
-        <span class="health-queue-main">
-          <strong>${escapeHtml(asset.label)}</strong>
-          <small>${escapeHtml(asset.kind)} / ${escapeHtml(asset.source)}</small>
-        </span>
-        <span class="health-queue-meta">
-          ${this.statusBadge(asset.status)}
-          <span class="health-queue-next">${escapeHtml(asset.nextAction.label)}</span>
+      <div class="section workbench-action-panel">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Action bank</span>
+            <h2>Commands</h2>
+          </div>
+          <span class="badge">4 lanes</span>
+        </div>
+        <div class="workbench-action-grid">
+          ${this.renderWorkbenchActionTile(compiled ? "Export Package" : "Compile Runtime", compiled ? "runtime package ready" : "create runtime-manifest/v0", "build", compiled ? 'data-action="export-package"' : 'data-action="compile-project"', compiled ? "ok" : "pending", true)}
+          ${this.renderWorkbenchActionTile(attentionAssets ? "Review Assets" : "Asset Desk", attentionAssets ? `${attentionAssets} records need attention` : `${summary.assets.length} mapped records`, "assets", `data-studio-tab="assets" data-asset-filter="${attentionAssets ? "attention" : "all"}"`, attentionAssets ? "warn" : "ok")}
+          ${this.renderWorkbenchActionTile("Export Trace", this.lastTraceArtifact ? "refresh runtime evidence" : "capture smoke evidence", "evidence", 'data-action="export-trace-artifact"', this.lastTraceArtifact ? "ok" : "pending")}
+          ${this.renderWorkbenchActionTile("Module Graph", `${summary.modules.length} engine contracts`, "modules", 'data-studio-tab="modules"', "ok")}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderWorkbenchOutputLedger(summary: StudioProjectSummary): string {
+    const compiled = this.lastCompiledProject;
+    const bundle = this.lastProjectBundle;
+    const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
+    const activeModules = compiled?.modules.active.length ?? summary.modules.filter((module) => module.status === "active" || module.status === "ok").length;
+    const moduleStatus: StudioStatus = summary.modules.some((module) => this.statusClassName(module.status) === "error")
+      ? "fail"
+      : summary.modules.some((module) => isAttentionStatus(module.status))
+        ? "warn"
+        : "ok";
+    return `
+      <div class="section workbench-output-panel">
+        <div class="section-heading-row">
+          <div>
+            <span class="panel-kicker">Files and outputs</span>
+            <h2>Build Ledger</h2>
+          </div>
+          <span class="badge ${bundle ? "ok" : compiled ? "warn" : ""}">${bundle ? "exported" : compiled ? "ready" : "pending"}</span>
+        </div>
+        <div class="workbench-output-list">
+          ${this.renderWorkbenchOutputRow("Runtime Manifest", compiled ? `${compiled.projectId}-runtime-manifest.json` : "runtime-manifest/v0 pending", "build", compiled ? "ok" : "pending", compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"')}
+          ${this.renderWorkbenchOutputRow("Engine Modules", `${activeModules}/${summary.modules.length} active contracts`, "modules", moduleStatus, 'data-studio-tab="modules"')}
+          ${this.renderWorkbenchOutputRow("Generated Atlases", `${summary.stats.generatedAtlases} sprite atlas records`, "assetAtlas", summary.stats.generatedAtlases ? "ok" : "pending", 'data-studio-tab="assets" data-asset-filter="generated"')}
+          ${this.renderWorkbenchOutputRow("Trace Evidence", traceCount ? `${traceCount} stored/current artifact(s)` : "no trace artifact exported", "evidence", traceCount ? "ok" : "pending", traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"')}
+          ${this.renderWorkbenchOutputRow("Project Package", bundle ? `${bundle.manifest.files.length} files / ${formatBytes(bundle.manifest.assets.binaryBytes)}` : "package ZIP not exported", "package", bundle ? "ok" : compiled ? "partial" : "pending", compiled ? 'data-action="export-package"' : 'data-action="compile-project"')}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderWorkbenchActionTile(
+    label: string,
+    detail: string,
+    icon: StudioIconName,
+    attribute: string,
+    status: StudioStatus,
+    primary = false,
+  ): string {
+    return `
+      <button type="button" class="workbench-action-tile is-${this.statusClassName(status)}${primary ? " is-primary" : ""}" ${attribute}>
+        ${tablerIcon(icon, "ui-icon action-icon")}
+        <span>
+          <strong>${escapeHtml(label)}</strong>
+          <small>${escapeHtml(detail)}</small>
         </span>
       </button>
     `;
+  }
+
+  private renderWorkbenchOutputRow(
+    label: string,
+    detail: string,
+    icon: StudioIconName,
+    status: StudioStatus,
+    attribute: string,
+  ): string {
+    return `
+      <button type="button" class="workbench-output-row is-${this.statusClassName(status)}" ${attribute}>
+        <span class="workbench-output-icon">${tablerIcon(icon, "ui-icon")}</span>
+        <span class="workbench-output-main">
+          <strong>${escapeHtml(label)}</strong>
+          <small>${escapeHtml(detail)}</small>
+        </span>
+        ${this.statusBadge(status)}
+      </button>
+    `;
+  }
+
+  private getWorkbenchSelectedAsset(summary: StudioProjectSummary): StudioProjectSummary["assets"][number] | undefined {
+    return (
+      summary.assets.find((asset) => asset.id === this.selectedP1) ??
+      summary.assets.find((asset) => asset.id === this.selectedP2) ??
+      summary.assets.find((asset) => asset.id === this.selectedStageId) ??
+      summary.assets.find((asset) => isAttentionStatus(asset.status)) ??
+      summary.assets[0]
+    );
+  }
+
+  private getWorkbenchWarningRows(summary: StudioProjectSummary): Array<{
+    label: string;
+    detail: string;
+    meta: string;
+    status: StudioStatus;
+    icon: StudioIconName;
+    attribute: string;
+  }> {
+    const rows: Array<{
+      label: string;
+      detail: string;
+      meta: string;
+      status: StudioStatus;
+      icon: StudioIconName;
+      attribute: string;
+    }> = [];
+    for (const gate of summary.gates.filter((item) => isAttentionStatus(item.status))) {
+      rows.push({
+        label: gate.label,
+        detail: gate.detail,
+        meta: gate.nextAction.label,
+        status: gate.status,
+        icon: "shield",
+        attribute: this.studioNextActionAttribute(gate.nextAction),
+      });
+    }
+    for (const asset of summary.assets.filter((item) => isAttentionStatus(item.status))) {
+      rows.push({
+        label: asset.label,
+        detail: asset.detail,
+        meta: asset.nextAction.label,
+        status: asset.status,
+        icon: iconForAssetRecord(asset),
+        attribute: `data-studio-tab="assets" data-studio-asset-id="${escapeHtml(asset.id)}" data-asset-filter="attention"`,
+      });
+    }
+    const compiled = this.lastCompiledProject;
+    if (!compiled) {
+      rows.push({
+        label: "Runtime manifest",
+        detail: "Compile the current project before exporting a runtime package.",
+        meta: "Compile runtime",
+        status: "pending",
+        icon: "build",
+        attribute: 'data-action="compile-project"',
+      });
+    } else if (compiled.diagnostics.errors.length || compiled.diagnostics.warnings.length || compiled.modules.missing.length) {
+      rows.push({
+        label: "Compiled manifest diagnostics",
+        detail: `${compiled.diagnostics.errors.length} errors / ${compiled.diagnostics.warnings.length} warnings / ${compiled.modules.missing.length} missing modules`,
+        meta: "Open build",
+        status: compiled.diagnostics.errors.length || compiled.modules.missing.length ? "fail" : "warn",
+        icon: "build",
+        attribute: 'data-studio-tab="build"',
+      });
+    }
+    if (!this.lastTraceArtifact) {
+      rows.push({
+        label: "Runtime trace evidence",
+        detail: "No current trace artifact is attached to this project state.",
+        meta: "Export trace",
+        status: "pending",
+        icon: "evidence",
+        attribute: 'data-action="export-trace-artifact"',
+      });
+    }
+    return rows;
+  }
+
+  private getWorkbenchHealthScore(summary: StudioProjectSummary): number {
+    const gatePenalty = summary.gates.reduce((total, gate) => total + this.healthPenaltyForStatus(gate.status, 14), 0);
+    const assetPenalty = Math.min(
+      24,
+      summary.assets.reduce((total, asset) => total + this.healthPenaltyForStatus(asset.status, 4), 0),
+    );
+    const compiled = this.lastCompiledProject;
+    const buildPenalty = compiled
+      ? compiled.diagnostics.errors.length * 18 + compiled.modules.missing.length * 12 + compiled.diagnostics.warnings.length * 4
+      : 8;
+    const tracePenalty = this.lastTraceArtifact ? 0 : 4;
+    return Math.max(0, Math.min(100, Math.round(100 - gatePenalty - assetPenalty - buildPenalty - tracePenalty)));
+  }
+
+  private healthPenaltyForStatus(status: StudioStatus, maxPenalty: number): number {
+    if (status === "ok" || status === "active") {
+      return 0;
+    }
+    if (status === "fail" || status === "blocked" || status === "unsupported") {
+      return maxPenalty;
+    }
+    if (status === "pending" || status === "planned" || status === "unknown") {
+      return Math.ceil(maxPenalty * 0.58);
+    }
+    return Math.ceil(maxPenalty * 0.42);
   }
 
   private renderRuntimeManifestPanel(): string {
@@ -4032,30 +4257,6 @@ export class App {
                     <small>${escapeHtml(gate.affectedSystem ?? "studio")} / ${gate.evidenceIds.length} evidence</small>
                   </span>
                 </button>
-              `,
-            )
-            .join("")}
-        </div>
-      </div>
-    `;
-  }
-
-  private renderNextStudioCutsPanel(summary: StudioProjectSummary): string {
-    return `
-      <div class="section">
-        <h2>Next Studio Cuts</h2>
-        <div class="list">
-          ${summary.modules
-            .filter((module) => module.status !== "active")
-            .slice(0, 4)
-            .map(
-              (module) => `
-                <div class="list-item">
-                  <span>
-                    <span class="list-title">${escapeHtml(module.label)}</span>
-                    <span class="list-meta">${escapeHtml(module.next)}</span>
-                  </span>
-                </div>
               `,
             )
             .join("")}
