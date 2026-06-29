@@ -58,6 +58,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeStateAvailabilityWorld } from "./StateAvailabilitySystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
@@ -220,6 +221,7 @@ export class PlayableMatchRuntime {
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
+  private readonly snapshotWorld = new RuntimeSnapshotWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -521,7 +523,6 @@ export class PlayableMatchRuntime {
   }
 
   getSnapshot(): MugenSnapshot {
-    const center = cameraCenterX([this.p1, this.p2]);
     const shake = this.envShakeWorld.snapshotCameraShake(this.tick, [this.p1, this.p2]);
     const envColor = this.envColorWorld.snapshotStageFlash(this.tick);
     const p1Effects = this.effectLifecycleWorld.snapshotGroups(this.p1);
@@ -534,23 +535,7 @@ export class PlayableMatchRuntime {
       speed: this.speed,
       ...this.toggles,
       matchPause: this.pauseWorld.snapshot(),
-      stage: {
-        id: this.stage.id,
-        displayName: this.stage.displayName,
-        floorY: this.stage.floorY,
-        zOffset: this.stage.zOffset,
-        bounds: this.stage.bounds,
-        camera: {
-          x: center + this.stage.camera.startX,
-          y: this.stage.camera.startY,
-          zoom: this.stage.camera.zoom,
-          ...(shake ? { shake } : {}),
-        },
-        ...(envColor ? { envColor } : {}),
-        layers: this.stage.layers,
-        animations: this.stage.animations,
-        bgControllers: this.stage.bgControllers,
-      },
+      stage: this.snapshotWorld.stage({ stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor }),
       round: this.round.snapshot(),
       actors: [toSnapshot(this.p1), toSnapshot(this.p2)],
       effects: [
@@ -2071,12 +2056,6 @@ function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
     })),
     envShakeEvents: fighter.envShakeEvents.map((event) => ({ ...event })),
   };
-}
-
-function cameraCenterX(fighters: FighterMatchState[]): number {
-  const cameraActors = fighters.filter((fighter) => fighter.runtime.screenBound?.moveCameraX !== false);
-  const source = cameraActors.length > 0 ? cameraActors : fighters;
-  return source.reduce((sum, fighter) => sum + fighter.runtime.pos.x, 0) / Math.max(1, source.length);
 }
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {
