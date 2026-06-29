@@ -182,6 +182,14 @@ export type RuntimeAfterImageSample = {
   offsetY: number;
 };
 
+export type RuntimeHitDefContactKind = "hit" | "guard";
+
+export type RuntimeHitDefContactMetadata = {
+  contactId: string;
+  contactTick: number;
+  contactKind: RuntimeHitDefContactKind;
+};
+
 export type RuntimeSoundEvent = {
   type: "PlaySnd" | "StopSnd";
   group?: number;
@@ -191,6 +199,9 @@ export type RuntimeSoundEvent = {
   stateNo: number;
   tick: number;
   runtimeTick?: number;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
 };
 
 export type RuntimeHitEffectAssetFrame = {
@@ -216,6 +227,9 @@ export type RuntimeHitEffectEvent = {
   runtimeTick?: number;
   assetFrame?: RuntimeHitEffectAssetFrame;
   assetFrames?: RuntimeHitEffectAssetFrame[];
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
 };
 
 export type RuntimeEnvShakeEvent = {

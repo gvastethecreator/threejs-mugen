@@ -65,10 +65,60 @@
 }
 
 .studio-command-head > span:first-child,
-.studio-command-decision {
+.studio-command-decision,
+.health-queue-main,
+.health-queue-meta,
+.engine-module-name,
+.engine-module-contracts,
+.command-launcher > span:first-child,
+.state-controller-row-head > span:first-child,
+.runtime-versus-card > div,
+.debug-actor-main,
+.command-result-main {
   display: grid;
   min-width: 0;
   gap: 2px;
+}
+
+.surface-jump-button span,
+.collapsible-section > summary small,
+.asset-row-kind,
+.asset-row-action,
+.debug-filter-button small,
+.debug-actor-main small,
+.trace-frame-button span,
+.timeline-frame span,
+.timeline-frame small,
+.module-node > span,
+.command-palette-search span {
+  color: var(--subtle);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.command-row-main,
+.state-row-main,
+.controller-trigger-list,
+.controller-param-grid {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.debug-effect-store-list,
+.asset-graph-map,
+.module-graph,
+.control-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.health-queue,
+.list,
+.debug-input-history,
+.fighter-bar {
+  display: grid;
+  gap: 5px;
 }
 
 .studio-command-head strong,
@@ -760,12 +810,6 @@
   background: var(--surface-flat);
 }
 
-.surface-jump-button span {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .surface-jump-button strong {
   color: var(--text);
   font-size: 12px;
@@ -1077,11 +1121,6 @@ button.studio-primary-next {
   margin: 0;
 }
 
-.health-queue {
-  display: grid;
-  gap: 5px;
-}
-
 .health-queue-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -1118,13 +1157,6 @@ button.studio-primary-next {
 .health-queue-row.is-unsupported,
 .health-queue-row.is-unknown {
   border-color: rgba(240, 93, 94, 0.34);
-}
-
-.health-queue-main,
-.health-queue-meta {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
 }
 
 .health-queue-main small,
@@ -1439,13 +1471,6 @@ button.studio-primary-next {
   box-shadow: inset 2px 0 0 rgba(240, 93, 94, 0.68);
 }
 
-.engine-module-name,
-.engine-module-contracts {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-
 .engine-module-name strong {
   color: var(--text);
   font-size: 12px;
@@ -1647,12 +1672,6 @@ button.studio-primary-next {
   box-shadow: var(--shadow-panel);
 }
 
-.command-launcher > span:first-child {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-
 .command-launcher strong {
   color: var(--text);
   font-size: 12px;
@@ -1830,12 +1849,6 @@ button.studio-primary-next {
   font-weight: 700;
 }
 
-.collapsible-section > summary small {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .collapsible-body {
   padding: 0 14px 14px;
 }
@@ -1851,11 +1864,6 @@ button.studio-primary-next {
 .studio-workbench-details .collapsible-body {
   display: grid;
   gap: 10px;
-}
-
-.list {
-  display: grid;
-  gap: 5px;
 }
 
 .console-list > .log-line {
@@ -2078,13 +2086,6 @@ button.list-item:hover {
   gap: 2px;
 }
 
-.asset-row-kind,
-.asset-row-action {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .asset-row-detail {
   display: block;
   overflow-wrap: anywhere;
@@ -2131,12 +2132,6 @@ button.list-item:hover {
 
 .command-list-item {
   align-items: start;
-}
-
-.command-row-main {
-  display: grid;
-  min-width: 0;
-  gap: 6px;
 }
 
 .command-detail {
@@ -2195,12 +2190,6 @@ button.list-item:hover {
 
 .state-list-item.is-selected {
   border-color: color-mix(in srgb, var(--surface-accent) 70%, transparent);
-}
-
-.state-row-main {
-  display: grid;
-  min-width: 0;
-  gap: 6px;
 }
 
 .state-title-button {
@@ -2317,12 +2306,6 @@ button.controller-chip {
   align-items: start;
 }
 
-.state-controller-row-head > span:first-child {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-
 .state-controller-row-head strong {
   color: var(--text);
 }
@@ -2332,13 +2315,6 @@ button.controller-chip {
   font-family: var(--mono);
   font-size: 12px;
   line-height: 1.35;
-}
-
-.controller-trigger-list,
-.controller-param-grid {
-  display: grid;
-  min-width: 0;
-  gap: 6px;
 }
 
 .controller-param-grid {
@@ -2426,12 +2402,6 @@ button.controller-chip {
   border-radius: 7px;
   background: var(--surface-flat);
   box-shadow: var(--shadow-inset);
-}
-
-.runtime-versus-card > div {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
 }
 
 .runtime-versus-card strong {
@@ -2613,12 +2583,6 @@ button.controller-chip {
   color: var(--text);
 }
 
-.debug-filter-button small {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .debug-filter-button b {
   display: inline-grid;
   min-width: 34px;
@@ -2710,11 +2674,6 @@ button.controller-chip {
   overflow-wrap: anywhere;
 }
 
-.debug-effect-store-list {
-  display: grid;
-  gap: 8px;
-}
-
 .debug-effect-store-row {
   display: grid;
   min-width: 0;
@@ -2756,18 +2715,6 @@ button.controller-chip {
   border-color: color-mix(in srgb, var(--surface-accent) 68%, transparent);
   background: color-mix(in srgb, var(--surface-accent) 13%, #101217);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 0 0 1px color-mix(in srgb, var(--surface-accent) 18%, transparent);
-}
-
-.debug-actor-main {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-
-.debug-actor-main small {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
 }
 
 .debug-actor-metrics {
@@ -2868,11 +2815,6 @@ button.controller-chip {
   text-align: left;
 }
 
-.debug-input-history {
-  display: grid;
-  gap: 5px;
-}
-
 .debug-input-row {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) auto;
@@ -2957,12 +2899,6 @@ button.controller-chip {
   font-size: 12px;
 }
 
-.trace-frame-button span {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .trace-frame-button.is-selected {
   border-color: color-mix(in srgb, var(--surface-accent) 72%, transparent);
   background: color-mix(in srgb, var(--surface-accent) 13%, #101217);
@@ -3006,11 +2942,6 @@ button.controller-chip {
 .asset-graph {
   display: grid;
   gap: 10px;
-}
-
-.asset-graph-map {
-  display: grid;
-  gap: 8px;
 }
 
 .asset-graph-branches {
@@ -3155,18 +3086,6 @@ button.controller-chip {
   font-size: 12px;
 }
 
-.timeline-frame span,
-.timeline-frame small {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
-.module-graph {
-  display: grid;
-  gap: 8px;
-}
-
 .module-node {
   display: grid;
   min-width: 0;
@@ -3192,17 +3111,6 @@ button.controller-chip {
 
 .module-node strong {
   color: var(--text);
-}
-
-.module-node > span {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
-.control-grid {
-  display: grid;
-  gap: 8px;
 }
 
 .control-chip {
@@ -3248,11 +3156,6 @@ button.controller-chip {
 .fighter-bars {
   display: grid;
   gap: 10px;
-}
-
-.fighter-bar {
-  display: grid;
-  gap: 5px;
 }
 
 .fighter-bar-top {
@@ -3670,12 +3573,6 @@ button.controller-chip {
   border-bottom: 1px solid var(--border);
 }
 
-.command-palette-search span {
-  color: var(--subtle);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .command-palette-search input {
   min-height: 46px;
   border-color: var(--border-strong);
@@ -3733,12 +3630,6 @@ button.controller-chip {
   box-shadow:
     inset 2px 0 0 color-mix(in srgb, var(--surface-accent) 78%, transparent),
     var(--shadow-panel);
-}
-
-.command-result-main {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
 }
 
 .command-result-main strong {

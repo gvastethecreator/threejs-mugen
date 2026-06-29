@@ -1034,6 +1034,7 @@ export function createImportedXTraceArtifact(
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
     requiredHitEffectEvents?: RuntimeTraceGate["requiredHitEffectEvents"];
+    requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
     requiredEnvShakeEvents?: RuntimeTraceGate["requiredEnvShakeEvents"];
     requiredRoundFrames?: RuntimeTraceGate["requiredRoundFrames"];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
@@ -1069,6 +1070,7 @@ export function createImportedXTraceArtifact(
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
         requiredHitEffectEvents: options.requiredHitEffectEvents,
+        requiredContactEffectPackages: options.requiredContactEffectPackages,
         requiredEnvShakeEvents: options.requiredEnvShakeEvents,
         requiredRoundFrames: options.requiredRoundFrames,
         requiredActorFrames: options.requiredActorFrames,
@@ -2739,8 +2741,41 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
         stateNo: 200,
       },
     ],
+    requiredContactEffectPackages: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        contactKind: "hit",
+        sound: {
+          type: "PlaySnd",
+          group: 5,
+          index: 0,
+          stateNo: 200,
+          contactKind: "hit",
+          requireContactId: true,
+        },
+        hitEffect: {
+          kind: "hit",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7002,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 8102,
+          assetSpriteIndex: 0,
+          minAssetFrameCount: 2,
+          minAssetTotalDuration: 11,
+          requiredAssetFrameIndices: [0, 1],
+          stateNo: 200,
+          contactKind: "hit",
+          requireContactId: true,
+        },
+      },
+    ],
     notes: [
-      "Synthetic imported HitDef hit-effect package trace proves one direct hit contact can emit bounded hitsound telemetry and FightFX hit-spark multi-frame AIR metadata together before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
+      "Synthetic imported HitDef hit-effect package trace proves one direct hit contact can emit bounded hitsound telemetry and FightFX hit-spark multi-frame AIR metadata with shared contact package metadata before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
     ],
   });
 }
@@ -2915,8 +2950,41 @@ export function createSyntheticImportedHitDefGuardEffectPackageTraceArtifact(
         stateNo: 200,
       },
     ],
+    requiredContactEffectPackages: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        contactKind: "guard",
+        sound: {
+          type: "PlaySnd",
+          group: 6,
+          index: 0,
+          stateNo: 200,
+          contactKind: "guard",
+          requireContactId: true,
+        },
+        hitEffect: {
+          kind: "guard",
+          sparkNo: 7004,
+          raw: "F7004",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7004,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 8104,
+          assetSpriteIndex: 0,
+          minAssetFrameCount: 2,
+          minAssetTotalDuration: 11,
+          requiredAssetFrameIndices: [0, 1],
+          stateNo: 200,
+          contactKind: "guard",
+          requireContactId: true,
+        },
+      },
+    ],
     notes: [
-      "Synthetic imported HitDef guard-effect package trace proves one guarded direct contact can emit bounded guardsound telemetry and FightFX guard-spark multi-frame AIR metadata together before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN guard-effect parity.",
+      "Synthetic imported HitDef guard-effect package trace proves one guarded direct contact can emit bounded guardsound telemetry and FightFX guard-spark multi-frame AIR metadata with shared contact package metadata before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN guard-effect parity.",
     ],
   });
 }
@@ -5772,6 +5840,7 @@ export function createImportedGuardTraceArtifact(
     requiredExecutedStates?: number[];
     requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
     requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
+    requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -5805,6 +5874,7 @@ export function createImportedGuardTraceArtifact(
         requiredCombatReasons: ["guard"],
         requiredSoundEvents: options.requiredSoundEvents,
         requiredHitEffectEvents: options.requiredHitEffectEvents,
+        requiredContactEffectPackages: options.requiredContactEffectPackages,
       },
     ],
   });

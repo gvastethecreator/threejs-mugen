@@ -1,4 +1,4 @@
-import type { RuntimeHitEffectAssetFrame, RuntimeHitEffectEvent } from "./types";
+import type { RuntimeHitDefContactMetadata, RuntimeHitEffectAssetFrame, RuntimeHitEffectEvent } from "./types";
 
 export type RuntimeHitEffectActor = {
   runtime: {
@@ -19,6 +19,7 @@ export class RuntimeHitEffectWorld {
     runtimeTick: number,
     assetFrame?: RuntimeHitEffectAssetFrame,
     assetFrames?: RuntimeHitEffectAssetFrame[],
+    contact?: RuntimeHitDefContactMetadata,
   ): RuntimeHitEffectEvent | undefined {
     if (!spark) {
       return undefined;
@@ -39,6 +40,7 @@ export class RuntimeHitEffectWorld {
       runtimeTick,
       assetFrame,
       assetFrames,
+      ...(contact ? { contactId: contact.contactId, contactTick: contact.contactTick, contactKind: contact.contactKind } : {}),
     };
     pushRuntimeHitEffectEvent(actor.hitEffectEvents, event);
     return event;

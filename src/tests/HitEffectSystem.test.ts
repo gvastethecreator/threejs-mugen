@@ -45,6 +45,28 @@ describe("HitEffectSystem", () => {
     expect(fighter.hitEffectEvents).toEqual([event]);
   });
 
+  it("tags bounded HitDef spark telemetry with contact package metadata", () => {
+    const world = new RuntimeHitEffectWorld();
+    const fighter = { runtime: { stateNo: 200 }, stateElapsed: 7, hitEffectEvents: [] as RuntimeHitEffectEvent[] };
+
+    const event = world.emitHitDefEffect(fighter, "guard", "F7004", [15, -63], 140, undefined, undefined, {
+      contactId: "direct:p1:p2:140:200:7:guard",
+      contactTick: 140,
+      contactKind: "guard",
+    });
+
+    expect(event).toMatchObject({
+      type: "HitSpark",
+      kind: "guard",
+      sparkNo: 7004,
+      raw: "F7004",
+      rawPrefix: "F",
+      contactId: "direct:p1:p2:140:200:7:guard",
+      contactTick: 140,
+      contactKind: "guard",
+    });
+  });
+
   it("does not emit disabled negative spark ids", () => {
     const world = new RuntimeHitEffectWorld();
     const fighter = { runtime: { stateNo: 200 }, stateElapsed: 7, hitEffectEvents: [] as RuntimeHitEffectEvent[] };

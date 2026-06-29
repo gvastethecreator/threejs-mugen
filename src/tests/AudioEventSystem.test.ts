@@ -92,6 +92,26 @@ describe("AudioEventSystem", () => {
     });
     expect(fighter.soundEvents).toEqual([event]);
   });
+
+  it("tags direct HitDef sound telemetry with contact package metadata", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 6), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitHitDefSound(fighter, "S5,0", 140, {
+      contactId: "direct:p1:p2:140:200:6:hit",
+      contactTick: 140,
+      contactKind: "hit",
+    });
+
+    expect(event).toMatchObject({
+      type: "PlaySnd",
+      group: 5,
+      index: 0,
+      contactId: "direct:p1:p2:140:200:6:hit",
+      contactTick: 140,
+      contactKind: "hit",
+    });
+  });
 });
 
 function actor(stateNo: number, stateElapsed: number) {

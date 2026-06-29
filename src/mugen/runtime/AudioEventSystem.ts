@@ -1,6 +1,6 @@
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { RuntimeSoundEvent } from "./types";
+import type { RuntimeHitDefContactMetadata, RuntimeSoundEvent } from "./types";
 
 export type RuntimeSoundActor = {
   runtime: {
@@ -43,7 +43,12 @@ export class RuntimeAudioWorld {
     return event;
   }
 
-  emitHitDefSound(actor: RuntimeAudioWorldActor, sound: string | undefined, runtimeTick: number): RuntimeSoundEvent | undefined {
+  emitHitDefSound(
+    actor: RuntimeAudioWorldActor,
+    sound: string | undefined,
+    runtimeTick: number,
+    contact?: RuntimeHitDefContactMetadata,
+  ): RuntimeSoundEvent | undefined {
     if (!sound) {
       return undefined;
     }
@@ -56,6 +61,7 @@ export class RuntimeAudioWorld {
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
+      ...(contact ? { contactId: contact.contactId, contactTick: contact.contactTick, contactKind: contact.contactKind } : {}),
     };
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;

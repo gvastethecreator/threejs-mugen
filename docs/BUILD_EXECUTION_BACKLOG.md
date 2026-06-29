@@ -1,5 +1,57 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio legacy CSS atom consolidation
+
+Changed:
+
+- Grouped repeated Studio legacy grid-stack, mono-subtle text, command/state list, debug/asset/module map, and compact list atoms in `src/styles/legacy/studio-legacy-surfaces.css`.
+- Removed the equivalent one-off declarations from later legacy selectors without changing classes, markup, imports, runtime behavior, or visual feature scope.
+- Tightened `pnpm qa:css:budget` from 2,618 to 2,595 max rules, from 164 to 159 repeated declaration groups, and from 125 to 124 cross-file overlaps.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,595 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 159 repeated declaration groups, 124 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm test` passes: 73 files / 648 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional, 0 skipped.
+- `pnpm qa:smoke` passes; visual inspection covered Studio Workbench desktop/tablet, Studio Assets, Studio Evidence, Studio Debug desktop/mobile, Studio Build, Studio Modules, and Runtime desktop/mobile with no obvious text, list, panel, or viewport regression from the grouped CSS atoms.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current CSS duplication is lower in measured rule/repeated-group terms, and exact duplicate selectors/rules remain at zero.
+
+Claim blocked:
+
+- This does not finish CSS architecture cleanup. Remaining cross-file cascade overlaps still need owner-by-surface migration, and this pass does not move runtime compatibility, Studio workflow, or port score.
+
+## 2026-06-29 - HitDef contact-package trace correlation
+
+Changed:
+
+- Added direct `HitDef` contact metadata (`contactId`, `contactTick`, `contactKind`) to bounded HitDef sound and HitSpark runtime telemetry.
+- Added `RuntimeTraceGate.requiredContactEffectPackages` and contact-package evidence so required package gates can prove sound and spark came from the same direct or guarded contact package.
+- Strengthened required hit/guard-effect package presets/tests for `synthetic-imported-hitdef-hit-effect-package.json` and `synthetic-imported-hitdef-guard-effect-package.json`.
+
+Evidence:
+
+- `pnpm test` passes: 73 files / 648 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional, 0 skipped. Contact-package trace checksums remain `synthetic-imported-hitdef-hit-effect-package.json` `46aa5ce1` and `synthetic-imported-hitdef-guard-effect-package.json` `1c3167b7`.
+- `pnpm qa:smoke` passes; visual inspection covered Studio Workbench desktop/tablet, Studio Assets, Studio Evidence, Studio Debug desktop/mobile, Studio Build, Studio Modules, and Runtime desktop/mobile.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Required hit/guard-effect package traces can now require one direct or guarded `HitDef` contact where attacker-side `PlaySnd` and `HitSpark` evidence share non-empty contact id, contact tick, and hit/guard kind before renderer/audio handoff.
+
+Claim blocked:
+
+- Exact intra-tick audio/spark ordering, SND playback, channel/mixing parity, FightFX/common render lookup, visual timing, binding, layering, scale, palette, motif ownership, hit/guard-effect parity, and full MUGEN/IKEMEN presentation parity remain unproven.
+
 ## 2026-06-29 - Studio text CSS atom cleanup
 
 Changed:

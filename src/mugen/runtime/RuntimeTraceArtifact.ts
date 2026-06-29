@@ -180,6 +180,15 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           offset: event.offset ? { ...event.offset } : undefined,
           assetFrameIndices: event.assetFrameIndices ? [...event.assetFrameIndices] : undefined,
         })),
+        contactEffectPackages: gate.evidence.contactEffectPackages.map((event) => ({
+          ...event,
+          sound: { ...event.sound },
+          hitEffect: {
+            ...event.hitEffect,
+            offset: event.hitEffect.offset ? { ...event.hitEffect.offset } : undefined,
+            assetFrameIndices: event.hitEffect.assetFrameIndices ? [...event.hitEffect.assetFrameIndices] : undefined,
+          },
+        })),
         envShakeEvents: gate.evidence.envShakeEvents.map((event) => ({ ...event })),
         targetLinks: gate.evidence.targetLinks.map((link) => ({
           ...link,
@@ -553,6 +562,18 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredHitEffectEvents: gate.requiredHitEffectEvents?.map((requirement) => ({
       ...requirement,
       requiredAssetFrameIndices: requirement.requiredAssetFrameIndices ? [...requirement.requiredAssetFrameIndices] : undefined,
+    })),
+    requiredContactEffectPackages: gate.requiredContactEffectPackages?.map((requirement) => ({
+      ...requirement,
+      sound: requirement.sound ? { ...requirement.sound } : undefined,
+      hitEffect: requirement.hitEffect
+        ? {
+            ...requirement.hitEffect,
+            requiredAssetFrameIndices: requirement.hitEffect.requiredAssetFrameIndices
+              ? [...requirement.hitEffect.requiredAssetFrameIndices]
+              : undefined,
+          }
+        : undefined,
     })),
     requiredEnvShakeEvents: gate.requiredEnvShakeEvents?.map((requirement) => ({ ...requirement })),
     requiredTargetLinks: gate.requiredTargetLinks?.map((requirement) => ({ ...requirement })),

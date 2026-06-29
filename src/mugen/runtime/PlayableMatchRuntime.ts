@@ -94,6 +94,7 @@ import type {
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
+  RuntimeHitDefContactMetadata,
   RuntimeHitEffectEvent,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
@@ -1743,19 +1744,44 @@ function resolveCombat(
       applyHitStateTransitions(source, target, moveArg, hitStateTransitionWorld),
     applyDefaultGetHit: (target, moveArg) => applyDefaultGetHitState(target, moveArg, getHitStateWorld),
   });
-  recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick);
-  recordHitDefEffectEvent(attacker, outcome.kind, move, runtimeTick);
+  const contact = createHitDefContactMetadata(attacker, defender, outcome.kind, runtimeTick);
+  recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick, contact);
+  recordHitDefEffectEvent(attacker, outcome.kind, move, runtimeTick, contact);
   log(outcome.message);
 }
 
-function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | undefined, runtimeTick: number): void {
-  fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick);
+function createHitDefContactMetadata(
+  attacker: FighterMatchState,
+  defender: FighterMatchState,
+  kind: RuntimeHitDefContactMetadata["contactKind"],
+  runtimeTick: number,
+): RuntimeHitDefContactMetadata {
+  return {
+    contactId: `direct:${attacker.id}:${defender.id}:${runtimeTick}:${attacker.runtime.stateNo}:${attacker.stateElapsed}:${kind}`,
+    contactTick: runtimeTick,
+    contactKind: kind,
+  };
 }
 
-function recordHitDefEffectEvent(fighter: FighterMatchState, kind: "hit" | "guard", move: DemoMove, runtimeTick: number): void {
+function recordHitDefSoundEvent(
+  fighter: FighterMatchState,
+  sound: string | undefined,
+  runtimeTick: number,
+  contact: RuntimeHitDefContactMetadata,
+): void {
+  fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick, contact);
+}
+
+function recordHitDefEffectEvent(
+  fighter: FighterMatchState,
+  kind: "hit" | "guard",
+  move: DemoMove,
+  runtimeTick: number,
+  contact: RuntimeHitDefContactMetadata,
+): void {
   const spark = kind === "guard" ? move.guardSpark : move.hitSpark;
   const assetFrames = resolveRuntimeHitSparkAssetFrames(fighter, spark);
-  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, assetFrames[0], assetFrames);
+  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, assetFrames[0], assetFrames, contact);
 }
 
 function recordFallEnvShakeEvent(

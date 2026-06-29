@@ -12,6 +12,7 @@ import type {
   MugenSnapshot,
   RuntimeActorKind,
   RuntimeControllerTraceEvent,
+  RuntimeHitDefContactKind,
   RuntimeMatchPauseSnapshot,
   RoundSnapshot,
   StageSnapshot,
@@ -662,6 +663,10 @@ export type RuntimeTraceSoundEventRequirement = {
   channel?: number;
   raw?: string;
   stateNo?: number;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
+  requireContactId?: boolean;
   minCount?: number;
 };
 
@@ -678,6 +683,9 @@ export type RuntimeTraceGateSoundEventEvidence = {
   stateNo: number;
   eventTick: number;
   runtimeTick?: number;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
   firstTraceTick: number;
   lastTraceTick: number;
   count: number;
@@ -700,6 +708,10 @@ export type RuntimeTraceHitEffectEventRequirement = {
   minAssetTotalDuration?: number;
   requiredAssetFrameIndices?: number[];
   stateNo?: number;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
+  requireContactId?: boolean;
   minCount?: number;
 };
 
@@ -725,6 +737,36 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   stateNo: number;
   eventTick: number;
   runtimeTick?: number;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
+  firstTraceTick: number;
+  lastTraceTick: number;
+  count: number;
+};
+
+export type RuntimeTraceContactEffectPackageRequirement = {
+  actorId?: string;
+  source?: NonNullable<ActorSnapshot["source"]>;
+  actorKind?: RuntimeActorKind;
+  contactId?: string;
+  contactTick?: number;
+  contactKind?: RuntimeHitDefContactKind;
+  sound?: RuntimeTraceSoundEventRequirement;
+  hitEffect?: RuntimeTraceHitEffectEventRequirement;
+  minCount?: number;
+};
+
+export type RuntimeTraceGateContactEffectPackageEvidence = {
+  actorId: string;
+  label: string;
+  source?: ActorSnapshot["source"];
+  actorKind: RuntimeActorKind;
+  contactId: string;
+  contactTick: number;
+  contactKind: RuntimeHitDefContactKind;
+  sound: RuntimeTraceGateSoundEventEvidence;
+  hitEffect: RuntimeTraceGateHitEffectEventEvidence;
   firstTraceTick: number;
   lastTraceTick: number;
   count: number;
@@ -793,6 +835,7 @@ export type RuntimeTraceGate = {
   requiredMatchPauseAdvances?: RuntimeTraceMatchPauseAdvanceRequirement[];
   requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
   requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
+  requiredContactEffectPackages?: RuntimeTraceContactEffectPackageRequirement[];
   requiredEnvShakeEvents?: RuntimeTraceEnvShakeEventRequirement[];
   requiredTargetLinks?: RuntimeTraceTargetLinkRequirement[];
   requiredRoundFrames?: RuntimeTraceRoundFrameRequirement[];
@@ -823,6 +866,7 @@ export type RuntimeTraceGateEvidence = {
   matchPauseAdvances: RuntimeTraceGateMatchPauseAdvanceEvidence[];
   soundEvents: RuntimeTraceGateSoundEventEvidence[];
   hitEffectEvents: RuntimeTraceGateHitEffectEventEvidence[];
+  contactEffectPackages: RuntimeTraceGateContactEffectPackageEvidence[];
   envShakeEvents: RuntimeTraceGateEnvShakeEventEvidence[];
   targetLinks: RuntimeTraceGateTargetLinkEvidence[];
   roundFrames: RuntimeTraceGateRoundFrameEvidence[];
@@ -1036,6 +1080,15 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
       .reduce((total, event) => total + event.count, 0);
     if (actual < minCount) {
       failures.push(`Missing hit-effect event: ${describeHitEffectEventRequirement(requirement)} >= ${minCount} (actual ${actual})`);
+    }
+  }
+  for (const requirement of gate.requiredContactEffectPackages ?? []) {
+    const minCount = requirement.minCount ?? 1;
+    const actual = evidence.contactEffectPackages
+      .filter((event) => matchesContactEffectPackageRequirement(event, requirement))
+      .reduce((total, event) => total + event.count, 0);
+    if (actual < minCount) {
+      failures.push(`Missing contact effect package: ${describeContactEffectPackageRequirement(requirement)} >= ${minCount} (actual ${actual})`);
     }
   }
   for (const requirement of gate.requiredEnvShakeEvents ?? []) {
@@ -1478,6 +1531,11 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     eventLines.add(event.line);
   }
 
+  const summarizedSoundEvents = [...soundEvents.values()].sort((left, right) => soundEventEvidenceKey(left).localeCompare(soundEventEvidenceKey(right)));
+  const summarizedHitEffectEvents = [...hitEffectEvents.values()].sort((left, right) =>
+    hitEffectEventEvidenceKey(left).localeCompare(hitEffectEventEvidenceKey(right)),
+  );
+
   return {
     actorSources: sortStrings([...actorSources]),
     actorKinds: sortStrings([...actorKinds]) as RuntimeActorKind[],
@@ -1505,8 +1563,9 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
     matchPauseAdvances: [...matchPauseAdvances.values()].sort((left, right) =>
       matchPauseAdvanceEvidenceKey(left.type, left.actorId).localeCompare(matchPauseAdvanceEvidenceKey(right.type, right.actorId)),
     ),
-    soundEvents: [...soundEvents.values()].sort((left, right) => soundEventEvidenceKey(left).localeCompare(soundEventEvidenceKey(right))),
-    hitEffectEvents: [...hitEffectEvents.values()].sort((left, right) => hitEffectEventEvidenceKey(left).localeCompare(hitEffectEventEvidenceKey(right))),
+    soundEvents: summarizedSoundEvents,
+    hitEffectEvents: summarizedHitEffectEvents,
+    contactEffectPackages: summarizeContactEffectPackageEvidence(summarizedSoundEvents, summarizedHitEffectEvents),
     envShakeEvents: [...envShakeEvents.values()].sort((left, right) => envShakeEventEvidenceKey(left).localeCompare(envShakeEventEvidenceKey(right))),
     targetLinks: [...targetLinks.values()].sort((left, right) => targetLinkEvidenceKey(left).localeCompare(targetLinkEvidenceKey(right))),
     roundFrames: [...roundFrames.values()].sort((left, right) => roundFrameGateEvidenceKey(left).localeCompare(roundFrameGateEvidenceKey(right))),
@@ -2008,6 +2067,9 @@ function summarizeSoundEventEvidence(
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
+    contactId: event.contactId,
+    contactTick: event.contactTick,
+    contactKind: event.contactKind,
     firstTraceTick: traceTick,
     lastTraceTick: traceTick,
     count: 1,
@@ -2025,6 +2087,9 @@ function soundEventEvidenceKey(event: RuntimeTraceGateSoundEventEvidence): strin
     event.stateNo,
     event.eventTick,
     event.runtimeTick ?? "",
+    event.contactId ?? "",
+    event.contactTick ?? "",
+    event.contactKind ?? "",
   ].join(":");
 }
 
@@ -2041,13 +2106,17 @@ function matchesSoundEventRequirement(
     (requirement.index === undefined || event.index === requirement.index) &&
     (requirement.channel === undefined || event.channel === requirement.channel) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
-    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
+    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
+    (requirement.contactId === undefined || event.contactId === requirement.contactId) &&
+    (requirement.contactTick === undefined || event.contactTick === requirement.contactTick) &&
+    (requirement.contactKind === undefined || event.contactKind === requirement.contactKind) &&
+    (requirement.requireContactId !== true || event.contactId !== undefined)
   );
 }
 
 function describeSoundEventRequirement(requirement: RuntimeTraceSoundEventRequirement): string {
   return Object.entries(requirement)
-    .filter(([key, value]) => value !== undefined && key !== "minCount")
+    .filter(([key, value]) => value !== undefined && key !== "minCount" && key !== "requireContactId")
     .map(([key, value]) => `${key}=${String(value)}`)
     .join(", ");
 }
@@ -2080,6 +2149,9 @@ function summarizeHitEffectEventEvidence(
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
+    contactId: event.contactId,
+    contactTick: event.contactTick,
+    contactKind: event.contactKind,
     firstTraceTick: traceTick,
     lastTraceTick: traceTick,
     count: 1,
@@ -2107,6 +2179,9 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.stateNo,
     event.eventTick,
     event.runtimeTick ?? "",
+    event.contactId ?? "",
+    event.contactTick ?? "",
+    event.contactKind ?? "",
   ].join(":");
 }
 
@@ -2131,15 +2206,96 @@ function matchesHitEffectEventRequirement(
     (requirement.minAssetTotalDuration === undefined || (event.assetTotalDuration ?? 0) >= requirement.minAssetTotalDuration) &&
     (requirement.requiredAssetFrameIndices === undefined ||
       requirement.requiredAssetFrameIndices.every((frameIndex) => event.assetFrameIndices?.includes(frameIndex))) &&
-    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
+    (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
+    (requirement.contactId === undefined || event.contactId === requirement.contactId) &&
+    (requirement.contactTick === undefined || event.contactTick === requirement.contactTick) &&
+    (requirement.contactKind === undefined || event.contactKind === requirement.contactKind) &&
+    (requirement.requireContactId !== true || event.contactId !== undefined)
   );
 }
 
 function describeHitEffectEventRequirement(requirement: RuntimeTraceHitEffectEventRequirement): string {
   return Object.entries(requirement)
-    .filter(([key, value]) => value !== undefined && key !== "minCount")
+    .filter(([key, value]) => value !== undefined && key !== "minCount" && key !== "requireContactId")
     .map(([key, value]) => `${key}=${String(value)}`)
     .join(", ");
+}
+
+function summarizeContactEffectPackageEvidence(
+  soundEvents: RuntimeTraceGateSoundEventEvidence[],
+  hitEffectEvents: RuntimeTraceGateHitEffectEventEvidence[],
+): RuntimeTraceGateContactEffectPackageEvidence[] {
+  const packages: RuntimeTraceGateContactEffectPackageEvidence[] = [];
+  for (const sound of soundEvents) {
+    if (!sound.contactId || sound.contactTick === undefined || !sound.contactKind) {
+      continue;
+    }
+    for (const hitEffect of hitEffectEvents) {
+      if (
+        hitEffect.actorId !== sound.actorId ||
+        hitEffect.contactId !== sound.contactId ||
+        hitEffect.contactTick !== sound.contactTick ||
+        hitEffect.contactKind !== sound.contactKind
+      ) {
+        continue;
+      }
+      packages.push({
+        actorId: sound.actorId,
+        label: sound.label,
+        source: sound.source,
+        actorKind: sound.actorKind,
+        contactId: sound.contactId,
+        contactTick: sound.contactTick,
+        contactKind: sound.contactKind,
+        sound,
+        hitEffect,
+        firstTraceTick: Math.min(sound.firstTraceTick, hitEffect.firstTraceTick),
+        lastTraceTick: Math.max(sound.lastTraceTick, hitEffect.lastTraceTick),
+        count: Math.min(sound.count, hitEffect.count),
+      });
+    }
+  }
+  return packages.sort((left, right) => contactEffectPackageEvidenceKey(left).localeCompare(contactEffectPackageEvidenceKey(right)));
+}
+
+function contactEffectPackageEvidenceKey(event: RuntimeTraceGateContactEffectPackageEvidence): string {
+  return [
+    event.actorId,
+    event.contactId,
+    event.contactTick,
+    event.contactKind,
+    soundEventEvidenceKey(event.sound),
+    hitEffectEventEvidenceKey(event.hitEffect),
+  ].join(":");
+}
+
+function matchesContactEffectPackageRequirement(
+  event: RuntimeTraceGateContactEffectPackageEvidence,
+  requirement: RuntimeTraceContactEffectPackageRequirement,
+): boolean {
+  return (
+    (requirement.actorId === undefined || event.actorId === requirement.actorId) &&
+    (requirement.source === undefined || event.source === requirement.source) &&
+    (requirement.actorKind === undefined || event.actorKind === requirement.actorKind) &&
+    (requirement.contactId === undefined || event.contactId === requirement.contactId) &&
+    (requirement.contactTick === undefined || event.contactTick === requirement.contactTick) &&
+    (requirement.contactKind === undefined || event.contactKind === requirement.contactKind) &&
+    (requirement.sound === undefined || matchesSoundEventRequirement(event.sound, requirement.sound)) &&
+    (requirement.hitEffect === undefined || matchesHitEffectEventRequirement(event.hitEffect, requirement.hitEffect))
+  );
+}
+
+function describeContactEffectPackageRequirement(requirement: RuntimeTraceContactEffectPackageRequirement): string {
+  const parts = Object.entries(requirement)
+    .filter(([key, value]) => value !== undefined && key !== "minCount" && key !== "sound" && key !== "hitEffect")
+    .map(([key, value]) => `${key}=${String(value)}`);
+  if (requirement.sound) {
+    parts.push(`sound={${describeSoundEventRequirement(requirement.sound)}}`);
+  }
+  if (requirement.hitEffect) {
+    parts.push(`hitEffect={${describeHitEffectEventRequirement(requirement.hitEffect)}}`);
+  }
+  return parts.join(", ");
 }
 
 function summarizeHitEffectAssetFrames(
@@ -3029,6 +3185,9 @@ function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEve
     stateNo: event.stateNo,
     tick: event.tick,
     runtimeTick: event.runtimeTick,
+    contactId: event.contactId,
+    contactTick: event.contactTick,
+    contactKind: event.contactKind,
   };
 }
 

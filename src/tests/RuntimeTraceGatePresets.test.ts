@@ -2565,6 +2565,19 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    const contactPackage = evidence?.contactEffectPackages.find((entry) => entry.contactKind === "hit");
+    expect(contactPackage).toMatchObject({
+      actorId: "p1",
+      source: "imported",
+      actorKind: "player",
+      contactKind: "hit",
+      sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
+      hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7002, assetSource: "fightfx", contactKind: "hit" }),
+    });
+    expect(contactPackage?.contactId).toBe(contactPackage?.sound.contactId);
+    expect(contactPackage?.contactId).toBe(contactPackage?.hitEffect.contactId);
+    expect(contactPackage?.contactTick).toBe(contactPackage?.sound.contactTick);
+    expect(contactPackage?.contactTick).toBe(contactPackage?.hitEffect.contactTick);
     expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
       expect.objectContaining({
         type: "PlaySnd",
@@ -2579,6 +2592,22 @@ describe("RuntimeTraceGatePresets", () => {
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        contactKind: "hit",
+        sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, requireContactId: true }),
+        hitEffect: expect.objectContaining({
+          kind: "hit",
+          sparkNo: 7002,
+          assetSource: "fightfx",
+          requiredAssetFrameIndices: [0, 1],
+          requireContactId: true,
+        }),
       }),
     ]);
   });
@@ -2784,6 +2813,19 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    const contactPackage = evidence?.contactEffectPackages.find((entry) => entry.contactKind === "guard");
+    expect(contactPackage).toMatchObject({
+      actorId: "p1",
+      source: "imported",
+      actorKind: "player",
+      contactKind: "guard",
+      sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+      hitEffect: expect.objectContaining({ kind: "guard", sparkNo: 7004, assetSource: "fightfx", contactKind: "guard" }),
+    });
+    expect(contactPackage?.contactId).toBe(contactPackage?.sound.contactId);
+    expect(contactPackage?.contactId).toBe(contactPackage?.hitEffect.contactId);
+    expect(contactPackage?.contactTick).toBe(contactPackage?.sound.contactTick);
+    expect(contactPackage?.contactTick).toBe(contactPackage?.hitEffect.contactTick);
     expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
       expect.objectContaining({
         type: "PlaySnd",
@@ -2798,6 +2840,22 @@ describe("RuntimeTraceGatePresets", () => {
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        contactKind: "guard",
+        sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, requireContactId: true }),
+        hitEffect: expect.objectContaining({
+          kind: "guard",
+          sparkNo: 7004,
+          assetSource: "fightfx",
+          requiredAssetFrameIndices: [0, 1],
+          requireContactId: true,
+        }),
       }),
     ]);
   });
