@@ -332,12 +332,14 @@ export class PlayableMatchRuntime {
     this.orientationWorld.updateAutoFacing(this.p2.runtime, this.p1.runtime);
 
     if (
-      this.hitPauseWorld.advance({
+      this.hitPauseWorld.advanceRuntime({
         p1: this.p1,
         p2: this.p2,
         p1Input,
         p2Input,
-        pushCommandBuffer: (fighter, fighterInput) => fighter.commandBuffer.push(this.tick, fighterInput, { hitPause: true }),
+        tick: this.tick,
+        stage: this.stage,
+        effectLifecycleWorld: this.effectLifecycleWorld,
         runIgnoredControllers: (fighter, opponent) =>
           runHitPauseIgnoredControllers(
             fighter,
@@ -350,7 +352,6 @@ export class PlayableMatchRuntime {
             (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
             (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
           ),
-        advancePausedPresentation: (fighter) => this.effectLifecycleWorld.advancePausedPresentation(fighter, "hitpause", this.stage),
       }).paused
     ) {
       return;

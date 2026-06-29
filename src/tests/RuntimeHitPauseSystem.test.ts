@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { RuntimeHitPauseWorld, type RuntimeHitPauseActor } from "../mugen/runtime/RuntimeHitPauseSystem";
+import {
+  RuntimeHitPauseWorld,
+  type RuntimeHitPauseActor,
+  type RuntimeHitPauseRuntimeActor,
+} from "../mugen/runtime/RuntimeHitPauseSystem";
 
 describe("RuntimeHitPauseWorld", () => {
   it("owns global hitpause command buffering, ignored-controller, presentation, and countdown order", () => {
@@ -50,8 +54,67 @@ describe("RuntimeHitPauseWorld", () => {
     expect(calls).toEqual([]);
     expect(result).toEqual({ paused: false, globalPause: 0, p1Remaining: 0, p2Remaining: 0 });
   });
+
+  it("wires runtime command buffering and paused presentation", () => {
+    const world = new RuntimeHitPauseWorld();
+    const calls: string[] = [];
+    const p1 = runtimeActor("p1", 2, calls);
+    const p2 = runtimeActor("p2", 1, calls);
+
+    const result = world.advanceRuntime({
+      p1,
+      p2,
+      p1Input: new Set(["x"]),
+      p2Input: new Set(["B"]),
+      tick: 22,
+      stage: { bounds: { left: -160, right: 160 } },
+      effectLifecycleWorld: {
+        advancePausedPresentation: (actor, pauseKind) => calls.push(`presentation:${actor.id}:${pauseKind}`),
+      },
+      runIgnoredControllers: (fighter, opponent) => calls.push(`ignored:${fighter.id}:${opponent.id}`),
+    });
+
+    expect(calls).toEqual([
+      "buffer:p1:22:x:true",
+      "buffer:p2:22:B:true",
+      "ignored:p1:p2",
+      "ignored:p2:p1",
+      "presentation:p1:hitpause",
+      "presentation:p2:hitpause",
+    ]);
+    expect(result).toEqual({ paused: true, globalPause: 2, p1Remaining: 1, p2Remaining: 0 });
+  });
 });
 
 function actor(id: string, hitPause: number): RuntimeHitPauseActor & { id: string } {
   return { id, hitPause };
+}
+
+function runtimeActor(id: string, hitPause: number, commandCalls: string[]): RuntimeHitPauseRuntimeActor & {
+  id: string;
+  commandCalls: string[];
+} {
+  return {
+    id,
+    hitPause,
+    commandCalls,
+    commandBuffer: {
+      push: (frame, values, options) =>
+        commandCalls.push(`buffer:${id}:${frame}:${[...values].join("+")}:${Boolean(options?.hitPause)}`),
+    },
+    runtime: {
+      pos: { x: 0, y: 0 },
+      facing: 1,
+      stateNo: 0,
+      moveType: "I",
+    },
+    effectActorWorld: {
+      advanceActiveEffects: () => undefined,
+      advancePresentationEffects: () => undefined,
+      explodSnapshots: () => [],
+      helperSnapshots: () => [],
+      projectileSnapshots: () => [],
+      removeExplodsOnGetHit: () => undefined,
+    },
+  } as RuntimeHitPauseRuntimeActor & { id: string; commandCalls: string[] };
 }

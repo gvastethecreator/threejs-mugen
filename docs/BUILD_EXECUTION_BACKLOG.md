@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeHitPause runtime-system bridge
+
+Changed:
+
+- Added `RuntimeHitPauseWorld.advanceRuntime(...)` as the concrete hitpause bridge for command buffering and paused-presentation orchestration.
+- Moved `PlayableMatchRuntime` hitpause command-buffer and paused-presentation glue behind that named bridge.
+- Kept the existing generic `advance(...)` ordering API for pure hitpause-order tests and future non-runtime call sites.
+- Extended `RuntimeHitPauseSystem` tests to prove runtime command buffers receive the current tick/input with `hitPause: true`, while paused presentation routes through `RuntimeEffectLifecycleWorld` using the `hitpause` pause kind.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeHitPauseSystem.test.ts` passes: 1 file / 3 tests.
+- `pnpm test` passes: 73 files / 642 tests.
+- `pnpm build` passes; Vite still reports the existing large-chunk warning.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional, 0 skipped.
+
+Claim allowed:
+
+- `RuntimeHitPauseWorld` now owns both bounded global hitpause ordering and the runtime-system bridge for current command buffering plus paused presentation during hitpause.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add new hitpause semantics, helper-owned hitpause execution, broad side-effect ordering during hitpause, exact first-frame decrement order, exact MUGEN/IKEMEN hitpause parity, or score movement.
+
 ## 2026-06-29 - RuntimePausedMatch runtime-system bridge
 
 Changed:
