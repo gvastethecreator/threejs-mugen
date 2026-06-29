@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio desktop command readability polish
+
+Changed:
+
+- Tightened the Studio desktop command center without changing runtime behavior: top chrome, command palette, bottom console, row focus, and scrollbar treatment now use hard neutral surfaces, larger readable text, exact-property transitions, and less modal glow.
+- Increased the desktop console from a thin status strip into a usable log instrument with clearer severity cells, stable file/source columns, and visible scroll affordance.
+- Rebalanced the command palette as a denser action table with larger row text, aligned meta columns, and a reduced hard-edged shadow instead of a glow-heavy modal.
+- Kept edits inside the modular CSS ownership paths: `src/styles/desktop/studio-desktop-command-polish.css`, `src/styles/command/studio-command-console.css`, and `src/styles/command/studio-command-palette.css`.
+
+Evidence:
+
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 639 tests.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:css` passes: 2,672 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file duplicate selectors, and 0 fully shadowed cross-file rules.
+- `pnpm qa:smoke` passes; inspected `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-build.png`, and `.scratch/qa/qa-smoke/studio-evidence.png`.
+- `pnpm qa:trace` passes: 161/161 artifacts.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Studio desktop command-center reading is stronger on Workbench, Build, Evidence, console, and command palette surfaces, while preserving playfield visibility and command palette keyboard/focus behavior.
+
+Claim blocked:
+
+- This is UI/product-surface polish only. It does not add runtime compatibility, IKEMEN behavior, production editing/export workflow, or score movement.
+- Detector debt remains in legacy nested-card markup, desktop-only media-query false positives, and older repeated literal colors; future cuts should flatten asset/right-pane panels and extract shared row/status primitives instead of adding broad new override layers.
+
 ## 2026-06-29 - RuntimeResourceSystem projectile/target ownership
 
 Changed:

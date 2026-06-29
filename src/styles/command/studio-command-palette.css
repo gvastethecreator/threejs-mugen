@@ -14,14 +14,15 @@
   .app-shell.mode-studio .command-palette-panel {
     display: grid;
     grid-template-rows: auto auto auto minmax(0, 1fr);
-    width: min(860px, calc(100vw - 40px));
-    max-height: min(624px, calc(100vh - 88px));
+    width: min(900px, calc(100vw - 40px));
+    max-height: min(650px, calc(100vh - 88px));
     overflow: hidden;
     border: 1px solid #2c333b;
     border-radius: 0;
     background: #080b0f;
     box-shadow:
-      0 24px 54px rgba(0, 0, 0, 0.66),
+      0 18px 32px rgba(0, 0, 0, 0.48),
+      0 0 0 1px #030405,
       inset 0 1px 0 #38404a,
       inset 0 -1px 0 #030405;
   }
@@ -59,7 +60,7 @@
   .app-shell.mode-studio .command-palette-header h2 {
     margin: 0;
     color: #edf1f5;
-    font-size: 14px;
+    font-size: 14.5px;
     font-weight: 700;
     letter-spacing: 0;
   }
@@ -81,7 +82,7 @@
     justify-content: center;
     padding-inline: 8px;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .command-palette-close {
@@ -113,7 +114,7 @@
     border-right: 1px solid #2c333b;
     color: #a6b0bb;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .command-palette-search input {
@@ -123,7 +124,7 @@
     border-radius: 0;
     background: #05080c;
     color: #edf1f5;
-    font-size: 13px;
+    font-size: 13.5px;
     outline: 0;
     box-shadow: inset 3px 0 0 #4d5967;
   }
@@ -136,7 +137,7 @@
 
   .app-shell.mode-studio .command-palette-grid-head {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 104px 82px;
+    grid-template-columns: minmax(0, 1fr) 114px 92px;
     gap: 0;
     padding: 0;
     border-bottom: 1px solid #303842;
@@ -144,13 +145,13 @@
   }
 
   .app-shell.mode-studio .command-palette-grid-head span {
-    min-height: 25px;
+    min-height: 28px;
     align-content: center;
     padding: 0 9px;
     border-right: 1px solid #303842;
     color: #98a3af;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 11px;
     letter-spacing: 0;
     text-transform: uppercase;
   }
@@ -173,10 +174,10 @@
 
   .app-shell.mode-studio .command-result {
     position: relative;
-    grid-template-columns: 34px minmax(0, 1fr) 192px;
-    min-height: 43px;
+    grid-template-columns: 34px minmax(0, 1fr) 206px;
+    min-height: 46px;
     gap: 7px;
-    padding: 5px 9px 5px 7px;
+    padding: 6px 10px 6px 7px;
     border: 0;
     border-bottom: 1px solid #252c34;
     border-radius: 0;
@@ -276,7 +277,7 @@
 
   .app-shell.mode-studio .command-result-main {
     min-width: 0;
-    gap: 3px;
+    gap: 4px;
     padding-right: 4px;
   }
 
@@ -292,18 +293,18 @@
 
   .app-shell.mode-studio .command-result-main strong {
     color: #f0f3f6;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
   }
 
   .app-shell.mode-studio .command-result-main small {
     color: #9ca6b1;
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .command-result-meta {
     display: grid;
-    grid-template-columns: 104px 82px;
+    grid-template-columns: 114px 92px;
     align-items: stretch;
     justify-content: stretch;
     gap: 0;
@@ -325,7 +326,7 @@
     background: transparent;
     color: #c4ccd5;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1;
     text-overflow: ellipsis;
     text-transform: uppercase;
@@ -371,9 +372,9 @@
   }
 
   .app-shell.mode-studio .command-palette-results .empty-state.compact span {
-    max-width: 560px;
+    max-width: 640px;
     color: #9ca6b1;
-    font-size: 12px;
+    font-size: 12.5px;
     line-height: 1.35;
   }
 }
