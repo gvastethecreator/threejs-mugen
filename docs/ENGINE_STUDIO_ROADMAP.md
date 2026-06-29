@@ -99,7 +99,7 @@ Goal: make the project editable and understandable, not just playable.
 Studio construction order for the approved horizon:
 
 1. Preserve the central playable/preview viewport.
-2. Make Assets, Evidence, and Build denser and more truthful before broad editing. Current visual checkpoints cover dense Assets ledger rows, Evidence audit ledgers, and Build/Modules command ledgers, all still backed by real QA bridge/project data.
+2. Make Assets, Evidence, and Build denser and more truthful before broad editing. Current visual checkpoints cover dense Assets ledger rows, Evidence audit ledgers, Build/Modules command ledgers, and the shared Studio command-desk status strip with live Pause/HitPause data, all still backed by real QA bridge/project/runtime data.
 3. Absorb Inspector into Character Studio only after the preview can show AIR/CMD/CNS/SFF, Clsn, unsupported features, and linked evidence.
 4. Add Stage Studio preview before BGCtrl/layer editing.
 5. Add generated-authoring records only where prompt/source, atlas QA, collision/action data, and runtime playtest evidence can be linked.

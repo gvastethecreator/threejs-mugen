@@ -9739,12 +9739,12 @@ export class App {
             <small>${escapeHtml(this.snapshot.stage.displayName ?? "Stage")} / state ${escapeHtml(actor?.runtime.stateType ?? "-")}/${escapeHtml(actor?.runtime.moveType ?? "-")}/${escapeHtml(actor?.runtime.physics ?? "-")} / anim ${actor?.runtime.animNo ?? "-"}</small>
           </div>
           <div class="stage-status-grid" aria-label="Runtime state summary">
-            ${this.renderStageStatusMetric("P1", `${actor?.runtime.life ?? 0} HP`, "ok")}
-            ${this.renderStageStatusMetric("CPU", `${opponent?.runtime.life ?? 0} HP`, "ok")}
-            ${this.renderStageStatusMetric("Cmd", activeCommands.length ? activeCommands.join(", ") : "idle", activeCommands.length ? "active" : undefined)}
-            ${this.renderStageStatusMetric("Stage", stageAsset, stageAsset === "geometry" ? undefined : "ok")}
-            ${this.renderStageStatusMetric("Atlas", p1Atlas, p1Atlas === "loaded" ? "ok" : p1Atlas === "fallback" ? "warn" : undefined)}
-            ${this.renderStageStatusMetric("Walk QA", p1QaLabel, p1Qa?.status === "pass" ? "ok" : p1Qa?.status === "fail" ? "error" : p1Qa?.status === "warn" || p1Qa?.status === "missing" ? "warn" : undefined)}
+            ${this.renderStageStatusMetric("P1", `${actor?.runtime.life ?? 0} HP`, "ok", "character")}
+            ${this.renderStageStatusMetric("CPU", `${opponent?.runtime.life ?? 0} HP`, "ok", "match")}
+            ${this.renderStageStatusMetric("Cmd", activeCommands.length ? activeCommands.join(", ") : "idle", activeCommands.length ? "active" : undefined, "tools")}
+            ${this.renderStageStatusMetric("Stage", stageAsset, stageAsset === "geometry" ? undefined : "ok", "stage")}
+            ${this.renderStageStatusMetric("Atlas", p1Atlas, p1Atlas === "loaded" ? "ok" : p1Atlas === "fallback" ? "warn" : undefined, "assetAtlas")}
+            ${this.renderStageStatusMetric("Walk QA", p1QaLabel, p1Qa?.status === "pass" ? "ok" : p1Qa?.status === "fail" ? "error" : p1Qa?.status === "warn" || p1Qa?.status === "missing" ? "warn" : undefined, "activity")}
           </div>
         </div>
       `;
@@ -9760,8 +9760,8 @@ export class App {
               <small>Action ${renderSnapshot.selectedActionId ?? "-"} / frame ${actor?.runtime.frameIndex ?? "-"} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "-"}</small>
             </div>
             <div class="stage-status-grid" aria-label="Inspector collision summary">
-              ${this.renderStageStatusMetric("Clsn1", String(frame?.clsn1.length ?? 0), frame?.clsn1.length ? "active" : undefined)}
-              ${this.renderStageStatusMetric("Clsn2", String(frame?.clsn2.length ?? 0), frame?.clsn2.length ? "ok" : undefined)}
+              ${this.renderStageStatusMetric("Clsn1", String(frame?.clsn1.length ?? 0), frame?.clsn1.length ? "active" : undefined, "hit")}
+              ${this.renderStageStatusMetric("Clsn2", String(frame?.clsn2.length ?? 0), frame?.clsn2.length ? "ok" : undefined, "hurt")}
             </div>
           </div>
         `;
@@ -9770,6 +9770,11 @@ export class App {
       const traceCount = this.traceArtifacts.length + this.storedTraceEvidence.length;
       const compiled = this.lastCompiledProject;
       const tabLabel = labelForStudioTab(this.studioTab);
+      const pauseLabel = this.snapshot.matchPause
+        ? `${this.snapshot.matchPause.type === "SuperPause" ? "super" : "pause"} ${this.snapshot.matchPause.remaining}f`
+        : actor?.hitPause
+          ? `hit ${actor.hitPause}f`
+          : "live";
       return `
         <div class="stage-status-card">
           <div class="stage-status-main">
@@ -9778,10 +9783,11 @@ export class App {
             <small>Playtest ${escapeHtml(actor?.label ?? "P1")} vs ${escapeHtml(opponent?.label ?? "CPU")}</small>
           </div>
           <div class="stage-status-grid" aria-label="Studio state summary">
-            ${this.renderStageStatusMetric("Gates", `${summary.gates.length - gateIssues}/${summary.gates.length}`, gateIssues > 0 ? "warn" : "ok")}
-            ${this.renderStageStatusMetric("Assets", `${summary.stats.characters}c / ${summary.stats.stages}s`)}
-            ${this.renderStageStatusMetric("Trace", traceCount ? String(traceCount) : "none", traceCount ? "ok" : "warn")}
-            ${this.renderStageStatusMetric("Build", compiled ? "ready" : "pending", compiled ? "ok" : "warn")}
+            ${this.renderStageStatusMetric("Gates", `${summary.gates.length - gateIssues}/${summary.gates.length}`, gateIssues > 0 ? "warn" : "ok", "shield")}
+            ${this.renderStageStatusMetric("Assets", `${summary.stats.characters}c / ${summary.stats.stages}s`, undefined, "assets")}
+            ${this.renderStageStatusMetric("Trace", traceCount ? String(traceCount) : "none", traceCount ? "ok" : "warn", "evidence")}
+            ${this.renderStageStatusMetric("Build", compiled ? "ready" : "pending", compiled ? "ok" : "warn", "build")}
+            ${this.renderStageStatusMetric("Pause", pauseLabel, this.snapshot.matchPause || actor?.hitPause ? "active" : undefined, "pause")}
           </div>
         </div>
       `;
@@ -9807,15 +9813,16 @@ export class App {
           <small>Frame ${actor?.runtime.frameIndex ?? "-"} / sprite ${frame ? `${frame.spriteGroup},${frame.spriteIndex}` : "mock"}</small>
         </div>
         <div class="stage-status-grid" aria-label="Character preview summary">
-          ${this.renderStageStatusMetric("SFF", decodedSprites > 0 ? `${decodedSprites}/${spriteTotal}` : "mock fallback", decodedSprites > 0 ? "ok" : "warn")}
+          ${this.renderStageStatusMetric("SFF", decodedSprites > 0 ? `${decodedSprites}/${spriteTotal}` : "mock fallback", decodedSprites > 0 ? "ok" : "warn", "assetAtlas")}
         </div>
       </div>
     `;
   }
 
-  private renderStageStatusMetric(label: string, value: string, tone?: "active" | "ok" | "warn" | "error"): string {
+  private renderStageStatusMetric(label: string, value: string, tone?: "active" | "ok" | "warn" | "error", icon?: StudioIconName): string {
     return `
-      <span class="stage-status-metric ${tone ? `is-${tone}` : ""}">
+      <span class="stage-status-metric ${tone ? `is-${tone}` : ""} ${icon ? "has-icon" : ""}">
+        ${icon ? tablerIcon(icon, "ui-icon stage-status-icon") : ""}
         <small>${escapeHtml(label)}</small>
         <b>${escapeHtml(value)}</b>
       </span>

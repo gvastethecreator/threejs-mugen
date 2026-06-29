@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio command desk visual pass
+
+Changed:
+
+- Added icons to stage status metrics for Runtime, Inspector, Studio, and Character preview readouts.
+- Added a Studio viewport Pause metric sourced from live `matchPause` / actor `hitPause` snapshot data.
+- Added desktop-only Studio command-desk styling so the chrome, viewport instruments, status strip, toolbar, badges, and dense rows read as one neutral operational surface.
+- Kept the change presentation/status-only: no runtime, parser, trace, export, package, or compatibility behavior changed.
+
+Evidence:
+
+- `pnpm qa:smoke` passes.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-debug-pause.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-assets.png`, and `.scratch/qa/qa-smoke/runtime-desktop.png`.
+- `pnpm qa:smoke` diagnostics confirm Studio Workbench has no horizontal overflow at desktop/tablet, Stage Status is visible on tablet, Studio Debug Pause lens shows hitpause actor state, Studio Build still compiles and reports a passing trace artifact, Studio Assets still exposes project asset data, and Runtime desktop still renders active hit spark evidence.
+
+Claim allowed:
+
+- Studio's desktop command surface is more coherent and the viewport status strip exposes live pause/hitpause state while staying bound to runtime/project evidence.
+
+Claim blocked:
+
+- This is visual/product polish only. It does not prove new Studio editing workflows, persistent source handles, package/export parity, runtime compatibility, IKEMEN execution, or score movement.
+
 ## 2026-06-29 - RuntimeStateAvailabilityWorld ownership extraction
 
 Changed:
