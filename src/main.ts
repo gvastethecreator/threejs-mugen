@@ -1,4 +1,5 @@
 import "./style.css";
+import "./styles/studio-command-center.css";
 import { App } from "./app/App";
 
 const root = document.querySelector<HTMLDivElement>("#app");

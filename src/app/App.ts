@@ -663,6 +663,7 @@ export class App {
   private studioLeftDockOpen = true;
   private studioRightDockOpen = true;
   private studioFocusMode = false;
+  private studioViewportDefaultsApplied = false;
   private pendingMs = 0;
   private renderBusy = false;
   private lastPanelUpdate = 0;
@@ -1668,6 +1669,23 @@ export class App {
     shell?.setAttribute("data-left-dock", this.mode === "studio" && !this.studioFocusMode && this.studioLeftDockOpen ? "open" : "closed");
     shell?.setAttribute("data-right-dock", this.mode === "studio" && !this.studioFocusMode && this.studioRightDockOpen ? "open" : "closed");
     shell?.setAttribute("data-focus-mode", this.mode === "studio" && this.studioFocusMode ? "true" : "false");
+    this.applyStudioViewportDefaults();
+  }
+
+  private applyStudioViewportDefaults(): void {
+    if (this.mode !== "studio" || this.studioViewportDefaultsApplied) {
+      return;
+    }
+    this.studioViewportDefaultsApplied = true;
+    const disableOverlay = (key: "showClsn1" | "showClsn2" | "showAxis" | "showGrid"): void => {
+      this.snapshot = this.isInspectorRuntimeSurface()
+        ? this.inspectorRuntime.dispatch({ type: "toggle", key, value: false })
+        : this.matchRuntime.dispatch({ type: "toggle", key, value: false });
+    };
+    disableOverlay("showGrid");
+    disableOverlay("showAxis");
+    disableOverlay("showClsn1");
+    disableOverlay("showClsn2");
   }
 
   private updateLiveUi(): void {
@@ -1711,6 +1729,12 @@ export class App {
     if (speedSelect) {
       speedSelect.value = String(this.snapshot.speed);
     }
+    for (const input of this.root.querySelectorAll<HTMLInputElement>("[data-toggle]")) {
+      const key = input.dataset.toggle as keyof Pick<MugenSnapshot, "showClsn1" | "showClsn2" | "showAxis" | "showGrid"> | undefined;
+      if (key) {
+        input.checked = Boolean(this.snapshot[key]);
+      }
+    }
   }
 
   private setHtml(selector: string, html: string): void {
@@ -1745,8 +1769,8 @@ export class App {
           <small>MUGEN / Ikemen Workbench</small>
         </span>
       </div>
-      <div class="studio-chrome-readout" aria-label="Active studio context">
-        <span class="studio-chrome-field studio-chrome-matchup">
+      <div class="studio-chrome-context" aria-label="Active studio context">
+        <div class="studio-chrome-field studio-chrome-matchup">
           <small class="studio-chrome-kicker">Matchup</small>
           <span class="studio-chrome-value">
             <i class="studio-chrome-dot is-p1" aria-hidden="true"></i>
@@ -1755,39 +1779,39 @@ export class App {
             <i class="studio-chrome-dot is-p2" aria-hidden="true"></i>
             <b>${escapeHtml(p2?.displayName ?? "CPU")}</b>
           </span>
-        </span>
-        <span class="studio-chrome-field">
+        </div>
+        <div class="studio-chrome-field">
           <small class="studio-chrome-kicker">Stage</small>
           <span class="studio-chrome-value">
             ${tablerIcon("stage", "ui-icon")}
             <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
             <em>${summary.stats.stages} stages</em>
           </span>
-        </span>
-        <span class="studio-chrome-field ${this.snapshot.playing ? "is-ok" : "is-warn"}">
+        </div>
+        <div class="studio-chrome-field ${this.snapshot.playing ? "is-ok" : "is-warn"}">
           <small class="studio-chrome-kicker">Runtime</small>
           <span class="studio-chrome-value">
             <i class="studio-chrome-dot ${this.snapshot.playing ? "is-live" : "is-paused"}" aria-hidden="true"></i>
             <b>${escapeHtml(runtimeLabel)}</b>
           </span>
-        </span>
-        <span class="studio-chrome-field ${this.lastCompiledProject ? "is-ok" : "is-warn"}">
+        </div>
+        <div class="studio-chrome-field ${this.lastCompiledProject ? "is-ok" : "is-warn"}">
           <small class="studio-chrome-kicker">Build</small>
           <span class="studio-chrome-value">
             ${tablerIcon("build", "ui-icon")}
             <b>${escapeHtml(buildLabel)}</b>
             <em>${summary.stats.generatedAtlases} atlas${summary.stats.generatedAtlases === 1 ? "" : "es"}</em>
           </span>
-        </span>
+        </div>
       </div>
       <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
         <button type="button" class="studio-chrome-command" data-action="open-command-palette" aria-label="Open command palette">
           <span class="studio-chrome-command-prefix" aria-hidden="true">&gt;_</span>
-          <span>Command Palette</span>
+          <span>Command</span>
         </button>
         <button type="button" class="studio-chrome-playtest" data-mode="match" aria-label="Open playable runtime">
           ${tablerIcon("play", "ui-icon")}
-          <span>Playtest (F5)</span>
+          <span>Playtest</span>
         </button>
         <button type="button" class="studio-chrome-utility" data-action="compile-project" aria-label="Compile runtime manifest" title="Compile runtime manifest">
           ${tablerIcon("build", "ui-icon")}
@@ -2955,7 +2979,8 @@ export class App {
       <div class="studio-mission-strip" aria-label="Studio project flow">
         ${this.renderStudioMissionNode({
           step: "01",
-          label: "Intake",
+          icon: "folder",
+          label: "Import",
           value: this.importedSourceBundle ? "source linked" : this.character ? "character parsed" : "load source",
           detail: this.importedSourceBundle?.sourceName ?? this.character?.sourceName ?? "MUGEN ZIP/folder",
           status: importedStatus,
@@ -2963,23 +2988,35 @@ export class App {
         })}
         ${this.renderStudioMissionNode({
           step: "02",
-          label: "Assemble",
-          value: `${summary.stats.characters} fighters / ${summary.stats.stages} stages`,
-          detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
+          icon: "shield",
+          label: "Validate",
+          value: "check characters, stages, atlases",
+          detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages / ${summary.stats.generatedAtlases} atlases`,
           status: assembleStatus,
           attribute: 'data-studio-tab="workbench"',
         })}
         ${this.renderStudioMissionNode({
           step: "03",
-          label: "Prove",
-          value: traceCount ? `${traceCount} trace${traceCount === 1 ? "" : "s"}` : "no trace yet",
-          detail: traceCount ? "evidence ready" : "export smoke trace",
-          status: evidenceStatus,
-          attribute: traceCount ? 'data-studio-tab="evidence"' : 'data-action="export-trace-artifact"',
+          icon: "route",
+          label: "Map Assets",
+          value: "link assets and dependencies",
+          detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
+          status: assembleStatus,
+          attribute: 'data-studio-tab="assets"',
         })}
         ${this.renderStudioMissionNode({
           step: "04",
-          label: "Ship",
+          icon: "play",
+          label: "Playtest",
+          value: traceCount ? `${traceCount} trace${traceCount === 1 ? "" : "s"}` : "no trace yet",
+          detail: this.snapshot.playing ? "local match live" : "local match paused",
+          status: evidenceStatus,
+          attribute: 'data-mode="match"',
+        })}
+        ${this.renderStudioMissionNode({
+          step: "05",
+          icon: "package",
+          label: "Package",
           value: compiled ? "manifest ready" : "compile needed",
           detail: compiled ? `${compiled.modules.active.length} modules active` : "runtime-manifest/v0",
           status: buildStatus,
@@ -2991,6 +3028,7 @@ export class App {
 
   private renderStudioMissionNode(input: {
     step: string;
+    icon: StudioIconName;
     label: string;
     value: string;
     detail: string;
@@ -2999,9 +3037,9 @@ export class App {
   }): string {
     return `
       <button type="button" class="studio-mission-node is-${this.statusClassName(input.status)}" ${input.attribute}>
-        <span class="studio-mission-step">${escapeHtml(input.step)}</span>
+        <span class="studio-mission-step">${tablerIcon(input.icon, "ui-icon mission-icon")}</span>
         <span class="studio-mission-main">
-          <strong>${escapeHtml(input.label)}</strong>
+          <strong><em>${escapeHtml(input.step)}</em>${escapeHtml(input.label)}</strong>
           <small>${escapeHtml(input.value)}</small>
         </span>
         <span class="studio-mission-detail">${escapeHtml(input.detail)}</span>

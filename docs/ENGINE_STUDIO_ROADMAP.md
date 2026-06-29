@@ -46,7 +46,7 @@ Product rule: every readiness badge should either link to evidence, point to the
 
 Product-design rule: before a major Studio interface rebuild, create three focused visual directions for the workbench shell and choose one. Those visuals are planning targets only; implementation must still use live project/runtime/evidence data and must close with browser visual QA.
 
-UX acceptance rule: every Studio surface must expose one primary next action, every `partial`/`warn`/`blocked` state must explain cause and repair path, and every `ok` state must link to evidence. The current visual audit found the shell broadly usable with no horizontal overflow, but flagged repeated status/action patterns across Assets, Evidence, Build, Debug, and Modules as the main coherence risk. The latest Studio chrome containment pass removed a duplicate desktop correction block that could hide Build/Compile controls; broader CSS consolidation remains a product-system task, not a finished cleanup.
+UX acceptance rule: every Studio surface must expose one primary next action, every `partial`/`warn`/`blocked` state must explain cause and repair path, and every `ok` state must link to evidence. The current visual audit found the shell broadly usable with no horizontal overflow, but flagged repeated status/action patterns across Assets, Evidence, Build, Debug, and Modules as the main coherence risk. The latest Studio CSS hygiene pass moved command-center authority into `src/styles/studio-command-center.css`, removed exact duplicate CSS rules, and added `pnpm qa:css`; broader primitive extraction remains a product-system task, not a finished cleanup.
 
 ## Non-Negotiable Architecture Rules
 
@@ -99,7 +99,7 @@ Goal: make the project editable and understandable, not just playable.
 Studio construction order for the approved horizon:
 
 1. Preserve the central playable/preview viewport.
-2. Make Assets, Evidence, and Build denser and more truthful before broad editing. Current visual checkpoints cover compact Studio navigator/mission rows, dense Assets ledger rows, Evidence audit ledgers, Build/Modules command ledgers, the shared Studio command-desk status strip with live Pause/HitPause data, and a first CSS containment pass that keeps command actions visible without a duplicate desktop correction block. These remain backed by real QA bridge/project/runtime data.
+2. Make Assets, Evidence, and Build denser and more truthful before broad editing. Current visual checkpoints cover compact Studio navigator/mission rows, dense Assets ledger rows, Evidence audit ledgers, Build/Modules command ledgers, the shared Studio command-desk status strip with live Pause/HitPause data, and a CSS hygiene pass that keeps command actions visible while eliminating exact duplicate CSS rules. These remain backed by real QA bridge/project/runtime data.
 3. Absorb Inspector into Character Studio only after the preview can show AIR/CMD/CNS/SFF, Clsn, unsupported features, and linked evidence.
 4. Add Stage Studio preview before BGCtrl/layer editing.
 5. Add generated-authoring records only where prompt/source, atlas QA, collision/action data, and runtime playtest evidence can be linked.

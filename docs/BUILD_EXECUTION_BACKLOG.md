@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS hygiene and duplication audit
+
+Changed:
+
+- Added `scripts/audit_css_duplication.cjs` plus `pnpm qa:css` / `pnpm fix:css` for CSS duplication metrics and exact-rule cleanup.
+- Kept active Studio command-center desktop authority in `src/styles/studio-command-center.css`, imported after the legacy base stylesheet.
+- Removed exact duplicate CSS rules from `src/style.css` while preserving the final cascade owner for each repeated rule.
+- Updated Studio interface/roadmap docs to name remaining duplicated selector cascade as debt instead of claiming a finished design-system refactor.
+
+Evidence:
+
+- `pnpm qa:css` reports 4,018 scanned rules, 423 duplicate selector keys / 1,334 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, and 314 repeated declaration groups.
+- `git diff --minimal --shortstat -- src/style.css` reports 26 inserted lines and 2,100 deleted lines from the legacy stylesheet after exact duplicate cleanup plus the command-center extraction.
+
+Claim allowed:
+
+- The current CSS source no longer has exact duplicate rules in the scanned base/Studio styles, and future agents can measure duplication with `pnpm qa:css`.
+
+Claim blocked:
+
+- This is CSS hygiene only. It does not finish shared Studio primitives, remove the remaining duplicated selector cascade, prove new Studio workflows, change runtime compatibility, or move port scores.
+
 ## 2026-06-29 - Studio chrome CSS containment
 
 Changed:

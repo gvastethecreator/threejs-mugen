@@ -589,10 +589,6 @@
     text-transform: uppercase;
   }
 
-  .app-shell.mode-studio .command-palette-grid-head span:nth-child(1) {
-    grid-column: 2;
-  }
-
   .app-shell.mode-studio .command-palette-grid-head span:nth-child(2) {
     grid-column: 3;
     justify-content: center;
@@ -1487,10 +1483,6 @@
     border-radius: 0;
     background: #0b0f14;
     box-shadow: none;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat strong {
@@ -2917,6 +2909,11 @@ pre,
   line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.studio-mission-main strong em {
+  margin-right: 0.55ch;
+  font-style: normal;
 }
 
 .studio-mission-main small,
@@ -6059,10 +6056,6 @@ button.controller-chip {
   height: 100%;
 }
 
-.meter-life span {
-  background: var(--surface-flat);
-}
-
 .meter-power {
   height: 6px;
 }
@@ -6582,11 +6575,6 @@ button.controller-chip {
   justify-content: end;
 }
 
-/* Product polish pass: dense engine UI, fewer decorative artifacts. */
-body {
-  background: var(--surface-flat);
-}
-
 button,
 .button {
   border-radius: 6px;
@@ -6594,11 +6582,6 @@ button,
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.09),
     inset 0 -1px 0 rgba(0, 0, 0, 0.72);
-}
-
-button:hover,
-.button:hover {
-  background: var(--surface-flat);
 }
 
 select,
@@ -6945,10 +6928,6 @@ button.debug-filter-button {
   gap: 7px 10px;
 }
 
-.kv dt {
-  color: color-mix(in srgb, var(--subtle) 88%, var(--text));
-}
-
 .kv dd {
   color: color-mix(in srgb, var(--text) 92%, var(--muted));
 }
@@ -7177,10 +7156,6 @@ button.debug-filter-button {
     padding: 12px 10px;
   }
 
-  .stage {
-    min-height: min(500px, 60vh);
-  }
-
   .app-shell.mode-studio .stage {
     min-height: min(390px, 50vh);
   }
@@ -7363,27 +7338,8 @@ button.debug-filter-button {
     display: none;
   }
 
-  .stage-status-card {
-    gap: 4px;
-    padding: 6px;
-  }
-
-  .stage-status-main small,
-  .stage-status-badges {
-    display: none;
-  }
-
-  .stage-status-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4px;
-  }
-
   .stage-status-metric {
     padding: 4px;
-  }
-
-  .stage-status-metric:nth-child(n + 5) {
-    display: none;
   }
 
   .match-select-grid,
@@ -8463,10 +8419,6 @@ button.list-item:hover,
 
 .badge.active {
   border-color: color-mix(in srgb, var(--surface-accent) 30%, var(--panel-border));
-}
-
-.meter-life span {
-  background: var(--surface-flat);
 }
 
 .meter-power span {
@@ -9890,9 +9842,6 @@ input {
 
 /* UI hardening pass: keep shell usable on tablet widths and reduce mobile stage occlusion. */
 @media (max-width: 1160px) {
-  body {
-    overflow: auto;
-  }
 
   .app-shell,
   .app-shell.mode-studio,
@@ -10455,30 +10404,12 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b,
   .app-shell.mode-studio .section h1,
   .app-shell.mode-studio .section h2,
   .app-shell.mode-studio .section h3,
   .app-shell.mode-studio .workbench-ops-head h2 {
     font-weight: 720;
     letter-spacing: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    border-color: var(--editor-edge);
-    border-radius: 1px;
-    background: var(--editor-bay-deep);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    min-height: 36px;
-    padding: 4px 8px;
-    border-right-color: color-mix(in srgb, var(--editor-edge) 78%, transparent);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
-    color: color-mix(in srgb, var(--warn) 78%, var(--text));
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -10519,28 +10450,9 @@ input {
     background: var(--editor-command-hover);
   }
 
-  .app-shell.mode-studio .studio-chrome-actions button.is-active,
-  .app-shell.mode-studio .mode-switch button.is-active,
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
-    border-color: color-mix(in srgb, var(--section-accent) 42%, var(--editor-edge-strong));
-    background: color-mix(in srgb, var(--section-accent) 7%, var(--editor-command));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.065),
-      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 46%, transparent);
-  }
-
   .app-shell.mode-studio .primary-action {
     border-color: color-mix(in srgb, var(--section-accent) 45%, var(--editor-edge));
     background: color-mix(in srgb, var(--section-accent) 10%, var(--editor-command));
-  }
-
-  .app-shell.mode-studio .pane,
-  .app-shell.mode-studio .pane-right {
-    gap: 0;
-    padding: 0;
-    border-color: var(--editor-edge-strong);
-    background: var(--editor-bay);
-    scrollbar-gutter: stable;
   }
 
   .app-shell.mode-studio .pane {
@@ -10567,17 +10479,6 @@ input {
   .app-shell.mode-studio .pane > .section:first-child,
   .app-shell.mode-studio .pane-right > .section:first-child {
     padding-top: 8px;
-  }
-
-  .app-shell.mode-studio .section-heading-row,
-  .app-shell.mode-studio .workbench-ops-head,
-  .app-shell.mode-studio .build-readiness-header,
-  .app-shell.mode-studio .command-center-header {
-    min-height: 28px;
-    align-items: end;
-    gap: 6px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid var(--editor-edge);
   }
 
   .app-shell.mode-studio .section-heading-row > div,
@@ -10631,14 +10532,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab:hover {
     background: var(--editor-row-hover);
   }
@@ -10662,19 +10555,6 @@ input {
   .app-shell.mode-studio .is-warn .tab-dot,
   .app-shell.mode-studio .is-warn::after {
     background: var(--warn);
-  }
-
-  .app-shell.mode-studio .badge,
-  .app-shell.mode-studio .status-badge,
-  .app-shell.mode-studio .tab-count,
-  .app-shell.mode-studio .asset-row-kind,
-  .app-shell.mode-studio .asset-row-action,
-  .app-shell.mode-studio .asset-row-export {
-    min-height: 20px;
-    border-color: var(--editor-edge);
-    border-radius: 1px;
-    background: var(--editor-panel-pressed);
-    color: color-mix(in srgb, var(--text) 86%, var(--muted));
   }
 
   .app-shell.mode-studio .badge.warn,
@@ -10721,19 +10601,6 @@ input {
     background: var(--editor-panel-pressed);
   }
 
-  .app-shell.mode-studio .workbench-ops-section,
-  .app-shell.mode-studio .asset-command-center,
-  .app-shell.mode-studio .acceptance-gates-section,
-  .app-shell.mode-studio .debug-lens-section,
-  .app-shell.mode-studio .trace-scrubber-section {
-    border: 1px solid var(--editor-edge);
-    border-radius: 1px;
-    background: var(--editor-panel);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.045),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
-  }
-
   .app-shell.mode-studio .workbench-ops-section {
     padding: 8px;
   }
@@ -10763,15 +10630,6 @@ input {
     padding: 8px 9px;
   }
 
-  .app-shell.mode-studio .workbench-route-button:hover,
-  .app-shell.mode-studio .asset-row:hover,
-  .app-shell.mode-studio .evidence-record:hover,
-  .app-shell.mode-studio .build-readiness-record:hover,
-  .app-shell.mode-studio .health-queue-row:hover,
-  .app-shell.mode-studio .engine-module-row:hover {
-    background: var(--editor-row-hover);
-  }
-
   .app-shell.mode-studio .workbench-route-button:last-child,
   .app-shell.mode-studio .asset-row:last-child,
   .app-shell.mode-studio .evidence-record:last-child,
@@ -10780,46 +10638,6 @@ input {
   .app-shell.mode-studio .engine-module-row:last-child,
   .app-shell.mode-studio .studio-mission-node:last-child {
     border-bottom: 0;
-  }
-
-  .app-shell.mode-studio .workbench-route-button.is-ok,
-  .app-shell.mode-studio .asset-row.is-ok,
-  .app-shell.mode-studio .evidence-record.is-ok,
-  .app-shell.mode-studio .build-readiness-record.is-ok,
-  .app-shell.mode-studio .health-grid .is-ok,
-  .app-shell.mode-studio .workbench-lane-strip .is-ok {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--ok) 68%, transparent);
-  }
-
-  .app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio .asset-row.is-warn,
-  .app-shell.mode-studio .asset-row.is-planned,
-  .app-shell.mode-studio .asset-row.is-partial,
-  .app-shell.mode-studio .evidence-record.is-warn,
-  .app-shell.mode-studio .evidence-record.is-planned,
-  .app-shell.mode-studio .evidence-record.is-partial,
-  .app-shell.mode-studio .build-readiness-record.is-warn,
-  .app-shell.mode-studio .build-readiness-record.is-planned,
-  .app-shell.mode-studio .build-readiness-record.is-partial,
-  .app-shell.mode-studio .health-grid .is-warn,
-  .app-shell.mode-studio .workbench-lane-strip .is-warn {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--warn) 66%, transparent);
-  }
-
-  .app-shell.mode-studio .asset-row.is-error,
-  .app-shell.mode-studio .asset-row.is-blocked,
-  .app-shell.mode-studio .evidence-record.is-error,
-  .app-shell.mode-studio .evidence-record.is-blocked,
-  .app-shell.mode-studio .build-readiness-record.is-error,
-  .app-shell.mode-studio .build-readiness-record.is-blocked,
-  .app-shell.mode-studio .workbench-lane-strip .is-error {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--danger) 72%, transparent);
-  }
-
-  .app-shell.mode-studio .workbench-route-button {
-    grid-template-columns: 18px minmax(0, 0.78fr) minmax(0, 1fr);
-    gap: 2px 8px;
-    min-height: 52px;
   }
 
   .app-shell.mode-studio .workbench-route-button .route-icon {
@@ -10872,42 +10690,9 @@ input {
     white-space: nowrap;
   }
 
-  .app-shell.mode-studio .workbench-action-bar {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button {
-    display: inline-grid;
-    grid-template-columns: 15px minmax(0, 1fr);
-    min-height: 40px;
-    align-items: center;
-    justify-content: start;
-    gap: 7px;
-    padding: 7px 8px;
-    border-width: 0 1px 0 0;
-    border-color: var(--editor-edge);
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button:last-child {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio .workbench-action-bar .action-icon {
     width: 15px;
     height: 15px;
-  }
-
-  .app-shell.mode-studio .studio-kv {
-    grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
-  }
-
-  .app-shell.mode-studio .studio-kv dt,
-  .app-shell.mode-studio .studio-kv dd {
-    min-height: 26px;
-    padding: 5px 7px;
-    border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
   }
 
   .app-shell.mode-studio .studio-kv dt {
@@ -10916,10 +10701,6 @@ input {
     font-family: var(--mono);
     font-size: 12px;
     text-align: right;
-  }
-
-  .app-shell.mode-studio .studio-kv dd {
-    background: var(--editor-row);
   }
 
   .app-shell.mode-studio .studio-kv dt:nth-last-child(2),
@@ -11000,25 +10781,8 @@ input {
     gap: 3px;
   }
 
-  .app-shell.mode-studio .stage-toolbar button,
-  .app-shell.mode-studio .stage-toolbar .toggle-pill,
-  .app-shell.mode-studio .toolbar-group select {
-    min-height: 40px;
-  }
-
-  .app-shell.mode-studio .stage-status {
-    width: min(480px, calc(40% - 16px));
-    max-height: 134px;
-  }
-
   .app-shell.mode-studio .stage-status-card {
     padding: 8px;
-  }
-
-  .app-shell.mode-studio .stage-status-grid {
-    gap: 0;
-    border: 1px solid var(--editor-edge);
-    background: var(--editor-panel-pressed);
   }
 
   .app-shell.mode-studio .stage-status-metric {
@@ -11032,11 +10796,6 @@ input {
     border-right: 0;
   }
 
-  .app-shell.mode-studio .console {
-    border-top-color: var(--editor-edge-strong);
-    background: #050609;
-  }
-
   .app-shell.mode-studio .console-toolbar {
     min-height: 28px;
     border-bottom-color: var(--editor-edge);
@@ -11045,60 +10804,10 @@ input {
   .app-shell.mode-studio .console-list {
     font-size: 12px;
   }
-
-  .app-shell.mode-studio :focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--section-accent) 70%, white);
-    outline-offset: 1px;
-  }
 }
 
 /* Final DCC authority: actual EOF rules after all legacy Studio passes. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio {
-    --console-reserved-height: 78px;
-  }
-
-  .app-shell.mode-studio .workspace-header {
-    gap: 6px;
-    padding: 7px 8px 8px;
-  }
-
-  .app-shell.mode-studio .workspace-brand {
-    gap: 1px;
-  }
-
-  .app-shell.mode-studio .workspace-brand h1 {
-    font-size: 14px;
-    line-height: 1.05;
-  }
-
-  .app-shell.mode-studio .workspace-brand p,
-  .app-shell.mode-studio .tab-summary,
-  .app-shell.mode-studio .mode-hint,
-  .app-shell.mode-studio .command-launcher small,
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-hint {
-    display: none;
-  }
-
-  .app-shell.mode-studio .mode-control-stack {
-    gap: 4px;
-  }
-
-  .app-shell.mode-studio .mode-switch {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .app-shell.mode-studio .mode-switch button {
-    min-height: 38px;
-    padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .mode-button-top {
-    display: grid;
-    grid-template-columns: 15px minmax(0, 1fr) 6px;
-    align-items: center;
-    gap: 5px;
-  }
 
   .app-shell.mode-studio .mode-status,
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
@@ -11107,201 +10816,13 @@ input {
     font-size: 12px;
   }
 
-  .app-shell.mode-studio .command-launcher {
-    min-height: 36px;
-    grid-template-columns: 16px minmax(0, 1fr) auto;
-    padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .workspace-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .app-shell.mode-studio .workspace-summary span {
-    min-height: 32px;
-    padding: 4px 6px;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact {
-    padding-top: 7px;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 35px;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 7px;
-    border-width: 0 0 1px;
-    border-right: 0;
-    text-align: left;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:last-child {
-    border-bottom: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
-    display: grid;
-    grid-template-columns: 16px minmax(0, 1fr) 6px;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-icon {
-    width: 14px;
-    height: 14px;
-    color: color-mix(in srgb, var(--section-accent) 70%, var(--muted));
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label,
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
     justify-self: end;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
-    box-shadow:
-      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 76%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
-  }
-
-  .app-shell.mode-studio .pane > .section > .section-heading-row,
-  .app-shell.mode-studio .pane-right > .section > .section-heading-row,
-  .app-shell.mode-studio .acceptance-gates-section > .section-heading-row,
-  .app-shell.mode-studio .workbench-ops-head,
-  .app-shell.mode-studio .command-center-header,
-  .app-shell.mode-studio .build-readiness-header {
-    margin: -8px -9px 8px;
-    padding: 6px 8px;
-    background: var(--editor-header);
-  }
-
-  .app-shell.mode-studio .pane h2,
-  .app-shell.mode-studio .pane-right h2 {
-    font-size: 13px;
-    line-height: 1.1;
-  }
-
-  .app-shell.mode-studio .workbench-directive {
-    min-height: 74px;
-    padding: 8px 9px;
-    box-shadow:
-      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 62%, transparent),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.72);
-  }
-
-  .app-shell.mode-studio .workbench-surface-grid,
-  .app-shell.mode-studio .workbench-action-bar {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .app-shell.mode-studio .workbench-route-button {
-    grid-template-columns: 17px minmax(70px, 0.58fr) minmax(0, 1fr) minmax(0, 0.82fr);
-    min-height: 40px;
-    padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .workbench-route-button small {
-    justify-self: end;
-    color: var(--subtle);
-  }
-
-  .app-shell.mode-studio .workbench-lane-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .app-shell.mode-studio .workbench-lane-strip span {
-    grid-template-columns: minmax(52px, 0.52fr) minmax(0, 0.72fr) minmax(0, 1fr);
-    min-height: 34px;
-    align-items: center;
-    padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button {
-    grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 40px;
-    border-width: 0 0 1px;
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button:last-child {
-    border-bottom: 0;
-  }
-
-  .app-shell.mode-studio .health-grid span {
-    display: grid;
-    grid-template-columns: minmax(24px, auto) minmax(0, 1fr);
-    min-height: 30px;
-    align-items: baseline;
-    gap: 6px;
-    padding: 5px 7px;
-    font-family: var(--mono);
-  }
-
-  .app-shell.mode-studio .health-grid b {
-    font-size: 13px;
-    text-align: right;
-  }
-
-  .app-shell.mode-studio .console {
-    display: grid;
-    grid-template-rows: 28px minmax(0, 1fr);
-    overflow: hidden;
-  }
-
-  .app-shell.mode-studio .console-toolbar {
-    min-height: 28px;
-    padding: 3px 8px;
-    border-bottom: 1px solid var(--editor-edge);
-    background: #06080b;
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .console-title strong {
-    color: color-mix(in srgb, var(--section-accent) 62%, var(--text));
-    font-family: var(--mono);
-    font-size: 12px;
-  }
-
-  .app-shell.mode-studio .console-title span,
-  .app-shell.mode-studio .console-metrics .badge {
-    font-size: 12px;
-  }
-
-  .app-shell.mode-studio .console-list {
-    gap: 0;
-    overflow: auto;
-    padding: 0 8px 5px;
-  }
-
-  .app-shell.mode-studio .log-line {
-    grid-template-columns: 68px minmax(0, 1fr) minmax(112px, 180px);
-    min-height: 20px;
-    padding: 2px 0;
-    border-bottom-color: color-mix(in srgb, var(--editor-edge) 58%, transparent);
-    font-size: 12px;
   }
 }
 
 /* Desktop DCC shelf pass: make Studio read like an editor, not a tile dashboard. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio {
-    --console-reserved-height: 78px;
-  }
 
   .app-shell.mode-studio .workspace-header {
     gap: 6px;
@@ -11362,10 +10883,6 @@ input {
     display: none;
   }
 
-  .app-shell.mode-studio .workspace-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
   .app-shell.mode-studio .workspace-summary span {
     min-height: 32px;
     padding: 4px 6px;
@@ -11384,12 +10901,6 @@ input {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
@@ -11401,47 +10912,14 @@ input {
     text-align: left;
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:last-child {
-    border-bottom: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
-    display: grid;
-    grid-template-columns: 16px minmax(0, 1fr) 6px;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-icon {
     width: 14px;
     height: 14px;
     color: color-mix(in srgb, var(--section-accent) 70%, var(--muted));
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label,
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
-    justify-self: end;
-    color: var(--subtle);
-    font-family: var(--mono);
-    font-size: 12px;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-hint {
     display: none;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
-    box-shadow:
-      inset 2px 0 0 color-mix(in srgb, var(--section-accent) 76%, transparent),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
   }
 
   .app-shell.mode-studio .pane > .section > .section-heading-row,
@@ -11492,17 +10970,6 @@ input {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .app-shell.mode-studio .workbench-route-button {
-    grid-template-columns: 17px minmax(70px, 0.58fr) minmax(0, 1fr) minmax(0, 0.82fr);
-    min-height: 40px;
-    padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .workbench-route-button small {
-    justify-self: end;
-    color: var(--subtle);
-  }
-
   .app-shell.mode-studio .workbench-lane-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -11516,16 +10983,6 @@ input {
 
   .app-shell.mode-studio .workbench-action-bar {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button {
-    grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 40px;
-    border-width: 0 0 1px;
-  }
-
-  .app-shell.mode-studio .workbench-action-bar button:last-child {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio .health-grid span {
@@ -11552,20 +11009,6 @@ input {
     min-height: 38px;
   }
 
-  .app-shell.mode-studio .console {
-    display: grid;
-    grid-template-rows: 28px minmax(0, 1fr);
-    overflow: hidden;
-  }
-
-  .app-shell.mode-studio .console-toolbar {
-    min-height: 28px;
-    padding: 3px 8px;
-    border-bottom: 1px solid var(--editor-edge);
-    background: #06080b;
-    box-shadow: none;
-  }
-
   .app-shell.mode-studio .console-title {
     gap: 10px;
   }
@@ -11578,20 +11021,6 @@ input {
 
   .app-shell.mode-studio .console-title span,
   .app-shell.mode-studio .console-metrics .badge {
-    font-size: 12px;
-  }
-
-  .app-shell.mode-studio .console-list {
-    gap: 0;
-    overflow: auto;
-    padding: 0 8px 5px;
-  }
-
-  .app-shell.mode-studio .log-line {
-    grid-template-columns: 68px minmax(0, 1fr) minmax(112px, 180px);
-    min-height: 20px;
-    padding: 2px 0;
-    border-bottom-color: color-mix(in srgb, var(--editor-edge) 58%, transparent);
     font-size: 12px;
   }
 }
@@ -11623,38 +11052,6 @@ input {
     --hurtbox: var(--info);
     --focus-ring: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.8);
     background: var(--editor-bg);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="workbench"] {
-    --section-accent: #9ca5ad;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="assets"] {
-    --section-accent: var(--asset);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="inspector"] {
-    --section-accent: #91a0ad;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] {
-    --section-accent: #a0aa92;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] {
-    --section-accent: #b77d79;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="evidence"] {
-    --section-accent: var(--trace);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] {
-    --section-accent: #8fa7a2;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] {
-    --section-accent: var(--build);
   }
 
   .app-shell.mode-studio .pane,
@@ -12108,18 +11505,6 @@ input {
     background: var(--editor-row);
   }
 
-  .app-shell.mode-studio .studio-kv dd .badge,
-  .app-shell.mode-studio .kv dd .badge,
-  .app-shell.mode-studio .studio-kv dd code,
-  .app-shell.mode-studio .kv dd code {
-    flex: 0 1 auto;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    word-break: normal;
-  }
-
   .app-shell.mode-studio .studio-kv dt:nth-last-child(-n + 2),
   .app-shell.mode-studio .studio-kv dd:nth-last-child(-n + 1),
   .app-shell.mode-studio .kv dt:nth-last-child(-n + 2),
@@ -12178,9 +11563,6 @@ input {
 }
 
 @media (max-width: 620px) {
-  .app-shell.mode-studio .workbench-action-bar button {
-    min-height: 40px;
-  }
 }
 
 /* Desktop editor-grade polish: less amber, stronger reading planes, aligned ledgers. */
@@ -12299,46 +11681,16 @@ input {
     color: color-mix(in srgb, var(--section-accent) 66%, var(--muted));
   }
 
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     color: color-mix(in srgb, var(--text) 90%, var(--muted));
     font-size: 12px;
     line-height: 1.05;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     color: color-mix(in srgb, var(--subtle) 88%, var(--muted));
     font-size: 12px;
     line-height: 1.05;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--editor-edge) 78%, transparent);
-    border-radius: 2px;
-    background: var(--editor-panel-pressed);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    min-height: 30px;
-    padding: 4px 8px;
-    border: 0;
-    border-right: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
-    color: color-mix(in srgb, var(--section-accent) 62%, var(--subtle));
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -12418,10 +11770,6 @@ input {
     border-right: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
     border-radius: 0;
     background: var(--editor-row);
-  }
-
-  .app-shell.mode-studio .mode-switch button:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio .mode-switch button.is-active {
@@ -12521,14 +11869,6 @@ input {
     background: transparent;
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
     color: var(--text);
     background: rgba(255, 255, 255, 0.028);
@@ -12577,10 +11917,6 @@ input {
 
   .app-shell.mode-studio .workspace-action-grid button:nth-child(2n) {
     border-right: 0;
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button:nth-last-child(-n + 2) {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio .workspace-action-grid .primary-action,
@@ -12823,10 +12159,6 @@ input {
     background: #040506;
   }
 
-  .app-shell.mode-inspect {
-    --surface-accent: var(--legacy-data-accent);
-  }
-
   .app-shell.mode-match .pane,
   .app-shell.mode-match .pane-right,
   .app-shell.mode-inspect .pane,
@@ -13001,23 +12333,6 @@ input {
     text-align: right;
   }
 
-  .app-shell.mode-match .workspace-action-grid button,
-  .app-shell.mode-inspect .workspace-action-grid button,
-  .app-shell.mode-match .action-stack button,
-  .app-shell.mode-inspect .action-stack button,
-  .app-shell.mode-match .split-controls button,
-  .app-shell.mode-inspect .split-controls button,
-  .app-shell.mode-match .full-width-action,
-  .app-shell.mode-inspect .full-width-action,
-  .app-shell.mode-match select,
-  .app-shell.mode-inspect select,
-  .app-shell.mode-match input[type="search"],
-  .app-shell.mode-inspect input[type="search"],
-  .app-shell.mode-match input[type="number"],
-  .app-shell.mode-inspect input[type="number"] {
-    min-height: 40px;
-  }
-
   .app-shell.mode-match .command-launcher,
   .app-shell.mode-inspect .command-launcher {
     display: grid;
@@ -13093,29 +12408,6 @@ input {
   .app-shell.mode-match .workspace-summary small,
   .app-shell.mode-inspect .workspace-summary small {
     line-height: 1.05;
-  }
-
-  .app-shell.mode-match .match-card,
-  .app-shell.mode-match .runtime-versus-card,
-  .app-shell.mode-inspect .runtime-versus-card {
-    grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
-    gap: 6px;
-  }
-
-  .app-shell.mode-match .match-card .list-meta,
-  .app-shell.mode-match .runtime-versus-card small,
-  .app-shell.mode-inspect .runtime-versus-card small {
-    white-space: normal;
-  }
-
-  .app-shell.mode-match .versus,
-  .app-shell.mode-inspect .versus {
-    min-width: 24px;
-    min-height: 24px;
-    border-color: color-mix(in srgb, var(--legacy-stage-accent) 42%, var(--legacy-frame));
-    border-radius: 2px;
-    color: color-mix(in srgb, var(--legacy-stage-accent) 78%, var(--text));
-    background: #0b0e13;
   }
 
   .app-shell.mode-match .workspace-actions,
@@ -13303,21 +12595,9 @@ input {
 
 .app-shell.mode-studio .studio-chrome-icon,
 .app-shell.mode-studio .studio-chrome-actions .ui-icon,
-.app-shell.mode-studio .studio-chrome-readout .ui-icon,
 .app-shell.mode-studio .tab-icon,
 .app-shell.mode-studio .mode-icon {
   flex: 0 0 auto;
-}
-
-.app-shell.mode-studio .studio-chrome-readout {
-  border-color: var(--studio-panel-line);
-  background: color-mix(in srgb, var(--editor-panel-pressed, var(--surface-flat)) 92%, black);
-}
-
-.app-shell.mode-studio .studio-chrome-readout > span {
-  min-height: 32px;
-  padding: 5px 8px;
-  border-right-color: var(--studio-row-line);
 }
 
 .app-shell.mode-studio .studio-chrome-actions {
@@ -13431,11 +12711,6 @@ input {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 48px;
   }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-column: 1 / -1;
-    order: 3;
-  }
 }
 
 @media (max-width: 620px) {
@@ -13443,10 +12718,6 @@ input {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 5px 8px;
     padding: 5px 7px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-actions {
-    gap: 3px;
   }
 
   .app-shell.mode-studio .studio-chrome-actions button {
@@ -13458,10 +12729,6 @@ input {
 
   .app-shell.mode-studio .studio-chrome-actions button span {
     display: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .app-shell.mode-studio .mode-switch button {
@@ -14924,7 +14191,6 @@ input {
 }
 
 .studio-chrome-brand,
-.studio-chrome-readout,
 .studio-chrome-actions {
   min-width: 0;
 }
@@ -14941,15 +14207,12 @@ input {
   color: var(--section-accent, var(--accent));
 }
 
-.studio-chrome-brand span,
-.studio-chrome-readout span {
+.studio-chrome-brand span {
   min-width: 0;
 }
 
 .studio-chrome-brand strong,
-.studio-chrome-brand small,
-.studio-chrome-readout b,
-.studio-chrome-readout small {
+.studio-chrome-brand small {
   display: block;
   min-width: 0;
   overflow: hidden;
@@ -14957,59 +14220,16 @@ input {
   white-space: nowrap;
 }
 
-.studio-chrome-brand strong,
-.studio-chrome-readout b {
+.studio-chrome-brand strong {
   color: var(--text);
   font-size: 12px;
   line-height: 1.05;
 }
 
-.studio-chrome-brand small,
-.studio-chrome-readout small {
+.studio-chrome-brand small {
   color: var(--subtle);
   font-size: 12px;
   line-height: 1.1;
-}
-
-.studio-chrome-readout {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
-  border-radius: 3px;
-  background: var(--editor-panel-pressed);
-}
-
-.studio-chrome-readout > span {
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  align-items: center;
-  gap: 2px 6px;
-  min-height: 28px;
-  padding: 4px 7px;
-  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
-}
-
-.studio-chrome-readout > span:last-child {
-  border-right: 0;
-}
-
-.studio-chrome-readout .ui-icon {
-  grid-row: 1 / span 2;
-  width: 15px;
-  height: 15px;
-  color: color-mix(in srgb, var(--section-accent, var(--accent)) 72%, var(--muted));
-}
-
-.studio-chrome-readout .is-ok .ui-icon,
-.studio-chrome-readout .is-ok b {
-  color: var(--ok);
-}
-
-.studio-chrome-readout .is-warn .ui-icon,
-.studio-chrome-readout .is-warn b {
-  color: var(--warn);
 }
 
 .studio-chrome-actions {
@@ -15115,12 +14335,6 @@ input {
   .app-shell.mode-studio[data-focus-mode="true"] .console {
     min-height: 31px;
   }
-
-  .studio-chrome-readout {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
 }
 
 @media (max-width: 620px) {
@@ -15131,18 +14345,6 @@ input {
 
   .studio-chrome-brand {
     grid-template-columns: 18px minmax(0, 1fr);
-  }
-
-  .studio-chrome-readout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .studio-chrome-readout > span:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .studio-chrome-readout > span:nth-child(n + 3) {
-    border-top: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
   }
 
   .studio-chrome-actions button {
@@ -15157,10 +14359,6 @@ input {
   .app-shell.mode-studio[data-focus-mode="true"] .studio-chrome {
     grid-template-columns: minmax(0, 1fr) auto;
     min-height: 52px;
-  }
-
-  .app-shell.mode-studio[data-focus-mode="true"] .studio-chrome-readout {
-    display: none;
   }
 
   .app-shell.mode-studio[data-focus-mode="true"] .round-hud {
@@ -15900,12 +15098,6 @@ input {
 }
 
 @media (max-width: 1160px) {
-  .app-shell.mode-studio .pane,
-  .app-shell.mode-studio .pane-right {
-    height: auto;
-    max-height: none;
-    overflow: visible;
-  }
 }
 
 /* True final desktop guard: this wins over legacy Studio layers above. */
@@ -16089,11 +15281,6 @@ input {
   padding: 4px 8px;
 }
 
-.app-shell.mode-studio .studio-chrome-readout > span {
-  min-height: 38px;
-  padding-block: 5px;
-}
-
 .app-shell.mode-studio .studio-chrome-actions button,
 .app-shell.mode-studio .stage-toolbar button,
 .app-shell.mode-studio .stage-toolbar .toggle-pill,
@@ -16143,8 +15330,6 @@ input {
 
 .app-shell.mode-studio .studio-chrome-brand strong,
 .app-shell.mode-studio .studio-chrome-brand small,
-.app-shell.mode-studio .studio-chrome-readout b,
-.app-shell.mode-studio .studio-chrome-readout small,
 .app-shell.mode-studio .mode-label,
 .app-shell.mode-studio .mode-status,
 .app-shell.mode-studio .tab-label,
@@ -16459,9 +15644,7 @@ input {
 }
 
 .app-shell.mode-studio .studio-chrome-brand strong,
-.app-shell.mode-studio .studio-chrome-brand small,
-.app-shell.mode-studio .studio-chrome-readout b,
-.app-shell.mode-studio .studio-chrome-readout small {
+.app-shell.mode-studio .studio-chrome-brand small {
   line-height: 1.12;
 }
 
@@ -16714,8 +15897,7 @@ input {
       inset 0 -1px 0 rgba(0, 0, 0, 0.82);
   }
 
-  .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout {
+  .app-shell.mode-studio .studio-chrome-brand {
     border: 1px solid var(--editor-edge);
     border-radius: 1px;
     background: var(--editor-bay-deep);
@@ -16724,11 +15906,6 @@ input {
   .app-shell.mode-studio .studio-chrome-brand {
     min-height: 38px;
     padding: 4px 7px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    min-height: 36px;
-    padding: 4px 8px;
   }
 
   .app-shell.mode-studio .pane,
@@ -16802,10 +15979,6 @@ input {
   .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-child(2n),
   .app-shell.mode-studio .workspace-summary span:last-child {
     border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 2) {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio .studio-chrome-actions button,
@@ -17027,22 +16200,6 @@ input {
     background: var(--editor-row);
   }
 
-  .app-shell.mode-studio .workbench-route-button span,
-  .app-shell.mode-studio .workbench-route-button strong,
-  .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .asset-row-title strong,
-  .app-shell.mode-studio .asset-row-detail,
-  .app-shell.mode-studio .list-title,
-  .app-shell.mode-studio .list-meta,
-  .app-shell.mode-studio .workbench-lane-strip small,
-  .app-shell.mode-studio .workbench-lane-strip b,
-  .app-shell.mode-studio .workbench-lane-strip em {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .round-hud-panel,
   .app-shell.mode-studio .stage-toolbar,
   .app-shell.mode-studio .stage-status-card {
@@ -17204,10 +16361,6 @@ input {
 
 /* EOF command shelf: keep Studio quick actions out of tile-dashboard territory. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio .workspace-action-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
 
   .app-shell.mode-studio .workspace-action-grid button {
     display: grid;
@@ -17218,10 +16371,6 @@ input {
     padding: 6px 8px;
     border-width: 0 0 1px;
     border-radius: 0;
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button:last-child {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio .workspace-action-grid small {
@@ -17328,7 +16477,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 36px;
     border: 1px solid var(--editor-edge);
@@ -17347,61 +16495,24 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
   .app-shell.mode-studio .studio-chrome-actions .ui-icon {
     width: 15px;
     height: 15px;
     stroke-width: 1.8;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     color: var(--text);
     font-size: 12px;
     font-weight: 700;
     line-height: 1.05;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     color: color-mix(in srgb, var(--muted) 82%, var(--subtle));
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1.05;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow: hidden;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 34px;
-    align-content: center;
-    gap: 1px 7px;
-    padding: 4px 9px;
-    border-right: 1px solid var(--editor-edge);
-    background: #080b0f;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
-    grid-row: 1 / span 2;
-    color: color-mix(in srgb, var(--section-accent) 58%, var(--muted));
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
-    color: color-mix(in srgb, var(--ok) 88%, var(--text));
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
-    color: color-mix(in srgb, var(--pending) 86%, var(--text));
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -17583,10 +16694,6 @@ input {
     box-shadow:
       inset 2px 0 0 color-mix(in srgb, var(--section-accent) 68%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.035);
-  }
-
-  .app-shell.mode-studio .workspace-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .app-shell.mode-studio .workspace-summary span {
@@ -17838,13 +16945,6 @@ input {
     padding: 3px;
   }
 
-  .app-shell.mode-studio .stage-toolbar button,
-  .app-shell.mode-studio .stage-toolbar .toggle-pill,
-  .app-shell.mode-studio .toolbar-group select {
-    min-height: 34px;
-    border-radius: 0;
-  }
-
   .app-shell.mode-studio .toolbar-group {
     gap: 0;
     padding: 2px;
@@ -17888,24 +16988,10 @@ input {
     min-height: 20px;
     font-size: 12px;
   }
-
-  .app-shell.mode-studio :focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--section-accent) 72%, white);
-    outline-offset: 1px;
-  }
 }
 
 /* Desktop DCC readability: keep operational labels useful before ellipsis. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio .command-launcher {
-    grid-template-columns: 16px minmax(0, 1fr) auto;
-  }
-
-  .app-shell.mode-studio .command-launcher .badge {
-    grid-column: 3;
-    justify-self: end;
-    white-space: nowrap;
-  }
 
   .app-shell.mode-studio .studio-mission-node {
     grid-template-columns: 34px minmax(0, 1fr);
@@ -17919,12 +17005,6 @@ input {
 
   .app-shell.mode-studio .studio-mission-step {
     grid-row: 1 / span 2;
-  }
-
-  .app-shell.mode-studio .studio-mission-main {
-    display: grid;
-    min-width: 0;
-    gap: 1px;
   }
 
   .app-shell.mode-studio .studio-mission-main strong {
@@ -18110,38 +17190,10 @@ input {
     color: var(--text);
   }
 
-  .app-shell.mode-studio[data-studio-tab="workbench"] {
-    --section-accent: var(--workbench);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="assets"] {
-    --section-accent: var(--asset);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="inspector"] {
-    --section-accent: var(--inspect);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] {
-    --section-accent: var(--stage-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] {
-    --section-accent: var(--debug-accent);
-  }
-
   .app-shell.mode-studio[data-studio-tab="evidence"] {
     --section-accent: var(--trace-accent);
     --evidence-warn: var(--warn);
     --evidence-danger: var(--danger);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] {
-    --section-accent: var(--module-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] {
-    --section-accent: var(--build-accent);
   }
 
   .app-shell.mode-studio,
@@ -18162,7 +17214,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 42px;
     border: 0;
@@ -18186,7 +17237,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-icon,
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
   .app-shell.mode-studio .studio-chrome-actions .ui-icon,
   .app-shell.mode-studio .tab-icon,
   .app-shell.mode-studio .mode-icon,
@@ -18200,7 +17250,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b,
   .app-shell.mode-studio .mode-label,
   .app-shell.mode-studio .tab-label,
   .app-shell.mode-studio .workspace-action-label {
@@ -18212,7 +17261,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small,
   .app-shell.mode-studio .mode-status,
   .app-shell.mode-studio .tab-status,
   .app-shell.mode-studio .workspace-action-grid small,
@@ -18224,52 +17272,8 @@ input {
     line-height: 1.08;
   }
 
-  .app-shell.mode-studio .studio-chrome-readout {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow: hidden;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    display: grid;
-    grid-template-columns: 17px minmax(0, 1fr);
-    grid-template-rows: minmax(0, auto) minmax(0, auto);
-    min-height: 41px;
-    align-content: center;
-    gap: 1px 7px;
-    padding: 5px 10px;
-    border-right: 1px solid var(--dcc-line);
-    background: var(--dcc-bay);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child,
   .app-shell.mode-studio .studio-chrome-actions {
     border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(1) .ui-icon {
-    color: var(--inspect);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(2) .ui-icon {
-    color: var(--stage-accent);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn b,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn b {
-    color: color-mix(in srgb, var(--pending) 84%, var(--text));
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
-    color: color-mix(in srgb, var(--ok) 84%, var(--text));
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -18524,10 +17528,6 @@ input {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .app-shell.mode-studio .workspace-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
   .app-shell.mode-studio .workspace-summary span,
   .app-shell.mode-studio .command-meter-grid span,
   .app-shell.mode-studio .asset-lane-strip span,
@@ -18696,13 +17696,6 @@ input {
   .app-shell.mode-studio .health-grid .is-ok,
   .app-shell.mode-studio .workbench-lane-strip .is-ok {
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--ok) 66%, transparent);
-  }
-
-  .app-shell.mode-studio .studio-mission-node.is-warn::after,
-  .app-shell.mode-studio .studio-mission-node.is-pending::after,
-  .app-shell.mode-studio .studio-mission-node.is-planned::after,
-  .app-shell.mode-studio .studio-mission-node.is-partial::after {
-    background: var(--warn);
   }
 
   .app-shell.mode-studio .workbench-route-button.is-warn,
@@ -19124,38 +18117,6 @@ input {
     font-size: 13px;
   }
 
-  .app-shell.mode-studio[data-studio-tab="workbench"] {
-    --section-accent: var(--workbench);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="assets"] {
-    --section-accent: var(--asset);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="inspector"] {
-    --section-accent: var(--inspect);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] {
-    --section-accent: var(--stage-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] {
-    --section-accent: var(--debug-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="evidence"] {
-    --section-accent: var(--trace-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] {
-    --section-accent: var(--module-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] {
-    --section-accent: var(--build-accent);
-  }
-
   .app-shell.mode-studio *,
   .app-shell.mode-studio *::before,
   .app-shell.mode-studio *::after {
@@ -19171,7 +18132,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 40px;
     background: var(--dcc-rail-deep);
@@ -19179,11 +18139,6 @@ input {
 
   .app-shell.mode-studio .studio-chrome-brand {
     box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 42%, transparent);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    min-height: 40px;
-    background: var(--dcc-rail);
   }
 
   .app-shell.mode-studio .pane {
@@ -19209,7 +18164,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b,
   .app-shell.mode-studio .mode-label,
   .app-shell.mode-studio .tab-label,
   .app-shell.mode-studio .workspace-action-label,
@@ -19227,7 +18181,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small,
   .app-shell.mode-studio .mode-status,
   .app-shell.mode-studio .tab-status,
   .app-shell.mode-studio .workspace-action-grid small,
@@ -19352,10 +18305,6 @@ input {
     gap: 1px;
   }
 
-  .app-shell.mode-studio .studio-mission-detail {
-    grid-column: 2;
-  }
-
   .app-shell.mode-studio .studio-mission-main strong,
   .app-shell.mode-studio .studio-mission-main small,
   .app-shell.mode-studio .studio-mission-detail {
@@ -19455,10 +18404,6 @@ input {
     color: color-mix(in srgb, var(--section-accent) 64%, var(--muted));
   }
 
-  .app-shell.mode-studio .command-result-main {
-    gap: 1px;
-  }
-
   .app-shell.mode-studio .command-result-main strong {
     font-size: 13px;
     line-height: 1.1;
@@ -19540,7 +18485,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 42px;
     background: var(--dcc-rail-deep);
@@ -19556,24 +18500,6 @@ input {
       inset 0 -1px 0 var(--dcc-shadow-cut);
   }
 
-  .app-shell.mode-studio .studio-chrome-readout {
-    gap: 0;
-    border-right: 1px solid var(--dcc-line);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 18px minmax(0, 1fr);
-    min-height: 42px;
-    align-content: center;
-    gap: 7px;
-    padding: 5px 10px;
-    border-left: 1px solid var(--dcc-line);
-    background: var(--dcc-rail);
-    box-shadow: inset 0 -1px 0 var(--dcc-shadow-cut);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout b,
-  .app-shell.mode-studio .studio-chrome-readout small,
   .app-shell.mode-studio .studio-chrome-brand strong,
   .app-shell.mode-studio .studio-chrome-brand small {
     display: block;
@@ -19616,14 +18542,6 @@ input {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.025),
       inset 0 -1px 0 var(--dcc-shadow-cut);
-  }
-
-  .app-shell.mode-studio .pane {
-    border-right: 1px solid var(--dcc-line-hard);
-  }
-
-  .app-shell.mode-studio .pane-right {
-    border-left: 1px solid var(--dcc-line-hard);
   }
 
   .app-shell.mode-studio .pane > .section,
@@ -19691,10 +18609,6 @@ input {
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.026),
       inset 0 -1px 0 var(--dcc-shadow-cut);
-  }
-
-  .app-shell.mode-studio .workspace-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .app-shell.mode-studio .workspace-summary span,
@@ -20093,16 +19007,6 @@ input {
     border-color: color-mix(in srgb, var(--warn) 34%, var(--dcc-line));
     background: color-mix(in srgb, var(--warn) 5%, var(--dcc-field));
     color: color-mix(in srgb, var(--warn) 68%, var(--text));
-  }
-
-  .app-shell.mode-studio .badge.ok,
-  .app-shell.mode-studio .status-badge.ok,
-  .app-shell.mode-studio .status-badge.status-ok,
-  .app-shell.mode-studio .status-badge.status-active,
-  .app-shell.mode-studio .asset-row-export.is-ok {
-    border-color: color-mix(in srgb, var(--ok) 34%, var(--dcc-line));
-    background: color-mix(in srgb, var(--ok) 5%, var(--dcc-field));
-    color: color-mix(in srgb, var(--ok) 72%, var(--text));
   }
 
   .app-shell.mode-studio .badge.error,
@@ -20557,10 +19461,6 @@ input {
     border-bottom: 0;
   }
 
-  .app-shell.mode-studio .workspace-action-grid button:hover {
-    background: var(--dcc-row-hover);
-  }
-
   .app-shell.mode-studio .workspace-action-grid .primary-action:hover {
     background: color-mix(in srgb, var(--section-accent) 9%, var(--dcc-control-hover));
   }
@@ -20761,12 +19661,6 @@ input {
   .app-shell.mode-studio .record-side {
     min-width: 82px;
     gap: 5px;
-  }
-
-  .app-shell.mode-studio .record-side .badge,
-  .app-shell.mode-studio .record-side .status-badge {
-    justify-self: end;
-    max-width: 100%;
   }
 
   .app-shell.mode-studio .record-evidence {
@@ -21510,12 +20404,6 @@ input {
     padding: 7px 8px;
   }
 
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main,
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record-main {
-    gap: 3px;
-    min-width: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title {
     overflow: hidden;
@@ -21612,38 +20500,6 @@ input {
     font-size: 13px;
   }
 
-  .app-shell.mode-studio[data-studio-tab="workbench"] {
-    --section-accent: var(--workbench);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="assets"] {
-    --section-accent: var(--asset);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="inspector"] {
-    --section-accent: var(--inspect);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] {
-    --section-accent: var(--stage-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="debug"] {
-    --section-accent: var(--debug-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="evidence"] {
-    --section-accent: var(--trace-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="modules"] {
-    --section-accent: var(--module-accent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] {
-    --section-accent: var(--build-accent);
-  }
-
   .app-shell.mode-studio[data-studio-tab="debug"],
   .app-shell.mode-studio[data-studio-tab="evidence"],
   .app-shell.mode-studio[data-studio-tab="build"] {
@@ -21669,7 +20525,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 40px;
     border: 0;
@@ -21686,24 +20541,6 @@ input {
     box-shadow:
       inset 3px 0 0 color-mix(in srgb, var(--section-accent) 66%, transparent),
       inset 0 -1px 0 var(--dcc-shadow-cut);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    background: var(--dcc-rail);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 39px;
-    gap: 1px 7px;
-    padding: 4px 10px;
-    border-right: 1px solid var(--dcc-line);
-    background: var(--dcc-rail);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -21736,7 +20573,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b,
   .app-shell.mode-studio .mode-label,
   .app-shell.mode-studio .tab-label,
   .app-shell.mode-studio .workspace-action-label,
@@ -21752,7 +20588,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small,
   .app-shell.mode-studio .mode-status,
   .app-shell.mode-studio .tab-status,
   .app-shell.mode-studio .workspace-action-grid small,
@@ -21767,7 +20602,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
   .app-shell.mode-studio .studio-chrome-actions .ui-icon,
   .app-shell.mode-studio .tab-icon,
   .app-shell.mode-studio .mode-icon,
@@ -21777,24 +20611,6 @@ input {
     height: 15px;
     color: color-mix(in srgb, var(--section-accent) 58%, var(--muted));
     stroke-width: 1.85;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(1) .ui-icon {
-    color: var(--inspect);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(2) .ui-icon {
-    color: var(--stage-accent);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
-    color: color-mix(in srgb, var(--ok) 86%, var(--text));
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
-    color: color-mix(in srgb, var(--pending) 86%, var(--text));
   }
 
   .app-shell.mode-studio .pane,
@@ -22277,10 +21093,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .stage-status-metric:nth-child(4n) {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio .stage-status-metric small,
   .app-shell.mode-studio .stage-status-metric b {
     overflow: hidden;
@@ -22434,11 +21246,6 @@ input {
     white-space: nowrap;
   }
 
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence,
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-evidence {
-    display: none;
-  }
-
   .app-shell.mode-studio .record-side {
     align-self: start;
     min-width: 76px;
@@ -22556,7 +21363,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 42px;
     background: var(--dcc-rail);
@@ -22573,49 +21379,15 @@ input {
       var(--dcc-raise);
   }
 
-  .app-shell.mode-studio .studio-chrome-readout {
-    border: 0;
-    background: var(--dcc-slot);
-    box-shadow: var(--dcc-inset);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 17px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    min-height: 42px;
-    align-content: center;
-    align-items: center;
-    gap: 1px 7px;
-    padding: 5px 10px;
-    border-right: 1px solid var(--dcc-line);
-    background: var(--dcc-rail);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
-    grid-row: 1 / span 2;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout b,
-  .app-shell.mode-studio .studio-chrome-readout small {
-    grid-column: 2;
-  }
-
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     font-size: 12.5px;
     line-height: 1.06;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     color: var(--subtle);
     font-size: 11.5px;
     line-height: 1.08;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
-    color: color-mix(in srgb, var(--warn) 72%, var(--text));
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -22906,10 +21678,6 @@ input {
     box-shadow: var(--dcc-raise);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer:not([open]) > summary {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary::after {
     width: 12px;
     height: 12px;
@@ -22918,10 +21686,6 @@ input {
     content: "+";
     font-size: 12px;
     line-height: 1;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer[open] > summary::after {
-    content: "-";
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-inspector-drawer > summary span,
@@ -23207,10 +21971,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .command-result:nth-child(even) {
-    background: var(--dcc-row-alt);
-  }
-
   .app-shell.mode-studio .command-result.tone-ok {
     --command-signal: var(--ok);
   }
@@ -23482,11 +22242,6 @@ input {
     -webkit-line-clamp: 2;
     text-overflow: clip;
     white-space: normal;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route + .record-route span,
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route + .record-route span {
-    -webkit-line-clamp: 1;
   }
 
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .studio-kv {
@@ -24270,7 +23025,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 38px;
   }
@@ -24283,28 +23037,12 @@ input {
       var(--dcc-raise);
   }
 
-  .app-shell.mode-studio .studio-chrome-readout {
-    min-width: 0;
-    background: var(--dcc-slot);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 15px minmax(0, 1fr);
-    min-width: 0;
-    min-height: 38px;
-    gap: 1px 6px;
-    padding: 4px 9px;
-    background: var(--dcc-rail);
-  }
-
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     font-size: 12px;
     line-height: 1.02;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     font-size: 12px;
     line-height: 1.03;
   }
@@ -24569,16 +23307,8 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .studio-mission-node:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .studio-mission-node:hover {
     background: var(--dcc-row-hover);
-  }
-
-  .app-shell.mode-studio .studio-mission-node::after {
-    display: none;
   }
 
   .app-shell.mode-studio .studio-mission-node.is-ok {
@@ -24678,10 +23408,6 @@ input {
     text-align: right;
   }
 
-  .app-shell.mode-studio .workspace-action-grid button:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .workspace-action-grid button:hover {
     background: var(--dcc-row-hover);
   }
@@ -24778,10 +23504,6 @@ input {
   .app-shell.mode-studio .studio-tab-section.is-compact .tab {
     min-height: 33px;
     padding: 4px 6px;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 2) {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio .badge,
@@ -25086,23 +23808,6 @@ input {
 @media (min-width: 1161px) {
   .app-shell.mode-studio .studio-chrome {
     border-bottom: 1px solid var(--dcc-line-hard);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(128px, 1fr);
-    border-left: 1px solid var(--dcc-line-hard);
-    border-right: 1px solid var(--dcc-line-hard);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    border-right: 1px solid var(--dcc-line);
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -25560,10 +24265,6 @@ input {
     background: var(--dcc-row-alt);
   }
 
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row > span {
     display: grid;
     grid-template-columns: minmax(92px, 0.34fr) minmax(0, 1fr) minmax(116px, max-content);
@@ -25595,10 +24296,6 @@ input {
     line-height: 1.12;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .list-meta:nth-of-type(n + 3) {
-    display: none;
   }
 
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .badge-row {
@@ -25718,11 +24415,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid span:last-child,
-  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat:nth-child(4n) {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .health-grid b,
   .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .studio-stat strong {
     color: var(--text);
@@ -25789,10 +24481,6 @@ input {
     min-height: 28px;
     color: var(--subtle);
     background: var(--dcc-field);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name {
-    gap: 2px;
   }
 
   .app-shell.mode-studio[data-studio-tab="workbench"] .pane-right .engine-module-name strong,
@@ -26656,7 +25344,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 38px;
     border-color: #252b32;
@@ -26671,7 +25358,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-icon,
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon,
   .app-shell.mode-studio .studio-chrome-actions .ui-icon {
     width: 15px;
     height: 15px;
@@ -26679,44 +25365,17 @@ input {
     opacity: 0.92;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     color: #f0f3f6;
     font-size: 12px;
     line-height: 1;
     letter-spacing: 0;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     color: #9aa5b2;
     font-size: 11px;
     line-height: 1;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-auto-columns: minmax(132px, 1fr);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    grid-template-columns: 17px minmax(0, 1fr);
-    gap: 6px;
-    min-height: 38px;
-    padding: 5px 9px;
-    border-right: 1px solid #252b32;
-    background: #0b0e12;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(3).is-warn b,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(4).is-warn b {
-    color: #c99b7f;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
-    color: #9fa891;
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -26809,10 +25468,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .mode-switch button:last-child {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio .mode-switch button.is-active {
     background: #151a20;
     box-shadow: inset 0 -2px 0 #8a96a3;
@@ -26835,19 +25490,6 @@ input {
     border-radius: 0;
     background: #0d1116;
     box-shadow: none;
-  }
-
-  .app-shell.mode-studio .workspace-summary span:last-child {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .workspace-summary b,
-  .app-shell.mode-studio .workspace-summary small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .workspace-summary b {
@@ -26878,12 +25520,6 @@ input {
     padding: 0;
   }
 
-  .app-shell.mode-studio .workspace-action-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
   .app-shell.mode-studio .workspace-action-grid button,
   .app-shell.mode-studio .workspace-action-grid button.primary-action {
     display: grid;
@@ -26900,10 +25536,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .workspace-action-grid button:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .workspace-action-grid button.primary-action {
     background: #151a20;
     box-shadow: inset 2px 0 0 #8a96a3;
@@ -26913,15 +25545,6 @@ input {
     width: 15px;
     height: 15px;
     color: #8d9aa8;
-  }
-
-  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
-  .app-shell.mode-studio .workspace-action-grid button small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .workspace-action-grid .workspace-action-label {
@@ -27033,10 +25656,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .studio-mission-node:last-child {
-    border-bottom: 0;
-  }
-
   .app-shell.mode-studio .studio-mission-step {
     width: 22px;
     height: 22px;
@@ -27050,16 +25669,6 @@ input {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
     gap: 6px;
     align-items: baseline;
-  }
-
-  .app-shell.mode-studio .studio-mission-main strong,
-  .app-shell.mode-studio .studio-mission-main small,
-  .app-shell.mode-studio .studio-mission-detail {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1.05;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .studio-mission-main strong {
@@ -28126,10 +26735,6 @@ input {
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .mode-switch button:last-child {
-    border-right: 0;
-  }
-
   .app-shell.mode-studio .mode-switch .mode-button-top {
     display: grid;
     grid-template-columns: 15px minmax(0, 1fr);
@@ -28232,10 +26837,6 @@ input {
     border-radius: 0;
     background: var(--station-rail);
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.74);
-  }
-
-  .app-shell.mode-studio .workspace-summary span:last-child {
-    border-right: 0;
   }
 
   .app-shell.mode-studio .workspace-summary b,
@@ -28439,7 +27040,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 34px;
     border: 0;
@@ -28456,8 +27056,7 @@ input {
     border-left: 1px solid #252c34;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand span,
-  .app-shell.mode-studio .studio-chrome-readout span {
+  .app-shell.mode-studio .studio-chrome-brand span {
     min-width: 0;
   }
 
@@ -28469,8 +27068,6 @@ input {
 
   .app-shell.mode-studio .studio-chrome-brand strong,
   .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout b,
-  .app-shell.mode-studio .studio-chrome-readout small,
   .app-shell.mode-studio .studio-chrome-actions span {
     min-width: 0;
     overflow: hidden;
@@ -28480,77 +27077,16 @@ input {
     white-space: nowrap;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand strong,
-  .app-shell.mode-studio .studio-chrome-readout b {
+  .app-shell.mode-studio .studio-chrome-brand strong {
     color: #eef2f5;
     font-size: 11px;
     font-weight: 800;
   }
 
-  .app-shell.mode-studio .studio-chrome-brand small,
-  .app-shell.mode-studio .studio-chrome-readout small {
+  .app-shell.mode-studio .studio-chrome-brand small {
     color: #8d98a4;
     font-family: var(--mono);
     font-size: 10px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(128px, 1fr);
-    overflow: hidden;
-    background: #05070a;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    display: grid;
-    grid-template-columns: 16px minmax(0, 1fr);
-    grid-template-rows: 14px 12px;
-    min-height: 34px;
-    gap: 0 6px;
-    align-content: center;
-    padding: 4px 8px;
-    border-right: 1px solid #252c34;
-    background: #0a0d11;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
-    grid-row: 1 / span 2;
-    width: 14px;
-    height: 14px;
-    align-self: center;
-    color: #7d8996;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout b {
-    align-self: end;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout small {
-    align-self: start;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(1) .ui-icon {
-    color: #87a9c2;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(2) .ui-icon {
-    color: #a0a78e;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
-    color: #8fb28f;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
-    color: #c59a68;
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -30057,11 +28593,6 @@ input {
       inset -16px 0 26px rgba(0, 0, 0, 0.28);
   }
 
-  .app-shell.mode-studio .stage::before {
-    display: none;
-    content: none;
-  }
-
   .app-shell.mode-studio .studio-chrome {
     border-bottom: 1px solid #030406;
     background: #090c10;
@@ -30590,7 +29121,6 @@ input {
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 38px;
     border-right: 1px solid var(--desk-edge);
@@ -30603,17 +29133,6 @@ input {
     border-left: 1px solid var(--desk-edge);
   }
 
-  .app-shell.mode-studio .studio-chrome-readout {
-    grid-auto-columns: minmax(132px, 1fr);
-    background: var(--desk-panel-low);
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout > span {
-    min-height: 38px;
-    padding: 5px 9px;
-    background: var(--desk-row);
-  }
-
   .app-shell.mode-studio .studio-chrome-actions button {
     min-width: 58px;
     min-height: 38px;
@@ -30621,13 +29140,10 @@ input {
     background: var(--desk-row);
   }
 
-  .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"] .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout > span:last-child .ui-icon {
+  .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"] .ui-icon {
     color: var(--desk-build);
   }
 
-  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
-  .app-shell.mode-studio .studio-chrome-readout .is-warn b,
   .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"].is-active .ui-icon {
     color: var(--desk-warn);
   }
@@ -30646,8 +29162,7 @@ input {
   .app-shell.mode-studio .section-heading-row > div,
   .app-shell.mode-studio .command-center-header > div,
   .app-shell.mode-studio .workbench-ops-head > div,
-  .app-shell.mode-studio .studio-chrome-brand span,
-  .app-shell.mode-studio .studio-chrome-readout span {
+  .app-shell.mode-studio .studio-chrome-brand span {
     min-width: 0;
   }
 
@@ -31833,594 +30348,5 @@ input {
     box-shadow:
       inset 4px 0 0 color-mix(in srgb, var(--command-signal, var(--desk-active)) 82%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-}
-
-/* Desktop reference alignment: sober command center, larger console, protected playfield. */
-@media (min-width: 1161px) {
-  .app-shell.mode-studio {
-    --console-reserved-height: clamp(118px, 14vh, 154px);
-    --command-bg: #020304;
-    --command-panel: #080a0d;
-    --command-panel-hi: #0d1116;
-    --command-panel-low: #050608;
-    --command-row: #0d1116;
-    --command-row-alt: #090d11;
-    --command-hot: #151c24;
-    --command-edge: #252b32;
-    --command-edge-strong: #3a434d;
-    --command-text: #f0f3f5;
-    --command-muted: #9aa4ae;
-    --command-dim: #6e7882;
-    --command-blue: #3575bf;
-    --command-ok: #84a17e;
-    --command-warn: #b87986;
-    --command-build: #a19d93;
-    grid-template-columns: minmax(314px, 326px) minmax(700px, 1fr) minmax(376px, 420px);
-    grid-template-rows: 74px minmax(0, 1fr) var(--console-reserved-height);
-    background: var(--command-bg);
-  }
-
-  .app-shell.mode-studio .studio-chrome {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 314px minmax(0, 1fr) minmax(342px, max-content);
-    gap: 0;
-    min-height: 74px;
-    padding: 0;
-    border: 1px solid var(--command-edge-strong);
-    border-top: 0;
-    border-inline: 0;
-    background: #050608;
-    box-shadow: inset 0 -1px 0 #000;
-  }
-
-  .app-shell.mode-studio .studio-chrome-brand,
-  .app-shell.mode-studio .studio-chrome-readout,
-  .app-shell.mode-studio .studio-chrome-actions {
-    min-height: 74px;
-    border: 0;
-    border-right: 1px solid var(--command-edge);
-    border-radius: 0;
-    background: var(--command-panel);
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-brand {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    gap: 12px;
-    align-items: center;
-    padding: 0 18px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-brand-mark {
-    display: grid;
-    width: 38px;
-    height: 38px;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--command-blue) 72%, var(--command-edge-strong));
-    border-radius: 4px;
-    background: #070a0f;
-    color: var(--command-blue);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.08),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.78);
-  }
-
-  .app-shell.mode-studio .studio-chrome-icon {
-    width: 22px;
-    height: 22px;
-    color: currentColor;
-  }
-
-  .app-shell.mode-studio .studio-chrome-title,
-  .app-shell.mode-studio .studio-chrome-field,
-  .app-shell.mode-studio .studio-chrome-value {
-    min-width: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-title strong,
-  .app-shell.mode-studio .studio-chrome-title small,
-  .app-shell.mode-studio .studio-chrome-kicker,
-  .app-shell.mode-studio .studio-chrome-value b,
-  .app-shell.mode-studio .studio-chrome-value em,
-  .app-shell.mode-studio .studio-chrome-actions span {
-    min-width: 0;
-    overflow: hidden;
-    letter-spacing: 0;
-    line-height: 1.05;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio .studio-chrome-title strong {
-    display: block;
-    color: var(--command-text);
-    font-size: 15px;
-    font-weight: 850;
-  }
-
-  .app-shell.mode-studio .studio-chrome-title small {
-    display: block;
-    margin-top: 4px;
-    color: var(--command-muted);
-    font-size: 12px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-readout {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow: hidden;
-    background: var(--command-panel-low);
-  }
-
-  .app-shell.mode-studio .studio-chrome-field {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    align-content: center;
-    gap: 7px;
-    justify-items: start;
-    min-height: 74px;
-    min-width: 0;
-    padding: 0 16px;
-    border-right: 1px solid var(--command-edge);
-    background: var(--command-panel);
-  }
-
-  .app-shell.mode-studio .studio-chrome-field:last-child {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-kicker {
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
-    text-align: left;
-    color: var(--command-muted);
-    font-family: var(--mono);
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .app-shell.mode-studio .studio-chrome-value {
-    display: flex;
-    grid-column: 1;
-    grid-row: 2;
-    align-items: center;
-    justify-content: start;
-    gap: 7px;
-    min-width: 0;
-    max-width: 100%;
-    overflow: hidden;
-  }
-
-  .app-shell.mode-studio .studio-chrome-value .ui-icon {
-    width: 18px;
-    height: 18px;
-    color: var(--command-muted);
-  }
-
-  .app-shell.mode-studio .studio-chrome-value b {
-    display: block;
-    min-width: 0;
-    max-width: 100%;
-    color: var(--command-text);
-    font-size: 13px;
-    font-weight: 760;
-  }
-
-  .app-shell.mode-studio .studio-chrome-value em {
-    display: block;
-    min-width: 0;
-    max-width: 100%;
-    color: var(--command-dim);
-    font-family: var(--mono);
-    font-size: 10px;
-    font-style: normal;
-  }
-
-  .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-value b {
-    max-width: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot {
-    width: 9px;
-    height: 9px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 999px;
-    background: var(--command-muted);
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-p1,
-  .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-value b:first-of-type {
-    color: #75a9e5;
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-p1 {
-    background: #2e80dd;
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-p2,
-  .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-value b:last-of-type {
-    color: #b987d6;
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-p2 {
-    background: #a94fce;
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-live,
-  .app-shell.mode-studio .studio-chrome-field.is-ok .studio-chrome-value b {
-    color: var(--command-ok);
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-live {
-    background: var(--command-ok);
-  }
-
-  .app-shell.mode-studio .studio-chrome-field.is-warn .studio-chrome-value b,
-  .app-shell.mode-studio .studio-chrome-field.is-warn .studio-chrome-value .ui-icon {
-    color: var(--command-warn);
-  }
-
-  .app-shell.mode-studio .studio-chrome-dot.is-paused {
-    background: var(--command-warn);
-  }
-
-  .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-dot,
-  .app-shell.mode-studio .studio-chrome-field:nth-child(4) .studio-chrome-value em {
-    display: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-actions {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    align-items: center;
-    gap: 6px;
-    padding: 0 12px;
-    border-right: 0;
-    background: #050608;
-  }
-
-  .app-shell.mode-studio .studio-chrome-actions button {
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 42px;
-    min-width: 0;
-    padding: 0 14px;
-    border: 1px solid var(--command-edge-strong);
-    border-radius: 4px;
-    background: #0b0f14;
-    color: #dce3ea;
-    font-size: 12px;
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.07),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
-  }
-
-  .app-shell.mode-studio .studio-chrome-actions button:hover,
-  .app-shell.mode-studio .studio-chrome-actions button:focus-visible {
-    border-color: #56616d;
-    background: var(--command-hot);
-    color: var(--command-text);
-    outline: 1px solid #637180;
-    outline-offset: -2px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-command {
-    width: 152px;
-    min-width: 152px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-command-prefix {
-    color: #c8d1dc;
-    font-family: var(--mono);
-    font-size: 13px;
-  }
-
-  .app-shell.mode-studio .studio-chrome-playtest {
-    width: 148px;
-    min-width: 148px;
-    border-color: color-mix(in srgb, var(--command-blue) 66%, var(--command-edge-strong));
-    background: #123256;
-    color: #f3f7fb;
-  }
-
-  .app-shell.mode-studio .studio-chrome-actions .studio-chrome-command,
-  .app-shell.mode-studio .studio-chrome-actions .studio-chrome-playtest {
-    grid-template-columns: max-content minmax(0, 1fr);
-  }
-
-  .app-shell.mode-studio .studio-chrome-command span:last-child,
-  .app-shell.mode-studio .studio-chrome-playtest span {
-    width: auto;
-    max-width: none;
-  }
-
-  .app-shell.mode-studio .studio-chrome-playtest .ui-icon {
-    color: #d6e9ff;
-  }
-
-  .app-shell.mode-studio .studio-chrome-utility {
-    width: 38px;
-    min-width: 38px;
-    height: 40px;
-    padding: 0;
-  }
-
-  .app-shell.mode-studio .studio-chrome-utility span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio .studio-chrome-utility.is-active {
-    border-color: #5a6673;
-    background: #17202a;
-    box-shadow: inset 0 -2px 0 var(--command-muted);
-  }
-
-  .app-shell.mode-studio #left-pane,
-  .app-shell.mode-studio .pane-right {
-    padding: 0;
-    background: var(--command-panel-low);
-    border-color: var(--command-edge-strong);
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio #left-pane {
-    border-right: 1px solid var(--command-edge-strong);
-  }
-
-  .app-shell.mode-studio .pane-right {
-    border-left: 1px solid var(--command-edge-strong);
-  }
-
-  .app-shell.mode-studio #left-pane .workspace-header {
-    gap: 0;
-    padding: 11px 14px 12px;
-    border: 0;
-    border-bottom: 1px solid var(--command-edge-strong);
-    background: var(--command-panel);
-  }
-
-  .app-shell.mode-studio #left-pane .workspace-brand {
-    display: grid;
-    gap: 3px;
-  }
-
-  .app-shell.mode-studio #left-pane .workspace-brand h1 {
-    order: 1;
-    color: var(--command-text);
-    font-size: 14px;
-    line-height: 1.05;
-  }
-
-  .app-shell.mode-studio #left-pane .workspace-brand .workspace-eyebrow {
-    order: 2;
-    color: var(--command-muted);
-    font-size: 10px;
-  }
-
-  .app-shell.mode-studio #left-pane .workspace-brand p,
-  .app-shell.mode-studio #left-pane .mode-control-stack,
-  .app-shell.mode-studio #left-pane .workspace-summary {
-    display: none;
-  }
-
-  .app-shell.mode-studio .workspace-actions {
-    gap: 0;
-    padding: 0;
-    border: 0;
-    border-bottom: 1px solid var(--command-edge-strong);
-    background: var(--command-panel-low);
-  }
-
-  .app-shell.mode-studio .workspace-actions-head {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) max-content;
-    min-height: 36px;
-    align-items: center;
-    gap: 8px;
-    padding: 0 14px;
-    border-bottom: 1px solid var(--command-edge);
-    background: var(--command-panel);
-  }
-
-  .app-shell.mode-studio .workspace-actions-head span,
-  .app-shell.mode-studio .workspace-actions-head b {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .app-shell.mode-studio .workspace-actions-head span {
-    color: var(--command-muted);
-    font-family: var(--mono);
-    font-size: 10px;
-    font-weight: 850;
-    text-transform: uppercase;
-  }
-
-  .app-shell.mode-studio .workspace-actions-head b {
-    color: var(--section-accent);
-    font-family: var(--mono);
-    font-size: 11px;
-  }
-
-  .app-shell.mode-studio .studio-mission-strip {
-    border: 0;
-    border-bottom: 1px solid var(--command-edge-strong);
-    background: var(--command-panel-low);
-  }
-
-  .app-shell.mode-studio .studio-mission-node {
-    grid-template-columns: 36px minmax(0, 1fr) 18px;
-    min-height: 68px;
-    gap: 4px 10px;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--command-edge);
-    background: var(--command-row);
-  }
-
-  .app-shell.mode-studio .studio-mission-node:nth-child(even) {
-    background: var(--command-row-alt);
-  }
-
-  .app-shell.mode-studio .studio-mission-step {
-    width: 28px;
-    min-height: 28px;
-    color: var(--command-text);
-    font-size: 11px;
-  }
-
-  .app-shell.mode-studio .studio-mission-main strong {
-    color: var(--command-text);
-    font-size: 12px;
-  }
-
-  .app-shell.mode-studio .studio-mission-main small,
-  .app-shell.mode-studio .studio-mission-detail {
-    color: var(--command-muted);
-    font-size: 10px;
-  }
-
-  .app-shell.mode-studio .studio-mission-detail {
-    grid-column: 2 / 4;
-  }
-
-  .app-shell.mode-studio .workspace-action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    border: 0;
-    background: var(--command-panel-low);
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button,
-  .app-shell.mode-studio .workspace-action-grid button.primary-action {
-    grid-template-columns: 18px minmax(0, 1fr);
-    min-height: 42px;
-    padding: 7px 10px;
-    border: 0;
-    border-right: 1px solid var(--command-edge);
-    border-bottom: 1px solid var(--command-edge);
-    border-radius: 0;
-    background: var(--command-row);
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button.primary-action {
-    background: #111820;
-    box-shadow: inset 3px 0 0 var(--section-accent);
-  }
-
-  .app-shell.mode-studio .workspace-action-grid button small {
-    justify-self: start;
-    max-width: 100%;
-    text-align: left;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact {
-    padding: 0;
-    border: 0;
-    border-bottom: 1px solid var(--command-edge-strong);
-    background: var(--command-panel-low);
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .section-heading-row {
-    min-height: 36px;
-    margin: 0;
-    padding: 0 14px;
-    border-bottom: 1px solid var(--command-edge);
-    background: var(--command-panel);
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
-    border: 0;
-  }
-
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
-    min-height: 38px;
-  }
-
-  .app-shell.mode-studio .stage {
-    border-inline: 1px solid var(--command-edge-strong);
-    background: #020304;
-    box-shadow:
-      inset 0 0 0 1px #111820,
-      inset 0 0 0 12px rgba(0, 0, 0, 0.16);
-  }
-
-  .app-shell.mode-studio .round-hud-panel {
-    top: 12px;
-    max-width: min(760px, calc(100% - 64px));
-    border-color: #4b5661;
-    background: rgba(4, 6, 8, 0.93);
-  }
-
-  .app-shell.mode-studio .stage-toolbar {
-    right: 14px;
-    bottom: 14px;
-    flex-direction: row;
-    align-items: end;
-    gap: 6px;
-    max-width: calc(100% - 28px);
-  }
-
-  .app-shell.mode-studio .stage-toolbar .toolbar-group {
-    width: max-content;
-    max-width: none;
-    min-height: 34px;
-    border-color: #46515c;
-    background: rgba(5, 7, 10, 0.94);
-  }
-
-  .app-shell.mode-studio .stage-toolbar .toolbar-run-group,
-  .app-shell.mode-studio .stage-toolbar .toolbar-view-group {
-    order: initial;
-  }
-
-  .app-shell.mode-studio .stage-status {
-    left: 14px;
-    bottom: 14px;
-    width: min(620px, calc(100% - 28px));
-  }
-
-  .app-shell.mode-studio .stage-status-card {
-    border-color: #46515c;
-    background: rgba(5, 7, 10, 0.94);
-  }
-
-  .app-shell.mode-studio .console {
-    min-height: var(--console-reserved-height);
-    border-top: 1px solid var(--command-edge-strong);
-    background: #050608;
-  }
-
-  .app-shell.mode-studio .console-tabs,
-  .app-shell.mode-studio .console-body,
-  .app-shell.mode-studio .console-footer {
-    background: #050608;
-  }
-
-  .app-shell.mode-studio .log-line {
-    min-height: 20px;
   }
 }
