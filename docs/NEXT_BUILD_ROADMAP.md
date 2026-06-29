@@ -75,6 +75,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeResourceSystem max/control ownership
+  -> authored life/power max resolution, runtime power-delta clamping, and control writes moved behind RuntimeResourceSystem helpers
+  -> PlayableMatchRuntime pause power deltas, state-entry/control writes, direct-combat power/control mutation, and ReversalDef power gain now use that boundary
+  -> focused RuntimeResourceSystem, DirectCombatSystem, ReversalSystem, and PlayableMatchRuntime tests preserve current behavior
+  -> no new runtime feature, exact CNS resource tick-order, helper/team/redirect ownership, or score movement claim
 R2 RuntimeSnapshotWorld effect snapshot aggregation
   -> final Explod/Helper/Projectile effect snapshot aggregation moved out of PlayableMatchRuntime into RuntimeSnapshotWorld
   -> focused RuntimeSnapshotSystem test covers stable p1/p2 effect ordering and clone isolation

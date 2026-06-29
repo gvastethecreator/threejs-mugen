@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  applyRuntimeControl,
   applyRuntimeLifeAdd,
+  applyRuntimePowerDelta,
   applyRuntimeResourceController,
+  applyRuntimeStateDefControl,
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
+  runtimeLifeMaxFromConstants,
+  runtimePowerMaxForState,
+  runtimePowerMaxFromConstants,
 } from "../mugen/runtime/RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -45,6 +51,44 @@ describe("RuntimeResourceSystem", () => {
 
     applyRuntimeResourceController(state, { kind: "resource", controllerType: "powerset", value: 9999 });
     expect(state.power).toBe(1200);
+  });
+
+  it("resolves authored max resources from constants", () => {
+    expect(runtimeLifeMaxFromConstants({ "data.life": 750 })).toBe(750);
+    expect(runtimePowerMaxFromConstants({ "data.power": 1250 })).toBe(1250);
+    expect(runtimeLifeMaxFromConstants({ "data.life": Number.NaN })).toBe(1000);
+    expect(runtimePowerMaxFromConstants({ "data.power": 0 })).toBe(1);
+  });
+
+  it("applies runtime power deltas through runtime max, constants, then fallback", () => {
+    const runtimeMaxState = runtimeState({ power: 1190, powerMax: 1200 });
+    applyRuntimePowerDelta(runtimeMaxState, 50, { "data.power": 2000 });
+    expect(runtimeMaxState.power).toBe(1200);
+    expect(runtimePowerMaxForState(runtimeMaxState, { "data.power": 2000 })).toBe(1200);
+
+    const constantMaxState = runtimeState({ power: 2950 });
+    applyRuntimePowerDelta(constantMaxState, 500, { "data.power": 3100 });
+    expect(constantMaxState.power).toBe(3100);
+
+    const fallbackState = runtimeState({ power: 2990 });
+    applyRuntimePowerDelta(fallbackState, 50);
+    expect(fallbackState.power).toBe(3000);
+  });
+
+  it("applies control writes from direct values and StateDef ctrl params", () => {
+    const state = runtimeState({ ctrl: true });
+
+    applyRuntimeControl(state, false);
+    expect(state.ctrl).toBe(false);
+
+    applyRuntimeStateDefControl(state, undefined);
+    expect(state.ctrl).toBe(false);
+
+    applyRuntimeStateDefControl(state, 1);
+    expect(state.ctrl).toBe(true);
+
+    applyRuntimeStateDefControl(state, 0);
+    expect(state.ctrl).toBe(false);
   });
 
   it("applies var, fvar, and sysvar assignments", () => {

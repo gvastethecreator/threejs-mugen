@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeResourceSystem max/control ownership
+
+Changed:
+
+- Added shared `RuntimeResourceSystem` helpers for authored life/power max resolution, runtime power-delta clamping, direct control writes, and StateDef `ctrl` application.
+- Replaced duplicate local power-max helpers in `RuntimeDirectCombatWorld`, `RuntimeReversalWorld`, and `PlayableMatchRuntime`.
+- Routed direct-combat guard control loss, direct/reversal power gain, match pause/superpause power deltas, move/control toggles, and state-entry `ctrl` application through the resource-system boundary.
+- Extended `RuntimeResourceSystem` coverage for constant max resolution, runtime-max precedence, fallback power clamping, and direct/StateDef control writes.
+- Updated R2 roadmap, workplan, issue, progress, and architecture docs to mark this as ownership cleanup only.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeResourceSystem.test.ts src/tests/DirectCombatSystem.test.ts src/tests/ReversalSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passes: 4 files / 88 tests.
+- `pnpm test` passes: 73 files / 638 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current match-runtime power/control mutation paths now use one named resource-system boundary while preserving existing bounded behavior.
+
+Claim blocked:
+
+- This does not add new controller semantics, exact CNS resource tick-order, helper/team/redirect resource ownership, full MUGEN/IKEMEN resource parity, or score movement.
+
 ## 2026-06-29 - Studio CSS entrypoint and audit detail
 
 Changed:

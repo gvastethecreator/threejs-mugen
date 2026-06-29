@@ -3,6 +3,7 @@ import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
+import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeReversalActor = {
@@ -128,7 +129,7 @@ export class RuntimeReversalWorld {
     attacker.runtime.guardControlTime = 0;
     attacker.runtime.guarding = false;
     markRuntimeEffectActorGotHit(attacker);
-    reverser.runtime.power = Math.min(runtimePowerMax(reverser), reverser.runtime.power + 25);
+    applyRuntimePowerDelta(reverser.runtime, 25, reverser.definition.constants);
 
     const p1StateNo = reversal.p1StateNo;
     const p2StateNo = reversal.p2StateNo;
@@ -165,17 +166,6 @@ function interruptCurrentMove(actor: RuntimeReversalActor): void {
   actor.currentMove = undefined;
   actor.currentMoveLabel = undefined;
   actor.moveTick = 0;
-}
-
-function runtimePowerMax(actor: RuntimeReversalActor): number {
-  return boundedRuntimeResourceMax(actor.runtime.powerMax ?? actor.definition.constants?.["data.power"], 3000);
-}
-
-function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
-  if (value === undefined || !Number.isFinite(value)) {
-    return fallback;
-  }
-  return Math.max(1, Math.round(value));
 }
 
 function cloneBox(box: CollisionBox): CollisionBox {

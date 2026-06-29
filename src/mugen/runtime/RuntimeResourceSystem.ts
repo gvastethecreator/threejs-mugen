@@ -17,12 +17,44 @@ export type RuntimeVariableRangeAssignment = {
   value: number;
 };
 
+export type RuntimeResourceConstants = Record<string, number | undefined>;
+
+export function runtimeLifeMaxFromConstants(constants?: RuntimeResourceConstants): number {
+  return boundedRuntimeResourceMax(constants?.["data.life"], 1000);
+}
+
+export function runtimePowerMaxFromConstants(constants?: RuntimeResourceConstants): number {
+  return boundedRuntimeResourceMax(constants?.["data.power"], 3000);
+}
+
+export function runtimePowerMaxForState(state: CharacterRuntimeState, constants?: RuntimeResourceConstants): number {
+  return boundedRuntimeResourceMax(state.powerMax ?? constants?.["data.power"], 3000);
+}
+
+export function applyRuntimeControl(state: CharacterRuntimeState, value: boolean): void {
+  state.ctrl = value;
+}
+
+export function applyRuntimeStateDefControl(state: CharacterRuntimeState, value: number | undefined): void {
+  if (value !== undefined) {
+    applyRuntimeControl(state, value !== 0);
+  }
+}
+
+export function applyRuntimePowerDelta(
+  state: CharacterRuntimeState,
+  value: number,
+  constants?: RuntimeResourceConstants,
+): void {
+  state.power = clampRuntimeResource(state.power + value, 0, runtimePowerMaxForState(state, constants));
+}
+
 export function applyRuntimeResourceController(
   state: CharacterRuntimeState,
   operation: ResourceControllerOp,
 ): void {
   if (operation.controllerType === "ctrlset") {
-    state.ctrl = operation.value;
+    applyRuntimeControl(state, operation.value);
     return;
   }
   if (operation.controllerType === "lifeadd") {
@@ -96,4 +128,11 @@ function clampIndex(value: number, max: number): number {
 function clampRuntimeResource(value: number, min: number, max?: number): number {
   const lowerBounded = Math.max(min, value);
   return max === undefined ? lowerBounded : Math.min(max, lowerBounded);
+}
+
+function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
+  if (value === undefined || !Number.isFinite(value)) {
+    return fallback;
+  }
+  return Math.max(1, Math.round(value));
 }

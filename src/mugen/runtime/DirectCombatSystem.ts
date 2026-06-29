@@ -11,6 +11,7 @@ import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
+import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeDirectCombatActor = {
@@ -130,8 +131,8 @@ export class RuntimeDirectCombatWorld {
       defender.runtime.vel.y = result.hitVelocityY;
     }
     markRuntimeEffectActorGotHit(defender);
-    defender.runtime.ctrl = false;
-    attacker.runtime.power = Math.min(runtimePowerMax(attacker), attacker.runtime.power + result.powerGain);
+    applyRuntimeControl(defender.runtime, false);
+    applyRuntimePowerDelta(attacker.runtime, result.powerGain, attacker.definition.constants);
     hooks.applyGuardHit(defender);
     return {
       kind: "guard",
@@ -165,7 +166,7 @@ export class RuntimeDirectCombatWorld {
       defender.runtime.vel.y = result.hitVelocityY;
     }
     markRuntimeEffectActorGotHit(defender);
-    attacker.runtime.power = Math.min(runtimePowerMax(attacker), attacker.runtime.power + result.powerGain);
+    applyRuntimePowerDelta(attacker.runtime, result.powerGain, attacker.definition.constants);
     hooks.applyHitStateTransitions(attacker, defender, move);
     hooks.applyDefaultGetHit(defender, move);
     this.contactWorld.markReceivedDamage(defender.contact, defender.runtime.stateNo, result.damage);
@@ -222,17 +223,6 @@ function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): Charact
     },
     envShake: fall.envShake,
   };
-}
-
-function runtimePowerMax(actor: RuntimeDirectCombatActor): number {
-  return boundedRuntimeResourceMax(actor.runtime.powerMax ?? actor.definition.constants?.["data.power"], 3000);
-}
-
-function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
-  if (value === undefined || !Number.isFinite(value)) {
-    return fallback;
-  }
-  return Math.max(1, Math.round(value));
 }
 
 function clampHitDefPriority(value: number): number {

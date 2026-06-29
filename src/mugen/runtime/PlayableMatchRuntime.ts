@@ -57,6 +57,13 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import {
+  applyRuntimeControl,
+  applyRuntimePowerDelta,
+  applyRuntimeStateDefControl,
+  runtimeLifeMaxFromConstants,
+  runtimePowerMaxFromConstants,
+} from "./RuntimeResourceSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeStateAvailabilityWorld } from "./StateAvailabilitySystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
@@ -498,7 +505,7 @@ export class PlayableMatchRuntime {
       compatibilityTelemetryWorld.recordOperation(fighter, operation);
     }
     if (result.powerDelta !== 0) {
-      fighter.runtime.power = clampNumber(fighter.runtime.power + result.powerDelta, 0, runtimePowerMax(fighter.definition));
+      applyRuntimePowerDelta(fighter.runtime, result.powerDelta, fighter.definition.constants);
     }
     this.logs.unshift(
       `${fighter.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
@@ -611,8 +618,8 @@ function createFighterState(
 ): FighterMatchState {
   const action = definition.animations.get(definition.idleAction)!;
   const runtimeProgram = getRuntimeProgram(definition);
-  const lifeMax = runtimeLifeMax(definition);
-  const powerMax = runtimePowerMax(definition);
+  const lifeMax = runtimeLifeMaxFromConstants(definition.constants);
+  const powerMax = runtimePowerMaxFromConstants(definition.constants);
   const attackMultiplier = runtimeAttackMultiplier(definition);
   const defenseMultiplier = runtimeDefenseMultiplier(definition);
   return {
@@ -798,7 +805,7 @@ function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, oppon
       fighter.runtime.physics = "S";
       changeAction(fighter, fighter.definition.idleAction);
       setRuntimeStateNo(fighter, fighter.definition.idleAction);
-      fighter.runtime.ctrl = true;
+      applyRuntimeControl(fighter.runtime, true);
     }
   }
 }
@@ -876,7 +883,7 @@ function advanceFighter(
       fighter.runtime.reversal = undefined;
       if (!wasReversal) {
         fighter.runtime.moveType = "I";
-        fighter.runtime.ctrl = true;
+        applyRuntimeControl(fighter.runtime, true);
         setRuntimeStateNo(fighter, fighter.definition.idleAction);
         changeAction(fighter, fighter.definition.idleAction);
       }
@@ -932,7 +939,7 @@ function startMoveWithSpec(fighter: FighterMatchState, move: DemoMove, label: st
   fighter.hasHit = false;
   fighter.runtime.reversal = undefined;
   fighter.runtime.moveType = "A";
-  fighter.runtime.ctrl = false;
+  applyRuntimeControl(fighter.runtime, false);
   enterState(fighter, move.actionId, move);
 }
 
@@ -1024,9 +1031,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
   if (state?.physics) {
     fighter.runtime.physics = normalizePhysics(state.physics, fighter.runtime.physics);
   }
-  if (state?.ctrl !== undefined) {
-    fighter.runtime.ctrl = state.ctrl !== 0;
-  }
+  applyRuntimeStateDefControl(fighter.runtime, state?.ctrl);
   if (state?.velSet) {
     fighter.runtime.vel = { x: state.velSet[0], y: state.velSet[1] };
   }
@@ -1128,7 +1133,7 @@ function runActiveStateControllers(
         preserveAnimationWhenMissing: true,
       });
       if (ctrl !== undefined) {
-        fighter.runtime.ctrl = ctrl;
+        applyRuntimeControl(fighter.runtime, ctrl);
       }
       return;
     }
@@ -1657,7 +1662,7 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   fighter.hasHit = false;
   fighter.runtime.reversal = undefined;
   fighter.runtime.moveType = "A";
-  fighter.runtime.ctrl = false;
+  applyRuntimeControl(fighter.runtime, false);
 }
 
 function activateReversalDef(
@@ -2237,14 +2242,6 @@ function runtimeConst(definition: DemoFighterDefinition, name: string): number |
   return definition.constants?.[name.trim().toLowerCase()];
 }
 
-function runtimeLifeMax(definition: DemoFighterDefinition): number {
-  return boundedRuntimeResourceMax(definition.constants?.["data.life"], 1000);
-}
-
-function runtimePowerMax(definition: DemoFighterDefinition): number {
-  return boundedRuntimeResourceMax(definition.constants?.["data.power"], 3000);
-}
-
 function runtimeAttackMultiplier(definition: DemoFighterDefinition): number | undefined {
   const attack = definition.constants?.["data.attack"];
   return attack === undefined ? undefined : boundedRuntimeDamageMultiplier(attack / 100);
@@ -2253,13 +2250,6 @@ function runtimeAttackMultiplier(definition: DemoFighterDefinition): number | un
 function runtimeDefenseMultiplier(definition: DemoFighterDefinition): number | undefined {
   const defence = definition.constants?.["data.defence"];
   return defence === undefined || defence <= 0 ? undefined : boundedRuntimeDamageMultiplier(100 / defence);
-}
-
-function boundedRuntimeResourceMax(value: number | undefined, fallback: number): number {
-  if (value === undefined || !Number.isFinite(value)) {
-    return fallback;
-  }
-  return Math.max(1, Math.round(value));
 }
 
 function boundedRuntimeDamageMultiplier(value: number): number {
@@ -2433,10 +2423,6 @@ function velocityPair(value: string | undefined): [number, number] | undefined {
 
 function clampHitDefPriority(value: number): number {
   return Math.max(0, Math.min(10, Math.round(value)));
-}
-
-function clampNumber(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
 }
 
 function stripMugenString(value: string | undefined): string | undefined {
