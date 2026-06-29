@@ -161,6 +161,7 @@ MatchWorld
   EffectLifecycleSystem
   TargetSystem
   CombatResolver
+  RuntimeGuardWorld
   PauseSystem
   RuntimeRecoverySystem
   RuntimeHitEligibilityWorld
@@ -198,12 +199,13 @@ The current extraction order is:
 18. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, low-level active/presentation advance mutation, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
 19. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
 20. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
-21. `RuntimeRecoverySystem`: own bounded fall recovery countdown, Common1 liedown recovery, and imported ground-recovery landing hooks outside the main match loop.
-22. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
-23. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
-24. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-25. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-26. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+21. `RuntimeGuardWorld`: own bounded guard-hit state selection, auto guard-start eligibility, and auto guard-start mutation outside inline match/combat mutation.
+22. `RuntimeRecoverySystem`: own bounded fall recovery countdown, Common1 liedown recovery, and imported ground-recovery landing hooks outside the main match loop.
+23. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
+24. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
+25. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+26. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+27. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
@@ -232,6 +234,8 @@ Three.js must consume snapshots and asset providers. It should not evaluate CNS,
 `TargetSystem` owns renderer-independent target bookkeeping plus the current simplified Target* controller and target-trigger application contract. It handles bounded target memory, target id matching, `NumTarget(id)` trigger reads, bindings, `TargetDrop` `excludeID`/`keepone` filtering with MUGEN's omitted-`keepone` default of `1`, partial `TargetBind` and `BindToTarget` binding, active target-binding position application, partial life/power/velocity/facing/bind/state effects, and delegates state-entry validation and size-anchor lookup back to the match runtime. `BindToTarget` lookup, `pos/postype` parsing, duration binding, and facing-aware position application now live in `RuntimeTargetWorld.applyBindToTargetController`; per-frame active `TargetBind` and `BindToTarget` position mutation now flows through `RuntimeTargetWorld.applyTargetBindings` / `applyBindToTarget`; `PlayableMatchRuntime` supplies parsed target `[Size]` anchors for `Mid`/`Head` and preserves interaction ordering. The required `synthetic-imported-bindtotarget-head` and `synthetic-imported-bindtotarget-mid` traces prove those anchor paths through world-visible offset evidence. The required `synthetic-imported-custom-state` trace proves the bounded owner-backed `HitDef p2stateno -> ChangeState -> SelfState` path by requiring P2 actor frames with `customOwnerId = p1` before the final return to control. The required `synthetic-imported-target-owned-custom-state` trace proves the complementary `HitDef p2stateno` route with `p2getp1state = 0`: P2 uses defender-owned state/action `888`, has no attacker `customOwnerId`, and returns to control through its own `SelfState`. The required `synthetic-imported-targetstate-custom` trace proves the matching target-memory-driven `TargetState -> ChangeState -> SelfState` owner route with typed `target:targetstate` operation evidence. Target memory and active bindings are exposed as `ActorSnapshot.runtime.targetRefs`/`targetBindings`, `ActorSnapshot.runtime.bindToTarget`, `MatchWorld.targetLinks`, and trace `world.targetLinks` evidence. It does not yet implement full redirect semantics, multi-target teams, helper parent/root redirects, exact target persistence rules, exact bind tick order, or complete custom-state ownership beyond those bounded two-actor routes.
 
 `CombatResolver` owns renderer-independent combat result helpers. Bounded direct `HitDef` priority clash mutation now lives in `RuntimeDirectCombatWorld`, and owner-backed `p2stateno` route evidence still goes through runtime state ownership, but the engine does not yet implement exact MUGEN/IKEMEN priority classes, guard states, fall state routing, complete custom-state ownership, reversal parity, projectile trade/cancel parity, helper combat, team rules, or exact hit timing.
+
+`RuntimeGuardWorld` owns the current bounded guard routing helpers: default guard-hit state selection for stand/crouch/air routes, default guard-start state selection with state `120` priority, auto guard-start eligibility from held-back input/control/pause/stun/current-move state, and the minimal start mutation that clears control and horizontal velocity. `PlayableMatchRuntime` still owns `InGuardDist` timing, frame/hurtbox lookup, state entry, and imported-source checks, while direct and projectile combat paths delegate guard-hit state selection through the same world. This is ownership cleanup, not exact proximity guard, guard-end timing, guard effects, air-guard landing, Common1 controller-loop parity, or full MUGEN/IKEMEN guard VM parity.
 
 `RuntimeHitEligibilityWorld` owns the current bounded lifetime maintenance around hit eligibility: finite `HitBy` / `NotHitBy` slots tick down and expire there, infinite slots remain active, and per-frame `AssertSpecial` plus render-opacity reset happens before the imported pre-facing AssertSpecial pass. `StateControllerExecutor` still applies the actual `HitBy`, `NotHitBy`, and `AssertSpecial` controller writes, while `CombatResolver`, `RuntimeDirectCombatWorld`, and `RuntimeProjectileCombatWorld` consume the resulting runtime state. This is an ownership boundary for current lifetime/reset behavior, not exact slot priority, attr grammar, helper/team/global ownership, persistence layering, pause interaction, or full MUGEN/IKEMEN hit-eligibility parity.
 

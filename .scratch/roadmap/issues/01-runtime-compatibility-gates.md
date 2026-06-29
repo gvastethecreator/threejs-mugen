@@ -10,6 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 recovery precision, R2 MatchWorld ownership deepening.
+- Latest completed R2 cut: `RuntimeGuardWorld` now owns bounded guard-hit state selection and auto guard-start eligibility/mutation consumed by direct combat, projectile combat, and `PlayableMatchRuntime`; focused `GuardSystem` tests prove Common1-style guard-hit/start fallback, held-back/current-move/pause/stun/guard-state rejection, and control/velocity start mutation while trace behavior stays stable.
 - Latest completed R2 cut: `RuntimeOrientationWorld` now owns bounded auto-facing and `Turn` facing flips consumed by `PlayableMatchRuntime` and `StateControllerExecutor`; focused `RuntimeOrientationSystem` tests prove opponent-facing, `AssertSpecial NoAutoTurn`, and `Turn` behavior.
 - Latest completed R2 cut: `RuntimeHitEligibilityWorld` now owns bounded `HitBy`/`NotHitBy` slot ticking and per-frame `AssertSpecial`/render-opacity reset consumed by `PlayableMatchRuntime`; focused `RuntimeHitEligibilitySystem` tests prove finite slot decrement/removal, infinite slot preservation, empty-container cleanup, and flag reset behavior.
 - Latest completed R2 cut: `RuntimeTargetWorld.applyTargetBindings` / `applyBindToTarget` now own active bounded `TargetBind` and `BindToTarget` per-frame position application consumed by `PlayableMatchRuntime`; focused `TargetSystem` tests prove owner-to-target binding, target-to-owner binding, and missing-target no-op behavior.
@@ -83,6 +84,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 - Full round/lifebar/team/screenpack parity from the bounded `RuntimeRoundSystem` ownership cut.
 - Exact KO slowdown, time-over duration, intro/winpose, round transition, lifebar, team, simul/tag/turns, and screenpack parity from the bounded `synthetic-imported-round-ko` / `synthetic-imported-round-timeover` trace gates.
 - Full target redirect/team/helper ownership or exact MUGEN/IKEMEN target semantics from the `RuntimeTargetWorld.snapshotRuntimeState` ownership cut.
+- Exact proximity guard, guard-end timing, guard effects, air-guard landing, helper/team/redirect guard ownership, Common1 controller-loop parity, or full MUGEN/IKEMEN guard VM parity from the `RuntimeGuardWorld` ownership cut.
 - Exact MUGEN/IKEMEN pause layering, super backgrounds, sound/spark timing, helper VM pause behavior, or rollback/netplay timing from the `RuntimePauseWorld` ownership cut.
 - Ordinary controllers without `ignorehitpause`, persistent controller semantics, helper-owned hitpause counters, broad side-effect ordering during hitpause beyond the required player advance/freeze trace, and exact hitpause tick-order parity from the bounded `HitPauseTime` / `ignorehitpause` active-state controller cut.
 - Exact EnvShake pause/stage/layer interaction, helper/redirect ownership, waveform parity, or full presentation parity from the `RuntimeEnvShakeWorld` ownership cut.

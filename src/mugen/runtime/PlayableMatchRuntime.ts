@@ -52,6 +52,7 @@ import {
 } from "./EffectActorSystem";
 import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
+import { RuntimeGuardWorld } from "./GuardSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
@@ -205,6 +206,7 @@ export class PlayableMatchRuntime {
   private readonly recoveryWorld = new RuntimeRecoverySystem();
   private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
   private readonly orientationWorld = new RuntimeOrientationWorld();
+  private readonly guardWorld = new RuntimeGuardWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -369,7 +371,7 @@ export class PlayableMatchRuntime {
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
     );
-    applyAutoGuardStart(this.p2, this.p1);
+    applyAutoGuardStart(this.p2, this.p1, this.guardWorld);
     if (!this.pauseWorld.current()) {
       advanceFighter(
         this.p2,
@@ -385,7 +387,7 @@ export class PlayableMatchRuntime {
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
       );
-      applyAutoGuardStart(this.p1, this.p2);
+      applyAutoGuardStart(this.p1, this.p2, this.guardWorld);
     }
     this.matchInteractionWorld.advance({
       p1: this.p1,
@@ -403,11 +405,11 @@ export class PlayableMatchRuntime {
           boxesIntersect: collisionBoxesIntersect,
         })?.message,
       resolveDirectCombat: (attacker, defender) =>
-        resolveCombat(attacker, defender, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.tick, (line) =>
+        resolveCombat(attacker, defender, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.guardWorld, this.tick, (line) =>
           this.logs.unshift(line),
         ),
       resolveProjectileCombat: (attacker, defender) =>
-        resolveProjectileCombat(attacker, defender, this.hitOverrideWorld, this.effectLifecycleWorld, (line) => this.logs.unshift(line)),
+        resolveProjectileCombat(attacker, defender, this.hitOverrideWorld, this.effectLifecycleWorld, this.guardWorld, (line) => this.logs.unshift(line)),
       clampToStage: (fighter) => this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage),
       advancePresentationEffects: (fighter) => this.effectLifecycleWorld.advancePresentation(fighter),
       log: (line) => this.logs.unshift(line),
@@ -1555,6 +1557,7 @@ function resolveProjectileCombat(
   defender: FighterMatchState,
   hitOverrideWorld: RuntimeHitOverrideWorld,
   effectLifecycleWorld: RuntimeEffectLifecycleWorld,
+  guardWorld: RuntimeGuardWorld,
   log: (line: string) => void,
 ): void {
   const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
@@ -1567,7 +1570,7 @@ function resolveProjectileCombat(
     rememberTarget,
     applyHitOverride: (source, target, override, hitPause, logger) =>
       applyHitOverride(source, target, override, hitPause, hitOverrideWorld, logger),
-    applyGuardHit: applyDefaultGuardHitState,
+    applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
     applyHitState: applyDefaultProjectileGetHitState,
     markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
@@ -1716,6 +1719,7 @@ function resolveCombat(
   directCombatWorld: RuntimeDirectCombatWorld,
   hitOverrideWorld: RuntimeHitOverrideWorld,
   reversalWorld: RuntimeReversalWorld,
+  guardWorld: RuntimeGuardWorld,
   runtimeTick: number,
   log: (line: string) => void,
 ): void {
@@ -1786,7 +1790,7 @@ function resolveCombat(
     holdingBack: isRuntimeHoldingBack(defender.currentInput),
   });
   const outcome = directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
-    applyGuardHit: applyDefaultGuardHitState,
+    applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
     applyHitStateTransitions,
     applyDefaultGetHit: applyDefaultGetHitState,
   });
@@ -1923,11 +1927,11 @@ function applyDefaultGetHitState(defender: FighterMatchState, move: DemoMove): v
   enterState(defender, stateNo, undefined, { clearStateOwner: true });
 }
 
-function applyDefaultGuardHitState(defender: FighterMatchState): void {
+function applyDefaultGuardHitState(defender: FighterMatchState, guardWorld: RuntimeGuardWorld): void {
   if (defender.definition.source !== "imported") {
     return;
   }
-  const stateNo = defaultGuardHitStateNo(defender);
+  const stateNo = guardWorld.defaultGuardHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
   if (stateNo === undefined || !canEnterState(defender, stateNo)) {
     return;
   }
@@ -1945,26 +1949,28 @@ function applyDefaultProjectileGetHitState(defender: FighterMatchState): void {
   enterState(defender, stateNo, undefined, { clearStateOwner: true });
 }
 
-function applyAutoGuardStart(defender: FighterMatchState, attacker: FighterMatchState): void {
+function applyAutoGuardStart(defender: FighterMatchState, attacker: FighterMatchState, guardWorld: RuntimeGuardWorld): void {
   if (defender.definition.source !== "imported") {
     return;
   }
-  if (!isRuntimeHoldingBack(defender.currentInput) || defender.currentMove || defender.hitPause > 0 || defender.hitStun > 0 || (defender.runtime.guardStun ?? 0) > 0) {
-    return;
-  }
-  if (!defender.runtime.ctrl || defender.runtime.moveType === "H" || isGuardState(defender.runtime.stateNo)) {
+  if (
+    !guardWorld.canAttemptAutoGuardStart(defender.currentInput, defender.runtime, {
+      currentMoveActive: Boolean(defender.currentMove),
+      hitPause: defender.hitPause,
+      hitStun: defender.hitStun,
+    })
+  ) {
     return;
   }
   if (!evaluateRuntimeInGuardDist(defender, attacker)) {
     return;
   }
-  const stateNo = defaultGuardStartStateNo(defender);
+  const stateNo = guardWorld.defaultGuardStartStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
   if (stateNo === undefined || !canEnterState(defender, stateNo)) {
     return;
   }
   enterState(defender, stateNo, undefined, { clearStateOwner: true });
-  defender.runtime.ctrl = false;
-  defender.runtime.vel.x = 0;
+  guardWorld.applyAutoGuardStart(defender.runtime);
 }
 
 function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolean {
@@ -1982,22 +1988,6 @@ function defaultGetHitStateNo(defender: FighterMatchState): number | undefined {
   const preferred =
     defender.runtime.stateType === "A" ? [5020, 5000] : defender.runtime.stateType === "C" ? [5010, 5000] : [5000];
   return preferred.find((stateNo) => canEnterState(defender, stateNo));
-}
-
-function defaultGuardHitStateNo(defender: FighterMatchState): number | undefined {
-  const preferred =
-    defender.runtime.stateType === "A" ? [154, 150] : defender.runtime.stateType === "C" ? [152, 150] : [150];
-  return preferred.find((stateNo) => canEnterState(defender, stateNo));
-}
-
-function defaultGuardStartStateNo(defender: FighterMatchState): number | undefined {
-  const stateTypedGuard =
-    defender.runtime.stateType === "A" ? [132, 120] : defender.runtime.stateType === "C" ? [131, 120] : [130, 120];
-  return [120, ...stateTypedGuard].find((stateNo) => canEnterState(defender, stateNo));
-}
-
-function isGuardState(stateNo: number): boolean {
-  return stateNo >= 120 && stateNo <= 155;
 }
 
 function enterTargetHitState(target: FighterMatchState, owner: FighterMatchState, stateId: number, getP1State: boolean): boolean {

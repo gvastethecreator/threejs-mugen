@@ -55,7 +55,7 @@ Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack pari
 
 The compact package ladder lives in `docs/ROADMAP_PACKAGE_MILESTONES.md`; the tactical next-10-slices queue lives in `docs/NEXT_BUILD_ROADMAP.md`. After docs/setup work, return to both before choosing code.
 
-Latest closed implementation checkpoint: `RuntimeOrientationWorld` owns bounded auto-facing and `Turn` facing flips previously inline in `PlayableMatchRuntime` / `StateControllerExecutor`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, or `RuntimeOrientationWorld` ownership as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam.
+Latest closed implementation checkpoint: `RuntimeGuardWorld` owns bounded guard-hit state selection plus auto guard-start eligibility/mutation previously inline in `PlayableMatchRuntime`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeOrientationWorld`, or `RuntimeGuardWorld` ownership as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam.
 
 ## Next Useful Studio Gates
 

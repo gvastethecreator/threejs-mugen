@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeGuardWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeGuardWorld` / `GuardSystem` as the named owner for bounded guard-hit state selection and auto guard-start eligibility/mutation.
+- Replaced inline guard-hit state selection in direct and projectile combat callbacks with `RuntimeGuardWorld.defaultGuardHitStateNo`.
+- Replaced inline auto guard-start checks/mutation in `PlayableMatchRuntime` with `RuntimeGuardWorld.canAttemptAutoGuardStart`, `defaultGuardStartStateNo`, and `applyAutoGuardStart`.
+- Added focused `GuardSystem` tests for Common1-style guard-hit and guard-start state fallback, held-back/current-move/pause/stun/guard-state rejection, and control/velocity start mutation.
+
+Evidence:
+
+- `pnpm test` passes: 66 files, 596 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-auto-guard-start.json` remains checksum `0c734290`, `synthetic-imported-auto-guard-end.json` remains `d1dc0aa3`, `synthetic-imported-default-guard-state.json` remains `016938a1`, `synthetic-imported-projectile-guard.json` remains `4bcc5650`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded guard state selection and auto guard-start gating/mutation now have a named runtime boundary consumed by direct combat, projectile combat, and the match loop.
+
+Claim blocked:
+
+- Exact proximity guard, guard-end timing, guard effects, air-guard landing, Common1 controller-loop parity, helper/team/redirect guard ownership, and full MUGEN/IKEMEN guard VM parity remain unsupported.
+
 ## 2026-06-29 - Studio Evidence audit visual pass
 
 Changed:

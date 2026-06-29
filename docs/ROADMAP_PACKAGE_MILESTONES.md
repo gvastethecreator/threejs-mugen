@@ -59,6 +59,10 @@ R2 RuntimeOrientationWorld ownership extraction
   -> auto-facing and Turn facing flips moved into OrientationSystem
   -> focused RuntimeOrientationSystem tests cover opponent-facing, NoAutoTurn preservation, and Turn
   -> behavior unchanged; no new parity or score claim
+R2 RuntimeGuardWorld ownership extraction
+  -> guard-hit state selection and auto guard-start eligibility/mutation moved into GuardSystem
+  -> focused GuardSystem tests cover state selection, guard-state rejection, pause/stun/current-move rejection, and start mutation
+  -> behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -97,12 +101,13 @@ Current closed gates that must not be reselected as "next":
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
 - `RuntimeOrientationWorld` ownership extraction
+- `RuntimeGuardWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after hit-eligibility ownership.
+3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after guard ownership.
 
 ## Package Closeout Contract
 

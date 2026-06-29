@@ -10,6 +10,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 ## Next Useful Cuts
 
 - Current setup-project/roadmap pass: added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board and linked it from AGENTS/setup/roadmap docs. This docs/control setup initially selected R2 random ownership after the latest `VarRandom` gate; that first slice is now implemented below, with no score movement.
+- Current setup-project/roadmap pass: confirmed the existing `setup-project` profile remains local markdown issues, canonical triage labels, and single-context domain docs; roadmap docs now point at `RuntimeGuardWorld` as the latest closed R2 ownership checkpoint before returning to R1 Common1/FightFX precision or deeper R2 helper/effect/combat ownership.
 - Current implementation follow-up: R2 `HitSparkAssetSystem` ownership extraction is now implemented after the random ownership slice, so future docs/setup work should return to R1 Common1/FightFX precision or deeper R2 MatchWorld ownership instead of reselecting spark lookup or random ownership.
 - Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `HitSparkAssetSystem` checkpoint instead of older closed gates.
 - Current roadmap sync: `docs/ROADMAP_PACKAGE_MILESTONES.md` now names the latest R2 ownership checkpoint and the next evidence-producing options: R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership. This is docs/control only and does not move scores.
@@ -58,6 +59,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including deeper FightFX/common spark presentation after the current package loading/provider/source-metadata route.
+- Latest implementation truth after this refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `RuntimeGuardWorld` owns bounded guard-hit state selection and auto guard-start eligibility/mutation, with stable trace aggregate 156/156 artifacts, 138 required, 18 optional.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
 - Latest implementation truth before this docs refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. The latest trace aggregate remains 156/156 artifacts, 138 required, 18 optional, with `synthetic-imported-variable.json` checksum `3b33f7a8`.
