@@ -55,6 +55,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 synthetic Target* side-effect trace strengthening
+  -> synthetic-imported-target.json checksum f5a16dc9 now gates TargetLifeAdd/TargetPowerAdd/TargetVel*/TargetFacing/TargetBind/BindToTarget/TargetDrop typed ops
+  -> trace evidence includes target links, P2 facing/velocity actor-frame telemetry, final P1 targetCount 0, final P2 life 943 and power 40
+  -> no full target redirects, helpers/root/parent, teams, multi-target lifetime, exact bind/drop tick-order, or target parity claim
 R2 RuntimeSnapshotWorld player actor projection
   -> player actor snapshot projection moved out of PlayableMatchRuntime
   -> focused RuntimeSnapshotSystem tests cover actor metadata, runtime/event cloning, target refs/bindings, active/frame collision boxes, missing-frame fallback hurtbox, and state-owner sprite metadata
@@ -144,6 +148,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitby-allow.json`
 - `synthetic-imported-hitby-reject.json`
 - `synthetic-imported-hitdef-hit-sound.json`
+- `synthetic-imported-target.json` final Target* side-effect evidence
 - `synthetic-imported-target-owned-custom-state.json`
 - `synthetic-imported-default-guard-state.json` actor-frame telemetry
 - `synthetic-imported-crouch-guard-state.json` actor-frame telemetry

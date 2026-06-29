@@ -4465,10 +4465,29 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      { actorId: "p2", actorKind: "player", facing: 1, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          actorKind: "player",
+          facing: 1,
+          minVel: expect.objectContaining({ y: expect.any(Number) }),
+          maxVel: expect.objectContaining({ x: expect.any(Number) }),
+        }),
+      ]),
+    );
     expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
       actorKind: "player",
       source: "imported",
       targetCount: 0,
+    });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      actorKind: "player",
+      life: 943,
+      power: 40,
     });
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
   });

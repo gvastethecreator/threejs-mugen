@@ -5621,7 +5621,13 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
             bindingOffsetY: -12,
           },
         ],
-        requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 }],
+        requiredActorFrames: [
+          { actorId: "p2", actorKind: "player", facing: 1, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
+          { actorId: "p2", actorKind: "player", life: 943, power: 40 },
+        ],
       },
     ],
   });
