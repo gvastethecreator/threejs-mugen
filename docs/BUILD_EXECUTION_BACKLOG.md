@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio status CSS primitive cleanup
+
+Changed:
+
+- Added shared status metric atoms in `src/styles/base/app-shell.css` for repeated ok/warn/error numeric text and ok/warn summary/health/lane panel tint.
+- Removed equivalent one-off status color and panel tint rules from `src/styles/legacy/studio-legacy-surfaces.css`.
+- Tightened `pnpm qa:css:budget` from 2,656 to 2,639 max rules and from 172 to 167 repeated declaration groups; the cross-file overlap ceiling remains 125.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,639 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 167 repeated declaration groups, 125 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `improve-interfaces` static detector output is saved to `.scratch/qa/ui-antipatterns-css-status-primitives.txt`; it still reports existing P2/P3 interface debt, with no blocker introduced by this status-primitive cleanup.
+- `pnpm qa:smoke` passes; visual inspection covered Studio Workbench desktop/tablet, Studio Build, Studio Evidence, Studio Assets, Studio Debug, Runtime desktop/mobile, Studio source-package relink, Studio Stage, and BGCtrl Lab captures with no obvious status-color, overflow, or panel-regression issue.
+
+Claim allowed:
+
+- Studio metric/status colors and repeated summary/health/lane panel tints now share a small primitive instead of scattered legacy one-off rules, with a tighter CSS budget.
+
+Claim blocked:
+
+- This does not finish CSS optimization. The remaining 125 cross-file overlaps still need owner-by-surface migration, and larger typography/grid/border reset repetition remains future primitive work. No runtime compatibility, editor workflow, or score movement is claimed.
+
 ## 2026-06-29 - Studio legacy responsive CSS prune
 
 Changed:

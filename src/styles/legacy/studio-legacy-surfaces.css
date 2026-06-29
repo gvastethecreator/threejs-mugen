@@ -171,24 +171,12 @@
   border-color: rgba(99, 214, 133, 0.28);
 }
 
-.studio-command-readouts .is-ok b {
-  color: var(--ok);
-}
-
 .studio-command-readouts .is-warn {
   border-color: rgba(242, 184, 75, 0.32);
 }
 
-.studio-command-readouts .is-warn b {
-  color: var(--warn);
-}
-
 .studio-command-readouts .is-error {
   border-color: rgba(240, 93, 94, 0.36);
-}
-
-.studio-command-readouts .is-error b {
-  color: var(--danger);
 }
 
 .studio-mission-strip {
@@ -567,39 +555,9 @@
   white-space: nowrap;
 }
 
-.health-grid .is-ok {
-  border-color: rgba(99, 214, 133, 0.24);
-  background: rgba(99, 214, 133, 0.045);
-}
-
-.health-grid .is-ok b {
-  color: var(--ok);
-}
-
-.health-grid .is-warn {
-  border-color: rgba(242, 184, 75, 0.28);
-  background: rgba(242, 184, 75, 0.05);
-}
-
-.health-grid .is-warn b {
-  color: var(--warn);
-}
-
 .health-grid .is-error {
   border-color: rgba(240, 93, 94, 0.34);
   background: rgba(240, 93, 94, 0.058);
-}
-
-.health-grid .is-error b {
-  color: var(--danger);
-}
-
-.readiness-strip .is-ok b {
-  color: var(--ok);
-}
-
-.readiness-strip .is-warn b {
-  color: var(--warn);
 }
 
 .section-emphasis {
@@ -710,49 +668,12 @@
   white-space: nowrap;
 }
 
-.command-meter-grid .is-ok,
-.asset-lane-strip .is-ok,
-.evidence-lane-strip .is-ok,
-.workbench-lane-strip .is-ok {
-  border-color: rgba(99, 214, 133, 0.24);
-  background: rgba(99, 214, 133, 0.045);
-}
-
-.command-meter-grid .is-ok b,
-.asset-lane-strip .is-ok b,
-.evidence-lane-strip .is-ok b,
-.workbench-lane-strip .is-ok b {
-  color: var(--ok);
-}
-
-.command-meter-grid .is-warn,
-.asset-lane-strip .is-warn,
-.evidence-lane-strip .is-warn,
-.workbench-lane-strip .is-warn {
-  border-color: rgba(242, 184, 75, 0.28);
-  background: rgba(242, 184, 75, 0.05);
-}
-
-.command-meter-grid .is-warn b,
-.asset-lane-strip .is-warn b,
-.evidence-lane-strip .is-warn b,
-.workbench-lane-strip .is-warn b {
-  color: var(--warn);
-}
-
 .command-meter-grid .is-error,
 .asset-lane-strip .is-error,
 .evidence-lane-strip .is-error,
 .workbench-lane-strip .is-error {
   border-color: rgba(240, 93, 94, 0.35);
   background: rgba(240, 93, 94, 0.06);
-}
-
-.command-meter-grid .is-error b,
-.asset-lane-strip .is-error b,
-.evidence-lane-strip .is-error b,
-.workbench-lane-strip .is-error b {
-  color: var(--danger);
 }
 
 .workbench-command-center .command-center-header p {
