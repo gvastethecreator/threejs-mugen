@@ -1034,6 +1034,7 @@ async function main() {
         artifact: presets.createImportedDefaultGetHitProgressionTraceArtifact(imported, {
           targetId: "kfm-official-default-gethit-progression-golden",
           targetLabel: "Official KFM Common1 HitShakeOver/HitOver progression",
+          requiredActorFrames: presets.officialKfmDefaultGetHitProgressionPhysicsFrames(),
           notes: [
             `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 state 5000, progress to 5001 through HitShakeOver, and return to state 0 through HitOver after a HitDef without p2stateno.`,
           ],

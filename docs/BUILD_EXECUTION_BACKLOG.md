@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Common1 stand get-hit physics-frame gate
+
+Changed:
+
+- Strengthened `synthetic-imported-default-gethit-progression.json` so the required gate now checks actor-frame state metadata for the bounded defender-owned `5000 -> 5001 -> 0` stand get-hit route.
+- Added `defaultGetHitProgressionPhysicsFrames()` with required `stateType`, `moveType`, `physics`, `Clsn1`/`Clsn2`, frame counts, ground position, and bounded X/Y velocity telemetry for states `5000` and `5001`.
+- Added `officialKfmDefaultGetHitProgressionPhysicsFrames()` so optional private KFM keeps its real `Clsn2 = 2`, state `5001` animation split, body width, and slide-velocity profile instead of inheriting synthetic-only frame assumptions.
+- Extended focused trace preset coverage so the gate asserts both ordered controller events and the required physics-frame evidence while preserving the behavior checksum.
+
+Evidence:
+
+- Focused trace preset test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Common1 progression"` -> 1 file, 2 tests.
+- `pnpm test` passes: 73 files / 649 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional, 0 skipped.
+- Expected checksum remains `synthetic-imported-default-gethit-progression.json` `ef2a67f8` because this cut tightens gate requirements without changing runtime behavior.
+
+Claim allowed:
+
+- The bounded imported Common1-style stand get-hit progression now requires controller order, actor-frame order, and frame-level stand shake/slide physics telemetry before claiming `HitShakeOver` / `HitOver` progression evidence.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN controller tick order, exact `HitShakeOver` / `HitOver` timing, fall/bounce/liedown/recovery parity, helper/custom-state ownership breadth, and full Common1 VM parity remain blocked.
+
 ## 2026-06-29 - Studio CSS overlap audit prune
 
 Changed:

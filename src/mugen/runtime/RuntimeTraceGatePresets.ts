@@ -4533,6 +4533,7 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -4568,6 +4569,7 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
         requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence()],
+        requiredActorFrames: options.requiredActorFrames ?? defaultGetHitProgressionPhysicsFrames(),
         requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence()],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
@@ -4627,6 +4629,98 @@ export function defaultGetHitProgressionActorFrameSequence(
       },
     ],
   };
+}
+
+export function defaultGetHitProgressionPhysicsFrames(
+  shakeStateNo = 5000,
+  slideStateNo = 5001,
+): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: shakeStateNo,
+      animNo: shakeStateNo,
+      stateType: "S",
+      moveType: "H",
+      physics: "N",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 3,
+      observedVelXAtMost: 3,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: slideStateNo,
+      animNo: slideStateNo,
+      stateType: "S",
+      moveType: "H",
+      physics: "S",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      minFrames: 8,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 2,
+      observedVelXAtMost: 1.2,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+    },
+  ];
+}
+
+export function officialKfmDefaultGetHitProgressionPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 5000,
+      animNo: 5000,
+      stateType: "S",
+      moveType: "H",
+      physics: "N",
+      clsn1Count: 0,
+      clsn2Count: 2,
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 0,
+      observedVelXAtMost: 0,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 5001,
+      stateType: "S",
+      moveType: "H",
+      physics: "S",
+      clsn1Count: 0,
+      clsn2Count: 2,
+      minFrames: 6,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 1,
+      observedVelXAtMost: 0,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+    },
+  ];
 }
 
 export function createImportedDefaultFallGetHitTraceArtifact(

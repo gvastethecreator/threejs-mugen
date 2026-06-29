@@ -30,6 +30,7 @@ import {
   defaultFallLieDownGetUpControllerSequence,
   defaultGetHitProgressionActorFrameSequence,
   defaultGetHitProgressionControllerSequence,
+  defaultGetHitProgressionPhysicsFrames,
   createImportedDefaultGuardStateTraceArtifact,
   createImportedGuardTraceArtifact,
   createSyntheticImportedHitstunTraceArtifact,
@@ -37,6 +38,7 @@ import {
   officialKfmAirGuardHitPhysicsFrames,
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
+  officialKfmDefaultGetHitProgressionPhysicsFrames,
   officialKfmFallGetHitControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmFallLieDownGetUpControllerSequence,
@@ -4122,18 +4124,86 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       defaultGetHitProgressionControllerSequence(),
     ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(defaultGetHitProgressionPhysicsFrames());
     expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
       defaultGetHitProgressionActorFrameSequence(),
     ]);
     expect(
       evidence?.controllerEvents.filter((event) => event.actorId === "p2").map((event) => `${event.stateNo}:${event.controller}`),
     ).toEqual(expect.arrayContaining(["5000:ChangeState", "5001:ChangeState"]));
+    const shakeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5000);
+    const slideFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5001);
+    expect(shakeFrame).toMatchObject({
+      animNo: 5000,
+      stateType: "S",
+      moveType: "H",
+      physics: "N",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      frames: 5,
+    });
+    expect(slideFrame).toMatchObject({
+      animNo: 5001,
+      stateType: "S",
+      moveType: "H",
+      physics: "S",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      frames: 8,
+    });
+    expect(shakeFrame?.lastTick ?? 0).toBeLessThan(slideFrame?.firstTick ?? 0);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,
       moveType: "I",
       ctrl: true,
     });
+  });
+
+  it("describes official KFM default Common1 progression physics-frame evidence separately from synthetic traces", () => {
+    expect(officialKfmDefaultGetHitProgressionPhysicsFrames()).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5000,
+        animNo: 5000,
+        stateType: "S",
+        moveType: "H",
+        physics: "N",
+        clsn1Count: 0,
+        clsn2Count: 2,
+        minFrames: 5,
+        observedPosYAtLeast: 0,
+        observedPosYAtMost: 0,
+        observedVelXAtLeast: 0,
+        observedVelXAtMost: 0,
+        observedVelYAtLeast: 0,
+        observedVelYAtMost: 0,
+        bodyWidthFront: 39,
+        bodyWidthBack: 39,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5001,
+        stateType: "S",
+        moveType: "H",
+        physics: "S",
+        clsn1Count: 0,
+        clsn2Count: 2,
+        minFrames: 6,
+        observedPosYAtLeast: 0,
+        observedPosYAtMost: 0,
+        observedVelXAtLeast: 1,
+        observedVelXAtMost: 0,
+        observedVelYAtLeast: 0,
+        observedVelYAtMost: 0,
+        bodyWidthFront: 39,
+        bodyWidthBack: 39,
+      },
+    ]);
   });
 
   it("creates an imported default Common1 airborne fall artifact through 5030 and 5050", () => {
