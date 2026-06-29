@@ -104,6 +104,8 @@ The compiler classifies each piece as:
 
 `RuntimeHitPauseWorld` owns the bounded global hitpause mini-loop that used to live inline in `PlayableMatchRuntime`: hitpause command buffering, `ignorehitpause` active-state controller dispatch for both actors, paused presentation advancement, and per-actor hitpause countdown. `PlayableMatchRuntime` still supplies controller execution callbacks and presentation hooks, so this is current-order ownership cleanup, not exact persistent controller execution, helper-owned hitpause, broad side-effect ordering, or MUGEN/IKEMEN hitpause tick parity.
 
+`RuntimeAssertSpecialWorld` owns the bounded pre-facing `AssertSpecial` pass that used to live inline in `PlayableMatchRuntime`: imported active-state lookup, owner-backed state lookup, `AssertSpecial` controller filtering, trigger gating, and controller application before automatic facing. `PlayableMatchRuntime` still supplies trigger evaluation, constants, random, and controller execution context, so this is current-order ownership cleanup, not exact persistence layering, global/team/helper ownership, pause interaction, or full MUGEN/IKEMEN `AssertSpecial` parity.
+
 `RuntimeEffectSpawnWorld` now owns the bounded spawn/dispatch bridge from active CNS controllers into the effect actor world: Explod action/position/bind/default duration resolution, Helper state/action resolution including state-owner sprite/action lookup, Projectile action/offset/terminal-action resolution, RemoveExplod dispatch, and ModifyProjectile dispatch. `PlayableMatchRuntime` still records controller execution/operation evidence and owns match orchestration, so this is an ownership cleanup rather than exact effect spawn timing, helper VM, parent/root redirect, or FightFX/Common animation parity.
 
 `RuntimeEffectLifecycleWorld` now owns the bounded lifecycle orchestration that happens after those effect actors exist: active-effect ticks, presentation ticks, paused presentation ticks, effect snapshot grouping, and shared get-hit cleanup. `PlayableMatchRuntime` delegates current effect lifecycle passes and projectile get-hit cleanup to that boundary, while direct combat, HitOverride, and Reversal share the same effect get-hit cleanup helper. This is current-behavior ownership, not exact helper VM lifecycle, pause/combat ordering, advanced remove-trigger timing, parent/root/redirect parity, or full MUGEN/IKEMEN effect lifecycle parity.
@@ -178,6 +180,7 @@ MatchWorld
   RuntimeHitStateTransitionWorld
   RuntimeStateAvailabilityWorld
   RuntimeHitEligibilityWorld
+  RuntimeAssertSpecialWorld
   RuntimeOrientationWorld
   RuntimeStunWorld
   RuntimePausedMatchWorld
@@ -221,13 +224,14 @@ The current extraction order is:
 25. `RuntimeHitStateTransitionWorld`: own bounded `p1stateno` / `p2stateno` / `p2getp1state` transition routing outside inline direct-combat and ReversalDef callbacks.
 26. `RuntimeStateAvailabilityWorld`: own bounded state/action availability and state-source lookup outside inline state validation.
 27. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
-28. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
-29. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
-30. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-31. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
-32. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
-31. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-32. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+28. `RuntimeAssertSpecialWorld`: own bounded imported pre-facing `AssertSpecial` lookup/filter/trigger/application ordering outside inline `PlayableMatchRuntime` branching.
+29. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
+30. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
+31. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+32. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
+33. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
+34. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+35. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
@@ -260,6 +264,8 @@ Three.js must consume snapshots and asset providers. It should not evaluate CNS,
 `RuntimeGuardWorld` owns the current bounded guard routing helpers: default guard-hit state selection for stand/crouch/air routes, default guard-start state selection with state `120` priority, auto guard-start eligibility from held-back input/control/pause/stun/current-move state, and the minimal start mutation that clears control and horizontal velocity. `PlayableMatchRuntime` still owns `InGuardDist` timing, frame/hurtbox lookup, state entry, and imported-source checks, while direct and projectile combat paths delegate guard-hit state selection through the same world. This is ownership cleanup, not exact proximity guard, guard-end timing, guard effects, air-guard landing, Common1 controller-loop parity, or full MUGEN/IKEMEN guard VM parity.
 
 `RuntimeHitEligibilityWorld` owns the current bounded lifetime maintenance around hit eligibility: finite `HitBy` / `NotHitBy` slots tick down and expire there, infinite slots remain active, and per-frame `AssertSpecial` plus render-opacity reset happens before the imported pre-facing AssertSpecial pass. `StateControllerExecutor` still applies the actual `HitBy`, `NotHitBy`, and `AssertSpecial` controller writes, while `CombatResolver`, `RuntimeDirectCombatWorld`, and `RuntimeProjectileCombatWorld` consume the resulting runtime state. This is an ownership boundary for current lifetime/reset behavior, not exact slot priority, attr grammar, helper/team/global ownership, persistence layering, pause interaction, or full MUGEN/IKEMEN hit-eligibility parity.
+
+`RuntimeAssertSpecialWorld` owns current bounded imported pre-facing `AssertSpecial` dispatch: it locates the current owner-backed state program, filters to `AssertSpecial`, respects trigger results supplied by the runtime, and applies the resulting runtime flags before `RuntimeOrientationWorld` performs automatic facing. `PlayableMatchRuntime` still owns the concrete trigger/evaluation context and pass placement, so exact persistence, global flags, helper/team ownership, pause layering, and full `AssertSpecial` VM parity remain future work.
 
 `RuntimeOrientationWorld` owns current bounded orientation mutation: automatic facing toward the opponent respects `AssertSpecial NoAutoTurn`, and `Turn` facing flips run through `OrientationSystem` instead of inline controller-executor mutation. `PlayableMatchRuntime` still decides when the pre-facing AssertSpecial pass and auto-facing pass occur, and `StateControllerExecutor` still validates controller operation shape before delegating. This is ownership cleanup, not exact auto-facing order, target-facing/team/helper semantics, redirect ownership, or full MUGEN/IKEMEN orientation parity.
 

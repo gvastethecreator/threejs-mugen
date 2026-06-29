@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeAssertSpecialWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeAssertSpecialWorld` as the named owner for the imported pre-facing `AssertSpecial` pass: owner-backed active-state lookup, `AssertSpecial` controller filtering, trigger gating, and runtime flag application before automatic facing.
+- Replaced the inline `PlayableMatchRuntime` pre-facing `AssertSpecial` helper with the new world boundary while keeping trigger evaluation and controller execution callbacks in the match runtime.
+- Added focused `RuntimeAssertSpecialSystem` coverage for imported current-state application, owner-backed custom-state application, trigger filtering, and non-imported skip behavior.
+- Updated R2 roadmap docs, the runtime issue ledger, and AGENTS current-checkpoint wording so future agents do not reselect this ownership cut.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeAssertSpecialSystem.test.ts` passes: 1 file, 4 tests.
+- `pnpm test` passes: 71 files, 618 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-assertspecial-control.json` remains checksum `c09b07b5`, `synthetic-imported-assertspecial-guarddeny.json` remains `f636748d`, `synthetic-imported-assertspecial-lifetime.json` remains `181ded30`, `synthetic-imported-assertspecial-noko.json` remains `9dd76f9b`, `synthetic-imported-hitpausetime-ignorehitpause.json` remains `a3a78bb8`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes, with the unrelated unstaged `src/style.css` CRLF warning still reported by Git.
+- `pnpm qa:smoke` is not required for this checkpoint because the committed runtime ownership cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded imported pre-facing `AssertSpecial` ordering now has a named runtime boundary separate from hit-eligibility reset and orientation ownership.
+
+Claim blocked:
+
+- This is ownership cleanup only. Exact `AssertSpecial` persistence layering, global/team/helper ownership, pause interaction, flag priority, and full MUGEN/IKEMEN `AssertSpecial` parity remain unsupported.
+
 ## 2026-06-29 - RuntimeHitPauseWorld ownership extraction
 
 Changed:

@@ -63,6 +63,7 @@ import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
+import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
@@ -211,6 +212,7 @@ export class PlayableMatchRuntime {
   private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private readonly recoveryWorld = new RuntimeRecoverySystem();
   private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
+  private readonly assertSpecialWorld = new RuntimeAssertSpecialWorld();
   private readonly orientationWorld = new RuntimeOrientationWorld();
   private readonly guardWorld = new RuntimeGuardWorld();
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
@@ -316,8 +318,8 @@ export class PlayableMatchRuntime {
 
     this.hitEligibilityWorld.resetFrameFlags(this.p1.runtime);
     this.hitEligibilityWorld.resetFrameFlags(this.p2.runtime);
-    applyPreFacingAssertSpecial(this.p1, this.p2, this.tick);
-    applyPreFacingAssertSpecial(this.p2, this.p1, this.tick);
+    this.applyPreFacingAssertSpecial(this.p1, this.p2);
+    this.applyPreFacingAssertSpecial(this.p2, this.p1);
     this.orientationWorld.updateAutoFacing(this.p1.runtime, this.p2.runtime);
     this.orientationWorld.updateAutoFacing(this.p2.runtime, this.p1.runtime);
 
@@ -500,6 +502,22 @@ export class PlayableMatchRuntime {
     this.logs.unshift(
       `${fighter.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
+  }
+
+  private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {
+    this.assertSpecialWorld.applyPreFacing({
+      actor: fighter,
+      opponent,
+      tick: this.tick,
+      triggersPass,
+      executeController: (controller, actor, owner, tick) =>
+        executeControllerIr(controller, actor.runtime, () => undefined, {
+          getConst: (name) => runtimeConst(owner.definition, name),
+          hitPauseTime: () => actor.hitPause,
+          random: () => nextRuntimeRandom(actor),
+          stageTime: tick,
+        }),
+    });
   }
 
   getSnapshot(): MugenSnapshot {
@@ -1321,27 +1339,6 @@ function runActiveStateControllers(
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {
   return (firstNumber(findParam(controller, "ignorehitpause")) ?? 0) !== 0;
-}
-
-function applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
-  const owner = fighter.stateOwner ?? fighter;
-  const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo);
-  const state = stateProgram?.source;
-  if (!state || (fighter.definition.source !== "imported" && owner.definition.source !== "imported")) {
-    return;
-  }
-
-  for (const controller of stateProgram.controllers) {
-    if (controller.normalizedType !== "assertspecial" || !triggersPass(controller, fighter, opponent, owner, tick)) {
-      continue;
-    }
-    fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
-      getConst: (name) => runtimeConst(owner.definition, name),
-      hitPauseTime: () => fighter.hitPause,
-      random: () => nextRuntimeRandom(fighter),
-      stageTime: tick,
-    });
-  }
 }
 
 function applySprPriorityController(
