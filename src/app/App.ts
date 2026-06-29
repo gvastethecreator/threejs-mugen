@@ -1987,7 +1987,7 @@ export class App {
     this.commandPaletteActiveIndex = 0;
     action.run();
     this.updateUi();
-    if (commandId.startsWith("debug-actor:")) {
+    if (commandId.startsWith("debug-actor:") || commandId.startsWith("trace-frame:") || commandId.startsWith("stage-layer:")) {
       this.scrollRightPaneToTop();
     }
   }
@@ -2353,6 +2353,8 @@ export class App {
         run: studioAction("debug"),
       },
       ...this.getDebugActorCommandPaletteActions(),
+      ...this.getTraceFrameCommandPaletteActions(),
+      ...this.getStageLayerCommandPaletteActions(),
       {
         id: "studio-modules",
         group: "Studio",
@@ -2546,6 +2548,109 @@ export class App {
         },
       },
     ];
+  }
+
+  private getTraceFrameCommandPaletteActions(): CommandPaletteAction[] {
+    const artifact = this.getActiveTraceArtifact();
+    if (!artifact) {
+      return [];
+    }
+    const frames = this.getTraceArtifactFrameSummaries(artifact);
+    if (!frames.length) {
+      return [];
+    }
+    const selectedIndex = Math.min(Math.max(0, this.selectedTraceFrameIndex), frames.length - 1);
+    return frames.slice(0, 24).map((frame, index) => {
+      const labels = [frame.label, ...frame.eventCategories, ...frame.combatReasons].filter((label): label is string => Boolean(label));
+      const checksumShort = frame.checksum.slice(0, 10);
+      const hasFrameActivity = labels.length > 0 || frame.actorCount > 0 || frame.effectCount > 0;
+      const tone: CommandPaletteTone = index === selectedIndex ? "active" : hasFrameActivity ? "ok" : "neutral";
+      return {
+        id: `trace-frame:${index}`,
+        group: "Trace",
+        label: `Open Trace Frame ${frame.frameIndex + 1}`,
+        detail: [
+          `tick ${frame.tick}`,
+          `sum ${checksumShort}`,
+          frame.actorCount || frame.effectCount ? `${frame.actorCount} actors / ${frame.effectCount} effects` : undefined,
+          labels.length ? labels.slice(0, 2).join(" / ") : undefined,
+        ]
+          .filter(Boolean)
+          .join(" / "),
+        keywords: [
+          "trace",
+          "frame",
+          "evidence",
+          "scrubber",
+          "checksum",
+          checksumShort,
+          String(frame.frameIndex + 1),
+          String(frame.tick),
+          ...labels,
+          ...frame.input.p1,
+          ...(frame.input.p2 ?? []),
+        ].filter((keyword): keyword is string => Boolean(keyword)),
+        tone,
+        run: () => {
+          this.mode = "studio";
+          this.studioTab = "evidence";
+          this.studioEvidenceFilter = "trace";
+          this.selectedTraceFrameIndex = index;
+          this.snapshot = this.getActiveSnapshot();
+          this.writeUrlState();
+        },
+      };
+    });
+  }
+
+  private getStageLayerCommandPaletteActions(): CommandPaletteAction[] {
+    const stage = this.findStage(this.selectedStageId) ?? rooftopDojoStage;
+    const report = this.getStageCompatibilityReportFor(stage.id);
+    const layers = this.getStudioStageLayerRows(stage, report);
+    if (!layers.length) {
+      return [];
+    }
+    return layers.slice(0, 18).map((layer, index) => {
+      const statusTone = this.stageLayerStatusClass(layer.status);
+      const tone: CommandPaletteTone = statusTone === "error" ? "error" : statusTone === "warn" ? "warn" : "ok";
+      return {
+        id: `stage-layer:${layer.id}:${index}`,
+        group: "Stage",
+        label: `Review ${layer.label}`,
+        detail: [
+          layer.status,
+          layer.type,
+          layer.tiled ? "tiled" : undefined,
+          layer.controlId === undefined ? undefined : `ctrl ${layer.controlId}`,
+          layer.detail,
+        ]
+          .filter(Boolean)
+          .join(" / "),
+        keywords: [
+          "stage",
+          "layer",
+          "background",
+          "controller",
+          "bgdef",
+          stage.id,
+          stage.displayName,
+          layer.id,
+          layer.label,
+          layer.status,
+          layer.type,
+          layer.fallback ?? "",
+          ...layer.unsupported,
+        ],
+        tone,
+        run: () => {
+          this.mode = "studio";
+          this.studioTab = "stage";
+          this.selectedStageId = stage.id;
+          this.snapshot = this.getActiveSnapshot();
+          this.writeUrlState();
+        },
+      };
+    });
   }
 
   private getDebugActorCommandPaletteActions(): CommandPaletteAction[] {
