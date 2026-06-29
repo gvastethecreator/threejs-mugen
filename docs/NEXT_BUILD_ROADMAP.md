@@ -31,8 +31,9 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> qa:css reports 2,666 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,666 rules, 173 repeated declaration groups, 126 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> qa:css reports 2,661 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 125 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,661 rules, 173 repeated declaration groups, 125 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> latest narrow cleanup removed one redundant pane-right shadow override and folded tab/collapsible/runtime label truncation into the existing legacy truncation atom
   -> latest narrow cleanup groups legacy Studio truncation labels into one CSS atom and passed qa:smoke plus screenshot inspection
   -> requires qa:smoke and visual inspection; product-surface hygiene only
 S1 Studio command chrome label/grid follow-up
@@ -77,13 +78,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 required common/FightFX guard HitSpark asset-frame trace strengthening
+R1 required combined guard-effect package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d
-  -> required traces prove bounded guarded direct HitDef contact, attacker-side guard HitSpark telemetry, and source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX guard spark refs
-  -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
-  -> pnpm qa:trace now passes 163/163 artifacts, 143 required and 20 optional
-  -> no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or score movement claim
+  -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
+  -> required traces prove bounded guarded direct HitDef contact, attacker-side guard PlaySnd/HitSpark telemetry, source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX guard spark refs, and one combined guardsound S6,0 plus FightFX guard.sparkno F7004 package route
+  -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
+  -> pnpm qa:trace now passes 164/164 artifacts, 144 required and 20 optional
+  -> no exact same-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
   -> PlayableMatchRuntime delegates those hitpause side effects through RuntimeHitPauseWorld instead of local callback glue

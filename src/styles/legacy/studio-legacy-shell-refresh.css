@@ -10,12 +10,6 @@
     inset 0 -1px 0 rgba(0, 0, 0, 0.72);
 }
 
-.pane-right {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.052),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
-}
-
 .section {
   padding: 13px 14px;
   border-top-color: rgba(255, 255, 255, 0.055);

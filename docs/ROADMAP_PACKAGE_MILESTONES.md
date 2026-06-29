@@ -85,12 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R1 required common/FightFX guard HitSpark asset-frame trace strengthening
+R1 required combined guard-effect package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
-  -> required traces require guarded direct HitDef contact, attacker-side guard HitSpark telemetry, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
-  -> pnpm qa:trace now passes 163/163 artifacts, 143 required and 20 optional
-  -> required trace evidence only; no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or full spark parity claim
+  -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata
+  -> required traces require guarded direct HitDef contact, attacker-side guard PlaySnd/HitSpark telemetry, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
+  -> pnpm qa:trace now passes 164/164 artifacts, 144 required and 20 optional
+  -> required trace evidence only; no exact same-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
   -> PlayableMatchRuntime delegates those hitpause side effects through RuntimeHitPauseWorld instead of local callback glue

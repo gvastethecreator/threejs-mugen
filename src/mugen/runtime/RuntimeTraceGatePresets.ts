@@ -2810,6 +2810,62 @@ export function createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHitDefGuardEffectPackageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-guard-effect-package-attacker",
+    displayName: "Synthetic Imported HitDef Guard Effect Package Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSound: "S6,0",
+    guardSpark: "F7004",
+    sparkXy: [15, -63],
+    moveGuardStateNo: 260,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-guard-effect-package-golden",
+    targetLabel: "Synthetic imported HitDef guard effect package route",
+    requiredExecutedStates: [200, 260],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 6,
+        index: 0,
+        stateNo: 200,
+      },
+    ],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 7004,
+        raw: "F7004",
+        rawPrefix: "F",
+        assetSource: "fightfx",
+        assetActionId: 7004,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 8104,
+        assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef guard-effect package trace proves one guarded direct contact can emit bounded guardsound telemetry and FightFX guard-spark multi-frame AIR metadata together before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN guard-effect parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialUnguardableTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS duplicate-budget prune
+
+Changed:
+
+- Removed a redundant `.pane-right` `box-shadow` override from `src/styles/legacy/studio-legacy-shell-refresh.css`; `.pane, .pane-right` already applied the same value.
+- Folded tab, collapsible summary, runtime-versus, and runtime-metric one-line truncation selectors into the existing grouped truncation atom in `src/styles/legacy/studio-legacy-surfaces.css`.
+- Tightened `pnpm qa:css:budget` from 2,666 to 2,661 max rules and from 126 to 125 max cross-file overlaps.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,661 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 173 repeated declaration groups, 125 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm qa:smoke` passes; visual inspection covered `studio-workbench.png`, `studio-assets.png`, `runtime-desktop.png`, and `studio-debug.png` with no obvious truncation, panel overlap, or horizontal overflow regression from the CSS grouping.
+
+Claim allowed:
+
+- The current CSS has no exact duplicate rules, no same-file duplicate selector keys, and a slightly tighter rule/overlap budget before the next Studio UI work.
+
+Claim blocked:
+
+- This does not finish broader token consolidation, typography cleanup, shared chrome/status primitives, or the remaining repeated declaration groups.
+
+## 2026-06-29 - HitDef combined guard-effect trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitdef-guard-effect-package.json` trace gate.
+- The route uses one guarded direct `HitDef` contact with `guardsound = S6,0` and `guard.sparkno = F7004`.
+- The gate requires attacker-side `PlaySnd` telemetry for `S6,0` plus attacker-side guard `HitSpark` telemetry with FightFX AIR metadata: 2 frames, frame indices `[0, 1]`, total authored duration `11`, and first-frame sprite `8104,0`.
+- Registered the artifact in `pnpm qa:trace` required coverage so separate sound/spark gates cannot silently prove only isolated routes.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` passes: 1 file / 160 tests.
+- `pnpm qa:trace` passes: 164/164 artifacts, 144 required and 20 optional, 0 skipped.
+- New checksum: `synthetic-imported-hitdef-guard-effect-package.json` `1c3167b7`.
+
+Claim allowed:
+
+- Current imported guarded direct `HitDef` routes can require bounded guard sound telemetry and FightFX guard-spark multi-frame AIR metadata on the same contact before renderer/audio handoff.
+
+Claim blocked:
+
+- Exact same-tick ordering between audio and spark events, SND playback, channel priority, common/FightFX visual timing, binding, layering, scale, palette, motif/screenpack ownership, guard-effect parity, and full MUGEN/IKEMEN `HitDef` presentation parity.
+
 ## 2026-06-29 - Studio truncation CSS primitive cleanup
 
 Changed:

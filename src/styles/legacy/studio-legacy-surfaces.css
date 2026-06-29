@@ -1215,7 +1215,17 @@ button.studio-primary-next {
 .command-launcher strong,
 .command-launcher small,
 .asset-row-kind,
-.asset-row-action {
+.asset-row-action,
+.tab-label,
+.tab-hint,
+.tab-count,
+.tab-status,
+.collapsible-section > summary span,
+.collapsible-section > summary small,
+.runtime-versus-card strong,
+.runtime-versus-card small,
+.runtime-metric-strip b,
+.runtime-metric-strip small {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1803,16 +1813,6 @@ button.studio-primary-next {
   gap: 7px;
 }
 
-.tab-label,
-.tab-hint,
-.tab-count,
-.tab-status {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .tab-label {
   color: var(--text);
   font-weight: 700;
@@ -1890,14 +1890,6 @@ button.studio-primary-next {
 
 .collapsible-section[open] > summary::after {
   content: "-";
-}
-
-.collapsible-section > summary span,
-.collapsible-section > summary small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .collapsible-section > summary span {
@@ -2519,14 +2511,6 @@ button.controller-chip {
   gap: 2px;
 }
 
-.runtime-versus-card strong,
-.runtime-versus-card small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .runtime-versus-card strong {
   color: var(--text);
   line-height: 1.2;
@@ -2557,14 +2541,6 @@ button.controller-chip {
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.022);
   box-shadow: var(--shadow-recessed);
-}
-
-.runtime-metric-strip b,
-.runtime-metric-strip small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .runtime-metric-strip b {
