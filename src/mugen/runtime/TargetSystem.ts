@@ -76,6 +76,10 @@ export type RuntimeBindToTargetControllerOptions<TActor extends RuntimeTargetWor
   targetAnchor?: (target: TActor, postype: RuntimeTargetPostype) => { x: number; y: number };
 };
 
+export type RuntimeTargetBindingApplyResult = {
+  appliedBindings: number;
+};
+
 export type RuntimeTargetControllerResult = {
   controllerType: string;
   matchedTargets: number;
@@ -126,6 +130,20 @@ export class RuntimeTargetWorld {
     options: RuntimeBindToTargetControllerOptions<TActor>,
   ): RuntimeTargetControllerResult {
     return applyRuntimeBindToTargetController(options);
+  }
+
+  applyTargetBindings<TActor extends RuntimeTargetWorldActor>(
+    actor: TActor,
+    candidateTargets: TActor[],
+  ): RuntimeTargetBindingApplyResult {
+    return applyRuntimeTargetBindings(actor, candidateTargets);
+  }
+
+  applyBindToTarget<TActor extends RuntimeTargetWorldActor>(
+    actor: TActor,
+    candidateTargets: TActor[],
+  ): RuntimeTargetBindingApplyResult {
+    return applyRuntimeBindToTarget(actor, candidateTargets);
   }
 }
 
@@ -264,6 +282,38 @@ export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetW
     },
   );
   return { controllerType: "bindtotarget", matchedTargets: 1, operationExecuted: true };
+}
+
+export function applyRuntimeTargetBindings<TActor extends RuntimeTargetWorldActor>(
+  actor: TActor,
+  candidateTargets: TActor[],
+): RuntimeTargetBindingApplyResult {
+  let appliedBindings = 0;
+  for (const binding of actor.targetBindings) {
+    const target = candidateTargets.find((candidate) => candidate.id === binding.actorId);
+    if (!target) {
+      continue;
+    }
+    target.runtime.pos = resolveRuntimeTargetBindingPosition(actor.runtime.pos, actor.runtime.facing, binding);
+    appliedBindings += 1;
+  }
+  return { appliedBindings };
+}
+
+export function applyRuntimeBindToTarget<TActor extends RuntimeTargetWorldActor>(
+  actor: TActor,
+  candidateTargets: TActor[],
+): RuntimeTargetBindingApplyResult {
+  const binding = actor.bindToTarget;
+  if (!binding) {
+    return { appliedBindings: 0 };
+  }
+  const target = candidateTargets.find((candidate) => candidate.id === binding.actorId);
+  if (!target) {
+    return { appliedBindings: 0 };
+  }
+  actor.runtime.pos = resolveRuntimeTargetBindingPosition(target.runtime.pos, target.runtime.facing, binding);
+  return { appliedBindings: 1 };
 }
 
 export function rememberRuntimeTarget(

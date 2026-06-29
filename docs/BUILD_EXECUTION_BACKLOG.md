@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Target binding position ownership extraction
+
+Changed:
+
+- Added `RuntimeTargetWorld.applyTargetBindings` and `RuntimeTargetWorld.applyBindToTarget` as the named boundary for per-frame active target binding position application.
+- Replaced the remaining inline `TargetBind` / active `BindToTarget` position mutation in `PlayableMatchRuntime` with target-world delegation.
+- Added focused `TargetSystem` tests for active `TargetBind` target-position application, active `BindToTarget` owner-position application, and missing-target no-op behavior.
+
+Evidence:
+
+- `pnpm test` passes: 63 files, 586 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-targetbind-pause.json` remains checksum `df621628`, `synthetic-imported-bindtotarget-head.json` remains `474deaa2`, `synthetic-imported-bindtotarget-mid.json` remains `c65ebf56`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Active bounded target binding position application now runs through `RuntimeTargetWorld` instead of inline match-loop mutation.
+
+Claim blocked:
+
+- Exact bind tick order, redirect/helper/team target ownership, multi-target semantics, throw/custom-state breadth, pause-order parity, and full MUGEN/IKEMEN target/bind parity remain unsupported.
+
 ## 2026-06-29 - BindToTarget target-system ownership extraction
 
 Changed:

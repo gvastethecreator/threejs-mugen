@@ -67,7 +67,6 @@ import {
 } from "./SpriteEffectSystem";
 import {
   RuntimeTargetWorld,
-  resolveRuntimeTargetBindingPosition,
   type RuntimeTarget,
   type RuntimeTargetBinding,
   type RuntimeTargetPostype,
@@ -1469,20 +1468,11 @@ function advanceTargetMemory(fighter: FighterMatchState): void {
 }
 
 function applyTargetBindings(fighter: FighterMatchState, opponent: FighterMatchState): void {
-  for (const binding of fighter.targetBindings) {
-    if (binding.actorId !== opponent.id) {
-      continue;
-    }
-    opponent.runtime.pos = resolveRuntimeTargetBindingPosition(fighter.runtime.pos, fighter.runtime.facing, binding);
-  }
+  fighter.targetWorld.applyTargetBindings(fighter, [opponent]);
 }
 
 function applyBindToTarget(fighter: FighterMatchState, opponent: FighterMatchState): void {
-  const binding = fighter.bindToTarget;
-  if (!binding || binding.actorId !== opponent.id) {
-    return;
-  }
-  fighter.runtime.pos = resolveRuntimeTargetBindingPosition(opponent.runtime.pos, opponent.runtime.facing, binding);
+  fighter.targetWorld.applyBindToTarget(fighter, [opponent]);
 }
 
 function bindToTargetAnchor(target: FighterMatchState, postype: RuntimeTargetPostype): { x: number; y: number } {

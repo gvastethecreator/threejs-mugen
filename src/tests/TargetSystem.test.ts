@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   addRuntimeTargetBinding,
   advanceRuntimeTargetMemory,
+  applyRuntimeBindToTarget,
   applyRuntimeBindToTargetController,
   applyRuntimeTargetController,
+  applyRuntimeTargetBindings,
   clampRuntimeTargetDuration,
   createRuntimeTargetBinding,
   dropRuntimeTargets,
@@ -387,6 +389,38 @@ describe("TargetSystem", () => {
     expect(result).toEqual({ controllerType: "bindtotarget", matchedTargets: 0, operationExecuted: false });
     expect(actor.bindToTarget).toBe(before);
     expect(actor.runtime.pos).toEqual({ x: 24, y: 4 });
+  });
+
+  it("applies active TargetBind positions through the target world boundary", () => {
+    const actor = targetActor("p1", {
+      runtime: { pos: { x: 120, y: -16 }, facing: -1 },
+      targetBindings: [binding({ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } })],
+    });
+    const target = targetActor("p2", {
+      runtime: { pos: { x: 0, y: 0 } },
+    });
+
+    const result = applyRuntimeTargetBindings(actor, [target]);
+
+    expect(result).toEqual({ appliedBindings: 1 });
+    expect(target.runtime.pos).toEqual({ x: 84, y: -28 });
+  });
+
+  it("applies active BindToTarget positions and ignores missing targets without mutation", () => {
+    const actor = targetActor("p1", {
+      runtime: { pos: { x: 0, y: 0 } },
+    });
+    actor.bindToTarget = binding({ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 18, y: -78 } });
+    const target = targetActor("p2", {
+      runtime: { pos: { x: 100, y: -20 }, facing: -1 },
+    });
+
+    expect(applyRuntimeBindToTarget(actor, [target])).toEqual({ appliedBindings: 1 });
+    expect(actor.runtime.pos).toEqual({ x: 82, y: -98 });
+
+    actor.runtime.pos = { x: 10, y: 20 };
+    expect(applyRuntimeBindToTarget(actor, [targetActor("helper")])).toEqual({ appliedBindings: 0 });
+    expect(actor.runtime.pos).toEqual({ x: 10, y: 20 });
   });
 });
 
