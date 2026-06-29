@@ -371,6 +371,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefFightFxSparkTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-hit-effect-package",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefHitEffectPackageTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-guard-spark",
       required: true,
       artifact: presets.createSyntheticImportedHitDefGuardSparkTraceArtifact(),
@@ -1526,6 +1531,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-hit-spark",
     "synthetic-imported-hitdef-common-spark",
     "synthetic-imported-hitdef-fightfx-spark",
+    "synthetic-imported-hitdef-hit-effect-package",
     "synthetic-imported-hitdef-guard-spark",
     "synthetic-imported-hitdef-common-guard-spark",
     "synthetic-imported-hitdef-fightfx-guard-spark",

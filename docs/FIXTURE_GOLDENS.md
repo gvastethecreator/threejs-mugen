@@ -43,7 +43,7 @@ Required artifacts should prove engine plumbing without private assets:
 - Helper
 - Explod
 - ModifyExplod live-mutation
-- HitDef hit/guard sound and spark routes, including the combined guard sound + FightFX guard-spark package route
+- HitDef hit/guard sound and spark routes, including combined hit sound + FightFX hit-spark and combined guard sound + FightFX guard-spark package routes
 
 These artifacts can prove regression stability and controller-system behavior. They do not prove official character parity.
 

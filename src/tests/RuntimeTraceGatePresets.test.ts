@@ -72,6 +72,7 @@ import {
   createSyntheticImportedHitDefCommonGuardSparkTraceArtifact,
   createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact,
   createSyntheticImportedHitDefFightFxSparkTraceArtifact,
+  createSyntheticImportedHitDefHitEffectPackageTraceArtifact,
   createSyntheticImportedHitDefGuardEffectPackageTraceArtifact,
   createSyntheticImportedHitDefHitSoundTraceArtifact,
   createSyntheticImportedHitDefHitSparkTraceArtifact,
@@ -2500,6 +2501,80 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
       expect.objectContaining({
+        assetSource: "fightfx",
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
+  });
+
+  it("creates a synthetic imported HitDef hit-effect package artifact with sound and FightFX spark evidence", () => {
+    const artifact = createSyntheticImportedHitDefHitEffectPackageTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-hit-effect-package-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          type: "PlaySnd",
+          group: 5,
+          index: 0,
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "hit",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7002,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 8102,
+          assetSpriteIndex: 0,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          assetFrameIndices: [0, 1],
+          offset: { x: 18, y: -68 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
+      expect.objectContaining({
+        type: "PlaySnd",
+        group: 5,
+        index: 0,
+      }),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "hit",
         assetSource: "fightfx",
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,

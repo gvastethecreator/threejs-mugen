@@ -50,9 +50,9 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,666 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,666 rules, 173 repeated declaration groups, 126 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
-  -> latest narrow cleanup groups legacy Studio truncation labels into one CSS atom and passed qa:smoke plus screenshot inspection
+  -> pnpm qa:css reports 2,656 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 172 repeated declaration groups, 125 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,656 rules, 172 repeated declaration groups, 125 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> latest narrow cleanup removed five redundant responsive rules from studio-legacy-shell-refresh.css and keeps the broader 125 cross-file overlaps queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail
@@ -85,13 +85,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R1 required combined guard-effect package trace strengthening
+R1 required combined hit/guard-effect package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
+  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata
-  -> required traces require guarded direct HitDef contact, attacker-side guard PlaySnd/HitSpark telemetry, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> pnpm qa:trace now passes 164/164 artifacts, 144 required and 20 optional
-  -> required trace evidence only; no exact same-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or full spark parity claim
+  -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
+  -> pnpm qa:trace now passes 165/165 artifacts, 145 required and 20 optional
+  -> required trace evidence only; no exact same-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
   -> PlayableMatchRuntime delegates those hitpause side effects through RuntimeHitPauseWorld instead of local callback glue

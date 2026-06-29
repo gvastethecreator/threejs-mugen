@@ -2690,6 +2690,61 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
   });
 }
 
+export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-hit-effect-package-attacker",
+    displayName: "Synthetic Imported HitDef Hit Effect Package Attacker",
+    hitSound: "S5,0",
+    hitSpark: "F7002",
+    sparkXy: [18, -68],
+    moveHitStateNo: 261,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-hit-effect-package-golden",
+    targetLabel: "Synthetic imported HitDef hit effect package route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 5,
+        index: 0,
+        stateNo: 200,
+      },
+    ],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 7002,
+        raw: "F7002",
+        rawPrefix: "F",
+        assetSource: "fightfx",
+        assetActionId: 7002,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 8102,
+        assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef hit-effect package trace proves one direct hit contact can emit bounded hitsound telemetry and FightFX hit-spark multi-frame AIR metadata together before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefGuardSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-guard-spark-attacker",

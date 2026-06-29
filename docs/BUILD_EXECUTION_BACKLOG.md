@@ -1,5 +1,51 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio legacy responsive CSS prune
+
+Changed:
+
+- Removed five redundant responsive rules from `src/styles/legacy/studio-legacy-shell-refresh.css`.
+- The removed `.stage`, `.console`, `.round-hud`, and mobile `.workspace-action-grid` declarations are already covered by later responsive/legacy CSS in the current import order.
+- Tightened `pnpm qa:css:budget` from 2,661 to 2,656 max rules and from 173 to 172 repeated declaration groups; the cross-file overlap ceiling remains 125.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,656 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 172 repeated declaration groups, 125 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- Ad hoc exact cross-file block scan reports 0 duplicated blocks after the prune.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm qa:smoke` passes; visual inspection covered `studio-workbench.png`, `studio-workbench-tablet.png`, `runtime-desktop.png`, `studio-assets.png`, and `studio-debug.png` with no obvious overflow, panel overlap, or stage/HUD placement regression.
+
+Claim allowed:
+
+- The CSS budget is slightly tighter and the obvious cross-file exact responsive duplicates are gone before the next Studio surface work.
+
+Claim blocked:
+
+- This does not finish broader CSS optimization. The remaining 125 cross-file overlaps still need owner-by-surface migration and shared primitives for chrome, ledger rows, status cells, typography/truncation, and command actions.
+
+## 2026-06-29 - HitDef combined hit-effect trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitdef-hit-effect-package.json` trace gate.
+- The route uses one direct `HitDef` hit contact with `hitsound = S5,0` and `sparkno = F7002`.
+- The gate requires attacker-side `PlaySnd` telemetry for `S5,0` plus attacker-side hit `HitSpark` telemetry with FightFX AIR metadata: 2 frames, frame indices `[0, 1]`, total authored duration `11`, and first-frame sprite `8102,0`.
+- Registered the artifact in `pnpm qa:trace` required coverage so separate hit sound/spark gates cannot silently prove only isolated routes.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` passes: 1 file / 161 tests.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional, 0 skipped.
+- New checksum: `synthetic-imported-hitdef-hit-effect-package.json` `46aa5ce1`.
+
+Claim allowed:
+
+- Current imported direct `HitDef` hit routes can require bounded hit sound telemetry and FightFX hit-spark multi-frame AIR metadata on the same contact before renderer/audio handoff.
+
+Claim blocked:
+
+- Exact same-tick ordering between audio and spark events, SND playback, channel priority, common/FightFX visual timing, binding, layering, scale, palette, motif/screenpack ownership, hit-effect parity, and full MUGEN/IKEMEN `HitDef` presentation parity.
+
 ## 2026-06-29 - Studio CSS duplicate-budget prune
 
 Changed:
