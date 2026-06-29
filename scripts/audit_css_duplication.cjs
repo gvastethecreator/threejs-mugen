@@ -14,11 +14,29 @@ const detailLimitArg = args.find((arg) => arg.startsWith("--detail-limit="));
 const detailLimit = Math.max(1, Number.parseInt(detailLimitArg?.slice("--detail-limit=".length) ?? "30", 10) || 30);
 const repeatedLimitArg = args.find((arg) => arg.startsWith("--detail-repeated-limit="));
 const repeatedLimit = Math.max(1, Number.parseInt(repeatedLimitArg?.slice("--detail-repeated-limit=".length) ?? "20", 10) || 20);
+const budgetArgs = {
+  rules: parseOptionalNumberArg("--max-rules="),
+  duplicateSelectorKeys: parseOptionalNumberArg("--max-duplicate-selector-keys="),
+  exactDuplicateRuleKeys: parseOptionalNumberArg("--max-exact-duplicate-rule-keys="),
+  repeatedDeclarationGroups: parseOptionalNumberArg("--max-repeated-declaration-groups="),
+  crossFileOverlaps: parseOptionalNumberArg("--max-cross-file-overlaps="),
+  srcStyleOverlaps: parseOptionalNumberArg("--max-src-style-overlaps="),
+  crossFileShadowedRules: parseOptionalNumberArg("--max-cross-file-shadowed-rules="),
+};
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
   .map((arg) => arg.slice("--prune-selector=".length))
   .filter(Boolean);
 const explicitFiles = args.filter((arg) => !arg.startsWith("--"));
+
+function parseOptionalNumberArg(prefix) {
+  const value = args.find((arg) => arg.startsWith(prefix))?.slice(prefix.length);
+  if (value === undefined) {
+    return undefined;
+  }
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
 
 function cssImportTargets(file) {
   const css = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
@@ -791,18 +809,45 @@ console.log(`  exact duplicate rules ${total.exactDuplicateRuleKeys} keys / ${to
 console.log(`  repeated declaration groups ${total.repeatedDeclarationKeys}`);
 
 const crossFileOverlaps = collectCrossFileOverlaps(currentSummaries);
+const legacyShadowedRuleCount = findCrossFileShadowedLegacyStyleRules(currentSummaries, files).length;
+const crossFileShadowedRuleCount = [...findCrossFileShadowedRules(currentSummaries, files).values()].reduce(
+  (sum, removals) => sum + removals.length,
+  0,
+);
 console.log("cross-file overlap");
 console.log(`  duplicate selectors across files ${crossFileOverlaps.groups.length}`);
 console.log(`  selectors shared with src\\style.css ${crossFileOverlaps.legacyGroups.length}`);
-console.log(`  legacy src\\style.css rules fully shadowed by later CSS imports ${findCrossFileShadowedLegacyStyleRules(currentSummaries, files).length}`);
-console.log(
-  `  cross-file rules fully shadowed by later CSS imports ${[...findCrossFileShadowedRules(currentSummaries, files).values()].reduce(
-    (sum, removals) => sum + removals.length,
-    0,
-  )}`,
-);
+console.log(`  legacy src\\style.css rules fully shadowed by later CSS imports ${legacyShadowedRuleCount}`);
+console.log(`  cross-file rules fully shadowed by later CSS imports ${crossFileShadowedRuleCount}`);
 for (const [file, count] of crossFileOverlaps.legacyModuleCounts.slice(0, 8)) {
   console.log(`  ${fileSummaryLabel(file)} ${count}`);
+}
+
+const budgetFailures = [];
+function checkBudget(label, value, limit) {
+  if (limit === undefined) {
+    return;
+  }
+  console.log(`budget ${label} ${value}/${limit}`);
+  if (value > limit) {
+    budgetFailures.push(`${label} ${value} > ${limit}`);
+  }
+}
+
+checkBudget("rules", total.rules, budgetArgs.rules);
+checkBudget("duplicate selector keys", total.duplicateSelectorKeys, budgetArgs.duplicateSelectorKeys);
+checkBudget("exact duplicate rule keys", total.exactDuplicateRuleKeys, budgetArgs.exactDuplicateRuleKeys);
+checkBudget("repeated declaration groups", total.repeatedDeclarationKeys, budgetArgs.repeatedDeclarationGroups);
+checkBudget("cross-file overlaps", crossFileOverlaps.groups.length, budgetArgs.crossFileOverlaps);
+checkBudget("src style overlaps", crossFileOverlaps.legacyGroups.length, budgetArgs.srcStyleOverlaps);
+checkBudget("cross-file shadowed rules", crossFileShadowedRuleCount, budgetArgs.crossFileShadowedRules);
+
+if (budgetFailures.length) {
+  console.error("CSS budget failed");
+  for (const failure of budgetFailures) {
+    console.error(`  ${failure}`);
+  }
+  process.exitCode = 1;
 }
 
 if (shouldPrintOverlapDetails) {

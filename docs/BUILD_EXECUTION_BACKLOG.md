@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS budget guard
+
+Changed:
+
+- Extended `scripts/audit_css_duplication.cjs` with optional CSS budget flags for total rules, same-file duplicate selector keys, exact duplicate rule keys, repeated declaration groups, cross-file selector overlaps, `src/style.css` overlaps, and fully shadowed cross-file rules.
+- Added `pnpm qa:css:budget` to freeze the current audited CSS debt ceilings before more Studio/runtime UI work lands.
+- Kept the budget guard separate from default `pnpm qa:css`, so runtime-only work is not blocked by intentional future Studio CSS growth unless a CSS cleanup/review round opts into the stricter gate.
+
+Evidence:
+
+- `pnpm qa:css:budget` passes with the current baseline: 2,669 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+
+Claim allowed:
+
+- CSS cleanup/review rounds can now prevent silent growth beyond the current repeated-declaration and cross-file-overlap baseline.
+
+Claim blocked:
+
+- This is a guard/control cut. It does not reduce the existing 173 repeated declaration groups or 126 cross-file overlaps; those still need primitive extraction for truncation rows, ledger rows, status cells, and command actions.
+
 ## 2026-06-29 - RuntimeHitPause runtime-system bridge
 
 Changed:
