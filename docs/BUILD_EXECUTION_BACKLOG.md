@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio Build and Modules release-desk visual pass
+
+Changed:
+
+- Added desktop-only Studio Build / Modules CSS so readiness, manifest, contract, and module rows render as dense command-ledger surfaces instead of loose card stacks.
+- Kept the change presentation-only: no runtime, parser, trace, export, or compatibility behavior changed.
+- Documented the visual QA closeout in the S1 Studio issue and interface tracker docs.
+
+Evidence:
+
+- `pnpm qa:smoke` passes.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-modules.png`, and `.scratch/qa/qa-smoke/studio-modules-contracts.png`.
+- `pnpm qa:smoke` diagnostics confirm Studio Build still compiles a project, emits a passing trace artifact, exposes shared/module contracts, bundles source packages, and reports no horizontal overflow in the checked Studio routes.
+
+Claim allowed:
+
+- Studio Build and Modules desktop surfaces are denser and easier to scan while still binding to real QA bridge/project evidence.
+
+Claim blocked:
+
+- This is visual/product polish only. It does not prove a full editor, production export pipeline, multi-project asset DB, runtime parity, or score movement.
+
 ## 2026-06-29 - RuntimeHitEligibilityWorld ownership extraction
 
 Changed:

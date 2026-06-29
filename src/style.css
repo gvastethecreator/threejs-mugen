@@ -79,6 +79,510 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Desktop Release Desk: align Build and Modules as dense command ledgers. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="build"],
+  .app-shell.mode-studio[data-studio-tab="modules"] {
+    --release-desk-line: #252c34;
+    --release-desk-line-strong: #343d47;
+    --release-desk-panel: #090c10;
+    --release-desk-row: #0d1116;
+    --release-desk-row-alt: #0a0e13;
+    --release-desk-header: #10151b;
+    --release-desk-text: #e7ebef;
+    --release-desk-muted: #9aa5b1;
+    --release-desk-accent: #8797a8;
+    --release-desk-ok: #86a58d;
+    --release-desk-warn: #b99772;
+    --release-desk-risk: #b98282;
+    --release-desk-plan: #9a91ae;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right {
+    gap: 0;
+    padding: 0;
+    border-left: 1px solid var(--release-desk-line-strong);
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right > .section,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right > .section,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left > .section,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left > .section {
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line-strong);
+    border-radius: 0;
+    background: var(--release-desk-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left {
+    gap: 6px;
+    padding: 6px;
+    background: #07090c;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left > .section,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left > .section {
+    border: 1px solid var(--release-desk-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right h2,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right h2,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left h2,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left h2,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left .section-heading-row {
+    min-height: 31px;
+    margin: 0;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: var(--release-desk-header);
+    color: var(--release-desk-text);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.1;
+    box-shadow: inset 3px 0 0 var(--release-desk-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .section-heading-row h2,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .section-heading-row h2,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left .section-heading-row h2,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left .section-heading-row h2 {
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge-row,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left .badge-row,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left .badge-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left .badge,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left .badge,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .status-badge,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .status-badge,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-left .status-badge,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-left .status-badge {
+    display: inline-grid;
+    min-width: 0;
+    min-height: 24px;
+    align-content: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 6px;
+    border: 0;
+    border-right: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: #0b0f14;
+    color: var(--release-desk-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge.ok,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge.ok,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .status-badge.ok,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .status-badge.ok {
+    color: var(--release-desk-ok);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge.warn,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge.warn,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .status-badge.warn,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .status-badge.warn {
+    color: var(--release-desk-warn);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge.error,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .badge.error,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .status-badge.error,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .status-badge.error {
+    color: var(--release-desk-risk);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px;
+    min-height: 27px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-header span {
+    display: grid;
+    align-content: center;
+    padding: 0 8px;
+    border-right: 1px solid var(--release-desk-line);
+    color: var(--release-desk-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-header span:last-child {
+    border-right: 0;
+    justify-content: end;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .compact-list,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .list,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-table,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .compact-list,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .list {
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: #05070a;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px;
+    min-height: 78px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: var(--release-desk-row);
+    box-shadow: inset 3px 0 0 var(--release-desk-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:nth-child(even) {
+    background: var(--release-desk-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-ok {
+    box-shadow: inset 3px 0 0 var(--release-desk-ok);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-warn,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-partial,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-planned {
+    box-shadow: inset 3px 0 0 var(--release-desk-warn);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-error,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record.is-blocked {
+    box-shadow: inset 3px 0 0 var(--release-desk-risk);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main {
+    display: grid;
+    grid-template-columns: minmax(82px, 0.28fr) minmax(0, 1fr);
+    gap: 0 8px;
+    min-width: 0;
+    padding: 7px 8px 7px 10px;
+    border-right: 1px solid var(--release-desk-line);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-kicker {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    align-self: start;
+    color: color-mix(in srgb, var(--release-desk-accent) 72%, var(--release-desk-muted));
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route b {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title {
+    grid-column: 2;
+    color: var(--release-desk-text);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta {
+    grid-column: 2;
+    color: var(--release-desk-muted);
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route {
+    display: grid;
+    grid-column: 2;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 6px;
+    margin: 0;
+    color: #b9c2cc;
+    font-size: 10.5px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route b {
+    color: var(--release-desk-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence {
+    grid-column: 2;
+    display: flex;
+    gap: 4px;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence .badge {
+    min-height: 18px;
+    max-width: 132px;
+    border: 1px solid var(--release-desk-line-strong);
+    background: #070a0e;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side {
+    display: grid;
+    align-content: start;
+    gap: 5px;
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side .badge,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side .status-badge {
+    width: 100%;
+    min-height: 22px;
+    border: 1px solid var(--release-desk-line-strong);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side button,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .row-actions button {
+    min-height: 24px;
+    padding: 0 7px;
+    border: 1px solid var(--release-desk-line-strong);
+    border-radius: 0;
+    background: #0b0f14;
+    color: var(--release-desk-text);
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-kv {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    background: #05070a;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dd,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-kv dd {
+    min-height: 28px;
+    align-content: center;
+    margin: 0;
+    padding: 4px 8px;
+    border: 0;
+    border-right: 1px solid var(--release-desk-line);
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: #0b0f14;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-kv dt {
+    color: var(--release-desk-muted);
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .studio-kv dd,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .studio-kv dd {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--release-desk-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) 76px;
+    grid-template-rows: 24px 20px;
+    min-height: 45px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--release-desk-line);
+    border-radius: 0;
+    background: var(--release-desk-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row:nth-child(even) {
+    background: var(--release-desk-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row-head {
+    min-height: 28px;
+    grid-template-rows: 28px;
+    background: #0b0f14;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row > span {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    padding: 5px 7px;
+    border-right: 1px solid var(--release-desk-line);
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row > span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row-head span {
+    color: var(--release-desk-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row-head span:nth-child(4),
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row-head span:nth-child(5) {
+    display: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-icon {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    justify-content: center;
+    color: var(--release-desk-muted);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-status {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-contracts {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-blocked {
+    grid-column: 3;
+    grid-row: 2;
+    justify-content: end;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name small,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-contracts,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-blocked {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name strong {
+    color: var(--release-desk-text);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-name small,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-contracts,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-blocked {
+    color: var(--release-desk-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row.is-ok {
+    box-shadow: inset 3px 0 0 var(--release-desk-ok);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row.is-warn,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row.is-partial,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row.is-planned {
+    box-shadow: inset 3px 0 0 var(--release-desk-warn);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row:hover,
+  .app-shell.mode-studio[data-studio-tab="modules"] .pane-right .engine-module-row:focus-within,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:hover,
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:focus-within {
+    background: #171d24;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+}
+
 @media (min-width: 1161px) {
   .app-shell.mode-studio[data-studio-tab="debug"] {
     --debug-console-line: #252b33;

@@ -24,6 +24,7 @@ Brand expression is allowed only as orientation between surfaces. Repeated contr
 - Studio left header includes a compact mission strip for the project flow: Intake, Assemble, Prove, Ship. Each step must be actionable and reflect real source/runtime/evidence/build state.
 - Studio Workbench starts with a command center, not a passive summary. It must show project readiness lanes, the current operator priority, direct jumps to Assets/Evidence/Build/Debug, and primary actions for Playtest, MUGEN intake, trace export, and runtime compile.
 - Inside non-Workbench Studio surfaces, the active task navigator appears before the general Studio surface grid, and the surface grid stays compact so diagnostics and next actions are not buried below global navigation.
+- Studio Build and Modules desktop surfaces use dense command-ledger layouts for readiness, manifest, contract, and module rows. They must stay scannable without turning real blocked/partial/exportable states into decorative cards.
 - Changing Studio surfaces resets the left/right pane scroll positions; residual scroll from long Build/Assets/Debug panels should never hide the header of the newly selected task.
 - Studio Workbench may summarize project state inline, but heavy project contract, recent-project, pipeline, and asset-library blocks should default to collapsible details so mobile and daily-use views stay scannable.
 - Lists represent queues, records, or selectable objects. Selection and status use full-perimeter state, not decorative side stripes.

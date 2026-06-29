@@ -10,6 +10,7 @@ Make Studio Mode the trusted operating surface for project state, assets, eviden
 ## Next Useful Cuts
 
 - Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: S1 Studio Evidence/Build trust chain.
+- Current visual checkpoint: Studio Build and Modules desktop surfaces now use dense command-ledger styling for readiness, manifest, contract, and module rows. `pnpm qa:smoke` passed, and `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-modules.png`, and `.scratch/qa/qa-smoke/studio-modules-contracts.png` were visually inspected.
 - Promote `docs/PORT_COMPLETION_SCORECARD.md` scores into Studio Evidence/Build as read-only status rows once the data can link to real gates.
 - Make Evidence and Build surfaces point to the same source of truth.
 - Expose stale, missing, partial, blocked, and exportable states with affected item, impact, evidence, and next action.
