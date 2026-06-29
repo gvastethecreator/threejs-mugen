@@ -10,6 +10,7 @@ Keep converting partial CNS/CMD/runtime behavior into typed operations, named ru
 ## Next Useful Cuts
 
 - Current queue labels in `docs/ROADMAP_EXECUTION_BOARD.md`: R1 KFM/Common1 recovery precision, R2 MatchWorld ownership deepening.
+- Latest completed R2 cut: `RuntimeOrientationWorld` now owns bounded auto-facing and `Turn` facing flips consumed by `PlayableMatchRuntime` and `StateControllerExecutor`; focused `RuntimeOrientationSystem` tests prove opponent-facing, `AssertSpecial NoAutoTurn`, and `Turn` behavior.
 - Latest completed R2 cut: `RuntimeHitEligibilityWorld` now owns bounded `HitBy`/`NotHitBy` slot ticking and per-frame `AssertSpecial`/render-opacity reset consumed by `PlayableMatchRuntime`; focused `RuntimeHitEligibilitySystem` tests prove finite slot decrement/removal, infinite slot preservation, empty-container cleanup, and flag reset behavior.
 - Latest completed R2 cut: `RuntimeTargetWorld.applyTargetBindings` / `applyBindToTarget` now own active bounded `TargetBind` and `BindToTarget` per-frame position application consumed by `PlayableMatchRuntime`; focused `TargetSystem` tests prove owner-to-target binding, target-to-owner binding, and missing-target no-op behavior.
 - Latest completed R2 cut: `RuntimeTargetWorld.applyBindToTargetController` now owns bounded `BindToTarget` target lookup, raw/typed postype binding, duration clamping, facing-aware position application, and operation reporting consumed by `PlayableMatchRuntime`; focused `TargetSystem` tests prove raw Head anchors, typed op application, and miss/no-mutation behavior.

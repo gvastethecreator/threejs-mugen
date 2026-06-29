@@ -55,6 +55,10 @@ R2 RuntimeHitEligibilityWorld ownership extraction
   -> HitBy/NotHitBy slot ticking and AssertSpecial/render-opacity frame reset moved out of PlayableMatchRuntime
   -> focused RuntimeHitEligibilitySystem tests cover finite/infinite slots and reset behavior
   -> behavior unchanged; no new parity or score claim
+R2 RuntimeOrientationWorld ownership extraction
+  -> auto-facing and Turn facing flips moved into OrientationSystem
+  -> focused RuntimeOrientationSystem tests cover opponent-facing, NoAutoTurn preservation, and Turn
+  -> behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -92,6 +96,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeOrientationWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

@@ -1,5 +1,53 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio Evidence audit visual pass
+
+Changed:
+
+- Added desktop-only Studio Evidence CSS so trace summary, QA evidence, persisted history, and trace detail panes render as dense audit ledgers.
+- Kept the change presentation-only: no runtime, parser, trace, export, or compatibility behavior changed.
+- Documented the visual QA closeout in the S1 Studio issue and interface tracker docs.
+
+Evidence:
+
+- `pnpm qa:smoke` passes after the Evidence visual change and subsequent runtime orientation extraction.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-evidence.png`.
+- `pnpm qa:smoke` diagnostics confirm Studio Evidence still exposes trace artifacts, persisted trace history, comparison rows, frame scrubber data, world-delta stats, and top actionable next step from the QA bridge.
+
+Claim allowed:
+
+- Studio Evidence desktop surface is denser and easier to scan while still binding to real trace/project evidence.
+
+Claim blocked:
+
+- This is visual/product polish only. It does not prove a full trace diff UI, production Evidence workflow, multi-artifact replay, runtime parity, or score movement.
+
+## 2026-06-29 - RuntimeOrientationWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeOrientationWorld` / `OrientationSystem` as the named owner for bounded automatic facing and `Turn` facing flips.
+- Replaced inline automatic facing mutation in `PlayableMatchRuntime` with `RuntimeOrientationWorld.updateAutoFacing`.
+- Replaced the inline `Turn` flip in `StateControllerExecutor` with `applyRuntimeTurn`.
+- Added focused `RuntimeOrientationSystem` tests for opponent-facing, `AssertSpecial NoAutoTurn`, and `Turn`.
+
+Evidence:
+
+- `pnpm test` passes: 65 files, 592 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-turn.json` remains checksum `9b7936e7`, `synthetic-imported-assertspecial-control.json` remains `c09b07b5`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `pnpm qa:smoke` passes after the runtime extraction; runtime desktop/mobile still report active player-source resolved hit sparks, Studio Build still reports compiled project / passing trace artifact / linked source packages, and Studio Modules still reports the shared-engine contract.
+- Visual inspection completed for `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/studio-build.png`, and `.scratch/qa/qa-smoke/studio-modules.png`.
+
+Claim allowed:
+
+- Bounded orientation mutation now has a named runtime boundary consumed by the match loop and controller executor.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN auto-facing order, target-facing/team/helper orientation semantics, redirect ownership, `Turn` tick-order parity, and full orientation VM parity remain unsupported.
+
 ## 2026-06-29 - Studio Build and Modules release-desk visual pass
 
 Changed:

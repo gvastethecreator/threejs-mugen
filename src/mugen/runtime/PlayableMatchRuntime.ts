@@ -55,6 +55,7 @@ import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
@@ -203,6 +204,7 @@ export class PlayableMatchRuntime {
   private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private readonly recoveryWorld = new RuntimeRecoverySystem();
   private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
+  private readonly orientationWorld = new RuntimeOrientationWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -303,8 +305,8 @@ export class PlayableMatchRuntime {
     this.hitEligibilityWorld.resetFrameFlags(this.p2.runtime);
     applyPreFacingAssertSpecial(this.p1, this.p2, this.tick);
     applyPreFacingAssertSpecial(this.p2, this.p1, this.tick);
-    updateFacing(this.p1, this.p2);
-    updateFacing(this.p2, this.p1);
+    this.orientationWorld.updateAutoFacing(this.p1.runtime, this.p2.runtime);
+    this.orientationWorld.updateAutoFacing(this.p2.runtime, this.p1.runtime);
 
     const globalPause = Math.max(this.p1.hitPause, this.p2.hitPause);
     if (globalPause > 0) {
@@ -2107,13 +2109,6 @@ function spriteOwnerSnapshot(fighter: FighterMatchState): {
     spriteOwnerDefinitionId: owner.definition.id,
     spriteOwnerLabel: owner.label,
   };
-}
-
-function updateFacing(self: FighterMatchState, opponent: FighterMatchState): void {
-  if (self.runtime.assertSpecial?.noAutoTurn) {
-    return;
-  }
-  self.runtime.facing = self.runtime.pos.x <= opponent.runtime.pos.x ? 1 : -1;
 }
 
 function cloneBox(box: CollisionBox): CollisionBox {

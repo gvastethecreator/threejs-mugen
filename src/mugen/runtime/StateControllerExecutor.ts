@@ -26,6 +26,7 @@ import {
   type RuntimeVariableAssignment,
 } from "./RuntimeResourceSystem";
 import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import { applyRuntimeTurn } from "./OrientationSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -184,7 +185,7 @@ export function executeControllerIr(
       reportUnsupported(`${controller.type}:operation-mismatch`);
       return next;
     }
-    next.facing = next.facing === 1 ? -1 : 1;
+    applyRuntimeTurn(next);
   } else if (type === "hitby" || type === "nothitby") {
     applyHitByController(next, controller, type === "hitby" ? "allow" : "deny", hitEligibilityOperation(controller, type));
   } else if (type === "hitoverride") {

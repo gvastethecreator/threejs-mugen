@@ -163,6 +163,8 @@ MatchWorld
   CombatResolver
   PauseSystem
   RuntimeRecoverySystem
+  RuntimeHitEligibilityWorld
+  RuntimeOrientationWorld
   RuntimeRoundSystem
   CommandSystem
 ```
@@ -197,9 +199,11 @@ The current extraction order is:
 19. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
 20. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
 21. `RuntimeRecoverySystem`: own bounded fall recovery countdown, Common1 liedown recovery, and imported ground-recovery landing hooks outside the main match loop.
-22. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-23. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-24. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+22. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
+23. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
+24. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+25. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+26. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
@@ -230,6 +234,8 @@ Three.js must consume snapshots and asset providers. It should not evaluate CNS,
 `CombatResolver` owns renderer-independent combat result helpers. Bounded direct `HitDef` priority clash mutation now lives in `RuntimeDirectCombatWorld`, and owner-backed `p2stateno` route evidence still goes through runtime state ownership, but the engine does not yet implement exact MUGEN/IKEMEN priority classes, guard states, fall state routing, complete custom-state ownership, reversal parity, projectile trade/cancel parity, helper combat, team rules, or exact hit timing.
 
 `RuntimeHitEligibilityWorld` owns the current bounded lifetime maintenance around hit eligibility: finite `HitBy` / `NotHitBy` slots tick down and expire there, infinite slots remain active, and per-frame `AssertSpecial` plus render-opacity reset happens before the imported pre-facing AssertSpecial pass. `StateControllerExecutor` still applies the actual `HitBy`, `NotHitBy`, and `AssertSpecial` controller writes, while `CombatResolver`, `RuntimeDirectCombatWorld`, and `RuntimeProjectileCombatWorld` consume the resulting runtime state. This is an ownership boundary for current lifetime/reset behavior, not exact slot priority, attr grammar, helper/team/global ownership, persistence layering, pause interaction, or full MUGEN/IKEMEN hit-eligibility parity.
+
+`RuntimeOrientationWorld` owns current bounded orientation mutation: automatic facing toward the opponent respects `AssertSpecial NoAutoTurn`, and `Turn` facing flips run through `OrientationSystem` instead of inline controller-executor mutation. `PlayableMatchRuntime` still decides when the pre-facing AssertSpecial pass and auto-facing pass occur, and `StateControllerExecutor` still validates controller operation shape before delegating. This is ownership cleanup, not exact auto-facing order, target-facing/team/helper semantics, redirect ownership, or full MUGEN/IKEMEN orientation parity.
 
 ### Audio Adapter
 

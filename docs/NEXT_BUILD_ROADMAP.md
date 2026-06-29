@@ -36,9 +36,13 @@ R2 RuntimeHitEligibilityWorld ownership extraction
   -> HitBy/NotHitBy slot ticking and per-frame AssertSpecial/render-opacity reset moved out of PlayableMatchRuntime
   -> focused RuntimeHitEligibilitySystem tests cover finite/infinite slots, expiry cleanup, and frame-flag reset
   -> proves named hit-eligibility lifetime ownership only
+R2 RuntimeOrientationWorld ownership extraction
+  -> auto-facing and Turn facing flips moved into OrientationSystem
+  -> focused RuntimeOrientationSystem tests cover opponent-facing, NoAutoTurn preservation, and Turn
+  -> proves named orientation ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, or `RuntimeHitEligibilityWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, or `RuntimeOrientationWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -79,7 +83,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, and `RuntimeHitEligibilityWorld` stable after extraction.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, and `RuntimeOrientationWorld` stable after extraction.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.
