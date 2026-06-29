@@ -79,6 +79,518 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="debug"] {
+    --debug-console-line: #252b33;
+    --debug-console-line-strong: #39424d;
+    --debug-console-panel: #0b0e12;
+    --debug-console-panel-alt: #0f1318;
+    --debug-console-panel-low: #07090c;
+    --debug-console-text: #e4e8ec;
+    --debug-console-muted: #9aa3ad;
+    --debug-console-accent: #8f9fb0;
+    --debug-console-state: #a98f74;
+    --debug-console-target: #7f9a8c;
+    --debug-console-risk: #b28a86;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right {
+    gap: 0;
+    padding: 0;
+    border-color: var(--debug-console-line);
+    background: #05070a;
+    box-shadow:
+      inset 1px 0 0 #111820,
+      inset 0 1px 0 #151a20;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left {
+    gap: 0;
+    padding: 6px;
+    border-color: var(--debug-console-line);
+    background: #07090c;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left > .section {
+    gap: 0;
+    margin: 0 0 6px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: var(--debug-console-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left > .section:last-child {
+    margin-bottom: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row.compact-heading {
+    min-height: 30px;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #10151b;
+    box-shadow: inset 3px 0 0 var(--debug-console-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row strong {
+    color: var(--debug-console-text);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-heading-row small {
+    color: var(--debug-console-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .section-description {
+    margin: 0;
+    padding: 8px;
+    border-bottom: 1px solid var(--debug-console-line);
+    color: #aab4bf;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .studio-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border: 0;
+    background: var(--debug-console-panel-low);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .studio-stat {
+    min-height: 40px;
+    padding: 6px 7px;
+    border: 0;
+    border-right: 1px solid var(--debug-console-line);
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .studio-stat:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .studio-stat strong {
+    color: var(--debug-console-text);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .studio-stat small {
+    color: var(--debug-console-muted);
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .badge-row {
+    gap: 4px;
+    margin: 0;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--debug-console-line);
+    background: #090d12;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .badge,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-left .status-badge {
+    min-height: 18px;
+    padding: 3px 5px;
+    border-color: var(--debug-console-line-strong);
+    border-radius: 0;
+    background: #080b0f;
+    color: var(--debug-console-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right > .section,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-section,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-block {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: var(--debug-console-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right > .section:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-block:nth-child(even) {
+    background: var(--debug-console-panel-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row.compact-heading {
+    min-height: 31px;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--debug-console-line);
+    background: #10151b;
+    box-shadow:
+      inset 3px 0 0 var(--debug-console-accent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .panel-kicker {
+    min-width: 0;
+    overflow: hidden;
+    letter-spacing: 0;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row strong {
+    color: var(--debug-console-text);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .panel-kicker {
+    color: var(--debug-console-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    background: var(--debug-console-panel-low);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat {
+    min-height: 54px;
+    padding: 7px 8px;
+    border: 0;
+    border-right: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat strong {
+    color: var(--debug-console-text);
+    font-family: var(--mono);
+    font-size: 17px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-stat-grid .studio-stat small {
+    color: var(--debug-console-muted);
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-grid,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    border: 0;
+    background: var(--debug-console-panel-low);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-grid .debug-evidence-block {
+    min-height: 58px;
+    margin: 0;
+    padding: 8px;
+    border: 0;
+    border-right: 1px solid var(--debug-console-line);
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-grid .debug-evidence-block:nth-child(even) {
+    border-right: 0;
+    background: #0a0e13;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter small {
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter strong {
+    color: var(--debug-console-text);
+    font-family: var(--mono);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-lens-meter small {
+    color: var(--debug-console-muted);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-evidence-block > .panel-kicker {
+    display: block;
+    margin: 0;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--debug-console-line);
+    background: #11161c;
+    color: color-mix(in srgb, var(--debug-console-accent) 74%, #a6adb5);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: var(--debug-console-panel-low);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+    min-height: 26px;
+    align-content: center;
+    margin: 0;
+    padding: 5px 8px;
+    border: 0;
+    border-right: 1px solid var(--debug-console-line);
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0c1015;
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt {
+    color: var(--debug-console-muted);
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--debug-console-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .compat-list,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-grid,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-trace-frame-list,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-input-history {
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: var(--debug-console-panel-low);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .compat-row,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-button,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-trace-frame-button {
+    min-height: 31px;
+    margin: 0;
+    padding: 6px 8px;
+    overflow: hidden;
+    border: 0;
+    border-right: 1px solid var(--debug-console-line);
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0d1116;
+    color: var(--debug-console-text);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.12;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-button:nth-child(even) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-button:hover,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-link-button:focus-visible,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-trace-frame-button:hover,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .debug-trace-frame-button:focus-visible,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .compat-row:hover,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .compat-row:focus-visible {
+    background: #171d24;
+    color: #f1f4f6;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .badge,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .status-badge {
+    min-height: 18px;
+    padding: 3px 5px;
+    border-color: var(--debug-console-line-strong);
+    border-radius: 0;
+    background: #080b0f;
+    color: var(--debug-console-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .badge.ok,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .status-badge.ok {
+    color: var(--debug-console-target);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .badge.warn,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .status-badge.warn {
+    color: var(--debug-console-state);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .badge.error,
+  .app-shell.mode-studio[data-studio-tab="debug"] .pane-right .status-badge.error {
+    color: var(--debug-console-risk);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-list {
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: var(--debug-console-panel-low);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(90px, max-content);
+    min-height: 42px;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--debug-console-line);
+    border-radius: 0;
+    background: #0d1116;
+    box-shadow: inset 3px 0 0 #3b4651;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:nth-child(even) {
+    background: #0a0e13;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:hover,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button:focus-visible,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button.is-selected {
+    background: #171d24;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-button.is-selected {
+    box-shadow: inset 3px 0 0 var(--debug-console-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong {
+    color: var(--debug-console-text);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics {
+    color: var(--debug-console-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics {
+    justify-self: end;
+    align-self: center;
+    display: flex;
+    max-width: 120px;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics .badge,
+  .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-metrics span {
+    max-width: 58px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
