@@ -31,14 +31,12 @@
 .acceptance-gate-board,
 .debug-lens-meter,
 .debug-evidence-block,
-.runtime-overview-panel,
 .engine-modules-panel {
   padding: 9px 10px;
 }
 
 .debug-lens-meter,
 .debug-evidence-block,
-.runtime-overview-panel,
 .engine-modules-panel {
   background: var(--surface-flat);
 }

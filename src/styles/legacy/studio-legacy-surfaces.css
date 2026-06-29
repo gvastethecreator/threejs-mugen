@@ -1911,10 +1911,6 @@ button.controller-chip {
   box-shadow: var(--shadow-inset);
 }
 
-.runtime-overview-panel {
-  background: var(--surface-flat);
-}
-
 .runtime-versus-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);

@@ -262,12 +262,13 @@ describe("EffectActorSystem", () => {
               controller("CtrlSet", { value: "1" }, ["Time = 0"]),
               controller("VarSet", { v: "3", value: "7" }, ["Time = 0"]),
               controller("VarAdd", { v: "3", value: "5" }, ["Time = 0"]),
+              controller("VarRandom", { v: "8", range: "20,20" }, ["Time = 0"]),
               controller("VarRangeSet", { first: "5", last: "6", value: "9" }, ["Time = 0"]),
               controller("VarSet", { fv: "2", value: "1.5" }, ["Time = 0"]),
               controller(
                 "ChangeState",
                 { value: "6002" },
-                ["var(3) = 12", "var(5) = 9", "fvar(2) = 1.5", "ctrl", "statetype = A", "movetype = A", "physics = N"],
+                ["var(3) = 12", "var(5) = 9", "var(8) = 20", "fvar(2) = 1.5", "ctrl", "statetype = A", "movetype = A", "physics = N"],
               ),
             ]),
           ),
@@ -285,7 +286,7 @@ describe("EffectActorSystem", () => {
       onController: (_helper, item) => executed.push(item.type),
     });
 
-    expect(executed).toEqual(["StateTypeSet", "CtrlSet", "VarSet", "VarAdd", "VarRangeSet", "VarSet", "ChangeState"]);
+    expect(executed).toEqual(["StateTypeSet", "CtrlSet", "VarSet", "VarAdd", "VarRandom", "VarRangeSet", "VarSet", "ChangeState"]);
     expect(helper).toMatchObject({
       stateNo: 6002,
       animNo: 902,
@@ -298,6 +299,7 @@ describe("EffectActorSystem", () => {
     });
     expect(helper.vars[3]).toBe(12);
     expect(helper.vars.slice(5, 7)).toEqual([9, 9]);
+    expect(helper.vars[8]).toBe(20);
     expect(helper.fvars[2]).toBe(1.5);
   });
 

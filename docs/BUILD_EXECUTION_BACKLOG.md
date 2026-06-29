@@ -1,5 +1,59 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS legacy prune
+
+Changed:
+
+- Removed the retired `studio-legacy-neutral-pass.css` import from the active Studio cascade.
+- Retired `studio-legacy-responsive.css` as a legacy pass by moving its required global app-shell responsive rules into `src/styles/base/app-shell.css`, then deleting the old pass file.
+- Removed a stray `runtime-overview-panel` background/padding correction from legacy ownership while leaving runtime-owned styling intact.
+- Tightened `pnpm qa:css:budget` from 2,467 rules / 138 repeated groups / 113 overlaps to 2,452 rules / 135 repeated groups / 112 overlaps.
+
+Evidence:
+
+- `pnpm qa:css` reports 2,452 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 135 repeated declaration groups, 112 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes against the 2,452-rule / 135-repeated-group / 112-overlap ceiling.
+- `pnpm qa:smoke` passes after the responsive shell migration; runtime mobile canvas is visible again.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-build.png`, and `.scratch/qa/qa-smoke/studio-debug.png`.
+- `pnpm test` passes: 73 files / 655 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- The active CSS cascade is smaller and guarded by a lower budget; exact duplicate CSS remains zero.
+
+Claim blocked:
+
+- Broader CSS primitive extraction and component-level row/status/action consolidation are still required before calling Studio CSS cleanup complete.
+
+## 2026-06-29 - Helper-local VarRandom VM cut
+
+Changed:
+
+- Allowed `VarRandom` inside the bounded `HelperSystem` helper-local micro-VM for current visual Helper actors.
+- Extended focused helper-local VM coverage so helper-local `VarRandom` writes `var(8)` and a later `ChangeState` trigger can branch on that helper-local value.
+
+Evidence:
+
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts` passes: 1 file / 17 tests.
+- `pnpm test` passes: 73 files / 655 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:smoke` passes after the CSS responsive migration.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current visual Helper actors can execute bounded helper-local int `VarRandom` through the existing `StateControllerExecutor` random path and branch later on helper-local `var(n)`.
+
+Claim blocked:
+
+- Exact MUGEN random stream parity, helper parent/root/team redirects, helper life/power resources, helper fvar/sysvar `VarRandom`, helper combat, helper-owned HitDefs/Projectiles/Explods/audio/effects, exact helper tick-order/pause parity, custom-state helper lifecycle, and score movement remain blocked.
+
 ## 2026-06-29 - Helper-local metadata and variable VM cut
 
 Changed:

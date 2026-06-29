@@ -294,6 +294,7 @@ const helperRuntimeControllers = new Set([
   "statetypeset",
   "varset",
   "varadd",
+  "varrandom",
   "varrangeset",
   "null",
 ]);
