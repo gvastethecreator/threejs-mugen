@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Required Common1 lie-down get-up recovery order gate
+
+Changed:
+
+- Strengthened `synthetic-imported-default-fall-recovery.json` so the required gate now checks ordered P2 controller events for the bounded Common1-style `5110 -> 5120 -> 0` lie-down/get-up route.
+- Added required actor-frame sequence evidence that imported P2 is observed in lie-down state `5110` with `moveType = H` before get-up state `5120` with `moveType = I`.
+- Added reusable synthetic and official KFM sequence helpers; the optional private-fixture `kfm-official-default-fall-recovery.json` now requires bounded `5110`/`5120` controller/typed-operation order plus the same actor-frame order when `.scratch/fixtures/kfm-official.zip` exists.
+
+Evidence:
+
+- Focused test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file, 156 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- Strengthened required checksum: `synthetic-imported-default-fall-recovery.json` `d83797d9`.
+- Strengthened optional local KFM checksum: `kfm-official-default-fall-recovery.json` `978b8343`.
+
+Claim allowed:
+
+- The bounded imported Common1-style fall recovery chain now requires trace evidence for lie-down state `5110` before get-up state `5120`, plus controller/typed-operation order through `5120` fall recovery settlement before final stand/control.
+
+Claim blocked:
+
+- Exact Common1 controller-loop tick order, exact animation timing, exact recovery threshold tables, velocity math, recovery-input branching, guard-state parity, public bundled KFM support, and full MUGEN/IKEMEN fall recovery parity remain blocked.
+
 ## 2026-06-29 - CSS overlap audit guard
 
 Changed:

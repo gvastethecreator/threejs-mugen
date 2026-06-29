@@ -4427,6 +4427,8 @@ export function createImportedDefaultFallRecoveryTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -4466,6 +4468,8 @@ export function createImportedDefaultFallRecoveryTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -4920,6 +4924,71 @@ export function officialKfmGroundRecoveryControllerSequence(): RuntimeTraceContr
   };
 }
 
+export function defaultFallLieDownGetUpControllerSequence(
+  liedownStateNo = 5110,
+  recoverStateNo = 5120,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${liedownStateNo}/${recoverStateNo}/0 lie-down get-up controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: liedownStateNo, controller: "ChangeState", name: "Get Up" },
+      { stateNo: recoverStateNo, controller: "VelSet", name: "Clear Velocity" },
+      { stateNo: recoverStateNo, operation: "kinematic:velset" },
+      { stateNo: recoverStateNo, controller: "HitFallSet", name: "Fall Recovery Settled" },
+      { stateNo: recoverStateNo, operation: "hitfall:hitfallset" },
+      { stateNo: recoverStateNo, controller: "ChangeState", name: "Stand" },
+    ],
+  };
+}
+
+export function defaultFallLieDownGetUpActorFrameSequence(
+  liedownStateNo = 5110,
+  recoverStateNo = 5120,
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${liedownStateNo} lie-down before ${recoverStateNo} get-up`,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: liedownStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: recoverStateNo,
+        moveType: "I",
+        minFrames: 1,
+      },
+    ],
+  };
+}
+
+export function officialKfmFallLieDownGetUpControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 5110/5120 lie-down get-up controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5110, controller: "HitFallDamage" },
+      { stateNo: 5110, operation: "hitfall:hitfalldamage" },
+      { stateNo: 5110, controller: "VelSet" },
+      { stateNo: 5110, operation: "kinematic:velset" },
+      { stateNo: 5120, controller: "VelSet" },
+      { stateNo: 5120, operation: "kinematic:velset" },
+      { stateNo: 5120, controller: "HitFallSet" },
+      { stateNo: 5120, operation: "hitfall:hitfallset" },
+      { stateNo: 5120, controller: "ChangeState" },
+    ],
+  };
+}
+
 export function createSyntheticImportedDefaultFallRecoveryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -4973,6 +5042,8 @@ export function createSyntheticImportedDefaultFallRecoveryTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredControllerEventSequences: [defaultFallLieDownGetUpControllerSequence()],
+        requiredActorFrameSequences: [defaultFallLieDownGetUpActorFrameSequence()],
         requiredFinalActors: [
           {
             actorId: "p2",

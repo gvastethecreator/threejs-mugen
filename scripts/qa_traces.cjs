@@ -1035,8 +1035,10 @@ async function main() {
         artifact: presets.createImportedDefaultFallRecoveryTraceArtifact(imported, {
           targetId: "kfm-official-default-fall-recovery-golden",
           targetLabel: "Official KFM Common1 lie-down get-up route",
+          requiredControllerEventSequences: [presets.officialKfmFallLieDownGetUpControllerSequence()],
+          requiredActorFrameSequences: [presets.defaultFallLieDownGetUpActorFrameSequence()],
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can continue from lie-down state 5110 into get-up state 5120 and return to state 0/control after a fall HitDef without p2stateno. Separate KFM artifacts cover air recovery-input 5050 -> 5210 -> 52 -> 0 and ground recovery-input 5050 -> 5200 -> 5201 -> 52 -> 0; this artifact does not prove exact tick-order parity, recovery thresholds/velocities, or guard-state parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can continue from lie-down state 5110 into get-up state 5120 and return to state 0/control after a fall HitDef without p2stateno, with required actor-frame order plus bounded 5110/5120 controller/typed-operation order evidence. Separate KFM artifacts cover air recovery-input 5050 -> 5210 -> 52 -> 0 and ground recovery-input 5050 -> 5200 -> 5201 -> 52 -> 0; this artifact does not prove exact tick-order parity, recovery thresholds/velocities, or guard-state parity.`,
           ],
         }),
       });

@@ -24,6 +24,8 @@ import {
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultFallLieDownGetUpActorFrameSequence,
+  defaultFallLieDownGetUpControllerSequence,
   defaultGetHitProgressionActorFrameSequence,
   defaultGetHitProgressionControllerSequence,
   createImportedDefaultGuardStateTraceArtifact,
@@ -34,6 +36,7 @@ import {
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
+  officialKfmFallLieDownGetUpControllerSequence,
   officialKfmGroundRecoveryControllerSequence,
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
@@ -3863,6 +3866,17 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitFallDamage).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultFallLieDownGetUpControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultFallLieDownGetUpActorFrameSequence(),
+    ]);
+    const lieDownFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5110);
+    const getUpFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5120);
+    expect(lieDownFrame?.moveType).toBe("H");
+    expect(getUpFrame?.moveType).toBe("I");
+    expect(lieDownFrame?.lastTick ?? 0).toBeLessThan(getUpFrame?.firstTick ?? 0);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,
@@ -4215,6 +4229,8 @@ describe("RuntimeTraceGatePresets", () => {
       generatedAt: "2026-06-25T00:00:00.000Z",
       targetId: "synthetic-imported-default-fall-official-recovery-golden",
       targetLabel: "Synthetic imported official-style fall recovery route",
+      requiredControllerEventSequences: [defaultFallLieDownGetUpControllerSequence()],
+      requiredActorFrameSequences: [defaultFallLieDownGetUpActorFrameSequence()],
     });
 
     expect(artifact).toMatchObject({
@@ -4234,11 +4250,36 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5100, 5101, 5110, 5120]));
     expect(evidence?.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultFallLieDownGetUpControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultFallLieDownGetUpActorFrameSequence(),
+    ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,
       moveType: "I",
       ctrl: true,
+    });
+  });
+
+  it("describes official KFM fall lie-down get-up controller evidence without relying on numeric controller names", () => {
+    expect(officialKfmFallLieDownGetUpControllerSequence()).toEqual({
+      label: "Official KFM 5110/5120 lie-down get-up controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 5110, controller: "HitFallDamage" },
+        { stateNo: 5110, operation: "hitfall:hitfalldamage" },
+        { stateNo: 5110, controller: "VelSet" },
+        { stateNo: 5110, operation: "kinematic:velset" },
+        { stateNo: 5120, controller: "VelSet" },
+        { stateNo: 5120, operation: "kinematic:velset" },
+        { stateNo: 5120, controller: "HitFallSet" },
+        { stateNo: 5120, operation: "hitfall:hitfallset" },
+        { stateNo: 5120, controller: "ChangeState" },
+      ],
     });
   });
 

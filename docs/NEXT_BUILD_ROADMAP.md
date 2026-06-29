@@ -59,6 +59,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 required Common1 lie-down/get-up recovery trace strengthening
+  -> synthetic-imported-default-fall-recovery.json checksum d83797d9
+  -> required trace now gates ordered P2 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState plus actor-frame 5110 -> 5120
+  -> optional kfm-official-default-fall-recovery.json checksum 978b8343 now requires bounded official KFM 5110/5120 controller/typed-operation order when the private fixture exists
+  -> no exact Common1 controller-loop tick order, threshold table, velocity math, recovery-input branching, public bundled KFM, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening
   -> synthetic-imported-default-gethit-progression.json checksum ef2a67f8
   -> required trace now gates ordered P2 5000 ChangeState before 5001 ChangeState plus actor-frame 5000 -> 5001 and final idle/control
