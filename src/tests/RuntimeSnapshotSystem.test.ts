@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
+import type { MugenAnimationFrame } from "../mugen/model/MugenAnimation";
 import { trainingStage } from "../mugen/runtime/demoStage";
-import { cameraCenterX, RuntimeSnapshotWorld, type RuntimeSnapshotActor } from "../mugen/runtime/RuntimeSnapshotSystem";
-import type { RuntimeStageFlash } from "../mugen/runtime/types";
+import {
+  cameraCenterX,
+  RuntimeSnapshotWorld,
+  type RuntimePlayerSnapshotActor,
+  type RuntimeSnapshotActor,
+} from "../mugen/runtime/RuntimeSnapshotSystem";
+import type { CharacterRuntimeState, RuntimeStageFlash } from "../mugen/runtime/types";
 
 describe("RuntimeSnapshotWorld", () => {
   it("projects camera center from actors that can move the camera", () => {
@@ -60,6 +66,191 @@ describe("RuntimeSnapshotWorld", () => {
       bgControllers: trainingStage.bgControllers,
     });
   });
+
+  it("owns player actor snapshot projection for runtime, targets, active boxes, events, and sprite owner", () => {
+    const world = new RuntimeSnapshotWorld();
+    const runtime = runtimeState();
+    const activeMoveBox = { x1: 1, y1: -12, x2: 22, y2: -2 };
+    const actor: RuntimePlayerSnapshotActor = {
+      id: "p1",
+      label: "Imported KFM",
+      definition: { id: "kfm", source: "imported" },
+      stateOwner: {
+        id: "p2",
+        label: "Target Owner",
+        definition: { id: "target-def" },
+      },
+      runtime,
+      currentAction: {
+        id: 200,
+        frames: [frame({ clsn2: [{ x1: -20, y1: -80, x2: 18, y2: 0 }] })],
+        rawLines: [],
+      },
+      currentMove: {
+        activeStart: 2,
+        activeEnd: 4,
+        hitbox: activeMoveBox,
+      },
+      moveTick: 3,
+      hitPause: 7,
+      targets: [{ actorId: "p2", targetId: 10, age: 5 }],
+      targetBindings: [],
+      bindToTarget: {
+        actorId: "p1",
+        targetId: 10,
+        remaining: Number.POSITIVE_INFINITY,
+        offset: { x: 12, y: -4 },
+      },
+      targetWorld: {
+        snapshot: () => ({
+          targets: [{ actorId: "p2", targetId: 10, age: 5 }],
+          bindings: [{ actorId: "p1", targetId: 10, remaining: "infinite", offset: { x: 12, y: -4 } }],
+        }),
+        count: () => 1,
+      },
+      soundEvents: [{ type: "PlaySnd", group: 5, index: 0, stateNo: 200, tick: 3, runtimeTick: 12 }],
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7000,
+          rawPrefix: "S",
+          offset: { x: 8, y: -70 },
+          stateNo: 200,
+          tick: 3,
+          runtimeTick: 13,
+          assetFrame: {
+            source: "player",
+            actionId: 7000,
+            frameIndex: 0,
+            spriteGroup: 7000,
+            spriteIndex: 0,
+            offsetX: 1,
+            offsetY: 2,
+            duration: 3,
+          },
+          assetFrames: [
+            {
+              source: "player",
+              actionId: 7000,
+              frameIndex: 0,
+              spriteGroup: 7000,
+              spriteIndex: 0,
+              offsetX: 1,
+              offsetY: 2,
+              duration: 3,
+            },
+          ],
+        },
+      ],
+      envShakeEvents: [{ type: "EnvShake", time: 8, freq: 60, ampl: 4, phase: 0, stateNo: 200, tick: 3, runtimeTick: 14 }],
+    };
+
+    const snapshot = world.actor(actor);
+    runtime.pos.x = 999;
+    actor.hitEffectEvents[0].offset = { x: 999, y: 999 };
+
+    expect(snapshot).toMatchObject({
+      id: "p1",
+      label: "Imported KFM",
+      actorKind: "player",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      source: "imported",
+      spriteOwnerId: "p2",
+      spriteOwnerDefinitionId: "target-def",
+      spriteOwnerLabel: "Target Owner",
+      hitPause: 7,
+      clsn1: [activeMoveBox],
+      clsn2: [{ x1: -20, y1: -80, x2: 18, y2: 0 }],
+      runtime: {
+        pos: { x: 30, y: 0 },
+        targetCount: 1,
+        targetRefs: [{ actorId: "p2", targetId: 10, age: 5 }],
+        bindToTarget: {
+          actorId: "p1",
+          targetId: 10,
+          remaining: "infinite",
+          offset: { x: 12, y: -4 },
+        },
+      },
+      soundEvents: [{ type: "PlaySnd", group: 5, index: 0, stateNo: 200, tick: 3, runtimeTick: 12 }],
+      envShakeEvents: [{ type: "EnvShake", time: 8, freq: 60, ampl: 4, phase: 0, stateNo: 200, tick: 3, runtimeTick: 14 }],
+    });
+    expect(snapshot.hitEffectEvents?.[0]?.offset).toEqual({ x: 8, y: -70 });
+    expect(snapshot.hitEffectEvents?.[0]?.assetFrames).toEqual([
+      {
+        source: "player",
+        actionId: 7000,
+        frameIndex: 0,
+        spriteGroup: 7000,
+        spriteIndex: 0,
+        offsetX: 1,
+        offsetY: 2,
+        duration: 3,
+      },
+    ]);
+  });
+
+  it("uses frame collision boxes when no active move exists", () => {
+    const world = new RuntimeSnapshotWorld();
+    const snapshot = world.actor({
+      id: "p1",
+      label: "Demo",
+      definition: { id: "demo" },
+      runtime: runtimeState(),
+      currentAction: {
+        id: 0,
+        frames: [frame({ clsn1: [{ x1: 2, y1: 3, x2: 4, y2: 5 }], clsn2: [] })],
+        rawLines: [],
+      },
+      moveTick: 0,
+      hitPause: 0,
+      targets: [],
+      targetBindings: [],
+      targetWorld: {
+        snapshot: () => ({ targets: [], bindings: [] }),
+        count: () => 0,
+      },
+      soundEvents: [],
+      hitEffectEvents: [],
+      envShakeEvents: [],
+    });
+
+    expect(snapshot.source).toBe("demo");
+    expect(snapshot.clsn1).toEqual([{ x1: 2, y1: 3, x2: 4, y2: 5 }]);
+    expect(snapshot.clsn2).toEqual([]);
+  });
+
+  it("uses default hurtbox when the current animation frame is missing", () => {
+    const world = new RuntimeSnapshotWorld();
+    const snapshot = world.actor({
+      id: "p1",
+      label: "Demo",
+      definition: { id: "demo" },
+      runtime: runtimeState(),
+      currentAction: {
+        id: 0,
+        frames: [],
+        rawLines: [],
+      },
+      moveTick: 0,
+      hitPause: 0,
+      targets: [],
+      targetBindings: [],
+      targetWorld: {
+        snapshot: () => ({ targets: [], bindings: [] }),
+        count: () => 0,
+      },
+      soundEvents: [],
+      hitEffectEvents: [],
+      envShakeEvents: [],
+    });
+
+    expect(snapshot.clsn1).toEqual([]);
+    expect(snapshot.clsn2).toEqual([{ x1: -24, y1: -96, x2: 24, y2: 0 }]);
+  });
 });
 
 function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"]): RuntimeSnapshotActor {
@@ -68,5 +259,40 @@ function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["scree
       pos: { x, y: 0 },
       screenBound,
     },
+  };
+}
+
+function runtimeState(): CharacterRuntimeState {
+  return {
+    pos: { x: 30, y: 0 },
+    vel: { x: 1, y: 0 },
+    facing: 1,
+    stateNo: 200,
+    animNo: 200,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: true,
+    stateType: "S",
+    moveType: "A",
+    physics: "S",
+    vars: [],
+    fvars: [],
+  };
+}
+
+function frame(overrides: Partial<MugenAnimationFrame> = {}): MugenAnimationFrame {
+  return {
+    spriteGroup: 200,
+    spriteIndex: 0,
+    offsetX: 0,
+    offsetY: 0,
+    duration: 3,
+    clsn1: [],
+    clsn2: [],
+    raw: "200,0,0,0,3",
+    line: 1,
+    ...overrides,
   };
 }

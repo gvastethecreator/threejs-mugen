@@ -1,11 +1,54 @@
+import type { CollisionBox } from "../model/CollisionBox";
+import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { CharacterRuntimeState, RuntimeStageFlash, StageSnapshot } from "./types";
+import type {
+  ActorSnapshot,
+  CharacterRuntimeState,
+  RuntimeEnvShakeEvent,
+  RuntimeHitEffectEvent,
+  RuntimeSoundEvent,
+  RuntimeStageFlash,
+  StageSnapshot,
+} from "./types";
+import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 
 export type RuntimeSnapshotActor = {
   runtime: {
     pos: CharacterRuntimeState["pos"];
     screenBound?: Pick<NonNullable<CharacterRuntimeState["screenBound"]>, "moveCameraX">;
   };
+};
+
+export type RuntimePlayerSnapshotActor = {
+  id: string;
+  label: string;
+  definition: {
+    id: string;
+    source?: "demo" | "imported";
+  };
+  stateOwner?: {
+    id: string;
+    label: string;
+    definition: {
+      id: string;
+    };
+  };
+  runtime: CharacterRuntimeState;
+  currentAction: MugenAnimationAction;
+  currentMove?: {
+    activeStart: number;
+    activeEnd: number;
+    hitbox: CollisionBox;
+  };
+  moveTick: number;
+  hitPause: number;
+  targets: RuntimeTarget[];
+  targetBindings: RuntimeTargetBinding[];
+  bindToTarget?: RuntimeTargetBinding;
+  targetWorld: Pick<RuntimeTargetWorld, "snapshot" | "count">;
+  soundEvents: RuntimeSoundEvent[];
+  hitEffectEvents: RuntimeHitEffectEvent[];
+  envShakeEvents: RuntimeEnvShakeEvent[];
 };
 
 export type RuntimeStageSnapshotInput = {
@@ -36,10 +79,80 @@ export class RuntimeSnapshotWorld {
       bgControllers: input.stage.bgControllers,
     };
   }
+
+  actor(actor: RuntimePlayerSnapshotActor): ActorSnapshot {
+    const frame = currentFrame(actor);
+    const activeHitbox = isCurrentMoveActive(actor) ? [actor.currentMove.hitbox] : frame?.clsn1 ?? [];
+    const targetSnapshot = actor.targetWorld.snapshot(actor);
+    return {
+      id: actor.id,
+      label: actor.label,
+      actorKind: "player",
+      ownerId: actor.id,
+      rootId: actor.id,
+      parentId: actor.id,
+      source: actor.definition.source ?? "demo",
+      ...spriteOwnerSnapshot(actor),
+      hitPause: actor.hitPause,
+      runtime: {
+        ...structuredClone(actor.runtime),
+        targetCount: actor.targetWorld.count(actor),
+        targetRefs: targetSnapshot.targets,
+        targetBindings: targetSnapshot.bindings,
+        ...(actor.bindToTarget
+          ? {
+              bindToTarget: {
+                actorId: actor.bindToTarget.actorId,
+                targetId: actor.bindToTarget.targetId,
+                remaining:
+                  actor.bindToTarget.remaining === Number.POSITIVE_INFINITY
+                    ? "infinite"
+                    : actor.bindToTarget.remaining,
+                offset: { ...actor.bindToTarget.offset },
+              },
+            }
+          : {}),
+      },
+      frame,
+      clsn1: activeHitbox.map((box) => ({ ...box })),
+      clsn2: frame?.clsn2.map((box) => ({ ...box })) ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }],
+      soundEvents: actor.soundEvents.map((event) => ({ ...event })),
+      hitEffectEvents: actor.hitEffectEvents.map((event) => ({
+        ...event,
+        offset: event.offset ? { ...event.offset } : undefined,
+        assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
+        assetFrames: event.assetFrames?.map((assetFrame) => ({ ...assetFrame })),
+      })),
+      envShakeEvents: actor.envShakeEvents.map((event) => ({ ...event })),
+    };
+  }
 }
 
 export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {
   const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraX !== false);
   const source = cameraActors.length > 0 ? cameraActors : actors;
   return source.reduce((sum, actor) => sum + actor.runtime.pos.x, 0) / Math.max(1, source.length);
+}
+
+function currentFrame(actor: RuntimePlayerSnapshotActor): MugenAnimationFrame | undefined {
+  return actor.currentAction.frames[actor.runtime.frameIndex];
+}
+
+function isCurrentMoveActive(actor: RuntimePlayerSnapshotActor): actor is RuntimePlayerSnapshotActor & {
+  currentMove: NonNullable<RuntimePlayerSnapshotActor["currentMove"]>;
+} {
+  return Boolean(actor.currentMove && actor.moveTick >= actor.currentMove.activeStart && actor.moveTick <= actor.currentMove.activeEnd);
+}
+
+function spriteOwnerSnapshot(actor: RuntimePlayerSnapshotActor): {
+  spriteOwnerId: string;
+  spriteOwnerDefinitionId: string;
+  spriteOwnerLabel: string;
+} {
+  const owner = actor.stateOwner ?? actor;
+  return {
+    spriteOwnerId: owner.id,
+    spriteOwnerDefinitionId: owner.definition.id,
+    spriteOwnerLabel: owner.label,
+  };
 }

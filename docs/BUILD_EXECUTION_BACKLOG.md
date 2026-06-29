@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeSnapshotWorld player actor projection
+
+Changed:
+
+- Extended `RuntimeSnapshotWorld` so it owns player actor snapshot projection in addition to the existing stage/camera projection: actor identity/source, sprite-owner metadata, cloned runtime state, target refs/bindings, active move or AIR-frame collision boxes, fallback hurtbox, sound events, hit-effect events, and env-shake events.
+- Replaced the inline `PlayableMatchRuntime.toSnapshot` helper with `this.snapshotWorld.actor(...)`, keeping effect snapshots, compatibility sessions, and round snapshots on their existing seams.
+- Added focused `RuntimeSnapshotSystem` coverage for active hitbox selection, frame collision boxes, missing-frame fallback hurtbox, runtime/event cloning, target snapshot handoff, bind-to-target projection, and state-owner sprite metadata.
+- Updated R2 roadmap docs and issue wording so actor snapshot projection is no longer listed as blocked under the current `RuntimeSnapshotWorld` ownership cut.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeSnapshotSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passes: 2 files, 77 tests.
+- `pnpm typecheck` passes.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional.
+- `pnpm test` passes: 73 files, 628 tests.
+- `pnpm build` passes with the existing large-chunk warning.
+- `git diff --check` passes.
+- `pnpm qa:smoke` is not required because this runtime snapshot ownership cut does not change renderer, Studio, stage art, sprite assets, CSS, or visible UI behavior.
+
+Claim allowed:
+
+- Current player actor snapshot projection has a named runtime ownership boundary separate from `PlayableMatchRuntime` match orchestration.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add target semantics, effect snapshot ownership, compatibility session ownership, renderer parity, motif/screenpack snapshot rules, exact MUGEN/IKEMEN camera behavior, or full MUGEN/IKEMEN snapshot parity.
+
 ## 2026-06-29 - RuntimeCompatibilityTelemetryWorld ownership extraction
 
 Changed:

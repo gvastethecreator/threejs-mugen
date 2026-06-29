@@ -83,7 +83,6 @@ import {
 import { trainingStage } from "./demoStage";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import type {
-  ActorSnapshot,
   CharacterRuntimeState,
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
@@ -537,7 +536,7 @@ export class PlayableMatchRuntime {
       matchPause: this.pauseWorld.snapshot(),
       stage: this.snapshotWorld.stage({ stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor }),
       round: this.round.snapshot(),
-      actors: [toSnapshot(this.p1), toSnapshot(this.p2)],
+      actors: [this.snapshotWorld.actor(this.p1), this.snapshotWorld.actor(this.p2)],
       effects: [
         ...p1Effects.explods,
         ...p2Effects.explods,
@@ -2011,51 +2010,6 @@ function evaluateRuntimeInGuardDist(fighter: FighterMatchState, opponent: Fighte
     hurtBoxes,
     move.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE,
   );
-}
-
-function toSnapshot(fighter: FighterMatchState): ActorSnapshot {
-  const frame = getCurrentFrame(fighter);
-  const move = fighter.currentMove;
-  const activeHitbox = move && isMoveActive(move, fighter.moveTick) ? [move.hitbox] : frame?.clsn1 ?? [];
-  const targetSnapshot = fighter.targetWorld.snapshot(fighter);
-  return {
-    id: fighter.id,
-    label: fighter.label,
-    actorKind: "player",
-    ownerId: fighter.id,
-    rootId: fighter.id,
-    parentId: fighter.id,
-    source: fighter.definition.source ?? "demo",
-    ...spriteOwnerSnapshot(fighter),
-    hitPause: fighter.hitPause,
-    runtime: {
-      ...structuredClone(fighter.runtime),
-      targetCount: fighter.targetWorld.count(fighter),
-      targetRefs: targetSnapshot.targets,
-      targetBindings: targetSnapshot.bindings,
-      ...(fighter.bindToTarget
-        ? {
-            bindToTarget: {
-              actorId: fighter.bindToTarget.actorId,
-              targetId: fighter.bindToTarget.targetId,
-              remaining: fighter.bindToTarget.remaining === Number.POSITIVE_INFINITY ? "infinite" : fighter.bindToTarget.remaining,
-              offset: { ...fighter.bindToTarget.offset },
-            },
-          }
-        : {}),
-    },
-    frame,
-    clsn1: activeHitbox.map((box) => ({ ...box })),
-    clsn2: frame?.clsn2.map((box) => ({ ...box })) ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }],
-    soundEvents: fighter.soundEvents.map((event) => ({ ...event })),
-    hitEffectEvents: fighter.hitEffectEvents.map((event) => ({
-      ...event,
-      offset: event.offset ? { ...event.offset } : undefined,
-      assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
-      assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
-    })),
-    envShakeEvents: fighter.envShakeEvents.map((event) => ({ ...event })),
-  };
 }
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {
