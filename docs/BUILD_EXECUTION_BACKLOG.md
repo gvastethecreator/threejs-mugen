@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS overlap audit prune
+
+Changed:
+
+- Removed one redundant base Studio `.workspace-header` override from `src/styles/base/app-shell.css` after confirming the later editor shell layer owns the same selector with the definitive gap and padding.
+- Tightened `pnpm qa:css:budget` from 2,595 to 2,594 max rules and from 124 to 123 cross-file overlaps; repeated declaration group ceiling remains 159.
+- Updated current-truth Studio/UI docs and the S1 local issue to use the live CSS debt baseline instead of the older 2,618 / 164 / 125 numbers.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,594 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 159 repeated declaration groups, 123 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm test` passes: 73 files / 648 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes in started-Vite mode; visual inspection covered Studio Workbench desktop/tablet and Runtime desktop with no obvious header, pane, text-overflow, or viewport regression from the redundant override prune.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- The repo does not currently have literal CSS duplication: same-file duplicate selectors and exact duplicate rules remain at zero. Remaining CSS debt is mostly cross-file cascade overlap plus repeated declaration patterns.
+
+Claim blocked:
+
+- This does not finish CSS architecture cleanup. The remaining 159 repeated declaration groups and 123 cross-file overlaps still need shared primitive extraction or owner-by-surface migration, and this pass does not move runtime compatibility, Studio workflow capability, or port score.
+
 ## 2026-06-29 - Studio legacy CSS atom consolidation
 
 Changed:

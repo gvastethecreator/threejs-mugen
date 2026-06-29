@@ -15,11 +15,6 @@
   grid-template-columns: clamp(300px, 22vw, 360px) minmax(560px, 1fr) clamp(300px, 22vw, 360px);
 }
 
-.app-shell.mode-studio .workspace-header {
-  gap: 8px;
-  padding-top: 12px;
-}
-
 .app-shell.mode-studio .workspace-brand p {
   display: none;
 }
