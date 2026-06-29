@@ -1708,6 +1708,27 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.app-shell.mode-studio .studio-mission-state {
+  min-width: 44px;
+  padding-inline: 4px;
+  letter-spacing: 0;
+}
+
+.app-shell.mode-studio .studio-mission-node.state-next .studio-mission-state {
+  border-color: color-mix(in srgb, var(--section-accent) 42%, var(--dcc-line-hard));
+  color: color-mix(in srgb, var(--section-accent) 76%, var(--text));
+}
+
+.app-shell.mode-studio .studio-mission-node.state-wait .studio-mission-state {
+  border-color: color-mix(in srgb, var(--pending) 34%, var(--dcc-line));
+  color: color-mix(in srgb, var(--pending) 72%, var(--text));
+}
+
+.app-shell.mode-studio .studio-mission-node.state-check .studio-mission-state {
+  border-color: color-mix(in srgb, var(--warn) 36%, var(--dcc-line));
+  color: color-mix(in srgb, var(--warn) 76%, var(--text));
+}
+
 .app-shell.mode-studio .studio-tab-section.is-compact .tab-state {
   min-width: 38px;
   max-width: 42px;

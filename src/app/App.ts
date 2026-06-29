@@ -2975,53 +2975,65 @@ export class App {
     const evidenceStatus: StudioStatus = traceCount ? "ok" : "pending";
     const buildStatus: StudioStatus = compiled ? (compiled.diagnostics.errors.length ? "fail" : compiled.diagnostics.warnings.length ? "warn" : "ok") : "pending";
     const assembleStatus: StudioStatus = issueCount ? primaryGate?.status ?? "warn" : "ok";
+    const missionSteps: Array<{
+      step: string;
+      icon: StudioIconName;
+      label: string;
+      value: string;
+      detail: string;
+      status: StudioStatus;
+      attribute: string;
+    }> = [
+      {
+        step: "01",
+        icon: "folder",
+        label: "Import",
+        value: this.importedSourceBundle ? "source linked" : this.character ? "character parsed" : "load source",
+        detail: this.importedSourceBundle?.sourceName ?? this.character?.sourceName ?? "MUGEN ZIP/folder",
+        status: importedStatus,
+        attribute: this.character ? 'data-mode="inspect"' : 'data-action="load-zip"',
+      },
+      {
+        step: "02",
+        icon: "shield",
+        label: "Validate",
+        value: "validate roster and files",
+        detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages / ${summary.stats.generatedAtlases} atlases`,
+        status: assembleStatus,
+        attribute: 'data-studio-tab="workbench"',
+      },
+      {
+        step: "03",
+        icon: "route",
+        label: "Map Assets",
+        value: "resolve asset links",
+        detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
+        status: assembleStatus,
+        attribute: 'data-studio-tab="assets"',
+      },
+      {
+        step: "04",
+        icon: "play",
+        label: "Playtest",
+        value: traceCount ? `${traceCount} trace${traceCount === 1 ? "" : "s"}` : "no trace yet",
+        detail: this.snapshot.playing ? "local match live" : "local match paused",
+        status: evidenceStatus,
+        attribute: 'data-mode="match"',
+      },
+      {
+        step: "05",
+        icon: "package",
+        label: "Package",
+        value: compiled ? "manifest ready" : "compile needed",
+        detail: compiled ? `${compiled.modules.active.length} modules active` : "runtime-manifest/v0",
+        status: buildStatus,
+        attribute: compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"',
+      },
+    ];
+    const nextMissionIndex = missionSteps.findIndex((mission) => mission.status !== "ok");
     return `
       <div class="studio-mission-strip" aria-label="Studio project flow">
-        ${this.renderStudioMissionNode({
-          step: "01",
-          icon: "folder",
-          label: "Import",
-          value: this.importedSourceBundle ? "source linked" : this.character ? "character parsed" : "load source",
-          detail: this.importedSourceBundle?.sourceName ?? this.character?.sourceName ?? "MUGEN ZIP/folder",
-          status: importedStatus,
-          attribute: this.character ? 'data-mode="inspect"' : 'data-action="load-zip"',
-        })}
-        ${this.renderStudioMissionNode({
-          step: "02",
-          icon: "shield",
-          label: "Validate",
-          value: "validate roster and files",
-          detail: `${summary.stats.characters} fighters / ${summary.stats.stages} stages / ${summary.stats.generatedAtlases} atlases`,
-          status: assembleStatus,
-          attribute: 'data-studio-tab="workbench"',
-        })}
-        ${this.renderStudioMissionNode({
-          step: "03",
-          icon: "route",
-          label: "Map Assets",
-          value: "resolve asset links",
-          detail: issueCount ? `${issueCount} gates need review` : "project gates clear",
-          status: assembleStatus,
-          attribute: 'data-studio-tab="assets"',
-        })}
-        ${this.renderStudioMissionNode({
-          step: "04",
-          icon: "play",
-          label: "Playtest",
-          value: traceCount ? `${traceCount} trace${traceCount === 1 ? "" : "s"}` : "no trace yet",
-          detail: this.snapshot.playing ? "local match live" : "local match paused",
-          status: evidenceStatus,
-          attribute: 'data-mode="match"',
-        })}
-        ${this.renderStudioMissionNode({
-          step: "05",
-          icon: "package",
-          label: "Package",
-          value: compiled ? "manifest ready" : "compile needed",
-          detail: compiled ? `${compiled.modules.active.length} modules active` : "runtime-manifest/v0",
-          status: buildStatus,
-          attribute: compiled ? 'data-studio-tab="build"' : 'data-action="compile-project"',
-        })}
+        ${missionSteps.map((mission, index) => this.renderStudioMissionNode(mission, index === nextMissionIndex)).join("")}
       </div>
     `;
   }
@@ -3034,11 +3046,12 @@ export class App {
     detail: string;
     status: StudioStatus;
     attribute: string;
-  }): string {
-    const statusLabel = this.missionStatusLabel(input.status);
+  }, isNext = false): string {
+    const statusLabel = this.missionStatusLabel(input.status, isNext);
+    const stateClass = statusLabel.toLowerCase();
     const ariaLabel = `${input.step} ${input.label}: ${input.value}. Status ${statusLabel}. ${input.detail}`;
     return `
-      <button type="button" class="studio-mission-node is-${this.statusClassName(input.status)} status-${escapeHtml(input.status)}" ${input.attribute} aria-label="${escapeHtml(ariaLabel)}">
+      <button type="button" class="studio-mission-node is-${this.statusClassName(input.status)} status-${escapeHtml(input.status)} state-${escapeHtml(stateClass)}" ${input.attribute} aria-label="${escapeHtml(ariaLabel)}">
         <span class="studio-mission-step">${tablerIcon(input.icon, "ui-icon mission-icon")}</span>
         <span class="studio-mission-main">
           <strong><em>${escapeHtml(input.step)}</em>${escapeHtml(input.label)}</strong>
@@ -3050,7 +3063,10 @@ export class App {
     `;
   }
 
-  private missionStatusLabel(status: StudioStatus): string {
+  private missionStatusLabel(status: StudioStatus, isNext = false): string {
+    if (isNext && (status === "pending" || status === "planned")) {
+      return "NEXT";
+    }
     switch (status) {
       case "ok":
         return "OK";
@@ -3063,7 +3079,7 @@ export class App {
       case "unsupported":
         return "NO";
       case "pending":
-        return "TODO";
+        return "WAIT";
       case "partial":
         return "PART";
       case "planned":
@@ -3072,7 +3088,7 @@ export class App {
         return "UNK";
       case "warn":
       default:
-        return "WARN";
+        return "CHECK";
     }
   }
 
