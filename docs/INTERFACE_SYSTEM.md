@@ -28,6 +28,7 @@ Brand expression is allowed only as orientation between surfaces. Repeated contr
 - Studio Build and Modules desktop surfaces use dense command-ledger layouts for readiness, manifest, contract, and module rows. They must stay scannable without turning real blocked/partial/exportable states into decorative cards.
 - Studio Assets desktop surfaces use dense asset-ledger layouts for project filters, selected asset detail, replacement flow, dependency sections, source/runtime map, provenance, playtest entries, and attention queue. They must keep warning/export/replacement states tied to real project asset data and avoid implying automatic regeneration or persistent source handles until those workflows exist.
 - Studio desktop chrome, viewport instruments, toolbar, and status strip use one command-desk register. Icon-backed status metrics are allowed only when they clarify live project/runtime data such as gates, assets, trace count, build readiness, atlas state, collision boxes, or Pause/HitPause state.
+- Studio desktop navigation, mode switching, workspace stats, and mission-control rows should stay compact and ledger-like. Use clear surface vocabulary (`Inspect`, `Evidence`, `Build`, `Modules`) rather than abstract aliases when space allows, and keep labels tied to URL-backed Studio tabs.
 - Changing Studio surfaces resets the left/right pane scroll positions; residual scroll from long Build/Assets/Debug panels should never hide the header of the newly selected task.
 - Studio Workbench may summarize project state inline, but heavy project contract, recent-project, pipeline, and asset-library blocks should default to collapsible details so mobile and daily-use views stay scannable.
 - Lists represent queues, records, or selectable objects. Selection and status use full-perimeter state, not decorative side stripes.
@@ -70,7 +71,7 @@ pnpm build
 pnpm qa:smoke
 ```
 
-`pnpm qa:smoke` must capture and pass Runtime desktop, Runtime mobile, Studio Workbench, Studio Build, Studio source-package relink, imported Studio Stage, native BGCtrl Lab Stage, Studio Assets, Studio Evidence, and Studio Debug screenshots. Studio Debug smoke coverage must include the overview plus targets/effects/pause/audio lenses. Visual review should inspect at least Runtime desktop, Studio Workbench, Studio Build, Studio source-package relink, Studio Stage, BGCtrl Lab, Studio Assets, Studio Debug lens shots, and Runtime mobile before claiming the interface round is done.
+`pnpm qa:smoke` must capture and pass Runtime desktop, Runtime mobile, Studio Workbench, Studio Build, Studio source-package relink, imported Studio Stage, native BGCtrl Lab Stage, Studio Assets, Studio Evidence, and Studio Debug screenshots. Studio Debug smoke coverage must include the overview plus targets/effects/pause/audio lenses. Visual review should inspect at least Runtime desktop, Studio Workbench desktop/tablet, Studio Build, Studio Modules, Studio source-package relink, Studio Stage, BGCtrl Lab, Studio Evidence, Studio Assets, Studio Debug lens/mobile shots, and Runtime mobile before claiming the interface round is done. The smoke runner uses software WebGL flags for Chromium so started-Vite local visual QA remains stable on this Windows workspace.
 
 ## Next Interface Cuts
 

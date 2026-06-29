@@ -29,7 +29,10 @@ async function main() {
   fs.mkdirSync(outDir, { recursive: true });
 
   const server = await resolveServer();
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch({
+    headless: true,
+    args: ["--disable-dev-shm-usage", "--use-angle=swiftshader", "--use-gl=swiftshader"],
+  });
   const context = await browser.newContext({
     acceptDownloads: true,
     viewport: { width: 1440, height: 960 },

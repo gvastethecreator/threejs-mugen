@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio command inspector readability and smoke stability
+
+Changed:
+
+- Tightened Studio desktop navigator controls, mode switch, workspace summary, mission strip, and panel borders into compact ledger-like rows in the current local UI stack.
+- Renamed compact Studio tab labels from `Data` to `Inspect` and `Trace` to `Evidence` so labels match the surface vocabulary.
+- Improved dense Build/Evidence right-pane readability for long route/copy rows, tightened stage toolbar placement, and made Assets replacement rows wrap without breaking ledger density.
+- Stabilized `pnpm qa:smoke` Chromium launch for local WebGL screenshots with SwiftShader/dev-shm flags after started-Vite smoke runs intermittently closed the browser while external-server smoke passed.
+
+Evidence:
+
+- `pnpm qa:smoke` passes with `started-vite` mode on `http://127.0.0.1:5300`.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-modules-contracts.png`, `.scratch/qa/qa-smoke/studio-stage.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, and `.scratch/qa/qa-smoke/studio-debug-evidence-mobile.png`.
+- Smoke diagnostics confirm Runtime desktop/mobile still render active player-source hit sparks, Studio Build compiles and exports a passing trace `9c9f205b`, Studio Modules exposes 8 shared contracts and 5 module contracts, Studio Stage exposes 7 rendered imported layers, Studio Evidence exposes current plus persisted trace comparison, and Studio Debug exposes imported KFM CNS/command evidence.
+- `pnpm test` passes: 69 files, 609 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Studio navigation, mission/control surfaces, inspector route copy, toolbar placement, and replacement rows are denser and clearer while remaining bound to real project/runtime/evidence data; smoke automation is more stable for local WebGL visual QA.
+
+Claim blocked:
+
+- This is visual/QA-harness polish only. It does not prove new Studio editing workflows, persistent source handles, production export, runtime parity, IKEMEN execution, or score movement.
+
 ## 2026-06-29 - RuntimeStunWorld presentation ownership extraction
 
 Changed:

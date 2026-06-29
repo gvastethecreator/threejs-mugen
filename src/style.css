@@ -31569,3 +31569,145 @@ input {
     color: var(--desk-danger);
   }
 }
+
+/* Desktop inspector readability: final override for route copy and replacement rows. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record {
+    grid-template-columns: minmax(0, 1fr) 84px;
+    gap: 5px 8px;
+    min-height: 0;
+    padding: 7px 8px 7px 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-main,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record-main {
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-title,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-title {
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record .list-meta,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record .list-meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 43px minmax(0, 1fr);
+    gap: 6px;
+    margin: 1px 0 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route b,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route b {
+    align-self: start;
+    color: color-mix(in srgb, var(--section-accent) 52%, var(--desk-muted));
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route span {
+    display: -webkit-box;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: color-mix(in srgb, var(--desk-text) 76%, var(--desk-muted));
+    font-size: 11px;
+    line-height: 1.18;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-route + .record-route span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-route + .record-route span {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-side,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-side {
+    align-self: start;
+    min-width: 0;
+    width: 84px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .record-evidence {
+    display: none;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    right: 10px;
+    bottom: 58px;
+    flex-direction: column;
+    align-items: end;
+    gap: 2px;
+    max-width: 202px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-group {
+    width: max-content;
+    max-width: 202px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-run-group {
+    order: 2;
+  }
+
+  .app-shell.mode-studio .stage-toolbar .toolbar-view-group {
+    order: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 7px 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-title {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-meta {
+    -webkit-line-clamp: 2;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
