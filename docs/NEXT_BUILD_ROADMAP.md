@@ -49,9 +49,9 @@ S1 Studio command-center CSS overlap prune
   -> product-surface hygiene only; deeper shared shell/foundation primitives remain open
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
-  -> src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css now own their desktop surfaces after the shared Studio modules
+  -> src/styles/command/studio-command-palette.css, src/styles/workflows/studio-stage.css, and src/styles/workflows/studio-inspector.css now own their desktop surfaces after the shared Studio modules
   -> fully overridden same-selector rules and old global Module ledger repair block pruned from legacy style.css
-  -> src/styles/studio-system-ledgers.css owns two-line Module rows and 40px system actions
+  -> src/styles/workflows/studio-system-ledgers.css owns two-line Module rows and 40px system actions
   -> qa:css reads CSS in src/main.ts import order and reports 2,622 rules, 115 duplicate selector keys / 264 instances, 0 exact duplicate rules, 216 repeated declaration groups, 40 cross-file overlaps, 16 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
   -> qa:smoke plus screenshots inspected Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> product-surface hygiene only; deeper shared primitives and token cleanup remain open
