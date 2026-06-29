@@ -2723,6 +2723,93 @@ export function createSyntheticImportedHitDefGuardSparkTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHitDefCommonGuardSparkTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-common-guard-spark-attacker",
+    displayName: "Synthetic Imported HitDef Common Guard Spark Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSpark: "7003",
+    sparkXy: [14, -62],
+    moveGuardStateNo: 260,
+    hitSparkLibraries: syntheticHitSparkLibrary("common", 7003, 7103),
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-common-guard-spark-golden",
+    targetLabel: "Synthetic imported HitDef common guard spark route",
+    requiredExecutedStates: [200, 260],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 7003,
+        raw: "7003",
+        assetSource: "common",
+        assetActionId: 7003,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 7103,
+        assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef common guard-spark trace proves an unprefixed guard.sparkno can resolve bounded common/default multi-frame AIR metadata from runtime hit-spark libraries before renderer handoff. It does not claim exact common sprite lookup, render timing, layering, scale, palette, motif ownership, or full MUGEN/IKEMEN guard-effect parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-fightfx-guard-spark-attacker",
+    displayName: "Synthetic Imported HitDef FightFX Guard Spark Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSpark: "F7004",
+    sparkXy: [15, -63],
+    moveGuardStateNo: 260,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-fightfx-guard-spark-golden",
+    targetLabel: "Synthetic imported HitDef FightFX guard spark route",
+    requiredExecutedStates: [200, 260],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 7004,
+        raw: "F7004",
+        rawPrefix: "F",
+        assetSource: "fightfx",
+        assetActionId: 7004,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 8104,
+        assetSpriteIndex: 0,
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef FightFX guard-spark trace proves an F-prefixed guard.sparkno can resolve bounded FightFX multi-frame AIR metadata from runtime hit-spark libraries before renderer handoff. It does not claim exact FightFX sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN guard-effect parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialUnguardableTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

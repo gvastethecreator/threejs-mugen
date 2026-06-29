@@ -69,6 +69,8 @@ import {
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
   createSyntheticImportedGuardTraceArtifact,
   createSyntheticImportedHitDefCommonSparkTraceArtifact,
+  createSyntheticImportedHitDefCommonGuardSparkTraceArtifact,
+  createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact,
   createSyntheticImportedHitDefFightFxSparkTraceArtifact,
   createSyntheticImportedHitDefHitSoundTraceArtifact,
   createSyntheticImportedHitDefHitSparkTraceArtifact,
@@ -2540,6 +2542,114 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported HitDef common guard-spark artifact with asset-frame evidence", () => {
+    const artifact = createSyntheticImportedHitDefCommonGuardSparkTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-common-guard-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-guard-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "guard",
+          sparkNo: 7003,
+          raw: "7003",
+          rawPrefix: undefined,
+          assetSource: "common",
+          assetActionId: 7003,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 7103,
+          assetSpriteIndex: 0,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          assetFrameIndices: [0, 1],
+          offset: { x: 14, y: -62 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "guard",
+        assetSource: "common",
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
+  });
+
+  it("creates a synthetic imported HitDef FightFX guard-spark artifact with asset-frame evidence", () => {
+    const artifact = createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-fightfx-guard-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-guard-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "guard",
+          sparkNo: 7004,
+          raw: "F7004",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7004,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 8104,
+          assetSpriteIndex: 0,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          assetFrameIndices: [0, 1],
+          offset: { x: 15, y: -63 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "guard",
+        assetSource: "fightfx",
+        minAssetFrameCount: 2,
+        minAssetTotalDuration: 11,
+        requiredAssetFrameIndices: [0, 1],
+      }),
+    ]);
   });
 
   it("creates a generic imported guard artifact for imported fighters", () => {

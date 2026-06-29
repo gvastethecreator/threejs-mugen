@@ -84,6 +84,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 required common/FightFX guard HitSpark asset-frame trace strengthening
+  -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
+  -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
+  -> required traces require guarded direct HitDef contact, attacker-side guard HitSpark telemetry, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
+  -> pnpm qa:trace now passes 163/163 artifacts, 143 required and 20 optional
+  -> required trace evidence only; no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
   -> PlayableMatchRuntime delegates those hitpause side effects through RuntimeHitPauseWorld instead of local callback glue
@@ -93,12 +99,12 @@ R2 RuntimePausedMatchWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete paused-match bridge for source-movetime target-memory aging, active-effect advance, presentation-effect advance, active target binding, stage clamp, and frozen-actor paused presentation
   -> PlayableMatchRuntime delegates those paused interaction side effects through RuntimePausedMatchWorld instead of local callback glue
   -> focused PauseSystem tests prove actor-local targetWorld, effectLifecycleWorld, and RuntimeActorConstraintWorld wiring
-  -> pnpm qa:trace stays stable at 161/161; no new pause semantics, helper VM during pause, exact pause layering, exact paused effect tick order, parent/root/team redirects, or score claim
+  -> pnpm qa:trace stays stable at 163/163; no new pause semantics, helper VM during pause, exact pause layering, exact paused effect tick order, parent/root/team redirects, or score claim
 R2 RuntimeMatchInteractionWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete normal-loop bridge for target-memory aging, active-effect advance, projectile clash, body separation, active target binding, stage clamp, and presentation-effect advance
   -> PlayableMatchRuntime delegates those interaction side effects through RuntimeMatchInteractionWorld instead of local callback glue
   -> focused MatchInteractionSystem tests prove actor-local targetWorld, effectLifecycleWorld, effectActorWorld.resolveProjectileClashes(...), and RuntimeActorConstraintWorld wiring
-  -> pnpm qa:trace stays stable at 161/161; no helper VM execution, new target/projectile/effect semantics, exact post-fighter tick-order, pause-specific bridge ownership, parent/root/team redirects, or score claim
+  -> pnpm qa:trace stays stable at 163/163; no helper VM execution, new target/projectile/effect semantics, exact post-fighter tick-order, pause-specific bridge ownership, parent/root/team redirects, or score claim
 R2 RuntimeResourceSystem resource-edge ownership
   -> authored life/power max resolution, runtime power-delta clamping, bounded life deltas, and control writes now live in RuntimeResourceSystem
   -> PlayableMatchRuntime, RuntimeDirectCombatWorld, RuntimeProjectileCombatWorld, RuntimeReversalWorld, and RuntimeTargetWorld use the shared boundary instead of local max helpers or inline writes
@@ -228,6 +234,8 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitdef-hit-sound.json`
 - `synthetic-imported-hitdef-common-spark.json`
 - `synthetic-imported-hitdef-fightfx-spark.json`
+- `synthetic-imported-hitdef-common-guard-spark.json`
+- `synthetic-imported-hitdef-fightfx-guard-spark.json`
 - `synthetic-imported-default-gethit-progression.json` controller/frame order
 - `synthetic-imported-target.json` final Target* side-effect evidence
 - `synthetic-imported-target-noko.json` TargetLifeAdd defender-side NoKO evidence

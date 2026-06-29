@@ -76,6 +76,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 required common/FightFX guard HitSpark asset-frame trace strengthening
+  -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c
+  -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d
+  -> required traces prove bounded guarded direct HitDef contact, attacker-side guard HitSpark telemetry, and source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX guard spark refs
+  -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
+  -> pnpm qa:trace now passes 163/163 artifacts, 143 required and 20 optional
+  -> no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
   -> PlayableMatchRuntime delegates those hitpause side effects through RuntimeHitPauseWorld instead of local callback glue
@@ -85,12 +92,12 @@ R2 RuntimePausedMatchWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete paused-match bridge for source-movetime target-memory aging, active-effect advance, presentation-effect advance, active target binding, stage clamp, and frozen-actor paused presentation
   -> PlayableMatchRuntime delegates those paused interaction side effects through RuntimePausedMatchWorld instead of local callback glue
   -> focused PauseSystem tests prove actor-local targetWorld, effectLifecycleWorld, and RuntimeActorConstraintWorld wiring
-  -> pnpm qa:trace stays stable at 161/161; no new pause semantics, helper VM during pause, exact pause layering, exact paused effect tick order, parent/root/team redirects, or score movement claim
+  -> pnpm qa:trace stays stable at 163/163; no new pause semantics, helper VM during pause, exact pause layering, exact paused effect tick order, parent/root/team redirects, or score movement claim
 R2 RuntimeMatchInteractionWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete normal-loop bridge for target-memory aging, active-effect advance, projectile clash, body separation, active target binding, stage clamp, and presentation-effect advance
   -> PlayableMatchRuntime delegates those interaction side effects through RuntimeMatchInteractionWorld instead of local callback glue
   -> focused MatchInteractionSystem tests prove actor-local targetWorld, effectLifecycleWorld, effectActorWorld.resolveProjectileClashes(...), and RuntimeActorConstraintWorld wiring
-  -> pnpm qa:trace stays stable at 161/161; no helper VM execution, new target/projectile/effect semantics, exact post-fighter tick-order, pause-specific bridge ownership, parent/root/team redirects, or score movement claim
+  -> pnpm qa:trace stays stable at 163/163; no helper VM execution, new target/projectile/effect semantics, exact post-fighter tick-order, pause-specific bridge ownership, parent/root/team redirects, or score movement claim
 R2 RuntimeResourceSystem resource-edge ownership
   -> authored life/power max resolution, runtime power-delta clamping, bounded life deltas, and control writes moved behind RuntimeResourceSystem helpers
   -> PlayableMatchRuntime pause power deltas, state-entry/control writes, direct/projectile combat power/control mutation, TargetLifeAdd/TargetPowerAdd, and ReversalDef power gain now use that boundary
@@ -117,7 +124,7 @@ R1 required Common1 stand get-hit progression trace strengthening
 R1 required common/FightFX HitSpark asset-frame trace strengthening
   -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7
   -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56
-  -> required traces prove bounded source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX spark refs
+  -> required traces prove bounded source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX hit spark refs
   -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
   -> no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, or score movement claim
 R1 optional KFM x HitDef presentation trace strengthening

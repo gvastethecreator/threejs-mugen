@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - HitDef common/FightFX guard-spark trace gates
+
+Changed:
+
+- Added required `synthetic-imported-hitdef-common-guard-spark.json` and `synthetic-imported-hitdef-fightfx-guard-spark.json` trace gates.
+- The common/default guard route requires unprefixed `guard.sparkno = 7003` to resolve bounded common/default AIR asset metadata: 2 frames, frame indices `[0, 1]`, total authored duration `11`, and first frame sprite `7103,0`.
+- The FightFX guard route requires `guard.sparkno = F7004` to resolve bounded FightFX AIR asset metadata: 2 frames, frame indices `[0, 1]`, total authored duration `11`, and first frame sprite `8104,0`.
+- Both routes run through guarded direct `HitDef` contact and require attacker-side `HitSpark:guard` telemetry before renderer handoff.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` passes: 1 file / 159 tests.
+- `pnpm qa:trace` passes: 163/163 artifacts, 143 required and 20 optional, 0 skipped.
+- New checksums: `synthetic-imported-hitdef-common-guard-spark.json` `7650a09c`; `synthetic-imported-hitdef-fightfx-guard-spark.json` `32f3e92d`.
+
+Claim allowed:
+
+- Current imported `HitDef` guard routes can require bounded common/default and FightFX guard-spark AIR metadata before renderer handoff.
+
+Claim blocked:
+
+- Exact common/FightFX sprite lookup, visual timing, binding, layering, scale, palette, motif/screenpack ownership, guard-effect parity, and full MUGEN/IKEMEN `HitDef` presentation parity.
+
 ## 2026-06-29 - Studio CSS budget guard
 
 Changed:
