@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeGetHitStateWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeGetHitStateWorld` / `GetHitStateSystem` as the named owner for bounded default get-hit state selection.
+- Replaced inline `PlayableMatchRuntime` selection for imported default direct-hit and projectile-hit state routing with `RuntimeGetHitStateWorld.defaultGetHitStateNo`.
+- Added focused `GetHitStateSystem` tests for stand `5000`, crouch `5010 -> 5000`, air `5020 -> 5000`, and missing-state no-op selection.
+
+Evidence:
+
+- `pnpm test` passes: 67 files, 599 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-default-gethit.json` remains checksum `9d610605`, `synthetic-imported-default-fall-gethit.json` remains `6af73a91`, `synthetic-imported-projectile-guard.json` remains `4bcc5650`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded default get-hit state selection for current imported direct and projectile hit routes now has a named runtime boundary.
+
+Claim blocked:
+
+- Exact Common1 get-hit animation selection, custom-state ownership breadth, helper/team/redirect get-hit routing, projectile-specific get-hit parity, full hit/fall/recovery VM tick order, and full MUGEN/IKEMEN get-hit parity remain unsupported.
+
 ## 2026-06-29 - Setup-project G1 roadmap control refresh
 
 Changed:

@@ -26,6 +26,10 @@ G1 setup-project refresh
 Latest implementation truth:
 
 ```txt
+R2 RuntimeGetHitStateWorld ownership extraction
+  -> default stand/crouch/air get-hit state selection moved out of PlayableMatchRuntime
+  -> focused GetHitStateSystem tests cover 5000, 5010 -> 5000, 5020 -> 5000, and missing-state no-op behavior
+  -> proves named default get-hit selection ownership only
 R2 HitSparkAssetSystem ownership extraction
   -> player/common/FightFX spark asset-frame lookup moved out of PlayableMatchRuntime
   -> focused HitSparkAssetSystem tests cover prefix, state-owner, library, and missing refs
@@ -56,7 +60,7 @@ R2 RuntimeGuardWorld ownership extraction
   -> proves named guard ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeOrientationWorld` ownership, or `RuntimeGuardWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, or `RuntimeGetHitStateWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -97,7 +101,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeOrientationWorld`, and `RuntimeGuardWorld` stable after extraction.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, and `RuntimeGetHitStateWorld` stable after extraction.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.

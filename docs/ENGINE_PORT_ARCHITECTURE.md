@@ -114,6 +114,8 @@ The compiler classifies each piece as:
 
 `RuntimeRecoverySystem` owns the bounded recovery timers and state-transition hooks that used to live inline in `PlayableMatchRuntime`: `fall.recovertime` countdown, Common1 liedown `data.liedown.time` defaulting/decrement, and imported `5201 -> 52` ground-recovery landing. `PlayableMatchRuntime` still validates and enters states through callbacks, so this is ownership cleanup for current behavior, not exact Common1 threshold/tick-order parity.
 
+`RuntimeGetHitStateWorld` owns the bounded default get-hit state selection that used to live inline in `PlayableMatchRuntime`: stand routes prefer `5000`, crouch routes prefer `5010 -> 5000`, and air routes prefer `5020 -> 5000` when those states exist. Direct combat and projectile combat still ask `PlayableMatchRuntime` to validate and enter states, and custom `p2stateno` routing remains separate. This is ownership cleanup for current imported default get-hit behavior, not exact Common1 animation selection, helper/team/redirect ownership, projectile-specific parity, or full get-hit VM parity.
+
 `RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. `RuntimeTraceGate.requiredRoundFrames` now lets required artifacts gate that snapshot evidence by round state, winner, message, frame count, and observed timer range; `synthetic-imported-round-ko.json` proves the bounded KO snapshot route after a lethal imported `HitDef`, and `synthetic-imported-round-timeover.json` proves a bounded time-over/draw route through a short `roundTimerFrames` fixture. The match loop still decides when combat/resources change life and when playback stops, so this is ownership cleanup plus evidence coverage for current sandbox round state, not MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, winpose, or screenpack parity.
 
 `MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
@@ -164,6 +166,7 @@ MatchWorld
   RuntimeGuardWorld
   PauseSystem
   RuntimeRecoverySystem
+  RuntimeGetHitStateWorld
   RuntimeHitEligibilityWorld
   RuntimeOrientationWorld
   RuntimeRoundSystem
@@ -201,11 +204,12 @@ The current extraction order is:
 20. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
 21. `RuntimeGuardWorld`: own bounded guard-hit state selection, auto guard-start eligibility, and auto guard-start mutation outside inline match/combat mutation.
 22. `RuntimeRecoverySystem`: own bounded fall recovery countdown, Common1 liedown recovery, and imported ground-recovery landing hooks outside the main match loop.
-23. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
-24. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
-25. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-26. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-27. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+23. `RuntimeGetHitStateWorld`: own bounded default stand/crouch/air get-hit state selection outside inline direct/projectile combat callbacks.
+24. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
+25. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
+26. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+27. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+28. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

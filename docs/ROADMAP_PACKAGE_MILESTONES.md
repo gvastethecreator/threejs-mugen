@@ -45,6 +45,10 @@ G1 setup-project refresh
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeGetHitStateWorld ownership extraction
+  -> default stand/crouch/air get-hit state selection moved out of PlayableMatchRuntime
+  -> focused GetHitStateSystem tests cover 5000, 5010 -> 5000, 5020 -> 5000, and missing-state no-op behavior
+  -> trace behavior unchanged; no new parity or score claim
 R2 HitSparkAssetSystem ownership extraction
   -> player/common/FightFX spark asset-frame lookup named after package-frame handoff
   -> focused HitSparkAssetSystem tests cover source routing and lookup behavior
@@ -112,6 +116,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitEligibilityWorld` ownership extraction
 - `RuntimeOrientationWorld` ownership extraction
 - `RuntimeGuardWorld` ownership extraction
+- `RuntimeGetHitStateWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

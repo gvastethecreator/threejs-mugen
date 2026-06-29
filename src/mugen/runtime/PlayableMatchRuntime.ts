@@ -52,6 +52,7 @@ import {
 } from "./EffectActorSystem";
 import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
+import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
@@ -207,6 +208,7 @@ export class PlayableMatchRuntime {
   private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
   private readonly orientationWorld = new RuntimeOrientationWorld();
   private readonly guardWorld = new RuntimeGuardWorld();
+  private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -405,11 +407,27 @@ export class PlayableMatchRuntime {
           boxesIntersect: collisionBoxesIntersect,
         })?.message,
       resolveDirectCombat: (attacker, defender) =>
-        resolveCombat(attacker, defender, this.directCombatWorld, this.hitOverrideWorld, this.reversalWorld, this.guardWorld, this.tick, (line) =>
-          this.logs.unshift(line),
+        resolveCombat(
+          attacker,
+          defender,
+          this.directCombatWorld,
+          this.hitOverrideWorld,
+          this.reversalWorld,
+          this.guardWorld,
+          this.getHitStateWorld,
+          this.tick,
+          (line) => this.logs.unshift(line),
         ),
       resolveProjectileCombat: (attacker, defender) =>
-        resolveProjectileCombat(attacker, defender, this.hitOverrideWorld, this.effectLifecycleWorld, this.guardWorld, (line) => this.logs.unshift(line)),
+        resolveProjectileCombat(
+          attacker,
+          defender,
+          this.hitOverrideWorld,
+          this.effectLifecycleWorld,
+          this.guardWorld,
+          this.getHitStateWorld,
+          (line) => this.logs.unshift(line),
+        ),
       clampToStage: (fighter) => this.actorConstraintWorld.clampToStage(fighter.runtime, this.stage),
       advancePresentationEffects: (fighter) => this.effectLifecycleWorld.advancePresentation(fighter),
       log: (line) => this.logs.unshift(line),
@@ -1558,6 +1576,7 @@ function resolveProjectileCombat(
   hitOverrideWorld: RuntimeHitOverrideWorld,
   effectLifecycleWorld: RuntimeEffectLifecycleWorld,
   guardWorld: RuntimeGuardWorld,
+  getHitStateWorld: RuntimeGetHitStateWorld,
   log: (line: string) => void,
 ): void {
   const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
@@ -1571,7 +1590,7 @@ function resolveProjectileCombat(
     applyHitOverride: (source, target, override, hitPause, logger) =>
       applyHitOverride(source, target, override, hitPause, hitOverrideWorld, logger),
     applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
-    applyHitState: applyDefaultProjectileGetHitState,
+    applyHitState: (target) => applyDefaultProjectileGetHitState(target, getHitStateWorld),
     markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
     recordReceivedDamage: markReceivedDamage,
@@ -1720,6 +1739,7 @@ function resolveCombat(
   hitOverrideWorld: RuntimeHitOverrideWorld,
   reversalWorld: RuntimeReversalWorld,
   guardWorld: RuntimeGuardWorld,
+  getHitStateWorld: RuntimeGetHitStateWorld,
   runtimeTick: number,
   log: (line: string) => void,
 ): void {
@@ -1792,7 +1812,7 @@ function resolveCombat(
   const outcome = directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
     applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
     applyHitStateTransitions,
-    applyDefaultGetHit: applyDefaultGetHitState,
+    applyDefaultGetHit: (target, moveArg) => applyDefaultGetHitState(target, moveArg, getHitStateWorld),
   });
   recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick);
   recordHitDefEffectEvent(attacker, outcome.kind, move, runtimeTick);
@@ -1916,11 +1936,13 @@ function applyHitStateTransitions(attacker: FighterMatchState, defender: Fighter
   }
 }
 
-function applyDefaultGetHitState(defender: FighterMatchState, move: DemoMove): void {
+function applyDefaultGetHitState(defender: FighterMatchState, move: DemoMove, getHitStateWorld: RuntimeGetHitStateWorld): void {
   if (move.p2StateNo !== undefined || defender.definition.source !== "imported") {
     return;
   }
-  const stateNo = move.defaultTargetStateNo ?? defaultGetHitStateNo(defender);
+  const stateNo =
+    move.defaultTargetStateNo ??
+    getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
   if (stateNo === undefined || !canEnterState(defender, stateNo)) {
     return;
   }
@@ -1938,11 +1960,11 @@ function applyDefaultGuardHitState(defender: FighterMatchState, guardWorld: Runt
   enterState(defender, stateNo, undefined, { clearStateOwner: true });
 }
 
-function applyDefaultProjectileGetHitState(defender: FighterMatchState): void {
+function applyDefaultProjectileGetHitState(defender: FighterMatchState, getHitStateWorld: RuntimeGetHitStateWorld): void {
   if (defender.definition.source !== "imported") {
     return;
   }
-  const stateNo = defaultGetHitStateNo(defender);
+  const stateNo = getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
   if (stateNo === undefined || !canEnterState(defender, stateNo)) {
     return;
   }
@@ -1982,12 +2004,6 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
     owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
     owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
   return state?.moveType?.toUpperCase() === "H";
-}
-
-function defaultGetHitStateNo(defender: FighterMatchState): number | undefined {
-  const preferred =
-    defender.runtime.stateType === "A" ? [5020, 5000] : defender.runtime.stateType === "C" ? [5010, 5000] : [5000];
-  return preferred.find((stateNo) => canEnterState(defender, stateNo));
 }
 
 function enterTargetHitState(target: FighterMatchState, owner: FighterMatchState, stateId: number, getP1State: boolean): boolean {
