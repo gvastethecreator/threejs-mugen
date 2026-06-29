@@ -57,6 +57,7 @@ import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
+import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -81,7 +82,6 @@ import type {
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
   RuntimeHitEffectEvent,
-  RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
   RuntimeSoundEvent,
@@ -202,6 +202,7 @@ export class PlayableMatchRuntime {
   private readonly reversalWorld = new RuntimeReversalWorld(this.contactWorld);
   private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private readonly recoveryWorld = new RuntimeRecoverySystem();
+  private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -298,8 +299,8 @@ export class PlayableMatchRuntime {
     this.p1.currentInput = new Set(p1Input);
     this.p2.currentInput = new Set(p2Input);
 
-    resetAssertSpecial(this.p1.runtime);
-    resetAssertSpecial(this.p2.runtime);
+    this.hitEligibilityWorld.resetFrameFlags(this.p1.runtime);
+    this.hitEligibilityWorld.resetFrameFlags(this.p2.runtime);
     applyPreFacingAssertSpecial(this.p1, this.p2, this.tick);
     applyPreFacingAssertSpecial(this.p2, this.p1, this.tick);
     updateFacing(this.p1, this.p2);
@@ -361,6 +362,7 @@ export class PlayableMatchRuntime {
       this.reversalWorld,
       this.effectSpawnWorld,
       this.recoveryWorld,
+      this.hitEligibilityWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -376,6 +378,7 @@ export class PlayableMatchRuntime {
         this.reversalWorld,
         this.effectSpawnWorld,
         this.recoveryWorld,
+        this.hitEligibilityWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -446,6 +449,7 @@ export class PlayableMatchRuntime {
         this.reversalWorld,
         this.effectSpawnWorld,
         this.recoveryWorld,
+        this.hitEligibilityWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -826,12 +830,13 @@ function advanceFighter(
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
   recoveryWorld: RuntimeRecoverySystem,
+  hitEligibilityWorld: RuntimeHitEligibilityWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
   spriteEffectWorld.tick(fighter.runtime, () => createAfterImageSample(fighter));
-  tickHitBySlots(fighter.runtime);
+  hitEligibilityWorld.tickHitBySlots(fighter.runtime);
   hitOverrideWorld.tickSlots(fighter.runtime);
   advanceContactTimers(fighter);
   fighter.runtime.renderAngle = undefined;
@@ -1348,29 +1353,6 @@ function applyPalFxController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
 ): void {
   spriteEffectWorld.applyPaletteFx(fighter.runtime, controller, operation);
-}
-
-function tickHitBySlots(state: CharacterRuntimeState): void {
-  if (!state.hitBy) {
-    return;
-  }
-  const next = { ...state.hitBy };
-  next.slot1 = tickHitBySlot(next.slot1);
-  next.slot2 = tickHitBySlot(next.slot2);
-  state.hitBy = next.slot1 || next.slot2 ? next : undefined;
-}
-
-function tickHitBySlot(slot: RuntimeHitBySlot | undefined): RuntimeHitBySlot | undefined {
-  if (!slot || slot.remaining === Number.POSITIVE_INFINITY) {
-    return slot;
-  }
-  const remaining = Math.max(0, slot.remaining - 1);
-  return remaining > 0 ? { ...slot, remaining } : undefined;
-}
-
-function resetAssertSpecial(state: CharacterRuntimeState): void {
-  state.assertSpecial = undefined;
-  state.renderOpacity = undefined;
 }
 
 function applyAfterImageController(

@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeHitEligibilityWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHitEligibilityWorld` as the named owner for bounded `HitBy` / `NotHitBy` slot ticking and per-frame `AssertSpecial` / render-opacity reset.
+- Replaced the remaining inline hit-eligibility ticking and frame-flag reset in `PlayableMatchRuntime` with the new system boundary.
+- Added focused `RuntimeHitEligibilitySystem` tests for finite slot decrement/removal, infinite slot preservation, empty-container cleanup, and `AssertSpecial` reset.
+
+Evidence:
+
+- `pnpm test` passes: 64 files, 589 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-hitby-allow.json` remains checksum `c75d5c7d`, `synthetic-imported-hitby-reject.json` remains `65185fd1`, `synthetic-imported-assertspecial-lifetime.json` remains `181ded30`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded hit-eligibility lifetime maintenance now has a named runtime boundary consumed by the match loop.
+
+Claim blocked:
+
+- Exact HitBy/NotHitBy attr grammar, slot priority, helper/custom-state/team ownership, AssertSpecial persistence layering, pause interaction, global flags, and full MUGEN/IKEMEN hit-eligibility parity remain unsupported.
+
 ## 2026-06-29 - Target binding position ownership extraction
 
 Changed:

@@ -51,6 +51,10 @@ R2 active target-binding position ownership extraction
   -> per-frame TargetBind target-position and BindToTarget owner-position mutation moved into RuntimeTargetWorld
   -> focused TargetSystem tests cover both binding directions and missing-target no-op behavior
   -> behavior unchanged; no new parity or score claim
+R2 RuntimeHitEligibilityWorld ownership extraction
+  -> HitBy/NotHitBy slot ticking and AssertSpecial/render-opacity frame reset moved out of PlayableMatchRuntime
+  -> focused RuntimeHitEligibilitySystem tests cover finite/infinite slots and reset behavior
+  -> behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -87,12 +91,13 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeRecoverySystem` fall/down-recovery ownership extraction
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
+- `RuntimeHitEligibilityWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after target-binding ownership.
+3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after hit-eligibility ownership.
 
 ## Package Closeout Contract
 

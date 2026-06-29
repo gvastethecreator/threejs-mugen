@@ -229,6 +229,8 @@ Three.js must consume snapshots and asset providers. It should not evaluate CNS,
 
 `CombatResolver` owns renderer-independent combat result helpers. Bounded direct `HitDef` priority clash mutation now lives in `RuntimeDirectCombatWorld`, and owner-backed `p2stateno` route evidence still goes through runtime state ownership, but the engine does not yet implement exact MUGEN/IKEMEN priority classes, guard states, fall state routing, complete custom-state ownership, reversal parity, projectile trade/cancel parity, helper combat, team rules, or exact hit timing.
 
+`RuntimeHitEligibilityWorld` owns the current bounded lifetime maintenance around hit eligibility: finite `HitBy` / `NotHitBy` slots tick down and expire there, infinite slots remain active, and per-frame `AssertSpecial` plus render-opacity reset happens before the imported pre-facing AssertSpecial pass. `StateControllerExecutor` still applies the actual `HitBy`, `NotHitBy`, and `AssertSpecial` controller writes, while `CombatResolver`, `RuntimeDirectCombatWorld`, and `RuntimeProjectileCombatWorld` consume the resulting runtime state. This is an ownership boundary for current lifetime/reset behavior, not exact slot priority, attr grammar, helper/team/global ownership, persistence layering, pause interaction, or full MUGEN/IKEMEN hit-eligibility parity.
+
 ### Audio Adapter
 
 Web Audio owns:
