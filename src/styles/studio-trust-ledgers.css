@@ -397,7 +397,8 @@
   .app-shell.mode-studio[data-studio-tab="build"] .build-command-center .build-action-grid button {
     display: grid;
     grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 31px;
+    min-height: 40px;
+    align-items: center;
     justify-content: start;
     gap: 7px;
     padding: 0 9px;
@@ -418,6 +419,7 @@
   .app-shell.mode-studio[data-studio-tab="build"] .build-command-center .build-action-grid .action-label {
     min-width: 0;
     overflow: hidden;
+    line-height: 1.12;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -486,7 +488,7 @@
   .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center .command-action-column button {
     display: grid;
     grid-template-columns: 16px minmax(0, 1fr);
-    min-height: 31px;
+    min-height: 38px;
     justify-content: start;
     gap: 7px;
     padding: 0 9px;
@@ -509,6 +511,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] .command-action-column button,
+  .app-shell.mode-studio[data-studio-tab="build"] .full-width-action,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .full-width-action {
+    min-height: 40px;
+    padding-block: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="build"] .pane-right .record-evidence,

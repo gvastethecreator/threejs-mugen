@@ -125,7 +125,7 @@
 
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row {
     display: grid;
-    min-height: 40px;
+    min-height: 52px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -146,7 +146,7 @@
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row > span {
     display: grid;
     grid-template-columns: minmax(82px, 0.36fr) minmax(0, 1fr) minmax(136px, max-content);
-    grid-template-rows: 17px 17px;
+    grid-template-rows: minmax(17px, auto) minmax(17px, auto);
     min-width: 0;
     align-items: center;
     gap: 0 8px;
@@ -175,6 +175,9 @@
     color: #9aa5b1;
     font-family: var(--mono);
     font-size: 10px;
+    line-height: 1.15;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .list-meta:nth-of-type(n + 3) {

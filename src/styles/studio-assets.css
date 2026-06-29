@@ -70,6 +70,13 @@
     white-space: nowrap;
   }
 
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip small,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip em {
+    line-height: 1.1;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
   .app-shell.mode-studio[data-studio-tab="assets"] .selection-summary,
   .app-shell.mode-studio[data-studio-tab="assets"] .operator-callout {
     display: grid;
@@ -112,9 +119,12 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
     min-width: 0;
-    min-height: 31px;
+    min-height: 38px;
     justify-content: start;
+    gap: 7px;
     overflow: hidden;
     padding: 0 9px;
     border: 0;
@@ -141,7 +151,7 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .studio-tabs .tab {
-    min-height: 31px;
+    min-height: 40px;
     border: 0;
     border-right: 1px solid var(--studio-ledge-edge);
     border-bottom: 1px solid var(--studio-ledge-edge);
@@ -166,8 +176,8 @@
   .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item,
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item {
     display: grid;
-    grid-template-columns: 22px minmax(0, 1fr) 58px;
-    min-height: 44px;
+    grid-template-columns: 22px minmax(0, 1fr) minmax(62px, max-content);
+    min-height: 54px;
     gap: 7px;
     margin: 0;
     padding: 6px 7px;
@@ -253,6 +263,16 @@
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind {
     overflow-wrap: anywhere;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.18;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-title,

@@ -615,6 +615,37 @@
     text-align: left;
   }
 
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    min-height: 40px;
+    align-items: center;
+    justify-content: start;
+    gap: 7px;
+    padding: 0 10px;
+    border: 0;
+    border-right: 1px solid var(--command-edge);
+    border-bottom: 1px solid var(--command-edge);
+    border-radius: 0;
+    background: var(--command-row);
+    color: var(--command-text);
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
+    background: #111820;
+    box-shadow: inset 3px 0 0 var(--section-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .app-shell.mode-studio .studio-tab-section.is-compact {
     padding: 0;
     border: 0;
@@ -640,7 +671,7 @@
   }
 
   .app-shell.mode-studio .studio-tab-section.is-compact .tab {
-    min-height: 38px;
+    min-height: 40px;
     padding: 0;
     border: 0;
     border-right: 1px solid var(--desk-edge);
@@ -661,6 +692,7 @@
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
     display: grid;
     grid-template-columns: 15px minmax(0, 1fr) 5px;
+    min-height: 40px;
     min-width: 0;
     align-items: center;
     gap: 6px;
@@ -677,7 +709,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--desk-text);
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 780;
     text-overflow: ellipsis;
     white-space: nowrap;
