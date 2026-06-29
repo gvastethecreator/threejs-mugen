@@ -1,0 +1,428 @@
+/* Studio command pipeline: project mission rail, primary actions, compact tabs. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .workspace-actions {
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--command-edge-strong);
+    background: var(--command-panel-low);
+  }
+
+  .app-shell.mode-studio .workspace-actions-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 36px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--command-edge);
+    background: var(--command-panel);
+  }
+
+  .app-shell.mode-studio .workspace-actions-head span,
+  .app-shell.mode-studio .workspace-actions-head b {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-actions-head span {
+    color: var(--command-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 850;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .workspace-actions-head b {
+    color: var(--section-accent);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .studio-mission-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--command-edge-strong);
+    background: var(--command-panel-low);
+  }
+
+  .app-shell.mode-studio .studio-mission-node {
+    --studio-mission-rail: #3b4651;
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) 40px;
+    grid-template-rows: minmax(24px, auto) minmax(15px, auto);
+    min-height: 54px;
+    width: 100%;
+    gap: 2px 8px;
+    align-items: center;
+    padding: 6px 8px 6px 9px;
+    border: 0;
+    border-bottom: 1px solid var(--command-edge);
+    border-radius: 0;
+    background: var(--command-row);
+    color: var(--command-text);
+    text-align: left;
+    box-shadow: inset 2px 0 0 var(--studio-mission-rail) !important;
+  }
+
+  .app-shell.mode-studio .studio-mission-node:nth-child(even) {
+    background: var(--command-row-alt);
+  }
+
+  .app-shell.mode-studio .studio-mission-node:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-node::after {
+    display: none;
+    content: none;
+  }
+
+  .app-shell.mode-studio .studio-mission-node::before {
+    display: none;
+    content: "";
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok,
+  .app-shell.mode-studio .studio-mission-node.is-active {
+    --studio-mission-rail: var(--command-ok);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn,
+  .app-shell.mode-studio .studio-mission-node.is-partial,
+  .app-shell.mode-studio .studio-mission-node.is-pending,
+  .app-shell.mode-studio .studio-mission-node.is-planned {
+    --studio-mission-rail: var(--command-warn);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-error {
+    --studio-mission-rail: var(--command-risk);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok::before,
+  .app-shell.mode-studio .studio-mission-node.is-active::before {
+    background: var(--command-ok);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn::before,
+  .app-shell.mode-studio .studio-mission-node.is-partial::before,
+  .app-shell.mode-studio .studio-mission-node.is-pending::before,
+  .app-shell.mode-studio .studio-mission-node.is-planned::before {
+    background: var(--command-warn);
+  }
+
+  .app-shell.mode-studio .studio-mission-step {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    min-height: 22px;
+    place-items: center;
+    align-self: center;
+    border: 1px solid var(--command-edge);
+    border-radius: 2px;
+    background: #070a0e;
+    color: var(--section-accent);
+  }
+
+  .app-shell.mode-studio .mission-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-shell.mode-studio .studio-mission-main {
+    display: grid;
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-auto-flow: row;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong {
+    display: flex;
+    grid-column: 1;
+    grid-row: 1;
+    align-items: baseline;
+    gap: 7px;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--command-text);
+    font-size: 11.5px;
+    font-weight: 850;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-mission-main strong em {
+    flex: 0 0 auto;
+    min-width: 18px;
+    margin-right: 0;
+    color: var(--command-muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 850;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio .studio-mission-main small,
+  .app-shell.mode-studio .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-detail {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--command-muted);
+    font-size: 10.5px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-mission-main small {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+  }
+
+  .app-shell.mode-studio .studio-mission-detail {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    max-width: 100%;
+    color: var(--command-dim);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio .studio-mission-state {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
+    justify-self: end;
+    min-width: 38px;
+    padding: 3px 4px;
+    border: 1px solid var(--command-edge-strong);
+    border-radius: 2px;
+    background: #06080b;
+    color: var(--command-muted);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 850;
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-ok .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-ok) 46%, var(--command-edge-strong));
+    color: var(--command-ok);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-warn .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.is-partial .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-warn) 48%, var(--command-edge-strong));
+    color: var(--command-warn);
+  }
+
+  .app-shell.mode-studio .studio-mission-node.status-pending .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.status-planned .studio-mission-state,
+  .app-shell.mode-studio .studio-mission-node.status-unknown .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-dim) 54%, var(--command-edge-strong));
+    color: color-mix(in srgb, var(--command-muted) 80%, var(--command-dim));
+  }
+
+  .app-shell.mode-studio .studio-mission-node.is-error .studio-mission-state {
+    border-color: color-mix(in srgb, var(--command-risk) 52%, var(--command-edge-strong));
+    color: var(--command-risk);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border: 0;
+    background: var(--command-panel-low);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    grid-template-columns: 18px minmax(0, 1fr);
+    min-height: 44px;
+    padding: 7px 10px;
+    border: 0;
+    border-right: 1px solid var(--command-edge);
+    border-bottom: 1px solid var(--command-edge);
+    border-radius: 0;
+    background: var(--command-row);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    background: #111820;
+    box-shadow: inset 3px 0 0 var(--section-accent);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button small {
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button,
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    min-height: 40px;
+    align-items: center;
+    justify-content: start;
+    gap: 7px;
+    padding: 0 10px;
+    border: 0;
+    border-right: 1px solid var(--command-edge);
+    border-bottom: 1px solid var(--command-edge);
+    border-radius: 0;
+    background: var(--command-row);
+    color: var(--command-text);
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
+    background: #111820;
+    box-shadow: inset 3px 0 0 var(--section-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--command-edge-strong);
+    background: var(--command-panel-low);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .section-heading-row {
+    min-height: 36px;
+    margin: 0;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--command-edge);
+    background: var(--command-panel);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--command-panel-low);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
+    min-height: 40px;
+    padding: 0;
+    border: 0;
+    border-right: 1px solid var(--desk-edge);
+    border-bottom: 1px solid var(--desk-edge);
+    border-radius: 0;
+    background: var(--desk-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
+    display: grid;
+    grid-template-columns: 15px minmax(0, 1fr) 34px;
+    min-height: 40px;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 0 7px;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-icon {
+    width: 14px;
+    height: 14px;
+    color: color-mix(in srgb, var(--section-accent) 68%, var(--desk-muted));
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-label {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--desk-text);
+    font-size: 11.5px;
+    font-weight: 780;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-status,
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-hint {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state {
+    display: inline-grid;
+    min-width: 30px;
+    max-width: 34px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--desk-edge-strong);
+    border-radius: 2px;
+    background: #06080b;
+    color: var(--desk-dim);
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 850;
+    line-height: 1;
+    box-shadow: none;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-ok {
+    border-color: color-mix(in srgb, var(--desk-ok) 46%, var(--desk-edge-strong));
+    color: var(--desk-ok);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-warn {
+    border-color: color-mix(in srgb, var(--desk-warn) 48%, var(--desk-edge-strong));
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-error {
+    border-color: color-mix(in srgb, var(--desk-danger) 52%, var(--desk-edge-strong));
+    color: var(--desk-danger);
+  }
+}

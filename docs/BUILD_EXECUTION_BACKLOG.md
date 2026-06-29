@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS cross-file shadow prune
+
+Changed:
+
+- Extended `scripts/audit_css_duplication.cjs` so `pnpm qa:css -- --detail-overlaps` prints real cross-file overlap details and `pnpm fix:css` removes fully shadowed cross-file rules in import order, not only same-file duplicate/shadowed rules.
+- Split the active Studio shell/command-center CSS ownership into focused `src/styles/studio-shell-*` and `src/styles/studio-command-*` modules while removing the old monolithic `studio-shell-overrides.css` and `studio-command-center.css` imports.
+- Pruned fully shadowed cross-file CSS so the final audit reports zero fully shadowed cross-file rules.
+- Updated interface, roadmap, progress, and Studio issue docs with the current module ownership and CSS metrics.
+
+Evidence:
+
+- `pnpm test` passes: 73 files / 635 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large chunk warning.
+- `pnpm qa:css` passes: 2,626 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 168 repeated declaration groups, 135 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, 0 legacy `src/style.css` rules fully shadowed by later imports, and 0 cross-file rules fully shadowed by later imports.
+- `pnpm qa:smoke` passes in started-Vite mode with runtime desktop/mobile, Studio Workbench, Build, Modules, Stage, Assets, Evidence, Debug, source relink, IKEMEN scan, and BGCtrl Stage screenshots captured.
+- Visual QA inspected `runtime-desktop.png`, `runtime-mobile.png`, `studio-workbench.png`, `studio-workbench-tablet.png`, `studio-build.png`, `studio-assets.png`, `studio-evidence.png`, `studio-modules.png`, `studio-debug.png`, and `studio-stage.png`; no obvious broken panels, text overlap, or horizontal overflow appeared from the CSS split/prune.
+
+Claim allowed:
+
+- The audited Studio CSS import order has zero exact duplicate rules, zero same-file duplicate selector keys, zero `src/style.css` overlap, and zero fully shadowed cross-file rules.
+- Active Studio command/shell CSS has smaller ownership modules for shell, workstation/topbar/playfield/surface-system, command shell, mission/action pipeline, playfield frame, and console dock.
+- The visible Runtime and Studio surfaces remain smoke-green after the CSS split/prune.
+
+Claim blocked:
+
+- This is Studio/product-surface hygiene only. It does not add new Studio workflows, production editing/export behavior, runtime compatibility, IKEMEN behavior, or score movement.
+- Cross-file selector overlap and repeated declaration groups remain; the next CSS cleanup should extract shared chrome, ledger-row, status-cell, and command-action primitives rather than add more tail-end override modules.
+
 ## 2026-06-29 - Studio CSS module split and duplicate-selector prune
 
 Changed:

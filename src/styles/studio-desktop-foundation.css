@@ -1,5 +1,5 @@
 /* Studio desktop foundation.
-   Shared neutral tokens and compact atoms. Shell, stage, mission, and compact-tab layout live in studio-command-center.css. */
+   Shared neutral tokens and compact atoms. Shell, stage, mission, and compact-tab layout live in studio-shell-* and studio-command-* modules. */
 
 @media (min-width: 1161px) {
   .app-shell.mode-studio {

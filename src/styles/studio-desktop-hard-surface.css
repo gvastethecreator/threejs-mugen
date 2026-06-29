@@ -231,18 +231,6 @@
   text-overflow: clip;
 }
 
-.app-shell.mode-studio .studio-tab-section.is-compact .tab-state-ok {
-  color: color-mix(in srgb, var(--desk-ok, var(--ok)) 82%, var(--text));
-}
-
-.app-shell.mode-studio .studio-tab-section.is-compact .tab-state-warn {
-  color: color-mix(in srgb, var(--desk-warn, var(--warn)) 82%, var(--text));
-}
-
-.app-shell.mode-studio .studio-tab-section.is-compact .tab-state-error {
-  color: color-mix(in srgb, var(--desk-danger, var(--danger)) 84%, var(--text));
-}
-
 .app-shell.mode-studio .workbench-route-button {
     display: grid;
     grid-template-columns: 22px minmax(72px, 0.52fr) minmax(0, 1fr);

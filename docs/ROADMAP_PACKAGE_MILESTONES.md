@@ -47,9 +47,10 @@ Latest Studio/UI checkpoint:
 
 ```txt
 S1 Studio CSS module split and shadow prune
-  -> legacy/editor/hardening/runtime command-room/desktop authority CSS is split into smaller import-ordered modules after app-shell and before current focused Studio modules
-  -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector rules
-  -> pnpm qa:css reports 2,608 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 143 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> legacy/editor/hardening/runtime command-room/shell/command-center/desktop authority CSS is split into smaller import-ordered modules after app-shell and before current focused Studio modules
+  -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
+  -> active command shell ownership lives in src/styles/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
+  -> pnpm qa:css reports 2,626 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 168 repeated declaration groups, 135 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail
@@ -60,7 +61,7 @@ S1 Studio command chrome label/grid follow-up
   -> visual QA required because this is visible chrome; no new Studio workflow or score claim
 S1 Studio command-center CSS overlap prune
   -> command-center desktop overrides for chrome, compact tabs, stage, console, round HUD, and mission-node fragments pruned from legacy src/style.css
-  -> src/styles/studio-command-center.css owns Studio chrome, mission strip, viewport framing, HUD, toolbar, and console
+  -> active ownership now lives in split studio-command-shell/pipeline/playfield/console modules
   -> mission rows and compact Studio tabs expose textual status instead of color-only dots
   -> dead tab-dot CSS was pruned after the compact navigator switched to tab-state badges
   -> pnpm qa:css reports 2,622 rules, 115 duplicate selector keys / 264 instances, 0 exact duplicate rules, 40 cross-file overlaps, 16 selectors shared with src/style.css, 3 command-center selectors still shared with legacy src/style.css, and 0 legacy style.css rules fully shadowed by later imports

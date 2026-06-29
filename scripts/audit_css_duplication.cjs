@@ -5,9 +5,12 @@ const repoRoot = path.resolve(__dirname, "..");
 const args = process.argv.slice(2);
 const shouldFix = args.includes("--fix-exact");
 const shouldFixShadowed = args.includes("--fix-shadowed");
+const shouldFixCrossFileShadowed = args.includes("--fix-cross-file-shadowed");
 const shouldFixEmptyAtRules = args.includes("--fix-empty-at-rules");
 const shouldFixLegacyStyleShadowed = args.includes("--fix-legacy-style-shadowed");
 const shouldPrintOverlapDetails = args.includes("--detail-overlaps");
+const detailLimitArg = args.find((arg) => arg.startsWith("--detail-limit="));
+const detailLimit = Math.max(1, Number.parseInt(detailLimitArg?.slice("--detail-limit=".length) ?? "30", 10) || 30);
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
   .map((arg) => arg.slice("--prune-selector=".length))
@@ -424,6 +427,58 @@ function findCrossFileShadowedLegacyStyleRules(summaryMap, orderedFiles) {
   return removals;
 }
 
+function findCrossFileShadowedRules(summaryMap, orderedFiles) {
+  const removalsByFile = new Map();
+
+  for (let fileIndex = 0; fileIndex < orderedFiles.length; fileIndex += 1) {
+    const file = orderedFiles[fileIndex];
+    const summary = summaryMap.get(file);
+    if (!summary) {
+      continue;
+    }
+
+    for (const rule of summary.rules) {
+      const entries = rule.entries ?? [];
+      if (!entries.length) {
+        continue;
+      }
+
+      const selectorKey = selectorKeyForRule(rule);
+      const laterProperties = new Map();
+      for (const laterFile of orderedFiles.slice(fileIndex + 1)) {
+        const laterSummary = summaryMap.get(laterFile);
+        if (!laterSummary) {
+          continue;
+        }
+        for (const laterRule of laterSummary.rules) {
+          if (selectorKeyForRule(laterRule) !== selectorKey) {
+            continue;
+          }
+          for (const entry of laterRule.entries ?? []) {
+            if (!laterProperties.has(entry.property) || entry.important) {
+              laterProperties.set(entry.property, entry);
+            }
+          }
+        }
+      }
+
+      const fullyShadowed = entries.every((entry) => {
+        const later = laterProperties.get(entry.property);
+        if (!later) {
+          return false;
+        }
+        return entry.important ? later.important : true;
+      });
+
+      if (fullyShadowed) {
+        removalsByFile.set(file, [...(removalsByFile.get(file) ?? []), rule]);
+      }
+    }
+  }
+
+  return removalsByFile;
+}
+
 function removeEmptyAtRules(css) {
   const edits = [];
   let removed = 0;
@@ -536,6 +591,23 @@ if (shouldFixLegacyStyleShadowed) {
   }
 }
 
+if (shouldFixCrossFileShadowed) {
+  const current = new Map(files.map((file) => [file, summarize(file)]));
+  const removalsByFile = findCrossFileShadowedRules(current, files);
+  for (const [file, removals] of removalsByFile) {
+    if (!removals.length) {
+      continue;
+    }
+    const summary = current.get(file);
+    if (!summary) {
+      continue;
+    }
+    const nextCss = removeRanges(summary.css, removals);
+    fs.writeFileSync(file, normalizeLineEndings(nextCss, detectLineEnding(summary.css)));
+    console.log(`${fileSummaryLabel(file)}: removed ${removals.length} cross-file fully shadowed rules`);
+  }
+}
+
 let total = {
   rules: 0,
   uniqueSelectors: 0,
@@ -546,10 +618,15 @@ let total = {
   repeatedDeclarationKeys: 0,
 };
 
-const currentSummaries =
-  shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || shouldFixLegacyStyleShadowed || pruneSelectors.length
-    ? new Map(files.map((file) => [file, summarize(file)]))
-    : summaries;
+const didMutateCss =
+  shouldFix ||
+  shouldFixShadowed ||
+  shouldFixEmptyAtRules ||
+  shouldFixLegacyStyleShadowed ||
+  shouldFixCrossFileShadowed ||
+  pruneSelectors.length;
+
+const currentSummaries = didMutateCss ? new Map(files.map((file) => [file, summarize(file)])) : summaries;
 
 function selectorKeyForRule(rule) {
   return rule.context ? `${rule.context} || ${rule.selector}` : rule.selector;
@@ -595,6 +672,13 @@ function collectCrossFileOverlaps(summaryMap) {
   };
 }
 
+function formatOverlapEntry(selector, fileMap) {
+  const fileList = [...fileMap.entries()]
+    .map(([file, lines]) => `${fileSummaryLabel(file)}:${lines.slice(0, 3).join(",")}`)
+    .join(" | ");
+  return `  ${fileList} :: ${selector}`;
+}
+
 for (const [file, summary] of currentSummaries) {
   const rel = path.relative(repoRoot, file);
   console.log(`${rel}`);
@@ -618,16 +702,26 @@ console.log("cross-file overlap");
 console.log(`  duplicate selectors across files ${crossFileOverlaps.groups.length}`);
 console.log(`  selectors shared with src\\style.css ${crossFileOverlaps.legacyGroups.length}`);
 console.log(`  legacy src\\style.css rules fully shadowed by later CSS imports ${findCrossFileShadowedLegacyStyleRules(currentSummaries, files).length}`);
+console.log(
+  `  cross-file rules fully shadowed by later CSS imports ${[...findCrossFileShadowedRules(currentSummaries, files).values()].reduce(
+    (sum, removals) => sum + removals.length,
+    0,
+  )}`,
+);
 for (const [file, count] of crossFileOverlaps.legacyModuleCounts.slice(0, 8)) {
   console.log(`  ${fileSummaryLabel(file)} ${count}`);
 }
 
-if (shouldPrintOverlapDetails && crossFileOverlaps.legacyGroups.length) {
-  console.log("src\\style.css overlap details");
-  for (const [selector, fileMap] of crossFileOverlaps.legacyGroups.slice(0, 30)) {
-    const fileList = [...fileMap.entries()]
-      .map(([file, lines]) => `${fileSummaryLabel(file)}:${lines.slice(0, 3).join(",")}`)
-      .join(" | ");
-    console.log(`  ${fileList} :: ${selector}`);
+if (shouldPrintOverlapDetails) {
+  console.log(`cross-file overlap details first ${Math.min(detailLimit, crossFileOverlaps.groups.length)} of ${crossFileOverlaps.groups.length}`);
+  for (const [selector, fileMap] of crossFileOverlaps.groups.slice(0, detailLimit)) {
+    console.log(formatOverlapEntry(selector, fileMap));
+  }
+
+  if (crossFileOverlaps.legacyGroups.length) {
+    console.log(`src\\style.css overlap details first ${Math.min(detailLimit, crossFileOverlaps.legacyGroups.length)} of ${crossFileOverlaps.legacyGroups.length}`);
+    for (const [selector, fileMap] of crossFileOverlaps.legacyGroups.slice(0, detailLimit)) {
+      console.log(formatOverlapEntry(selector, fileMap));
+    }
   }
 }
