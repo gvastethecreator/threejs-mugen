@@ -27,6 +27,11 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
+S1 Studio trust-ledger CSS extraction
+  -> Build/Evidence right-rail ownership moved into src/styles/studio-trust-ledgers.css
+  -> qa:css reports 4,022 rules, 390 duplicate selector keys, and 0 exact duplicate rules
+  -> qa:smoke plus screenshots inspected studio-build, studio-evidence, and studio-evidence-world-delta
+  -> product-surface hygiene only; it does not change the next runtime/port slice
 S1 Studio chrome CSS containment
   -> duplicate desktop command-chrome correction block removed and merged into the main desktop command-desk block
   -> qa:smoke confirms Workbench desktop/tablet have no horizontal overflow and Build/Compile action remains executable
