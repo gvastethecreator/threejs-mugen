@@ -375,7 +375,10 @@
 }
 
 .workbench-directive strong,
-.workbench-directive small {
+.workbench-directive small,
+.workbench-route-button span,
+.workbench-route-button strong,
+.workbench-route-button small {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -420,13 +423,6 @@
 .workbench-route-button:focus-visible {
   border-color: color-mix(in srgb, var(--surface-accent) 48%, var(--panel-border));
   background: var(--surface-flat);
-}
-
-.workbench-route-button span,
-.workbench-route-button strong,
-.workbench-route-button small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .workbench-route-button span {

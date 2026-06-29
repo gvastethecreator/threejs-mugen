@@ -73,7 +73,36 @@
 
 .studio-command-head strong,
 .studio-command-decision strong,
-.studio-command-decision small {
+.studio-command-decision small,
+.workspace-next strong,
+.workspace-next small,
+.surface-jump-button span,
+.surface-jump-button strong,
+.surface-jump-button small,
+.operator-callout strong,
+.operator-callout small,
+.selection-summary strong,
+.selection-summary small,
+.asset-focus-panel strong,
+.asset-focus-panel small,
+.action-callout strong,
+.action-callout small,
+.record-route span,
+.state-controller-row-head strong,
+.state-controller-row-head small,
+.debug-selection-panel strong,
+.debug-selection-panel span,
+.debug-lens-meter strong,
+.debug-lens-meter small,
+.asset-graph-node strong,
+.asset-graph-node small,
+.compat-row span,
+.actor-tree-row strong,
+.actor-tree-row span,
+.log-line span,
+.empty-state span,
+.command-result-main strong,
+.command-result-main small {
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -401,12 +430,6 @@
   text-overflow: ellipsis;
   text-transform: none;
   white-space: nowrap;
-}
-
-.workspace-next strong,
-.workspace-next small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .workspace-next strong {
@@ -737,13 +760,6 @@
   background: var(--surface-flat);
 }
 
-.surface-jump-button span,
-.surface-jump-button strong,
-.surface-jump-button small {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .surface-jump-button span {
   color: var(--subtle);
   font-family: var(--mono);
@@ -830,14 +846,6 @@
 .selection-summary {
   border-color: var(--border);
   background: rgba(255, 255, 255, 0.026);
-}
-
-.operator-callout strong,
-.operator-callout small,
-.selection-summary strong,
-.selection-summary small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .operator-callout strong,
@@ -934,14 +942,6 @@
 .asset-focus-panel.compact {
   border-color: var(--border);
   background: var(--surface-flat);
-}
-
-.asset-focus-panel strong,
-.action-callout strong,
-.asset-focus-panel small,
-.action-callout small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .asset-focus-panel strong,
@@ -1146,7 +1146,20 @@ button.studio-primary-next {
 .runtime-versus-card strong,
 .runtime-versus-card small,
 .runtime-metric-strip b,
-.runtime-metric-strip small {
+.runtime-metric-strip small,
+.debug-filter-button strong,
+.debug-filter-button small,
+.debug-actor-main strong,
+.debug-actor-main small,
+.trace-frame-button strong,
+.trace-frame-button span,
+.timeline-frame strong,
+.timeline-frame span,
+.timeline-frame small,
+.module-node strong,
+.module-node span,
+.fighter-bar-top strong,
+.fighter-bar-top span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1995,11 +2008,6 @@ button.list-item:hover {
   text-transform: none;
 }
 
-.record-route span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .record-evidence {
   margin-top: 3px;
 }
@@ -2315,12 +2323,6 @@ button.controller-chip {
   gap: 2px;
 }
 
-.state-controller-row-head strong,
-.state-controller-row-head small {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .state-controller-row-head strong {
   color: var(--text);
 }
@@ -2566,12 +2568,6 @@ button.controller-chip {
   box-shadow: var(--shadow-inset);
 }
 
-.debug-selection-panel strong,
-.debug-selection-panel span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .debug-filter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
@@ -2611,14 +2607,6 @@ button.controller-chip {
   display: grid;
   min-width: 0;
   gap: 3px;
-}
-
-.debug-filter-button strong,
-.debug-filter-button small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .debug-filter-button strong {
@@ -2679,12 +2667,6 @@ button.controller-chip {
   border-radius: 5px;
   background: color-mix(in srgb, var(--surface) 88%, #000);
   box-shadow: var(--shadow-inset);
-}
-
-.debug-lens-meter strong,
-.debug-lens-meter small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .debug-lens-meter strong {
@@ -2780,14 +2762,6 @@ button.controller-chip {
   display: grid;
   min-width: 0;
   gap: 2px;
-}
-
-.debug-actor-main strong,
-.debug-actor-main small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .debug-actor-main small {
@@ -2977,14 +2951,6 @@ button.controller-chip {
   text-align: left;
 }
 
-.trace-frame-button strong,
-.trace-frame-button span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .trace-frame-button strong {
   color: var(--text);
   font-family: var(--mono);
@@ -3131,12 +3097,6 @@ button.controller-chip {
   border-color: rgba(240, 93, 94, 0.42);
 }
 
-.asset-graph-node strong,
-.asset-graph-node small {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .asset-graph-node > .badge {
   justify-self: start;
 }
@@ -3189,15 +3149,6 @@ button.controller-chip {
   background: color-mix(in srgb, var(--surface-accent) 12%, #101217);
 }
 
-.timeline-frame strong,
-.timeline-frame span,
-.timeline-frame small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .timeline-frame strong {
   color: var(--text);
   font-family: var(--mono);
@@ -3237,14 +3188,6 @@ button.controller-chip {
 
 .module-node .badge {
   justify-self: start;
-}
-
-.module-node strong,
-.module-node span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .module-node strong {
@@ -3317,14 +3260,6 @@ button.controller-chip {
   justify-content: space-between;
   gap: 8px;
   color: var(--text);
-}
-
-.fighter-bar-top strong,
-.fighter-bar-top span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .meter {
@@ -3484,11 +3419,6 @@ button.controller-chip {
   font-size: 12px;
 }
 
-.compat-row span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .compat-row .badge {
   min-width: max-content;
 }
@@ -3507,12 +3437,6 @@ button.controller-chip {
   border: 1px solid var(--panel-border);
   border-radius: 5px;
   background: color-mix(in srgb, var(--row-bg) 82%, #000);
-}
-
-.actor-tree-row strong,
-.actor-tree-row span {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .actor-tree-links {
@@ -3607,11 +3531,6 @@ button.controller-chip {
   border-bottom: 1px solid rgba(255, 255, 255, 0.045);
 }
 
-.log-line span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-
 .log-level-error {
   color: var(--danger);
 }
@@ -3645,11 +3564,6 @@ button.controller-chip {
 
 .empty-state strong {
   color: var(--text);
-}
-
-.empty-state span {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .empty-state button {
@@ -3825,12 +3739,6 @@ button.controller-chip {
   display: grid;
   min-width: 0;
   gap: 2px;
-}
-
-.command-result-main strong,
-.command-result-main small {
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 
 .command-result-main strong {

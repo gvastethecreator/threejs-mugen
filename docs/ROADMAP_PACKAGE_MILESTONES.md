@@ -50,9 +50,9 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,656 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 172 repeated declaration groups, 125 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,656 rules, 172 repeated declaration groups, 125 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
-  -> latest narrow cleanup removed five redundant responsive rules from studio-legacy-shell-refresh.css and keeps the broader 125 cross-file overlaps queued for shared primitive extraction
+  -> pnpm qa:css reports 2,618 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 164 repeated declaration groups, 125 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,618 rules, 164 repeated declaration groups, 125 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> latest narrow cleanup groups legacy Studio truncation/text-wrap rows and removed five redundant responsive rules from studio-legacy-shell-refresh.css; the broader 125 cross-file overlaps stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail

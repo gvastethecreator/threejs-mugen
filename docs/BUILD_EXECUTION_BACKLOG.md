@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio text CSS atom cleanup
+
+Changed:
+
+- Grouped repeated Studio text-wrap safeguards in `src/styles/legacy/studio-legacy-surfaces.css` for command decisions, workspace next actions, surface jump buttons, operator/action callouts, trace rows, debug rows, asset graph rows, compatibility rows, actor tree rows, log rows, empty states, and command result rows.
+- Grouped repeated one-line truncation rows in `src/styles/legacy/studio-legacy-surfaces.css` for debug filters, debug actor rows, trace frame buttons, timeline frames, module nodes, and fighter bars.
+- Grouped repeated workbench directive/route text-wrap declarations in `src/styles/legacy/studio-legacy-layout-refresh.css`.
+- Tightened `pnpm qa:css:budget` from 2,639 to 2,618 max rules and from 167 to 164 repeated declaration groups; the cross-file overlap ceiling remains 125.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,618 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 164 repeated declaration groups, 125 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm qa:smoke` passes; visual inspection covered Studio Workbench desktop/tablet, Studio Build, Studio Evidence, Studio Assets, Studio Debug, Runtime desktop/mobile, Studio source-package relink, Studio Stage, and BGCtrl Lab captures with no obvious text-wrap, truncation, horizontal overflow, or viewport regression.
+
+Claim allowed:
+
+- CSS duplication is not high in the exact-duplicate sense: same-file duplicate selectors, exact duplicate rules, and fully shadowed cross-file rules remain zero. The current useful CSS debt is repeated declarations and cross-file cascade overlap; this pass reduces the repeated declaration/rule budget through grouped text primitives.
+
+Claim blocked:
+
+- This does not finish CSS optimization. The remaining 125 cross-file overlaps still need owner-by-surface migration, and broader grid reset / border reset / chrome primitive extraction remains future work. No runtime compatibility, editor workflow, or score movement is claimed.
+
 ## 2026-06-29 - Studio status CSS primitive cleanup
 
 Changed:
