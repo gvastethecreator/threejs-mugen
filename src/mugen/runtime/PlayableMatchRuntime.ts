@@ -66,11 +66,11 @@ import {
   type RuntimeAngleSpriteEffectOp,
 } from "./SpriteEffectSystem";
 import {
-  createRuntimeTargetBinding,
   RuntimeTargetWorld,
   resolveRuntimeTargetBindingPosition,
   type RuntimeTarget,
   type RuntimeTargetBinding,
+  type RuntimeTargetPostype,
 } from "./TargetSystem";
 import { trainingStage } from "./demoStage";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -1446,21 +1446,14 @@ function applyBindToTargetController(
   controller: MugenStateController,
   operation?: BindToTargetControllerOp,
 ): void {
-  const requestedId = operation?.requestedId ?? firstNumber(findParam(controller, "id")) ?? -1;
-  const target = fighter.targetWorld.find(fighter, opponent.id, requestedId);
-  if (!target) {
-    return;
-  }
-  const bindParams = operation ? { pos: operation.pos, postype: operation.postype } : bindToTargetParams(controller);
-  const offset = bindToTargetOffset(opponent, bindParams);
-  fighter.bindToTarget = createRuntimeTargetBinding({
-    actorId: opponent.id,
-    targetId: target.targetId,
-    remaining: operation?.time ?? firstNumber(findParam(controller, "time")) ?? 1,
-    offset,
+  fighter.targetWorld.applyBindToTargetController({
+    actor: fighter,
+    candidateTargets: [opponent],
+    controller,
+    operation,
+    targetAnchor: bindToTargetAnchor,
+    onOperation: (executedOperation) => recordControllerOperation(fighter, executedOperation),
   });
-  recordControllerOperation(fighter, operation ?? { kind: "bindtotarget", requestedId, pos: bindParams.pos, postype: bindParams.postype, time: fighter.bindToTarget.remaining });
-  applyBindToTarget(fighter, opponent);
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
@@ -1492,28 +1485,7 @@ function applyBindToTarget(fighter: FighterMatchState, opponent: FighterMatchSta
   fighter.runtime.pos = resolveRuntimeTargetBindingPosition(opponent.runtime.pos, opponent.runtime.facing, binding);
 }
 
-function bindToTargetParams(controller: MugenStateController): { pos: [number, number]; postype: "foot" | "mid" | "head" } {
-  const raw = findParam(controller, "pos");
-  if (!raw) {
-    return { pos: [0, 0], postype: "foot" };
-  }
-  const parts = raw.split(",").map((part) => part.trim());
-  const pair = numberPair(raw) ?? [0, 0];
-  return {
-    pos: [pair[0], pair[1] ?? 0],
-    postype: normalizeBindToTargetPostype(parts[2]),
-  };
-}
-
-function bindToTargetOffset(target: FighterMatchState, params: { pos: [number, number]; postype: "foot" | "mid" | "head" }): { x: number; y: number } {
-  const anchor = bindToTargetAnchor(target, params.postype);
-  return {
-    x: anchor.x + params.pos[0],
-    y: anchor.y + params.pos[1],
-  };
-}
-
-function bindToTargetAnchor(target: FighterMatchState, postype: "foot" | "mid" | "head"): { x: number; y: number } {
+function bindToTargetAnchor(target: FighterMatchState, postype: RuntimeTargetPostype): { x: number; y: number } {
   if (postype === "foot") {
     return { x: 0, y: 0 };
   }
@@ -1522,11 +1494,6 @@ function bindToTargetAnchor(target: FighterMatchState, postype: "foot" | "mid" |
     x: runtimeConst(target.definition, `${key}.x`) ?? runtimeConst(target.definition, key) ?? 0,
     y: runtimeConst(target.definition, `${key}.y`) ?? 0,
   };
-}
-
-function normalizeBindToTargetPostype(value: string | undefined): "foot" | "mid" | "head" {
-  const normalized = value?.replace(/^"|"$/g, "").trim().toLowerCase();
-  return normalized === "mid" || normalized === "head" ? normalized : "foot";
 }
 
 function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {

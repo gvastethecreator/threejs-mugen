@@ -1,6 +1,6 @@
 # Port Completion Scorecard
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
@@ -59,7 +59,7 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
-Latest ownership checkpoint: `RuntimeRecoverySystem` now owns bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing hooks consumed by `PlayableMatchRuntime`. `HitSparkAssetSystem` remains the bounded player/common/FightFX spark lookup checkpoint, `RuntimeRandomSystem` remains the deterministic random checkpoint, and `RuntimeContactMemoryWorld` remains the contact-memory checkpoint. These are ownership cleanups only, not new parity or score movement.
+Latest ownership checkpoint: `RuntimeTargetWorld.applyBindToTargetController` now owns bounded `BindToTarget` target lookup, postype/offset binding, duration, facing-aware position application, and operation reporting consumed by `PlayableMatchRuntime`. `RuntimeRecoverySystem`, `HitSparkAssetSystem`, `RuntimeRandomSystem`, and `RuntimeContactMemoryWorld` remain earlier ownership checkpoints. These are ownership cleanups only, not new parity or score movement.
 
 Latest trace aggregate: `pnpm qa:trace` passes 156/156 artifacts, with 138 required and 18 optional local-fixture artifacts. The latest required runtime oracle is `synthetic-imported-variable.json` checksum `3b33f7a8`, proving bounded imported `VarRandom` executes as typed `variable:varrandom` next to `VarSet`, `VarAdd`, and `VarRangeSet` and can drive an owner-local `var(...)` branch; exact MUGEN random stream parity and helper/parent/root variable scopes remain blocked.
 

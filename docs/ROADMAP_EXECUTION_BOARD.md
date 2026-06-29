@@ -1,6 +1,6 @@
 # Roadmap Execution Board
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
@@ -30,7 +30,7 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
-Latest implementation checkpoint: `RuntimeRecoverySystem` owns bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing previously inline in `PlayableMatchRuntime`; `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional. `HitSparkAssetSystem` remains the presentation ownership checkpoint and `RuntimeRandomSystem` remains the deterministic random ownership checkpoint with required `synthetic-imported-variable.json` checksum `3b33f7a8`. This is R2 recovery ownership cleanup, not exact Common1 recovery thresholds, controller-loop parity, FightFX/common presentation parity, exact MUGEN random stream, helper/parent/root variable scope, or VM parity.
+Latest implementation checkpoint: `RuntimeTargetWorld.applyBindToTargetController` owns bounded `BindToTarget` target lookup, postype/offset binding, and facing-aware position application previously inline in `PlayableMatchRuntime`. `RuntimeRecoverySystem` remains the recovery ownership checkpoint; `HitSparkAssetSystem` remains the presentation ownership checkpoint; `RuntimeRandomSystem` remains the deterministic random ownership checkpoint with required `synthetic-imported-variable.json` checksum `3b33f7a8`. This is R2 target ownership cleanup, not exact bind tick order, multi-target/team ownership, helper/parent/root redirects, exact Common1 recovery thresholds, FightFX/common presentation parity, exact MUGEN random stream, or VM parity.
 
 ## Operating Snapshot
 
@@ -133,6 +133,7 @@ Build next:
 - Current proof: `RuntimeRandomSystem` now owns deterministic sandbox-side random seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` unit derivation consumed by `PlayableMatchRuntime` and `StateControllerExecutor`, with focused system coverage and stable `synthetic-imported-variable.json` checksum `3b33f7a8`.
 - Current proof: `HitSparkAssetSystem` now owns bounded player/common/FightFX HitDef spark asset-frame resolution consumed by `PlayableMatchRuntime` before `RuntimeHitEffectWorld` event insertion, with focused system coverage and unchanged renderer behavior expected.
 - Current proof: `RuntimeRecoverySystem` now owns bounded `fall.recovertime` countdown, Common1 liedown recovery countdown/defaulting, and imported `5201 -> 52` ground-recovery landing hooks consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
+- Current proof: `RuntimeTargetWorld.applyBindToTargetController` now owns bounded `BindToTarget` lookup, raw/typed postype parsing, duration binding, facing-aware position application, and operation reporting; `PlayableMatchRuntime` only supplies target size anchors and evidence callbacks.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: deeper helper/projectile/explod VM lifecycle, combat/effect ordering, target links, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 

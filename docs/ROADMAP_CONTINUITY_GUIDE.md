@@ -1,6 +1,6 @@
 # Roadmap Continuity Guide
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This guide exists so the project can keep moving without losing the thread. It does not replace the scorecard, execution board, or workplan. It explains how to continue the port in a way that produces usable software instead of scattered experiments.
 
@@ -55,7 +55,7 @@ Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack pari
 
 The compact package ladder lives in `docs/ROADMAP_PACKAGE_MILESTONES.md`; the tactical next-10-slices queue lives in `docs/NEXT_BUILD_ROADMAP.md`. After docs/setup work, return to both before choosing code.
 
-Latest closed implementation checkpoint: `RuntimeRecoverySystem` owns bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing hooks previously inline in `PlayableMatchRuntime`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, or `RuntimeRecoverySystem` as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
+Latest closed implementation checkpoint: `RuntimeTargetWorld.applyBindToTargetController` owns bounded `BindToTarget` target lookup, postype/offset binding, duration, facing-aware position application, and operation reporting previously inline in `PlayableMatchRuntime`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, or `BindToTarget` target-system ownership as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam.
 
 ## Next Useful Studio Gates
 

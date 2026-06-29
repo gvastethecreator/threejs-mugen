@@ -1,6 +1,6 @@
 # Roadmap Package Milestones
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -43,6 +43,10 @@ R2 RuntimeRecoverySystem ownership extraction
   -> fall.recovertime, Common1 liedown recovery, and imported ground-recovery landing moved out of PlayableMatchRuntime
   -> focused RuntimeRecoverySystem tests cover timer/default/transition behavior
   -> behavior unchanged; no new parity or score claim
+R2 BindToTarget target-system ownership extraction
+  -> target lookup, postype/offset binding, duration, position application, and op reporting moved into RuntimeTargetWorld
+  -> focused TargetSystem tests cover raw Head anchors, typed ops, and miss/no-mutation behavior
+  -> behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -77,6 +81,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeRandomSystem` deterministic random ownership extraction
 - `HitSparkAssetSystem` player/common/FightFX spark asset-frame lookup extraction
 - `RuntimeRecoverySystem` fall/down-recovery ownership extraction
+- `BindToTarget` target-system ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

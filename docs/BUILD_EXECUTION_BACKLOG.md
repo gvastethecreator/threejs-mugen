@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - BindToTarget target-system ownership extraction
+
+Changed:
+
+- Moved `BindToTarget` target lookup, raw `pos/postype` parsing, duration binding, facing-aware position application, and operation reporting into `RuntimeTargetWorld.applyBindToTargetController`.
+- Kept `PlayableMatchRuntime` responsible only for the MUGEN `[Size]` anchor callback and controller evidence recording.
+- Added focused `TargetSystem` tests for raw `BindToTarget` with `Head` postype anchors, typed `BindToTarget` operation application, and miss/no-mutation behavior.
+
+Evidence:
+
+- `pnpm test` passes: 63 files, 584 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-variable.json` remains checksum `3b33f7a8`, `synthetic-imported-bindtotarget-head.json` remains `474deaa2`, and `synthetic-imported-bindtotarget-mid.json` remains `c65ebf56`.
+- `pnpm qa:smoke` not required for this ownership cut because it does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded `BindToTarget` controller mutation now has a named target-system boundary consumed by the match loop.
+
+Claim blocked:
+
+- Exact bind tick order, multi-target/team ownership, helper/parent/root redirects, advanced postype behavior, custom-state breadth, and full MUGEN/IKEMEN target/bind parity remain unsupported.
+
 ## 2026-06-28 - RuntimeRecoverySystem ownership extraction
 
 Changed:

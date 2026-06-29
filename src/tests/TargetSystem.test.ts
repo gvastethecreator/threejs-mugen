@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   addRuntimeTargetBinding,
   advanceRuntimeTargetMemory,
+  applyRuntimeBindToTargetController,
   applyRuntimeTargetController,
   clampRuntimeTargetDuration,
   createRuntimeTargetBinding,
@@ -332,6 +333,60 @@ describe("TargetSystem", () => {
     expect(actor.targets).toEqual([{ actorId: "helper", targetId: 88, age: 0 }]);
     expect(actor.targetBindings).toEqual([binding({ actorId: "helper", targetId: 88 })]);
     expect(actor.runtime.targetCount).toBe(1);
+  });
+
+  it("applies raw BindToTarget through target memory, postype anchors, and facing-aware binding position", () => {
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
+    });
+    const target = targetActor("p2", {
+      runtime: { pos: { x: 100, y: -20 }, facing: -1 },
+    });
+    const operations: string[] = [];
+
+    const result = applyRuntimeBindToTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("BindToTarget", { id: "77", pos: "12,-8,Head", time: "5" }),
+      targetAnchor: (_target, postype) => (postype === "head" ? { x: 6, y: -70 } : { x: 0, y: 0 }),
+      onOperation: (operation) => operations.push(`${operation.kind}:${operation.postype}:${operation.time}`),
+    });
+
+    expect(result).toEqual({ controllerType: "bindtotarget", matchedTargets: 1, operationExecuted: true });
+    expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 5, offset: { x: 18, y: -78 } });
+    expect(actor.runtime.pos).toEqual({ x: 82, y: -98 });
+    expect(operations).toEqual(["bindtotarget:head:5"]);
+  });
+
+  it("applies typed BindToTarget ops and reports misses without mutation", () => {
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
+    });
+    const target = targetActor("p2", {
+      runtime: { pos: { x: 20, y: 10 }, facing: 1 },
+    });
+
+    applyRuntimeBindToTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("BindToTarget", {}),
+      operation: { kind: "bindtotarget", requestedId: 77, pos: [4, -6], postype: "foot", time: 3 },
+    });
+
+    expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 3, offset: { x: 4, y: -6 } });
+    expect(actor.runtime.pos).toEqual({ x: 24, y: 4 });
+
+    const before = actor.bindToTarget;
+    const result = applyRuntimeBindToTargetController({
+      actor,
+      candidateTargets: [target],
+      controller: controller("BindToTarget", {}),
+      operation: { kind: "bindtotarget", requestedId: 88, pos: [40, -60], postype: "foot", time: 1 },
+    });
+
+    expect(result).toEqual({ controllerType: "bindtotarget", matchedTargets: 0, operationExecuted: false });
+    expect(actor.bindToTarget).toBe(before);
+    expect(actor.runtime.pos).toEqual({ x: 24, y: 4 });
   });
 });
 

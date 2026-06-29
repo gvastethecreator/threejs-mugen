@@ -1,6 +1,6 @@
 # Next Build Roadmap
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -24,9 +24,13 @@ R2 RuntimeRecoverySystem ownership extraction
   -> hit fall recovery timers, Common1 liedown recovery, and imported ground-recovery landing moved out of PlayableMatchRuntime
   -> focused RuntimeRecoverySystem tests cover countdown, default liedown time, and state-transition hooks
   -> proves named recovery ownership only
+R2 BindToTarget target-system ownership extraction
+  -> target lookup, raw postype parsing, duration binding, and facing-aware position application moved into RuntimeTargetWorld
+  -> focused TargetSystem tests cover raw Head anchors, typed ops, and miss/no-mutation behavior
+  -> proves named target-binding ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, or `RuntimeRecoverySystem` as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, or `BindToTarget` target-system ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -67,8 +71,8 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, and `RuntimeRecoverySystem` stable after ownership extraction.
-2. Deepen target/helper/effect ownership after current contact/recovery ownership cuts.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, and `BindToTarget` target-system ownership stable after extraction.
+2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.
 

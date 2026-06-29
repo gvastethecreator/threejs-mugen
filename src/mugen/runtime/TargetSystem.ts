@@ -1,4 +1,4 @@
-import type { TargetControllerOp } from "../compiler/ControllerOps";
+import type { BindToTargetControllerOp, TargetControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
@@ -15,6 +15,8 @@ export type RuntimeTargetBinding = {
   remaining: number;
   offset: { x: number; y: number };
 };
+
+export type RuntimeTargetPostype = "foot" | "mid" | "head";
 
 export type RuntimeTargetMemory = {
   targets: RuntimeTarget[];
@@ -65,6 +67,15 @@ export type RuntimeTargetControllerOptions<TActor extends RuntimeTargetControlle
   enterTargetState?: (target: TActor, stateId: number) => void;
 };
 
+export type RuntimeBindToTargetControllerOptions<TActor extends RuntimeTargetWorldActor> = {
+  actor: TActor;
+  candidateTargets: TActor[];
+  controller: MugenStateController;
+  operation?: BindToTargetControllerOp;
+  onOperation?: (operation: BindToTargetControllerOp) => void;
+  targetAnchor?: (target: TActor, postype: RuntimeTargetPostype) => { x: number; y: number };
+};
+
 export type RuntimeTargetControllerResult = {
   controllerType: string;
   matchedTargets: number;
@@ -109,6 +120,12 @@ export class RuntimeTargetWorld {
     options: RuntimeTargetControllerOptions<TActor>,
   ): RuntimeTargetControllerResult {
     return applyRuntimeTargetController(options);
+  }
+
+  applyBindToTargetController<TActor extends RuntimeTargetWorldActor>(
+    options: RuntimeBindToTargetControllerOptions<TActor>,
+  ): RuntimeTargetControllerResult {
+    return applyRuntimeBindToTargetController(options);
   }
 }
 
@@ -211,6 +228,42 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
   }
 
   return { controllerType: type, matchedTargets: targets.length, operationExecuted: Boolean(options.operation) };
+}
+
+export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetWorldActor>(
+  options: RuntimeBindToTargetControllerOptions<TActor>,
+): RuntimeTargetControllerResult {
+  const requestedId = options.operation?.requestedId ?? firstNumber(findControllerParam(options.controller, "id")) ?? -1;
+  const target = options.candidateTargets.find((candidate) => hasRuntimeTarget(options.actor.targets, candidate.id, requestedId));
+  if (!target) {
+    return { controllerType: "bindtotarget", matchedTargets: 0, operationExecuted: false };
+  }
+
+  const memoryTarget = options.actor.targets.find((candidate) => candidate.actorId === target.id && matchesRuntimeTargetId(candidate, requestedId));
+  const bindParams = options.operation ? { pos: options.operation.pos, postype: options.operation.postype } : bindToTargetParams(options.controller);
+  const anchor = options.targetAnchor?.(target, bindParams.postype) ?? { x: 0, y: 0 };
+  const offset = {
+    x: anchor.x + bindParams.pos[0],
+    y: anchor.y + bindParams.pos[1],
+  };
+  const remaining = options.operation?.time ?? firstNumber(findControllerParam(options.controller, "time")) ?? 1;
+  options.actor.bindToTarget = createRuntimeTargetBinding({
+    actorId: target.id,
+    targetId: memoryTarget?.targetId,
+    remaining,
+    offset,
+  });
+  options.actor.runtime.pos = resolveRuntimeTargetBindingPosition(target.runtime.pos, target.runtime.facing, options.actor.bindToTarget);
+  options.onOperation?.(
+    options.operation ?? {
+      kind: "bindtotarget",
+      requestedId,
+      pos: bindParams.pos,
+      postype: bindParams.postype,
+      time: options.actor.bindToTarget.remaining,
+    },
+  );
+  return { controllerType: "bindtotarget", matchedTargets: 1, operationExecuted: true };
 }
 
 export function rememberRuntimeTarget(
@@ -443,4 +496,36 @@ function numberPair(value: string | undefined): [number, number] | undefined {
   const x = Number(xRaw?.trim());
   const y = Number(yRaw?.trim());
   return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : undefined;
+}
+
+function bindToTargetParams(controller: MugenStateController): { pos: [number, number]; postype: RuntimeTargetPostype } {
+  const raw = findControllerParam(controller, "pos");
+  if (!raw) {
+    return { pos: [0, 0], postype: "foot" };
+  }
+  const parts = raw.split(",").map((part) => part.trim());
+  const pair = bindToTargetNumberPair(raw) ?? [0, 0];
+  return {
+    pos: [pair[0], pair[1] ?? 0],
+    postype: normalizeRuntimeTargetPostype(parts[2]),
+  };
+}
+
+function normalizeRuntimeTargetPostype(value: string | undefined): RuntimeTargetPostype {
+  const normalized = value?.replace(/^"|"$/g, "").trim().toLowerCase();
+  return normalized === "mid" || normalized === "head" ? normalized : "foot";
+}
+
+function bindToTargetNumberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value
+    .split(",")
+    .map((part) => Number(part.trim()))
+    .filter((numberValue) => Number.isFinite(numberValue));
+  if (numbers.length === 0 || numbers[0] === undefined) {
+    return undefined;
+  }
+  return [numbers[0], numbers[1] ?? numbers[0]];
 }

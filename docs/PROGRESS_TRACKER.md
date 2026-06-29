@@ -1,6 +1,6 @@
 # Progress Tracker
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This document is the compact truth board for progress. It does not replace detailed docs; it points to the evidence that keeps claims honest.
 
@@ -39,7 +39,7 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 Docs/setup work alone does not change scores. The current guard trace-strengthening cuts also keep score bands unchanged because they tighten existing required evidence without broadening runtime parity claims.
 
-Latest implementation checkpoint: `RuntimeRecoverySystem` owns bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing hooks before `PlayableMatchRuntime` requests state transitions. `HitSparkAssetSystem` remains the presentation ownership checkpoint and `RuntimeRandomSystem` remains the deterministic random ownership checkpoint. This is ownership cleanup and does not prove exact Common1 recovery thresholds, controller-loop parity, FightFX/common presentation parity, exact MUGEN random stream, helper/parent/root variable scope, or move the score band.
+Latest implementation checkpoint: `RuntimeTargetWorld.applyBindToTargetController` owns bounded `BindToTarget` lookup, postype/offset binding, duration, position application, and operation reporting before `PlayableMatchRuntime` supplies size anchors and evidence callbacks. This is ownership cleanup and does not prove exact bind tick order, multi-target/team ownership, helper/parent/root redirects, full target parity, or move the score band.
 
 ## Immediate Execution Order
 
@@ -58,7 +58,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
-| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest aggregate: 156/156 artifacts passed, 138 required and 18 optional. Latest required oracle: `synthetic-imported-variable.json` checksum `3b33f7a8` accepts typed `variable:varrandom` in the imported variable route; previous `synthetic-imported-noop.json` checksum `a5fe169e` still accepts `Null`, `ForceFeedback`, debug clipboard controllers, and deprecated `MakeDust` as telemetry-visible no-ops. Latest ownership proof: `RuntimeRecoverySystem` owns bounded recovery timer/default/landing hooks, `HitSparkAssetSystem` owns player/common/FightFX spark asset-frame lookup, `RuntimeRandomSystem` owns deterministic random seed/advance/clamp/fallback behavior, and `RuntimeContactMemoryWorld` owns bounded contact-memory mutation/readback for direct/projectile contact triggers. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, exact random stream parity, full guard/fall/recovery semantics and exact FightFX/sound timing/layering/scale/palette. |
+| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest aggregate: 156/156 artifacts passed, 138 required and 18 optional. Latest required oracle: `synthetic-imported-variable.json` checksum `3b33f7a8` accepts typed `variable:varrandom` in the imported variable route; previous `synthetic-imported-noop.json` checksum `a5fe169e` still accepts `Null`, `ForceFeedback`, debug clipboard controllers, and deprecated `MakeDust` as telemetry-visible no-ops. Latest ownership proof: `RuntimeTargetWorld.applyBindToTargetController` owns bounded BindToTarget mutation, `RuntimeRecoverySystem` owns bounded recovery timer/default/landing hooks, `HitSparkAssetSystem` owns player/common/FightFX spark asset-frame lookup, `RuntimeRandomSystem` owns deterministic random seed/advance/clamp/fallback behavior, and `RuntimeContactMemoryWorld` owns bounded contact-memory mutation/readback for direct/projectile contact triggers. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, exact random stream parity, full target/bind semantics, full guard/fall/recovery semantics, and exact FightFX/sound timing/layering/scale/palette. |
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks, including active desktop/mobile diagnostics for `HitSparkRenderer` resolving `S`-prefixed player AIR spark frames into sprites when available, plus bounded common/FightFX system lookup-frame, first-pass `fight.def`/FightFX AIR/SFF loading, decoded system-SFF provider registration, package-frame handoff coverage, and 180-frame fallback geometry when AIR/sprite lookup fails. | Pixel-perfect MUGEN render parity, exact FightFX/common layering/timing/scale/palette, full spark animation timing, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
@@ -71,7 +71,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 0. **Common1/FightFX precision**
    - Current selected next runtime cut: move beyond summarized guard/fall/recovery or FightFX/common presentation evidence into a narrower trace, fixture, or visible package proof.
    - Done when focused trace or fixture evidence names the exact route and blocked claims stay explicit.
-   - This should not reselect `VarRandom`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `MakeDust`, target-owned custom-state, or already-closed guard/auto-guard evidence.
+   - This should not reselect `VarRandom`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, `MakeDust`, target-owned custom-state, or already-closed guard/auto-guard evidence.
 
 1. **MatchWorld ownership**
    - Move more lifecycle/combat/pause/target behavior behind named systems.
@@ -132,7 +132,7 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 | Package | Linked issue | Next proof |
 | --- | --- | --- |
 | R1 KFM/Common1 recovery precision | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Next proof should move beyond synthetic threshold, optional ordered KFM threshold oracle, summarized actor-frame tick order, bounded named controller/operation order, synthetic auto guard-start/end controller-order evidence, synthetic guard-hit actor-frame telemetry, bounded air/ground velocity telemetry, target-owned custom-state ownership, optional KFM auto guard-start/end order, optional KFM guard-hit frame physics, required hit/guard sound plus hit/guard spark telemetry, smoke-gated player AIR, first-pass FightFX/common loading/provider handoff, and bounded common/FightFX system/package-frame spark metadata into deeper VM loop order, exact FightFX/common binding/layering/timing/scale/palette, or broader Common1 parity. |
-| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/sprite-effect/actor-constraint/direct-combat/direct-priority/hitoverride/reversal/projectile-combat/effect-spawn/effect-lifecycle/contact/random/spark/recovery ownership; next proof should target helper VM boundaries, combat/effect ordering, deeper presentation semantics, target ownership, or exact checksum-stable ownership. |
+| R2 MatchWorld ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` | Continue after round/target/pause/env-shake/audio/envcolor/sprite-effect/actor-constraint/direct-combat/direct-priority/hitoverride/reversal/projectile-combat/effect-spawn/effect-lifecycle/contact/random/spark/recovery/BindToTarget ownership; next proof should target helper VM boundaries, combat/effect ordering, deeper presentation semantics, broader target ownership, or exact checksum-stable ownership. |
 | S1 Studio Evidence/Build trust | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` | Shared status contract plus visual QA. |
 | A1 Generated asset provenance/QA | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` | Prompt/source/atlas/QA/collision/playtest record with failing motion/scale states visible. |
 | I1 IKEMEN scanner/reference | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` | Scanner-only findings backed by tests and docs. |
