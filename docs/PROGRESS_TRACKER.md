@@ -15,6 +15,7 @@ Use these files together:
 | `docs/ROADMAP_NAVIGATION.md` | Fast route map for docs ownership, package lanes, score evidence, setup-project profile, and anti-drift rules. |
 | `docs/ROADMAP_PROGRESS_SYSTEM.md` | Source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template. |
 | `docs/ROADMAP_PACKAGE_MILESTONES.md` | Compact active package ladder, milestone exits, next recommended slice, and package closeout ownership. |
+| `docs/NEXT_BUILD_ROADMAP.md` | Tactical next-10-slices queue and lane-specific done evidence. |
 | `docs/ROADMAP_CONTINUITY_GUIDE.md` | Continuity rules, next useful gates, documentation update matrix, and closeout template for long-running work. |
 | `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` | Task-type checklist for runtime, renderer, Studio, generated assets, IKEMEN scanner, modular boundaries, docs-only setup, and score movement. |
 | `docs/ROADMAP_RELEASE_TARGETS.md` | Release-train targets, usable milestones, and score-movement rules. |
@@ -38,13 +39,13 @@ Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SC
 
 Docs/setup work alone does not change scores. The current guard trace-strengthening cuts also keep score bands unchanged because they tighten existing required evidence without broadening runtime parity claims.
 
-Latest implementation checkpoint: required `synthetic-imported-variable.json` checksum `3b33f7a8` accepts partial `VarRandom` next to `VarSet`, `VarAdd`, and `VarRangeSet` as telemetry-visible typed variable operations. `pnpm qa:trace` remains 156/156 artifacts, 138 required and 18 optional, with controller-family coverage at 77. This reduces variable-controller gaps for imported CNS/Common1-style states; it does not prove exact MUGEN random stream, helper/parent/root variable scope, or move the score band.
+Latest implementation checkpoint: `RuntimeRandomSystem` owns deterministic sandbox-side random seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` unit derivation. Required `synthetic-imported-variable.json` remains checksum `3b33f7a8`, with `pnpm qa:trace` passing 156/156 artifacts, 138 required and 18 optional. This is ownership cleanup after the `VarRandom` gate; it does not prove exact MUGEN random stream, helper/parent/root variable scope, or move the score band.
 
 ## Immediate Execution Order
 
 | Slot | Cut | Done when |
 | --- | --- | --- |
-| 1 | R1 runtime compatibility gate | Default next slice: Common1/FightFX precision or another custom-state/ownership route with required trace evidence. |
+| 1 | R1 runtime compatibility gate | Common1/FightFX precision or another custom-state/ownership route with required trace evidence. |
 | 2 | R2 MatchWorld ownership | One mutable behavior moves behind a named system with focused coverage and no hidden checksum drift. |
 | 3 | S1 Studio trust chain | Evidence and Build show one shared truthful status/next action, visually verified. |
 | 4 | A1 generated asset QA/provenance | One generated/native fighter or asset record links source prompt, sheet, atlas, QA, collisions, and playtest result. |
@@ -57,20 +58,20 @@ Docs/setup work is Slot 0: keep future agents aligned, then return to Slot 1 unl
 
 | Area | Current Proof | Still Weak |
 | --- | --- | --- |
-| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest aggregate: 156/156 artifacts passed, 138 required and 18 optional. Latest required oracle: `synthetic-imported-variable.json` checksum `3b33f7a8` accepts typed `variable:varrandom` in the imported variable route; previous `synthetic-imported-noop.json` checksum `a5fe169e` still accepts `Null`, `ForceFeedback`, debug clipboard controllers, and deprecated `MakeDust` as telemetry-visible no-ops. Latest ownership proof: `RuntimeContactMemoryWorld` owns bounded contact-memory mutation/readback for direct/projectile contact triggers and is injected into direct-combat/reversal paths without trace drift. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, exact random stream parity, full guard/fall/recovery semantics and exact FightFX/sound timing. |
+| Runtime | `pnpm qa:trace` required artifacts, native/generated roster, imported KFM optional fixtures. Latest aggregate: 156/156 artifacts passed, 138 required and 18 optional. Latest required oracle: `synthetic-imported-variable.json` checksum `3b33f7a8` accepts typed `variable:varrandom` in the imported variable route; previous `synthetic-imported-noop.json` checksum `a5fe169e` still accepts `Null`, `ForceFeedback`, debug clipboard controllers, and deprecated `MakeDust` as telemetry-visible no-ops. Latest ownership proof: `RuntimeRandomSystem` owns deterministic random seed/advance/clamp/fallback behavior, while `RuntimeContactMemoryWorld` owns bounded contact-memory mutation/readback for direct/projectile contact triggers. | Exact controller/VM tick order inside frames, helpers as real VM actors, persistent controllers, exact hit-eligibility attr grammar/slot priority, broad hitpause side-effect ordering, custom states/throws, teams, exact random stream parity, full guard/fall/recovery semantics and exact FightFX/sound timing. |
 | Three.js rendering | `pnpm qa:smoke` screenshots and canvas checks, including active desktop/mobile diagnostics for `HitSparkRenderer` resolving `S`-prefixed player AIR spark frames into sprites when available, plus bounded common/FightFX system lookup-frame and package-frame handoff unit/runtime coverage with 180-frame fallback geometry when AIR/sprite lookup fails. | Pixel-perfect MUGEN render parity, real fight.def/FightFX/common AIR/SFF loading, decoded system-SFF provider registration, full spark animation timing, palette application, screenpack/lifebar parity. |
 | Parsers/loaders | DEF/AIR/CMD/CNS/SFF/SND parsers with reports. | SFF v2 edge formats, full CNS expression language, all controller params, broader corpus. |
 | Studio | Workbench, Assets, Evidence, Debug, Modules, Build surfaces. | True editing workflows, regenerate/relink automation, multi-artifact trace diff depth. |
 | IKEMEN | Scanner-only profile for ZSS/Lua/config/screenpack/model-stage signals. | No ZSS/Lua execution, no rollback/netplay, no IKEMEN runtime extensions. |
 | Modular engine | Shared contracts and boundary tests. | Platformer proof slice blocked until fighting contracts stay stable. |
-| Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, and closeout. | Must keep docs synchronized after every score/support/queue change. |
+| Project control | `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/agents/*`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `.scratch/roadmap/*` define setup, issue tracking, skill routing, release targets, next concrete gates, score evidence, and closeout. | Must keep docs synchronized after every score/support/queue change. |
 
 ## Next Required Cuts
 
-0. **Target-owned custom-state required trace gate**
-   - Current proof added: required `synthetic-imported-target-owned-custom-state.json` checksum `410fb8c0` gates imported direct `HitDef p2stateno = 888` with `p2getp1state = 0`, routes P2 through its own state/action `888`, proves actor-frame `customOwnerId` stays absent, then returns P2 to state `0`/control.
-   - The gate requires imported `HitDef`, `SelfState`, typed `hitdef`, hit event/combat evidence, P2 state/action `888` frame evidence, and final P2 idle/control evidence.
-   - This complements owner-backed `synthetic-imported-custom-state.json` without claiming throws, helpers/root/parent redirects, teams, exact bind/tick order, or full MUGEN/IKEMEN custom-state parity.
+0. **Common1/FightFX precision**
+   - Current selected next runtime cut: move beyond summarized guard/fall/recovery or FightFX/common presentation evidence into a narrower trace, fixture, or visible package proof.
+   - Done when focused trace or fixture evidence names the exact route and blocked claims stay explicit.
+   - This should not reselect `VarRandom`, `RuntimeRandomSystem`, `MakeDust`, target-owned custom-state, or already-closed guard/auto-guard evidence.
 
 1. **MatchWorld ownership**
    - Move more lifecycle/combat/pause/target behavior behind named systems.

@@ -53,9 +53,9 @@ These are good next implementation slices because they can be proven without pre
 
 Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack parity until the smaller routes above stay green.
 
-The compact package ladder and current default next slice live in `docs/ROADMAP_PACKAGE_MILESTONES.md`. After docs/setup work, return there before choosing code.
+The compact package ladder lives in `docs/ROADMAP_PACKAGE_MILESTONES.md`; the tactical next-10-slices queue lives in `docs/NEXT_BUILD_ROADMAP.md`. After docs/setup work, return to both before choosing code.
 
-Latest closed implementation checkpoint: `VarRandom` is accepted as partial owner-local int variable support through required `synthetic-imported-variable.json` checksum `3b33f7a8`. Do not reselect `VarRandom`, `MakeDust`, or the previous `RuntimeContactMemoryWorld` extraction as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
+Latest closed implementation checkpoint: `RuntimeRandomSystem` owns deterministic sandbox-side seed/advance/clamp/fallback behavior introduced for `VarRandom`, while required `synthetic-imported-variable.json` remains checksum `3b33f7a8`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, or `RuntimeRandomSystem` as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
 
 ## Next Useful Studio Gates
 

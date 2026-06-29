@@ -9,6 +9,8 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 
 ## Next Useful Cuts
 
+- Current setup-project/roadmap pass: added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board and linked it from AGENTS/setup/roadmap docs. This docs/control setup initially selected R2 random ownership after the latest `VarRandom` gate; that first slice is now implemented below, with no score movement.
+- Current implementation follow-up: R2 `RuntimeRandomSystem` ownership extraction is now implemented as the first next-build slice, so future docs/setup work should return to R1 Common1/FightFX precision or deeper R2 MatchWorld ownership instead of reselecting random ownership.
 - Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `RuntimeContactMemoryWorld` checkpoint instead of older closed gates.
 - Current roadmap sync: `docs/ROADMAP_PACKAGE_MILESTONES.md` now names the latest R2 ownership checkpoint and the next evidence-producing options: R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership. This is docs/control only and does not move scores.
 - Current setup-project refresh: parent workspace `AGENTS.md` now routes agents into `mugen-web-sandbox`; repo `AGENTS.md` remains authoritative and records setup-project defaults, slice-selection priority, verification baseline, and docs-only no-score rule.
@@ -22,7 +24,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Current cut: `AGENTS.md` now records named-skill routing for setup-project, caveman, product/interface, imagegen/sprite-atlas, and Three.js visual QA work; `docs/ROADMAP_EXECUTION_BOARD.md` now has a twelve-item concrete gate queue for R1/R2/S1/A1/I1/M1 follow-up.
 - Current closeout: `docs/ROADMAP_NAVIGATION.md` now gives the fast route map for source ownership, package lanes, score movement evidence, setup-project profile, and anti-drift rules; `AGENTS.md`, `docs/agents/domain.md`, `docs/PROGRESS_TRACKER.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `.scratch/roadmap/PRD.md` link to it.
 - Current closeout: `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` now maps runtime, renderer, Studio, generated asset, IKEMEN scanner, modular boundary, and docs-only work to required evidence, docs, commands, and score-movement rules.
-- Current setup-project/roadmap refresh: `docs/ROADMAP_PACKAGE_MILESTONES.md` now gives the package ladder, milestone exits, closeout contract, update map, and default next code slice after docs/setup work: the R1 `HitBy` mismatch-reject required trace.
+- Current setup-project/roadmap refresh: `docs/ROADMAP_PACKAGE_MILESTONES.md` now gives the package ladder, milestone exits, closeout contract, update map, and default next code slice after docs/setup work: R1 Common1/FightFX precision, with deeper R2 MatchWorld ownership as alternate.
 - Keep `docs/ROADMAP_EXECUTION_BOARD.md` as the current queue/handoff board.
 - Keep `docs/PROGRESS_TRACKER.md` compact and current after meaningful milestones.
 - Keep `docs/PORT_COMPLETION_SCORECARD.md` as the only 0-100 answer source.
@@ -57,7 +59,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including FightFX/common spark lookup after the current fallback/source-metadata route.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
-- Latest implementation truth before this docs refresh comes from `docs/BUILD_EXECUTION_BACKLOG.md` entry 223: `RuntimeContactMemoryWorld` ownership extraction passed `pnpm test`, `pnpm typecheck`, `pnpm build`, and `pnpm qa:trace` with stable 156/156 artifacts.
+- Latest implementation truth before this docs refresh comes from `docs/BUILD_EXECUTION_BACKLOG.md` entry 225: `VarRandom` passed `pnpm qa:trace` with 156/156 artifacts, 138 required, 18 optional, and required `synthetic-imported-variable.json` checksum `3b33f7a8`.
 
 ## Claim Allowed
 

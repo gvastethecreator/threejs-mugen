@@ -35,10 +35,10 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest implementation checkpoint:
 
 ```txt
-R1 VarRandom variable compatibility
-  -> MUGEN VarRandom accepted as partial owner-local int var controller
+R2 RuntimeRandomSystem ownership extraction
+  -> deterministic seed/advance/clamp/fallback ownership named after VarRandom
   -> synthetic-imported-variable.json checksum 3b33f7a8
-  -> proves typed variable:varrandom execution plus var(...) branch routing
+  -> focused RuntimeRandomSystem tests cover the ownership seam
   -> qa:trace aggregate 156/156, 138 required, 18 optional, 77 controller families
 ```
 
@@ -50,7 +50,7 @@ R1 Common1/FightFX precision
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or visible package presentation evidence
 ```
 
-Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior.
+Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
 
 ## Slice Selection Guardrails
 
@@ -69,7 +69,9 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
 - `synthetic-imported-noop.json` debug clipboard plus `MakeDust` no-op coverage
+- `synthetic-imported-variable.json` `VarRandom` variable compatibility
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
+- `RuntimeRandomSystem` deterministic random ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

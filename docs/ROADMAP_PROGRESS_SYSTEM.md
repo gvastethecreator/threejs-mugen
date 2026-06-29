@@ -14,6 +14,7 @@ Read these in order when planning or reporting status:
 | Domain map | `CONTEXT.md` | Product shape, vocabulary, hard rules, current priority. |
 | Navigation | `docs/ROADMAP_NAVIGATION.md` | Fast route map for docs ownership, package lanes, score evidence, and anti-drift rules. |
 | Package ladder | `docs/ROADMAP_PACKAGE_MILESTONES.md` | Active package status, milestone exits, next recommended slice, and package closeout ownership. |
+| Tactical queue | `docs/NEXT_BUILD_ROADMAP.md` | Next 10 build slices and lane-specific done evidence. |
 | Release targets | `docs/ROADMAP_RELEASE_TARGETS.md` | Usable milestones, release trains, and score-movement rules. |
 | Current queue | `docs/ROADMAP_EXECUTION_BOARD.md` | Active packages, acceptance gates, handoff contract. |
 | Scoreboard | `docs/PORT_COMPLETION_SCORECARD.md` | 0-100 status by horizon and evidence ledger. |
@@ -29,7 +30,7 @@ Rule: when two docs disagree, prefer the more specific owner above. Then update 
 Use this sequence when a new agent, resumed thread, or subtask starts work:
 
 1. Run `git status --short --branch` from the repo root.
-2. Read `CONTEXT.md`, `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, this file, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
+2. Read `CONTEXT.md`, `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, this file, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 3. For status answers, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
 4. For implementation slices, read the linked `.scratch/roadmap/issues/<NN>-*.md` issue and update it with evidence, next cut, and blocked claims.
 5. For score/support/queue changes, update every owner listed in the update matrix below.
@@ -116,6 +117,6 @@ Parallel docs are allowed when they reduce drift. Parallel UI is allowed when it
 
 `setup-project`, roadmap routing, issue tracker docs, and AGENTS changes are valid control work, but they are not compatibility evidence. Close them with normal build/test gates, update `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`, and keep `docs/PORT_COMPLETION_SCORECARD.md` unchanged unless runtime, visual, fixture, scanner, Studio, or package evidence also changed.
 
-Every setup/docs pass must compare the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. If an older "next" gate has already closed, refresh the route before selecting more code.
+Every setup/docs pass must compare the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` with `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, and the linked roadmap issue. If an older "next" gate has already closed, refresh the route before selecting more code.
 
-After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and choose the next evidence-producing package. The `HitBy` accept/reject, target-owned custom-state, required synthetic guard-hit actor-frame telemetry, required synthetic auto guard-start/end controller-order, debug clipboard plus `MakeDust` no-op, `VarRandom` variable, and contact-memory world ownership gates are already closed; current default is R1 Common1/FightFX precision or R2 `MatchWorld` ownership, whichever can produce focused evidence without broad drift.
+After any docs-only setup pass, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md`, then choose the next evidence-producing package. The `HitBy` accept/reject, target-owned custom-state, required synthetic guard-hit actor-frame telemetry, required synthetic auto guard-start/end controller-order, debug clipboard plus `MakeDust` no-op, `VarRandom` variable, contact-memory world ownership, and `RuntimeRandomSystem` ownership gates are already closed; current default is R1 Common1/FightFX precision or R2 `MatchWorld` ownership, whichever can produce focused evidence without broad drift.

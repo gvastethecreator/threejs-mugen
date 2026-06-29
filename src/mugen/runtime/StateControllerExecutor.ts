@@ -25,6 +25,7 @@ import {
   applyRuntimeVariableRangeAssignment,
   type RuntimeVariableAssignment,
 } from "./RuntimeResourceSystem";
+import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -531,7 +532,16 @@ function applyVariableRandomController(
   const lower = Math.round(Math.min(range[0], range[1]));
   const upper = Math.round(Math.max(range[0], range[1]));
   const span = Math.max(1, upper - lower + 1);
-  const unit = clampRandomUnit(context.random?.() ?? fallbackRandomUnit(state, index, lower, upper, context.stageTime));
+  const unit = clampRuntimeRandomUnit(
+    context.random?.() ??
+      fallbackRuntimeRandomUnit({
+        state,
+        variableIndex: index,
+        lower,
+        upper,
+        stageTime: context.stageTime,
+      }),
+  );
   applyRuntimeVariableAssignment(state, { variableType: "var", index, value: lower + Math.floor(unit * span) }, false);
 }
 
@@ -698,35 +708,6 @@ function controllerDuration(value: number): number {
 
 function clampIndex(value: number, max: number): number {
   return Math.max(0, Math.min(max, value));
-}
-
-function clampRandomUnit(value: number): number {
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-  return Math.max(0, Math.min(0.999999999, value));
-}
-
-function fallbackRandomUnit(
-  state: CharacterRuntimeState,
-  index: number,
-  lower: number,
-  upper: number,
-  stageTime = 0,
-): number {
-  let seed = 2166136261;
-  seed = mixSeed(seed, state.stateNo);
-  seed = mixSeed(seed, state.animNo);
-  seed = mixSeed(seed, state.animTime);
-  seed = mixSeed(seed, stageTime);
-  seed = mixSeed(seed, index);
-  seed = mixSeed(seed, lower);
-  seed = mixSeed(seed, upper);
-  return (seed >>> 0) / 0x100000000;
-}
-
-function mixSeed(seed: number, value: number): number {
-  return Math.imul(seed ^ Math.trunc(value), 16777619) >>> 0;
 }
 
 function variableAssignmentParam(

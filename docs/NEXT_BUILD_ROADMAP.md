@@ -1,0 +1,163 @@
+# Next Build Roadmap
+
+Last updated: 2026-06-28
+
+This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
+
+- `docs/PORT_COMPLETION_SCORECARD.md` owns 0-100 status.
+- `docs/ROADMAP_EXECUTION_BOARD.md` owns the current queue.
+- `.scratch/roadmap/issues/` owns agent-sized slices.
+- This file explains which slices should happen next, why they matter, and what evidence closes them.
+
+Docs-only changes here do not move scores.
+
+## Current Checkpoint
+
+Latest implementation truth:
+
+```txt
+R2 RuntimeRandomSystem ownership extraction
+  -> required synthetic-imported-variable.json checksum 3b33f7a8
+  -> focused RuntimeRandomSystem tests cover seed, advance, clamp, fallback salt
+  -> proves named deterministic random ownership only
+```
+
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, or `RuntimeRandomSystem` as fresh next work. They are already closed gates.
+
+## Next 10 Build Slices
+
+| Order | Lane | Slice | Evidence | Score impact |
+| ---: | --- | --- | --- | --- |
+| 1 | R1 runtime | Deepen Common1 recovery/guard loop precision beyond current frame/order summaries. | Required trace or official KFM optional fixture gate. | Possible MUGEN-lite movement only if scorecard threshold is met. |
+| 2 | R1 presentation | Improve FightFX/common spark/dust/sound presentation evidence after current package-frame handoff. | `pnpm qa:trace` if telemetry changes; `pnpm qa:smoke` plus screenshots if visible. | Possible playable/visual confidence, not full screenpack parity. |
+| 3 | R2 ownership | Move helper/effect/target ordering into a tighter named world boundary. | Focused world tests; stable or documented trace checksum behavior. | Debt reduction; score movement only with behavior evidence. |
+| 4 | S1 Studio | Build one shared Evidence/Build status contract for stale, blocked, missing, partial, unsupported, and exportable states. | `pnpm qa:smoke` plus visual inspection using real rows. | Possible Studio score movement. |
+| 5 | A1 assets | Store generated asset source prompt, sheet, atlas, QA, collision, and playtest provenance as one record. | Asset QA record; visual QA if shown. | Generated/native pipeline confidence only. |
+| 6 | I1 IKEMEN | Add one scanner-only IKEMEN signal family from source/docs, classified recognized/unsupported/unknown. | Focused scanner tests. | Scanner-only movement, no IKEMEN execution claim. |
+| 7 | M1 modular | Prove one shared project/asset/input/snapshot/debug/build contract has no fighting-specific leakage. | `pnpm check:boundaries` or focused boundary test. | Modular readiness only. |
+| 8 | R1 fixtures | Add or tighten private official KFM fixture proof for a route already covered synthetically. | Optional fixture artifact when local fixture exists. | Compatibility confidence, no public asset claim. |
+| 9 | Runtime corpus | Add another private character/stage corpus package as local evidence only. | Local fixture report; no committed third-party assets. | Broad compatibility evidence only when reproducible locally. |
+| 10 | R2 trace order | Add trace evidence for effect/combat ordering if the next ownership boundary can affect checksums. | Required trace or documented stable checksum behavior. | Debt reduction unless behavior evidence moves score. |
+
+## R1 Runtime Compatibility Plan
+
+Goal: imported MUGEN-style packages execute more KFM/Common1-authored routes without crashing and with visible unsupported gaps.
+
+Build sequence:
+
+1. Tighten one Common1 guard/fall/recovery route with controller order, actor frame, velocity, and blocked-claim evidence.
+2. Promote one parser-only or no-crash controller only when semantics are small enough to type or safely no-op.
+3. Add required trace gates before broad claims.
+4. Mirror synthetic gates with private KFM fixture gates when local fixtures exist.
+5. Keep helpers, custom states, throws, teams, and screenpacks as explicit blocked scope until separate gates exist.
+
+Done evidence:
+
+- Required `pnpm qa:trace` artifact or focused runtime tests.
+- Updated `docs/SUPPORTED_FEATURES.md`, `docs/CONTROLLER_SUPPORT_REGISTRY.md`, `docs/WORKPLAN.md`, and `docs/BUILD_EXECUTION_BACKLOG.md`.
+- Relevant `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` updated with claim allowed / claim blocked.
+
+## R2 Runtime Ownership Plan
+
+Goal: mutable match behavior moves behind named systems so future ports can replace or expand them without rewriting the whole loop.
+
+Build sequence:
+
+1. Keep `RuntimeRandomSystem` stable after the ownership extraction.
+2. Deepen target/helper/effect ownership after current `RuntimeContactMemoryWorld`.
+3. Keep checksum drift stable unless the behavior intentionally changes.
+4. Prefer tests around ownership boundaries before adding new runtime features.
+
+Done evidence:
+
+- Focused unit/system tests.
+- Stable `pnpm qa:trace` when behavior should not change.
+- `docs/ENGINE_PORT_ARCHITECTURE.md`, `docs/WORKPLAN.md`, and backlog updated.
+
+## S1 Studio Trust Plan
+
+Goal: Studio becomes a real workbench, not a decorative dashboard.
+
+Build sequence:
+
+1. Define one shared status contract consumed by Evidence and Build.
+2. Give every blocked/stale/partial/exportable row one primary next action.
+3. Link rows to trace/report/runtime/project evidence.
+4. Keep visible states honest: no fake green exports.
+
+Done evidence:
+
+- `pnpm qa:smoke`.
+- Visual inspection on desktop and mobile when layout changes.
+- `docs/ENGINE_STUDIO_ROADMAP.md` and `docs/INTERFACE_SYSTEM.md` updated.
+
+## A1 Generated Asset Plan
+
+Goal: generated/native fighters are usable test subjects and future authoring assets without being counted as imported MUGEN compatibility.
+
+Build sequence:
+
+1. Store prompt/source image/sheet path, atlas manifest, contact sheet/GIF, collision/action data, and QA report as one provenance record.
+2. Surface motion, scale, baseline, and contact-box QA failures.
+3. Regenerate bad source sprites; do not disguise broken motion by atlas cropping.
+
+Done evidence:
+
+- QA record under `.scratch/qa/` or generated asset metadata.
+- Visual QA if the asset appears in runtime or Studio.
+- Generated/native status separated from imported compatibility in docs.
+
+## I1 IKEMEN Scanner Plan
+
+Goal: Ikemen-GO source/docs knowledge improves reporting before runtime execution exists.
+
+Build sequence:
+
+1. Add one recognized unsupported signal family at a time.
+2. Keep ZSS/Lua/rollback/netplay as scanner-only until execution gates exist.
+3. Document every scanner finding as recognized, unsupported, or unknown.
+
+Done evidence:
+
+- Focused scanner tests.
+- `docs/IKEMEN_GO_REFERENCE.md`, `docs/COMPATIBILITY_PROFILES.md`, and `docs/MUGEN_COMPATIBILITY_PLAN.md` updated.
+
+## M1 Modular Engine Plan
+
+Goal: extract only contracts proven useful by fighting runtime and Studio evidence.
+
+Build sequence:
+
+1. Choose one shared contract candidate: project, asset, input, tick, snapshot, render, audio, debug, or build.
+2. Prove it does not import CNS, CMD, HitDef, Common1, helpers, rounds, teams, or MUGEN command routing.
+3. Delay platformer runtime work until fighting smoke/trace gates stay stable.
+
+Done evidence:
+
+- `pnpm check:boundaries` or focused boundary test.
+- `docs/MODULE_BOUNDARY_CONTRACT.md` updated.
+
+## Selection Rule
+
+When continuing autonomously:
+
+1. If current work is docs/setup only, close it with no score movement and return to R1 or R2.
+2. If runtime behavior changed, require `pnpm qa:trace`.
+3. If frontend/render/Studio changed, require `pnpm qa:smoke` plus visual inspection.
+4. If a fixture is private/local, keep it out of the repo and report it as optional evidence.
+5. If a slice cannot produce evidence in one round, split it until it can.
+
+## Claim Guard
+
+Allowed after this roadmap pass:
+
+- Future agents have a clearer next-slice order and evidence map.
+- `setup-project` remains local markdown issues, canonical triage labels, and single-context docs.
+
+Blocked after this roadmap pass:
+
+- No runtime compatibility score movement.
+- No new imported character support.
+- No new IKEMEN execution.
+- No new Studio workflow implementation.
+- No modular-engine extraction beyond documented plan.

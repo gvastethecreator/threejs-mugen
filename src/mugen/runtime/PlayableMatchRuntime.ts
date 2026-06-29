@@ -53,6 +53,7 @@ import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
+import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import { RuntimePauseWorld } from "./PauseSystem";
@@ -655,7 +656,7 @@ function createFighterState(
     controllerEvents: [],
     nextControllerEventSequence: 0,
     compatibilityTick: 0,
-    rngSeed: initialFighterRandomSeed(id, definition.id),
+    rngSeed: createRuntimeRandomSeed(id, definition.id),
     firedHitDefs: new Set(),
     soundEvents: [],
     audioWorld,
@@ -670,17 +671,10 @@ function createFighterState(
   };
 }
 
-function initialFighterRandomSeed(id: string, definitionId: string): number {
-  let seed = 2166136261;
-  for (const char of `${id}:${definitionId}`) {
-    seed = Math.imul(seed ^ char.charCodeAt(0), 16777619) >>> 0;
-  }
-  return seed || 1;
-}
-
 function nextRuntimeRandom(fighter: FighterMatchState): number {
-  fighter.rngSeed = (Math.imul(fighter.rngSeed, 1664525) + 1013904223) >>> 0;
-  return fighter.rngSeed / 0x100000000;
+  const next = nextRuntimeRandomUnit(fighter.rngSeed);
+  fighter.rngSeed = next.seed;
+  return next.value;
 }
 
 function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr | undefined {

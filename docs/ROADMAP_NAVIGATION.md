@@ -37,6 +37,7 @@ For architecture or source-of-truth changes, also read:
 | What is this product/engine trying to become? | `CONTEXT.md` |
 | What is the current queue? | `docs/ROADMAP_EXECUTION_BOARD.md` |
 | What package should move next? | `docs/ROADMAP_PACKAGE_MILESTONES.md` |
+| What are the next 10 build slices? | `docs/NEXT_BUILD_ROADMAP.md` |
 | How far are we from playable/full ports? | `docs/PORT_COMPLETION_SCORECARD.md` |
 | What changed recently? | `docs/BUILD_EXECUTION_BACKLOG.md` |
 | What is the compact current truth? | `docs/PROGRESS_TRACKER.md` |
@@ -113,10 +114,11 @@ See:
 - `docs/agents/triage-labels.md`
 - `docs/agents/domain.md`
 - `docs/ROADMAP_PACKAGE_MILESTONES.md`
+- `docs/NEXT_BUILD_ROADMAP.md`
 
 ## Continuity Guide
 
-Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when a task asks to continue the broader port, update the roadmap, or choose the next autonomous implementation slice. It summarizes the active horizon, continuity rules, workstream ladder, documentation update matrix, and closeout template.
+Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when a task asks to continue the broader port, update the roadmap, or choose the next autonomous implementation slice. It summarizes the active horizon, continuity rules, workstream ladder, documentation update matrix, and closeout template. Use `docs/NEXT_BUILD_ROADMAP.md` when the question is "what should we actually build next?" and the package ladder is already understood.
 
 ## Anti-Drift Rules
 

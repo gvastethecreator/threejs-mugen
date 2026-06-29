@@ -4,7 +4,7 @@ Last updated: 2026-06-28
 
 This is the short operating board for choosing the next slice without re-reading every roadmap file. It does not replace `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_RELEASE_TARGETS.md`, `docs/WORKPLAN.md`, `docs/PORT_COMPLETION_SCORECARD.md`, or `docs/BUILD_EXECUTION_BACKLOG.md`; it points at the exact next packages and the docs that must change when progress moves.
 
-Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when turning this board into a next implementation cut or when resuming after a long pause.
+Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when turning this board into a next implementation cut or when resuming after a long pause. Use `docs/NEXT_BUILD_ROADMAP.md` for the tactical next-10-slices order.
 
 ## Read Order
 
@@ -14,12 +14,13 @@ Use this order before starting broad work:
 2. `AGENTS.md`
 3. `docs/ROADMAP_PROGRESS_SYSTEM.md`
 4. `docs/ROADMAP_PACKAGE_MILESTONES.md`
-5. `docs/ROADMAP_RELEASE_TARGETS.md`
-6. `docs/ROADMAP_EXECUTION_BOARD.md`
-7. `docs/ROADMAP_CONTINUITY_GUIDE.md`
-8. `docs/PROGRESS_TRACKER.md`
-9. `docs/WORKPLAN.md`
-10. Relevant `.scratch/roadmap/issues/<NN>-*.md`
+5. `docs/NEXT_BUILD_ROADMAP.md`
+6. `docs/ROADMAP_RELEASE_TARGETS.md`
+7. `docs/ROADMAP_EXECUTION_BOARD.md`
+8. `docs/ROADMAP_CONTINUITY_GUIDE.md`
+9. `docs/PROGRESS_TRACKER.md`
+10. `docs/WORKPLAN.md`
+11. Relevant `.scratch/roadmap/issues/<NN>-*.md`
 
 Use `docs/PORT_COMPLETION_SCORECARD.md` when answering "how far are we?" or changing scores.
 
@@ -29,7 +30,7 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
-Latest implementation checkpoint: `VarRandom` is accepted as a partial owner-local int variable controller through `synthetic-imported-variable.json` checksum `3b33f7a8`; `pnpm qa:trace` passes 156/156 artifacts, with 138 required, 18 optional, and 77 controller families. This is R1 variable-controller compatibility, not exact MUGEN random stream, helper/parent/root variable scope, or VM parity.
+Latest implementation checkpoint: `RuntimeRandomSystem` owns deterministic sandbox-side seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` salt derivation introduced by the prior `VarRandom` cut. Required `synthetic-imported-variable.json` remains checksum `3b33f7a8`; `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional. This is R2 ownership cleanup, not exact MUGEN random stream, helper/parent/root variable scope, or VM parity.
 
 ## Operating Snapshot
 
@@ -129,6 +130,7 @@ Build next:
 - Current proof: `RuntimeEffectLifecycleWorld` owns bounded active-effect tick, presentation tick, paused presentation tick, effect snapshot grouping, and shared get-hit cleanup orchestration consumed by `PlayableMatchRuntime`, `RuntimeDirectCombatWorld`, `RuntimeHitOverrideWorld`, and `RuntimeReversalWorld`, with focused `EffectLifecycleSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeMatchInteractionWorld` owns bounded post-fighter interaction ordering for target-memory aging, active-effect advance, projectile clash, body separation, target bindings, direct priority/direct combat, projectile combat, stage clamp, and presentation-effect advance, with focused `MatchInteractionSystem` order coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeContactMemoryWorld` now owns bounded direct/projectile contact-memory creation, reset, mutation, and readback consumed by `PlayableMatchRuntime`, `RuntimeDirectCombatWorld`, and `RuntimeReversalWorld`, with focused `ContactMemorySystem`, `DirectCombatSystem`, and `ReversalSystem` coverage and unchanged trace behavior expected.
+- Current proof: `RuntimeRandomSystem` now owns deterministic sandbox-side random seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` unit derivation consumed by `PlayableMatchRuntime` and `StateControllerExecutor`, with focused system coverage and stable `synthetic-imported-variable.json` checksum `3b33f7a8`.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: deeper helper/projectile/explod VM lifecycle, combat/effect ordering, target links, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 

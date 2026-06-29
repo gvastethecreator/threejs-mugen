@@ -26,6 +26,7 @@
 - Read `CONTEXT.md` first for domain vocabulary, then `docs/ROADMAP_PROGRESS_SYSTEM.md` for progress ownership, then `docs/ROADMAP_EXECUTION_BOARD.md` for the current queue.
 - Use `docs/ROADMAP_NAVIGATION.md` as the fast map for source-of-truth ownership, package lanes, score movement, and claim checklist.
 - Use `docs/ROADMAP_PACKAGE_MILESTONES.md` as the compact package ladder when selecting the next implementation slice after docs/setup work.
+- Use `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board after setup/project-control work.
 - Use `docs/DELIVERY_ROADMAP.md` when planning multi-phase delivery, milestone exits, or what "usable" means for each horizon.
 - Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming long-running work, choosing the next score-moving slice, or deciding which docs must change with a slice.
 - Use `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` to choose closeout gates for runtime, renderer, Studio, generated assets, IKEMEN scanner, modular boundaries, or docs-only work.
@@ -55,13 +56,14 @@ Use this checklist when resuming the goal or starting a new autonomous pass:
 3. Read `docs/ROADMAP_NAVIGATION.md` when the task spans roadmap, setup-project, score, issue, or handoff docs.
 4. Read `docs/ROADMAP_PACKAGE_MILESTONES.md` when choosing the next package or continuing after a docs/setup pass.
 5. Read `docs/DELIVERY_ROADMAP.md` when choosing phase targets or answering what remains to reach a usable port.
-6. Read `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming autonomous work or converting roadmap language into the next implementation cut.
-7. Read `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` before choosing verification gates.
-8. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
-9. Read the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` before calling anything "latest".
-10. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
-11. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
-12. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
+6. Read `docs/NEXT_BUILD_ROADMAP.md` when choosing the next concrete implementation slice.
+7. Read `docs/ROADMAP_CONTINUITY_GUIDE.md` when resuming autonomous work or converting roadmap language into the next implementation cut.
+8. Read `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` before choosing verification gates.
+9. If the user asks "how far are we?", read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md` before answering.
+10. Read the latest numbered entry in `docs/BUILD_EXECUTION_BACKLOG.md` before calling anything "latest".
+11. If picking implementation work, open the linked `.scratch/roadmap/issues/<NN>-*.md` issue and keep claim allowed / claim blocked wording aligned.
+12. Before editing, identify whether the work is runtime trace, UI/visual, Studio/product, generated assets, IKEMEN scanner, modular contract, or docs-only; use the matching checklist row.
+13. Close with gates, docs/backlog update, and a checkpoint commit when the user has asked for persistent progress.
 
 ## Roadmap Update Protocol
 
@@ -102,6 +104,7 @@ pnpm qa:smoke
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` explains source-of-truth order, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/DELIVERY_ROADMAP.md` defines delivery phases, horizon exit gates, and the next evidence ladder.
 - `docs/ROADMAP_PACKAGE_MILESTONES.md` defines active packages, milestone exits, next recommended slice, and package closeout ownership.
+- `docs/NEXT_BUILD_ROADMAP.md` defines the tactical next-10-slices queue and lane-specific done evidence.
 - `docs/ROADMAP_CONTINUITY_GUIDE.md` keeps the long-running port pointed at the next useful evidence-backed slice.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` maps each work type to required docs, evidence, and commands.
 - `docs/ROADMAP_RELEASE_TARGETS.md` translates scores into release trains, gates, and "usable" milestones.
@@ -114,12 +117,12 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Last audited: 2026-06-28 during the setup-project refresh and roadmap-control pass after the `RuntimeContactMemoryWorld` checkpoint.
+- Last audited: 2026-06-28 during the setup-project refresh and next-build-roadmap pass after the `VarRandom` checkpoint.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
 - Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
-- Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates.
+- Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates. Current latest closed ownership cut is `RuntimeRandomSystem` unless the backlog proves a newer one.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
 
 ## Roadmap Slice Selection
@@ -134,13 +137,13 @@ When the user says to continue the port, choose the first slice that can produce
 6. Modular boundary proof with `pnpm check:boundaries` or docs-only blocked-scope wording.
 
 Docs-only/setup slices improve control only. They do not raise scores.
-Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, and the linked `.scratch/roadmap/issues/` file so already-closed gates are not rebuilt.
+Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, and the linked `.scratch/roadmap/issues/` file so already-closed gates are not rebuilt.
 
 ## Current Milestone Focus
 
 - Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
 - Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
-- Immediate next slice after the MakeDust no-op checkpoint: R1 Common1/FightFX precision or R2 MatchWorld helper/effect/target ownership, whichever can produce focused evidence without broad drift.
+- Immediate next slice after the `RuntimeRandomSystem` checkpoint: R1 Common1/FightFX precision or R2 MatchWorld helper/effect/target ownership, whichever can produce focused evidence without broad drift.
 - Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
 - Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 

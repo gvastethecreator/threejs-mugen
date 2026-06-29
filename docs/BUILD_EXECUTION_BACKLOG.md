@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-28 - RuntimeRandomSystem ownership extraction
+
+Changed:
+
+- Added `RuntimeRandomSystem` as the named owner for deterministic runtime random seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` unit derivation.
+- Replaced ad hoc RNG helpers in `PlayableMatchRuntime` and `StateControllerExecutor` with the shared system while preserving per-actor seed storage and expression/controller random callbacks.
+- Added focused `RuntimeRandomSystem` tests for seed determinism, sequence advance, clamping, and fallback salt stability.
+- Updated roadmap/docs to mark the random ownership extraction as closed ownership cleanup, not score movement or exact MUGEN random-stream parity.
+
+Evidence:
+
+- `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-variable.json` remains checksum `3b33f7a8`.
+- `pnpm test` passes 61 files / 572 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+
+Claim allowed:
+
+- Deterministic sandbox-side random behavior used by partial `VarRandom` and trigger/controller expression contexts now has a named runtime-system boundary.
+
+Claim blocked:
+
+- Exact MUGEN random stream parity, helper/parent/root random ownership, fvar/sysvar `VarRandom`, IKEMEN map vars, persistent/tick-order edge cases, and full VM parity remain unsupported.
+
 ## 2026-06-28 - VarRandom variable compatibility cut
 
 Changed:
@@ -25,6 +49,22 @@ Claim allowed:
 Claim blocked:
 
 - Exact MUGEN random stream parity, helper/parent/root variable scopes, fvar/sysvar `VarRandom`, persistent/tick-order edge cases, IKEMEN map vars, and full CNS VM parity remain unsupported.
+
+## 2026-06-28 - Setup-project next-build roadmap refresh
+
+Changed:
+- Verified the repo setup-project profile remains `AGENTS.md`, local markdown issues under `.scratch/`, canonical triage labels, root `CONTEXT.md`, `docs/agents/*`, and ADRs under `docs/adr/`.
+- Added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board spanning R1 runtime compatibility, R2 ownership, S1 Studio, A1 generated assets, I1 IKEMEN scanner, and M1 modular boundaries.
+- Linked the new tactical roadmap from `AGENTS.md`, `docs/agents/domain.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_CONTINUITY_GUIDE.md`, `docs/ROADMAP_EXECUTION_BOARD.md`, `docs/PROGRESS_TRACKER.md`, and `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`.
+
+Evidence:
+- Docs-only setup/project-control pass. Normal closeout gates still required before commit.
+
+Claim allowed:
+- Future agents have a clearer route from setup-project context to the next evidence-producing implementation slice. The first selected slice from that route was R2 `RuntimeRandomSystem` ownership extraction, now recorded above as a follow-up implementation cut.
+
+Claim blocked:
+- This does not move port scores, add runtime compatibility, add IKEMEN execution, improve Studio implementation, or replace tests/traces/visual QA for future code changes.
 
 ## 2026-06-28 - MakeDust no-op compatibility cut
 
