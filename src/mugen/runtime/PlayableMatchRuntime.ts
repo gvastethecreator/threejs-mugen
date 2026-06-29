@@ -54,6 +54,7 @@ import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
+import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
@@ -209,6 +210,7 @@ export class PlayableMatchRuntime {
   private readonly orientationWorld = new RuntimeOrientationWorld();
   private readonly guardWorld = new RuntimeGuardWorld();
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
+  private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -415,6 +417,7 @@ export class PlayableMatchRuntime {
           this.reversalWorld,
           this.guardWorld,
           this.getHitStateWorld,
+          this.hitStateTransitionWorld,
           this.tick,
           (line) => this.logs.unshift(line),
         ),
@@ -1740,6 +1743,7 @@ function resolveCombat(
   reversalWorld: RuntimeReversalWorld,
   guardWorld: RuntimeGuardWorld,
   getHitStateWorld: RuntimeGetHitStateWorld,
+  hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
   runtimeTick: number,
   log: (line: string) => void,
 ): void {
@@ -1768,9 +1772,8 @@ function resolveCombat(
       rememberTarget,
       canEnterState: (target, stateNo) => canEnterState(target, stateNo),
       enterState: (target, stateNo) => enterState(target, stateNo),
-      enterTargetHitState: (target, owner, stateNo, getP1State) => {
-        enterTargetHitState(target, owner, stateNo, getP1State);
-      },
+      enterTargetHitState: (target, owner, stateNo, getP1State) =>
+        hitStateTransitionWorld.enterTargetHitState(target, owner, stateNo, getP1State, hitStateTransitionHooks()),
     });
     log(outcome.message);
     return;
@@ -1811,7 +1814,8 @@ function resolveCombat(
   });
   const outcome = directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
     applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
-    applyHitStateTransitions,
+    applyHitStateTransitions: (source, target, moveArg) =>
+      applyHitStateTransitions(source, target, moveArg, hitStateTransitionWorld),
     applyDefaultGetHit: (target, moveArg) => applyDefaultGetHitState(target, moveArg, getHitStateWorld),
   });
   recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick);
@@ -1927,13 +1931,25 @@ function applyHitOverride(
   log(result.message);
 }
 
-function applyHitStateTransitions(attacker: FighterMatchState, defender: FighterMatchState, move: DemoMove): void {
-  if (move.p2StateNo !== undefined) {
-    enterTargetHitState(defender, attacker, move.p2StateNo, move.p2GetP1State ?? true);
-  }
-  if (move.p1StateNo !== undefined && canEnterState(attacker, move.p1StateNo)) {
-    enterState(attacker, move.p1StateNo);
-  }
+function applyHitStateTransitions(
+  attacker: FighterMatchState,
+  defender: FighterMatchState,
+  move: DemoMove,
+  hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
+): void {
+  hitStateTransitionWorld.applyHitStateTransitions(attacker, defender, move, hitStateTransitionHooks());
+}
+
+function hitStateTransitionHooks() {
+  return {
+    canEnterState: (target: FighterMatchState, stateNo: number, stateOwner?: FighterMatchState) =>
+      canEnterState(target, stateNo, stateOwner),
+    enterState: (
+      target: FighterMatchState,
+      stateNo: number,
+      options?: { stateOwner?: FighterMatchState; clearStateOwner?: boolean },
+    ) => enterState(target, stateNo, undefined, options),
+  };
 }
 
 function applyDefaultGetHitState(defender: FighterMatchState, move: DemoMove, getHitStateWorld: RuntimeGetHitStateWorld): void {
@@ -2004,18 +2020,6 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
     owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
     owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
   return state?.moveType?.toUpperCase() === "H";
-}
-
-function enterTargetHitState(target: FighterMatchState, owner: FighterMatchState, stateId: number, getP1State: boolean): boolean {
-  const stateOwner = getP1State ? owner : target;
-  if (!canEnterState(target, stateId, stateOwner)) {
-    return false;
-  }
-  enterState(target, stateId, undefined, { stateOwner: getP1State ? owner : undefined, clearStateOwner: !getP1State });
-  if (getP1State && target.runtime.customState) {
-    target.runtime.customState.getP1State = true;
-  }
-  return true;
 }
 
 function isMoveActive(move: DemoMove, tick: number): boolean {

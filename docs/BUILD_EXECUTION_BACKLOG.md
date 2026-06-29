@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeHitStateTransitionWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHitStateTransitionWorld` / `HitStateTransitionSystem` as the named owner for bounded direct-hit `p1stateno` / `p2stateno` transition routing.
+- Replaced inline `PlayableMatchRuntime` custom-state transition helpers with a shared runtime boundary for direct combat and ReversalDef target-state routing.
+- Added focused `HitStateTransitionSystem` tests for attacker-owned `p1stateno`, attacker-owned `p2stateno`, target-owned `p2getp1state = 0`, and unavailable-state no-op behavior.
+- Revalidated the setup-project route while updating roadmap docs: `AGENTS.md` remains the repo agent file, parent `AGENTS.md` remains only a router, `docs/agents/*` remains the active local markdown / canonical label / single-context profile, and `.scratch/roadmap/` remains the working tracker.
+
+Evidence:
+
+- `pnpm test` passes: 68 files, 602 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-target-owned-custom-state.json` remains checksum `410fb8c0`, `synthetic-imported-custom-state.json` remains `bf632df3`, `synthetic-imported-reversal.json` remains `88d91494`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded direct-hit and ReversalDef target-state transition routing now has a named runtime boundary for current `p1stateno`, `p2stateno`, and `p2getp1state` ownership behavior.
+
+Claim blocked:
+
+- Throws, helpers/root/parent redirects, team ownership, exact bind/tick order, exact custom-state VM semantics, projectile-specific state ownership breadth, and full MUGEN/IKEMEN custom-state parity remain unsupported.
+
 ## 2026-06-29 - RuntimeGetHitStateWorld ownership extraction
 
 Changed:

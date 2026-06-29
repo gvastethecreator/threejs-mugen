@@ -45,6 +45,10 @@ G1 setup-project refresh
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeHitStateTransitionWorld ownership extraction
+  -> direct-hit and ReversalDef p1/p2 state transition routing moved out of PlayableMatchRuntime
+  -> focused HitStateTransitionSystem tests cover attacker-owned, target-owned, and unavailable-state behavior
+  -> trace behavior unchanged; no new parity or score claim
 R2 RuntimeGetHitStateWorld ownership extraction
   -> default stand/crouch/air get-hit state selection moved out of PlayableMatchRuntime
   -> focused GetHitStateSystem tests cover 5000, 5010 -> 5000, 5020 -> 5000, and missing-state no-op behavior
@@ -117,12 +121,13 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeOrientationWorld` ownership extraction
 - `RuntimeGuardWorld` ownership extraction
 - `RuntimeGetHitStateWorld` ownership extraction
+- `RuntimeHitStateTransitionWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after guard ownership.
+3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after hit-state transition ownership.
 
 ## Package Closeout Contract
 
