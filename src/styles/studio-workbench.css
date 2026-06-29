@@ -18,11 +18,11 @@
 
   .app-shell.mode-studio .workbench-health-meter {
     display: grid;
-    grid-template-columns: 68px minmax(0, 0.72fr) minmax(0, 1fr);
-    gap: 0 9px;
+    grid-template-columns: 58px minmax(0, 0.74fr) minmax(0, 1fr);
+    gap: 0 8px;
     align-items: center;
     margin: 0;
-    padding: 7px 8px;
+    padding: 6px 8px;
     border: 0;
     border-bottom: 1px solid var(--studio-ledge-edge);
     background: var(--studio-ledge-bg);
@@ -31,7 +31,7 @@
   .app-shell.mode-studio .workbench-health-score {
     display: grid;
     grid-row: 1 / span 2;
-    min-height: 48px;
+    min-height: 42px;
     align-content: center;
     justify-content: center;
     border: 1px solid var(--studio-ledge-edge-strong);
@@ -40,7 +40,7 @@
 
   .app-shell.mode-studio .workbench-health-score b {
     color: var(--studio-ledge-text);
-    font-size: 23px;
+    font-size: 21px;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
@@ -58,7 +58,7 @@
   .app-shell.mode-studio .workbench-health-track {
     grid-column: 2 / -1;
     display: block;
-    height: 9px;
+    height: 7px;
     overflow: hidden;
     border: 1px solid var(--studio-ledge-edge-strong);
     background: var(--studio-ledge-stage-track);
@@ -125,6 +125,7 @@
   .app-shell.mode-studio .workbench-warning-row,
   .app-shell.mode-studio .workbench-action-tile,
   .app-shell.mode-studio .workbench-output-row {
+    --workbench-row-rail: transparent;
     width: 100%;
     min-width: 0;
     border: 0;
@@ -132,17 +133,17 @@
     border-radius: 0;
     background: var(--studio-ledge-row);
     color: var(--studio-ledge-text);
-    box-shadow: none;
+    box-shadow: inset 2px 0 0 var(--workbench-row-rail);
   }
 
   .app-shell.mode-studio .workbench-active-asset {
     display: grid;
-    grid-template-columns: 30px minmax(0, 1fr) max-content;
-    gap: 8px;
+    grid-template-columns: 26px minmax(0, 1fr) max-content;
+    gap: 7px;
     align-items: center;
-    min-height: 48px;
+    min-height: 42px;
     margin: 0;
-    padding: 7px 8px;
+    padding: 6px 8px;
     text-align: left;
   }
 
@@ -160,11 +161,11 @@
   .app-shell.mode-studio .workbench-warning-row,
   .app-shell.mode-studio .workbench-output-row {
     display: grid;
-    grid-template-columns: 30px minmax(0, 1fr) minmax(74px, max-content);
-    gap: 8px;
+    grid-template-columns: 26px minmax(0, 1fr) minmax(70px, max-content);
+    gap: 7px;
     align-items: center;
-    min-height: 39px;
-    padding: 6px 8px;
+    min-height: 35px;
+    padding: 5px 8px;
     text-align: left;
   }
 
@@ -178,8 +179,8 @@
   .app-shell.mode-studio .workbench-warning-icon,
   .app-shell.mode-studio .workbench-output-icon {
     display: grid;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     place-items: center;
     border: 1px solid var(--studio-ledge-edge-strong);
     background: var(--studio-ledge-control);
@@ -202,7 +203,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--studio-ledge-text);
-    font-size: 12px;
+    font-size: 11.5px;
     line-height: 1.08;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -216,7 +217,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--studio-ledge-muted);
-    font-size: 10.5px;
+    font-size: 10px;
     line-height: 1.15;
     text-overflow: ellipsis;
     text-transform: none;
@@ -224,10 +225,10 @@
   }
 
   .app-shell.mode-studio .workbench-warning-meta {
-    max-width: 96px;
+    max-width: 90px;
     justify-self: end;
     color: var(--studio-ledge-muted);
-    font-size: 10.5px;
+    font-size: 10px;
     text-align: right;
   }
 
@@ -286,11 +287,11 @@
 
   .app-shell.mode-studio .workbench-action-tile {
     display: grid;
-    grid-template-columns: 20px minmax(0, 1fr);
-    min-height: 48px;
-    gap: 8px;
+    grid-template-columns: 18px minmax(0, 1fr);
+    min-height: 40px;
+    gap: 7px;
     align-items: center;
-    padding: 7px 8px;
+    padding: 6px 8px;
     border-right: 1px solid var(--studio-ledge-edge);
     text-align: left;
   }
@@ -300,14 +301,42 @@
   }
 
   .app-shell.mode-studio .workbench-action-tile .action-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     color: color-mix(in srgb, var(--section-accent) 75%, var(--studio-ledge-muted));
   }
 
   .app-shell.mode-studio .workbench-action-tile.is-primary {
+    --workbench-row-rail: var(--section-accent);
     background: var(--studio-ledge-primary);
-    box-shadow: inset 0 2px 0 color-mix(in srgb, var(--section-accent) 72%, transparent);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-ok,
+  .app-shell.mode-studio .workbench-warning-row.is-ok,
+  .app-shell.mode-studio .workbench-action-tile.is-ok,
+  .app-shell.mode-studio .workbench-output-row.is-ok {
+    --workbench-row-rail: var(--desk-ok);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-warn,
+  .app-shell.mode-studio .workbench-warning-row.is-warn,
+  .app-shell.mode-studio .workbench-action-tile.is-warn,
+  .app-shell.mode-studio .workbench-output-row.is-warn {
+    --workbench-row-rail: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-error,
+  .app-shell.mode-studio .workbench-warning-row.is-error,
+  .app-shell.mode-studio .workbench-action-tile.is-error,
+  .app-shell.mode-studio .workbench-output-row.is-error {
+    --workbench-row-rail: var(--desk-danger);
+  }
+
+  .app-shell.mode-studio .workbench-active-asset.is-planned,
+  .app-shell.mode-studio .workbench-warning-row.is-planned,
+  .app-shell.mode-studio .workbench-action-tile.is-planned,
+  .app-shell.mode-studio .workbench-output-row.is-planned {
+    --workbench-row-rail: var(--studio-ledge-muted);
   }
 
   .app-shell.mode-studio .workbench-active-asset:hover,
