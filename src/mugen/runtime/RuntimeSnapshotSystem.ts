@@ -10,6 +10,7 @@ import type {
   RuntimeStageFlash,
   StageSnapshot,
 } from "./types";
+import type { RuntimeEffectSnapshotGroups } from "./EffectLifecycleSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 
 export type RuntimeSnapshotActor = {
@@ -56,6 +57,11 @@ export type RuntimeStageSnapshotInput = {
   actors: RuntimeSnapshotActor[];
   cameraShake?: StageSnapshot["camera"]["shake"];
   envColor?: RuntimeStageFlash;
+};
+
+export type RuntimeEffectSnapshotInput = {
+  p1: RuntimeEffectSnapshotGroups;
+  p2: RuntimeEffectSnapshotGroups;
 };
 
 export class RuntimeSnapshotWorld {
@@ -125,6 +131,17 @@ export class RuntimeSnapshotWorld {
       })),
       envShakeEvents: actor.envShakeEvents.map((event) => ({ ...event })),
     };
+  }
+
+  effects(input: RuntimeEffectSnapshotInput): ActorSnapshot[] {
+    return [
+      ...input.p1.explods,
+      ...input.p2.explods,
+      ...input.p1.helpers,
+      ...input.p2.helpers,
+      ...input.p1.projectiles,
+      ...input.p2.projectiles,
+    ].map((snapshot) => structuredClone(snapshot));
   }
 }
 

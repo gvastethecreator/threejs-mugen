@@ -7,7 +7,7 @@ import {
   type RuntimePlayerSnapshotActor,
   type RuntimeSnapshotActor,
 } from "../mugen/runtime/RuntimeSnapshotSystem";
-import type { CharacterRuntimeState, RuntimeStageFlash } from "../mugen/runtime/types";
+import type { ActorSnapshot, CharacterRuntimeState, RuntimeStageFlash } from "../mugen/runtime/types";
 
 describe("RuntimeSnapshotWorld", () => {
   it("projects camera center from actors that can move the camera", () => {
@@ -251,6 +251,30 @@ describe("RuntimeSnapshotWorld", () => {
     expect(snapshot.clsn1).toEqual([]);
     expect(snapshot.clsn2).toEqual([{ x1: -24, y1: -96, x2: 24, y2: 0 }]);
   });
+
+  it("owns ordered effect snapshot aggregation without leaking mutable snapshots", () => {
+    const world = new RuntimeSnapshotWorld();
+    const p1Explod = effectSnapshot("p1-explod-1", "explod", "p1", { x: 1, y: 0 });
+    const p2Explod = effectSnapshot("p2-explod-1", "explod", "p2", { x: 2, y: 0 });
+    const p1Helper = effectSnapshot("p1-helper-1", "helper", "p1", { x: 3, y: 0 });
+    const p2Projectile = effectSnapshot("p2-projectile-1", "projectile", "p2", { x: 4, y: 0 });
+
+    const snapshots = world.effects({
+      p1: { explods: [p1Explod], helpers: [p1Helper], projectiles: [] },
+      p2: { explods: [p2Explod], helpers: [], projectiles: [p2Projectile] },
+    });
+    p1Explod.runtime.pos.x = 999;
+    p1Explod.clsn1[0]!.x1 = 999;
+
+    expect(snapshots.map((snapshot) => snapshot.id)).toEqual([
+      "p1-explod-1",
+      "p2-explod-1",
+      "p1-helper-1",
+      "p2-projectile-1",
+    ]);
+    expect(snapshots[0]?.runtime.pos.x).toBe(1);
+    expect(snapshots[0]?.clsn1).toEqual([{ x1: 0, y1: -10, x2: 8, y2: 0 }]);
+  });
 });
 
 function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"]): RuntimeSnapshotActor {
@@ -294,5 +318,77 @@ function frame(overrides: Partial<MugenAnimationFrame> = {}): MugenAnimationFram
     raw: "200,0,0,0,3",
     line: 1,
     ...overrides,
+  };
+}
+
+function effectSnapshot(
+  id: string,
+  kind: NonNullable<ActorSnapshot["effect"]>["kind"],
+  ownerId: string,
+  pos: CharacterRuntimeState["pos"],
+): ActorSnapshot {
+  return {
+    id,
+    label: id,
+    actorKind: kind,
+    ownerId,
+    rootId: ownerId,
+    parentId: ownerId,
+    source: "effect",
+    effect: effectPayload(kind),
+    runtime: {
+      ...runtimeState(),
+      pos: { ...pos },
+    },
+    clsn1: [{ x1: 0, y1: -10, x2: 8, y2: 0 }],
+    clsn2: [],
+  };
+}
+
+function effectPayload(kind: NonNullable<ActorSnapshot["effect"]>["kind"]): NonNullable<ActorSnapshot["effect"]> {
+  if (kind === "explod") {
+    return {
+      kind,
+      age: 1,
+      removeTime: 30,
+      spritePriority: 2,
+      opacity: 1,
+      scale: { x: 1, y: 1 },
+      removeOnGetHit: false,
+      ignoreHitPause: false,
+      pauseMoveTime: 0,
+      superMoveTime: 0,
+    };
+  }
+  if (kind === "helper") {
+    return {
+      kind,
+      age: 1,
+      removeTime: 30,
+      spritePriority: 2,
+      scale: { x: 1, y: 1 },
+      ignoreHitPause: false,
+      pauseMoveTime: 0,
+      superMoveTime: 0,
+    };
+  }
+  return {
+    kind,
+    age: 1,
+    removeTime: 30,
+    spritePriority: 2,
+    priority: 1,
+    hitsRemaining: 1,
+    missTime: 0,
+    missTimeRemaining: 0,
+    damage: 10,
+    hitPause: 0,
+    hitStun: 0,
+    guardDamage: 0,
+    guardPause: 0,
+    guardStun: 0,
+    guardDistance: 0,
+    removeOnHit: true,
+    hasHit: false,
   };
 }

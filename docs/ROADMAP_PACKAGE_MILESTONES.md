@@ -51,7 +51,7 @@ S1 Studio command chrome label/grid follow-up
   -> desktop utility buttons keep visible truncated labels inside fixed grid tracks instead of becoming icon-only
   -> Workbench Project Health now exposes a text Readiness band beside the numeric score
   -> app shell and remaining legacy Studio cascade moved out of src/style.css into app-shell, studio-legacy-surfaces, studio-editor-cascade, studio-ui-hardening, and studio-desktop-authority modules
-  -> qa:css reports 2,618 rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rules, 198 repeated declaration groups, 78 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> qa:css reports 2,622 rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rules, 198 repeated declaration groups, 79 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
   -> visual QA required because this is visible chrome; no new Studio workflow or score claim
 S1 Studio command-center CSS overlap prune
   -> command-center desktop overrides for chrome, compact tabs, stage, console, round HUD, and mission-node fragments pruned from legacy src/style.css
@@ -77,6 +77,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeSnapshotWorld effect snapshot aggregation
+  -> final Explod/Helper/Projectile effect snapshot aggregation moved out of PlayableMatchRuntime
+  -> focused RuntimeSnapshotSystem tests cover stable p1/p2 effect ordering and clone isolation
+  -> no effect VM semantics, exact tick order, renderer parity, compatibility-session ownership, or score claim
 R1 required Common1 fall get-hit entry trace strengthening
   -> synthetic-imported-default-fall-gethit.json checksum 6af73a91 now gates ordered 5000 -> 5030 -> 5050 controller/frame evidence
   -> optional kfm-official-default-fall-gethit.json checksum 813ff55d applies bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation and actor-frame order when the private fixture exists

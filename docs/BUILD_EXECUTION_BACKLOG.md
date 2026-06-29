@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeSnapshotWorld effect snapshot aggregation
+
+Changed:
+
+- Added `RuntimeSnapshotWorld.effects(...)` as the bounded owner for final effect snapshot aggregation across Explod, Helper, and Projectile groups.
+- Updated `PlayableMatchRuntime.getSnapshot()` so it delegates effect snapshot ordering/clone ownership to `RuntimeSnapshotWorld` instead of assembling the `effects` array inline.
+- Added focused `RuntimeSnapshotSystem` coverage proving stable p1/p2 explod/helper/projectile ordering and clone isolation for effect snapshots.
+- Updated roadmap/docs wording so bounded effect snapshot aggregation is no longer listed as missing from the current `RuntimeSnapshotWorld` ownership cut.
+- Corrected the previous CSS claim wording: current `pnpm qa:css` evidence has 0 selectors shared with `src/style.css`, not 7.
+- Verified the companion Studio mission-state label cleanup already present in the working tree: mission steps now distinguish `NEXT`, `WAIT`, and `CHECK` states in text instead of collapsing pending/warn states into less useful labels.
+
+Evidence:
+
+- Focused snapshot test passes: `pnpm vitest run src/tests/RuntimeSnapshotSystem.test.ts`.
+- Full closeout gates for this runtime snapshot ownership cut: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm qa:smoke`, and `git diff --check`.
+- Visual QA inspected `runtime-desktop.png`, `studio-debug-effects.png`, `studio-evidence-world-delta.png`, and `studio-workbench.png`; runtime rendering, effect-store evidence, and Studio mission labels remained readable.
+
+Claim allowed:
+
+- `RuntimeSnapshotWorld` now owns bounded stage/camera, player actor, and final effect snapshot aggregation before trace/debug/render consumers read `MugenSnapshot`.
+- Current effect snapshot aggregation preserves existing order and clones source snapshots so later mutable effect-store data cannot leak into emitted snapshots.
+- Studio mission rows expose clearer next/wait/check text for current project-flow state.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add helper VM lifecycle, exact effect tick order, parent/root/redirect semantics, renderer parity, compatibility session ownership, motif/screenpack snapshot rules, or full MUGEN/IKEMEN snapshot parity.
+- The Studio mission label cleanup does not add new Studio workflows, persistence, export readiness, or score movement.
+
 ## 2026-06-29 - Required common/FightFX HitSpark multi-frame trace metadata
 
 Changed:
@@ -14,13 +42,13 @@ Evidence:
 - Focused runtime preset test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file, 157 tests.
 - `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
 - Required presentation checksums remain `synthetic-imported-hitdef-common-spark.json` `5ea054d7` and `synthetic-imported-hitdef-fightfx-spark.json` `11537b56`.
-- `pnpm qa:css` passes: 2,618 scanned rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 198 repeated declaration groups, 78 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, and 0 legacy `src/style.css` rules fully shadowed by later imports.
+- `pnpm qa:css` passes: 2,622 scanned rules, 83 duplicate selector keys / 184 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 198 repeated declaration groups, 79 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, and 0 legacy `src/style.css` rules fully shadowed by later imports.
 - Final full-round gates were run after docs/code: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm qa:css`, `pnpm qa:smoke`, and `git diff --check`.
 
 Claim allowed:
 
 - Required common/default and FightFX HitSpark traces now prove bounded multi-frame AIR metadata before renderer handoff for supplied libraries, including frame count, frame indices, and authored total duration.
-- Studio chrome/workbench actions are clearer in the compact desktop command rail, Project Health is less number-only, and legacy `src/style.css` is now a small base stylesheet with only 7 selectors still shared against imported CSS modules while exact duplicate rules remain zero.
+- Studio chrome/workbench actions are clearer in the compact desktop command rail, Project Health is less number-only, and legacy `src/style.css` is now a small base stylesheet with 0 selectors shared against imported CSS modules while exact duplicate rules remain zero.
 
 Claim blocked:
 

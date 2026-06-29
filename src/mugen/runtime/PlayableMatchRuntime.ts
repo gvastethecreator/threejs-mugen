@@ -537,14 +537,7 @@ export class PlayableMatchRuntime {
       stage: this.snapshotWorld.stage({ stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor }),
       round: this.round.snapshot(),
       actors: [this.snapshotWorld.actor(this.p1), this.snapshotWorld.actor(this.p2)],
-      effects: [
-        ...p1Effects.explods,
-        ...p2Effects.explods,
-        ...p1Effects.helpers,
-        ...p2Effects.helpers,
-        ...p1Effects.projectiles,
-        ...p2Effects.projectiles,
-      ],
+      effects: this.snapshotWorld.effects({ p1: p1Effects, p2: p2Effects }),
       compatibilitySession: compatibilityTelemetryWorld.buildSession([this.p1, this.p2]),
       logs: this.logs.slice(0, 80),
     };
