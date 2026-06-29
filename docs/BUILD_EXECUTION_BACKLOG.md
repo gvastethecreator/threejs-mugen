@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio legacy CSS atom prune
+
+Changed:
+
+- Grouped repeated legacy Studio grid, alignment, subtle text, and mono metric declarations in `src/styles/legacy/studio-legacy-surfaces.css`.
+- Removed equivalent one-off rules for file/action split grids, module/tab/lane columns, source/state/command row alignment, command/runtime subtle labels, and runtime/trace/timeline mono metrics.
+- Tightened `pnpm qa:css:budget` from 2,498 to 2,486 max scanned rules and from 144 to 138 repeated declaration groups; cross-file overlap remains 123 because this pass intentionally did not migrate ownership between CSS modules.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,486 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 138 repeated declaration groups, 123 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+
+Claim allowed:
+
+- The repo still does not have literal CSS duplication, and the active CSS budget is smaller through low-risk same-file atom consolidation.
+
+Claim blocked:
+
+- Remaining cross-file overlaps still need owner-by-surface migration or shared chrome, ledger-row, status-cell, and command-action primitive extraction. This does not move runtime compatibility, Studio capability, or port score.
+
 ## 2026-06-29 - Studio structural dead-selector CSS prune
 
 Changed:

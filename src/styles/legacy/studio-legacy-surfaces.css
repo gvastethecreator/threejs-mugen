@@ -62,11 +62,40 @@
   gap: 8px;
 }
 
+.file-actions,
+.match-select-grid,
+.split-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 .list,
 .debug-input-history,
 .fighter-bar {
   display: grid;
   gap: 5px;
+}
+
+.source-package-row,
+.state-list-item,
+.command-list-item {
+  align-items: start;
+}
+
+.command-token small,
+.runtime-versus-card small,
+.runtime-metric-strip small {
+  color: var(--subtle);
+  font-size: 12px;
+}
+
+.runtime-metric-strip b,
+.trace-frame-button strong,
+.timeline-frame strong {
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
 }
 
 .workspace-next strong,
@@ -479,11 +508,9 @@
   gap: 6px;
 }
 
-.command-meter-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.asset-lane-strip {
+.command-meter-grid,
+.asset-lane-strip,
+.studio-tab-section.is-compact .studio-tabs {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
@@ -491,7 +518,9 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.workbench-lane-strip {
+.workbench-lane-strip,
+.module-boundary-grid,
+.studio-tab-section .studio-tabs {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1055,10 +1084,6 @@
   text-align: right;
 }
 
-.module-boundary-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .module-boundary-card {
   display: grid;
   min-width: 0;
@@ -1085,12 +1110,6 @@
 .drop-zone.is-dragging {
   border-color: var(--accent);
   background: var(--surface-flat);
-}
-
-.file-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
 }
 
 .file-actions button {
@@ -1250,14 +1269,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.085),
     inset 0 -1px 0 rgba(0, 0, 0, 0.72),
     0 0 0 1px color-mix(in srgb, var(--surface-accent) 18%, transparent);
-}
-
-.studio-tab-section .studio-tabs {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.studio-tab-section.is-compact .studio-tabs {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .app-shell.mode-studio .studio-tab-section {
@@ -1582,10 +1593,6 @@ button.list-item:hover {
   min-width: 0;
 }
 
-.source-package-row {
-  align-items: start;
-}
-
 .source-package-row .row-actions button {
   padding: 6px 8px;
   min-height: 30px;
@@ -1662,14 +1669,6 @@ button.list-item:hover {
   border-color: rgba(242, 184, 75, 0.28);
 }
 
-.state-list-item {
-  align-items: start;
-}
-
-.command-list-item {
-  align-items: start;
-}
-
 .command-detail {
   display: grid;
   min-width: 0;
@@ -1705,11 +1704,6 @@ button.list-item:hover {
   color: var(--text);
   font-size: 12px;
   line-height: 1.15;
-}
-
-.command-token small {
-  color: var(--subtle);
-  font-size: 12px;
 }
 
 .command-token.direction {
@@ -1894,12 +1888,6 @@ button.controller-chip {
   text-align: center;
 }
 
-.match-select-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
 .field {
   display: grid;
   min-width: 0;
@@ -1945,11 +1933,6 @@ button.controller-chip {
   line-height: 1.2;
 }
 
-.runtime-versus-card small {
-  color: var(--subtle);
-  font-size: 12px;
-}
-
 .runtime-fighter-bars {
   margin-top: 8px;
 }
@@ -1970,17 +1953,6 @@ button.controller-chip {
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.022);
   box-shadow: var(--shadow-recessed);
-}
-
-.runtime-metric-strip b {
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
-.runtime-metric-strip small {
-  color: var(--subtle);
-  font-size: 12px;
 }
 
 .runtime-debug-panel .section-heading-row {
@@ -2429,12 +2401,6 @@ button.controller-chip {
   text-align: left;
 }
 
-.trace-frame-button strong {
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
-}
-
 .trace-frame-button.is-selected {
   border-color: color-mix(in srgb, var(--surface-accent) 72%, transparent);
   background: color-mix(in srgb, var(--surface-accent) 13%, #101217);
@@ -2614,12 +2580,6 @@ button.controller-chip {
 .timeline-frame.is-active {
   border-color: color-mix(in srgb, var(--surface-accent) 66%, transparent);
   background: color-mix(in srgb, var(--surface-accent) 12%, #101217);
-}
-
-.timeline-frame strong {
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
 }
 
 .module-node {
@@ -2999,12 +2959,6 @@ button.controller-chip {
 
 .empty-state button {
   min-height: 36px;
-}
-
-.split-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
 }
 
 .split-controls + .split-controls {
