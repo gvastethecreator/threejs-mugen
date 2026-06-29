@@ -216,8 +216,10 @@ describe("StateControllerExecutor", () => {
   });
 
   it("accepts debug clipboard controllers as no-op runtime controllers", () => {
-    for (const type of ["DisplayToClipboard", "AppendToClipboard", "ClearClipboard"]) {
-      const compiled = compileControllerIr(controller(type, { text: '"state=%d"', params: "StateNo" }));
+    for (const type of ["DisplayToClipboard", "AppendToClipboard", "ClearClipboard", "MakeDust"]) {
+      const compiled = compileControllerIr(
+        controller(type, { text: '"state=%d"', params: "StateNo", pos: "0,0", spacing: "1" }),
+      );
       const result = executeControllerIr(compiled, runtimeState({ stateNo: 200, life: 777 }), () => undefined);
 
       expect(compiled.supportLevel).toBe("noop");
@@ -395,6 +397,7 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("AttackMulSet", { value: "1.5" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("RemapPal", { source: "1,1", dest: "2,3" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("ForceFeedback", { time: "8" }), state, (item) => unsupported.push(item));
+    state = executeStateController(controller("MakeDust", { pos: "0,0", spacing: "1" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("LifeSet", { value: "777" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("PowerSet", { value: "1234" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("VarRangeSet", { first: "2", last: "4", value: "9" }), state, (item) =>

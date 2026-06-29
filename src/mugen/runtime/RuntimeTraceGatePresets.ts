@@ -362,12 +362,13 @@ export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGa
         "DisplayToClipboard",
         "AppendToClipboard",
         "ClearClipboard",
+        "MakeDust",
         "HitDef",
       ],
       requiredExecutedOperations: ["hitdef"],
       requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200 }],
       notes: [
-        "Synthetic imported no-op trace proves Null, ForceFeedback, DisplayToClipboard, AppendToClipboard, and ClearClipboard controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback and debug clipboard controllers remain browser/runtime no-ops, and Null remains a true no-op; this does not claim device feedback, debug text rendering, clipboard output, side effects, or full CNS VM parity.",
+        "Synthetic imported no-op trace proves Null, ForceFeedback, DisplayToClipboard, AppendToClipboard, ClearClipboard, and deprecated MakeDust controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback, debug clipboard controllers, and MakeDust remain browser/runtime no-ops, and Null remains a true no-op; this does not claim device feedback, debug text rendering, clipboard output, dust rendering, side effects, or full CNS VM parity.",
       ],
     },
   );
@@ -10532,6 +10533,12 @@ params = Time
 [State 200, Clear Debug Clipboard Probe]
 type = ClearClipboard
 trigger1 = Time = 0
+
+[State 200, MakeDust Probe]
+type = MakeDust
+trigger1 = Time = 0
+pos = 0, 0
+spacing = 1
 `;
 }
 

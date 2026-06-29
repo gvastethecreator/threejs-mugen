@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-28 - MakeDust no-op compatibility cut
+
+Changed:
+
+- Added deprecated MUGEN `MakeDust` to the controller support registry as `noop("deprecated dust presentation no-op")`.
+- Routed `MakeDust` through state-program runtime-controller dispatch and `StateControllerExecutor` no-op handling.
+- Extended `synthetic-imported-noop.json` to execute `MakeDust` before the simple `HitDef` route.
+- Added focused compiler/runtime/preset tests for `MakeDust` no-op support and trace requirements.
+- Updated compatibility docs and roadmap docs to name `MakeDust` as accepted/countable no-op only.
+
+Evidence:
+
+- `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional.
+- `synthetic-imported-noop.json` checksum is now `a5fe169e`.
+- Controller-family coverage rises to 76.
+
+Claim allowed:
+
+- Imported CNS/Common1 `MakeDust` controllers are accepted, counted, and visible in no-op compatibility telemetry without mutating runtime state or crashing the route.
+
+Claim blocked:
+
+- No dust rendering, FightFX/common dust asset lookup, spacing/pos visual timing, helper/redirect ownership, exact no-op timing, or full CNS VM parity is claimed.
+
 ## 2026-06-28 - Setup-project AGENTS and roadmap sync refresh
 
 Changed:
@@ -1060,3 +1084,5 @@ These are future horizons, not blockers for the private usable MVP.
 222. Done debug no-op controller compatibility cut: the controller registry now accepts `DisplayToClipboard`, `AppendToClipboard`, and `ClearClipboard` as runtime no-ops next to `Null` and browser no-op `ForceFeedback`; `StateProgramExecutor` dispatches them through the runtime-controller path and `StateControllerExecutor` leaves runtime state unchanged. `synthetic-imported-noop.json` now requires all five no-op/debug controllers before the same simple `HitDef` route; focused tests assert noop support/immutability and trace requirements. `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-noop.json` checksum is now `72d54f24`, and controller-family coverage rises to 75. Claim allowed: these common CNS debug/clipboard controllers are accepted and counted in compatibility telemetry without crashing imported flow. Claim blocked: debug text rendering, clipboard output, device force feedback, no-op side effects, helper/redirect ownership, exact no-op timing, and full CNS VM parity.
 
 223. Done contact-memory world ownership cut: `RuntimeContactMemoryWorld` now owns bounded direct/projectile contact-memory creation, reset, mutation, and readback for `MoveContact`/`MoveHit`/`MoveGuarded`, `HitCount`/`UniqHitCount`, `HitAdd`, `MoveReversed`, `ReceivedDamage`/`ReceivedHits`, and projectile contact/time markers. `PlayableMatchRuntime` injects the world into fighter state; `RuntimeDirectCombatWorld` and `RuntimeReversalWorld` now receive the same boundary for direct hit/guard, received-damage, and reversal marker writes. Focused tests prove world readback and injected boundary calls. `pnpm test` passes 60 files / 568 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, and `pnpm qa:trace` remains stable at 156/156 artifacts, 138 required and 18 optional. Claim allowed: bounded contact-memory mutation has a world-style runtime boundary consumed by the main match loop plus direct-combat/reversal systems without trace drift. Claim blocked: exact contact/combo lifetime, helper/redirect/team ownership, hitpause/tick-order accounting, multi-target lifetime, and full MUGEN/IKEMEN contact-memory parity.
+
+224. Done MakeDust no-op compatibility cut: the controller registry now accepts deprecated MUGEN `MakeDust` as a presentation no-op, `StateProgramExecutor` routes it through runtime-controller dispatch, and `StateControllerExecutor` leaves runtime state unchanged. `synthetic-imported-noop.json` now requires `MakeDust` next to `Null`, browser no-op `ForceFeedback`, and debug clipboard no-ops before the same simple `HitDef` route; focused tests assert registry metadata, runtime immutability, and trace requirements. `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-noop.json` checksum is now `a5fe169e`, and controller-family coverage rises to 76. Claim allowed: imported CNS/Common1 `MakeDust` controllers are accepted and counted in no-op compatibility telemetry without crashing imported flow. Claim blocked: dust rendering, FightFX/common dust lookup, visual spacing/pos timing, helper/redirect ownership, exact no-op timing, and full CNS VM parity.

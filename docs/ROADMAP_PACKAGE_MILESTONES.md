@@ -35,11 +35,11 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest implementation checkpoint:
 
 ```txt
-R2 RuntimeContactMemoryWorld ownership
-  -> contact-memory creation/reset/mutation/readback moved behind a named runtime world
-  -> consumed by PlayableMatchRuntime, RuntimeDirectCombatWorld, and RuntimeReversalWorld
-  -> pnpm test 60 files / 568 tests, pnpm typecheck, pnpm build, pnpm qa:trace
-  -> qa:trace aggregate stable at 156/156, 138 required, 18 optional
+R1 MakeDust no-op compatibility
+  -> deprecated MUGEN MakeDust accepted as presentation no-op
+  -> synthetic-imported-noop.json checksum a5fe169e
+  -> proves controller recognition/execution telemetry only, no dust rendering
+  -> qa:trace aggregate 156/156, 138 required, 18 optional, 76 controller families
 ```
 
 Default next implementation slice after docs/setup work:
@@ -68,7 +68,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-air-guard-state.json` actor-frame telemetry
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
-- `synthetic-imported-noop.json` debug clipboard no-op coverage
+- `synthetic-imported-noop.json` debug clipboard plus `MakeDust` no-op coverage
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:

@@ -231,6 +231,7 @@ export function executeControllerIr(
     type === "displaytoclipboard" ||
     type === "appendtoclipboard" ||
     type === "clearclipboard" ||
+    type === "makedust" ||
     type === "playsnd" ||
     type === "stopsnd" ||
     type === "envshake" ||

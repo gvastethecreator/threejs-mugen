@@ -124,6 +124,11 @@ time = 20
     expect(getControllerSupport("HitAdd").runtimeLabel).toBe("contact memory");
     expect(isRuntimeExecutableController("ForceFeedback")).toBe(true);
     expect(getControllerSupport("ForceFeedback").level).toBe("noop");
+    expect(isRuntimeExecutableController("MakeDust")).toBe(true);
+    expect(getControllerSupport("MakeDust")).toEqual({
+      level: "noop",
+      runtimeLabel: "deprecated dust presentation no-op",
+    });
     expect(isRuntimeExecutableController("Trans")).toBe(true);
     expect(getControllerSupport("Trans").level).toBe("partial");
     expect(isRuntimeExecutableController("EnvColor")).toBe(true);

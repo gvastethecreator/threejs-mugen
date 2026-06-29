@@ -69,7 +69,7 @@ MVP controller subset:
 - Combat: `HitDef`, `HitBy`, `NotHitBy`, `DefenceMulSet`, target memory controllers.
 - Pause/camera/effects: `Pause`, `SuperPause`, `Width`, `PlayerPush`, `Turn`, `PosFreeze`, `ScreenBound`, `SprPriority`, `PalFX`, `AfterImage`, `Explod`, `Projectile`, `Helper`, `EnvShake`.
 - Audio: `PlaySnd`, `StopSnd`.
-- Safe no-op/reporting: `Null`, browser-inapplicable controllers such as `ForceFeedback`, and debug clipboard controllers (`DisplayToClipboard`, `AppendToClipboard`, `ClearClipboard`) as accepted no-ops.
+- Safe no-op/reporting: `Null`, browser-inapplicable controllers such as `ForceFeedback`, debug clipboard controllers (`DisplayToClipboard`, `AppendToClipboard`, `ClearClipboard`), and deprecated presentation-only `MakeDust` as accepted no-ops.
 
 Controllers can be partial, but the partial behavior must be documented in `docs/SUPPORTED_FEATURES.md`.
 
