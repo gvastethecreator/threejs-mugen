@@ -4,6 +4,8 @@ const path = require("node:path");
 const repoRoot = path.resolve(__dirname, "..");
 const args = process.argv.slice(2);
 const shouldFix = args.includes("--fix-exact");
+const shouldFixShadowed = args.includes("--fix-shadowed");
+const shouldFixEmptyAtRules = args.includes("--fix-empty-at-rules");
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
   .map((arg) => arg.slice("--prune-selector=".length))
@@ -41,6 +43,26 @@ function normalizeDeclarations(input) {
     .filter(Boolean)
     .sort()
     .join(";");
+}
+
+function declarationEntries(input) {
+  return input
+    .split(";")
+    .map((declaration) => declaration.trim())
+    .filter(Boolean)
+    .map((declaration) => {
+      const colon = declaration.indexOf(":");
+      if (colon <= 0) {
+        return undefined;
+      }
+      const property = declaration.slice(0, colon).trim().toLowerCase();
+      const value = declaration.slice(colon + 1).trim();
+      if (!property || !value) {
+        return undefined;
+      }
+      return { property, value, important: /!important\s*$/i.test(value) };
+    })
+    .filter(Boolean);
 }
 
 function matchingClose(css, openIndex) {
@@ -85,11 +107,13 @@ function parseLeafRules(css) {
       if (prelude.startsWith("@")) {
         parseBlock(open + 1, close, context.concat(prelude));
       } else if (prelude && !body.includes("{")) {
+        const rawDeclarations = css.slice(open + 1, close);
         const declarations = normalizeDeclarations(body);
         if (declarations) {
           rules.push({
             selector: prelude,
             declarations,
+            entries: declarationEntries(rawDeclarations),
             context: context.join(" | "),
             start: preludeStart,
             open,
@@ -226,6 +250,10 @@ function pruneUnusedSelectors(css, targets) {
 
 function summarize(file) {
   const css = fs.readFileSync(file, "utf8");
+  return summarizeFromCss(css);
+}
+
+function summarizeFromCss(css) {
   const rules = parseLeafRules(css);
   const selectors = new Map();
   const exact = new Map();
@@ -274,6 +302,57 @@ function removeRanges(css, ranges) {
   return output;
 }
 
+function findShadowedSameSelectorRules(summary) {
+  const removals = [];
+
+  for (const group of summary.selectors.values()) {
+    if (group.length < 2) {
+      continue;
+    }
+
+    const laterProperties = new Map();
+    for (let index = group.length - 1; index >= 0; index -= 1) {
+      const rule = group[index];
+      const entries = rule.entries ?? [];
+      if (!entries.length) {
+        continue;
+      }
+
+      const fullyShadowed = entries.every((entry) => {
+        const later = laterProperties.get(entry.property);
+        if (!later) {
+          return false;
+        }
+        return entry.important ? later.important : true;
+      });
+
+      if (fullyShadowed) {
+        removals.push(rule);
+        continue;
+      }
+
+      for (const entry of entries) {
+        if (!laterProperties.has(entry.property) || entry.important) {
+          laterProperties.set(entry.property, entry);
+        }
+      }
+    }
+  }
+
+  return removals;
+}
+
+function removeEmptyAtRules(css) {
+  let removed = 0;
+  let nextCss = css;
+  const emptyAtRule = /(?:\r?\n){0,2}[ \t]*@[^{]+\{\s*\}/g;
+  nextCss = nextCss.replace(emptyAtRule, (match) => {
+    removed += 1;
+    return match.startsWith("\r\n\r\n") ? "\r\n" : match.startsWith("\n\n") ? "\n" : "";
+  });
+  return { css: nextCss, removed };
+}
+
 function detectLineEnding(input) {
   return input.includes("\r\n") ? "\r\n" : "\n";
 }
@@ -287,10 +366,12 @@ for (const file of files) {
   summaries.set(file, summarize(file));
 }
 
-if (shouldFix || pruneSelectors.length) {
+if (shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || pruneSelectors.length) {
   for (const [file, summary] of summaries) {
     let nextCss = summary.css;
     let removedExact = 0;
+    let removedShadowed = 0;
+    let removedEmptyAtRules = 0;
     let pruned = { prunedSelectors: 0, removedRules: 0 };
 
     if (shouldFix && summary.exactRemovals.length) {
@@ -298,9 +379,23 @@ if (shouldFix || pruneSelectors.length) {
       removedExact = summary.exactRemovals.length;
     }
 
+    if (shouldFixShadowed) {
+      const shadowedRemovals = findShadowedSameSelectorRules(summarizeFromCss(nextCss));
+      if (shadowedRemovals.length) {
+        nextCss = removeRanges(nextCss, shadowedRemovals);
+        removedShadowed = shadowedRemovals.length;
+      }
+    }
+
     if (pruneSelectors.length) {
       pruned = pruneUnusedSelectors(nextCss, pruneSelectors);
       nextCss = pruned.css;
+    }
+
+    if (shouldFixEmptyAtRules) {
+      const emptyAtRuleResult = removeEmptyAtRules(nextCss);
+      nextCss = emptyAtRuleResult.css;
+      removedEmptyAtRules = emptyAtRuleResult.removed;
     }
 
     if (nextCss === summary.css) {
@@ -311,6 +406,12 @@ if (shouldFix || pruneSelectors.length) {
     const messages = [];
     if (removedExact) {
       messages.push(`removed ${removedExact} exact duplicate rules`);
+    }
+    if (removedShadowed) {
+      messages.push(`removed ${removedShadowed} fully shadowed same-selector rules`);
+    }
+    if (removedEmptyAtRules) {
+      messages.push(`removed ${removedEmptyAtRules} empty at-rules`);
     }
     if (pruned.prunedSelectors) {
       messages.push(`pruned ${pruned.prunedSelectors} unused selectors`);
@@ -332,7 +433,10 @@ let total = {
   repeatedDeclarationKeys: 0,
 };
 
-const currentSummaries = shouldFix || pruneSelectors.length ? new Map(files.map((file) => [file, summarize(file)])) : summaries;
+const currentSummaries =
+  shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || pruneSelectors.length
+    ? new Map(files.map((file) => [file, summarize(file)]))
+    : summaries;
 
 for (const [file, summary] of currentSummaries) {
   const rel = path.relative(repoRoot, file);

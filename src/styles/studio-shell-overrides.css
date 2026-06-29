@@ -262,7 +262,6 @@
 /* Desktop Studio workstation header: one command spine, clearer states, less button soup. */
 @media (min-width: 1161px) {
   .app-shell.mode-studio {
-    --station-bg: #05070a;
     --station-panel: #0a0d11;
     --station-rail: #0f1318;
     --station-row: #11161c;
@@ -276,18 +275,31 @@
     --station-warn: #c59a68;
     --station-danger: #c87772;
     --station-info: #85a9c8;
+    --studio-line: #252b33;
+    --studio-line-soft: #171c22;
+    --studio-line-strong: #39414a;
+    --studio-panel: #090c10;
+    --studio-panel-raised: #0f1318;
+    --studio-panel-low: #05070a;
+    --studio-row: #0c1117;
+    --studio-row-alt: #090d12;
+    --studio-row-hot: #151b22;
+    --studio-text: #e4e8ed;
+    --studio-muted: #9aa4af;
+    --studio-dim: #717b86;
+    --surface-accent: #9aa3ad;
+    grid-template-columns: clamp(300px, 21vw, 340px) minmax(640px, 1fr) clamp(304px, 22vw, 360px);
+    background: #05070a;
   }
 
   .app-shell.mode-studio .workspace-header {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 5px;
-    padding: 6px;
-    border-bottom: 1px solid var(--station-line-strong);
-    background: var(--station-bg);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.035),
-      inset -1px 0 0 #020304;
+    gap: 7px;
+    padding: 8px 9px;
+    border-bottom: 1px solid var(--studio-line-strong);
+    background: #080b0f;
+    box-shadow: none;
   }
 
   .app-shell.mode-studio .workspace-brand {
@@ -363,7 +375,9 @@
     color: #d9e0e7;
     text-align: left;
     box-shadow: none;
-  }  .app-shell.mode-studio .mode-switch .mode-label,
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-label,
   .app-shell.mode-studio .mode-switch .mode-hint,
   .app-shell.mode-studio .mode-switch .mode-status {
     min-width: 0;
@@ -372,7 +386,9 @@
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }  .app-shell.mode-studio .mode-switch .mode-hint {
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-hint {
     grid-column: 1;
     align-self: end;
     color: #8d98a4;
@@ -458,7 +474,9 @@
     font-family: var(--mono);
     font-size: 12px;
     font-variant-numeric: tabular-nums;
-  }  .app-shell.mode-studio .workspace-summary .is-ok b {
+  }
+
+  .app-shell.mode-studio .workspace-summary .is-ok b {
     color: var(--station-ok);
   }
 
@@ -548,7 +566,9 @@
     border-radius: 0;
     background: #0b0f14;
     box-shadow: none;
-  }  .app-shell.mode-studio .workspace-action-grid button,
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
   .app-shell.mode-studio .workspace-action-grid button.primary-action {
     display: grid;
     grid-template-columns: 18px minmax(0, 1fr) minmax(60px, max-content);
@@ -574,7 +594,9 @@
     background: var(--station-row-hot);
     outline: 1px solid #4a5663;
     outline-offset: -1px;
-  }  .app-shell.mode-studio .workspace-action-grid .action-icon {
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .action-icon {
     width: 15px;
     height: 15px;
     color: #a8b2bd;
@@ -610,7 +632,8 @@
 }
 
 /* Desktop Studio top chrome: instrument strip over marketing/nav chrome. */
-@media (min-width: 1161px) {  .app-shell.mode-studio .studio-chrome-brand,
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .studio-chrome-brand,
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 34px;
     border: 0;
@@ -629,7 +652,9 @@
 
   .app-shell.mode-studio .studio-chrome-brand span {
     min-width: 0;
-  }  .app-shell.mode-studio .studio-chrome-brand strong,
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand strong,
   .app-shell.mode-studio .studio-chrome-brand small,
   .app-shell.mode-studio .studio-chrome-actions span {
     min-width: 0;
@@ -687,7 +712,9 @@
     width: 14px;
     height: 14px;
     color: #8b96a2;
-  }  .app-shell.mode-studio .studio-chrome-actions button.is-active {
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button.is-active {
     background: #18212b;
     color: #f2f5f7;
     box-shadow: inset 0 -2px 0 #83909d;
@@ -695,28 +722,11 @@
 
   .app-shell.mode-studio .studio-chrome-actions button[data-action="open-command-palette"] .ui-icon {
     color: #89afd2;
-  }}
+  }
+}
 
 /* Desktop Studio command-center pass: hard neutral surfaces, tab accents, tighter spatial reading. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio {
-    --studio-line: #252b33;
-    --studio-line-soft: #171c22;
-    --studio-line-strong: #39414a;
-    --studio-panel: #090c10;
-    --studio-panel-raised: #0f1318;
-    --studio-panel-low: #05070a;
-    --studio-row: #0c1117;
-    --studio-row-alt: #090d12;
-    --studio-row-hot: #151b22;
-    --studio-text: #e4e8ed;
-    --studio-muted: #9aa4af;
-    --studio-dim: #717b86;
-    --surface-accent: #9aa3ad;
-    grid-template-columns: clamp(300px, 21vw, 340px) minmax(640px, 1fr) clamp(304px, 22vw, 360px);
-    background: #05070a;
-  }
-
   .app-shell.mode-studio[data-studio-tab="character"] {
     --surface-accent: #9f9490;
   }
@@ -734,7 +744,9 @@
     box-shadow:
       inset 1px 0 0 var(--studio-line),
       inset -1px 0 0 rgba(255, 255, 255, 0.035);
-  }  .app-shell.mode-studio .section {
+  }
+
+  .app-shell.mode-studio .section {
     margin: 0;
     padding: 9px 10px;
     border: 0;
@@ -760,14 +772,6 @@
     border-top-color: color-mix(in srgb, var(--surface-accent) 28%, var(--studio-line-strong));
     border-radius: 0;
     background: var(--studio-panel-raised);
-    box-shadow: none;
-  }
-
-  .app-shell.mode-studio .workspace-header {
-    gap: 7px;
-    padding: 8px 9px;
-    border-bottom: 1px solid var(--studio-line-strong);
-    background: #080b0f;
     box-shadow: none;
   }
 
@@ -1120,12 +1124,16 @@
     overflow: hidden;
     padding: 0;
     background: rgba(7, 10, 14, 0.9);
-  }  .app-shell.mode-studio .stage-status {
+  }
+
+  .app-shell.mode-studio .stage-status {
     left: 8px;
     bottom: 8px;
     width: min(560px, calc(100% - 16px));
     max-height: none;
-  }  .app-shell.mode-studio .stage-status-main strong,
+  }
+
+  .app-shell.mode-studio .stage-status-main strong,
   .app-shell.mode-studio .stage-status-main small {
     overflow: hidden;
     text-overflow: ellipsis;
