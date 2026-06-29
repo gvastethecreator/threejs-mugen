@@ -62,6 +62,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 required common/FightFX HitSpark asset-frame trace strengthening
+  -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame metadata for sparkno 7001
+  -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame metadata for sparkno F7002
+  -> required trace evidence only; no exact renderer lookup, layering, scale, palette, motif/screenpack ownership, or full spark parity claim
 R1 optional KFM x HitDef presentation trace strengthening
   -> kfm-official-x-hit-sound.json checksum 9668e88a gates bounded real KFM x hitsound S5,0 telemetry
   -> kfm-official-x-hit-spark.json checksum 9668e88a gates bounded real KFM x sparkno 0 telemetry
@@ -148,8 +152,8 @@ Default next implementation slice after docs/setup work:
 
 ```txt
 R1 Common1/FightFX precision
-  -> move one guard/fall/recovery or FightFX/common route beyond current bounded evidence
-  -> prefer deeper VM loop order, broader fixture-backed confirmation, or visible package presentation evidence
+  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame evidence
+  -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
 ```
 
 Alternate next slice: R2 `MatchWorld` ownership around helper lifecycle, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
@@ -163,6 +167,8 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitby-allow.json`
 - `synthetic-imported-hitby-reject.json`
 - `synthetic-imported-hitdef-hit-sound.json`
+- `synthetic-imported-hitdef-common-spark.json`
+- `synthetic-imported-hitdef-fightfx-spark.json`
 - `synthetic-imported-target.json` final Target* side-effect evidence
 - `synthetic-imported-target-noko.json` TargetLifeAdd defender-side NoKO evidence
 - `synthetic-imported-target-owned-custom-state.json`
@@ -197,7 +203,7 @@ Current closed gates that must not be reselected as "next":
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
-2. R1 FightFX/common presentation proof beyond current package-frame handoff.
+2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame trace metadata.
 3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after AssertSpecial ownership.
 
 ## Package Closeout Contract

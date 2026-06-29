@@ -2608,6 +2608,81 @@ export function createSyntheticImportedHitDefHitSparkTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHitDefCommonSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-common-spark-attacker",
+    displayName: "Synthetic Imported HitDef Common Spark Attacker",
+    hitSpark: "7001",
+    sparkXy: [16, -66],
+    moveHitStateNo: 261,
+    hitSparkLibraries: syntheticHitSparkLibrary("common", 7001, 7101),
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-common-spark-golden",
+    targetLabel: "Synthetic imported HitDef common spark route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 7001,
+        raw: "7001",
+        assetSource: "common",
+        assetActionId: 7001,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 7101,
+        assetSpriteIndex: 0,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef common-spark trace proves an unprefixed sparkno can resolve bounded common/default asset-frame metadata from runtime hit-spark libraries. It does not claim exact common sprite lookup, render timing, layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-fightfx-spark-attacker",
+    displayName: "Synthetic Imported HitDef FightFX Spark Attacker",
+    hitSpark: "F7002",
+    sparkXy: [18, -68],
+    moveHitStateNo: 261,
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-fightfx-spark-golden",
+    targetLabel: "Synthetic imported HitDef FightFX spark route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 7002,
+        raw: "F7002",
+        rawPrefix: "F",
+        assetSource: "fightfx",
+        assetActionId: 7002,
+        assetFrameIndex: 0,
+        assetSpriteGroup: 8102,
+        assetSpriteIndex: 0,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef FightFX-spark trace proves an F-prefixed sparkno can resolve bounded FightFX asset-frame metadata from runtime hit-spark libraries. It does not claim exact FightFX sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN hit-effect parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefGuardSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-guard-spark-attacker",
@@ -8297,6 +8372,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitSpark?: string;
   guardSpark?: string;
   sparkXy?: [number, number];
+  hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
   fall?: DemoMove["fall"];
   getHitState?: { stateNo: number; animNo?: number };
   fallDefenceUpBranchStateNo?: number;
@@ -8831,6 +8907,7 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBloc
     states: stateFile.states,
     stateEntryControllers,
     commands,
+    hitSparkLibraries: options.hitSparkLibraries,
     animations: new Map([
       [0, options.passiveReversalDef ? reversalTraceAction(0) : traceAction(0)],
       [10, traceAction(10)],
@@ -11255,6 +11332,50 @@ function traceAction(id: number, duration = 4): MugenAnimationAction {
         clsn2: [{ x1: -20, y1: -80, x2: 20, y2: 0 }],
         raw: `${id},0,0,0,${duration}`,
         line: 1,
+      },
+    ],
+  };
+}
+
+function syntheticHitSparkLibrary(
+  source: "common" | "fightfx",
+  actionId: number,
+  spriteGroup: number,
+): NonNullable<DemoFighterDefinition["hitSparkLibraries"]> {
+  const libraries: NonNullable<DemoFighterDefinition["hitSparkLibraries"]> = {};
+  libraries[source] = {
+    source,
+    animations: new Map([[actionId, traceHitSparkAction(actionId, spriteGroup)]]),
+  };
+  return libraries;
+}
+
+function traceHitSparkAction(actionId: number, spriteGroup: number): MugenAnimationAction {
+  return {
+    id: actionId,
+    rawLines: [`[Begin Action ${actionId}]`],
+    frames: [
+      {
+        spriteGroup,
+        spriteIndex: 0,
+        offsetX: 3,
+        offsetY: -4,
+        duration: 5,
+        clsn1: [],
+        clsn2: [],
+        raw: `${spriteGroup},0,3,-4,5`,
+        line: 1,
+      },
+      {
+        spriteGroup,
+        spriteIndex: 1,
+        offsetX: 4,
+        offsetY: -5,
+        duration: 6,
+        clsn1: [],
+        clsn2: [],
+        raw: `${spriteGroup},1,4,-5,6`,
+        line: 2,
       },
     ],
   };

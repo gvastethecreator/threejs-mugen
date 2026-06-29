@@ -577,6 +577,8 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     hitEffectEvents: actor.hitEffectEvents?.map((event) => ({
       ...event,
       offset: event.offset ? { ...event.offset } : undefined,
+      assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
+      assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
     })),
     envShakeEvents: actor.envShakeEvents?.map((event) => ({ ...event })),
     hitFall: actor.hitFall

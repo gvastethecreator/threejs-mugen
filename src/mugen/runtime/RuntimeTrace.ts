@@ -29,7 +29,7 @@ export type RuntimeTraceScriptSegment = RuntimeTraceInputFrame & {
 };
 
 export type RuntimeTraceEffectSummary = NonNullable<ActorSnapshot["effect"]>;
-export type RuntimeTraceHitEffectEvent = Omit<NonNullable<ActorSnapshot["hitEffectEvents"]>[number], "assetFrame">;
+export type RuntimeTraceHitEffectEvent = NonNullable<ActorSnapshot["hitEffectEvents"]>[number];
 
 export type RuntimeTraceActor = {
   id: string;
@@ -691,6 +691,11 @@ export type RuntimeTraceHitEffectEventRequirement = {
   sparkNo?: number;
   raw?: string;
   rawPrefix?: string;
+  assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
+  assetActionId?: number;
+  assetFrameIndex?: number;
+  assetSpriteGroup?: number;
+  assetSpriteIndex?: number;
   stateNo?: number;
   minCount?: number;
 };
@@ -706,6 +711,11 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   raw?: string;
   rawPrefix?: string;
   offset?: { x: number; y: number };
+  assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
+  assetActionId?: number;
+  assetFrameIndex?: number;
+  assetSpriteGroup?: number;
+  assetSpriteIndex?: number;
   stateNo: number;
   eventTick: number;
   runtimeTick?: number;
@@ -2052,6 +2062,11 @@ function summarizeHitEffectEventEvidence(
     raw: event.raw,
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,
+    assetSource: event.assetFrame?.source,
+    assetActionId: event.assetFrame?.actionId,
+    assetFrameIndex: event.assetFrame?.frameIndex,
+    assetSpriteGroup: event.assetFrame?.spriteGroup,
+    assetSpriteIndex: event.assetFrame?.spriteIndex,
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
@@ -2071,6 +2086,11 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.rawPrefix ?? "",
     event.offset?.x ?? "",
     event.offset?.y ?? "",
+    event.assetSource ?? "",
+    event.assetActionId ?? "",
+    event.assetFrameIndex ?? "",
+    event.assetSpriteGroup ?? "",
+    event.assetSpriteIndex ?? "",
     event.stateNo,
     event.eventTick,
     event.runtimeTick ?? "",
@@ -2089,6 +2109,11 @@ function matchesHitEffectEventRequirement(
     (requirement.sparkNo === undefined || event.sparkNo === requirement.sparkNo) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
     (requirement.rawPrefix === undefined || event.rawPrefix === requirement.rawPrefix) &&
+    (requirement.assetSource === undefined || event.assetSource === requirement.assetSource) &&
+    (requirement.assetActionId === undefined || event.assetActionId === requirement.assetActionId) &&
+    (requirement.assetFrameIndex === undefined || event.assetFrameIndex === requirement.assetFrameIndex) &&
+    (requirement.assetSpriteGroup === undefined || event.assetSpriteGroup === requirement.assetSpriteGroup) &&
+    (requirement.assetSpriteIndex === undefined || event.assetSpriteIndex === requirement.assetSpriteIndex) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo)
   );
 }
@@ -2969,6 +2994,8 @@ function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEve
     raw: event.raw,
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,
+    assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
+    assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
     stateNo: event.stateNo,
     tick: event.tick,
     runtimeTick: event.runtimeTick,

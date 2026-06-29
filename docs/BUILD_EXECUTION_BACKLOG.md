@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Required common/FightFX HitSpark asset-frame trace gates
+
+Changed:
+
+- Extended `RuntimeTraceGate` hit-effect evidence with flat asset-frame fields: `assetSource`, `assetActionId`, `assetFrameIndex`, `assetSpriteGroup`, and `assetSpriteIndex`.
+- Preserved `assetFrame` / `assetFrames` in runtime trace hit-effect events so exported artifacts can inspect package/library spark-frame metadata.
+- Added required synthetic trace artifacts for unprefixed common/default spark refs and `F`-prefixed FightFX spark refs:
+  - `synthetic-imported-hitdef-common-spark.json`
+  - `synthetic-imported-hitdef-fightfx-spark.json`
+
+Evidence:
+
+- Focused tests pass: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/RuntimeTraceArtifact.test.ts src/tests/RuntimeTrace.test.ts` -> 3 files, 170 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- New required checksums: `synthetic-imported-hitdef-common-spark.json` `5ea054d7`; `synthetic-imported-hitdef-fightfx-spark.json` `11537b56`.
+
+Claim allowed:
+
+- Imported HitDef spark telemetry can now be required to prove bounded source-frame metadata for unprefixed common/default refs and `F`-prefixed FightFX refs when `hitSparkLibraries` supplies the AIR action frames.
+
+Claim blocked:
+
+- Exact common/FightFX sprite lookup parity, renderer timing, layering, scale, palette, motif/screenpack ownership, system sound fallback, and full MUGEN/IKEMEN hit-effect parity remain blocked.
+
 ## 2026-06-29 - Studio CSS cascade prune and optional KFM HitDef presentation gates
 
 Changed:

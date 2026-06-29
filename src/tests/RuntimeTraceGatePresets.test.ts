@@ -60,6 +60,8 @@ import {
   createSyntheticImportedCrouchGuardStateTraceArtifact,
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
   createSyntheticImportedGuardTraceArtifact,
+  createSyntheticImportedHitDefCommonSparkTraceArtifact,
+  createSyntheticImportedHitDefFightFxSparkTraceArtifact,
   createSyntheticImportedHitDefHitSoundTraceArtifact,
   createSyntheticImportedHitDefHitSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSparkTraceArtifact,
@@ -2383,6 +2385,88 @@ describe("RuntimeTraceGatePresets", () => {
           raw: "S7001",
           rawPrefix: "S",
           offset: { x: 10, y: -72 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef common-spark artifact with asset-frame evidence", () => {
+    const artifact = createSyntheticImportedHitDefCommonSparkTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-common-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "hit",
+          sparkNo: 7001,
+          raw: "7001",
+          rawPrefix: undefined,
+          assetSource: "common",
+          assetActionId: 7001,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 7101,
+          assetSpriteIndex: 0,
+          offset: { x: 16, y: -66 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef FightFX-spark artifact with asset-frame evidence", () => {
+    const artifact = createSyntheticImportedHitDefFightFxSparkTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-fightfx-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "hit",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7002,
+          assetFrameIndex: 0,
+          assetSpriteGroup: 8102,
+          assetSpriteIndex: 0,
+          offset: { x: 18, y: -68 },
           stateNo: 200,
         }),
       ]),
