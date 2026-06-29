@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-28 - RuntimeRecoverySystem ownership extraction
+
+Changed:
+
+- Added `RuntimeRecoverySystem` as the named owner for bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing hooks.
+- Replaced inline recovery helpers in `PlayableMatchRuntime` with the recovery system while keeping state validation and state entry in the match runtime through callbacks.
+- Added focused `RuntimeRecoverySystem` tests for `fall.recovertime` countdown, `data.liedown.time` defaulting, `5110 -> 5120` liedown recovery transition, and imported `5201 -> 52` landing behavior.
+- Refreshed setup-project/roadmap docs so the latest closed ownership cut is `RuntimeRecoverySystem` and the next queue returns to R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership.
+
+Evidence:
+
+- `pnpm test` passes 63 files / 582 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-variable.json` remains checksum `3b33f7a8`.
+- `pnpm qa:smoke` was not required because this slice did not change frontend, renderer, stage, sprite, or Studio UI behavior.
+
+Claim allowed:
+
+- Bounded recovery timer/default/landing behavior now has a named runtime-system boundary consumed by the match loop.
+
+Claim blocked:
+
+- Exact Common1 recovery thresholds, exact controller-loop/tick order, full get-hit/fall/recovery VM parity, helper/redirect/team ownership, and full MUGEN/IKEMEN recovery parity remain unsupported.
+
 ## 2026-06-28 - HitSpark asset resolver ownership extraction
 
 Changed:

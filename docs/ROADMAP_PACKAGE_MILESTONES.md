@@ -39,6 +39,10 @@ R2 HitSparkAssetSystem ownership extraction
   -> player/common/FightFX spark asset-frame lookup named after package-frame handoff
   -> focused HitSparkAssetSystem tests cover source routing and lookup behavior
   -> renderer behavior unchanged; no new parity or score claim
+R2 RuntimeRecoverySystem ownership extraction
+  -> fall.recovertime, Common1 liedown recovery, and imported ground-recovery landing moved out of PlayableMatchRuntime
+  -> focused RuntimeRecoverySystem tests cover timer/default/transition behavior
+  -> behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -72,12 +76,13 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
 - `RuntimeRandomSystem` deterministic random ownership extraction
 - `HitSparkAssetSystem` player/common/FightFX spark asset-frame lookup extraction
+- `RuntimeRecoverySystem` fall/down-recovery ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around target/helper/effect ordering with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around target/helper/effect ordering with stable or documented trace behavior after `RuntimeRecoverySystem`.
 
 ## Package Closeout Contract
 

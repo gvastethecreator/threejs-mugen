@@ -20,9 +20,13 @@ R2 HitSparkAssetSystem ownership extraction
   -> player/common/FightFX spark asset-frame lookup moved out of PlayableMatchRuntime
   -> focused HitSparkAssetSystem tests cover prefix, state-owner, library, and missing refs
   -> proves named presentation lookup ownership only
+R2 RuntimeRecoverySystem ownership extraction
+  -> hit fall recovery timers, Common1 liedown recovery, and imported ground-recovery landing moved out of PlayableMatchRuntime
+  -> focused RuntimeRecoverySystem tests cover countdown, default liedown time, and state-transition hooks
+  -> proves named recovery ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, or `HitSparkAssetSystem` as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, or `RuntimeRecoverySystem` as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -63,8 +67,8 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem` and `HitSparkAssetSystem` stable after ownership extraction.
-2. Deepen target/helper/effect ownership after current `RuntimeContactMemoryWorld`.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, and `RuntimeRecoverySystem` stable after ownership extraction.
+2. Deepen target/helper/effect ownership after current contact/recovery ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.
 

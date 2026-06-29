@@ -112,6 +112,8 @@ The compiler classifies each piece as:
 
 `RuntimeStunSystem` owns the bounded hitstun/guardstun timer update used by the playable match loop: input-lock checks, guardstun decay, guarding flag maintenance, hit/guard horizontal friction, and hitstun decay. `PlayableMatchRuntime` still maps those timer results to current presentation actions and imported-state preservation, so this is a system boundary for current behavior, not exact MUGEN/IKEMEN hitpause, guard recovery, or Common1 tick-order parity.
 
+`RuntimeRecoverySystem` owns the bounded recovery timers and state-transition hooks that used to live inline in `PlayableMatchRuntime`: `fall.recovertime` countdown, Common1 liedown `data.liedown.time` defaulting/decrement, and imported `5201 -> 52` ground-recovery landing. `PlayableMatchRuntime` still validates and enters states through callbacks, so this is ownership cleanup for current behavior, not exact Common1 threshold/tick-order parity.
+
 `RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. `RuntimeTraceGate.requiredRoundFrames` now lets required artifacts gate that snapshot evidence by round state, winner, message, frame count, and observed timer range; `synthetic-imported-round-ko.json` proves the bounded KO snapshot route after a lethal imported `HitDef`, and `synthetic-imported-round-timeover.json` proves a bounded time-over/draw route through a short `roundTimerFrames` fixture. The match loop still decides when combat/resources change life and when playback stops, so this is ownership cleanup plus evidence coverage for current sandbox round state, not MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, winpose, or screenpack parity.
 
 `MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
@@ -160,6 +162,7 @@ MatchWorld
   TargetSystem
   CombatResolver
   PauseSystem
+  RuntimeRecoverySystem
   RuntimeRoundSystem
   CommandSystem
 ```
@@ -193,9 +196,10 @@ The current extraction order is:
 18. `EffectActorSystem` / `RuntimeEffectActorWorld`: own the mutable per-fighter effect actor stores and keep serials, bounded lists, low-level active/presentation advance mutation, removal mutation, combat handoff, reset, summaries, and snapshot handoff out of the main match loop.
 19. `TargetSystem`: own target memory, target id matching, target binding, and drop/expiry helpers.
 20. `CombatResolver`: own current partial contact, eligibility, override, guard, and damage-result helpers outside the match loop.
-21. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-22. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-23. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+21. `RuntimeRecoverySystem`: own bounded fall recovery countdown, Common1 liedown recovery, and imported ground-recovery landing hooks outside the main match loop.
+22. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+23. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+24. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

@@ -56,6 +56,7 @@ import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
+import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
 import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -201,6 +202,7 @@ export class PlayableMatchRuntime {
   private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
   private readonly reversalWorld = new RuntimeReversalWorld(this.contactWorld);
   private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
+  private readonly recoveryWorld = new RuntimeRecoverySystem();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -359,6 +361,7 @@ export class PlayableMatchRuntime {
       this.hitOverrideWorld,
       this.reversalWorld,
       this.effectSpawnWorld,
+      this.recoveryWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -373,6 +376,7 @@ export class PlayableMatchRuntime {
         this.hitOverrideWorld,
         this.reversalWorld,
         this.effectSpawnWorld,
+        this.recoveryWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -442,6 +446,7 @@ export class PlayableMatchRuntime {
         this.hitOverrideWorld,
         this.reversalWorld,
         this.effectSpawnWorld,
+        this.recoveryWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -821,6 +826,7 @@ function advanceFighter(
   hitOverrideWorld: RuntimeHitOverrideWorld,
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
+  recoveryWorld: RuntimeRecoverySystem,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -832,7 +838,7 @@ function advanceFighter(
   fighter.runtime.renderAngle = undefined;
   fighter.stateElapsed += 1;
   actorConstraintWorld.resetFrameConstraints(fighter.runtime);
-  advanceHitFallRecoveryWindow(fighter);
+  recoveryWorld.tickHitFallRecoveryWindow(fighter);
   const tickStartPos = { ...fighter.runtime.pos };
   const stunTick = tickRuntimeStun(fighter);
   if (stunTick.guardActive) {
@@ -898,8 +904,14 @@ function advanceFighter(
     onPauseController,
     onEnvColorController,
   );
-  advanceImportedGroundRecoveryLanding(fighter);
-  advanceCommon1LieDownRecovery(fighter);
+  recoveryWorld.advanceImportedGroundRecoveryLanding(fighter, {
+    canEnterState: (stateId) => canEnterState(fighter, stateId),
+    enterState: (stateId) => enterState(fighter, stateId, undefined, { clearStateOwner: true }),
+  });
+  recoveryWorld.advanceCommon1LieDownRecovery(fighter, {
+    canEnterState: (stateId) => canEnterState(fighter, stateId),
+    enterState: (stateId) => enterState(fighter, stateId, undefined, { clearStateOwner: true }),
+  });
   actorConstraintWorld.preserveFrozenPosition(fighter.runtime, tickStartPos);
 }
 
@@ -1928,77 +1940,6 @@ function buildMoveFallData(controller: MugenStateController, existing?: DemoMove
           }
         : existing?.fall?.envShake,
   };
-}
-
-function advanceHitFallRecoveryWindow(fighter: FighterMatchState): void {
-  const hitFall = fighter.runtime.hitFall;
-  if (!hitFall?.recover || hitFall.recoverTime === undefined || hitFall.recoverTime <= 0) {
-    return;
-  }
-  fighter.runtime.hitFall = {
-    ...hitFall,
-    recoverTime: Math.max(0, hitFall.recoverTime - 1),
-  };
-}
-
-function advanceCommon1LieDownRecovery(fighter: FighterMatchState): void {
-  if (fighter.runtime.stateNo !== 5110 || fighter.runtime.life <= 0) {
-    return;
-  }
-  const hitFall = ensureDownRecoveryTime(fighter);
-  if (!hitFall) {
-    return;
-  }
-  if ((hitFall.downRecoverTime ?? 0) <= 0) {
-    if (fighter.stateElapsed >= 1 && canEnterState(fighter, 5120)) {
-      enterState(fighter, 5120, undefined, { clearStateOwner: true });
-    }
-    return;
-  }
-  fighter.runtime.hitFall = {
-    ...hitFall,
-    downRecoverTime: Math.max(0, (hitFall.downRecoverTime ?? 0) - 1),
-  };
-}
-
-function advanceImportedGroundRecoveryLanding(fighter: FighterMatchState): void {
-  if (!isImportedGroundRecoveryLandingState(fighter) || fighter.runtime.life <= 0) {
-    return;
-  }
-  if (fighter.runtime.vel.y <= 0 || fighter.runtime.pos.y < 0 || !canEnterState(fighter, 52)) {
-    return;
-  }
-  fighter.runtime.pos.y = 0;
-  fighter.runtime.vel.y = 0;
-  enterState(fighter, 52, undefined, { clearStateOwner: true });
-}
-
-function isImportedGroundRecoveryLandingState(fighter: FighterMatchState): boolean {
-  if (fighter.definition.source !== "imported" && fighter.stateOwner?.definition.source !== "imported") {
-    return false;
-  }
-  return fighter.runtime.stateNo === 5201 && fighter.runtime.physics === "A";
-}
-
-function ensureDownRecoveryTime(fighter: FighterMatchState): CharacterRuntimeState["hitFall"] | undefined {
-  const hitFall = fighter.runtime.hitFall;
-  if (!hitFall) {
-    return undefined;
-  }
-  if (hitFall.downRecoverTime !== undefined) {
-    return hitFall;
-  }
-  const downRecoverTime = defaultDownRecoverTime(fighter.definition);
-  fighter.runtime.hitFall = {
-    ...hitFall,
-    downRecover: hitFall.downRecover ?? true,
-    downRecoverTime,
-  };
-  return fighter.runtime.hitFall;
-}
-
-function defaultDownRecoverTime(definition: DemoFighterDefinition): number {
-  return Math.max(0, Math.round(definition.constants?.["data.liedown.time"] ?? 60));
 }
 
 function applyHitOverride(

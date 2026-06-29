@@ -30,7 +30,7 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
-Latest implementation checkpoint: `HitSparkAssetSystem` owns bounded player/common/FightFX HitDef spark asset-frame lookup previously inline in `PlayableMatchRuntime`. `RuntimeRandomSystem` remains the deterministic random ownership checkpoint with required `synthetic-imported-variable.json` checksum `3b33f7a8`; `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional. This is R2 presentation ownership cleanup, not exact FightFX/common layering, scale, palette, timing, motif/screenpack ownership, exact MUGEN random stream, helper/parent/root variable scope, or VM parity.
+Latest implementation checkpoint: `RuntimeRecoverySystem` owns bounded hit-fall recovery countdown, Common1 liedown recovery default/decrement, and imported ground-recovery landing previously inline in `PlayableMatchRuntime`; `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional. `HitSparkAssetSystem` remains the presentation ownership checkpoint and `RuntimeRandomSystem` remains the deterministic random ownership checkpoint with required `synthetic-imported-variable.json` checksum `3b33f7a8`. This is R2 recovery ownership cleanup, not exact Common1 recovery thresholds, controller-loop parity, FightFX/common presentation parity, exact MUGEN random stream, helper/parent/root variable scope, or VM parity.
 
 ## Operating Snapshot
 
@@ -132,6 +132,7 @@ Build next:
 - Current proof: `RuntimeContactMemoryWorld` now owns bounded direct/projectile contact-memory creation, reset, mutation, and readback consumed by `PlayableMatchRuntime`, `RuntimeDirectCombatWorld`, and `RuntimeReversalWorld`, with focused `ContactMemorySystem`, `DirectCombatSystem`, and `ReversalSystem` coverage and unchanged trace behavior expected.
 - Current proof: `RuntimeRandomSystem` now owns deterministic sandbox-side random seed creation, LCG advance, controller-safe unit clamping, and fallback `VarRandom` unit derivation consumed by `PlayableMatchRuntime` and `StateControllerExecutor`, with focused system coverage and stable `synthetic-imported-variable.json` checksum `3b33f7a8`.
 - Current proof: `HitSparkAssetSystem` now owns bounded player/common/FightFX HitDef spark asset-frame resolution consumed by `PlayableMatchRuntime` before `RuntimeHitEffectWorld` event insertion, with focused system coverage and unchanged renderer behavior expected.
+- Current proof: `RuntimeRecoverySystem` now owns bounded `fall.recovertime` countdown, Common1 liedown recovery countdown/defaulting, and imported `5201 -> 52` ground-recovery landing hooks consumed by `PlayableMatchRuntime`, with focused system coverage and unchanged trace behavior expected.
 - Move one mutable runtime area behind a named world/system boundary without changing behavior: deeper helper/projectile/explod VM lifecycle, combat/effect ordering, target links, deeper audio semantics, or deeper presentation ownership.
 - Gate ownership through existing trace fields where possible rather than adding new UI.
 
