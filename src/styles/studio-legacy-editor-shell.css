@@ -1,0 +1,525 @@
+/* Editor shell pass: docked, low-chrome command-room layout. */
+.app-shell.mode-studio {
+  --editor-bg: #040506;
+  --editor-panel: #090b0e;
+  --editor-panel-raised: #0e1115;
+  --editor-panel-pressed: #06080a;
+  --editor-header: #11151a;
+  --editor-edge: rgba(255, 255, 255, 0.082);
+  --editor-edge-dark: rgba(0, 0, 0, 0.9);
+  --editor-row: rgba(255, 255, 255, 0.018);
+  --editor-row-hover: rgba(255, 255, 255, 0.045);
+  --editor-command: #151a20;
+  --editor-viewport-bar: rgba(8, 10, 13, 0.94);
+  grid-template-columns: minmax(286px, 318px) minmax(620px, 1fr) minmax(300px, 338px);
+  background: var(--editor-bg);
+}
+
+.app-shell.mode-studio .pane,
+.app-shell.mode-studio .pane-right {
+  gap: 0;
+  padding: 0;
+  border-color: var(--editor-edge-dark);
+  background: var(--editor-panel);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .pane {
+  border-right: 1px solid var(--editor-edge-dark);
+  box-shadow: inset -1px 0 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .pane-right {
+  border-left: 1px solid var(--editor-edge-dark);
+  box-shadow: inset 1px 0 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .workspace-header {
+  gap: 7px;
+  padding: 8px 10px 9px;
+  border-bottom: 1px solid var(--editor-edge-dark);
+  border-radius: 0;
+  background: var(--editor-header);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.058),
+    inset 0 -1px 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .workspace-brand {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.app-shell.mode-studio .workspace-eyebrow {
+  color: color-mix(in srgb, var(--section-accent) 78%, var(--muted));
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.app-shell.mode-studio .workspace-brand h1 {
+  font-size: 15px;
+  line-height: 1.08;
+}
+
+.app-shell.mode-studio .mode-switch {
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .mode-switch button {
+  min-height: 32px;
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio .mode-switch button.is-active {
+  background: var(--editor-command);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 34%, transparent);
+}
+
+.app-shell.mode-studio .workspace-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 84%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .workspace-summary span {
+  min-height: 36px;
+  padding: 5px 6px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+
+.app-shell.mode-studio .workspace-summary span:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio .workspace-summary b {
+  font-size: 12px;
+}
+
+.app-shell.mode-studio .workspace-summary small {
+  color: color-mix(in srgb, var(--subtle) 86%, var(--text));
+  font-size: 12px;
+}
+
+.app-shell.mode-studio .workspace-summary .is-ok,
+.app-shell.mode-studio .workspace-summary .is-warn {
+  background: transparent;
+}
+
+.app-shell.mode-studio .section,
+.app-shell.mode-studio .workspace-actions,
+.app-shell.mode-studio .studio-command-deck,
+.app-shell.mode-studio .studio-command-center,
+.app-shell.mode-studio .workbench-ops-section,
+.app-shell.mode-studio .acceptance-gates-section {
+  gap: 7px;
+  padding: 9px 10px;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-bottom: 1px solid var(--editor-edge-dark);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .pane > .section:first-child,
+.app-shell.mode-studio .pane-right > .section:first-child {
+  border-top: 0;
+}
+
+.app-shell.mode-studio .section-heading-row {
+  min-height: 28px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+}
+
+.app-shell.mode-studio .section h1,
+.app-shell.mode-studio .section h2,
+.app-shell.mode-studio .section h3 {
+  margin-bottom: 3px;
+  color: color-mix(in srgb, var(--text) 92%, var(--muted));
+  font-size: 13px;
+}
+
+.app-shell.mode-studio .section p {
+  color: color-mix(in srgb, var(--muted) 88%, var(--text));
+  line-height: 1.36;
+}
+
+.app-shell.mode-studio .panel-kicker,
+.app-shell.mode-studio .gate-kicker {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--section-accent) 82%, var(--muted));
+  font-size: 12px;
+}
+
+.app-shell.mode-studio .command-launcher,
+.app-shell.mode-studio .studio-primary-next,
+.app-shell.mode-studio .primary-action {
+  min-height: 38px;
+  border-color: color-mix(in srgb, var(--section-accent) 42%, var(--editor-edge));
+  border-radius: 3px;
+  background: var(--editor-command);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.68);
+}
+
+.app-shell.mode-studio .studio-tab-section.is-compact {
+  padding: 7px 8px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+  gap: 4px;
+}
+
+.app-shell.mode-studio .studio-tab-section.is-compact .tab {
+  min-height: 38px;
+  border-color: color-mix(in srgb, var(--editor-edge) 86%, transparent);
+  border-radius: 2px;
+  background: transparent;
+}
+
+.app-shell.mode-studio .studio-tab-section.is-compact .tab:hover {
+  background: var(--editor-row-hover);
+}
+
+.app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
+  background: var(--editor-command);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 36%, transparent);
+}
+
+.app-shell.mode-studio .studio-command-readouts,
+.app-shell.mode-studio .command-meter-grid,
+.app-shell.mode-studio .asset-lane-strip,
+.app-shell.mode-studio .evidence-lane-strip,
+.app-shell.mode-studio .workbench-lane-strip,
+.app-shell.mode-studio .health-grid,
+.app-shell.mode-studio .stage-status-grid,
+.app-shell.mode-studio .studio-stat-grid {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .studio-command-readouts span,
+.app-shell.mode-studio .command-meter-grid span,
+.app-shell.mode-studio .asset-lane-strip span,
+.app-shell.mode-studio .evidence-lane-strip span,
+.app-shell.mode-studio .workbench-lane-strip span,
+.app-shell.mode-studio .health-grid span,
+.app-shell.mode-studio .stage-status-metric,
+.app-shell.mode-studio .studio-stat-card {
+  min-height: 32px;
+  padding: 5px 6px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 68%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .studio-command-readouts span:last-child,
+.app-shell.mode-studio .command-meter-grid span:last-child,
+.app-shell.mode-studio .asset-lane-strip span:last-child,
+.app-shell.mode-studio .evidence-lane-strip span:last-child,
+.app-shell.mode-studio .workbench-lane-strip span:last-child,
+.app-shell.mode-studio .health-grid span:last-child,
+.app-shell.mode-studio .stage-status-metric:last-child,
+.app-shell.mode-studio .studio-stat-card:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio .studio-mission-strip,
+.app-shell.mode-studio .workbench-surface-grid,
+.app-shell.mode-studio .workspace-action-grid,
+.app-shell.mode-studio .debug-actor-list,
+.app-shell.mode-studio .debug-filter-grid,
+.app-shell.mode-studio .debug-effect-store-list,
+.app-shell.mode-studio .health-queue,
+.app-shell.mode-studio .list,
+.app-shell.mode-studio .build-readiness-list,
+.app-shell.mode-studio .evidence-record-list {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio .studio-mission-node,
+.app-shell.mode-studio .workbench-route-button,
+.app-shell.mode-studio .asset-row,
+.app-shell.mode-studio .evidence-record,
+.app-shell.mode-studio .build-readiness-record,
+.app-shell.mode-studio .health-queue-row,
+.app-shell.mode-studio .debug-filter-button,
+.app-shell.mode-studio .debug-actor-button,
+.app-shell.mode-studio .debug-target-row,
+.app-shell.mode-studio .debug-effect-row,
+.app-shell.mode-studio .debug-event-row,
+.app-shell.mode-studio .debug-world-frame-row,
+.app-shell.mode-studio .actor-tree-row,
+.app-shell.mode-studio .compat-row,
+.app-shell.mode-studio .module-node,
+.app-shell.mode-studio .source-package-row,
+.app-shell.mode-studio .stage-layer-row,
+.app-shell.mode-studio .state-controller-row,
+.app-shell.mode-studio .surface-jump-button,
+.app-shell.mode-studio button.list-item,
+.app-shell.mode-studio .acceptance-gate-row {
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio .studio-mission-node:last-child,
+.app-shell.mode-studio .workbench-route-button:last-child,
+.app-shell.mode-studio .asset-row:last-child,
+.app-shell.mode-studio .evidence-record:last-child,
+.app-shell.mode-studio .build-readiness-record:last-child,
+.app-shell.mode-studio .health-queue-row:last-child,
+.app-shell.mode-studio .debug-filter-button:last-child,
+.app-shell.mode-studio .debug-actor-button:last-child,
+.app-shell.mode-studio .debug-target-row:last-child,
+.app-shell.mode-studio .debug-effect-row:last-child,
+.app-shell.mode-studio .debug-event-row:last-child,
+.app-shell.mode-studio .debug-world-frame-row:last-child,
+.app-shell.mode-studio .actor-tree-row:last-child,
+.app-shell.mode-studio .compat-row:last-child,
+.app-shell.mode-studio .module-node:last-child,
+.app-shell.mode-studio .source-package-row:last-child,
+.app-shell.mode-studio .stage-layer-row:last-child,
+.app-shell.mode-studio .state-controller-row:last-child,
+.app-shell.mode-studio .surface-jump-button:last-child,
+.app-shell.mode-studio button.list-item:last-child,
+.app-shell.mode-studio .acceptance-gate-row:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio .studio-mission-node:hover,
+.app-shell.mode-studio .workbench-route-button:hover,
+.app-shell.mode-studio .asset-row:hover,
+.app-shell.mode-studio .evidence-record:hover,
+.app-shell.mode-studio .build-readiness-record:hover,
+.app-shell.mode-studio .health-queue-row:hover,
+.app-shell.mode-studio .debug-filter-button:hover,
+.app-shell.mode-studio .debug-actor-button:hover,
+.app-shell.mode-studio .surface-jump-button:hover,
+.app-shell.mode-studio button.list-item:hover,
+.app-shell.mode-studio .acceptance-gate-row:hover {
+  background: var(--editor-row-hover);
+}
+
+.app-shell.mode-studio .workbench-route-button {
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-height: 46px;
+  gap: 5px 7px;
+}
+
+.app-shell.mode-studio .workbench-route-button .route-icon {
+  grid-row: 1 / span 3;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  border: 0;
+  background: transparent;
+}
+
+.app-shell.mode-studio .workbench-route-button span {
+  grid-row: auto;
+  font-size: 12px;
+}
+
+.app-shell.mode-studio .workbench-route-button.is-ok,
+.app-shell.mode-studio .asset-row.is-ok,
+.app-shell.mode-studio .evidence-record.is-ok,
+.app-shell.mode-studio .build-readiness-record.is-ok,
+.app-shell.mode-studio .health-queue-row.is-ok,
+.app-shell.mode-studio .stage-layer-row.is-ok,
+.app-shell.mode-studio .engine-module-row.is-ok,
+.app-shell.mode-studio .state-controller-row.is-ok {
+  box-shadow: inset 2px 0 0 var(--ok);
+}
+
+.app-shell.mode-studio .workbench-route-button.is-warn,
+.app-shell.mode-studio .asset-row.is-warn,
+.app-shell.mode-studio .asset-row.is-planned,
+.app-shell.mode-studio .asset-row.is-partial,
+.app-shell.mode-studio .evidence-record.is-warn,
+.app-shell.mode-studio .evidence-record.is-planned,
+.app-shell.mode-studio .evidence-record.is-partial,
+.app-shell.mode-studio .build-readiness-record.is-warn,
+.app-shell.mode-studio .build-readiness-record.is-planned,
+.app-shell.mode-studio .build-readiness-record.is-partial,
+.app-shell.mode-studio .health-queue-row.is-warn,
+.app-shell.mode-studio .health-queue-row.is-planned,
+.app-shell.mode-studio .health-queue-row.is-partial {
+  box-shadow: inset 2px 0 0 var(--warn);
+}
+
+.app-shell.mode-studio .asset-row.is-error,
+.app-shell.mode-studio .asset-row.is-blocked,
+.app-shell.mode-studio .evidence-record.is-error,
+.app-shell.mode-studio .evidence-record.is-blocked,
+.app-shell.mode-studio .build-readiness-record.is-error,
+.app-shell.mode-studio .build-readiness-record.is-blocked,
+.app-shell.mode-studio .health-queue-row.is-error,
+.app-shell.mode-studio .health-queue-row.is-blocked {
+  box-shadow: inset 2px 0 0 var(--danger);
+}
+
+.app-shell.mode-studio .asset-row .ui-icon {
+  color: var(--asset);
+}
+
+.app-shell.mode-studio .evidence-record .ui-icon {
+  color: var(--trace);
+}
+
+.app-shell.mode-studio .debug-filter-button .ui-icon,
+.app-shell.mode-studio .debug-actor-button .ui-icon {
+  color: var(--info);
+}
+
+.app-shell.mode-studio .build-readiness-record .ui-icon {
+  color: var(--warn);
+}
+
+.app-shell.mode-studio .stage {
+  border-inline: 1px solid var(--editor-edge-dark);
+  background: #030405;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+    inset 0 26px 0 rgba(0, 0, 0, 0.22);
+}
+
+.app-shell.mode-studio .stage-status-card {
+  gap: 5px;
+  padding: 6px;
+  border-color: color-mix(in srgb, var(--editor-edge) 82%, transparent);
+  border-radius: 3px;
+  background: var(--editor-viewport-bar);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 10px 18px rgba(0, 0, 0, 0.38);
+}
+
+.app-shell.mode-studio .round-hud-panel {
+  border-color: color-mix(in srgb, var(--editor-edge) 86%, transparent);
+  border-radius: 3px;
+  background: rgba(7, 9, 12, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.052),
+    0 10px 18px rgba(0, 0, 0, 0.34);
+}
+
+.app-shell.mode-studio .console {
+  border-top: 1px solid var(--editor-edge-dark);
+  background: #030405;
+  box-shadow: inset 0 1px 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .console-toolbar {
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: 0;
+  background: var(--editor-header);
+  box-shadow: inset 0 -1px 0 var(--editor-edge-dark);
+}
+
+.app-shell.mode-studio .console-list {
+  padding: 2px 8px 5px;
+  border-radius: 0;
+  background: #030405;
+}
+
+.app-shell.mode-studio .log-line {
+  min-height: 18px;
+  padding-block: 1px;
+}
+
+.app-shell.mode-studio .command-palette-panel {
+  border-color: color-mix(in srgb, var(--editor-edge) 92%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-raised);
+}
+
+@media (max-width: 1240px) and (min-width: 1161px) {
+  .app-shell.mode-studio {
+    grid-template-columns: minmax(266px, 0.78fr) minmax(520px, 1.26fr) minmax(270px, 0.82fr);
+  }
+}
+
+@media (max-width: 1160px) {
+
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right {
+    border-right: 0;
+    border-left: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio .workspace-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.app-shell.mode-studio .workspace-summary span:nth-child(2n) {
+    border-right: 0;
+  }
+
+.app-shell.mode-studio .workspace-summary span:nth-child(n + 3) {
+    border-top: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  }
+
+.app-shell.mode-studio .studio-command-readouts,
+  .app-shell.mode-studio .command-meter-grid,
+  .app-shell.mode-studio .asset-lane-strip,
+  .app-shell.mode-studio .evidence-lane-strip,
+  .app-shell.mode-studio .workbench-lane-strip,
+  .app-shell.mode-studio .health-grid,
+  .app-shell.mode-studio .stage-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.app-shell.mode-studio .stage-status {
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+button:active,
+  .button:active,
+  .touch-cluster button.is-pressed {
+    transform: none;
+  }
+}

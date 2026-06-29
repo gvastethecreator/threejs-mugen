@@ -1,0 +1,99 @@
+/* UI hardening pass: keep shell usable on tablet widths and reduce mobile stage occlusion. */
+@media (max-width: 1160px) {
+
+  .app-shell,
+  .app-shell.mode-studio,
+  .app-shell.mode-inspect {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto minmax(92px, auto);
+    height: auto;
+    min-height: 100vh;
+  }
+
+.pane,
+  .pane-right {
+    border-right: 0;
+    border-left: 0;
+    padding-bottom: 0;
+    scroll-padding-bottom: 0;
+  }
+
+#left-pane,
+  .app-shell.mode-studio #left-pane {
+    order: 2;
+  }
+
+.stage {
+    order: 1;
+    min-height: min(540px, 64vh);
+  }
+
+.pane-right {
+    order: 3;
+  }
+
+.console {
+    grid-column: 1;
+    order: 4;
+  }
+
+.stage-status,
+  .app-shell.mode-studio .stage-status {
+    display: grid;
+    right: 8px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+    max-width: none;
+    max-height: 92px;
+  }
+
+.round-hud {
+    top: 58px;
+  }
+
+.console-list {
+    max-height: 124px;
+    overflow: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .stage {
+    min-height: min(500px, 60vh);
+  }
+
+.stage-status,
+  .app-shell.mode-studio .stage-status {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    max-height: 72px;
+  }
+
+.stage-status-card {
+    gap: 4px;
+    padding: 6px;
+  }
+
+.stage-status-main small,
+  .stage-status-badges {
+    display: none;
+  }
+
+.stage-status-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+.stage-status-metric {
+    min-height: 34px;
+    padding: 4px;
+  }
+
+.stage-status-metric:nth-child(n + 5) {
+    display: none;
+  }
+
+.console-list {
+    max-height: 112px;
+  }
+}

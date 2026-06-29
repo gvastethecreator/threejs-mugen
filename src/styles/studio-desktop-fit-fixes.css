@@ -1,0 +1,38 @@
+/* Desktop DCC fit fixes: command launcher and module ledger readability. */
+@media (min-width: 1161px) {
+
+  .app-shell.mode-studio .command-launcher .badge {
+    grid-column: 3;
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+.app-shell.mode-studio .engine-module-row-head span:nth-child(3) {
+    display: none;
+  }
+
+.app-shell.mode-studio .engine-module-row .status-badge {
+    min-width: 88px;
+    justify-self: end;
+    white-space: nowrap;
+  }
+
+.app-shell.mode-studio .engine-module-contracts {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    display: flex;
+    min-width: 0;
+    justify-content: space-between;
+    gap: 8px;
+    text-align: left;
+  }
+
+.app-shell.mode-studio .engine-module-contracts b,
+  .app-shell.mode-studio .engine-module-contracts small,
+  .app-shell.mode-studio .engine-module-blocked {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

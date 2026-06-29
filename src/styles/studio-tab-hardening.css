@@ -1,0 +1,1367 @@
+/* Evidence Browser command-room polish: dense neutral ledgers, color as signal only. */
+.app-shell.mode-studio[data-studio-tab="evidence"] {
+  --evidence-ok: #78c986;
+  --evidence-warn: var(--warn);
+  --evidence-danger: #d76b66;
+  --evidence-info: #72a7c9;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center {
+  gap: 7px;
+  padding: 9px 10px;
+  border-color: color-mix(in srgb, var(--trace) 28%, var(--editor-edge));
+  background: var(--editor-panel);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-header {
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-header h2,
+.app-shell.mode-studio[data-studio-tab="evidence"] .section > h2,
+.app-shell.mode-studio[data-studio-tab="evidence"] .section-heading-row h2 {
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .panel-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-meta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip em,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge {
+  font-size: 12px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .panel-kicker,
+.app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker {
+  color: color-mix(in srgb, var(--trace) 64%, var(--muted));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-strip,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-grid,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compact-list,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .debug-evidence-block:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .compat-row:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-item:last-child,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record:last-child {
+  border-bottom: 0;
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step.active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-error {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-ok b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-ok b {
+  color: var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-warn b {
+  color: var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-error b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid .is-error b {
+  color: var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pipeline-step small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-meta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip em {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  line-height: 1.22;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button strong,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button span,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid b,
+.app-shell.mode-studio[data-studio-tab="evidence"] .list-title {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
+  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr);
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .operator-callout,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-world-delta,
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-delta {
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 74%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-actions-section .action-stack {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .tabs.studio-tabs,
+.app-shell.mode-studio[data-studio-tab="evidence"] .tab-count {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-action-column button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-actions-section button,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-tabs button {
+  min-height: 40px;
+  padding-block: 7px;
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+  display: grid;
+  grid-template-columns: minmax(88px, 0.34fr) minmax(0, 1fr);
+  margin: 8px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd {
+  min-height: 28px;
+  padding: 6px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 60%, transparent);
+  line-height: 1.24;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 84%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 42%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd {
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dt:nth-last-child(-n + 2),
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv dd:nth-last-child(-n + 1) {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-strip {
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  margin: 8px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button {
+  gap: 2px;
+  text-align: left;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-button.is-selected {
+  color: var(--text);
+  background: color-mix(in srgb, var(--trace) 7%, var(--editor-row));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--trace) 62%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge-row,
+.app-shell.mode-studio[data-studio-tab="evidence"] .contract-pill-row {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge {
+  min-height: 22px;
+  border-radius: 2px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.ok,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.active {
+  color: var(--evidence-ok);
+  border-color: color-mix(in srgb, var(--evidence-ok) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-ok) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.partial {
+  color: var(--evidence-warn);
+  border-color: color-mix(in srgb, var(--evidence-warn) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-warn) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .badge.fail,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.fail,
+.app-shell.mode-studio[data-studio-tab="evidence"] .status-badge.error {
+  color: var(--evidence-danger);
+  border-color: color-mix(in srgb, var(--evidence-danger) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--evidence-danger) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-ok {
+  box-shadow: inset 1px 0 0 var(--evidence-ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-warn,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-planned,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-partial {
+  box-shadow: inset 1px 0 0 var(--evidence-warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-error,
+.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-blocked {
+  box-shadow: inset 1px 0 0 var(--evidence-danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .section {
+  padding: 9px 10px;
+}
+
+@media (max-width: 860px) {
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-center-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid span,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip span {
+    border-right: 0;
+  }
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .studio-kv {
+    grid-template-columns: minmax(76px, 0.38fr) minmax(0, 1fr);
+  }
+
+.app-shell.mode-studio[data-studio-tab="evidence"] .trace-world-row,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .trace-frame-delta-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step {
+  display: grid;
+  gap: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step small {
+  color: color-mix(in srgb, var(--muted) 82%, var(--subtle));
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-command-center {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border-color: color-mix(in srgb, var(--build) 26%, var(--editor-edge));
+  background: var(--editor-panel);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.34);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .studio-tabs,
+.app-shell.mode-studio[data-studio-tab="build"] .empty-state {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] {
+  --build: #8a98a6;
+}
+
+@media (min-width: 1100px) {
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    grid-template-columns: minmax(284px, 306px) minmax(560px, 1fr) minmax(372px, 404px);
+  }
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .section-heading-row {
+  min-height: 28px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .section-heading-row h2 {
+  font-size: 13px;
+  line-height: 1.05;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .panel-kicker {
+  color: color-mix(in srgb, var(--build) 54%, var(--subtle));
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .workspace-actions {
+  gap: 5px;
+  padding: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .studio-mission-strip {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .workspace-action-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .workspace-action-grid button {
+  min-height: 40px;
+  padding-block: 7px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .workspace-action-grid button small {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 82%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway span {
+  display: grid;
+  min-width: 0;
+  min-height: 32px;
+  gap: 1px;
+  padding: 5px 7px 5px 8px;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  color: var(--muted);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway span:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway b,
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway b {
+  color: color-mix(in srgb, var(--text) 92%, var(--build));
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway small {
+  color: var(--subtle);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway .is-ok {
+  box-shadow:
+    inset 1px 0 0 var(--ok),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway .is-warn {
+  box-shadow:
+    inset 1px 0 0 var(--warn),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway .is-error {
+  box-shadow:
+    inset 1px 0 0 var(--danger),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 2px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-action-grid button {
+  min-height: 40px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 62%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 62%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-action-grid .primary-action {
+  grid-column: 1 / -1;
+  box-shadow: inset 1px 0 0 var(--build);
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+  background: color-mix(in srgb, var(--editor-panel-raised) 76%, black);
+  color: color-mix(in srgb, var(--subtle) 90%, var(--text));
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-header span:last-child {
+  text-align: center;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-header + .list {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record {
+  grid-template-columns: minmax(0, 1fr) minmax(82px, auto);
+  gap: 4px 8px;
+  padding-block: 7px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-main {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .record-kicker {
+  width: 100%;
+  max-width: none;
+  overflow: visible;
+  color: color-mix(in srgb, var(--build) 60%, var(--muted));
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .list-title,
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .list-meta {
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .list-title {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.18;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .list-meta {
+  color: color-mix(in srgb, var(--muted) 88%, var(--text));
+  line-height: 1.28;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .record-route {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(44px, 0.28fr) minmax(0, 1.72fr);
+  gap: 5px;
+  margin-top: 1px;
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .record-route b {
+  color: color-mix(in srgb, var(--build) 50%, var(--subtle));
+  text-align: right;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .badge-row {
+  justify-content: flex-start;
+  gap: 3px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record .record-evidence .badge {
+  min-height: 18px;
+  padding: 2px 5px;
+  border-radius: 2px;
+  color: color-mix(in srgb, var(--subtle) 90%, var(--text));
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .record-side {
+  min-width: 82px;
+  gap: 4px;
+  align-self: stretch;
+  align-content: start;
+  justify-items: stretch;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .record-side .badge,
+.app-shell.mode-studio[data-studio-tab="build"] .status-badge {
+  max-width: 100%;
+  justify-content: center;
+  border-radius: 2px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .source-package-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .source-package-row .list-meta {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .pane .section,
+.app-shell.mode-studio[data-studio-tab="build"] .pane-right .section {
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row:first-of-type {
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="build"] .pane-right .section > h2 {
+  padding-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  color: var(--text);
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio[data-studio-tab="build"] .build-runway {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway span:nth-child(2n) {
+    border-right: 0;
+  }
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-runway span:nth-child(n + 3) {
+    border-top: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  }
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-action-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record,
+  .app-shell.mode-studio[data-studio-tab="build"] .source-package-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+.app-shell.mode-studio[data-studio-tab="build"] .record-side,
+  .app-shell.mode-studio[data-studio-tab="build"] .source-package-row .row-actions {
+    justify-items: start;
+    justify-content: flex-start;
+  }
+}
+
+.studio-chrome {
+  display: none;
+}
+
+.app-shell.mode-studio .studio-chrome {
+  z-index: 8;
+  display: grid;
+  grid-column: 1 / 4;
+  grid-row: 1;
+  grid-template-columns: minmax(210px, 0.55fr) minmax(0, 1.45fr) auto;
+  align-items: center;
+  min-width: 0;
+  min-height: 38px;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--editor-edge-dark);
+  background: var(--editor-header);
+  box-shadow: inset 0 -1px 0 var(--editor-edge);
+}
+
+.app-shell.mode-studio .pane,
+.app-shell.mode-studio .stage,
+.app-shell.mode-studio .pane-right {
+  grid-row: 2;
+}
+
+.app-shell.mode-studio .pane {
+  grid-column: 1;
+}
+
+.app-shell.mode-studio .stage {
+  grid-column: 2;
+}
+
+.app-shell.mode-studio .pane-right {
+  grid-column: 3;
+}
+
+.app-shell.mode-studio .console {
+  grid-row: 3;
+}
+
+#command-palette-root:empty {
+  display: none;
+}
+
+.studio-chrome-brand,
+.studio-chrome-actions {
+  min-width: 0;
+}
+
+.studio-chrome-brand {
+  display: inline-grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+}
+
+.studio-chrome-icon {
+  color: var(--section-accent, var(--accent));
+}
+
+.studio-chrome-brand span {
+  min-width: 0;
+}
+
+.studio-chrome-brand strong,
+.studio-chrome-brand small {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-chrome-brand strong {
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.05;
+}
+
+.studio-chrome-brand small {
+  color: var(--subtle);
+  font-size: 12px;
+  line-height: 1.1;
+}
+
+.studio-chrome-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.studio-chrome-actions button {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.studio-chrome-actions button.is-active {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--section-accent, var(--accent)) 54%, var(--editor-edge));
+  background: color-mix(in srgb, var(--section-accent, var(--accent)) 10%, var(--editor-command));
+}
+
+.studio-chrome-actions .ui-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"] {
+  grid-template-columns: 0 minmax(620px, 1fr) minmax(300px, 338px);
+}
+
+.app-shell.mode-studio[data-right-dock="closed"] {
+  grid-template-columns: minmax(286px, 318px) minmax(620px, 1fr) 0;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"][data-right-dock="closed"],
+.app-shell.mode-studio[data-focus-mode="true"] {
+  --console-reserved-height: 31px;
+  grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+
+.app-shell.mode-studio[data-left-dock="closed"] #left-pane,
+.app-shell.mode-studio[data-right-dock="closed"] #right-pane,
+.app-shell.mode-studio[data-focus-mode="true"] #left-pane,
+.app-shell.mode-studio[data-focus-mode="true"] #right-pane {
+  display: none;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .console-list {
+  display: none;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .console-toolbar {
+  min-height: 30px;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .round-hud {
+  top: 10px;
+}
+
+.app-shell.mode-studio[data-focus-mode="true"] .round-hud-panel {
+  max-width: 720px;
+}
+
+@media (max-width: 1160px) {
+
+  .app-shell.mode-studio .studio-chrome {
+    grid-column: 1;
+    grid-row: auto;
+    order: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 42px;
+  }
+
+.app-shell.mode-studio .stage,
+  .app-shell.mode-studio .pane,
+  .app-shell.mode-studio .pane-right,
+  .app-shell.mode-studio .console {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+.app-shell.mode-studio[data-left-dock="closed"],
+  .app-shell.mode-studio[data-right-dock="closed"],
+  .app-shell.mode-studio[data-left-dock="closed"][data-right-dock="closed"],
+  .app-shell.mode-studio[data-focus-mode="true"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+.app-shell.mode-studio[data-focus-mode="true"] {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+.app-shell.mode-studio[data-focus-mode="true"] .console {
+    min-height: 31px;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-studio .studio-chrome {
+    gap: 5px;
+    padding: 5px 6px;
+  }
+
+.studio-chrome-brand {
+    grid-template-columns: 18px minmax(0, 1fr);
+  }
+
+.studio-chrome-actions button {
+    min-width: 32px;
+    padding-inline: 7px;
+  }
+
+.studio-chrome-actions button span {
+    display: none;
+  }
+
+.app-shell.mode-studio[data-focus-mode="true"] .studio-chrome {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 52px;
+  }
+
+.app-shell.mode-studio[data-focus-mode="true"] .round-hud {
+    top: 8px;
+  }
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right {
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section {
+  padding-block: 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .section-heading-row {
+  min-height: 25px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-section {
+  background: color-mix(in srgb, var(--editor-panel-pressed) 76%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-stat-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid {
+  margin-block: 6px 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-grid {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter {
+  gap: 2px;
+  min-height: 54px;
+  padding: 7px 8px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-lens-meter:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid {
+  gap: 0;
+  margin-top: 7px;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid .debug-evidence-block {
+  margin-top: 0;
+  padding: 8px;
+  border-top: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-grid .debug-evidence-block:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block {
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 0 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--editor-edge) 76%, transparent);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block > .panel-kicker {
+  display: block;
+  min-height: 16px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .section-heading-row.compact-heading {
+  padding-bottom: 2px;
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .compat-list,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-link-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-input-history,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-trace-frame-list,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-list {
+  gap: 0;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-link-grid,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-evidence-block .debug-trace-frame-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-link-button,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-trace-frame-button {
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-link-button:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row:last-child,
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-trace-frame-button:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-input-row.has-input {
+  background: color-mix(in srgb, var(--section-accent) 5%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .debug-effect-store-row .section-heading-row.compact-heading {
+  min-height: 24px;
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv {
+  grid-template-columns: minmax(76px, 0.48fr) minmax(0, 1.52fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 68%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+  min-height: 26px;
+  padding: 5px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 58%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 82%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 42%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="debug"] .pane-right .studio-kv dd {
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-command-center {
+  gap: 7px;
+  border-width: 1px 0;
+  border-inline: 0;
+  border-radius: 0;
+  background: color-mix(in srgb, var(--editor-panel-pressed) 74%, transparent);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .panel-kicker,
+.app-shell.mode-studio[data-studio-tab="assets"] .list-meta,
+.app-shell.mode-studio[data-studio-tab="assets"] small,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="assets"] .studio-kv dd,
+.app-shell.mode-studio[data-studio-tab="assets"] .badge,
+.app-shell.mode-studio[data-studio-tab="assets"] .status-badge {
+  font-size: 12px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-center-header {
+  min-height: 26px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-center-main {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-action-column {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button,
+.app-shell.mode-studio[data-studio-tab="assets"] .action-stack button,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right button,
+.app-shell.mode-studio[data-studio-tab="assets"] .primary-action {
+  min-height: 40px;
+  padding: 7px;
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .tabs.studio-tabs,
+.app-shell.mode-studio[data-studio-tab="assets"] .tab-count,
+.app-shell.mode-studio[data-studio-tab="assets"] .studio-tabs button,
+.app-shell.mode-studio[data-studio-tab="assets"] .badge,
+.app-shell.mode-studio[data-studio-tab="assets"] .status-badge,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export {
+  border-radius: 2px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right {
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .section {
+  padding-block: 8px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .section-heading-row {
+  min-height: 25px;
+  padding-bottom: 4px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-triage-section {
+  gap: 7px;
+  background: color-mix(in srgb, var(--editor-panel-pressed) 72%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span {
+  min-height: 34px;
+  padding: 6px 7px;
+  border: 0;
+  border-right: 1px solid color-mix(in srgb, var(--editor-edge) 66%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid span:last-child,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip span:last-child {
+  border-right: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip .is-ok {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip .is-warn {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip .is-error {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  background: var(--editor-row);
+  box-shadow: inset 1px 0 0 var(--danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip small,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip em,
+.app-shell.mode-studio[data-studio-tab="assets"] .triage-grid small {
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  line-height: 1.18;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .operator-callout,
+.app-shell.mode-studio[data-studio-tab="assets"] .selection-summary,
+.app-shell.mode-studio[data-studio-tab="assets"] .action-callout {
+  gap: 3px;
+  padding: 7px 8px;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 26%, var(--editor-edge));
+  border-radius: 3px;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .action-callout {
+  border-left-color: color-mix(in srgb, var(--section-accent) 48%, var(--editor-edge));
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv {
+  grid-template-columns: minmax(72px, 0.45fr) minmax(0, 1.55fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 68%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+  min-height: 28px;
+  padding: 6px 7px;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 58%, transparent);
+  line-height: 1.24;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt {
+  color: color-mix(in srgb, var(--subtle) 84%, var(--text));
+  background: color-mix(in srgb, var(--editor-command) 40%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+  background: var(--editor-row);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt:nth-last-child(-n + 2),
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd:nth-last-child(-n + 1) {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-flow,
+.app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph {
+  display: grid;
+  gap: 6px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-flow .list,
+.app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .compact-list {
+  gap: 0;
+  margin-top: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item,
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .list-item:last-child,
+.app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-map {
+  display: grid;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
+  border-radius: 3px;
+  background: var(--editor-panel-pressed);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-branches {
+  display: grid;
+  gap: 0;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-branch {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-connector {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node {
+  grid-template-columns: minmax(54px, 0.34fr) minmax(0, 1fr) auto;
+  gap: 6px 8px;
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--editor-edge) 64%, transparent);
+  border-radius: 0;
+  background: var(--editor-row);
+  box-shadow: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node small {
+  grid-column: 2 / -1;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node.is-root {
+  background: color-mix(in srgb, var(--asset) 6%, var(--editor-row));
+  box-shadow: inset 1px 0 0 color-mix(in srgb, var(--asset) 72%, transparent);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row {
+  grid-template-columns: minmax(0, 1fr) minmax(58px, auto);
+  gap: 6px;
+}
+
+.app-shell.mode-studio .asset-row {
+  min-height: 44px;
+}
+
+.app-shell.mode-studio .asset-row-main {
+  gap: 4px;
+}
+
+.app-shell.mode-studio .asset-row-title {
+  gap: 2px;
+}
+
+.app-shell.mode-studio .asset-row-kind,
+.app-shell.mode-studio .asset-row-action {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  line-height: 1.18;
+}
+
+.app-shell.mode-studio .asset-row-action {
+  color: color-mix(in srgb, var(--muted) 90%, var(--text));
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail {
+  display: none;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-side {
+  min-width: 58px;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-row-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-row-action,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node strong,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node small {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind {
+  line-height: 1.15;
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-ok {
+  box-shadow: inset 1px 0 0 var(--ok);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-warn,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-planned,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-partial {
+  box-shadow: inset 1px 0 0 var(--warn);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-error,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-blocked {
+  box-shadow: inset 1px 0 0 var(--danger);
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .badge.ok,
+.app-shell.mode-studio[data-studio-tab="assets"] .status-badge.ok,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-ok {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--ok) 6%, var(--editor-row));
+}
+
+.app-shell.mode-studio[data-studio-tab="assets"] .badge.warn,
+.app-shell.mode-studio[data-studio-tab="assets"] .status-badge.warn,
+.app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-warn {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 34%, var(--editor-edge));
+  background: color-mix(in srgb, var(--warn) 6%, var(--editor-row));
+}

@@ -1,0 +1,175 @@
+}
+
+.pane,
+.pane-right {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.035),
+    inset -1px 0 0 rgba(0, 0, 0, 0.66);
+}
+
+.workspace-header,
+.workspace-actions,
+.section,
+.workbench-ops-section,
+.acceptance-gates-section,
+.studio-command-deck,
+.studio-command-center,
+.command-palette-panel,
+.console-toolbar,
+.console-list {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.74);
+}
+
+.workbench-directive,
+.workbench-route-button,
+.acceptance-gate-board,
+.acceptance-gate-row,
+.studio-command-decision,
+.operator-callout,
+.surface-jump-button,
+.studio-mission-node,
+.health-queue-row,
+.studio-primary-next,
+.list-item,
+.asset-row,
+.evidence-record,
+.build-readiness-record,
+.debug-filter-button,
+.debug-lens-meter,
+.debug-actor-button,
+.debug-target-row,
+.debug-effect-row,
+.debug-event-row,
+.debug-world-frame-row,
+.actor-tree-row,
+.compat-row,
+.module-node,
+.control-chip,
+.source-package-row {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.workbench-directive:hover,
+.workbench-directive:focus-visible,
+.workbench-route-button:hover,
+.workbench-route-button:focus-visible,
+.acceptance-gate-row:hover,
+.acceptance-gate-row:focus-visible,
+button.list-item:hover,
+.debug-filter-button:hover,
+.debug-filter-button:focus-visible,
+.debug-actor-button:hover,
+.debug-actor-button:focus-visible {
+  background: var(--surface-flat);
+}
+
+.badge.ok,
+.status-badge.ok,
+.workspace-summary .is-ok,
+.studio-command-readouts .is-ok,
+.command-meter-grid .is-ok,
+.asset-lane-strip .is-ok,
+.evidence-lane-strip .is-ok,
+.workbench-lane-strip .is-ok,
+.health-grid .is-ok,
+.readiness-strip .is-ok,
+.stage-status-metric.is-ok {
+  border-color: color-mix(in srgb, var(--ok) 28%, var(--panel-border));
+  background: rgba(170, 176, 155, 0.045);
+}
+
+.workspace-summary .is-ok b,
+.studio-command-readouts .is-ok b,
+.command-meter-grid .is-ok b,
+.asset-lane-strip .is-ok b,
+.evidence-lane-strip .is-ok b,
+.workbench-lane-strip .is-ok b,
+.health-grid .is-ok b,
+.readiness-strip .is-ok b,
+.stage-status-metric.is-ok b,
+.workbench-route-button.is-ok strong,
+.console-toolbar.is-ok .console-title span {
+  color: var(--ok);
+}
+
+.mode-dot.is-ok,
+.surface-jump-button.is-ok::before,
+.studio-mission-node.is-ok::before,
+.list-item.is-ok::before,
+.debug-actor-button.is-ok::before {
+  box-shadow: none;
+}
+
+.round-hud-panel,
+.stage-status-card {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.workspace-actions::after,
+.studio-command-center::after,
+.command-launcher::after,
+.studio-command-deck::before,
+.studio-mission-node::after {
+  display: none;
+}
+
+.workspace-eyebrow,
+.panel-kicker,
+.gate-kicker,
+.studio-command-label,
+.studio-command-code {
+  color: color-mix(in srgb, var(--surface-accent) 82%, var(--muted));
+}
+
+.studio-command-code,
+.badge.active,
+.badge.warn,
+.badge.ok,
+.status-badge,
+.workbench-route-button.is-warn,
+.workbench-route-button.is-ok,
+.acceptance-gate-row.is-warn,
+.acceptance-gate-row.is-planned,
+.acceptance-gate-row.is-ok,
+.studio-mission-node.is-warn,
+.studio-mission-node.is-planned,
+.studio-mission-node.is-pending,
+.studio-mission-node.is-partial,
+.studio-mission-node.is-ok {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.7);
+}
+
+.badge.warn,
+.workbench-route-button.is-warn,
+.acceptance-gate-row.is-warn,
+.acceptance-gate-row.is-planned,
+.studio-mission-node.is-warn,
+.studio-mission-node.is-planned,
+.studio-mission-node.is-pending,
+.studio-mission-node.is-partial {
+  border-color: color-mix(in srgb, var(--warn) 30%, var(--panel-border));
+}
+
+.badge.ok,
+.workbench-route-button.is-ok,
+.acceptance-gate-row.is-ok,
+.studio-mission-node.is-ok {
+  border-color: rgba(156, 161, 143, 0.22);
+}
+
+.badge.active {
+  border-color: color-mix(in srgb, var(--surface-accent) 30%, var(--panel-border));
+}

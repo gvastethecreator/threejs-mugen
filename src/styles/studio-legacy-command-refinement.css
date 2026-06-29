@@ -1,0 +1,526 @@
+/* Command-room refinement: less indicator glow, better compact labels, stronger instrument hierarchy. */
+.studio-tab-section.is-compact .tab,
+.app-shell.mode-studio .studio-tab-section.is-compact .tab {
+  min-height: 44px;
+  gap: 3px;
+  border-color: rgba(255, 255, 255, 0.105);
+}
+
+.studio-tab-section.is-compact .tab-topline {
+  gap: 5px;
+}
+
+.studio-tab-section.is-compact .tab-status,
+.app-shell.mode-studio .studio-tab-section.is-compact .tab-status {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
+  color: color-mix(in srgb, var(--muted) 86%, var(--text));
+  font-size: 12px;
+  line-height: 1.08;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.studio-tab-section.is-compact .tab-label,
+.app-shell.mode-studio .studio-tab-section.is-compact .tab-label {
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.08;
+  text-overflow: ellipsis;
+}
+
+.mode-dot {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: none;
+}
+
+.tab.is-active,
+.mode-switch button.is-active,
+.app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.76),
+    inset 0 0 0 1px color-mix(in srgb, var(--surface-accent) 18%, transparent);
+}
+
+.badge,
+.status-badge {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.badge.error,
+.status-badge.error {
+  border-color: rgba(185, 105, 98, 0.28);
+  color: color-mix(in srgb, var(--danger) 78%, var(--text));
+}
+
+.build-readiness-record,
+.evidence-record,
+.debug-lens-section,
+.debug-selection-panel,
+.debug-evidence-block {
+  border-color: rgba(255, 255, 255, 0.105);
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.74);
+}
+
+.build-readiness-record.is-ok,
+.evidence-record.is-ok {
+  border-color: color-mix(in srgb, var(--ok) 20%, rgba(255, 255, 255, 0.11));
+}
+
+.build-readiness-record.is-warn,
+.build-readiness-record.is-planned,
+.evidence-record.is-warn,
+.evidence-record.is-planned {
+  border-color: color-mix(in srgb, var(--warn) 22%, rgba(255, 255, 255, 0.11));
+}
+
+.build-readiness-record.is-error,
+.evidence-record.is-error {
+  border-color: color-mix(in srgb, var(--danger) 24%, rgba(255, 255, 255, 0.11));
+}
+
+.record-route {
+  grid-template-columns: 48px minmax(0, 1fr);
+}
+
+.console {
+  border-top-color: rgba(255, 255, 255, 0.08);
+  background: #05070a;
+}
+
+.console-toolbar {
+  min-height: 29px;
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.console-list {
+  background: #05070a;
+}
+
+.log-line {
+  color: color-mix(in srgb, var(--muted) 86%, #8b9098);
+}
+
+.workspace-summary span,
+.app-shell.mode-studio .workspace-summary span,
+.studio-command-readouts span,
+.command-meter-grid span,
+.asset-lane-strip span,
+.evidence-lane-strip span,
+.workbench-lane-strip span,
+.health-grid span,
+.stage-status-metric {
+  background: var(--surface-flat);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.035),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+body,
+.app-shell,
+.stage,
+.pane,
+.pane-right,
+.workspace-header,
+.workspace-actions,
+.section,
+.workbench-ops-section,
+.acceptance-gates-section,
+.studio-command-deck,
+.studio-command-center,
+.command-palette-panel,
+.console,
+.console-toolbar,
+.console-list {
+  background: var(--surface-flat-recessed);
+  background-image: none;
+}
+
+.pane,
+.pane-right,
+.workspace-header,
+.workspace-actions,
+.section,
+.workbench-ops-section,
+.studio-command-center,
+.studio-command-deck,
+.command-palette-panel,
+.console-toolbar {
+  background: var(--surface-flat);
+}
+
+.workspace-summary span,
+.studio-command-readouts span,
+.command-meter-grid span,
+.asset-lane-strip span,
+.evidence-lane-strip span,
+.workbench-lane-strip span,
+.health-grid span,
+.stage-status-metric,
+.workbench-directive,
+.workbench-route-button,
+.acceptance-gate-board,
+.acceptance-gate-row,
+.studio-command-decision,
+.operator-callout,
+.surface-jump-button,
+.studio-mission-node,
+.health-queue-row,
+.studio-primary-next,
+.list-item,
+.asset-row,
+.evidence-record,
+.build-readiness-record,
+.debug-filter-button,
+.debug-lens-meter,
+.debug-actor-button,
+.debug-target-row,
+.debug-effect-row,
+.debug-event-row,
+.debug-world-frame-row,
+.actor-tree-row,
+.compat-row,
+.module-node,
+.control-chip,
+.source-package-row,
+.badge,
+.status-badge,
+button,
+.button,
+select,
+input {
+  background: var(--surface-flat-raised);
+  background-image: none;
+}
+
+button:hover,
+.button:hover,
+.workbench-route-button:hover,
+.debug-filter-button:hover,
+.debug-actor-button:hover,
+.acceptance-gate-row:hover,
+button.list-item:hover {
+  background: var(--surface-flat-strong);
+}
+
+.ui-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  color: currentColor;
+  stroke-width: 1.8;
+  vertical-align: -0.18em;
+}
+
+.mode-icon,
+.tab-icon,
+.action-icon,
+.route-icon,
+.command-launcher-icon,
+.status-icon {
+  color: var(--subtle);
+}
+
+.mode-button-top,
+.tab-topline,
+.workspace-action-label,
+.status-badge,
+.command-launcher {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-topline {
+  width: 100%;
+}
+
+.workspace-action-grid button {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-content: center;
+  align-items: center;
+  column-gap: 7px;
+}
+
+.workspace-action-grid button small {
+  grid-column: 2;
+}
+
+.workbench-route-button {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.workbench-route-button .route-icon {
+  grid-row: 1 / span 3;
+  width: 19px;
+  height: 19px;
+  flex-basis: 19px;
+}
+
+.tab.is-active .tab-icon,
+.mode-switch button.is-active .mode-icon,
+.primary-action .action-icon,
+.command-launcher-icon {
+  color: var(--accent);
+}
+
+.status-badge.ok,
+.badge.ok,
+.is-ok .ui-icon,
+.workbench-route-button.is-ok .route-icon,
+.mode-dot.is-ok {
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 36%, var(--panel-border));
+}
+
+.status-badge.warn,
+.badge.warn,
+.is-warn .ui-icon,
+.workbench-route-button.is-warn .route-icon,
+.mode-dot.is-warn {
+  color: var(--warn);
+  border-color: color-mix(in srgb, var(--warn) 38%, var(--panel-border));
+}
+
+.status-badge.error,
+.badge.error,
+.is-error .ui-icon {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--panel-border));
+}
+
+.status-pending .status-icon,
+.status-planned .status-icon,
+.status-unknown .status-icon {
+  color: var(--info);
+}
+
+.workbench-route-button[data-studio-tab="assets"] .route-icon,
+.asset-row .ui-icon {
+  color: var(--asset);
+}
+
+.workbench-route-button[data-studio-tab="evidence"] .route-icon,
+.evidence-record .ui-icon {
+  color: var(--trace);
+}
+
+.workbench-route-button[data-studio-tab="build"] .route-icon {
+  color: var(--build);
+}
+
+.workbench-route-button[data-studio-tab="debug"] .route-icon {
+  color: var(--info);
+}
+
+.meter-life span {
+  background: #8f985d;
+}
+
+.meter-power span {
+  background: #7e92ad;
+}
+
+.hud-life span {
+  background: #8f985d;
+}
+
+.hud-power span {
+  background: #7e92ad;
+}
+
+.studio-tab-section.is-compact .studio-tabs,
+.app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.command-launcher,
+.app-shell.mode-studio .command-launcher {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.command-launcher .badge {
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.app-shell[data-studio-tab="workbench"] {
+  --section-accent: #b8a36d;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="assets"] {
+  --section-accent: #aa8f66;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="inspector"] {
+  --section-accent: #88919d;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="stage"] {
+  --section-accent: #8d9675;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="debug"] {
+  --section-accent: #b27b68;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="evidence"] {
+  --section-accent: #9a8bb3;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="modules"] {
+  --section-accent: #7e9a98;
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.app-shell[data-studio-tab="build"] {
+  --section-accent: var(--build);
+  --surface-accent: var(--section-accent);
+  --accent: var(--section-accent);
+}
+
+.pane,
+.pane-right {
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.section,
+.workspace-actions,
+.workspace-header,
+.workbench-ops-section,
+.acceptance-gates-section,
+.studio-command-deck,
+.studio-command-center,
+.command-palette-panel,
+.console-toolbar,
+.console-list,
+.round-hud-panel {
+  border-radius: 4px;
+}
+
+.section,
+.workspace-actions,
+.workbench-ops-section,
+.acceptance-gates-section,
+.studio-command-deck,
+.studio-command-center {
+  gap: 8px;
+  padding: 10px 11px;
+}
+
+.workspace-header {
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.studio-tab-section.is-compact,
+.app-shell.mode-studio .studio-tab-section.is-compact {
+  padding: 8px 10px;
+}
+
+.section + .section {
+  margin-top: 0;
+}
+
+.workspace-summary,
+.studio-stat-grid,
+.studio-command-readouts,
+.command-meter-grid,
+.asset-lane-strip,
+.evidence-lane-strip,
+.workbench-lane-strip,
+.health-grid,
+.stage-status-grid,
+.studio-mission-strip,
+.workspace-action-grid,
+.workbench-surface-grid,
+.workbench-action-bar,
+.studio-tabs,
+.studio-tab-section.is-compact .studio-tabs,
+.app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
+  gap: 5px;
+}
+
+.workspace-summary span,
+.studio-command-readouts span,
+.command-meter-grid span,
+.asset-lane-strip span,
+.evidence-lane-strip span,
+.workbench-lane-strip span,
+.health-grid span,
+.stage-status-metric {
+  min-height: 32px;
+  padding: 5px 6px;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.studio-mission-node,
+.workbench-route-button,
+.tab,
+.health-queue-row,
+.studio-primary-next,
+.list-item,
+.asset-row,
+.evidence-record,
+.build-readiness-record,
+.debug-filter-button,
+.debug-actor-button,
+.debug-target-row,
+.debug-effect-row,
+.debug-event-row,
+.debug-world-frame-row,
+.actor-tree-row,
+.compat-row,
+.module-node,
+.source-package-row,
+.surface-jump-button,
+.operator-callout,
+.studio-command-decision,
+.acceptance-gate-row,
+.acceptance-gate-board,
+.workbench-directive,
+.badge,
+.status-badge,
+button,
+.button,
+select,
+input {
+  border-radius: 3px;
+}
+
+.studio-mission-node {
+  min-height: 50px;
+  padding: 7px 8px;

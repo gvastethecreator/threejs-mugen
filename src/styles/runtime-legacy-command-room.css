@@ -1,0 +1,467 @@
+/* Legacy command-room polish: flatten Match/Inspect into dense operator ledgers. */
+.app-shell.mode-match,
+.app-shell.mode-inspect {
+  --legacy-accent: #b59655;
+  --legacy-data-accent: #9b8fbd;
+  --legacy-physics-accent: #a88268;
+  --legacy-row: #0b0e13;
+  --legacy-row-alt: #0f1319;
+  --legacy-row-pressed: #05070a;
+  --legacy-frame: rgba(255, 255, 255, 0.115);
+  --legacy-frame-strong: rgba(255, 255, 255, 0.175);
+  --legacy-rule: rgba(255, 255, 255, 0.07);
+  --surface-accent: var(--legacy-accent);
+  background: var(--surface-flat-recessed);
+}
+
+.app-shell.mode-inspect {
+  --surface-accent: var(--legacy-data-accent);
+}
+
+.app-shell.mode-match .pane,
+.app-shell.mode-match .pane-right,
+.app-shell.mode-inspect .pane,
+.app-shell.mode-inspect .pane-right {
+  background: #07090c;
+}
+
+.app-shell.mode-match .section,
+.app-shell.mode-inspect .section,
+.app-shell.mode-match .runtime-overview-panel,
+.app-shell.mode-match .runtime-debug-panel,
+.app-shell.mode-inspect .runtime-overview-panel,
+.app-shell.mode-inspect .runtime-debug-panel {
+  padding: 10px 11px;
+  border-top: 1px solid var(--legacy-rule);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.86);
+  background: #090c10;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.app-shell.mode-match .section-heading-row,
+.app-shell.mode-inspect .section-heading-row {
+  gap: 7px;
+  min-height: 30px;
+  margin-bottom: 7px;
+}
+
+.app-shell.mode-match .section h2,
+.app-shell.mode-inspect .section h2,
+.app-shell.mode-match .section h3,
+.app-shell.mode-inspect .section h3 {
+  font-size: 13px;
+  line-height: 1.08;
+}
+
+.app-shell.mode-match .panel-kicker,
+.app-shell.mode-inspect .panel-kicker,
+.app-shell.mode-match .list-meta,
+.app-shell.mode-inspect .list-meta {
+  color: color-mix(in srgb, var(--subtle) 88%, var(--text));
+  letter-spacing: 0;
+}
+
+.app-shell.mode-match .workspace-actions,
+.app-shell.mode-inspect .workspace-actions,
+.app-shell.mode-match .match-setup-panel,
+.app-shell.mode-inspect .file-loader-section {
+  border: 1px solid color-mix(in srgb, var(--surface-accent) 28%, var(--legacy-frame));
+  border-radius: 3px;
+  background: #0b0e13;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.82);
+}
+
+.app-shell.mode-match .workspace-actions,
+.app-shell.mode-inspect .workspace-actions {
+  gap: 6px;
+  padding: 7px;
+}
+
+.app-shell.mode-match .workspace-next,
+.app-shell.mode-inspect .workspace-next {
+  gap: 2px;
+  padding: 7px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+}
+
+.app-shell.mode-match .workspace-next strong,
+.app-shell.mode-inspect .workspace-next strong {
+  font-size: 13px;
+}
+
+.app-shell.mode-match .workspace-action-grid,
+.app-shell.mode-inspect .workspace-action-grid,
+.app-shell.mode-match .match-select-grid {
+  gap: 4px;
+}
+
+.app-shell.mode-match .workspace-action-grid button,
+.app-shell.mode-inspect .workspace-action-grid button,
+.app-shell.mode-match .action-stack button,
+.app-shell.mode-inspect .action-stack button,
+.app-shell.mode-match .split-controls button,
+.app-shell.mode-inspect .split-controls button,
+.app-shell.mode-match .full-width-action,
+.app-shell.mode-inspect .full-width-action {
+  min-height: 36px;
+  padding: 6px 8px;
+  border-radius: 2px;
+  border-color: color-mix(in srgb, var(--legacy-frame-strong) 72%, #000);
+  background: var(--legacy-row-alt);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.72);
+}
+
+.app-shell.mode-match .workspace-action-grid button::before,
+.app-shell.mode-inspect .workspace-action-grid button::before {
+  display: none;
+}
+
+.app-shell.mode-match .workspace-action-grid .primary-action,
+.app-shell.mode-inspect .workspace-action-grid .primary-action {
+  border-color: color-mix(in srgb, var(--surface-accent) 54%, var(--legacy-frame-strong));
+  background: #12151a;
+  box-shadow:
+    inset 2px 0 0 var(--surface-accent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.app-shell.mode-match select,
+.app-shell.mode-inspect select,
+.app-shell.mode-match input[type="search"],
+.app-shell.mode-inspect input[type="search"],
+.app-shell.mode-match input[type="number"],
+.app-shell.mode-inspect input[type="number"] {
+  min-height: 34px;
+  padding: 5px 8px;
+  border-radius: 2px;
+  border-color: color-mix(in srgb, var(--legacy-frame) 84%, #000);
+  background: var(--legacy-row-pressed);
+}
+
+.app-shell.mode-match .match-card,
+.app-shell.mode-match .runtime-versus-card,
+.app-shell.mode-inspect .runtime-versus-card {
+  gap: 6px;
+  margin-top: 6px;
+  padding: 6px 7px;
+  border: 1px solid color-mix(in srgb, var(--legacy-physics-accent) 32%, var(--legacy-frame));
+  border-radius: 2px;
+  background: var(--legacy-row);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--legacy-physics-accent) 72%, transparent);
+}
+
+.app-shell.mode-match .runtime-versus-card strong,
+.app-shell.mode-inspect .runtime-versus-card strong,
+.app-shell.mode-match .match-card strong {
+  font-size: 12px;
+}
+
+.app-shell.mode-match .runtime-metric-strip,
+.app-shell.mode-inspect .runtime-metric-strip,
+.app-shell.mode-match .health-grid,
+.app-shell.mode-inspect .health-grid,
+.app-shell.mode-match .readiness-strip,
+.app-shell.mode-inspect .readiness-strip {
+  gap: 0;
+  overflow: hidden;
+  margin-top: 7px;
+  border: 1px solid var(--legacy-frame);
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+}
+
+.app-shell.mode-match .runtime-metric-strip span,
+.app-shell.mode-inspect .runtime-metric-strip span,
+.app-shell.mode-match .health-grid span,
+.app-shell.mode-inspect .health-grid span,
+.app-shell.mode-match .readiness-strip span,
+.app-shell.mode-inspect .readiness-strip span {
+  min-height: 31px;
+  padding: 5px 7px;
+  border: 0;
+  border-right: 1px solid var(--legacy-rule);
+  border-bottom: 1px solid var(--legacy-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-match .runtime-metric-strip span:nth-child(5n),
+.app-shell.mode-inspect .runtime-metric-strip span:nth-child(5n),
+.app-shell.mode-match .health-grid span:nth-child(even),
+.app-shell.mode-inspect .health-grid span:nth-child(even),
+.app-shell.mode-match .readiness-strip span:nth-child(3n),
+.app-shell.mode-inspect .readiness-strip span:nth-child(3n) {
+  border-right: 0;
+}
+
+.app-shell.mode-match .runtime-metric-strip b,
+.app-shell.mode-inspect .runtime-metric-strip b,
+.app-shell.mode-match .health-grid b,
+.app-shell.mode-inspect .health-grid b {
+  font-size: 12px;
+}
+
+.app-shell.mode-match .health-grid .is-ok,
+.app-shell.mode-inspect .health-grid .is-ok {
+  background: color-mix(in srgb, var(--ok) 5%, transparent);
+}
+
+.app-shell.mode-match .health-grid .is-warn,
+.app-shell.mode-inspect .health-grid .is-warn {
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
+}
+
+.app-shell.mode-match .health-grid .is-error,
+.app-shell.mode-inspect .health-grid .is-error {
+  background: color-mix(in srgb, var(--danger) 7%, transparent);
+}
+
+.app-shell.mode-match .telemetry-kv,
+.app-shell.mode-inspect .telemetry-kv,
+.app-shell.mode-match .kv,
+.app-shell.mode-inspect .kv {
+  padding: 7px;
+  border: 1px solid var(--legacy-frame);
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+  box-shadow: none;
+}
+
+.app-shell.mode-match .collapsible-section,
+.app-shell.mode-inspect .collapsible-section {
+  padding: 0;
+}
+
+.app-shell.mode-match .collapsible-section > summary,
+.app-shell.mode-inspect .collapsible-section > summary {
+  min-height: 34px;
+  padding: 8px 10px;
+  border-left: 1px solid color-mix(in srgb, var(--surface-accent) 70%, transparent);
+  background: #0b0e13;
+}
+
+.app-shell.mode-match .collapsible-body,
+.app-shell.mode-inspect .collapsible-body {
+  padding: 8px 10px 10px;
+}
+
+.app-shell.mode-match .control-grid,
+.app-shell.mode-inspect .control-grid,
+.app-shell.mode-match .compat-list,
+.app-shell.mode-inspect .compat-list,
+.app-shell.mode-match .list,
+.app-shell.mode-inspect .list,
+.app-shell.mode-match .action-stack,
+.app-shell.mode-inspect .action-stack {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--legacy-frame);
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+}
+
+.app-shell.mode-match .control-chip,
+.app-shell.mode-inspect .control-chip,
+.app-shell.mode-match .compat-row,
+.app-shell.mode-inspect .compat-row,
+.app-shell.mode-match .source-package-row,
+.app-shell.mode-inspect .source-package-row,
+.app-shell.mode-match .list-item,
+.app-shell.mode-inspect .list-item,
+.app-shell.mode-match .actor-tree-row,
+.app-shell.mode-inspect .actor-tree-row {
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--legacy-rule);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.mode-match .control-chip:last-child,
+.app-shell.mode-inspect .control-chip:last-child,
+.app-shell.mode-match .compat-row:last-child,
+.app-shell.mode-inspect .compat-row:last-child,
+.app-shell.mode-match .source-package-row:last-child,
+.app-shell.mode-inspect .source-package-row:last-child,
+.app-shell.mode-match .list-item:last-child,
+.app-shell.mode-inspect .list-item:last-child,
+.app-shell.mode-match .actor-tree-row:last-child,
+.app-shell.mode-inspect .actor-tree-row:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-match .list-item.is-selected,
+.app-shell.mode-inspect .list-item.is-selected,
+.app-shell.mode-match .compat-row.is-selected,
+.app-shell.mode-inspect .compat-row.is-selected {
+  background: color-mix(in srgb, var(--surface-accent) 8%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--surface-accent) 76%, transparent);
+}
+
+.app-shell.mode-match .control-chip kbd,
+.app-shell.mode-inspect .control-chip kbd {
+  padding: 3px 5px;
+  border-radius: 2px;
+  background: #11151b;
+}
+
+.app-shell.mode-match .compat-list > strong,
+.app-shell.mode-inspect .compat-list > strong {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--legacy-rule);
+  color: color-mix(in srgb, var(--surface-accent) 60%, var(--text));
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.app-shell.mode-match .badge,
+.app-shell.mode-inspect .badge {
+  border-radius: 2px;
+}
+
+.app-shell.mode-match .swatch,
+.app-shell.mode-inspect .swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.28);
+}
+
+.app-shell.mode-match .empty-state,
+.app-shell.mode-inspect .empty-state {
+  gap: 5px;
+  padding: 9px;
+  border-style: solid;
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--surface-accent) 46%, transparent);
+}
+
+.app-shell.mode-match .pipeline-list,
+.app-shell.mode-inspect .pipeline-list {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--legacy-frame);
+  border-radius: 2px;
+  background: var(--legacy-row-pressed);
+}
+
+.app-shell.mode-match .pipeline-step,
+.app-shell.mode-inspect .pipeline-step {
+  min-height: 34px;
+  padding: 7px 8px;
+  border: 0;
+  border-bottom: 1px solid var(--legacy-rule);
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+.app-shell.mode-match .pipeline-step:last-child,
+.app-shell.mode-inspect .pipeline-step:last-child {
+  border-bottom: 0;
+}
+
+.app-shell.mode-match .pipeline-step.active,
+.app-shell.mode-inspect .pipeline-step.active {
+  color: color-mix(in srgb, var(--surface-accent) 62%, var(--text));
+  background: color-mix(in srgb, var(--surface-accent) 7%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--surface-accent) 78%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell.mode-match .control-chip:hover,
+  .app-shell.mode-inspect .control-chip:hover,
+  .app-shell.mode-match .compat-row:hover,
+  .app-shell.mode-inspect .compat-row:hover,
+  .app-shell.mode-match .list-item:hover,
+  .app-shell.mode-inspect .list-item:hover {
+    background: color-mix(in srgb, var(--surface-accent) 5%, var(--legacy-row-alt));
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell.mode-match .section,
+  .app-shell.mode-inspect .section,
+  .app-shell.mode-match .runtime-overview-panel,
+  .app-shell.mode-match .runtime-debug-panel,
+  .app-shell.mode-inspect .runtime-overview-panel,
+  .app-shell.mode-inspect .runtime-debug-panel {
+    padding: 9px;
+  }
+
+.app-shell.mode-match .touch-controls,
+  .app-shell.mode-inspect .touch-controls {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    gap: 8px;
+  }
+
+.app-shell.mode-match .touch-cluster,
+  .app-shell.mode-inspect .touch-cluster {
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--legacy-frame);
+    border-radius: 3px;
+    background: rgba(5, 7, 10, 0.88);
+  }
+
+.app-shell.mode-match .touch-cluster button,
+  .app-shell.mode-inspect .touch-cluster button {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    border-radius: 2px;
+    border-color: color-mix(in srgb, var(--legacy-frame-strong) 80%, #000);
+    background: #0f1319;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.075),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.78);
+  }
+
+.app-shell.mode-match .touch-cluster button.is-pressed,
+  .app-shell.mode-inspect .touch-cluster button.is-pressed {
+    border-color: color-mix(in srgb, var(--surface-accent) 54%, var(--legacy-frame-strong));
+    background: color-mix(in srgb, var(--surface-accent) 10%, #0f1319);
+    transform: translateY(1px);
+  }
+
+.app-shell.mode-match .runtime-metric-strip,
+  .app-shell.mode-inspect .runtime-metric-strip,
+  .app-shell.mode-match .health-grid,
+  .app-shell.mode-inspect .health-grid,
+  .app-shell.mode-match .readiness-strip,
+  .app-shell.mode-inspect .readiness-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.app-shell.mode-match .runtime-metric-strip span:nth-child(n),
+  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(n),
+  .app-shell.mode-match .health-grid span:nth-child(n),
+  .app-shell.mode-inspect .health-grid span:nth-child(n),
+  .app-shell.mode-match .readiness-strip span:nth-child(n),
+  .app-shell.mode-inspect .readiness-strip span:nth-child(n) {
+    border-right: 1px solid var(--legacy-rule);
+  }
+
+.app-shell.mode-match .runtime-metric-strip span:nth-child(even),
+  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(even),
+  .app-shell.mode-match .health-grid span:nth-child(even),
+  .app-shell.mode-inspect .health-grid span:nth-child(even),
+  .app-shell.mode-match .readiness-strip span:nth-child(even),
+  .app-shell.mode-inspect .readiness-strip span:nth-child(even) {
+    border-right: 0;
+  }
+}
