@@ -125,13 +125,13 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Last audited: 2026-06-29 during the setup-project/G1 roadmap-control refresh after the `RuntimeStateAvailabilityWorld` ownership pass.
+- Last audited: 2026-06-29 during the setup-project/G1 roadmap-control refresh after the `RuntimeStunWorld` ownership pass.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
 - Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
 - Agent docs: `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, and `docs/agents/domain.md` are the setup-project handoff files for skills such as `to-issues`, `to-prd`, `triage`, `diagnose`, `tdd`, `improve-codebase-architecture`, and `web-project-readiness`.
-- Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates. Current latest closed ownership cut is `RuntimeStateAvailabilityWorld` unless the backlog proves a newer one.
+- Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates. Current latest closed ownership cut is `RuntimeStunWorld` unless the backlog proves a newer one.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
 
 ## Roadmap Slice Selection
@@ -152,7 +152,7 @@ Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `doc
 
 - Primary: MUGEN-lite playable MVP, not full IKEMEN parity.
 - Near-term runtime focus: R1 KFM/Common1 recovery/guard precision and R2 MatchWorld ownership deepening.
-- Immediate next slice after the `RuntimeStateAvailabilityWorld` checkpoint: R1 Common1/FightFX precision or R2 MatchWorld helper/effect/combat ownership, whichever can produce focused evidence without broad drift.
+- Immediate next slice after the `RuntimeStunWorld` checkpoint: R1 Common1/FightFX precision or R2 MatchWorld helper/effect/combat ownership, whichever can produce focused evidence without broad drift.
 - Parallel product focus: Studio Evidence/Build trust chain, generated asset provenance/QA, IKEMEN scanner/reference expansion, and shared contract readiness.
 - Score movement rule: docs-only/setup work can improve project control but must not raise port scores without runtime trace, focused test, browser visual QA, fixture evidence, or build/export proof.
 

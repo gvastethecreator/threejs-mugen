@@ -110,7 +110,7 @@ The compiler classifies each piece as:
 
 `RuntimeContactMemoryWorld` now owns the bounded contact-memory data structure and mutations behind those direct/projectile trigger cuts: direct `MoveContact`/`MoveHit`/`MoveGuarded`, direct `HitCount`/`UniqHitCount`, `HitAdd`, `MoveReversed`, defender-local `ReceivedDamage`/`ReceivedHits`, and projectile contact/time markers. `PlayableMatchRuntime` injects that world into fighter state and uses it as the actor/state-number glue; `RuntimeDirectCombatWorld` and `RuntimeReversalWorld` use the same boundary for direct hit/guard, received-damage, and reversal marker mutations. This is ownership cleanup, not exact contact/combo lifetime parity. `RuntimeResourceSystem` now owns the bounded resource and variable writes used by `StateControllerExecutor`: `CtrlSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, `VarSet`, `VarAdd`, partial `VarRandom`, and `VarRangeSet`, including sysvar assignment support for set/add. `StateControllerExecutor` still resolves params and expressions, while `RuntimeRandomSystem` owns deterministic sandbox-side random units and dynamic fallback salt for `VarRandom`, so this does not claim exact variable scope, exact MUGEN random stream, parent/root redirects, or full CNS VM parity. `HitSparkAssetSystem` now owns bounded HitDef spark asset-frame resolution from `S` player AIR refs, unprefixed common refs, and `F` FightFX refs before `RuntimeHitEffectWorld` records the event; this is presentation ownership cleanup, not exact FightFX/common visual parity.
 
-`RuntimeStunSystem` owns the bounded hitstun/guardstun timer update used by the playable match loop: input-lock checks, guardstun decay, guarding flag maintenance, hit/guard horizontal friction, and hitstun decay. `PlayableMatchRuntime` still maps those timer results to current presentation actions and imported-state preservation, so this is a system boundary for current behavior, not exact MUGEN/IKEMEN hitpause, guard recovery, or Common1 tick-order parity.
+`RuntimeStunWorld` owns the bounded hitstun/guardstun update used by the playable match loop: input-lock checks, guardstun decay, guarding flag maintenance, hit/guard horizontal friction, hitstun decay, hitstun presentation-action requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration. `PlayableMatchRuntime` still supplies the concrete action-change callback and imported-state predicate, so this is a system boundary for current behavior, not exact MUGEN/IKEMEN hitpause, guard recovery, helper/custom-state stun ownership, or Common1 tick-order parity.
 
 `RuntimeRecoverySystem` owns the bounded recovery timers and state-transition hooks that used to live inline in `PlayableMatchRuntime`: `fall.recovertime` countdown, Common1 liedown `data.liedown.time` defaulting/decrement, and imported `5201 -> 52` ground-recovery landing. `PlayableMatchRuntime` still validates and enters states through callbacks, so this is ownership cleanup for current behavior, not exact Common1 threshold/tick-order parity.
 
@@ -175,6 +175,7 @@ MatchWorld
   RuntimeStateAvailabilityWorld
   RuntimeHitEligibilityWorld
   RuntimeOrientationWorld
+  RuntimeStunWorld
   RuntimeRoundSystem
   CommandSystem
 ```
@@ -215,9 +216,10 @@ The current extraction order is:
 26. `RuntimeStateAvailabilityWorld`: own bounded state/action availability and state-source lookup outside inline state validation.
 27. `RuntimeHitEligibilityWorld`: own bounded hit-eligibility slot ticking plus per-frame `AssertSpecial` / render-opacity resets outside the main match loop.
 28. `RuntimeOrientationWorld`: own bounded automatic facing and `Turn` facing flips outside inline match/controller mutation.
-29. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-30. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-31. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
+29. `RuntimeStunWorld`: own bounded hitstun/guardstun timer advance, hitstun presentation requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration outside inline match-loop branching.
+30. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+31. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+32. Combat/effect actor systems: move `HitDef`, richer target controller effects, real helper state machines, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

@@ -45,6 +45,10 @@ G1 setup-project refresh
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStunWorld presentation ownership extraction
+  -> hitstun/guardstun advance plus presentation/recovery glue moved out of PlayableMatchRuntime
+  -> focused RuntimeStunSystem tests cover guard+hit callback behavior, imported hit-state preservation, current-move guardrails, and state-owner presentation suppression
+  -> trace behavior unchanged; no new parity or score claim
 R2 RuntimeStateAvailabilityWorld ownership extraction
   -> state/action availability lookup moved out of PlayableMatchRuntime
   -> focused StateAvailabilitySystem tests cover compiled state precedence, parsed states, animation fallback, owner-backed lookup, and missing-state rejection
@@ -127,6 +131,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeGetHitStateWorld` ownership extraction
 - `RuntimeHitStateTransitionWorld` ownership extraction
 - `RuntimeStateAvailabilityWorld` ownership extraction
+- `RuntimeStunWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

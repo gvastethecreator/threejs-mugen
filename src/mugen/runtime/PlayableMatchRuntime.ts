@@ -63,7 +63,7 @@ import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
-import { hasRuntimeStun, tickRuntimeStun } from "./RuntimeStunSystem";
+import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
@@ -214,6 +214,7 @@ export class PlayableMatchRuntime {
   private readonly guardWorld = new RuntimeGuardWorld();
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
+  private readonly stunWorld = new RuntimeStunWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -374,6 +375,7 @@ export class PlayableMatchRuntime {
       this.effectSpawnWorld,
       this.recoveryWorld,
       this.hitEligibilityWorld,
+      this.stunWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -390,6 +392,7 @@ export class PlayableMatchRuntime {
         this.effectSpawnWorld,
         this.recoveryWorld,
         this.hitEligibilityWorld,
+        this.stunWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -478,6 +481,7 @@ export class PlayableMatchRuntime {
         this.effectSpawnWorld,
         this.recoveryWorld,
         this.hitEligibilityWorld,
+        this.stunWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -859,6 +863,7 @@ function advanceFighter(
   effectSpawnWorld: RuntimeEffectSpawnWorld,
   recoveryWorld: RuntimeRecoverySystem,
   hitEligibilityWorld: RuntimeHitEligibilityWorld,
+  stunWorld: RuntimeStunWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -872,17 +877,13 @@ function advanceFighter(
   actorConstraintWorld.resetFrameConstraints(fighter.runtime);
   recoveryWorld.tickHitFallRecoveryWindow(fighter);
   const tickStartPos = { ...fighter.runtime.pos };
-  const stunTick = tickRuntimeStun(fighter);
-  if (stunTick.guardActive) {
-    if (!fighter.stateOwner && !shouldPreserveImportedStateMoveType(fighter)) {
-      changeAction(fighter, fighter.definition.hitstunAction);
-    }
-  }
-  if (stunTick.hitActive) {
-    if (!fighter.stateOwner && !shouldPreserveImportedStateMoveType(fighter)) {
-      changeAction(fighter, fighter.definition.hitstunAction);
-    }
-  }
+  const preserveImportedStateMoveType = shouldPreserveImportedStateMoveType(fighter);
+  stunWorld.advance(fighter, {
+    hasCurrentMove: Boolean(fighter.currentMove),
+    preserveImportedStateMoveType,
+    suppressHitStunAction: Boolean(fighter.stateOwner),
+    showHitStunAction: () => changeAction(fighter, fighter.definition.hitstunAction),
+  });
 
   if (fighter.currentMove) {
     fighter.moveTick += 1;
@@ -905,8 +906,6 @@ function advanceFighter(
         changeAction(fighter, fighter.definition.idleAction);
       }
     }
-  } else if (fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0 && !shouldPreserveImportedStateMoveType(fighter)) {
-    fighter.runtime.moveType = "I";
   }
 
   fighter.runtime.pos.x += fighter.runtime.vel.x;

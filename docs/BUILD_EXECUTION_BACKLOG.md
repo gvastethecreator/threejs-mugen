@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeStunWorld presentation ownership extraction
+
+Changed:
+
+- Added `RuntimeStunWorld` as the named owner for bounded hitstun/guardstun advance plus the former match-loop glue for hitstun action requests and idle moveType restoration.
+- Replaced inline `PlayableMatchRuntime` stun presentation/recovery branching with `RuntimeStunWorld.advance`.
+- Added focused `RuntimeStunSystem` coverage for guard+hit callback behavior, imported hit-state moveType preservation, current-move guardrails, and state-owner presentation suppression.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeStunSystem.test.ts` passes: 1 file, 8 tests.
+- `pnpm test` passes: 69 files, 609 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-hitstun.json` remains checksum `d739e194`, `synthetic-imported-target-owned-custom-state.json` remains `410fb8c0`, `synthetic-imported-custom-state.json` remains `bf632df3`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` is not required for this checkpoint because the staged runtime/setup slice does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded hitstun/guardstun timer advance, presentation-action requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration now have a named runtime boundary.
+
+Claim blocked:
+
+- This is ownership cleanup only. Exact MUGEN/IKEMEN hitstun, guard recovery thresholds, Common1 tick-order parity, helper/custom-state stun ownership, pause interaction, and full guard/hitstun semantics remain unsupported.
+
 ## 2026-06-29 - Studio command desk visual pass
 
 Changed:

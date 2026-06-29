@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { hasRuntimeStun, tickRuntimeStun, type RuntimeStunActor } from "../mugen/runtime/RuntimeStunSystem";
+import {
+  hasRuntimeStun,
+  RuntimeStunWorld,
+  tickRuntimeStun,
+  type RuntimeStunActor,
+} from "../mugen/runtime/RuntimeStunSystem";
 
 describe("RuntimeStunSystem", () => {
   it("reports active hitstun or guardstun as runtime stun", () => {
@@ -42,6 +47,73 @@ describe("RuntimeStunSystem", () => {
     expect(fighter.hitStun).toBe(0);
     expect(fighter.runtime.guardStun).toBe(0);
     expect(fighter.runtime.vel.x).toBeCloseTo(10 * 0.82 * 0.88);
+  });
+
+  it("owns hitstun action requests and moveType recovery after timers expire", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 1, guardStun: 1, velX: 10, moveType: "H" });
+    const actions: RuntimeStunActor[] = [];
+
+    const result = world.advance(fighter, {
+      showHitStunAction: (target) => actions.push(target),
+    });
+
+    expect(result).toEqual({
+      guardActive: true,
+      hitActive: true,
+      hitStunActionRequests: 2,
+      restoredIdleMoveType: true,
+    });
+    expect(actions).toEqual([fighter, fighter]);
+    expect(fighter.runtime.moveType).toBe("I");
+    expect(world.hasStun(fighter)).toBe(false);
+  });
+
+  it("preserves imported hit-state moveType and suppresses presentation callbacks", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 1, guardStun: 1, velX: 6, moveType: "H" });
+    const actions: RuntimeStunActor[] = [];
+
+    const result = world.advance(fighter, {
+      preserveImportedStateMoveType: true,
+      showHitStunAction: (target) => actions.push(target),
+    });
+
+    expect(result).toMatchObject({
+      guardActive: true,
+      hitActive: true,
+      hitStunActionRequests: 0,
+      restoredIdleMoveType: false,
+    });
+    expect(actions).toEqual([]);
+    expect(fighter.runtime.moveType).toBe("H");
+  });
+
+  it("keeps current attacks from being restored to idle moveType", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 1, guardStun: 0, velX: -4, moveType: "A" });
+
+    const result = world.advance(fighter, { hasCurrentMove: true });
+
+    expect(result.restoredIdleMoveType).toBe(false);
+    expect(fighter.runtime.moveType).toBe("A");
+    expect(fighter.hitStun).toBe(0);
+  });
+
+  it("can suppress hitstun presentation while still restoring non-imported moveType", () => {
+    const world = new RuntimeStunWorld();
+    const fighter = actor({ hitStun: 1, guardStun: 0, moveType: "H" });
+    const actions: RuntimeStunActor[] = [];
+
+    const result = world.advance(fighter, {
+      suppressHitStunAction: true,
+      showHitStunAction: (target) => actions.push(target),
+    });
+
+    expect(result.hitStunActionRequests).toBe(0);
+    expect(result.restoredIdleMoveType).toBe(true);
+    expect(actions).toEqual([]);
+    expect(fighter.runtime.moveType).toBe("I");
   });
 });
 

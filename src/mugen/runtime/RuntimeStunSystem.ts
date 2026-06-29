@@ -10,6 +10,18 @@ export type RuntimeStunTickResult = {
   hitActive: boolean;
 };
 
+export type RuntimeStunAdvanceOptions<TActor extends RuntimeStunActor> = {
+  hasCurrentMove?: boolean;
+  preserveImportedStateMoveType?: boolean;
+  suppressHitStunAction?: boolean;
+  showHitStunAction?: (actor: TActor) => void;
+};
+
+export type RuntimeStunAdvanceResult = RuntimeStunTickResult & {
+  hitStunActionRequests: number;
+  restoredIdleMoveType: boolean;
+};
+
 export function hasRuntimeStun(actor: RuntimeStunActor): boolean {
   return actor.hitStun > 0 || (actor.runtime.guardStun ?? 0) > 0;
 }
@@ -36,4 +48,41 @@ export function tickRuntimeStun(actor: RuntimeStunActor): RuntimeStunTickResult 
   }
 
   return result;
+}
+
+export class RuntimeStunWorld {
+  hasStun(actor: RuntimeStunActor): boolean {
+    return hasRuntimeStun(actor);
+  }
+
+  advance<TActor extends RuntimeStunActor>(
+    actor: TActor,
+    options: RuntimeStunAdvanceOptions<TActor> = {},
+  ): RuntimeStunAdvanceResult {
+    const tick = tickRuntimeStun(actor);
+    const result: RuntimeStunAdvanceResult = {
+      ...tick,
+      hitStunActionRequests: 0,
+      restoredIdleMoveType: false,
+    };
+    const preserveImportedStateMoveType = options.preserveImportedStateMoveType ?? false;
+    const canShowHitStunAction =
+      !preserveImportedStateMoveType && !options.suppressHitStunAction && options.showHitStunAction;
+
+    if (tick.guardActive && canShowHitStunAction) {
+      options.showHitStunAction?.(actor);
+      result.hitStunActionRequests += 1;
+    }
+    if (tick.hitActive && canShowHitStunAction) {
+      options.showHitStunAction?.(actor);
+      result.hitStunActionRequests += 1;
+    }
+
+    if (!options.hasCurrentMove && !hasRuntimeStun(actor) && !preserveImportedStateMoveType) {
+      actor.runtime.moveType = "I";
+      result.restoredIdleMoveType = true;
+    }
+
+    return result;
+  }
 }

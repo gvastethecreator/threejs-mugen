@@ -26,6 +26,10 @@ G1 setup-project refresh
 Latest implementation truth:
 
 ```txt
+R2 RuntimeStunWorld presentation ownership extraction
+  -> hitstun/guardstun advance plus hitstun action requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration moved out of PlayableMatchRuntime
+  -> focused RuntimeStunSystem tests cover the boundary
+  -> proves named stun ownership only
 R2 RuntimeStateAvailabilityWorld ownership extraction
   -> state/action availability lookup moved out of PlayableMatchRuntime
   -> focused StateAvailabilitySystem tests cover compiled state precedence, parsed states, animation fallback, owner-backed lookup, and missing-state rejection
@@ -68,7 +72,7 @@ R2 RuntimeGuardWorld ownership extraction
   -> proves named guard ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, or `RuntimeStateAvailabilityWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, or `RuntimeStunWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -109,7 +113,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, and `RuntimeStateAvailabilityWorld` stable after extraction.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, and `RuntimeStunWorld` stable after extraction.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.
