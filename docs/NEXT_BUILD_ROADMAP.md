@@ -16,13 +16,13 @@ Docs-only changes here do not move scores.
 Latest implementation truth:
 
 ```txt
-R2 RuntimeRandomSystem ownership extraction
-  -> required synthetic-imported-variable.json checksum 3b33f7a8
-  -> focused RuntimeRandomSystem tests cover seed, advance, clamp, fallback salt
-  -> proves named deterministic random ownership only
+R2 HitSparkAssetSystem ownership extraction
+  -> player/common/FightFX spark asset-frame lookup moved out of PlayableMatchRuntime
+  -> focused HitSparkAssetSystem tests cover prefix, state-owner, library, and missing refs
+  -> proves named presentation lookup ownership only
 ```
 
-Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, or `RuntimeRandomSystem` as fresh next work. They are already closed gates.
+Do not reselect `HitBy`, target-owned custom-state, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, `VarRandom`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, or `HitSparkAssetSystem` as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -63,7 +63,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem` stable after the ownership extraction.
+1. Keep `RuntimeRandomSystem` and `HitSparkAssetSystem` stable after ownership extraction.
 2. Deepen target/helper/effect ownership after current `RuntimeContactMemoryWorld`.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.

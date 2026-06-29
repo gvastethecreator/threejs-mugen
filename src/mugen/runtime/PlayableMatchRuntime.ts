@@ -37,10 +37,11 @@ import {
   runtimeWorldBox,
   scaleRuntimeIncomingDamage,
 } from "./CombatResolver";
-import { demoFighters, type DemoFighterDefinition, type DemoMove, type HitSparkLibrarySource } from "./demoFighters";
+import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
-import { parseMugenSparkValue, RuntimeHitEffectWorld } from "./HitEffectSystem";
+import { resolveRuntimeHitSparkAssetFrames } from "./HitSparkAssetSystem";
+import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
 import { evaluateExpression } from "./ExpressionEvaluator";
@@ -79,7 +80,6 @@ import type {
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
-  RuntimeHitEffectAssetFrame,
   RuntimeHitEffectEvent,
   RuntimeHitBySlot,
   RuntimeHitOverrideSlot,
@@ -1848,71 +1848,8 @@ function recordHitDefSoundEvent(fighter: FighterMatchState, sound: string | unde
 
 function recordHitDefEffectEvent(fighter: FighterMatchState, kind: "hit" | "guard", move: DemoMove, runtimeTick: number): void {
   const spark = kind === "guard" ? move.guardSpark : move.hitSpark;
-  const assetFrames = resolveHitSparkAssetFrames(fighter, spark);
+  const assetFrames = resolveRuntimeHitSparkAssetFrames(fighter, spark);
   fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, assetFrames[0], assetFrames);
-}
-
-function resolveHitSparkAssetFrames(fighter: FighterMatchState, spark: string | undefined): RuntimeHitEffectAssetFrame[] {
-  const parsed = parseMugenSparkValue(spark);
-  if (!parsed) {
-    return [];
-  }
-  if (parsed.rawPrefix === "S") {
-    return resolvePlayerHitSparkAssetFrames(fighter, parsed.sparkNo);
-  }
-  const source = hitSparkLibrarySource(parsed.rawPrefix);
-  if (!source) {
-    return [];
-  }
-  return resolveLibraryHitSparkAssetFrames(fighter, source, parsed.sparkNo);
-}
-
-function resolvePlayerHitSparkAssetFrames(fighter: FighterMatchState, actionId: number): RuntimeHitEffectAssetFrame[] {
-  const owner = fighter.stateOwner ?? fighter;
-  const action = owner.definition.animations.get(actionId);
-  if (!action) {
-    return [];
-  }
-  return action.frames.map((frame, frameIndex) => ({
-    source: "player",
-    actionId,
-    frameIndex,
-    spriteGroup: frame.spriteGroup,
-    spriteIndex: frame.spriteIndex,
-    offsetX: frame.offsetX,
-    offsetY: frame.offsetY,
-    duration: frame.duration,
-  }));
-}
-
-function resolveLibraryHitSparkAssetFrames(
-  fighter: FighterMatchState,
-  source: HitSparkLibrarySource,
-  actionId: number,
-): RuntimeHitEffectAssetFrame[] {
-  const owner = fighter.stateOwner ?? fighter;
-  const library = owner.definition.hitSparkLibraries?.[source];
-  const action = library?.animations.get(actionId);
-  if (!action) {
-    return [];
-  }
-  return action.frames.map((frame, frameIndex) => ({
-    source,
-    actionId,
-    frameIndex,
-    spriteGroup: frame.spriteGroup,
-    spriteIndex: frame.spriteIndex,
-    offsetX: frame.offsetX,
-    offsetY: frame.offsetY,
-    duration: frame.duration,
-  }));
-}
-
-function hitSparkLibrarySource(rawPrefix: string | undefined): HitSparkLibrarySource | undefined {
-  if (rawPrefix === undefined) {
-    return "common";
-  }
-  return rawPrefix === "F" ? "fightfx" : undefined;
 }
 
 function recordFallEnvShakeEvent(

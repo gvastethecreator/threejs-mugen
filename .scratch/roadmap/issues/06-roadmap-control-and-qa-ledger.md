@@ -10,8 +10,8 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 ## Next Useful Cuts
 
 - Current setup-project/roadmap pass: added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board and linked it from AGENTS/setup/roadmap docs. This docs/control setup initially selected R2 random ownership after the latest `VarRandom` gate; that first slice is now implemented below, with no score movement.
-- Current implementation follow-up: R2 `RuntimeRandomSystem` ownership extraction is now implemented as the first next-build slice, so future docs/setup work should return to R1 Common1/FightFX precision or deeper R2 MatchWorld ownership instead of reselecting random ownership.
-- Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `RuntimeContactMemoryWorld` checkpoint instead of older closed gates.
+- Current implementation follow-up: R2 `HitSparkAssetSystem` ownership extraction is now implemented after the random ownership slice, so future docs/setup work should return to R1 Common1/FightFX precision or deeper R2 MatchWorld ownership instead of reselecting spark lookup or random ownership.
+- Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `HitSparkAssetSystem` checkpoint instead of older closed gates.
 - Current roadmap sync: `docs/ROADMAP_PACKAGE_MILESTONES.md` now names the latest R2 ownership checkpoint and the next evidence-producing options: R1 Common1/FightFX precision or deeper R2 helper/effect/target ownership. This is docs/control only and does not move scores.
 - Current setup-project refresh: parent workspace `AGENTS.md` now routes agents into `mugen-web-sandbox`; repo `AGENTS.md` remains authoritative and records setup-project defaults, slice-selection priority, verification baseline, and docs-only no-score rule.
 - Current setup-project verification: repo setup already exists (`AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/adr/`, local `.scratch/roadmap/`, GitHub remote). This pass refreshes alignment rather than creating a duplicate agent contract.
@@ -56,10 +56,10 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/ROADMAP_PACKAGE_MILESTONES.md` owns compact package selection, milestone exits, and the next recommended evidence-producing slice.
 - `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
-- `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including FightFX/common spark lookup after the current fallback/source-metadata route.
+- `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including deeper FightFX/common spark presentation after the current package loading/provider/source-metadata route.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
-- Latest implementation truth before this docs refresh comes from `docs/BUILD_EXECUTION_BACKLOG.md` entry 225: `VarRandom` passed `pnpm qa:trace` with 156/156 artifacts, 138 required, 18 optional, and required `synthetic-imported-variable.json` checksum `3b33f7a8`.
+- Latest implementation truth before this docs refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. The latest trace aggregate remains 156/156 artifacts, 138 required, 18 optional, with `synthetic-imported-variable.json` checksum `3b33f7a8`.
 
 ## Claim Allowed
 

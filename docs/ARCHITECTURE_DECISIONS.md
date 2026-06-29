@@ -14,6 +14,8 @@ Current cut: `RuntimeEffectActorWorld` is the accepted boundary for helper/proje
 
 Current variable/random cut: `VarRandom` is now a bounded `StateControllerExecutor` variable operation using deterministic sandbox-side actor RNG. `RuntimeRandomSystem` owns seed creation, LCG advance, controller-safe clamping, and fallback random-unit salt; `PlayableMatchRuntime` only stores the current actor seed and delegates advance. Trace evidence proves owner-local int var writes only, not exact MUGEN random stream or helper/parent/root variable scope.
 
+Current presentation cut: `HitSparkAssetSystem` owns bounded HitDef spark asset-frame resolution from player AIR (`S`), common, and FightFX sources before the match loop emits `RuntimeHitEffectWorld` events. This keeps package-backed spark lookup out of `PlayableMatchRuntime` without claiming exact layering, scale, palette, timing, or motif parity.
+
 Gate: every extraction must preserve deterministic trace checksums unless the behavior change is intentional and documented.
 
 Blocker rule: new gameplay lifecycle work should be routed through `MatchWorld` or a system behind it. Adding broad behavior directly to `PlayableMatchRuntime` is allowed only for a bounded bridge cut with a follow-up extraction note.

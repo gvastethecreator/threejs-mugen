@@ -35,11 +35,10 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest implementation checkpoint:
 
 ```txt
-R2 RuntimeRandomSystem ownership extraction
-  -> deterministic seed/advance/clamp/fallback ownership named after VarRandom
-  -> synthetic-imported-variable.json checksum 3b33f7a8
-  -> focused RuntimeRandomSystem tests cover the ownership seam
-  -> qa:trace aggregate 156/156, 138 required, 18 optional, 77 controller families
+R2 HitSparkAssetSystem ownership extraction
+  -> player/common/FightFX spark asset-frame lookup named after package-frame handoff
+  -> focused HitSparkAssetSystem tests cover source routing and lookup behavior
+  -> renderer behavior unchanged; no new parity or score claim
 ```
 
 Default next implementation slice after docs/setup work:
@@ -72,6 +71,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-variable.json` `VarRandom` variable compatibility
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
 - `RuntimeRandomSystem` deterministic random ownership extraction
+- `HitSparkAssetSystem` player/common/FightFX spark asset-frame lookup extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

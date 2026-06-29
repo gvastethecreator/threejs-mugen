@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-28 - HitSpark asset resolver ownership extraction
+
+Changed:
+
+- Added `HitSparkAssetSystem` as the named owner for resolving HitDef spark asset frames from `S` player AIR refs, unprefixed common refs, and `F` FightFX refs.
+- Replaced inline player/common/FightFX asset-frame resolution in `PlayableMatchRuntime` with `resolveRuntimeHitSparkAssetFrames`.
+- Added focused `HitSparkAssetSystem` tests for source-prefix routing, state-owner player AIR lookup, common/FightFX library lookup, and missing/unsupported refs.
+- Kept `HitSparkRenderer` behavior unchanged; this is runtime presentation ownership cleanup before deeper FightFX/common parity work.
+
+Evidence:
+
+- `pnpm qa:trace` passes 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-variable.json` remains checksum `3b33f7a8`.
+- `pnpm test` passes 62 files / 576 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` was not required because this slice did not change visible renderer/UI behavior; existing renderer behavior stays delegated from the same event asset-frame data.
+
+Claim allowed:
+
+- Bounded HitDef spark asset-frame resolution now has a named runtime presentation system consumed by the match loop.
+
+Claim blocked:
+
+- Exact FightFX/common layering, scale, palette, motif/screenpack ownership, spark timing, helper-owned spark routing, and full MUGEN/IKEMEN visual-effect parity remain unsupported.
+
 ## 2026-06-28 - RuntimeRandomSystem ownership extraction
 
 Changed:

@@ -55,7 +55,7 @@ Avoid starting full helper VM, full ZSS/Lua, rollback, teams, or screenpack pari
 
 The compact package ladder lives in `docs/ROADMAP_PACKAGE_MILESTONES.md`; the tactical next-10-slices queue lives in `docs/NEXT_BUILD_ROADMAP.md`. After docs/setup work, return to both before choosing code.
 
-Latest closed implementation checkpoint: `RuntimeRandomSystem` owns deterministic sandbox-side seed/advance/clamp/fallback behavior introduced for `VarRandom`, while required `synthetic-imported-variable.json` remains checksum `3b33f7a8`. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, or `RuntimeRandomSystem` as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
+Latest closed implementation checkpoint: `HitSparkAssetSystem` owns bounded player/common/FightFX HitDef spark asset-frame lookup previously inline in `PlayableMatchRuntime`; `RuntimeRandomSystem` remains the latest deterministic random ownership cut. Do not reselect `VarRandom`, `MakeDust`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, or `HitSparkAssetSystem` as the next cut; continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/target ownership seam.
 
 ## Next Useful Studio Gates
 
