@@ -2,7 +2,6 @@ import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   BindToTargetControllerOp,
   ContactControllerOp,
-  ControllerOp,
   EnvColorControllerOp,
   FallEnvShakeControllerOp,
   HitDefControllerOp,
@@ -65,6 +64,7 @@ import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
+import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
@@ -83,7 +83,6 @@ import {
 import { trainingStage } from "./demoStage";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import type {
-  ActorCompatibilitySession,
   ActorSnapshot,
   CharacterRuntimeState,
   RuntimeAfterImageSample,
@@ -96,6 +95,7 @@ import type {
 } from "./types";
 
 const stateAvailabilityWorld = new RuntimeStateAvailabilityWorld();
+const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -496,7 +496,7 @@ export class PlayableMatchRuntime {
       return;
     }
     if (operation) {
-      recordControllerOperation(fighter, operation);
+      compatibilityTelemetryWorld.recordOperation(fighter, operation);
     }
     if (result.powerDelta !== 0) {
       fighter.runtime.power = clampNumber(fighter.runtime.power + result.powerDelta, 0, runtimePowerMax(fighter.definition));
@@ -546,7 +546,7 @@ export class PlayableMatchRuntime {
         ...p1Effects.projectiles,
         ...p2Effects.projectiles,
       ],
-      compatibilitySession: buildCompatibilitySession([this.p1, this.p2]),
+      compatibilitySession: compatibilityTelemetryWorld.buildSession([this.p1, this.p2]),
       logs: this.logs.slice(0, 80),
     };
   }
@@ -1001,7 +1001,7 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
   const state = stateAvailabilityWorld.findState(owner, stateId);
   const actionId =
     options.animOverride ?? state?.anim ?? move?.actionId ?? (options.preserveAnimationWhenMissing ? undefined : stateId);
-  recordStateExecution(fighter, stateId, owner);
+  compatibilityTelemetryWorld.recordStateExecution(fighter, stateId, owner);
   if (!move && fighter.currentMove && fighter.currentMove.actionId !== stateId) {
     fighter.currentMove = undefined;
     fighter.currentMoveLabel = undefined;
@@ -1129,7 +1129,7 @@ function runActiveStateControllers(
       }
       const animOverride = resolveDispatchNumber(dispatch.animOverride, dispatch.animExpression, fighter, opponent, owner, tick);
       const ctrl = resolveDispatchBoolean(dispatch.ctrl, dispatch.ctrlExpression, fighter, opponent, owner, tick);
-      recordControllerExecution(fighter, rawController);
+      compatibilityTelemetryWorld.recordController(fighter, rawController);
       enterState(fighter, stateId, undefined, {
         clearStateOwner: dispatch.clearStateOwner,
         animOverride,
@@ -1148,7 +1148,7 @@ function runActiveStateControllers(
       }
       const elem = resolveDispatchNumber(dispatch.elem, dispatch.elemExpression, fighter, opponent, owner, tick);
       const elemTime = resolveDispatchNumber(dispatch.elemTime, dispatch.elemTimeExpression, fighter, opponent, owner, tick);
-      recordControllerExecution(fighter, rawController);
+      compatibilityTelemetryWorld.recordController(fighter, rawController);
       const animationOwner = dispatch.animationSource === "state-owner" ? owner : fighter;
       changeAction(fighter, actionId, dispatch.animationSource, animationOwner.definition, {
         elem,
@@ -1158,7 +1158,7 @@ function runActiveStateControllers(
     }
 
     if (dispatch.kind === "runtime-controller") {
-      recordControllerExecution(fighter, rawController);
+      compatibilityTelemetryWorld.recordController(fighter, rawController);
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         getConst: (name) => runtimeConst(owner.definition, name),
         hitPauseTime: () => fighter.hitPause,
@@ -1166,7 +1166,7 @@ function runActiveStateControllers(
         stageTime: tick,
       });
       if (controller.operation) {
-        recordControllerOperation(fighter, controller.operation);
+        compatibilityTelemetryWorld.recordOperation(fighter, controller.operation);
       }
       continue;
     }
@@ -1175,68 +1175,68 @@ function runActiveStateControllers(
       if (dispatch.effect === "hitdef") {
         activateHitDef(fighter, rawController, controller.operation?.kind === "hitdef" ? controller.operation : undefined);
       } else if (dispatch.effect === "reversaldef") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         activateReversalDef(fighter, rawController, reversalWorld, operation);
       } else if (dispatch.effect === "width") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "width" ? controller.operation : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         actorConstraintWorld.applyWidth(fighter.runtime, rawController, operation);
       } else if (dispatch.effect === "fallenvshake") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         recordFallEnvShakeEvent(
           fighter,
           tick,
           controller.operation?.kind === "fallenvshake" ? controller.operation : undefined,
         );
       } else if (dispatch.effect === "sprpriority") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation =
           controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "sprpriority"
             ? controller.operation
             : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         applySprPriorityController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "palfx") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation =
           controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "palfx"
             ? controller.operation
             : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         applyPalFxController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "afterimage") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation =
           controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimage"
             ? controller.operation
             : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         applyAfterImageController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "afterimagetime") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation =
           controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimagetime"
             ? controller.operation
             : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         applyAfterImageTimeController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "angle") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation =
           controller.operation?.kind === "sprite-effect" &&
           (controller.operation.controllerType === "angleset" ||
@@ -1245,72 +1245,72 @@ function runActiveStateControllers(
             ? controller.operation
             : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         applyAngleController(fighter, spriteEffectWorld, rawController, operation);
       } else if (dispatch.effect === "explod") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "explod" ? controller.operation : undefined;
         if (effectSpawnWorld.spawnExplod(fighter, opponent, rawController, operation) && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "removeexplod") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "removeexplod" ? controller.operation : undefined;
         if (effectSpawnWorld.removeExplods(fighter, rawController, operation) && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "modifyexplod") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "modifyexplod" ? controller.operation : undefined;
         if (effectSpawnWorld.modifyExplods(fighter, rawController, operation) > 0 && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "helper") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "helper" ? controller.operation : undefined;
         if (effectSpawnWorld.spawnHelper(fighter, opponent, rawController, operation) && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "projectile") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
         if (effectSpawnWorld.spawnProjectile(fighter, opponent, rawController, operation) && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "modifyprojectile") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
         if (effectSpawnWorld.modifyProjectiles(fighter, rawController, operation) > 0 && operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
       } else if (dispatch.effect === "target") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         applyTargetController(fighter, opponent, rawController, controller.operation?.kind === "target" ? controller.operation : undefined);
       } else if (dispatch.effect === "bindtotarget") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         applyBindToTargetController(fighter, opponent, rawController, controller.operation?.kind === "bindtotarget" ? controller.operation : undefined);
       } else if (dispatch.effect === "pause") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
       } else if (dispatch.effect === "sound") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         recordSoundEvent(fighter, rawController, tick);
       } else if (dispatch.effect === "envcolor") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "envcolor" ? controller.operation : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         onEnvColorController?.(rawController, operation);
       } else if (dispatch.effect === "envshake") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         recordEnvShakeEvent(fighter, rawController, tick);
       } else if (dispatch.effect === "contact") {
-        recordControllerExecution(fighter, rawController);
+        compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "contact" ? controller.operation : undefined;
         if (operation) {
-          recordControllerOperation(fighter, operation);
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
         if (rawController.type.toLowerCase() === "hitadd") {
           applyHitAddController(fighter, rawController, operation?.controllerType === "hitadd" ? operation : undefined);
@@ -1399,7 +1399,7 @@ function applyTargetController(
     candidateTargets: [opponent],
     controller,
     operation,
-    onOperation: (executedOperation) => recordControllerOperation(fighter, executedOperation),
+    onOperation: (executedOperation) => compatibilityTelemetryWorld.recordOperation(fighter, executedOperation),
     scaleIncomingDamage: scaleRuntimeIncomingDamage,
     enterTargetState: (target, stateId) => {
       const controllerOwner = fighter.stateOwner ?? fighter;
@@ -1422,7 +1422,7 @@ function applyBindToTargetController(
     controller,
     operation,
     targetAnchor: bindToTargetAnchor,
-    onOperation: (executedOperation) => recordControllerOperation(fighter, executedOperation),
+    onOperation: (executedOperation) => compatibilityTelemetryWorld.recordOperation(fighter, executedOperation),
   });
 }
 
@@ -1587,9 +1587,9 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
     return;
   }
   fighter.firedHitDefs.add(key);
-  recordControllerExecution(fighter, controller);
+  compatibilityTelemetryWorld.recordController(fighter, controller);
   if (operation) {
-    recordControllerOperation(fighter, operation);
+    compatibilityTelemetryWorld.recordOperation(fighter, operation);
   }
   const existing = fighter.currentMove;
   const activeStart = fighter.moveTick;
@@ -1808,7 +1808,7 @@ function recordFallEnvShakeEvent(
     envShake: undefined,
   };
   if (operation) {
-    recordControllerOperation(fighter, operation);
+    compatibilityTelemetryWorld.recordOperation(fighter, operation);
   }
 }
 
@@ -2097,7 +2097,7 @@ function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchSt
     if (stateId === undefined) {
       continue;
     }
-    recordStateEntryRoute(fighter, controller.source, stateId);
+    compatibilityTelemetryWorld.recordStateEntryRoute(fighter, controller.source, stateId);
     const move = fighter.definition.stateMoves?.get(stateId);
     if (move) {
       startMoveWithSpec(fighter, move, controller.name ?? `state ${stateId}`);
@@ -2124,7 +2124,7 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
       continue;
     }
     if (isStateEntrySetupDispatch(dispatch)) {
-      recordControllerExecution(fighter, controller.source);
+      compatibilityTelemetryWorld.recordController(fighter, controller.source);
       fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
         hitPauseTime: () => fighter.hitPause,
         random: () => nextRuntimeRandom(fighter),
@@ -2132,162 +2132,6 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
       });
     }
   }
-}
-
-function isImportedCompatibilityActor(fighter: FighterMatchState): boolean {
-  return fighter.definition.source === "imported" || fighter.stateOwner?.definition.source === "imported";
-}
-
-function recordStateExecution(fighter: FighterMatchState, stateId: number, owner: FighterMatchState = fighter): void {
-  if (fighter.definition.source !== "imported" && owner.definition.source !== "imported") {
-    return;
-  }
-  fighter.executedStateIds.add(stateId);
-  fighter.lastExecutedState = stateId;
-}
-
-function recordStateEntryRoute(fighter: FighterMatchState, controller: MugenStateController, stateId: number): void {
-  if (fighter.definition.source !== "imported") {
-    return;
-  }
-  fighter.routedStateEntries += 1;
-  fighter.routedStateIds.push(stateId);
-  while (fighter.routedStateIds.length > 12) {
-    fighter.routedStateIds.shift();
-  }
-  fighter.lastRoutedState = {
-    stateId,
-    ...(controller.name ? { name: controller.name } : {}),
-  };
-  recordControllerExecution(fighter, controller);
-}
-
-function recordControllerExecution(fighter: FighterMatchState, controller: MugenStateController): void {
-  if (!isImportedCompatibilityActor(fighter)) {
-    return;
-  }
-  const key = controller.type || controller.name || "Unknown";
-  fighter.executedControllerCounts[key] = (fighter.executedControllerCounts[key] ?? 0) + 1;
-  appendControllerEvent(fighter, controller);
-}
-
-function recordControllerOperation(fighter: FighterMatchState, operation: ControllerOp): void {
-  if (!isImportedCompatibilityActor(fighter)) {
-    return;
-  }
-  const key = controllerOperationKey(operation);
-  fighter.executedOperationCounts[key] = (fighter.executedOperationCounts[key] ?? 0) + 1;
-  appendControllerEvent(fighter, undefined, key);
-}
-
-function appendControllerEvent(fighter: FighterMatchState, controller?: MugenStateController, operation?: string): void {
-  const key = controller?.type || controller?.name || operation || "Unknown";
-  fighter.controllerEvents.push({
-    sequence: fighter.nextControllerEventSequence++,
-    tick: fighter.compatibilityTick,
-    stateNo: fighter.runtime.stateNo,
-    controller: key,
-    ...(controller?.name ? { name: controller.name } : {}),
-    ...(controller?.line !== undefined ? { line: controller.line } : {}),
-    ...(operation ? { operation } : {}),
-  });
-  while (fighter.controllerEvents.length > 160) {
-    fighter.controllerEvents.shift();
-  }
-}
-
-function controllerOperationKey(operation: ControllerOp): string {
-  if (operation.kind === "target") {
-    return `target:${operation.controllerType}`;
-  }
-  if (operation.kind === "bindtotarget") {
-    return "bindtotarget";
-  }
-  if (operation.kind === "pause") {
-    return `pause:${operation.controllerType}`;
-  }
-  if (operation.kind === "hitfall") {
-    return `hitfall:${operation.controllerType}`;
-  }
-  if (operation.kind === "kinematic") {
-    return `kinematic:${operation.controllerType}`;
-  }
-  if (operation.kind === "bounds") {
-    return `bounds:${operation.controllerType}`;
-  }
-  if (operation.kind === "collision") {
-    return `collision:${operation.controllerType}`;
-  }
-  if (operation.kind === "metadata") {
-    return `metadata:${operation.controllerType}`;
-  }
-  if (operation.kind === "orientation") {
-    return `orientation:${operation.controllerType}`;
-  }
-  if (operation.kind === "sprite-effect") {
-    return `sprite-effect:${operation.controllerType}`;
-  }
-  if (operation.kind === "resource") {
-    return `resource:${operation.controllerType}`;
-  }
-  if (operation.kind === "variable") {
-    return `variable:${operation.controllerType}`;
-  }
-  if (operation.kind === "eligibility") {
-    return `eligibility:${operation.controllerType}`;
-  }
-  if (operation.kind === "damage-scale") {
-    return `damage-scale:${operation.controllerType}`;
-  }
-  if (operation.kind === "contact") {
-    return `contact:${operation.controllerType}`;
-  }
-  return operation.kind;
-}
-
-function buildCompatibilitySession(fighters: FighterMatchState[]): MugenSnapshot["compatibilitySession"] {
-  const actors = fighters
-    .filter(isImportedCompatibilityActor)
-    .map((fighter): ActorCompatibilitySession => {
-      const executedStates = [...fighter.executedStateIds].sort((a, b) => a - b);
-      const session: ActorCompatibilitySession = {
-        actorId: fighter.id,
-        label: fighter.label,
-        source: "imported",
-        executedStates,
-        routedStateEntries: fighter.routedStateEntries,
-        routedStates: [...fighter.routedStateIds],
-        executedControllers: { ...fighter.executedControllerCounts },
-        executedOperations: { ...fighter.executedOperationCounts },
-        controllerEvents: fighter.controllerEvents.map((event) => ({ ...event })),
-        activeCommands: activeImportedCommands(fighter),
-        commandHistory: fighter.commandBuffer.getHistory(24),
-      };
-      if (fighter.lastRoutedState) {
-        session.lastRoutedState = { ...fighter.lastRoutedState };
-      }
-      if (fighter.lastExecutedState !== undefined) {
-        session.lastExecutedState = fighter.lastExecutedState;
-      }
-      return session;
-    });
-  return actors.length > 0 ? { actors } : undefined;
-}
-
-function activeImportedCommands(fighter: FighterMatchState): string[] {
-  const commands = fighter.definition.commands ?? [];
-  const names: string[] = [];
-  const seen = new Set<string>();
-  for (const command of commands) {
-    if (seen.has(command.name)) {
-      continue;
-    }
-    if (fighter.commandBuffer.isCommandActive(command.name, commands)) {
-      names.push(command.name);
-      seen.add(command.name);
-    }
-  }
-  return names.slice(0, 12);
 }
 
 function triggersPass(

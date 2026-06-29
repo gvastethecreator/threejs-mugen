@@ -55,6 +55,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeCompatibilityTelemetryWorld ownership extraction
+  -> imported compatibility telemetry/session projection moved out of PlayableMatchRuntime
+  -> focused RuntimeCompatibilityTelemetrySystem tests cover imported/owner-backed filtering, session projection, controller-event caps, and operation key stability
+  -> pnpm qa:trace stays stable; no new controller semantics, CNS VM timing, actor snapshot, or parity claim
 R2 RuntimeSnapshotWorld ownership extraction
   -> stage/camera snapshot projection moved out of PlayableMatchRuntime
   -> focused RuntimeSnapshotSystem tests cover ScreenBound camera exclusion/fallback and EnvShake/EnvColor handoff
@@ -162,6 +166,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitPauseWorld` ownership extraction
 - `RuntimeAssertSpecialWorld` ownership extraction
 - `RuntimeSnapshotWorld` ownership extraction
+- `RuntimeCompatibilityTelemetryWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

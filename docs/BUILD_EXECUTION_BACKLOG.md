@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeCompatibilityTelemetryWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeCompatibilityTelemetryWorld` as the named owner for imported compatibility telemetry and session projection: imported/owner-backed actor filtering, executed-state bookkeeping, routed State -1 entries, controller/operation counts, bounded controller-event history, active commands, command history, and `compatibilitySession` construction.
+- Replaced inline `PlayableMatchRuntime` helper functions for state/controller/operation/session telemetry with the new world boundary while preserving existing operation keys and event caps.
+- Added focused `RuntimeCompatibilityTelemetrySystem` coverage for imported filtering, owner-backed state owners, routed-state projection, event cap behavior, active command dedupe, command-history handoff, and operation-key stability.
+- Updated R2 roadmap docs and issue wording so future agents do not reselect this ownership cut.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/PlayableMatchRuntime.test.ts src/tests/RuntimeTrace.test.ts src/tests/RuntimeTraceArtifact.test.ts` passes: 4 files, 90 tests.
+- `pnpm typecheck` passes.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional.
+- `pnpm test` passes: 73 files, 625 tests.
+- `pnpm build` passes with the existing large-chunk warning.
+- `git diff --check` passes.
+- `pnpm qa:smoke` is not required because this runtime ownership cut does not change renderer, Studio, stage, sprite, CSS, or visible UI behavior.
+
+Claim allowed:
+
+- Imported compatibility telemetry/session projection now has a named runtime ownership boundary separate from `PlayableMatchRuntime` controller dispatch.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add new controller semantics, exact CNS VM timing, actor snapshot ownership, broad imported runtime parity, or full MUGEN/IKEMEN compatibility.
+
 ## 2026-06-29 - Studio CSS hygiene and duplication audit
 
 Changed:
