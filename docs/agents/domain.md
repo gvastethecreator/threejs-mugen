@@ -1,6 +1,6 @@
 # Domain Docs
 
-Last audited: 2026-06-28
+Last audited: 2026-06-29
 
 This is a single-context repo for a Three.js-based progressive MUGEN/Ikemen-GO port, playable sandbox, and future modular engine/studio.
 

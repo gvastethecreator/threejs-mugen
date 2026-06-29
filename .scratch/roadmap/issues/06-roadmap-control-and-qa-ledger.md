@@ -25,6 +25,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Current closeout: `docs/ROADMAP_NAVIGATION.md` now gives the fast route map for source ownership, package lanes, score movement evidence, setup-project profile, and anti-drift rules; `AGENTS.md`, `docs/agents/domain.md`, `docs/PROGRESS_TRACKER.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `.scratch/roadmap/PRD.md` link to it.
 - Current closeout: `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` now maps runtime, renderer, Studio, generated asset, IKEMEN scanner, modular boundary, and docs-only work to required evidence, docs, commands, and score-movement rules.
 - Current setup-project/roadmap refresh: `docs/ROADMAP_PACKAGE_MILESTONES.md` now gives the package ladder, milestone exits, closeout contract, update map, and default next code slice after docs/setup work: R1 Common1/FightFX precision, with deeper R2 MatchWorld ownership as alternate.
+- Current setup-project checkpoint: `docs/agents/*` audit dates now match the 2026-06-29 repo `AGENTS.md` setup profile after the `RuntimeHitEligibilityWorld` ownership pass. The profile remains local markdown issues, canonical triage labels, and single-context domain docs; no score movement.
 - Keep `docs/ROADMAP_EXECUTION_BOARD.md` as the current queue/handoff board.
 - Keep `docs/PROGRESS_TRACKER.md` compact and current after meaningful milestones.
 - Keep `docs/PORT_COMPLETION_SCORECARD.md` as the only 0-100 answer source.

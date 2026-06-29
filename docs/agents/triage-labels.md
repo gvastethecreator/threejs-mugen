@@ -1,6 +1,6 @@
 # Triage Labels
 
-Last audited: 2026-06-28
+Last audited: 2026-06-29
 
 The engineering skills use five canonical triage roles. This repo maps them directly to local markdown labels.
 

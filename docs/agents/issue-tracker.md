@@ -1,6 +1,6 @@
 # Issue Tracker: Local Markdown
 
-Last audited: 2026-06-28
+Last audited: 2026-06-29
 
 Issues, PRDs, audits, and implementation plans for this repo live as markdown files in `.scratch/`.
 
