@@ -3979,6 +3979,7 @@ export class App {
 
   private renderWorkbenchCommandInspector(summary: StudioProjectSummary): string {
     const score = this.getWorkbenchHealthScore(summary);
+    const healthBand = this.getWorkbenchHealthBand(score);
     const statusCounts = countBy(summary.gates, (gate) => this.statusClassName(gate.status));
     const primaryGate = this.getPrimaryStudioGate(summary);
     const selectedAsset = this.getWorkbenchSelectedAsset(summary);
@@ -3997,6 +3998,10 @@ export class App {
         <div class="workbench-health-meter" style="--health-score: ${score}%">
           <span class="workbench-health-score"><b>${score}</b><small>/ 100</small></span>
           <span class="workbench-health-track" aria-hidden="true"><i></i></span>
+          <span class="workbench-health-band is-${healthBand.tone}">
+            <small>Readiness</small>
+            <b>${escapeHtml(healthBand.label)}</b>
+          </span>
           <span class="workbench-health-next">
             <small>Next</small>
             <b>${escapeHtml(primaryGate?.nextAction.label ?? "Review project")}</b>
@@ -4152,6 +4157,16 @@ export class App {
       summary.assets.find((asset) => isAttentionStatus(asset.status)) ??
       summary.assets[0]
     );
+  }
+
+  private getWorkbenchHealthBand(score: number): { label: string; tone: "ok" | "warn" | "error" } {
+    if (score >= 82) {
+      return { label: "Ready", tone: "ok" };
+    }
+    if (score >= 58) {
+      return { label: "Review", tone: "warn" };
+    }
+    return { label: "Critical", tone: "error" };
   }
 
   private getWorkbenchWarningRows(summary: StudioProjectSummary): Array<{

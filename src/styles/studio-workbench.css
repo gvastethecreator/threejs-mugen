@@ -18,7 +18,7 @@
 
   .app-shell.mode-studio .workbench-health-meter {
     display: grid;
-    grid-template-columns: 68px minmax(0, 1fr);
+    grid-template-columns: 68px minmax(0, 0.72fr) minmax(0, 1fr);
     gap: 0 9px;
     align-items: center;
     margin: 0;
@@ -46,6 +46,7 @@
   }
 
   .app-shell.mode-studio .workbench-health-score small,
+  .app-shell.mode-studio .workbench-health-band small,
   .app-shell.mode-studio .workbench-health-next small {
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
@@ -55,6 +56,7 @@
   }
 
   .app-shell.mode-studio .workbench-health-track {
+    grid-column: 2 / -1;
     display: block;
     height: 9px;
     overflow: hidden;
@@ -73,6 +75,38 @@
     display: grid;
     min-width: 0;
     gap: 3px;
+  }
+
+  .app-shell.mode-studio .workbench-health-band {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+    padding-right: 8px;
+    border-right: 1px solid var(--studio-ledge-edge);
+  }
+
+  .app-shell.mode-studio .workbench-health-band b {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-ledge-text);
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workbench-health-band.is-ok b {
+    color: var(--studio-ledge-ok);
+  }
+
+  .app-shell.mode-studio .workbench-health-band.is-warn b {
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .workbench-health-band.is-error b {
+    color: var(--desk-danger);
   }
 
   .app-shell.mode-studio .workbench-health-next b,
