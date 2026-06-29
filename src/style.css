@@ -31790,3 +31790,48 @@ input {
     white-space: nowrap;
   }
 }
+
+/* Desktop command palette containment: keep launcher rows inside the instrument frame. */
+@media (min-width: 981px) {
+  .app-shell.mode-studio .command-palette-panel {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    max-height: min(624px, calc(100vh - 88px));
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio .command-palette-results {
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .app-shell.mode-studio .command-palette-results::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .app-shell.mode-studio .command-palette-results::-webkit-scrollbar-track {
+    background: #05080c;
+    border-left: 1px solid #252c34;
+  }
+
+  .app-shell.mode-studio .command-palette-results::-webkit-scrollbar-thumb {
+    background: #343d47;
+    border: 2px solid #05080c;
+  }
+
+  .app-shell.mode-studio .command-result:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .command-result.is-active,
+  .app-shell.mode-studio .command-result[aria-selected="true"] {
+    background: #202832;
+    outline-color: #667381;
+    box-shadow:
+      inset 4px 0 0 color-mix(in srgb, var(--command-signal, var(--desk-active)) 82%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+}
