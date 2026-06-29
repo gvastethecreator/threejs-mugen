@@ -44,6 +44,8 @@ When docs disagree, prefer this order for current implementation truth:
 
 Then update stale roadmap docs in the same pass. Do not preserve an older "next" gate if the backlog proves it already closed.
 
+Keep lane checkpoints separate when resolving conflicts. A latest Studio/UI closeout can be the newest backlog entry without replacing the latest runtime/port checkpoint. Use `docs/ROADMAP_PROGRESS_SYSTEM.md#checkpoint-taxonomy` to decide whether the current fact belongs to runtime, Studio/UI, generated assets, IKEMEN scanner, modular boundaries, or G1 project control.
+
 ## Autonomous Pass Routing
 
 Use this routing before editing:

@@ -20,7 +20,17 @@ G1 setup-project refresh
   -> AGENTS.md and docs/agents/* are the active setup-project profile
   -> local markdown issues, canonical labels, and single-context docs remain the defaults
   -> roadmap health checks now tell future agents how to avoid duplicate closed gates
+  -> lane checkpoint taxonomy prevents latest UI/docs work from replacing latest runtime evidence
   -> no score movement; return to R1/R2 evidence-producing work next
+```
+
+Latest Studio/UI truth:
+
+```txt
+S1 Studio command inspector readability and smoke stability
+  -> compact Studio command/readability pass closed with qa:smoke, screenshots, tests, typecheck, build, and diff-check
+  -> keeps Studio more usable for future workbench/build/evidence flows
+  -> does not change the next runtime/port slice
 ```
 
 Latest implementation truth:

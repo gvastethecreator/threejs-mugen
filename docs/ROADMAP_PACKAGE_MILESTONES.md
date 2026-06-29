@@ -38,8 +38,18 @@ Latest project-control checkpoint:
 G1 setup-project refresh
   -> AGENTS.md and docs/agents/* confirm local markdown issues, canonical labels, single-context docs
   -> roadmap navigation/progress/checklist docs include G1 health checks and decision routing
+  -> lane checkpoint taxonomy separates latest overall, runtime, Studio/UI, asset, scanner, modular, and G1 control truth
   -> .scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md remains the setup/project-control ledger
   -> docs-only control work; no runtime, Studio, IKEMEN, modular, or score claim
+```
+
+Latest Studio/UI checkpoint:
+
+```txt
+S1 Studio command inspector readability and smoke stability
+  -> dense Studio command surfaces, Build/Evidence route copy, stage toolbar, and replacement rows were tightened
+  -> pnpm qa:smoke plus screenshot inspection proved the visible surfaces after that pass
+  -> product/UI evidence only; it does not replace the latest runtime checkpoint or change the next runtime slice
 ```
 
 Latest implementation checkpoint:

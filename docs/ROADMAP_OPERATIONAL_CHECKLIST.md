@@ -148,6 +148,7 @@ Setup-project refresh sequence:
 5. Update roadmap docs only where the queue, closeout gate, setup profile, or next-slice routing changed.
 6. Append evidence to `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` and `docs/BUILD_EXECUTION_BACKLOG.md`.
 7. Close with normal docs-only gates and explicit no-score movement.
+8. If the latest overall backlog entry is not runtime work, preserve the latest runtime/port checkpoint separately from Studio/UI or docs-only checkpoint wording.
 
 Required closeout:
 

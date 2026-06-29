@@ -25,6 +25,22 @@ Read these in order when planning or reporting status:
 
 Rule: when two docs disagree, prefer the more specific owner above. Then update stale docs in the same round if the task touched that scope.
 
+## Checkpoint Taxonomy
+
+Use lane-specific checkpoints instead of collapsing every recent entry into one "latest implementation" label:
+
+| Lane checkpoint | What it means | Current owner doc |
+| --- | --- | --- |
+| Latest overall closeout | Top entry in the detailed history, regardless of lane. | `docs/BUILD_EXECUTION_BACKLOG.md` |
+| Latest runtime/port checkpoint | Most recent runtime, parser, controller, trace, or MatchWorld evidence cut. | `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/ROADMAP_EXECUTION_BOARD.md` |
+| Latest Studio/UI checkpoint | Most recent visible Studio, runtime UI, browser smoke, or visual QA cut. | `docs/PROGRESS_TRACKER.md`, `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md` |
+| Latest generated-asset checkpoint | Most recent source/provenance/atlas/QA/playtest evidence cut. | `docs/GENERATED_ASSET_QA_CONTRACT.md` |
+| Latest IKEMEN scanner checkpoint | Most recent scanner-only recognized/unsupported/unknown signal. | `docs/IKEMEN_GO_REFERENCE.md`, `docs/COMPATIBILITY_PROFILES.md` |
+| Latest modular-boundary checkpoint | Most recent shared-contract or boundary proof. | `docs/MODULE_BOUNDARY_CONTRACT.md` |
+| Latest G1 control checkpoint | Most recent AGENTS/setup-project/roadmap/issue-tracker refresh. | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
+
+When the backlog top entry is Studio/UI or docs-only work, do not overwrite the runtime next slice with that lane. Add or refresh the lane checkpoint summary, state no score movement if applicable, then return to the evidence-producing queue.
+
 ## Roadmap Health Check
 
 Run this lightweight check during G1 setup/project-control work:

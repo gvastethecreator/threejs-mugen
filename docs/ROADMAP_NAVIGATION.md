@@ -50,6 +50,7 @@ For architecture or source-of-truth changes, also read:
 | What must generated assets prove? | `docs/GENERATED_ASSET_QA_CONTRACT.md` |
 | What is only scanner-level IKEMEN work? | `docs/IKEMEN_GO_REFERENCE.md` and `docs/COMPATIBILITY_PROFILES.md` |
 | What is shared-core vs fighting-specific? | `docs/MODULE_BOUNDARY_CONTRACT.md` |
+| Which "latest" checkpoint belongs to which lane? | `docs/ROADMAP_PROGRESS_SYSTEM.md#checkpoint-taxonomy` |
 
 ## Decision Tree
 
@@ -144,3 +145,4 @@ Use `docs/ROADMAP_CONTINUITY_GUIDE.md` when a task asks to continue the broader 
 - Do not bundle commercial or third-party characters.
 - Do not close an issue without evidence and blocked claims.
 - Do not start platformer or generic SDK runtime work before fighting contracts stay green.
+- Do not treat the latest overall backlog entry as the latest runtime checkpoint unless it is actually runtime/port evidence.

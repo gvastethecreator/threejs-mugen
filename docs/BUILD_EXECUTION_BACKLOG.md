@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Setup-project lane checkpoint taxonomy
+
+Changed:
+
+- Rechecked the existing setup-project profile: repo `AGENTS.md`, parent router `AGENTS.md`, `docs/agents/*`, root `CONTEXT.md`, `docs/adr/`, GitHub remote, and local `.scratch/roadmap/` tracker are present and aligned.
+- Added lane checkpoint taxonomy so future agents keep latest overall closeout, runtime/port, Studio/UI, generated assets, IKEMEN scanner, modular boundary, and G1 project-control truth separate.
+- Updated AGENTS/setup docs, roadmap navigation, progress system, package milestones, tactical roadmap, execution board, progress tracker, and the G1 local issue to route docs-only work back to R1/R2 evidence-producing cuts.
+
+Evidence:
+
+- `pnpm test` passes: 69 files, 609 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `git diff --check` passes, with the pre-existing `src/style.css` CRLF warning still reported by Git.
+- `pnpm qa:trace` and `pnpm qa:smoke` were not required for this docs/project-control checkpoint because it does not change runtime semantics, renderer behavior, Studio layout, sprites, stage, or visible UI behavior.
+
+Claim allowed:
+
+- Project-control docs now tell future agents not to treat the latest Studio/UI or docs-only backlog entry as the latest runtime checkpoint. Setup-project defaults remain local markdown issues, canonical labels, and single-context domain docs.
+
+Claim blocked:
+
+- This is docs/project-control work only. It does not prove new runtime compatibility, Studio workflow execution, generated asset QA, IKEMEN execution, modular boundary extraction, or score movement.
+
 ## 2026-06-29 - Studio command inspector readability and smoke stability
 
 Changed:

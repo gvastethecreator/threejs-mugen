@@ -122,6 +122,7 @@ pnpm qa:smoke
 - `.scratch/roadmap/PRD.md` and `.scratch/roadmap/issues/` are local slicing aids.
 - `docs/ROADMAP_EXECUTION_BOARD.md` is the current queue and handoff map.
 - Update all affected roadmap files when a gate changes a score, claim, priority, or blocked scope.
+- Keep lane checkpoints separate: the latest overall backlog entry may be Studio/UI or project-control work, while the latest runtime checkpoint still owns the port evidence trail. Record latest runtime, Studio/UI, asset, scanner, modular, and G1 control checkpoints separately when roadmap docs could otherwise blur them.
 
 ## Setup Project Profile
 
@@ -147,6 +148,7 @@ When the user says to continue the port, choose the first slice that can produce
 
 Docs-only/setup slices improve control only. They do not raise scores.
 Before selecting a new slice, compare `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `docs/BUILD_EXECUTION_BACKLOG.md`, and the linked `.scratch/roadmap/issues/` file so already-closed gates are not rebuilt.
+If the top backlog entry is visual, docs-only, or Studio work, use the lane checkpoint taxonomy in `docs/ROADMAP_PROGRESS_SYSTEM.md` before changing the runtime next slice.
 
 ## Current Milestone Focus
 

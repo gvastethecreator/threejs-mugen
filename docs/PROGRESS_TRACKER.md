@@ -28,6 +28,17 @@ Use these files together:
 
 Rule: this tracker stays short. Update score changes in `docs/PORT_COMPLETION_SCORECARD.md`, add detailed implementation history to `docs/BUILD_EXECUTION_BACKLOG.md`, and use `.scratch/roadmap/issues/` for next-slice planning.
 
+## Lane Checkpoints
+
+Use this table to avoid mixing unrelated "latest" facts:
+
+| Lane | Latest checkpoint | Next read |
+| --- | --- | --- |
+| Overall closeout | Studio command inspector readability and smoke-stability pass. | `docs/BUILD_EXECUTION_BACKLOG.md` |
+| Runtime/port | `RuntimeStunWorld` ownership extraction. | `docs/ROADMAP_PACKAGE_MILESTONES.md` |
+| Studio/UI | Dense Studio command inspector/readability plus smoke harness stability. | `docs/ENGINE_STUDIO_ROADMAP.md`, `docs/INTERFACE_SYSTEM.md` |
+| G1 project control | Setup-project profile and roadmap docs remain local markdown, canonical labels, single-context docs, now with lane checkpoint taxonomy. | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
+
 ## Current Score
 
 | Horizon | Score | Meaning |
