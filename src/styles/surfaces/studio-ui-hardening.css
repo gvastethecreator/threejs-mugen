@@ -99,7 +99,6 @@
 .app-shell.mode-studio .debug-filter-button,
 .app-shell.mode-studio .debug-actor-button,
 .app-shell.mode-studio .workbench-route-button,
-.app-shell.mode-studio .health-queue-row,
 .app-shell.mode-studio .asset-row {
   outline: 1px solid transparent;
   outline-offset: -1px;
@@ -108,7 +107,6 @@
 .app-shell.mode-studio .debug-filter-button.is-selected,
 .app-shell.mode-studio .debug-actor-button.is-selected,
 .app-shell.mode-studio .workbench-route-button:hover,
-.app-shell.mode-studio .health-queue-row:hover,
 .app-shell.mode-studio .asset-row:hover {
   outline-color: color-mix(in srgb, var(--section-accent, var(--accent)) 42%, transparent);
 }

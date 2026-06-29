@@ -23,10 +23,6 @@
   display: none;
 }
 
-.app-shell.mode-studio .readiness-strip.compact {
-  display: none;
-}
-
 .pane {
   min-width: 0;
   min-height: 0;
@@ -205,9 +201,6 @@
 
 .stage-status-metric.is-ok b,
 .workspace-summary .is-ok b,
-.studio-command-readouts .is-ok b,
-.health-grid .is-ok b,
-.readiness-strip .is-ok b,
 .command-meter-grid .is-ok b,
 .asset-lane-strip .is-ok b,
 .evidence-lane-strip .is-ok b,
@@ -217,9 +210,6 @@
 
 .stage-status-metric.is-warn b,
 .workspace-summary .is-warn b,
-.studio-command-readouts .is-warn b,
-.health-grid .is-warn b,
-.readiness-strip .is-warn b,
 .command-meter-grid .is-warn b,
 .asset-lane-strip .is-warn b,
 .evidence-lane-strip .is-warn b,
@@ -228,8 +218,6 @@
 }
 
 .stage-status-metric.is-error b,
-.studio-command-readouts .is-error b,
-.health-grid .is-error b,
 .command-meter-grid .is-error b,
 .asset-lane-strip .is-error b,
 .evidence-lane-strip .is-error b,
@@ -238,7 +226,6 @@
 }
 
 .workspace-summary .is-ok,
-.health-grid .is-ok,
 .command-meter-grid .is-ok,
 .asset-lane-strip .is-ok,
 .evidence-lane-strip .is-ok,
@@ -248,7 +235,6 @@
 }
 
 .workspace-summary .is-warn,
-.health-grid .is-warn,
 .command-meter-grid .is-warn,
 .asset-lane-strip .is-warn,
 .evidence-lane-strip .is-warn,
@@ -276,13 +262,6 @@
 
 .stage-status-metric.is-error {
   border-color: rgba(240, 93, 94, 0.34);
-}
-
-.stage-status-badges {
-  display: flex;
-  min-width: 0;
-  flex-wrap: wrap;
-  gap: 5px;
 }
 
 .round-hud {

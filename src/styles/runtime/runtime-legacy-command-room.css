@@ -164,11 +164,7 @@
 }
 
 .app-shell.mode-match .runtime-metric-strip,
-.app-shell.mode-inspect .runtime-metric-strip,
-.app-shell.mode-match .health-grid,
-.app-shell.mode-inspect .health-grid,
-.app-shell.mode-match .readiness-strip,
-.app-shell.mode-inspect .readiness-strip {
+.app-shell.mode-inspect .runtime-metric-strip {
   gap: 0;
   overflow: hidden;
   margin-top: 7px;
@@ -178,11 +174,7 @@
 }
 
 .app-shell.mode-match .runtime-metric-strip span,
-.app-shell.mode-inspect .runtime-metric-strip span,
-.app-shell.mode-match .health-grid span,
-.app-shell.mode-inspect .health-grid span,
-.app-shell.mode-match .readiness-strip span,
-.app-shell.mode-inspect .readiness-strip span {
+.app-shell.mode-inspect .runtime-metric-strip span {
   min-height: 31px;
   padding: 5px 7px;
   border: 0;
@@ -194,34 +186,13 @@
 }
 
 .app-shell.mode-match .runtime-metric-strip span:nth-child(5n),
-.app-shell.mode-inspect .runtime-metric-strip span:nth-child(5n),
-.app-shell.mode-match .health-grid span:nth-child(even),
-.app-shell.mode-inspect .health-grid span:nth-child(even),
-.app-shell.mode-match .readiness-strip span:nth-child(3n),
-.app-shell.mode-inspect .readiness-strip span:nth-child(3n) {
+.app-shell.mode-inspect .runtime-metric-strip span:nth-child(5n) {
   border-right: 0;
 }
 
 .app-shell.mode-match .runtime-metric-strip b,
-.app-shell.mode-inspect .runtime-metric-strip b,
-.app-shell.mode-match .health-grid b,
-.app-shell.mode-inspect .health-grid b {
+.app-shell.mode-inspect .runtime-metric-strip b {
   font-size: 12px;
-}
-
-.app-shell.mode-match .health-grid .is-ok,
-.app-shell.mode-inspect .health-grid .is-ok {
-  background: color-mix(in srgb, var(--ok) 5%, transparent);
-}
-
-.app-shell.mode-match .health-grid .is-warn,
-.app-shell.mode-inspect .health-grid .is-warn {
-  background: color-mix(in srgb, var(--warn) 6%, transparent);
-}
-
-.app-shell.mode-match .health-grid .is-error,
-.app-shell.mode-inspect .health-grid .is-error {
-  background: color-mix(in srgb, var(--danger) 7%, transparent);
 }
 
 .app-shell.mode-match .telemetry-kv,
@@ -439,29 +410,17 @@
   }
 
 .app-shell.mode-match .runtime-metric-strip,
-  .app-shell.mode-inspect .runtime-metric-strip,
-  .app-shell.mode-match .health-grid,
-  .app-shell.mode-inspect .health-grid,
-  .app-shell.mode-match .readiness-strip,
-  .app-shell.mode-inspect .readiness-strip {
+  .app-shell.mode-inspect .runtime-metric-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
 .app-shell.mode-match .runtime-metric-strip span:nth-child(n),
-  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(n),
-  .app-shell.mode-match .health-grid span:nth-child(n),
-  .app-shell.mode-inspect .health-grid span:nth-child(n),
-  .app-shell.mode-match .readiness-strip span:nth-child(n),
-  .app-shell.mode-inspect .readiness-strip span:nth-child(n) {
+  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(n) {
     border-right: 1px solid var(--legacy-rule);
   }
 
 .app-shell.mode-match .runtime-metric-strip span:nth-child(even),
-  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(even),
-  .app-shell.mode-match .health-grid span:nth-child(even),
-  .app-shell.mode-inspect .health-grid span:nth-child(even),
-  .app-shell.mode-match .readiness-strip span:nth-child(even),
-  .app-shell.mode-inspect .readiness-strip span:nth-child(even) {
+  .app-shell.mode-inspect .runtime-metric-strip span:nth-child(even) {
     border-right: 0;
   }
 }

@@ -86,23 +86,7 @@
     font-size: 14px;
   }
 
-.app-shell.mode-studio .health-grid span {
-    display: grid;
-    grid-template-columns: minmax(24px, auto) minmax(0, 1fr);
-    align-items: baseline;
-    min-height: 30px;
-    gap: 6px;
-    padding: 5px 7px;
-    font-family: var(--mono);
-  }
-
-.app-shell.mode-studio .health-grid b {
-    font-size: 13px;
-    text-align: right;
-  }
-
-.app-shell.mode-studio .health-queue-row,
-  .app-shell.mode-studio .engine-module-row,
+.app-shell.mode-studio .engine-module-row,
   .app-shell.mode-studio .acceptance-gate-row,
   .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,

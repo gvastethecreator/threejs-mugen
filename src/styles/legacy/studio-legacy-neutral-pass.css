@@ -11,7 +11,6 @@
 .section,
 .workbench-ops-section,
 .acceptance-gates-section,
-.studio-command-deck,
 .studio-command-center,
 .command-palette-panel,
 .console-toolbar,
@@ -26,12 +25,8 @@
 .workbench-route-button,
 .acceptance-gate-board,
 .acceptance-gate-row,
-.studio-command-decision,
 .operator-callout,
-.surface-jump-button,
 .studio-mission-node,
-.health-queue-row,
-.studio-primary-next,
 .list-item,
 .asset-row,
 .evidence-record,
@@ -71,26 +66,20 @@ button.list-item:hover,
 .badge.ok,
 .status-badge.ok,
 .workspace-summary .is-ok,
-.studio-command-readouts .is-ok,
 .command-meter-grid .is-ok,
 .asset-lane-strip .is-ok,
 .evidence-lane-strip .is-ok,
 .workbench-lane-strip .is-ok,
-.health-grid .is-ok,
-.readiness-strip .is-ok,
 .stage-status-metric.is-ok {
   border-color: color-mix(in srgb, var(--ok) 28%, var(--panel-border));
   background: rgba(170, 176, 155, 0.045);
 }
 
 .workspace-summary .is-ok b,
-.studio-command-readouts .is-ok b,
 .command-meter-grid .is-ok b,
 .asset-lane-strip .is-ok b,
 .evidence-lane-strip .is-ok b,
 .workbench-lane-strip .is-ok b,
-.health-grid .is-ok b,
-.readiness-strip .is-ok b,
 .stage-status-metric.is-ok b,
 .workbench-route-button.is-ok strong,
 .console-toolbar.is-ok .console-title span {
@@ -98,7 +87,6 @@ button.list-item:hover,
 }
 
 .mode-dot.is-ok,
-.surface-jump-button.is-ok::before,
 .studio-mission-node.is-ok::before,
 .list-item.is-ok::before,
 .debug-actor-button.is-ok::before {
@@ -116,20 +104,16 @@ button.list-item:hover,
 .workspace-actions::after,
 .studio-command-center::after,
 .command-launcher::after,
-.studio-command-deck::before,
 .studio-mission-node::after {
   display: none;
 }
 
 .workspace-eyebrow,
 .panel-kicker,
-.gate-kicker,
-.studio-command-label,
-.studio-command-code {
+.gate-kicker {
   color: color-mix(in srgb, var(--surface-accent) 82%, var(--muted));
 }
 
-.studio-command-code,
 .badge.active,
 .badge.warn,
 .badge.ok,

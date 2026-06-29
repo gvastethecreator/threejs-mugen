@@ -13,7 +13,6 @@
 
 .workspace-actions,
 .app-shell.mode-studio .workspace-actions,
-.studio-command-deck,
 .studio-command-center,
 .command-launcher {
   border-radius: 7px;
@@ -28,45 +27,15 @@
   background: var(--surface-flat);
 }
 
-.studio-command-deck,
-.app-shell.mode-studio .studio-command-deck,
 .studio-command-center,
 .app-shell.mode-studio .studio-command-center {
   border: 1px solid color-mix(in srgb, var(--surface-border-strong) 74%, #000);
   background: var(--surface-flat);
 }
 
-.studio-command-deck.is-ok {
-  border-color: color-mix(in srgb, var(--ok) 34%, var(--surface-border-strong));
-}
-
-.studio-command-deck.is-warn,
-.studio-command-deck.is-planned,
-.studio-command-deck.is-pending {
-  border-color: color-mix(in srgb, var(--warn) 38%, var(--surface-border-strong));
-}
-
-.studio-command-deck.is-error {
-  border-color: color-mix(in srgb, var(--danger) 42%, var(--surface-border-strong));
-}
-
-.studio-command-deck::before,
-.app-shell.mode-studio .studio-command-deck::before {
-  display: none;
-}
-
-.studio-command-head {
-  padding-left: 0;
-}
-
-.studio-command-decision,
-.app-shell.mode-studio .studio-command-decision,
 .operator-callout,
 .app-shell.mode-studio .operator-callout,
-.surface-jump-button,
-.studio-mission-node,
-.health-queue-row,
-.studio-primary-next {
+.studio-mission-node {
   border-radius: 6px;
   background: var(--surface-flat);
   box-shadow: none;
@@ -77,7 +46,6 @@
   border-color: color-mix(in srgb, var(--surface-accent) 28%, var(--surface-border-strong));
 }
 
-.studio-command-readouts,
 .command-meter-grid,
 .asset-lane-strip,
 .evidence-lane-strip,
@@ -85,8 +53,6 @@
   grid-template-columns: repeat(auto-fit, minmax(78px, 1fr));
 }
 
-.studio-command-readouts b,
-.studio-command-readouts small,
 .command-meter-grid b,
 .command-meter-grid small,
 .asset-lane-strip b,
@@ -97,22 +63,19 @@
 .evidence-lane-strip em,
 .workbench-lane-strip b,
 .workbench-lane-strip small,
-.workbench-lane-strip em,
-.health-grid b {
+.workbench-lane-strip em {
   overflow-wrap: anywhere;
   text-overflow: clip;
   white-space: normal;
 }
 
-.studio-command-readouts span,
 .command-meter-grid span,
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
 .workspace-summary span,
 .stage-status-metric,
-.studio-stat,
-.health-grid span {
+.studio-stat {
   min-height: 42px;
 }
 
@@ -517,8 +480,7 @@
     justify-content: center;
   }
 
-.app-shell.mode-studio .studio-command-readouts,
-  .app-shell.mode-studio .workbench-lane-strip {
+.app-shell.mode-studio .workbench-lane-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

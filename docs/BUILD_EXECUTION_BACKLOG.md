@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio unused CSS selector prune
+
+Changed:
+
+- Removed unused legacy Studio command, readiness, health, module-summary, log-level, and stage-status selector hooks after source search confirmed those class names no longer appear outside CSS.
+- Kept live command shell, Workbench, Assets, Evidence, Build, Modules, Debug, runtime, and stage ownership modules intact; this is a dead-selector prune, not a visual redesign.
+- Tightened `pnpm qa:css:budget` from 2,594 to 2,500 max rules and from 159 to 144 repeated declaration groups; cross-file overlap ceiling remains 123 because remaining overlaps are live cascade ownership debt.
+- Updated Studio/UI roadmap docs and the S1 local issue to use the new 2,500 / 144 / 123 CSS baseline.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,500 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 144 repeated declaration groups, 123 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the new lower ceilings.
+- `pnpm test` passes: 73 files / 649 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes in started-Vite mode; visual inspection covered Studio Workbench desktop/tablet, Runtime desktop, Studio Build, Studio Assets, Studio Evidence, Studio Debug, and Command Palette screenshots with no obvious layout or missing-surface regression from the selector prune.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- The repo still does not have literal CSS duplication, and the active CSS budget is smaller: dead legacy selectors are pruned while exact duplicate selectors/rules remain zero.
+
+Claim blocked:
+
+- This does not finish CSS architecture cleanup. The remaining 123 cross-file overlaps still need owner-by-surface migration or shared primitive extraction, and this pass does not move runtime compatibility, Studio workflow capability, or port score.
+
 ## 2026-06-29 - Common1 stand get-hit physics-frame gate
 
 Changed:

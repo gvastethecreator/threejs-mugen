@@ -35,12 +35,10 @@
 
   .app-shell.mode-studio .section-emphasis,
   .app-shell.mode-studio .studio-command-center,
-  .app-shell.mode-studio .workbench-command-center,
   .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .build-command-center,
   .app-shell.mode-studio .evidence-command-center,
-  .app-shell.mode-studio .match-setup-panel,
-  .app-shell.mode-studio .studio-health-panel {
+  .app-shell.mode-studio .match-setup-panel {
     border: 1px solid var(--studio-line-strong);
     border-top-color: color-mix(in srgb, var(--surface-accent) 28%, var(--studio-line-strong));
     border-radius: 0;
@@ -49,8 +47,7 @@
   }
 
   .app-shell.mode-studio .workspace-eyebrow,
-  .app-shell.mode-studio .panel-kicker,
-  .app-shell.mode-studio .studio-command-label {
+  .app-shell.mode-studio .panel-kicker {
     color: var(--surface-accent);
     font-family: var(--mono);
     font-size: 10px;
@@ -75,8 +72,6 @@
 
   .app-shell.mode-studio .workspace-summary,
   .app-shell.mode-studio .studio-stat-grid,
-  .app-shell.mode-studio .health-grid,
-  .app-shell.mode-studio .readiness-strip,
   .app-shell.mode-studio .command-meter-grid,
   .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .evidence-lane-strip,
@@ -92,8 +87,6 @@
 
   .app-shell.mode-studio .workspace-summary span,
   .app-shell.mode-studio .studio-stat,
-  .app-shell.mode-studio .health-grid span,
-  .app-shell.mode-studio .readiness-strip span,
   .app-shell.mode-studio .command-meter-grid span,
   .app-shell.mode-studio .asset-lane-strip span,
   .app-shell.mode-studio .evidence-lane-strip span,
@@ -113,8 +106,6 @@
 
   .app-shell.mode-studio .workspace-summary span:nth-child(even),
   .app-shell.mode-studio .studio-stat:nth-child(even),
-  .app-shell.mode-studio .health-grid span:nth-child(even),
-  .app-shell.mode-studio .readiness-strip span:nth-child(even),
   .app-shell.mode-studio .command-meter-grid span:nth-child(even),
   .app-shell.mode-studio .asset-lane-strip span:nth-child(even),
   .app-shell.mode-studio .evidence-lane-strip span:nth-child(even),
@@ -126,8 +117,6 @@
 
   .app-shell.mode-studio .workspace-summary b,
   .app-shell.mode-studio .studio-stat strong,
-  .app-shell.mode-studio .health-grid b,
-  .app-shell.mode-studio .readiness-strip b,
   .app-shell.mode-studio .command-meter-grid b,
   .app-shell.mode-studio .asset-lane-strip b,
   .app-shell.mode-studio .evidence-lane-strip b,
@@ -145,8 +134,6 @@
   .app-shell.mode-studio .workspace-summary small,
   .app-shell.mode-studio .studio-stat span,
   .app-shell.mode-studio .studio-stat small,
-  .app-shell.mode-studio .health-grid small,
-  .app-shell.mode-studio .readiness-strip small,
   .app-shell.mode-studio .command-meter-grid small,
   .app-shell.mode-studio .asset-lane-strip small,
   .app-shell.mode-studio .evidence-lane-strip small,
@@ -228,14 +215,12 @@
   .app-shell.mode-studio .action-stack button,
   .app-shell.mode-studio .workbench-action-bar button,
   .app-shell.mode-studio .command-action-column button,
-  .app-shell.mode-studio .surface-jump-button,
   .app-shell.mode-studio .studio-mission-node {
     border-radius: 0;
     background: var(--studio-row);
     box-shadow: none;
   }
 
-  .app-shell.mode-studio .surface-jump-button:hover,
   .app-shell.mode-studio .studio-mission-node:hover {
     background: var(--studio-row-hot);
   }

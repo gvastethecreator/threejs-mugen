@@ -131,7 +131,6 @@
   .app-shell.mode-studio .studio-mission-node.is-partial,
   .app-shell.mode-studio .studio-mission-node.is-pending,
   .app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio .health-queue-row.is-warn,
   .app-shell.mode-studio .acceptance-gate-row.is-warn,
   .app-shell.mode-studio .engine-module-row.is-warn,
   .app-shell.mode-studio .asset-row.is-warn,
@@ -142,7 +141,6 @@
     box-shadow: inset 2px 0 0 var(--desk-warn);
   }
 
-  .app-shell.mode-studio .studio-primary-next,
   .app-shell.mode-studio .workbench-directive.is-warn,
   .app-shell.mode-studio .workspace-action-grid button.primary-action {
     box-shadow: inset 3px 0 0 var(--section-accent);
@@ -253,7 +251,6 @@
 
   .app-shell.mode-studio .list-title,
   .app-shell.mode-studio .asset-row-title .list-title,
-  .app-shell.mode-studio .health-queue-main strong,
   .app-shell.mode-studio .engine-module-name strong {
     color: var(--desk-text);
   }
@@ -261,7 +258,6 @@
   .app-shell.mode-studio .list-meta,
   .app-shell.mode-studio .asset-row-detail,
   .app-shell.mode-studio .asset-row-kind,
-  .app-shell.mode-studio .health-queue-main small,
   .app-shell.mode-studio .engine-module-name small {
     color: var(--desk-muted);
   }

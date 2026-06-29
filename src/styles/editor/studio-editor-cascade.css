@@ -134,7 +134,6 @@
   .app-shell.mode-studio .workbench-action-bar,
   .app-shell.mode-studio .workspace-action-grid,
   .app-shell.mode-studio .studio-stat-grid,
-  .app-shell.mode-studio .health-grid,
   .app-shell.mode-studio .build-readiness-list,
   .app-shell.mode-studio .evidence-record-list,
   .app-shell.mode-studio .list.compact-list,
@@ -155,7 +154,6 @@
   .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
-  .app-shell.mode-studio .health-queue-row,
   .app-shell.mode-studio .engine-module-row,
   .app-shell.mode-studio .studio-stat,
   .app-shell.mode-studio .workbench-lane-strip span,
@@ -179,7 +177,6 @@
   .app-shell.mode-studio .asset-row:last-child,
   .app-shell.mode-studio .evidence-record:last-child,
   .app-shell.mode-studio .build-readiness-record:last-child,
-  .app-shell.mode-studio .health-queue-row:last-child,
   .app-shell.mode-studio .engine-module-row:last-child,
   .app-shell.mode-studio .studio-mission-node:last-child {
     border-bottom: 0;
@@ -244,8 +241,7 @@
 
 .app-shell.mode-studio .asset-row-main,
   .app-shell.mode-studio .evidence-record-main,
-  .app-shell.mode-studio .build-readiness-main,
-  .app-shell.mode-studio .health-queue-main {
+  .app-shell.mode-studio .build-readiness-main {
     min-width: 0;
   }
 

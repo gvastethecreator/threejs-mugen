@@ -58,7 +58,6 @@
   .app-shell.mode-studio .workbench-lane-strip,
   .app-shell.mode-studio .workbench-action-bar,
   .app-shell.mode-studio .workspace-action-grid,
-  .app-shell.mode-studio .health-grid,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .engine-module-table,
   .app-shell.mode-studio .build-readiness-list,
@@ -77,7 +76,6 @@
 .app-shell.mode-studio .mode-switch button,
   .app-shell.mode-studio .studio-tab-section.is-compact .tab,
   .app-shell.mode-studio .workspace-summary span,
-  .app-shell.mode-studio .health-grid span,
   .app-shell.mode-studio .studio-stat,
   .app-shell.mode-studio .workbench-lane-strip span,
   .app-shell.mode-studio .workbench-route-button,
@@ -85,8 +83,7 @@
   .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
-  .app-shell.mode-studio .engine-module-row,
-  .app-shell.mode-studio .health-queue-row {
+  .app-shell.mode-studio .engine-module-row {
     border-radius: 0;
     background: var(--editor-row);
     box-shadow: none;
@@ -131,7 +128,6 @@
   }
 
 .app-shell.mode-studio .workspace-summary .is-warn b,
-  .app-shell.mode-studio .health-grid .is-warn b,
   .app-shell.mode-studio .workbench-lane-strip .is-warn b {
     color: color-mix(in srgb, var(--pending) 88%, var(--text));
   }
@@ -176,7 +172,6 @@
 
 .app-shell.mode-studio .studio-mission-node.is-ok::after,
   .app-shell.mode-studio .workbench-route-button.is-ok .route-icon,
-  .app-shell.mode-studio .health-grid .is-ok b,
   .app-shell.mode-studio .workbench-lane-strip .is-ok b {
     color: var(--ok);
   }

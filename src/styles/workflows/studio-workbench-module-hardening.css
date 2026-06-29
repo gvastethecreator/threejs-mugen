@@ -9,9 +9,7 @@
   border-radius: 2px;
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts,
 .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid,
 .app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat-grid {
   gap: 0;
   overflow: hidden;
@@ -20,9 +18,7 @@
   background: var(--editor-panel-pressed);
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts span,
 .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip span,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid span,
 .app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat {
   min-height: 34px;
   padding: 6px 7px;
@@ -33,17 +29,13 @@
   box-shadow: none;
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts span:last-child,
 .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip span:last-child,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid span:last-child,
 .app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat:last-child {
   border-right: 0;
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .studio-command-readouts small,
 .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip small,
 .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip em,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid small,
 .app-shell.mode-studio[data-studio-tab="workbench"] .studio-stat span,
 .app-shell.mode-studio[data-studio-tab="workbench"] .empty-state,
 .app-shell.mode-studio[data-studio-tab="workbench"] .empty-state p {
@@ -55,22 +47,19 @@
   text-overflow: clip;
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-ok,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-ok {
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-ok {
   color: var(--text);
   background: var(--editor-row);
   box-shadow: inset 1px 0 0 var(--ok);
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-warn,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-warn {
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-warn {
   color: var(--text);
   background: var(--editor-row);
   box-shadow: inset 1px 0 0 var(--warn);
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-error,
-.app-shell.mode-studio[data-studio-tab="workbench"] .health-grid .is-error {
+.app-shell.mode-studio[data-studio-tab="workbench"] .workbench-lane-strip .is-error {
   color: var(--text);
   background: var(--editor-row);
   box-shadow: inset 1px 0 0 var(--danger);

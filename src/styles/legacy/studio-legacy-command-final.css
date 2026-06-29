@@ -27,15 +27,13 @@
 }
 
 .workbench-directive,
-.studio-command-decision,
 .operator-callout,
 .acceptance-gate-board,
 .debug-lens-meter,
 .debug-evidence-block,
 .runtime-overview-panel,
 .engine-modules-panel,
-.asset-focus-panel,
-.studio-health-panel {
+.asset-focus-panel {
   padding: 9px 10px;
 }
 
@@ -43,8 +41,7 @@
 .debug-evidence-block,
 .runtime-overview-panel,
 .engine-modules-panel,
-.asset-focus-panel,
-.studio-health-panel {
+.asset-focus-panel {
   background: var(--surface-flat);
 }
 
@@ -122,7 +119,6 @@
 .build-readiness-record,
 .evidence-record,
 .asset-row,
-.health-queue-row,
 .debug-actor-button,
 .debug-filter-button,
 .debug-target-row,
@@ -143,7 +139,6 @@
 .build-readiness-record.is-ok,
 .evidence-record.is-ok,
 .asset-row.is-ok,
-.health-queue-row.is-ok,
 .stage-layer-row.is-ok,
 .engine-module-row.is-ok,
 .state-controller-row.is-ok {
@@ -159,9 +154,6 @@
 .asset-row.is-warn,
 .asset-row.is-planned,
 .asset-row.is-partial,
-.health-queue-row.is-warn,
-.health-queue-row.is-planned,
-.health-queue-row.is-partial,
 .stage-layer-row.is-warn,
 .engine-module-row.is-warn,
 .engine-module-row.is-planned,
@@ -178,8 +170,6 @@
 .evidence-record.is-blocked,
 .asset-row.is-error,
 .asset-row.is-blocked,
-.health-queue-row.is-error,
-.health-queue-row.is-blocked,
 .stage-layer-row.is-error,
 .engine-module-row.is-error,
 .engine-module-row.is-blocked,
@@ -201,7 +191,6 @@
 .debug-filter-grid,
 .debug-lens-grid,
 .debug-effect-store-list,
-.health-queue,
 .list,
 .build-readiness-list,
 .evidence-record-list {
@@ -210,8 +199,7 @@
 
 .build-readiness-record,
 .evidence-record,
-.asset-row,
-.health-queue-row {
+.asset-row {
   padding: 7px 8px;
 }
 
@@ -231,7 +219,6 @@
 }
 
 .acceptance-gate-board,
-.health-queue,
 .list {
   background: transparent;
   box-shadow: none;

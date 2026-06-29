@@ -116,12 +116,10 @@
 
 .workspace-summary span,
 .app-shell.mode-studio .workspace-summary span,
-.studio-command-readouts span,
 .command-meter-grid span,
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
-.health-grid span,
 .stage-status-metric {
   background: var(--surface-flat);
   box-shadow:
@@ -139,7 +137,6 @@ body,
 .section,
 .workbench-ops-section,
 .acceptance-gates-section,
-.studio-command-deck,
 .studio-command-center,
 .command-palette-panel,
 .console,
@@ -156,30 +153,23 @@ body,
 .section,
 .workbench-ops-section,
 .studio-command-center,
-.studio-command-deck,
 .command-palette-panel,
 .console-toolbar {
   background: var(--surface-flat);
 }
 
 .workspace-summary span,
-.studio-command-readouts span,
 .command-meter-grid span,
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
-.health-grid span,
 .stage-status-metric,
 .workbench-directive,
 .workbench-route-button,
 .acceptance-gate-board,
 .acceptance-gate-row,
-.studio-command-decision,
 .operator-callout,
-.surface-jump-button,
 .studio-mission-node,
-.health-queue-row,
-.studio-primary-next,
 .list-item,
 .asset-row,
 .evidence-record,
@@ -420,7 +410,6 @@ button.list-item:hover {
 .workspace-header,
 .workbench-ops-section,
 .acceptance-gates-section,
-.studio-command-deck,
 .studio-command-center,
 .command-palette-panel,
 .console-toolbar,
@@ -433,7 +422,6 @@ button.list-item:hover {
 .workspace-actions,
 .workbench-ops-section,
 .acceptance-gates-section,
-.studio-command-deck,
 .studio-command-center {
   gap: 8px;
   padding: 10px 11px;
@@ -455,12 +443,10 @@ button.list-item:hover {
 
 .workspace-summary,
 .studio-stat-grid,
-.studio-command-readouts,
 .command-meter-grid,
 .asset-lane-strip,
 .evidence-lane-strip,
 .workbench-lane-strip,
-.health-grid,
 .stage-status-grid,
 .studio-mission-strip,
 .workspace-action-grid,
@@ -473,12 +459,10 @@ button.list-item:hover {
 }
 
 .workspace-summary span,
-.studio-command-readouts span,
 .command-meter-grid span,
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
-.health-grid span,
 .stage-status-metric {
   min-height: 32px;
   padding: 5px 6px;
@@ -490,8 +474,6 @@ button.list-item:hover {
 .studio-mission-node,
 .workbench-route-button,
 .tab,
-.health-queue-row,
-.studio-primary-next,
 .list-item,
 .asset-row,
 .evidence-record,
@@ -506,9 +488,7 @@ button.list-item:hover {
 .compat-row,
 .module-node,
 .source-package-row,
-.surface-jump-button,
 .operator-callout,
-.studio-command-decision,
 .acceptance-gate-row,
 .acceptance-gate-board,
 .workbench-directive,

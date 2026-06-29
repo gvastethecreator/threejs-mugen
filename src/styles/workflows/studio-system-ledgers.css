@@ -343,9 +343,7 @@
   .app-shell.mode-studio[data-studio-tab="debug"] .list-title,
   .app-shell.mode-studio[data-studio-tab="debug"] .list-meta,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note {
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span {
     min-width: 0;
     overflow: hidden;
     line-height: 1.12;
@@ -498,7 +496,6 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card strong,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary b,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main strong {
     color: var(--system-text);
     font-size: 11.5px;
@@ -508,7 +505,6 @@
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-contracts,
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card span,
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-note,
   .app-shell.mode-studio[data-studio-tab="debug"] .debug-actor-main small {
     color: var(--system-muted);
     font-family: var(--mono);
@@ -521,7 +517,6 @@
     justify-content: center;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -534,7 +529,6 @@
     background: var(--system-bg);
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary > div,
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card {
     display: grid;
     min-width: 0;
@@ -550,7 +544,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-contract-summary > div:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card:nth-child(even) {
     border-right: 0;
     background: var(--system-row-alt);

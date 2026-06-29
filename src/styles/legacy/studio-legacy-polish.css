@@ -13,7 +13,6 @@
 .workspace-header,
 .workspace-actions,
 .section,
-.studio-command-deck,
 .studio-command-center {
   border-color: color-mix(in srgb, var(--surface-border-strong) 72%, #000);
 }
@@ -58,12 +57,10 @@
 }
 
 .workspace-summary span,
-.studio-command-readouts span,
 .command-meter-grid span,
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
-.health-grid span,
 .stage-status-metric,
 .studio-stat {
   border: 1px solid color-mix(in srgb, var(--surface-border) 86%, #000);
@@ -71,12 +68,10 @@
 }
 
 .workspace-summary b,
-.studio-command-readouts b,
 .command-meter-grid b,
 .asset-lane-strip b,
 .evidence-lane-strip b,
 .workbench-lane-strip b,
-.health-grid b,
 .stage-status-metric b,
 .studio-stat strong {
   line-height: 1.08;
@@ -88,8 +83,7 @@
 .debug-selection-panel,
 .debug-evidence-block,
 .engine-modules-panel,
-.asset-focus-panel,
-.studio-health-panel {
+.asset-focus-panel {
   border: 1px solid color-mix(in srgb, var(--surface-border-strong) 74%, #000);
   background: color-mix(in srgb, var(--surface-flat) 92%, var(--surface-flat-raised));
 }
