@@ -24,6 +24,8 @@ import {
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultFallGetHitActorFrameSequence,
+  defaultFallGetHitControllerSequence,
   defaultFallLieDownGetUpActorFrameSequence,
   defaultFallLieDownGetUpControllerSequence,
   defaultGetHitProgressionActorFrameSequence,
@@ -35,6 +37,7 @@ import {
   officialKfmAirGuardHitPhysicsFrames,
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
+  officialKfmFallGetHitControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmFallLieDownGetUpControllerSequence,
   officialKfmGroundRecoveryControllerSequence,
@@ -3808,6 +3811,8 @@ describe("RuntimeTraceGatePresets", () => {
       targetId: "synthetic-imported-default-fall-gethit-golden",
       targetLabel: "Synthetic Imported Default Fall GetHit",
       attacker,
+      requiredControllerEventSequences: [defaultFallGetHitControllerSequence()],
+      requiredActorFrameSequences: [defaultFallGetHitActorFrameSequence()],
     });
 
     expect(artifact).toMatchObject({
@@ -3830,6 +3835,18 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultFallGetHitControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([defaultFallGetHitActorFrameSequence()]);
+    const shakeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5000);
+    const airFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5030);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    expect(shakeFrame?.moveType).toBe("H");
+    expect(airFrame?.moveType).toBe("H");
+    expect(fallFrame?.moveType).toBe("H");
+    expect(shakeFrame?.lastTick ?? 0).toBeLessThan(airFrame?.firstTick ?? 0);
+    expect(airFrame?.lastTick ?? 0).toBeLessThan(fallFrame?.firstTick ?? 0);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       hitFall: {
@@ -3837,6 +3854,34 @@ describe("RuntimeTraceGatePresets", () => {
         velocity: { y: -6 },
         recover: false,
       },
+    });
+  });
+
+  it("describes official KFM fall get-hit controller evidence without relying on numeric controller names", () => {
+    expect(officialKfmFallGetHitControllerSequence()).toEqual({
+      label: "Official KFM 5000/5030/5050/5100/5101/5110 fall get-hit controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 5000, controller: "ChangeState" },
+        { stateNo: 5030, controller: "VelAdd" },
+        { stateNo: 5030, controller: "HitVelSet" },
+        { stateNo: 5030, operation: "kinematic:hitvelset" },
+        { stateNo: 5030, controller: "ChangeState" },
+        { stateNo: 5050, controller: "VelAdd" },
+        { stateNo: 5050, controller: "ChangeState" },
+        { stateNo: 5100, controller: "VelSet" },
+        { stateNo: 5100, operation: "kinematic:velset" },
+        { stateNo: 5100, controller: "ChangeState" },
+        { stateNo: 5101, controller: "HitFallVel" },
+        { stateNo: 5101, operation: "hitfall:hitfallvel" },
+        { stateNo: 5101, controller: "VelAdd" },
+        { stateNo: 5101, controller: "ChangeState" },
+        { stateNo: 5110, controller: "HitFallDamage" },
+        { stateNo: 5110, operation: "hitfall:hitfalldamage" },
+        { stateNo: 5110, controller: "VelSet" },
+        { stateNo: 5110, operation: "kinematic:velset" },
+      ],
     });
   });
 

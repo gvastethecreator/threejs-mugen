@@ -4364,6 +4364,8 @@ export function createImportedDefaultFallGetHitTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredExecutedStates?: number[];
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -4400,6 +4402,8 @@ export function createImportedDefaultFallGetHitTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 5000, 5030, 5050],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -4418,6 +4422,71 @@ export function createImportedDefaultFallGetHitTraceArtifact(
       },
     ],
   });
+}
+
+export function defaultFallGetHitControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo} airborne fall get-hit controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "Bounded Settle" },
+    ],
+  };
+}
+
+export function defaultFallGetHitActorFrameSequence(
+  stateNos = [5000, 5030, 5050],
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${stateNos.join("/")} airborne fall get-hit actor-frame order`,
+    steps: stateNos.map((stateNo) => ({
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo,
+      moveType: "H",
+      minFrames: 1,
+    })),
+  };
+}
+
+export function officialKfmFallGetHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 5000/5030/5050/5100/5101/5110 fall get-hit controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5000, controller: "ChangeState" },
+      { stateNo: 5030, controller: "VelAdd" },
+      { stateNo: 5030, controller: "HitVelSet" },
+      { stateNo: 5030, operation: "kinematic:hitvelset" },
+      { stateNo: 5030, controller: "ChangeState" },
+      { stateNo: 5050, controller: "VelAdd" },
+      { stateNo: 5050, controller: "ChangeState" },
+      { stateNo: 5100, controller: "VelSet" },
+      { stateNo: 5100, operation: "kinematic:velset" },
+      { stateNo: 5100, controller: "ChangeState" },
+      { stateNo: 5101, controller: "HitFallVel" },
+      { stateNo: 5101, operation: "hitfall:hitfallvel" },
+      { stateNo: 5101, controller: "VelAdd" },
+      { stateNo: 5101, controller: "ChangeState" },
+      { stateNo: 5110, controller: "HitFallDamage" },
+      { stateNo: 5110, operation: "hitfall:hitfalldamage" },
+      { stateNo: 5110, controller: "VelSet" },
+      { stateNo: 5110, operation: "kinematic:velset" },
+    ],
+  };
 }
 
 export function createImportedDefaultFallRecoveryTraceArtifact(

@@ -519,8 +519,10 @@ async function main() {
             groundVelocity: [-3, -6],
             fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: false, recoverTime: 30 },
           }),
+          requiredControllerEventSequences: [presets.defaultFallGetHitControllerSequence()],
+          requiredActorFrameSequences: [presets.defaultFallGetHitActorFrameSequence()],
           notes: [
-            "Synthetic imported fall get-hit trace proves a default defender-owned Common1-style route can branch from 5000 into 5030 and 5050 when fall/y velocity metadata exists. It does not claim ground impact 5100, bounce, liedown, recovery input, or guard-state parity.",
+            "Synthetic imported fall get-hit trace proves a default defender-owned Common1-style route can branch from 5000 into 5030 and 5050 when fall/y velocity metadata exists, with ordered controller/typed-operation and actor-frame evidence. It does not claim ground impact 5100, bounce, liedown, recovery input, or guard-state parity.",
           ],
         },
       ),
@@ -1024,8 +1026,10 @@ async function main() {
           targetId: "kfm-official-default-fall-gethit-golden",
           targetLabel: "Official KFM Common1 airborne fall get-hit route",
           requiredExecutedStates: [200, 5000, 5030, 5050, 5100, 5101, 5110],
+          requiredControllerEventSequences: [presets.officialKfmFallGetHitControllerSequence()],
+          requiredActorFrameSequences: [presets.defaultFallGetHitActorFrameSequence([5000, 5030, 5050, 5100, 5101, 5110])],
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 state 5000, branch to 5030, reach 5050, hit ground in 5100, enter the first bounce state 5101, and settle into lie-down state 5110 after a fall HitDef without p2stateno. Separate recovery artifacts cover the bounded 5110 -> 5120 -> 0 get-up route, the air recovery-input 5050 -> 5210 -> 52 -> 0 branch, and the ground recovery-input 5050 -> 5200 -> 5201 -> 52 -> 0 branch; exact recovery thresholds/velocities, tick-order, and guard-state parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 state 5000, branch to 5030, reach 5050, hit ground in 5100, enter the first bounce state 5101, and settle into lie-down state 5110 after a fall HitDef without p2stateno, with required actor-frame order plus bounded controller/typed-operation order evidence. Separate recovery artifacts cover the bounded 5110 -> 5120 -> 0 get-up route, the air recovery-input 5050 -> 5210 -> 52 -> 0 branch, and the ground recovery-input 5050 -> 5200 -> 5201 -> 52 -> 0 branch; exact recovery thresholds/velocities, tick-order, and guard-state parity remain future work.`,
           ],
         }),
       });

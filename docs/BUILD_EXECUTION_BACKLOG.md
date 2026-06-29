@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Required Common1 fall get-hit entry order gate
+
+Changed:
+
+- Strengthened `synthetic-imported-default-fall-gethit.json` so the required gate now checks ordered P2 controller/typed-operation evidence through the bounded fall-entry route: `5000` `ChangeState` -> `5030` `VelAdd` / `HitVelSet` / `kinematic:hitvelset` / `ChangeState` -> `5050` `VelAdd` / `ChangeState`.
+- Added required actor-frame sequence evidence that imported P2 is observed in states `5000 -> 5030 -> 5050` with `moveType = H`.
+- Added reusable synthetic and official KFM fall get-hit sequence helpers; the optional private-fixture `kfm-official-default-fall-gethit.json` now requires bounded official KFM controller/typed-operation order and actor-frame order through `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110` when `.scratch/fixtures/kfm-official.zip` exists.
+
+Evidence:
+
+- Focused test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file, 157 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- Strengthened required checksum remains `synthetic-imported-default-fall-gethit.json` `6af73a91`.
+- Strengthened optional local KFM checksum remains `kfm-official-default-fall-gethit.json` `813ff55d`.
+
+Claim allowed:
+
+- The bounded imported Common1-style fall get-hit branch now requires trace evidence for ordered `5000 -> 5030 -> 5050` actor frames plus controller/typed-operation order through `HitVelSet`; optional KFM evidence also requires the bounded ground-impact/bounce/lie-down entry order through `5100 -> 5101 -> 5110`.
+
+Claim blocked:
+
+- Exact Common1 controller-loop tick order, exact fall/bounce/liedown velocity math, exact `HitShakeOver`/`HitOver` timing, recovery thresholds/input branching, guard-state parity, public bundled KFM support, and full MUGEN/IKEMEN fall get-hit parity remain blocked.
+
 ## 2026-06-29 - Studio CSS legacy shadow prune
 
 Changed:
