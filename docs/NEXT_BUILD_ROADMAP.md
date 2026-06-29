@@ -27,17 +27,13 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
-S1 CSS overlap audit guard
-  -> pnpm qa:css now reports cross-file selector overlap and src/style.css/module overlap, not only per-file duplicate selectors
-  -> current working tree audit reports 2,662 scanned rules, 126 duplicate selector keys / 289 instances, 0 exact duplicate rules, 217 repeated declaration groups, 62 cross-file duplicate selectors, and 42 selectors shared with src/style.css
-  -> largest src/style.css overlaps are studio-command-center.css, studio-shell-overrides.css, studio-desktop-foundation.css, runtime-command-deck.css, and studio-primitives.css
-  -> tooling/control only; visual CSS migration still needs qa:smoke and screenshot inspection
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
   -> src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css now own their desktop surfaces after the shared Studio modules
-  -> fully overridden same-selector rules covered by later Studio modules pruned
-  -> qa:css reports 3,256 rules, 266 duplicate selector keys / 804 instances, 0 exact duplicate rules, and 238 repeated declaration groups
-  -> qa:smoke plus screenshots inspected Workbench desktop/tablet, runtime desktop/mobile, Modules, Debug, Build, and Evidence
+  -> fully overridden same-selector rules and old global Module ledger repair block pruned from legacy style.css
+  -> src/styles/studio-system-ledgers.css owns two-line Module rows and 40px system actions
+  -> qa:css reads CSS in src/main.ts import order and reports 2,645 rules, 121 duplicate selector keys / 277 instances, 0 exact duplicate rules, 217 repeated declaration groups, 57 cross-file overlaps, 35 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> qa:smoke plus screenshots inspected Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> product-surface hygiene only; deeper shared primitives and token cleanup remain open
 S1 Studio trust/system-ledger CSS extraction
   -> Build/Evidence ownership lives in src/styles/studio-trust-ledgers.css

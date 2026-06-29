@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS legacy shadow prune
+
+Changed:
+
+- Updated `scripts/audit_css_duplication.cjs` so `pnpm qa:css` reads CSS files in the real `src/main.ts` import order instead of alphabetical module order.
+- Added `--fix-legacy-style-shadowed` to remove only legacy `src/style.css` rules whose declarations are fully covered by later CSS imports with the same selector/context.
+- Removed 9 fully shadowed legacy rules from `src/style.css`, including the old global Module ledger repair block now owned by `src/styles/studio-system-ledgers.css`.
+- Kept the Modules two-line row and 40px system-action layout in `src/styles/studio-system-ledgers.css`.
+- Updated roadmap and Studio issue docs with the final CSS metrics and no-score movement wording.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,645 scanned rules, 121 duplicate selector keys / 277 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 217 repeated declaration groups, 57 cross-file duplicate selectors, 35 selectors shared with `src/style.css`, and 0 legacy `style.css` rules fully shadowed by later imports.
+- `pnpm test` passes: 73 files, 632 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes.
+- `pnpm qa:smoke` passes in started-Vite mode; inspected `studio-workbench.png`, `studio-modules.png`, `studio-modules-contracts.png`, and `runtime-desktop.png` for no horizontal overflow and no broken module rows.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- The legacy CSS cascade is measurably smaller, `src/style.css` has no remaining rules fully shadowed by later imported CSS modules, and the CSS audit can keep detecting that class of dead legacy rule.
+
+Claim blocked:
+
+- Remaining 35 selectors shared with `src/style.css` need manual module extraction or shared primitives. This does not prove new Studio workflows, runtime compatibility, IKEMEN behavior, or any score movement.
+
 ## 2026-06-29 - Required Common1 lie-down get-up recovery order gate
 
 Changed:

@@ -367,11 +367,12 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row {
     display: grid;
-    grid-template-columns: 22px minmax(0, 1fr) 66px 62px minmax(72px, 0.8fr);
+    grid-template-columns: 22px minmax(0, 1fr) minmax(78px, max-content);
+    grid-template-rows: minmax(20px, auto) minmax(18px, auto);
     min-width: 0;
-    min-height: 40px;
+    min-height: 58px;
     align-items: center;
-    gap: 0;
+    gap: 0 8px;
     margin: 0;
     padding: 0;
     border: 0;
@@ -383,6 +384,7 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head {
     display: grid;
+    grid-template-rows: minmax(28px, auto);
     min-height: 28px;
     background: var(--system-cell);
     color: var(--system-muted);
@@ -399,10 +401,50 @@
     border-right: 1px solid var(--system-edge);
   }
 
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head span:nth-child(1),
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-icon {
+    grid-column: 1 !important;
+    grid-row: 1 / span 2 !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head span:nth-child(2),
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head span:nth-child(3),
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-status {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    justify-self: stretch !important;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head span:nth-child(4),
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row-head span:nth-child(5) {
+    display: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-contracts {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-blocked {
+    grid-column: 3 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+    text-align: right;
+  }
+
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-icon {
     display: inline-grid;
     width: auto;
-    height: 100%;
+    height: auto;
+    align-self: stretch;
     place-items: center;
     padding: 0;
     border: 0;
@@ -424,7 +466,19 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name {
     display: grid;
+    align-content: center;
+    justify-items: start;
+    justify-self: stretch;
     gap: 2px;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong,
+  .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name small {
+    display: block;
+    justify-self: start;
+    max-width: 100%;
+    text-align: left;
   }
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-name strong,
@@ -463,6 +517,7 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-status .badge {
     width: 100%;
+    min-width: 0;
     justify-content: center;
   }
 
@@ -503,9 +558,10 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .full-width-action,
   .app-shell.mode-studio[data-studio-tab="debug"] .full-width-action {
-    min-height: 31px;
+    min-height: 40px;
     margin: 0;
     overflow: hidden;
+    padding: 0 9px;
     border: 0;
     border-bottom: 1px solid var(--system-edge);
     border-radius: 0;

@@ -49,9 +49,10 @@ Latest Studio/UI checkpoint:
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
   -> Command Palette, Stage, and Inspector desktop density now live in src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css
-  -> fully overridden module-covered rules pruned from legacy style.css
-  -> pnpm qa:css reports 3,256 rules, 266 duplicate selector keys / 804 instances, and 0 exact duplicate rules
-  -> pnpm qa:smoke plus screenshot inspection covered Workbench desktop/tablet, runtime desktop/mobile, Modules, Debug, Build, and Evidence
+  -> fully overridden module-covered rules plus old global Module ledger repair block pruned from legacy style.css
+  -> src/styles/studio-system-ledgers.css owns two-line Module rows and 40px system actions
+  -> pnpm qa:css reads CSS in src/main.ts import order and reports 2,645 rules, 121 duplicate selector keys / 277 instances, 0 exact duplicate rules, 57 cross-file overlaps, 35 selectors shared with src/style.css, and 0 legacy style.css rules fully shadowed by later imports
+  -> pnpm qa:smoke plus screenshot inspection covered Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> no new Studio workflow or score claim
 S1 Studio command inspector readability and smoke stability
   -> dense Studio command surfaces, Build/Evidence route copy, stage toolbar, and replacement rows were tightened

@@ -6,6 +6,7 @@ const args = process.argv.slice(2);
 const shouldFix = args.includes("--fix-exact");
 const shouldFixShadowed = args.includes("--fix-shadowed");
 const shouldFixEmptyAtRules = args.includes("--fix-empty-at-rules");
+const shouldFixLegacyStyleShadowed = args.includes("--fix-legacy-style-shadowed");
 const shouldPrintOverlapDetails = args.includes("--detail-overlaps");
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
@@ -14,16 +15,38 @@ const pruneSelectors = args
 const explicitFiles = args.filter((arg) => !arg.startsWith("--"));
 
 function defaultCssFiles() {
-  const files = [path.join(repoRoot, "src", "style.css")];
+  const discovered = [path.join(repoRoot, "src", "style.css")];
   const stylesDir = path.join(repoRoot, "src", "styles");
   if (fs.existsSync(stylesDir)) {
     for (const entry of fs.readdirSync(stylesDir).sort()) {
       if (entry.endsWith(".css")) {
-        files.push(path.join(stylesDir, entry));
+        discovered.push(path.join(stylesDir, entry));
       }
     }
   }
-  return files;
+
+  const mainPath = path.join(repoRoot, "src", "main.ts");
+  if (!fs.existsSync(mainPath)) {
+    return discovered;
+  }
+
+  const imported = [];
+  const mainSource = fs.readFileSync(mainPath, "utf8");
+  const importPattern = /import\s+["'](.+?\.css)["'];/g;
+  for (const match of mainSource.matchAll(importPattern)) {
+    imported.push(path.resolve(path.dirname(mainPath), match[1]));
+  }
+
+  const ordered = [];
+  const seen = new Set();
+  for (const file of imported.concat(discovered)) {
+    if (seen.has(file)) {
+      continue;
+    }
+    seen.add(file);
+    ordered.push(file);
+  }
+  return ordered;
 }
 
 const files = (explicitFiles.length ? explicitFiles.map((file) => path.resolve(repoRoot, file)) : defaultCssFiles()).filter((file) =>
@@ -343,6 +366,64 @@ function findShadowedSameSelectorRules(summary) {
   return removals;
 }
 
+function findCrossFileShadowedLegacyStyleRules(summaryMap, orderedFiles) {
+  const legacyStyleFile = path.join(repoRoot, "src", "style.css");
+  const legacySummary = summaryMap.get(legacyStyleFile);
+  if (!legacySummary) {
+    return [];
+  }
+
+  const fileIndex = new Map(orderedFiles.map((file, index) => [file, index]));
+  const legacyIndex = fileIndex.get(legacyStyleFile) ?? 0;
+  const laterRulesBySelector = new Map();
+
+  for (const [file, summary] of summaryMap) {
+    const index = fileIndex.get(file);
+    if (index === undefined || index <= legacyIndex) {
+      continue;
+    }
+
+    for (const rule of summary.rules) {
+      const selectorKey = selectorKeyForRule(rule);
+      laterRulesBySelector.set(selectorKey, [...(laterRulesBySelector.get(selectorKey) ?? []), rule]);
+    }
+  }
+
+  const removals = [];
+  for (const rule of legacySummary.rules) {
+    const entries = rule.entries ?? [];
+    if (!entries.length) {
+      continue;
+    }
+
+    const laterRules = laterRulesBySelector.get(selectorKeyForRule(rule));
+    if (!laterRules?.length) {
+      continue;
+    }
+
+    const laterProperties = new Map();
+    for (const laterRule of laterRules) {
+      for (const entry of laterRule.entries ?? []) {
+        laterProperties.set(entry.property, entry);
+      }
+    }
+
+    const fullyShadowed = entries.every((entry) => {
+      const later = laterProperties.get(entry.property);
+      if (!later) {
+        return false;
+      }
+      return entry.important ? later.important : true;
+    });
+
+    if (fullyShadowed) {
+      removals.push(rule);
+    }
+  }
+
+  return removals;
+}
+
 function removeEmptyAtRules(css) {
   const edits = [];
   let removed = 0;
@@ -443,6 +524,18 @@ if (shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || pruneSelectors.le
   }
 }
 
+if (shouldFixLegacyStyleShadowed) {
+  const current = new Map(files.map((file) => [file, summarize(file)]));
+  const removals = findCrossFileShadowedLegacyStyleRules(current, files);
+  const legacyStyleFile = path.join(repoRoot, "src", "style.css");
+  const legacySummary = current.get(legacyStyleFile);
+  if (removals.length && legacySummary) {
+    const nextCss = removeRanges(legacySummary.css, removals);
+    fs.writeFileSync(legacyStyleFile, normalizeLineEndings(nextCss, detectLineEnding(legacySummary.css)));
+    console.log(`${fileSummaryLabel(legacyStyleFile)}: removed ${removals.length} legacy cross-file shadowed rules`);
+  }
+}
+
 let total = {
   rules: 0,
   uniqueSelectors: 0,
@@ -454,7 +547,7 @@ let total = {
 };
 
 const currentSummaries =
-  shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || pruneSelectors.length
+  shouldFix || shouldFixShadowed || shouldFixEmptyAtRules || shouldFixLegacyStyleShadowed || pruneSelectors.length
     ? new Map(files.map((file) => [file, summarize(file)]))
     : summaries;
 
@@ -524,6 +617,7 @@ const crossFileOverlaps = collectCrossFileOverlaps(currentSummaries);
 console.log("cross-file overlap");
 console.log(`  duplicate selectors across files ${crossFileOverlaps.groups.length}`);
 console.log(`  selectors shared with src\\style.css ${crossFileOverlaps.legacyGroups.length}`);
+console.log(`  legacy src\\style.css rules fully shadowed by later CSS imports ${findCrossFileShadowedLegacyStyleRules(currentSummaries, files).length}`);
 for (const [file, count] of crossFileOverlaps.legacyModuleCounts.slice(0, 8)) {
   console.log(`  ${fileSummaryLabel(file)} ${count}`);
 }
