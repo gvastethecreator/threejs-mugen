@@ -1206,7 +1206,16 @@ button.studio-primary-next {
   gap: 2px;
 }
 
-.health-queue-main small {
+.health-queue-main small,
+.engine-module-name strong,
+.engine-module-name small,
+.mode-label,
+.mode-hint,
+.mode-status,
+.command-launcher strong,
+.command-launcher small,
+.asset-row-kind,
+.asset-row-action {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1493,14 +1502,6 @@ button.studio-primary-next {
   gap: 2px;
 }
 
-.engine-module-name strong,
-.engine-module-name small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .engine-module-name strong {
   color: var(--text);
   font-size: 12px;
@@ -1669,15 +1670,6 @@ button.studio-primary-next {
   background: var(--warn);
 }
 
-.mode-label,
-.mode-hint,
-.mode-status {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .mode-label {
   color: var(--text);
   font-family: var(--display);
@@ -1715,14 +1707,6 @@ button.studio-primary-next {
   display: grid;
   min-width: 0;
   gap: 2px;
-}
-
-.command-launcher strong,
-.command-launcher small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .command-launcher strong {
@@ -2175,13 +2159,9 @@ button.list-item:hover {
 
 .asset-row-kind,
 .asset-row-action {
-  min-width: 0;
-  overflow: hidden;
   color: var(--subtle);
   font-family: var(--mono);
   font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .asset-row-detail {

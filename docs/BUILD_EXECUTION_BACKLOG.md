@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio truncation CSS primitive cleanup
+
+Changed:
+
+- Consolidated repeated Studio truncation declarations for health queue text, module names, mode labels, command launcher labels, and asset-row labels into one grouped CSS atom in `src/styles/legacy/studio-legacy-surfaces.css`.
+- Removed parallel `min-width` / `overflow` / `text-overflow` / `white-space` declarations from the individual selector blocks while preserving the existing class hooks and cascade order.
+- Lowered `pnpm qa:css:budget` max rule budget from 2,669 to 2,666 so the small cleanup cannot silently regress.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,666 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:smoke` passes.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `studio-assets.png`, `studio-build.png`, `studio-evidence.png`, and `studio-command-palette.png`; no obvious text overflow, broken truncation, panel overlap, or horizontal overflow appeared from the CSS grouping.
+
+Claim allowed:
+
+- Studio CSS has one fewer repeated truncation pattern and a tighter rule-count budget before future UI work.
+
+Claim blocked:
+
+- This is a narrow CSS hygiene cut. It does not reduce the larger repeated-declaration group count or cross-file overlap count yet, and it does not add Studio workflows, runtime compatibility, or score movement.
+
 ## 2026-06-29 - HitDef common/FightFX guard-spark trace gates
 
 Changed:

@@ -31,8 +31,9 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> qa:css reports 2,661 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,669 rules, 173 repeated declaration groups, 126 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> qa:css reports 2,666 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,666 rules, 173 repeated declaration groups, 126 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> latest narrow cleanup groups legacy Studio truncation labels into one CSS atom and passed qa:smoke plus screenshot inspection
   -> requires qa:smoke and visual inspection; product-surface hygiene only
 S1 Studio command chrome label/grid follow-up
   -> compact command rail compile-project action now says Build
