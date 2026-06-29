@@ -349,6 +349,9 @@
     background: transparent;
   }
 
+  .app-shell.mode-inspect .state-row-main > .badge-row,
+  .app-shell.mode-inspect .state-controller-row-head .badge-row,
+  .app-shell.mode-inspect .state-controller-strip,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-row-main > .badge-row,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head .badge-row,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-strip {
@@ -363,6 +366,24 @@
     background: transparent;
   }
 
+  .app-shell.mode-inspect .state-controller-row-head,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .app-shell.mode-inspect .state-controller-row-head strong,
+  .app-shell.mode-inspect .state-controller-row-head small,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head strong,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
   .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row .badge {
     min-height: 18px;
     justify-content: center;
@@ -374,6 +395,9 @@
     font-size: 9.5px;
   }
 
+  .app-shell.mode-inspect .state-row-main > .badge-row .badge,
+  .app-shell.mode-inspect .state-controller-row-head .badge-row .badge,
+  .app-shell.mode-inspect .state-controller-strip .controller-chip,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-row-main > .badge-row .badge,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head .badge-row .badge,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-strip .controller-chip {

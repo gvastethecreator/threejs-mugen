@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS cascade prune and optional KFM HitDef presentation gates
+
+Changed:
+
+- Removed the obsolete `Desktop Evidence Audit` and `Desktop Release Desk` media blocks from `src/style.css`; current Evidence/Build/Modules/Debug ownership lives in the imported Studio modules.
+- Added `src/styles/studio-command-palette.css`, `src/styles/studio-stage.css`, and `src/styles/studio-inspector.css` as desktop ownership modules and imported them after the shared Studio modules.
+- Pruned legacy `src/style.css` rules whose same-selector properties are fully overridden by later `src/styles/*` Studio modules.
+- Added optional private-fixture KFM gates `kfm-official-x-hit-sound.json` and `kfm-official-x-hit-spark.json` to prove the real KFM `x -> 200` route emits bounded `hitsound = S5,0` and `sparkno = 0` telemetry after contact when `.scratch/fixtures/kfm-official.zip` exists.
+
+Evidence:
+
+- `pnpm qa:css` passes: 3,256 scanned rules, 266 duplicate selector keys / 804 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, and 238 repeated declaration groups.
+- `pnpm qa:smoke` passes in started-Vite mode with runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, Assets, Evidence, Debug, Stage, IKEMEN scan, and replacement flow.
+- Visual inspection checked `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-stage.png`, `.scratch/qa/qa-smoke/studio-debug-inspector-jump.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-modules.png`, `.scratch/qa/qa-smoke/studio-debug.png`, `.scratch/qa/qa-smoke/studio-build.png`, and `.scratch/qa/qa-smoke/studio-evidence.png`.
+- `pnpm qa:trace` passes: 159/159 artifacts, 139 required and 20 optional. `kfm-official-x-hit-sound.json` and `kfm-official-x-hit-spark.json` both pass with checksum `9668e88a`; latest required checksum remains `synthetic-imported-target-noko.json` `28ac8636`.
+
+Claim allowed:
+
+- Legacy Studio cascade in `src/style.css` is smaller, exact duplicate CSS remains zero, and private official KFM `x` HitDef presentation telemetry now has optional local sound/spark gates.
+
+Claim blocked:
+
+- CSS duplicate selector cascade still exists, broader token/primitive extraction remains open, no new Studio workflow is proved, no SND decode/playback or exact FightFX/common render parity is proved, and no runtime score moves from optional private fixture evidence.
+
 ## 2026-06-29 - Studio system-ledger CSS extraction
 
 Changed:

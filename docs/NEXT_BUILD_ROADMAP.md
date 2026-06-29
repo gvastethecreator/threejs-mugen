@@ -27,10 +27,17 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
+S1 Studio CSS cascade prune
+  -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
+  -> src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css now own their desktop surfaces after the shared Studio modules
+  -> fully overridden same-selector rules covered by later Studio modules pruned
+  -> qa:css reports 3,256 rules, 266 duplicate selector keys / 804 instances, 0 exact duplicate rules, and 238 repeated declaration groups
+  -> qa:smoke plus screenshots inspected Workbench desktop/tablet, runtime desktop/mobile, Modules, Debug, Build, and Evidence
+  -> product-surface hygiene only; deeper shared primitives and token cleanup remain open
 S1 Studio trust/system-ledger CSS extraction
   -> Build/Evidence ownership lives in src/styles/studio-trust-ledgers.css
   -> Modules/Debug ownership lives in src/styles/studio-system-ledgers.css
-  -> qa:css reports 4,035 rules, 372 duplicate selector keys, and 0 exact duplicate rules
+  -> previous qa:css baseline reported 4,035 rules, 372 duplicate selector keys, and 0 exact duplicate rules
   -> qa:smoke plus screenshots inspected studio-modules, studio-debug, studio-build, and studio-evidence
   -> product-surface hygiene only; it does not change the next runtime/port slice
 S1 Studio chrome CSS containment
@@ -47,6 +54,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 optional KFM x HitDef presentation trace strengthening
+  -> kfm-official-x-hit-sound.json checksum 9668e88a
+  -> kfm-official-x-hit-spark.json checksum 9668e88a
+  -> optional private fixture gates prove real KFM x -> 200 emits bounded hitsound S5,0 and sparkno 0 telemetry after contact
+  -> no public bundled KFM asset, SND decode/playback, exact FightFX/common lookup, exact render/audio timing, or score movement claim
 R1 synthetic TargetLifeAdd NoKO trace strengthening
   -> synthetic-imported-target-noko.json checksum 28ac8636
   -> required trace gates defender-side AssertSpecial NoKO before HitDef and lethal TargetLifeAdd

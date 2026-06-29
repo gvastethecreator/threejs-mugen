@@ -70,7 +70,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Latest implementation truth after this refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `RuntimeStunWorld` owns bounded hitstun/guardstun timer advance, hitstun presentation-action requests, imported hit-state moveType preservation, current-move guardrails, and non-imported idle moveType restoration. Full final trace aggregate is recorded in that backlog entry.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
-- Latest implementation truth before this docs refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. The latest trace aggregate remains 156/156 artifacts, 138 required, 18 optional, with `synthetic-imported-variable.json` checksum `3b33f7a8`.
+- Previous implementation truth before this docs refresh came from the then-current top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. Newer runtime and Studio/UI checkpoints are recorded above it in the backlog; the latest aggregate after optional KFM presentation gates is 159/159 artifacts, 139 required, and 20 optional.
 
 ## Claim Allowed
 

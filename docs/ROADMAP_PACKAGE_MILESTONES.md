@@ -46,6 +46,13 @@ G1 setup-project refresh
 Latest Studio/UI checkpoint:
 
 ```txt
+S1 Studio CSS cascade prune
+  -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
+  -> Command Palette, Stage, and Inspector desktop density now live in src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css
+  -> fully overridden module-covered rules pruned from legacy style.css
+  -> pnpm qa:css reports 3,256 rules, 266 duplicate selector keys / 804 instances, and 0 exact duplicate rules
+  -> pnpm qa:smoke plus screenshot inspection covered Workbench desktop/tablet, runtime desktop/mobile, Modules, Debug, Build, and Evidence
+  -> no new Studio workflow or score claim
 S1 Studio command inspector readability and smoke stability
   -> dense Studio command surfaces, Build/Evidence route copy, stage toolbar, and replacement rows were tightened
   -> pnpm qa:smoke plus screenshot inspection proved the visible surfaces after that pass
@@ -55,6 +62,10 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 optional KFM x HitDef presentation trace strengthening
+  -> kfm-official-x-hit-sound.json checksum 9668e88a gates bounded real KFM x hitsound S5,0 telemetry
+  -> kfm-official-x-hit-spark.json checksum 9668e88a gates bounded real KFM x sparkno 0 telemetry
+  -> optional private fixture evidence only; no public asset, exact SND playback, exact FightFX/common rendering, or score claim
 R1 synthetic TargetLifeAdd NoKO trace strengthening
   -> synthetic-imported-target-noko.json checksum 28ac8636 gates ordered P2 AssertSpecial NoKO -> P1 HitDef -> P1 TargetLifeAdd evidence
   -> trace evidence includes target link id 77 and final P2 life 1 after lethal target-controller damage

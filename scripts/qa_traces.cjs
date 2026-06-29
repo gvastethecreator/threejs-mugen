@@ -771,6 +771,53 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-x-hit-sound",
+        required: false,
+        artifact: presets.createImportedXTraceArtifact(imported, {
+          targetId: "kfm-official-x-hit-sound-golden",
+          targetLabel: "Official KFM x hit sound route",
+          requireHitEvent: true,
+          requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd"],
+          requiredSoundEvents: [
+            {
+              actorId: "p1",
+              source: "imported",
+              actorKind: "player",
+              type: "PlaySnd",
+              group: 5,
+              index: 0,
+              stateNo: 200,
+            },
+          ],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM x route emits bounded HitDef hit sound telemetry (S5,0) after contact. This does not prove SND decode/playback, channel priority, mixing, timing, or full MUGEN/IKEMEN audio parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
+        name: "kfm-official-x-hit-spark",
+        required: false,
+        artifact: presets.createImportedXTraceArtifact(imported, {
+          targetId: "kfm-official-x-hit-spark-golden",
+          targetLabel: "Official KFM x hit spark route",
+          requireHitEvent: true,
+          requiredHitEffectEvents: [
+            {
+              actorId: "p1",
+              source: "imported",
+              actorKind: "player",
+              kind: "hit",
+              sparkNo: 0,
+              raw: "0",
+              stateNo: 200,
+            },
+          ],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM x route emits bounded HitSpark telemetry from its authored sparkno 0 and sparkxy offset after contact. This does not prove exact FightFX/common lookup, layering, scale, palette, render timing, or full MUGEN/IKEMEN hit-effect parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-qcf-x",
         required: false,
         artifact: presets.createImportedQcfXTraceArtifact(imported, {
