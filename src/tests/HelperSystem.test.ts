@@ -80,6 +80,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
+    stateTime: 0,
     removeTime: 10,
     ignoreHitPause: false,
     pauseMoveTime: 0,

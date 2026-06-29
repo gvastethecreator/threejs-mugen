@@ -364,6 +364,7 @@ function effectPayload(kind: NonNullable<ActorSnapshot["effect"]>["kind"]): NonN
     return {
       kind,
       age: 1,
+      stateTime: 1,
       removeTime: 30,
       spritePriority: 2,
       scale: { x: 1, y: 1 },

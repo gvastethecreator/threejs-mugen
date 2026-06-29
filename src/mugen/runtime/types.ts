@@ -289,6 +289,7 @@ export type ActorEffectSnapshot =
       name?: string;
       stateNo?: number;
       age: number;
+      stateTime: number;
       removeTime: number;
       spritePriority: number;
       scale: { x: number; y: number };

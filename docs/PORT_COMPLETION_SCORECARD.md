@@ -75,7 +75,7 @@ The latest optional official KFM presentation oracles are `kfm-official-x-hit-so
 | --- | --- |
 | CNS VM and expression parity | Needs full source-located AST/IR, redirects, dynamic params, helper/parent/root ownership, exact trigger lifetime, and error compatibility. |
 | Common1/combat parity | Needs exact get-hit, guard, fall, recovery, throws, custom states, priority, KO/round flow, sparks/sounds, and tick order across real fixtures. |
-| Helpers/projectiles/explods | Current visual/effect actors are bounded. Full port needs helper-local VM, ownership, redirects, pause behavior, contact rules, and lifecycle parity. |
+| Helpers/projectiles/explods | Current visual/effect actors are bounded and Helpers have a tiny helper-local micro-VM. Full port still needs parent/root/redirect ownership, full helper state machines, pause behavior, contact rules, and lifecycle parity. |
 | Rendering/palettes/audio | Needs full SFF/ACT palette behavior, FightFX, lifebars, screenpacks, blend/shadow behavior, SND timing/mixing, and presentation parity. |
 | IKEMEN-specific runtime | Scanner exists, but ZSS, Lua hooks, rollback/netplay, model-stage, screenpack extensions, team modes, and IKEMEN-specific controllers are not executed. |
 | Corpus and tooling | Full port needs many fixture packages, golden traces, compatibility profiles, automated diffing, authoring tools, and release QA. |
@@ -86,7 +86,7 @@ Practical reading: from today's evidence, a private playable sandbox is roughly 
 
 1. Remaining `AssertSpecial` and guard precision: broader lifetime/persistence layering, priority, helper/team/global ownership, pause interaction, FightFX/common guard-effect layering/timing/scale/palette beyond bounded player AIR/system-namespace/package-frame spark sprites/fallback sparks and first-pass system asset plumbing, proximity rules, and KFM/Common1 confirmation beyond bounded stand/crouch/air denial, one-frame expiry traces, and optional guard-hit actor-frame physics telemetry.
 2. Exact-enough fall/recovery tick order, optional fixture threshold oracles, and broader recovery parity beyond the current synthetic threshold handoff, summarized actor-frame tick-order gate, bounded synthetic air/ground velocity gates, and synthetic/official early recovery-input reject gates.
-3. Helper VM ownership slice: parent/root/redirect reads plus helper-local state execution.
+3. Helper VM ownership slice: parent/root/redirect reads plus deeper helper-local state execution beyond the current micro-VM.
 4. Projectile parity slice beyond current bounded hit/guard/clash routes.
 5. Stage BGCtrl slice with animated/velocity/tile/parallax evidence.
 6. Palette application slice: ACT/SFF palette remap plus PalFX/RemapPal interaction.

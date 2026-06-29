@@ -50,9 +50,9 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,486 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 138 repeated declaration groups, 123 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,486 rules, 138 repeated declaration groups, 123 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
-  -> latest narrow cleanup groups legacy Studio truncation/text-wrap/grid/align/text rows, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader 123 cross-file overlaps stay queued for shared primitive extraction
+  -> pnpm qa:css reports 2,467 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 138 repeated declaration groups, 113 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,467 rules, 138 repeated declaration groups, 113 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> latest narrow cleanup groups legacy Studio truncation/text-wrap/grid/align/text rows, absorbs redundant shell/header/status/summary overrides into base/surface owners, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader repeated declaration groups stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail
@@ -85,12 +85,18 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 helper-local micro-VM ownership
+  -> HelperSystem runs a bounded helper-local micro-VM for current visual Helper actors spawned with owner runtime-program data
+  -> RuntimeEffectSpawnWorld passes owner runtimeProgram and animation maps into HelperSystem
+  -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, and DestroySelf removal on helper actors
+  -> focused EffectSpawnSystem tests prove the handoff
+  -> no redirects, parent/root/team/keyctrl, helper variables/resources/audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
   -> RuntimeEffectSpawnWorld exposes the same handoff for future controller dispatch
   -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
-  -> no helper VM execution, real DestroySelf semantics, redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, exact lifecycle tick-order parity, or score claim
+  -> no redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, exact lifecycle tick-order parity, or score claim
 R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
@@ -273,6 +279,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
 - visual-helper removal ownership
+- helper-local micro-VM ownership
 - `RuntimeAssertSpecialWorld` ownership extraction
 - `RuntimeSnapshotWorld` ownership extraction
 - `RuntimeSnapshotWorld` player actor projection
@@ -282,7 +289,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper VM boundaries or effect/combat ordering with stable or documented trace behavior after the visual-helper removal ownership cut.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries or effect/combat ordering with stable or documented trace behavior after the helper-local micro-VM cut.
 
 ## Package Closeout Contract
 

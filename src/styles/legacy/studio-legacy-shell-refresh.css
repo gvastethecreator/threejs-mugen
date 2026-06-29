@@ -1,50 +1,9 @@
-.app-shell {
-  background: var(--surface-flat);
-}
-
 .pane,
 .pane-right {
   border-color: rgba(0, 0, 0, 0.86);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.052),
     inset 0 -1px 0 rgba(0, 0, 0, 0.72);
-}
-
-.section {
-  padding: 13px 14px;
-  border-top-color: rgba(255, 255, 255, 0.055);
-  border-bottom-color: rgba(0, 0, 0, 0.78);
-  background: var(--surface-flat);
-  box-shadow: none;
-}
-
-.section + .section {
-  box-shadow: none;
-}
-
-.section h1,
-.section h2,
-.section h3 {
-  font-family: var(--sans);
-  font-stretch: normal;
-  font-weight: 720;
-}
-
-.workspace-header {
-  padding: 14px;
-  background: var(--surface-flat);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.075),
-    0 8px 18px rgba(0, 0, 0, 0.28);
-}
-
-.workspace-brand h1 {
-  font-size: 18px;
-  letter-spacing: 0;
-}
-
-.workspace-brand p {
-  color: color-mix(in srgb, var(--muted) 88%, var(--text));
 }
 
 .workspace-eyebrow,
@@ -81,11 +40,6 @@
   background: var(--surface-flat);
 }
 
-.workspace-summary {
-  gap: 6px;
-}
-
-.workspace-summary span,
 .stage-status-metric,
 .studio-stat {
   border-radius: 7px;
@@ -186,27 +140,6 @@
   background: var(--surface-flat);
 }
 
-.toolbar-group {
-  gap: 6px;
-  padding: 4px;
-  border-radius: 8px;
-  background: rgba(8, 11, 16, 0.9);
-}
-
-.stage-status {
-  left: 16px;
-  bottom: 16px;
-}
-
-.stage-status-card,
-.round-hud-panel {
-  background: var(--surface-flat);
-}
-
-.round-hud-panel {
-  max-width: min(100%, 50rem);
-}
-
 .list {
   gap: 6px;
 }
@@ -273,10 +206,6 @@ button.debug-filter-button {
 .empty-state {
   border-radius: 7px;
   background: var(--surface-flat);
-}
-
-.console {
-  min-height: var(--console-reserved-height);
 }
 
 .console-toolbar {

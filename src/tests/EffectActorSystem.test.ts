@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
-import type { MugenStateController } from "../mugen/model/MugenState";
+import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 import {
   advanceRuntimeExplodActors,
@@ -180,6 +181,73 @@ describe("EffectActorSystem", () => {
 
     expect(world.removeHelpers("p2")).toBe(1);
     expect(world.countActors("p2", "helper")).toBe(0);
+  });
+
+  it("runs a bounded helper-local state program for movement and animation", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("VelSet", { x: "3", y: "-1" }, ["Time = 0"]),
+              controller("ChangeAnim", { value: "901" }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      stageTime: 10,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["VelSet", "ChangeAnim"]);
+    expect(helper).toMatchObject({
+      animNo: 901,
+      vel: { x: 3, y: -1 },
+      pos: { x: 3, y: -1 },
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("runs bounded helper-local ChangeState and DestroySelf controllers", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [controller("ChangeState", { value: "6001" }, ["Time = 0"])])),
+          compileStateProgram(state(6001, 901, [controller("DestroySelf", {}, ["Time >= 1"])])),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.helpers[0]).toBe(helper);
+    expect(helper).toMatchObject({
+      stateNo: 6001,
+      animNo: 901,
+      stateTime: 1,
+      age: 1,
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(store.helpers).toEqual([]);
   });
 
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
@@ -486,14 +554,29 @@ function projectileInput(params: Record<string, string>) {
   };
 }
 
-function controller(type: string, params: Record<string, string>): MugenStateController {
+function controller(type: string, params: Record<string, string>, triggers: string[] = []): MugenStateController {
   return {
     stateId: 200,
     type,
     params,
-    triggers: [],
+    triggers: triggers.map((expression, index) => ({
+      index: index + 1,
+      expression,
+      raw: `trigger${index + 1} = ${expression}`,
+      line: index + 1,
+    })),
     line: 1,
     rawHeader: `[State 200, ${type}]`,
+  };
+}
+
+function state(id: number, anim: number, controllers: MugenStateController[] = []): MugenStateDef {
+  return {
+    id,
+    anim,
+    rawParams: {},
+    controllers: controllers.map((item) => ({ ...item, stateId: id })),
+    line: 1,
   };
 }
 

@@ -110,6 +110,8 @@ export class RuntimeEffectSpawnWorld {
       spriteOwnerId: owner.id,
       spriteOwnerDefinitionId: owner.definition.id,
       spriteOwnerLabel: owner.label,
+      runtimeProgram: owner.runtimeProgram,
+      animations: owner.definition.animations,
       action,
       stateNo,
       animNo,

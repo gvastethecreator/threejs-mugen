@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Helper-local VM and CSS overlap prune
+
+Changed:
+
+- Added a bounded helper-local micro-VM in `HelperSystem` for current visual Helper actors spawned with owner runtime-program data.
+- Routed owner `runtimeProgram` and animation maps through `RuntimeEffectSpawnWorld` into spawned Helpers.
+- Added helper-local support for `Time` trigger checks, `ChangeState`, `ChangeAnim`, helper-local kinematic controllers, and `DestroySelf` removal.
+- Consolidated Studio chrome/status/header CSS ownership into base/surface owners and pruned redundant legacy shell/layout overrides.
+- Tightened `pnpm qa:css:budget` from 2,486 to 2,467 max scanned rules and from 123 to 113 cross-file overlaps; repeated declaration groups remain 138.
+- Updated runtime support, controller registry, architecture, QA, roadmap, workplan, and local runtime issue docs with allowed/blocked scope.
+
+Evidence:
+
+- Focused coverage added in `EffectActorSystem` for helper-local movement/animation/state-change/destruction and in `EffectSpawnSystem` for helper runtime-program/animation handoff.
+- `pnpm test` passes: 73 files / 654 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:smoke` passes, and screenshots for runtime desktop, Studio Workbench desktop/tablet, Build, Evidence, and Debug were visually inspected for header/status/chrome regressions.
+- `pnpm qa:css` passes: 2,467 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 138 repeated declaration groups, 113 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes against the tightened 2,467-rule / 113-overlap ceiling.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current visual Helper actors can run a tiny local state/action/kinematic/destruction subset through `HelperSystem`, and Studio CSS has less cross-file selector overlap under a stricter budget.
+
+Claim blocked:
+
+- Redirects, parent/root/team/keyctrl, helper variables/resources/audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, broader CSS primitive extraction, and score movement remain blocked.
+
 ## 2026-06-29 - Visual helper removal ownership
 
 Changed:

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
@@ -114,6 +115,7 @@ describe("EffectSpawnSystem", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const spawnWorld = new RuntimeEffectSpawnWorld();
     const owner = actor("owner", effectActorWorld, {}, definition("owner", [baseAction, helperAction, terminalAction], [state(300, 920)]));
+    owner.runtimeProgram = { states: [compileStateProgram(state(300, 920))] };
     const fighter = actor("p1", effectActorWorld, {
       pos: { x: 100, y: 0 },
       facing: 1,
@@ -130,8 +132,10 @@ describe("EffectSpawnSystem", () => {
       stateNo: 300,
       animNo: 920,
       spriteOwnerId: "owner",
+      runtimeProgram: owner.runtimeProgram,
       pos: { x: 208, y: 5 },
     });
+    expect(effectActorWorld.getStore("p1").helpers[0]?.animations?.get(920)).toBe(helperAction);
 
     expect(
       spawnWorld.spawnProjectile(

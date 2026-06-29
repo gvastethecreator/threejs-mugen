@@ -858,9 +858,9 @@
   margin: 0 0 8px;
   color: var(--text);
   font-size: 13px;
-  font-family: var(--display);
-  font-stretch: condensed;
-  font-weight: 700;
+  font-family: var(--sans);
+  font-stretch: normal;
+  font-weight: 720;
   letter-spacing: 0;
   text-wrap: balance;
 }

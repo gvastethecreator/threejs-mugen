@@ -1,9 +1,13 @@
 import type { HelperControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
-import { findControllerParam } from "./StateProgramExecutor";
-import type { ActorSnapshot } from "./types";
+import { evaluateExpression } from "./ExpressionEvaluator";
+import { executeControllerIr } from "./StateControllerExecutor";
+import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
+import { evaluateTriggerIr } from "./TriggerEvaluator";
+import type { ActorSnapshot, CharacterRuntimeState } from "./types";
 
 export type RuntimeHelper = {
   serialId: string;
@@ -16,6 +20,8 @@ export type RuntimeHelper = {
   spriteOwnerId: string;
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
+  runtimeProgram?: Pick<RuntimeProgramIr, "states">;
+  animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
@@ -26,6 +32,7 @@ export type RuntimeHelper = {
   frameIndex: number;
   frameElapsed: number;
   age: number;
+  stateTime: number;
   removeTime: number;
   ignoreHitPause: boolean;
   pauseMoveTime: number;
@@ -37,6 +44,9 @@ export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
 
 export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
+  stageTime?: number;
+  onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
+  onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
 
 export type RuntimeHelperRemovalFilter = {
@@ -54,6 +64,8 @@ export type RuntimeHelperSpawnInput = {
   spriteOwnerId: string;
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
+  runtimeProgram?: Pick<RuntimeProgramIr, "states">;
+  animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
@@ -73,6 +85,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     spriteOwnerId: input.spriteOwnerId,
     spriteOwnerDefinitionId: input.spriteOwnerDefinitionId,
     spriteOwnerLabel: input.spriteOwnerLabel,
+    runtimeProgram: input.runtimeProgram,
+    animations: input.animations,
     action: input.action,
     stateNo: input.stateNo,
     animNo: input.animNo,
@@ -83,6 +97,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     frameIndex: 0,
     frameElapsed: 0,
     age: 0,
+    stateTime: 0,
     removeTime: clampHelperTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "removetime")) ?? 180),
     ignoreHitPause: operation?.ignoreHitPause ?? booleanNumber(findControllerParam(input.controller, "ignorehitpause")) ?? false,
     pauseMoveTime: clampHelperMoveTime(operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime")) ?? 0),
@@ -96,14 +111,22 @@ export function advanceRuntimeHelpers(
   stage: Pick<MugenStageDefinition, "bounds">,
   options: RuntimeHelperAdvanceOptions = {},
 ): RuntimeHelper[] {
+  const destroyed = new Set<string>();
   for (const helper of helpers) {
     if (shouldAdvanceRuntimeHelper(helper, options.pauseKind)) {
+      if (runRuntimeHelperStateControllers(helper, options) === "destroyed") {
+        destroyed.add(helper.serialId);
+        continue;
+      }
       advanceRuntimeHelper(helper);
       consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
     }
   }
   const margin = 240;
   return helpers.filter((helper) => {
+    if (destroyed.has(helper.serialId)) {
+      return false;
+    }
     if (helper.removeTime >= 0 && helper.age >= helper.removeTime) {
       return false;
     }
@@ -114,6 +137,62 @@ export function advanceRuntimeHelpers(
       helper.pos.y <= 180
     );
   });
+}
+
+export type RuntimeHelperControllerResult = "active" | "destroyed";
+
+export function runRuntimeHelperStateControllers(
+  helper: RuntimeHelper,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "onController" | "onUnsupportedController"> = {},
+): RuntimeHelperControllerResult {
+  const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
+  if (!stateProgram) {
+    return "active";
+  }
+  for (const controller of stateProgram.controllers) {
+    if (!helperTriggersPass(helper, controller, options.stageTime)) {
+      continue;
+    }
+    const dispatch = dispatchStateProgramController(controller);
+    if (dispatch.kind === "change-state") {
+      const stateId = resolveHelperNumber(helper, dispatch.stateId, dispatch.stateExpression, options.stageTime);
+      if (stateId === undefined) {
+        continue;
+      }
+      options.onController?.(helper, controller);
+      changeHelperState(helper, stateId, resolveHelperNumber(helper, dispatch.animOverride, dispatch.animExpression, options.stageTime));
+      return "active";
+    }
+    if (dispatch.kind === "change-anim") {
+      const actionId = resolveHelperNumber(helper, dispatch.actionId, dispatch.actionExpression, options.stageTime);
+      if (actionId === undefined) {
+        continue;
+      }
+      options.onController?.(helper, controller);
+      changeHelperAction(helper, actionId);
+      continue;
+    }
+    if (dispatch.kind === "runtime-controller") {
+      if (controller.normalizedType === "destroyself") {
+        options.onController?.(helper, controller);
+        return "destroyed";
+      }
+      if (!helperRuntimeControllers.has(controller.normalizedType)) {
+        options.onUnsupportedController?.(helper, controller);
+        continue;
+      }
+      options.onController?.(helper, controller);
+      applyRuntimeStateToHelper(
+        helper,
+        executeControllerIr(controller, helperRuntimeState(helper), () => undefined, {
+          stageTime: options.stageTime,
+        }),
+      );
+      continue;
+    }
+    options.onUnsupportedController?.(helper, controller);
+  }
+  return "active";
 }
 
 export function removeRuntimeHelpers(helpers: RuntimeHelper[], filter: RuntimeHelperRemovalFilter = {}): RuntimeHelper[] {
@@ -144,6 +223,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           name: helper.name,
           stateNo: helper.stateNo,
           age: helper.age,
+          stateTime: helper.stateTime,
           removeTime: helper.removeTime,
           spritePriority: helper.spritePriority,
           scale: { ...helper.scale },
@@ -158,7 +238,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           spritePriority: helper.spritePriority,
           stateNo: helper.stateNo ?? sourceStateNo,
           animNo: helper.animNo,
-          animTime: helper.age,
+          animTime: helper.stateTime,
           frameIndex: helper.frameIndex,
           life: 0,
           power: 0,
@@ -188,8 +268,111 @@ function matchesRuntimeHelperRemovalFilter(helper: RuntimeHelper, filter: Runtim
   return true;
 }
 
+const helperRuntimeControllers = new Set(["velset", "veladd", "velmul", "posset", "posadd", "gravity", "statetypeset", "null"]);
+
+function helperTriggersPass(helper: RuntimeHelper, controller: ControllerIr, stageTime?: number): boolean {
+  const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
+  if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, stageTime)))) {
+    return false;
+  }
+  const grouped = new Map<number, ControllerIr["triggers"]>();
+  for (const trigger of controller.triggers) {
+    if (trigger.index <= 0) {
+      continue;
+    }
+    const triggers = grouped.get(trigger.index) ?? [];
+    triggers.push(trigger);
+    grouped.set(trigger.index, triggers);
+  }
+  if (grouped.size === 0) {
+    return true;
+  }
+  return [...grouped.values()].some((triggers) =>
+    triggers.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, stageTime))),
+  );
+}
+
+function resolveHelperNumber(
+  helper: RuntimeHelper,
+  value: number | undefined,
+  expression: string | undefined,
+  stageTime?: number,
+): number | undefined {
+  if (value !== undefined) {
+    return value;
+  }
+  if (!expression) {
+    return undefined;
+  }
+  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, stageTime)));
+  return Number.isFinite(result) ? Math.trunc(result) : undefined;
+}
+
+function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?: number): void {
+  helper.stateNo = stateNo;
+  helper.stateTime = 0;
+  const state = helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
+  const animNo = animOverride ?? state?.anim;
+  if (animNo !== undefined) {
+    changeHelperAction(helper, animNo);
+  }
+}
+
+function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
+  const action = helper.animations?.get(animNo);
+  if (!action) {
+    return;
+  }
+  helper.action = action;
+  helper.animNo = animNo;
+  helper.frameIndex = 0;
+  helper.frameElapsed = 0;
+}
+
+function helperExpressionContext(helper: RuntimeHelper, stageTime?: number) {
+  return {
+    self: helperRuntimeState(helper),
+    stageTime,
+    stateTime: helper.stateTime,
+    animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
+    stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
+  };
+}
+
+function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
+  return {
+    pos: { ...helper.pos },
+    vel: { ...helper.vel },
+    facing: helper.facing,
+    spritePriority: helper.spritePriority,
+    stateNo: helper.stateNo ?? 0,
+    animNo: helper.animNo,
+    animTime: helper.stateTime,
+    frameIndex: helper.frameIndex,
+    life: 0,
+    power: 0,
+    ctrl: false,
+    stateType: "S",
+    moveType: "I",
+    physics: "N",
+    vars: [],
+    fvars: [],
+    ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
+  };
+}
+
+function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRuntimeState): void {
+  helper.pos = { ...runtime.pos };
+  helper.vel = { ...runtime.vel };
+  helper.facing = runtime.facing;
+  helper.stateNo = runtime.stateNo;
+  helper.animNo = runtime.animNo;
+  helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
+}
+
 function advanceRuntimeHelper(helper: RuntimeHelper): void {
   helper.age += 1;
+  helper.stateTime += 1;
   helper.pos.x += helper.vel.x;
   helper.pos.y += helper.vel.y;
   helper.frameElapsed += 1;

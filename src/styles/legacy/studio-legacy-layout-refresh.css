@@ -2,15 +2,6 @@
   grid-template-columns: clamp(280px, 21vw, 340px) minmax(480px, 1fr) clamp(288px, 23vw, 360px);
 }
 
-.section {
-  background: var(--surface-flat);
-}
-
-.workspace-header {
-  gap: 10px;
-  background: var(--surface-flat);
-}
-
 .workspace-actions,
 .app-shell.mode-studio .workspace-actions,
 .studio-command-center,
@@ -73,33 +64,14 @@
 .asset-lane-strip span,
 .evidence-lane-strip span,
 .workbench-lane-strip span,
-.workspace-summary span,
 .stage-status-metric,
 .studio-stat {
   min-height: 42px;
 }
 
-.stage-status-grid {
-  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-}
-
-.stage-status {
-  width: min(520px, calc(42% - 16px));
-}
-
-.toolbar-group select,
-.toggle-pill {
-  min-height: 40px;
-}
-
 .toggle-pill input[type="checkbox"] {
   width: 16px;
   height: 16px;
-}
-
-.toolbar-group {
-  border-radius: 7px;
-  background: rgba(7, 10, 15, 0.92);
 }
 
 .tab,
