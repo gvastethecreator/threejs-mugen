@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Setup-project G1 roadmap control refresh
+
+Changed:
+
+- Revalidated the existing setup-project profile: `AGENTS.md` is the repo agent file, parent `AGENTS.md` is only a router, `docs/agents/*` exists, `CONTEXT.md` plus `docs/adr/` make this a single-context repo, `.scratch/roadmap/` remains the active local markdown tracker, and the GitHub remote is not the working issue tracker.
+- Tightened `AGENTS.md` with a G1 setup-project control section that names default decisions, docs to update, no-score rule, and return-to-evidence routing.
+- Expanded `docs/agents/*` with skill consumers, lane tags, autonomous-pass routing, and no-duplicate-tracker guidance.
+- Added roadmap decision routing and health-check guidance to `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`.
+- Updated package/progress docs so the latest project-control truth is explicit while the next implementation work still returns to R1/R2 evidence-producing slices.
+
+Evidence:
+
+- Repo exploration confirmed `AGENTS.md`, `docs/agents/*`, `CONTEXT.md`, `docs/adr/0001-roadmap-control-and-local-issues.md`, `.scratch/roadmap/`, and GitHub remote config are present.
+- `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` records this as G1 setup/project-control work.
+- No runtime, parser, renderer, Studio workflow, generated asset, IKEMEN scanner, or modular boundary behavior changed in this docs-only pass.
+
+Claim allowed:
+
+- Future agents and setup-aware skills can identify the issue tracker, triage labels, domain docs, roadmap owner docs, task lane, closeout gates, and next evidence-producing slice without re-discovery.
+
+Claim blocked:
+
+- Docs-only G1 control work does not move scores, prove imported runtime compatibility, improve Studio functionality, execute IKEMEN features, or replace tests, traces, smoke, fixture evidence, or build/export proof.
+
 ## 2026-06-29 - Studio Assets ledger visual pass
 
 Changed:

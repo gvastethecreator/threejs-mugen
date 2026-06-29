@@ -32,6 +32,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 
 ## Next Recommended Slice
 
+Latest project-control checkpoint:
+
+```txt
+G1 setup-project refresh
+  -> AGENTS.md and docs/agents/* confirm local markdown issues, canonical labels, single-context docs
+  -> roadmap navigation/progress/checklist docs include G1 health checks and decision routing
+  -> .scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md remains the setup/project-control ledger
+  -> docs-only control work; no runtime, Studio, IKEMEN, modular, or score claim
+```
+
 Latest implementation checkpoint:
 
 ```txt

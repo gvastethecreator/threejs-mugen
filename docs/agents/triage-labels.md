@@ -25,6 +25,23 @@ For this repo, prefer adding explicit evidence tags too:
 - `generated-assets`
 - `stage`
 - `audio`
+- `project-control`
+- `boundary`
+
+## Lane Tags
+
+Use these tags to route work to the right roadmap package:
+
+| Tag | Package |
+| --- | --- |
+| `project-control` | G1 roadmap/setup control |
+| `runtime-trace` | R1 runtime compatibility |
+| `mugen-compat` | R1 runtime compatibility |
+| `boundary` | R2 runtime ownership or M1 modular boundary |
+| `studio` | S1 Studio trust chain |
+| `generated-assets` | A1 generated asset provenance |
+| `ikemen-scan` | I1 scanner-only IKEMEN reference work |
+| `visual-qa` | Any renderer, Studio, sprite, stage, or frontend-visible work |
 
 ## Status Field Guidance
 

@@ -1,6 +1,6 @@
 # Roadmap Navigation
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This is the fast map for agents and humans who need to know where to look, what to update, and when a task is allowed to claim progress.
 
@@ -50,6 +50,22 @@ For architecture or source-of-truth changes, also read:
 | What must generated assets prove? | `docs/GENERATED_ASSET_QA_CONTRACT.md` |
 | What is only scanner-level IKEMEN work? | `docs/IKEMEN_GO_REFERENCE.md` and `docs/COMPATIBILITY_PROFILES.md` |
 | What is shared-core vs fighting-specific? | `docs/MODULE_BOUNDARY_CONTRACT.md` |
+
+## Decision Tree
+
+Use this quick route when a task is broad:
+
+| If task asks for... | Treat as | Open next |
+| --- | --- | --- |
+| AGENTS, setup-project, tracker, roadmap, progress docs, closeout rules | G1 project control | `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` |
+| Imported character behavior, CNS/CMD/trigger/controller semantics, Common1, guard/fall/recovery | R1 runtime compatibility | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` |
+| Moving mutable match behavior out of `PlayableMatchRuntime` | R2 runtime ownership | `.scratch/roadmap/issues/01-runtime-compatibility-gates.md` |
+| Studio Evidence/Build/Assets/Debug workflow | S1 Studio trust chain | `.scratch/roadmap/issues/02-studio-evidence-workflow.md` |
+| Generated fighters, imagegen, sprite atlas, locomotion/scale QA | A1 generated assets | `.scratch/roadmap/issues/03-generated-assets-pipeline.md` |
+| Ikemen-GO docs/source scan, ZSS/Lua/config/screenpack detection | I1 scanner | `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md` |
+| Shared engine contracts, module boundaries, future platformer support | M1 modular boundary | `.scratch/roadmap/issues/05-modular-engine-boundaries.md` |
+
+If a task spans more than one row, pick the row that changes executable behavior first, then update the control docs that became stale.
 
 ## Package Lanes
 

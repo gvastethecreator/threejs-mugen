@@ -1,6 +1,6 @@
 # Roadmap Operational Checklist
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This checklist turns the roadmap into repeatable execution steps. It is not a new source of truth. Use it with `AGENTS.md`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, and `docs/ROADMAP_EXECUTION_BOARD.md`.
 
@@ -138,6 +138,16 @@ Update when relevant:
 ## Docs Or Project Control
 
 Use for `setup-project`, `AGENTS.md`, roadmap, issue tracker, ADR, scorecard routing, and handoff rules.
+
+Setup-project refresh sequence:
+
+1. Verify repo root, remote, `AGENTS.md`, optional `CLAUDE.md`, `CONTEXT.md`, `docs/adr/`, `docs/agents/`, and `.scratch/roadmap/`.
+2. Keep existing repo file choice: edit `AGENTS.md` here because no `CLAUDE.md` exists and the parent `AGENTS.md` is only a router.
+3. Keep default decisions unless the user asks to switch: local markdown issue tracker, canonical triage labels, single-context domain docs.
+4. Update `docs/agents/*` only when the tracker, labels, domain layout, or skill routing changed.
+5. Update roadmap docs only where the queue, closeout gate, setup profile, or next-slice routing changed.
+6. Append evidence to `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` and `docs/BUILD_EXECUTION_BACKLOG.md`.
+7. Close with normal docs-only gates and explicit no-score movement.
 
 Required closeout:
 

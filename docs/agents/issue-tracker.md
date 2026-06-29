@@ -19,6 +19,21 @@ When a skill says to publish to the issue tracker, create or update markdown und
 
 This repo currently has a GitHub remote, but the active working tracker is local markdown. Do not open or sync GitHub issues unless the user explicitly asks.
 
+## Skill Consumers
+
+These skills should treat this file as their issue-tracker contract:
+
+- `to-issues`
+- `to-prd`
+- `triage`
+- `diagnose`
+- `tdd`
+- `improve-codebase-architecture`
+- `web-project-readiness`
+- `zoom-out`
+
+If one of those skills needs to write work items, use local markdown first and link the affected roadmap/package docs in the issue body.
+
 ## Fetching
 
 When a skill says to fetch an issue, read the referenced markdown path. If the user gives only a slug or number, search `.scratch/` first.
@@ -34,6 +49,8 @@ Do not use the GitHub remote as the active issue tracker unless the user explici
 Use `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` for setup-project, AGENTS, roadmap-routing, and QA-ledger refreshes. Append evidence there instead of creating duplicate setup issues unless the tracker layout, triage vocabulary, or domain-doc model changes.
 
 Before choosing a new implementation issue, compare `docs/BUILD_EXECUTION_BACKLOG.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and the linked roadmap issue so an already-closed gate is not reselected as "next".
+
+Do not create a second issue tracker under `docs/`, GitHub Issues, or a parent workspace folder for normal autonomous work. Parent `D:\DEV\mugen-sandbox-prototypes\AGENTS.md` is only a router.
 
 ## Roadmap Issue Schema
 

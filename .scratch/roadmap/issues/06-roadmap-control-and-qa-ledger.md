@@ -1,6 +1,6 @@
 # 06 - Roadmap Control And QA Ledger
 
-Status: closed
+Status: ready-for-agent
 Labels: docs, roadmap, ready-for-agent
 
 ## Objective
@@ -10,6 +10,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 ## Next Useful Cuts
 
 - Current setup-project/roadmap pass: added `docs/NEXT_BUILD_ROADMAP.md` as the tactical next-10-slices board and linked it from AGENTS/setup/roadmap docs. This docs/control setup initially selected R2 random ownership after the latest `VarRandom` gate; that first slice is now implemented below, with no score movement.
+- Current setup-project/G1 refresh: `AGENTS.md`, `docs/agents/*`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, and `docs/PROGRESS_TRACKER.md` now make the local tracker, canonical labels, single-context docs, G1 health check, decision tree, and no-score rule explicit.
 - Current setup-project/roadmap pass: confirmed the existing `setup-project` profile remains local markdown issues, canonical triage labels, and single-context domain docs; roadmap docs now point at `RuntimeGuardWorld` as the latest closed R2 ownership checkpoint before returning to R1 Common1/FightFX precision or deeper R2 helper/effect/combat ownership.
 - Current implementation follow-up: R2 `HitSparkAssetSystem` ownership extraction is now implemented after the random ownership slice, so future docs/setup work should return to R1 Common1/FightFX precision or deeper R2 MatchWorld ownership instead of reselecting spark lookup or random ownership.
 - Current setup-project/AGENTS refresh: setup-project profile remains local markdown issues, canonical triage labels, and single-context domain docs. Repo `AGENTS.md`, `docs/agents/*`, package milestones, execution board, progress tracker, scorecard, continuity guide, and checklist now route future agents through the latest `HitSparkAssetSystem` checkpoint instead of older closed gates.
@@ -53,6 +54,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Parent `AGENTS.md` routes agents from `D:\DEV\mugen-sandbox-prototypes` into the repo instead of letting work happen at the wrong folder level.
 - `AGENTS.md` owns repo rules, setup-project profile, session bootstrap, roadmap update protocol, and verification baseline.
 - `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, and `docs/agents/domain.md` define the local markdown tracker, canonical triage vocabulary, and single-context domain-doc layout.
+- The latest G1 setup-project refresh keeps those decisions as defaults and adds explicit skill-consumer, lane-tag, autonomous-pass-routing, decision-tree, and health-check guidance.
 - `docs/ROADMAP_PROGRESS_SYSTEM.md` owns source-of-truth order, resume/checkpoint protocol, package lifecycle, horizon ladder, update matrix, and closeout template.
 - `docs/ROADMAP_NAVIGATION.md` owns the fast route map for future agents who need to find the right doc/issue/gate quickly.
 - `docs/ROADMAP_PACKAGE_MILESTONES.md` owns compact package selection, milestone exits, and the next recommended evidence-producing slice.

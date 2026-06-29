@@ -1,6 +1,6 @@
 # Roadmap Progress System
 
-Last updated: 2026-06-28
+Last updated: 2026-06-29
 
 This document explains how progress is tracked for the Three.js MUGEN/Ikemen-GO port, Creator Studio, generated asset pipeline, and future modular engine. It is operational glue: it tells agents where truth lives, how a slice moves, and what must not be claimed.
 
@@ -24,6 +24,18 @@ Read these in order when planning or reporting status:
 | Local issues | `.scratch/roadmap/issues/` | Agent-sized work slices with acceptance and blocked claims. |
 
 Rule: when two docs disagree, prefer the more specific owner above. Then update stale docs in the same round if the task touched that scope.
+
+## Roadmap Health Check
+
+Run this lightweight check during G1 setup/project-control work:
+
+1. Confirm `AGENTS.md` and `docs/agents/*` still describe the same tracker, labels, and domain layout.
+2. Confirm `docs/BUILD_EXECUTION_BACKLOG.md` latest top entry matches the latest checkpoint named in `docs/ROADMAP_EXECUTION_BOARD.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and `docs/NEXT_BUILD_ROADMAP.md`.
+3. Confirm `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md` records the current docs/setup pass.
+4. Confirm docs-only work says "no score movement" and does not edit `docs/PORT_COMPLETION_SCORECARD.md` unless evidence changed.
+5. Confirm next work points back to R1/R2/S1/A1/I1/M1 evidence-producing cuts, not another docs loop.
+
+This check is project-control evidence only. It never proves runtime compatibility by itself.
 
 ## Resume And Checkpoint Protocol
 

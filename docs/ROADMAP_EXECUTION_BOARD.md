@@ -30,6 +30,8 @@ Current release target: **MUGEN-lite playable MVP**.
 
 This means the default native/generated match stays playable while an imported KFM/Common1-style package gains more fixture-backed routes. The next score-moving work must produce runtime trace, focused test, visual QA, fixture, or build/export evidence. This docs/setup pass improves R0 project control only and does not move scores.
 
+Latest project-control checkpoint: setup-project/G1 refresh confirms `AGENTS.md`, `docs/agents/*`, local markdown issues, canonical triage labels, single-context domain docs, roadmap decision routing, and docs-only no-score rules are aligned. This is control evidence only; next implementation work should return to R1 Common1/FightFX precision or R2 MatchWorld ownership.
+
 Latest implementation checkpoint: `RuntimeGuardWorld` owns bounded guard-hit state selection plus auto guard-start eligibility/mutation previously inline in `PlayableMatchRuntime`. `RuntimeOrientationWorld` remains the orientation ownership checkpoint, `RuntimeHitEligibilityWorld` remains the hit-eligibility lifetime/reset ownership checkpoint, `RuntimeTargetWorld.applyTargetBindings` / `applyBindToTarget` remain the active target-binding ownership checkpoint, `RuntimeRecoverySystem` remains the recovery ownership checkpoint, `HitSparkAssetSystem` remains the presentation ownership checkpoint, and `RuntimeRandomSystem` remains the deterministic random ownership checkpoint with required `synthetic-imported-variable.json` checksum `3b33f7a8`. This is R2 guard ownership cleanup, not exact proximity guard, guard-end timing, guard effects, air-guard landing, exact Common1 recovery thresholds, FightFX/common presentation parity, exact MUGEN random stream, or VM parity.
 
 ## Operating Snapshot

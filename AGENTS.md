@@ -75,6 +75,14 @@ When a change affects support level, priority, or claimed progress:
 4. Update `docs/WORKPLAN.md` for execution authority and `docs/BUILD_EXECUTION_BACKLOG.md` for historical closeout.
 5. Update the relevant `.scratch/roadmap/issues/` file with status, next cut, evidence, and blocked claims.
 
+## G1 Setup-Project Control
+
+- `setup-project` is active when agent rules, local issue routing, triage labels, roadmap source-of-truth docs, or closeout gates drift.
+- Default setup-project decisions are already chosen for this repo: local markdown issues, canonical triage labels, and single-context domain docs. Do not ask the user to reconfirm those defaults unless switching tracker, labels, or domain layout.
+- For setup/project-control passes, update only the docs that own the drift. Usual owners are `AGENTS.md`, `docs/agents/*`, `docs/ROADMAP_NAVIGATION.md`, `docs/ROADMAP_PROGRESS_SYSTEM.md`, `docs/ROADMAP_OPERATIONAL_CHECKLIST.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, `docs/NEXT_BUILD_ROADMAP.md`, `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`, and `docs/BUILD_EXECUTION_BACKLOG.md`.
+- Setup/project-control work is G1 control work. It can make future work safer, but it does not raise port, Studio, IKEMEN, or modular-engine scores.
+- After any G1 pass, return to the first evidence-producing cut in `docs/ROADMAP_PACKAGE_MILESTONES.md` / `docs/NEXT_BUILD_ROADMAP.md`.
+
 ## Verification Baseline
 
 Default closeout for code/runtime/docs rounds:
@@ -117,11 +125,12 @@ pnpm qa:smoke
 
 ## Setup Project Profile
 
-- Last audited: 2026-06-29 during the setup-project refresh after the `RuntimeGuardWorld` ownership pass.
+- Last audited: 2026-06-29 during the setup-project/G1 roadmap-control refresh after the `RuntimeGuardWorld` ownership pass and Studio Assets ledger visual pass.
 - `setup-project` profile: local markdown issue tracker, canonical triage labels, single-context domain docs.
 - Issue tracker: local markdown under `.scratch/<feature-slug>/`; GitHub remote exists, but local markdown remains the working tracker unless the user explicitly asks to publish GitHub issues.
 - Triage vocabulary: canonical labels in `docs/agents/triage-labels.md`, plus repo evidence tags for runtime, Studio, generated assets, IKEMEN, docs, and visual QA.
 - Domain layout: single-context repo with root `CONTEXT.md`; durable decisions live under `docs/adr/`.
+- Agent docs: `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, and `docs/agents/domain.md` are the setup-project handoff files for skills such as `to-issues`, `to-prd`, `triage`, `diagnose`, `tdd`, `improve-codebase-architecture`, and `web-project-readiness`.
 - Latest-implementation truth: `docs/BUILD_EXECUTION_BACKLOG.md` wins for recent closeout history; package and roadmap docs must be refreshed when they point at already-closed gates. Current latest closed ownership cut is `RuntimeGuardWorld` unless the backlog proves a newer one.
 - Broad web-app readiness or architecture sweeps should use this setup before `web-project-readiness`, `improve-codebase-architecture`, `diagnose`, `triage`, `tdd`, `to-issues`, or `to-prd`.
 

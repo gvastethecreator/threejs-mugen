@@ -44,6 +44,18 @@ When docs disagree, prefer this order for current implementation truth:
 
 Then update stale roadmap docs in the same pass. Do not preserve an older "next" gate if the backlog proves it already closed.
 
+## Autonomous Pass Routing
+
+Use this routing before editing:
+
+1. If the task is setup-project, AGENTS, tracker, roadmap, or closeout process, treat it as G1 project-control work and update `.scratch/roadmap/issues/06-roadmap-control-and-qa-ledger.md`.
+2. If the task changes imported runtime behavior, use R1/R2 docs and require trace or focused system evidence.
+3. If the task changes Studio, runtime visuals, generated sprites, stages, or renderer presentation, require browser smoke and screenshot inspection.
+4. If the task is scanner-only IKEMEN research, keep findings classified as recognized, unsupported, or unknown and do not claim runtime execution.
+5. If the task touches shared module boundaries, prove the contract does not import MUGEN/CNS/CMD/HitDef/Common1 concepts before calling it shared.
+
+After docs/setup work, return to `docs/ROADMAP_PACKAGE_MILESTONES.md` and `docs/NEXT_BUILD_ROADMAP.md` for the next evidence-producing cut.
+
 ## Domain Vocabulary
 
 Use these terms consistently:
