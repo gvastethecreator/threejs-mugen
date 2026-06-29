@@ -42,7 +42,7 @@
   .app-shell.mode-studio .asset-browser-panel > .section-heading-row,
   .app-shell.mode-studio .asset-command-center > .command-center-header,
   .app-shell.mode-studio .asset-side-panel > h2,
-  .app-shell.mode-studio .asset-inspector-drawer > summary,
+  .app-shell.mode-studio .studio-ledger-drawer > summary,
   .app-shell.mode-studio .studio-workbench-details > summary {
     display: grid;
     grid-template-columns: minmax(0, 1fr) max-content;
@@ -61,6 +61,7 @@
 
   .app-shell.mode-studio .workbench-ledger-panel h2,
   .app-shell.mode-studio .asset-side-panel h2,
+  .app-shell.mode-studio .studio-ledger-drawer > summary span,
   .app-shell.mode-studio .asset-browser-panel h2,
   .app-shell.mode-studio .asset-command-center h2,
   .app-shell.mode-studio .studio-workbench-details summary span {
@@ -76,6 +77,7 @@
 
   .app-shell.mode-studio .workbench-ledger-panel .panel-kicker,
   .app-shell.mode-studio .asset-side-panel .panel-kicker,
+  .app-shell.mode-studio .studio-ledger-drawer > summary small,
   .app-shell.mode-studio .asset-browser-panel .panel-kicker,
   .app-shell.mode-studio .asset-command-center .panel-kicker,
   .app-shell.mode-studio .studio-workbench-details summary small {
@@ -90,21 +92,6 @@
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
-  }
-
-  .app-shell.mode-studio .asset-inspector-drawer > summary {
-    grid-template-columns: minmax(0, 1fr) max-content 16px;
-    cursor: pointer;
-  }
-
-  .app-shell.mode-studio .asset-inspector-drawer > summary::after {
-    justify-self: end;
-    color: var(--studio-ledge-muted);
-    content: "+";
-  }
-
-  .app-shell.mode-studio .asset-inspector-drawer[open] > summary::after {
-    content: "-";
   }
 
   .app-shell.mode-studio .workbench-ledger-panel button,
@@ -124,7 +111,7 @@
   .app-shell.mode-studio .asset-browser-panel button:focus-visible,
   .app-shell.mode-studio .asset-command-center button:focus-visible,
   .app-shell.mode-studio .asset-inspector-drawer button:focus-visible,
-  .app-shell.mode-studio .asset-inspector-drawer summary:focus-visible,
+  .app-shell.mode-studio .studio-ledger-drawer > summary:focus-visible,
   .app-shell.mode-studio .studio-workbench-details summary:focus-visible {
     outline: 2px solid color-mix(in srgb, var(--section-accent) 56%, transparent);
     outline-offset: -2px;

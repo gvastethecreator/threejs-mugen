@@ -3602,49 +3602,65 @@ export class App {
     return `
       ${this.renderStudioAssetTriage(library)}
       ${this.renderSelectedAssetPanel(library)}
-      <div class="section">
-        <h2>Filtered Assets</h2>
-        <div class="list compact-list">
-          ${
-            library.visibleAssets.length
-              ? library.visibleAssets.slice(0, 8).map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
-              : `<div class="empty-state">No assets match ${escapeHtml(library.activeFilter)}.</div>`
-          }
-        </div>
-      </div>
-      <section class="asset-side-panel asset-provenance-panel">
-        <h2>Asset Provenance</h2>
-        <dl class="kv studio-kv">
-          <dt>Filter</dt><dd class="mono">${escapeHtml(library.activeFilter)}</dd>
-          <dt>Generated</dt><dd class="mono">${sourceCounts.get("generated") ?? 0}</dd>
-          <dt>Imported</dt><dd class="mono">${sourceCounts.get("mugen-import") ?? 0}</dd>
-          <dt>Authored</dt><dd class="mono">${sourceCounts.get("authored") ?? 0}</dd>
-          <dt>Runtime demo</dt><dd class="mono">${sourceCounts.get("runtime-demo") ?? 0}</dd>
-        </dl>
-        <div class="badge-row">
-          ${[...statusCounts.entries()].map(([status, count]) => `<span class="badge">${escapeHtml(status)} ${count}</span>`).join("")}
-        </div>
-      </section>
-      <section class="asset-side-panel asset-entry-panel">
-        <h2>Playtest Entry Assets</h2>
-        <div class="list compact-list">
-          ${
-            entryAssets.length
-              ? entryAssets.map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
-              : `<div class="empty-state">Current P1/P2/stage IDs are not represented in asset records.</div>`
-          }
-        </div>
-      </section>
-      <section class="asset-side-panel asset-attention-panel">
-        <h2>Asset Attention Queue</h2>
-        <div class="list compact-list">
-          ${
-            attentionAssets.length
-              ? attentionAssets.slice(0, 10).map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
-              : `<div class="empty-state">No pending, partial, warning, or failed asset records.</div>`
-          }
-        </div>
-      </section>
+      ${this.renderAssetSideDrawer(
+        "Filtered Assets",
+        `${library.visibleAssets.length} visible`,
+        `
+          <div class="list compact-list">
+            ${
+              library.visibleAssets.length
+                ? library.visibleAssets.slice(0, 8).map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
+                : `<div class="empty-state">No assets match ${escapeHtml(library.activeFilter)}.</div>`
+            }
+          </div>
+        `,
+        { className: "asset-filtered-panel", open: true },
+      )}
+      ${this.renderAssetSideDrawer(
+        "Asset Provenance",
+        `${library.activeFilter} filter`,
+        `
+          <dl class="kv studio-kv">
+            <dt>Filter</dt><dd class="mono">${escapeHtml(library.activeFilter)}</dd>
+            <dt>Generated</dt><dd class="mono">${sourceCounts.get("generated") ?? 0}</dd>
+            <dt>Imported</dt><dd class="mono">${sourceCounts.get("mugen-import") ?? 0}</dd>
+            <dt>Authored</dt><dd class="mono">${sourceCounts.get("authored") ?? 0}</dd>
+            <dt>Runtime demo</dt><dd class="mono">${sourceCounts.get("runtime-demo") ?? 0}</dd>
+          </dl>
+          <div class="badge-row">
+            ${[...statusCounts.entries()].map(([status, count]) => `<span class="badge">${escapeHtml(status)} ${count}</span>`).join("")}
+          </div>
+        `,
+        { className: "asset-provenance-panel" },
+      )}
+      ${this.renderAssetSideDrawer(
+        "Playtest Entry Assets",
+        `${entryAssets.length} entry`,
+        `
+          <div class="list compact-list">
+            ${
+              entryAssets.length
+                ? entryAssets.map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
+                : `<div class="empty-state">Current P1/P2/stage IDs are not represented in asset records.</div>`
+            }
+          </div>
+        `,
+        { className: "asset-entry-panel" },
+      )}
+      ${this.renderAssetSideDrawer(
+        "Asset Attention Queue",
+        `${attentionAssets.length} attention`,
+        `
+          <div class="list compact-list">
+            ${
+              attentionAssets.length
+                ? attentionAssets.slice(0, 10).map((asset) => this.renderStudioAsset(asset, { selectable: true, selected: asset.id === library.selectedAsset?.id })).join("")
+                : `<div class="empty-state">No pending, partial, warning, or failed asset records.</div>`
+            }
+          </div>
+        `,
+        { className: "asset-attention-panel", open: true },
+      )}
     `;
   }
 
@@ -3793,13 +3809,41 @@ export class App {
   }
 
   private renderStudioAssetInspectorDrawer(title: string, body: string, options: { badge?: string; open?: boolean } = {}): string {
+    return this.renderStudioLedgerDrawer(title, body, {
+      badge: options.badge,
+      bodyClassName: "asset-inspector-drawer-body",
+      className: "asset-inspector-drawer",
+      open: options.open,
+    });
+  }
+
+  private renderAssetSideDrawer(
+    title: string,
+    badge: string,
+    body: string,
+    options: { className?: string; open?: boolean } = {},
+  ): string {
+    const className = options.className ? `asset-side-panel ${options.className}` : "asset-side-panel";
+    return this.renderStudioLedgerDrawer(title, body, {
+      badge,
+      bodyClassName: "asset-side-panel-body",
+      className,
+      open: options.open,
+    });
+  }
+
+  private renderStudioLedgerDrawer(
+    title: string,
+    body: string,
+    options: { badge?: string; bodyClassName: string; className: string; open?: boolean },
+  ): string {
     return `
-      <details class="asset-inspector-drawer" ${options.open ? "open" : ""}>
+      <details class="${options.className} studio-ledger-drawer" ${options.open ? "open" : ""}>
         <summary>
           <span>${escapeHtml(title)}</span>
           ${options.badge ? `<small>${escapeHtml(options.badge)}</small>` : ""}
         </summary>
-        <div class="asset-inspector-drawer-body">
+        <div class="${options.bodyClassName} studio-ledger-drawer-body">
           ${body}
         </div>
       </details>

@@ -1,0 +1,290 @@
+@media (min-width: 900px) {
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-browser-list,
+  .app-shell.mode-studio[data-studio-tab="assets"] .compact-list,
+  .app-shell.mode-studio[data-studio-tab="assets"] .list,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-flow {
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item {
+    display: grid;
+    grid-template-columns: var(--asset-row-icon-size) minmax(0, 1fr) minmax(var(--asset-row-side-min), max-content);
+    min-height: var(--asset-row-min-height);
+    gap: var(--asset-row-gap);
+    margin: 0;
+    padding: var(--asset-row-padding);
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    border-radius: 0;
+    background: var(--asset-ledger-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item:not(.asset-row) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate {
+    padding: var(--asset-inline-row-padding);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item:nth-child(even) {
+    background: var(--asset-ledger-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:hover,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:focus-visible,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-selected,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:hover,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:focus-visible {
+    background: var(--studio-ledge-row-hot);
+    outline: 1px solid #4c5864;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-icon {
+    align-self: center;
+    width: var(--asset-row-icon-size);
+    height: var(--asset-row-icon-size);
+    border: 1px solid var(--studio-ledge-edge-strong);
+    border-radius: 0;
+    background: var(--studio-ledge-control);
+    color: var(--studio-ledge-icon-muted);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-main,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate > span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item > span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item > span {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-title .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-meta,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-meta,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-meta {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind {
+    overflow-wrap: anywhere;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--asset-row-action-line-clamp);
+    line-height: 1.18;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-title {
+    -webkit-line-clamp: 1;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .replacement-candidate .list-meta {
+    -webkit-line-clamp: var(--asset-meta-line-clamp);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary span,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    max-height: 40px;
+    overflow: hidden;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .badge {
+    max-width: 116px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-title .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-title,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-title {
+    color: var(--studio-ledge-text);
+    font-size: var(--asset-row-title-size);
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
+  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-meta,
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-meta,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-meta {
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: var(--asset-row-meta-size);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-side {
+    display: grid;
+    align-content: center;
+    justify-items: end;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv {
+    display: grid;
+    grid-template-columns: var(--asset-kv-label-width) minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+    min-height: var(--asset-kv-min-height);
+    margin: 0;
+    padding: var(--asset-kv-padding);
+    border: 0;
+    border-right: 1px solid var(--studio-ledge-edge);
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    border-radius: 0;
+    background: var(--asset-ledger-row);
+    font-family: var(--mono);
+    font-size: var(--asset-kv-font-size);
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt {
+    color: var(--studio-ledge-muted);
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
+    min-width: 0;
+    overflow: visible;
+    color: var(--studio-ledge-text);
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd:nth-of-type(5),
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd:nth-of-type(6) {
+    display: block;
+    min-height: var(--asset-kv-min-height);
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .operator-callout .badge-row .badge:last-child {
+    flex: 1 1 100%;
+    justify-content: start;
+    min-height: 20px;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-meta,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-meta {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--asset-meta-line-clamp);
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .badge,
+  .app-shell.mode-studio[data-studio-tab="assets"] .status-badge,
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export {
+    display: inline-grid;
+    min-width: 0;
+    min-height: 18px;
+    align-content: center;
+    justify-content: center;
+    overflow: visible;
+    padding: 0 5px;
+    border: 1px solid var(--studio-ledge-edge-strong);
+    border-radius: 0;
+    background: var(--studio-ledge-control-alt);
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1;
+    text-overflow: clip;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-ok,
+  .app-shell.mode-studio[data-studio-tab="assets"] .badge.ok,
+  .app-shell.mode-studio[data-studio-tab="assets"] .status-badge.ok {
+    color: var(--asset-ledger-ok);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-warn,
+  .app-shell.mode-studio[data-studio-tab="assets"] .badge.warn,
+  .app-shell.mode-studio[data-studio-tab="assets"] .status-badge.warn {
+    color: var(--asset-ledger-warn);
+  }
+}

@@ -1,0 +1,40 @@
+@media (min-width: 900px) {
+  .app-shell.mode-studio .studio-ledger-drawer > summary {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content 16px;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .app-shell.mode-studio .studio-ledger-drawer > summary span,
+  .app-shell.mode-studio .studio-ledger-drawer > summary small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-ledger-drawer > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .app-shell.mode-studio .studio-ledger-drawer > summary::after {
+    justify-self: end;
+    color: var(--studio-ledge-muted, var(--muted));
+    content: "+";
+  }
+
+  .app-shell.mode-studio .studio-ledger-drawer[open] > summary::after {
+    content: "-";
+  }
+
+  .app-shell.mode-studio .studio-ledger-drawer-body {
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    background: var(--studio-ledge-bg, var(--editor-panel-pressed, #05070a));
+  }
+}

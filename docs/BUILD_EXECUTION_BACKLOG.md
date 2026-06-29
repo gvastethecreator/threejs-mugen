@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio Assets drawer primitive cleanup
+
+Changed:
+
+- Audited the current CSS duplication state before continuing broader port work.
+- Confirmed `pnpm qa:css` still reports 0 same-file duplicate selector keys, 0 exact duplicate rules, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- Consolidated repeated Assets right-pane collapsible drawer markup through `renderStudioLedgerDrawer(...)`, while preserving the existing `asset-side-panel` and `asset-inspector-drawer` classes.
+- Added shared `studio-ledger-drawer` and `studio-ledger-drawer-body` hooks, with reusable drawer styling in `src/styles/surfaces/studio-ledger-drawers.css` and reusable Assets row styling in `src/styles/workflows/studio-assets-ledger.css`, so side-panel/inspector drawers no longer need parallel summary/body selectors.
+- Updated Studio/UI docs with the current 2,669-rule CSS audit, the shared drawer primitive, and the remaining repeated-declaration/cross-file overlap debt.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,669 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file duplicate selectors, and 0 fully shadowed cross-file rules.
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 639 tests.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` passes; inspected `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-assets-replacement.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, and `.scratch/qa/qa-smoke/studio-workbench-tablet.png` for drawer/header regressions.
+- `node C:\Users\cristian\.agents\skills\improve-interfaces\scripts\detect-ui-antipatterns.mjs src\app\App.ts src\style.css src\styles --out .scratch\qa\ui-antipatterns-after-css-modular.txt` reports 384 findings; remaining P2/P3 debt is tracked, not introduced as a blocker for this CSS modularization cut.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- The app does not have exact duplicated CSS rules today, but it does have tracked Studio cascade debt: repeated declaration groups and cross-file selector overlap.
+- Assets right-pane drawers now share one rendering helper and shared CSS primitive, reducing structural duplication before more Studio surfaces are added.
+
+Claim blocked:
+
+- This is Studio CSS/markup hygiene only. It does not add runtime compatibility, IKEMEN behavior, editing/export workflow, or score movement.
+- The 173 repeated declaration groups and 126 cross-file overlaps remain active debt; future cuts should extract truncation, ledger-row, status-cell, and command-action primitives instead of adding broad override files.
+
 ## 2026-06-29 - Studio desktop command readability polish
 
 Changed:
