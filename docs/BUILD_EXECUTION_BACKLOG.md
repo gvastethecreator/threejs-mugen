@@ -1,5 +1,60 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS duplicate-budget trim
+
+Changed:
+
+- Removed retired hidden pseudo indicator rules for workspace actions, command center, and command launcher.
+- Grouped duplicate life/power meter colors and mission/mode status-dot token rules.
+- Tightened `pnpm qa:css:budget` from 2,452 rules / 135 repeated groups / 112 overlaps to 2,446 rules / 131 repeated groups / 111 overlaps.
+
+Evidence:
+
+- `pnpm qa:css` reports 2,446 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 131 repeated declaration groups, 111 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes against the 2,446-rule / 131-repeated-group / 111-overlap ceiling.
+- `node C:\Users\cristian\.agents\skills\improve-interfaces\scripts\detect-ui-antipatterns.mjs --format=text src` scanned 256 files and surfaced broad existing P2/P3 UI debt; this slice only used it as a static signal and did not attempt a full product-interface review.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, and `.scratch/qa/qa-smoke/studio-debug.png`.
+- `pnpm test` passes: 73 files / 656 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md`, `docs/PLAYABLE_V0_STATUS.md`, and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- CSS debt is lower and guarded by a tighter budget; exact duplicate CSS remains zero.
+
+Claim blocked:
+
+- Broader primitive extraction, cross-file selector consolidation, dense typography cleanup, and full interface review remain open. This is Studio/UI hygiene only and does not move port scores.
+
+## 2026-06-29 - Helper-local resource VM cut
+
+Changed:
+
+- Added bounded helper-local `LifeAdd`, `LifeSet`, `PowerAdd`, and `PowerSet` execution inside `HelperSystem`.
+- Helpers now carry local `lifeMax`, `life`, `powerMax`, and `power` resource state, expose it through snapshots, and can branch later on `Life`, `LifeMax`, `Power`, and `PowerMax` triggers.
+- Extended focused helper-local VM coverage so resource mutations route through the same `StateControllerExecutor` resource path as player controllers.
+
+Evidence:
+
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts` passes: 1 file / 18 tests.
+- `pnpm test` passes: 73 files / 656 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional. Helper snapshot resource projection intentionally updates helper trace checksums to `synthetic-imported-helper.json` `60538bd3`, helper velocity `dc0fb203`, helper scale `a161d896`, helper supermovetime `857f927e`, helper pausemovetime `bfe83f64`, and helper ignorehitpause `7d008a66`.
+- `pnpm qa:smoke` passes after the CSS duplicate-budget trim.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md`, `docs/PLAYABLE_V0_STATUS.md`, and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current visual Helper actors can execute bounded helper-local `LifeAdd` / `LifeSet` / `PowerAdd` / `PowerSet`, persist helper-local life/power resource values, expose them in helper snapshots, and branch later on helper-local resource triggers.
+
+Claim blocked:
+
+- Redirects, parent/root/team ownership, `keyctrl`, helper fvar/sysvar `VarRandom`, helper audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact helper resource semantics, exact random stream parity, exact tick-order/pause parity, custom-state helper lifecycle, score movement, and full MUGEN/IKEMEN helper parity remain blocked.
+
 ## 2026-06-29 - Studio CSS legacy prune
 
 Changed:

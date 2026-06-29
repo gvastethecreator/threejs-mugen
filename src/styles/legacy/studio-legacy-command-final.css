@@ -86,8 +86,7 @@
   border-radius: 4px;
 }
 
-.mode-dot,
-.command-launcher::after {
+.mode-dot {
   border-radius: 2px;
 }
 

@@ -1,23 +1,5 @@
 /* Legacy Studio/product surfaces extracted from src/style.css. Keep before newer Studio modules. */
 
-.workspace-actions::after,
-.studio-command-center::after,
-.command-launcher::after {
-  position: absolute;
-  inset: 6px 6px auto auto;
-  width: 5px;
-  height: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 50%;
-  background: var(--surface-flat);
-  box-shadow:
-    -12px 0 0 -1px #05070a,
-    -12px 0 0 0 rgba(255, 255, 255, 0.08),
-    inset 0 1px 1px rgba(0, 0, 0, 0.82);
-  content: "";
-  pointer-events: none;
-}
-
 .engine-module-name,
 .engine-module-contracts,
 .command-launcher > span:first-child,
@@ -195,7 +177,8 @@
   background: var(--surface-flat);
 }
 
-.studio-mission-node.is-ok::after {
+.studio-mission-node.is-ok::after,
+.mode-dot.is-ok {
   background: var(--ok);
 }
 
@@ -210,7 +193,8 @@
 .studio-mission-node.is-warn::after,
 .studio-mission-node.is-planned::after,
 .studio-mission-node.is-pending::after,
-.studio-mission-node.is-partial::after {
+.studio-mission-node.is-partial::after,
+.mode-dot.is-warn {
   background: var(--warn);
 }
 
@@ -1190,14 +1174,6 @@
   border-radius: 999px;
   background: var(--subtle);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
-}
-
-.mode-dot.is-ok {
-  background: var(--ok);
-}
-
-.mode-dot.is-warn {
-  background: var(--warn);
 }
 
 .mode-label {

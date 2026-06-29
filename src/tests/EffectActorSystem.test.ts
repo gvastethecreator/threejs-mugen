@@ -303,6 +303,54 @@ describe("EffectActorSystem", () => {
     expect(helper.fvars[2]).toBe(1.5);
   });
 
+  it("persists helper-local life and power resources for later triggers and snapshots", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("LifeAdd", { value: "-200", kill: "0" }, ["Time = 0"]),
+              controller("PowerAdd", { value: "250" }, ["Time = 0"]),
+              controller("LifeSet", { value: "950" }, ["Time = 0"]),
+              controller("PowerSet", { value: "900" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6002" }, ["life = 950", "lifemax = 1000", "power = 900", "powermax = 3000"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["LifeAdd", "PowerAdd", "LifeSet", "PowerSet", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      lifeMax: 1000,
+      life: 950,
+      powerMax: 3000,
+      power: 900,
+      stateTime: 1,
+      age: 1,
+    });
+    expect(runtimeHelperActorsToSnapshots(store, 200)[0]?.runtime).toMatchObject({
+      lifeMax: 1000,
+      life: 950,
+      powerMax: 3000,
+      power: 900,
+    });
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

@@ -318,18 +318,12 @@ button.list-item:hover {
   color: var(--info);
 }
 
-.meter-life span {
-  background: #8f985d;
-}
-
-.meter-power span {
-  background: #7e92ad;
-}
-
+.meter-life span,
 .hud-life span {
   background: #8f985d;
 }
 
+.meter-power span,
 .hud-power span {
   background: #7e92ad;
 }

@@ -113,12 +113,6 @@
   line-height: 1.12;
 }
 
-.workspace-actions::after,
-.studio-command-center::after,
-.command-launcher::after {
-  display: none;
-}
-
 .app-shell.mode-studio .workspace-summary span,
 .app-shell.mode-studio .studio-mission-node,
 .app-shell.mode-studio .workbench-lane-strip span,

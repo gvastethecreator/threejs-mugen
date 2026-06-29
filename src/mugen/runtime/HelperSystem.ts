@@ -33,6 +33,10 @@ export type RuntimeHelper = {
   stateType: CharacterRuntimeState["stateType"];
   moveType: CharacterRuntimeState["moveType"];
   physics: CharacterRuntimeState["physics"];
+  lifeMax: number;
+  life: number;
+  powerMax: number;
+  power: number;
   vars: number[];
   sysvars: number[];
   fvars: number[];
@@ -105,6 +109,10 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     stateType: "S",
     moveType: "I",
     physics: "N",
+    lifeMax: 1000,
+    life: 1000,
+    powerMax: 3000,
+    power: 0,
     vars: Array.from({ length: 60 }, () => 0),
     sysvars: [],
     fvars: Array.from({ length: 40 }, () => 0),
@@ -254,8 +262,10 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           animNo: helper.animNo,
           animTime: helper.stateTime,
           frameIndex: helper.frameIndex,
-          life: 0,
-          power: 0,
+          lifeMax: helper.lifeMax,
+          life: helper.life,
+          powerMax: helper.powerMax,
+          power: helper.power,
           ctrl: helper.ctrl,
           stateType: helper.stateType,
           moveType: helper.moveType,
@@ -291,6 +301,10 @@ const helperRuntimeControllers = new Set([
   "posadd",
   "gravity",
   "ctrlset",
+  "lifeadd",
+  "lifeset",
+  "poweradd",
+  "powerset",
   "statetypeset",
   "varset",
   "varadd",
@@ -378,8 +392,10 @@ function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
     animNo: helper.animNo,
     animTime: helper.stateTime,
     frameIndex: helper.frameIndex,
-    life: 0,
-    power: 0,
+    lifeMax: helper.lifeMax,
+    life: helper.life,
+    powerMax: helper.powerMax,
+    power: helper.power,
     ctrl: helper.ctrl,
     stateType: helper.stateType,
     moveType: helper.moveType,
@@ -398,6 +414,10 @@ function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRunt
   helper.stateNo = runtime.stateNo;
   helper.animNo = runtime.animNo;
   helper.spritePriority = runtime.spritePriority ?? helper.spritePriority;
+  helper.lifeMax = runtime.lifeMax ?? helper.lifeMax;
+  helper.life = runtime.life;
+  helper.powerMax = runtime.powerMax ?? helper.powerMax;
+  helper.power = runtime.power;
   helper.ctrl = runtime.ctrl;
   helper.stateType = runtime.stateType;
   helper.moveType = runtime.moveType;

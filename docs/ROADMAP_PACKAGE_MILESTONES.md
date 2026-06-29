@@ -50,8 +50,8 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,452 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 135 repeated declaration groups, 112 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,452 rules, 135 repeated declaration groups, 112 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> pnpm qa:css reports 2,446 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 131 repeated declaration groups, 111 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,446 rules, 131 repeated declaration groups, 111 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
   -> latest narrow cleanup groups legacy Studio truncation/text-wrap/grid/align/text rows, absorbs redundant shell/header/status/summary overrides into base/surface owners, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader repeated declaration groups stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
@@ -90,7 +90,8 @@ R2 helper-local micro-VM ownership
   -> RuntimeEffectSpawnWorld passes owner runtimeProgram and animation maps into HelperSystem
   -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, DestroySelf removal, helper-local CtrlSet/StateTypeSet, and helper-local VarSet/VarAdd/VarRandom/VarRangeSet trigger branches on helper actors
   -> focused EffectSpawnSystem tests prove the handoff
-  -> no redirects, parent/root/team/keyctrl, helper life/power resources, helper fvar/sysvar VarRandom, exact random stream parity, helper audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
+  -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
+  -> no redirects, parent/root/team/keyctrl, exact helper resource semantics, helper fvar/sysvar VarRandom, exact random stream parity, helper audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
