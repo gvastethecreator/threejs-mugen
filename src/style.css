@@ -29981,3 +29981,485 @@ input {
     box-shadow: none;
   }
 }
+
+/* Desktop Studio command-center pass: hard neutral surfaces, tab accents, tighter spatial reading. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --studio-line: #252b33;
+    --studio-line-soft: #171c22;
+    --studio-line-strong: #39414a;
+    --studio-panel: #090c10;
+    --studio-panel-raised: #0f1318;
+    --studio-panel-low: #05070a;
+    --studio-row: #0c1117;
+    --studio-row-alt: #090d12;
+    --studio-row-hot: #151b22;
+    --studio-text: #e4e8ed;
+    --studio-muted: #9aa4af;
+    --studio-dim: #717b86;
+    --surface-accent: #9aa3ad;
+    grid-template-columns: clamp(300px, 21vw, 340px) minmax(640px, 1fr) clamp(304px, 22vw, 360px);
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="workbench"] {
+    --surface-accent: #9aa3ad;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] {
+    --surface-accent: #aa8d9b;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="stage"] {
+    --surface-accent: #9a9b88;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="evidence"] {
+    --surface-accent: #8f98b8;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="build"] {
+    --surface-accent: #b08d7e;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="debug"] {
+    --surface-accent: #9b8db3;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="modules"] {
+    --surface-accent: #929a93;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="character"] {
+    --surface-accent: #9f9490;
+  }
+
+  .app-shell.mode-studio .pane {
+    background: var(--studio-panel-low);
+    border-color: #020305;
+    box-shadow:
+      inset -1px 0 0 var(--studio-line),
+      inset 1px 0 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .app-shell.mode-studio .pane-right {
+    background: var(--studio-panel-low);
+    box-shadow:
+      inset 1px 0 0 var(--studio-line),
+      inset -1px 0 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .app-shell.mode-studio .stage {
+    border-inline: 0;
+    background: var(--surface-flat);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      inset 16px 0 26px rgba(0, 0, 0, 0.28),
+      inset -16px 0 26px rgba(0, 0, 0, 0.28);
+  }
+
+  .app-shell.mode-studio .stage::before {
+    display: none;
+    content: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome {
+    border-bottom: 1px solid #030406;
+    background: #090c10;
+  }
+
+  .app-shell.mode-studio .section {
+    margin: 0;
+    padding: 9px 10px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .section + .section {
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .section-emphasis,
+  .app-shell.mode-studio .studio-command-center,
+  .app-shell.mode-studio .workbench-command-center,
+  .app-shell.mode-studio .asset-command-center,
+  .app-shell.mode-studio .build-command-center,
+  .app-shell.mode-studio .evidence-command-center,
+  .app-shell.mode-studio .match-setup-panel,
+  .app-shell.mode-studio .studio-health-panel {
+    border: 0;
+    border-bottom: 1px solid var(--studio-line-strong);
+    border-left: 3px solid var(--surface-accent);
+    border-radius: 0;
+    background: var(--studio-panel-raised);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-header {
+    gap: 7px;
+    padding: 8px 9px;
+    border-bottom: 1px solid var(--studio-line-strong);
+    background: #080b0f;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-eyebrow,
+  .app-shell.mode-studio .panel-kicker,
+  .app-shell.mode-studio .studio-command-label {
+    color: var(--surface-accent);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .workspace-brand h1,
+  .app-shell.mode-studio h2,
+  .app-shell.mode-studio h3,
+  .app-shell.mode-studio .section-heading-row strong,
+  .app-shell.mode-studio .command-center-header h2 {
+    color: var(--studio-text);
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio .workspace-summary,
+  .app-shell.mode-studio .studio-stat-grid,
+  .app-shell.mode-studio .health-grid,
+  .app-shell.mode-studio .readiness-strip,
+  .app-shell.mode-studio .command-meter-grid,
+  .app-shell.mode-studio .asset-lane-strip,
+  .app-shell.mode-studio .evidence-lane-strip,
+  .app-shell.mode-studio .workbench-lane-strip,
+  .app-shell.mode-studio .asset-flow-strip,
+  .app-shell.mode-studio .triage-grid,
+  .app-shell.mode-studio .stage-status-grid {
+    gap: 0;
+    border-top: 1px solid var(--studio-line);
+    border-left: 1px solid var(--studio-line);
+    background: var(--studio-panel-low);
+  }
+
+  .app-shell.mode-studio .workspace-summary span,
+  .app-shell.mode-studio .studio-stat,
+  .app-shell.mode-studio .health-grid span,
+  .app-shell.mode-studio .readiness-strip span,
+  .app-shell.mode-studio .command-meter-grid span,
+  .app-shell.mode-studio .asset-lane-strip span,
+  .app-shell.mode-studio .evidence-lane-strip span,
+  .app-shell.mode-studio .workbench-lane-strip span,
+  .app-shell.mode-studio .asset-flow-strip span,
+  .app-shell.mode-studio .triage-grid span,
+  .app-shell.mode-studio .stage-status-metric {
+    min-height: 34px;
+    padding: 6px 7px;
+    border: 0;
+    border-right: 1px solid var(--studio-line);
+    border-bottom: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary span:nth-child(even),
+  .app-shell.mode-studio .studio-stat:nth-child(even),
+  .app-shell.mode-studio .health-grid span:nth-child(even),
+  .app-shell.mode-studio .readiness-strip span:nth-child(even),
+  .app-shell.mode-studio .command-meter-grid span:nth-child(even),
+  .app-shell.mode-studio .asset-lane-strip span:nth-child(even),
+  .app-shell.mode-studio .evidence-lane-strip span:nth-child(even),
+  .app-shell.mode-studio .workbench-lane-strip span:nth-child(even),
+  .app-shell.mode-studio .asset-flow-strip span:nth-child(even),
+  .app-shell.mode-studio .triage-grid span:nth-child(even) {
+    background: var(--studio-row-alt);
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .studio-stat strong,
+  .app-shell.mode-studio .health-grid b,
+  .app-shell.mode-studio .readiness-strip b,
+  .app-shell.mode-studio .command-meter-grid b,
+  .app-shell.mode-studio .asset-lane-strip b,
+  .app-shell.mode-studio .evidence-lane-strip b,
+  .app-shell.mode-studio .workbench-lane-strip b,
+  .app-shell.mode-studio .asset-flow-strip b,
+  .app-shell.mode-studio .triage-grid b,
+  .app-shell.mode-studio .stage-status-metric b {
+    color: var(--studio-text);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.05;
+  }
+
+  .app-shell.mode-studio .workspace-summary small,
+  .app-shell.mode-studio .studio-stat span,
+  .app-shell.mode-studio .studio-stat small,
+  .app-shell.mode-studio .health-grid small,
+  .app-shell.mode-studio .readiness-strip small,
+  .app-shell.mode-studio .command-meter-grid small,
+  .app-shell.mode-studio .asset-lane-strip small,
+  .app-shell.mode-studio .evidence-lane-strip small,
+  .app-shell.mode-studio .workbench-lane-strip small,
+  .app-shell.mode-studio .asset-flow-strip small,
+  .app-shell.mode-studio .triage-grid small,
+  .app-shell.mode-studio .stage-status-metric small {
+    color: var(--studio-dim);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.05;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .tabs,
+  .app-shell.mode-studio .studio-tabs {
+    gap: 0;
+    padding: 0;
+    border: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-panel-low);
+  }
+
+  .app-shell.mode-studio .tab,
+  .app-shell.mode-studio .studio-tabs button {
+    min-height: 32px;
+    padding: 5px 8px;
+    border: 0;
+    border-right: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .tab:hover,
+  .app-shell.mode-studio .studio-tabs button:hover,
+  .app-shell.mode-studio .tab.is-active,
+  .app-shell.mode-studio .studio-tabs button.is-active {
+    background: var(--studio-row-hot);
+    box-shadow: inset 0 -2px 0 var(--surface-accent);
+  }
+
+  .app-shell.mode-studio button,
+  .app-shell.mode-studio .button,
+  .app-shell.mode-studio select,
+  .app-shell.mode-studio input[type="search"],
+  .app-shell.mode-studio input[type="number"] {
+    border-color: var(--studio-line-strong);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.045),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.74);
+  }
+
+  .app-shell.mode-studio button:hover,
+  .app-shell.mode-studio .button:hover,
+  .app-shell.mode-studio button:focus-visible,
+  .app-shell.mode-studio .button:focus-visible {
+    border-color: color-mix(in srgb, var(--surface-accent) 68%, var(--studio-line-strong));
+    background: #141a21;
+  }
+
+  .app-shell.mode-studio .primary-action,
+  .app-shell.mode-studio .workspace-action-grid .primary-action {
+    border-color: color-mix(in srgb, var(--surface-accent) 72%, var(--studio-line-strong));
+    background: #11161c;
+    box-shadow: inset 3px 0 0 var(--surface-accent);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid,
+  .app-shell.mode-studio .action-stack,
+  .app-shell.mode-studio .workbench-action-bar,
+  .app-shell.mode-studio .command-action-column {
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .action-stack button,
+  .app-shell.mode-studio .workbench-action-bar button,
+  .app-shell.mode-studio .command-action-column button,
+  .app-shell.mode-studio .surface-jump-button,
+  .app-shell.mode-studio .studio-mission-node {
+    border-radius: 0;
+    background: var(--studio-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .surface-jump-button:hover,
+  .app-shell.mode-studio .studio-mission-node:hover {
+    background: var(--studio-row-hot);
+  }
+
+  .app-shell.mode-studio .list,
+  .app-shell.mode-studio .compact-list,
+  .app-shell.mode-studio .pipeline-list,
+  .app-shell.mode-studio .compat-list {
+    gap: 0;
+    border: 1px solid var(--studio-line);
+    border-bottom: 0;
+    border-radius: 0;
+    background: var(--studio-panel-low);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .list-item,
+  .app-shell.mode-studio .pipeline-step,
+  .app-shell.mode-studio .compat-row {
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-bottom: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-row);
+    box-shadow: inset 2px 0 0 #3b4651;
+  }
+
+  .app-shell.mode-studio .list-item:nth-child(even),
+  .app-shell.mode-studio .pipeline-step:nth-child(even),
+  .app-shell.mode-studio .compat-row:nth-child(even) {
+    background: var(--studio-row-alt);
+  }
+
+  .app-shell.mode-studio .list-item:hover,
+  .app-shell.mode-studio .pipeline-step:hover,
+  .app-shell.mode-studio .compat-row:hover {
+    background: var(--studio-row-hot);
+  }
+
+  .app-shell.mode-studio .list-title,
+  .app-shell.mode-studio .asset-row-title .list-title {
+    color: var(--studio-text);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio .list-meta,
+  .app-shell.mode-studio .asset-row-detail,
+  .app-shell.mode-studio .asset-row-kind {
+    color: var(--studio-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.14;
+  }
+
+  .app-shell.mode-studio .studio-kv,
+  .app-shell.mode-studio .kv {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    border: 1px solid var(--studio-line);
+    border-bottom: 0;
+    border-radius: 0;
+    background: var(--studio-panel-low);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-kv dt,
+  .app-shell.mode-studio .studio-kv dd,
+  .app-shell.mode-studio .kv dt,
+  .app-shell.mode-studio .kv dd {
+    min-height: 27px;
+    align-content: center;
+    margin: 0;
+    padding: 4px 8px;
+    border: 0;
+    border-right: 1px solid var(--studio-line);
+    border-bottom: 1px solid var(--studio-line);
+    border-radius: 0;
+    background: var(--studio-row);
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .app-shell.mode-studio .studio-kv dt,
+  .app-shell.mode-studio .kv dt {
+    color: var(--studio-dim);
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .studio-kv dd,
+  .app-shell.mode-studio .kv dd {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--studio-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .badge-row {
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio .badge,
+  .app-shell.mode-studio .status-badge {
+    min-height: 18px;
+    padding: 2px 5px;
+    border-color: var(--studio-line-strong);
+    border-radius: 0;
+    background: #070a0e;
+    box-shadow: none;
+    color: var(--studio-muted);
+    font-family: var(--mono);
+    font-size: 9.5px;
+    line-height: 1;
+  }
+
+  .app-shell.mode-studio .badge.ok,
+  .app-shell.mode-studio .status-badge.ok,
+  .app-shell.mode-studio .is-ok b,
+  .app-shell.mode-studio .is-ok strong {
+    color: #a5b39f;
+  }
+
+  .app-shell.mode-studio .badge.warn,
+  .app-shell.mode-studio .status-badge.warn,
+  .app-shell.mode-studio .is-warn b,
+  .app-shell.mode-studio .is-partial b,
+  .app-shell.mode-studio .is-pending b,
+  .app-shell.mode-studio .is-planned b {
+    color: #c2a08e;
+  }
+
+  .app-shell.mode-studio .badge.error,
+  .app-shell.mode-studio .status-badge.error,
+  .app-shell.mode-studio .is-error b,
+  .app-shell.mode-studio .is-blocked b,
+  .app-shell.mode-studio .is-unsupported b {
+    color: #c7837f;
+  }
+
+  .app-shell.mode-studio .stage-status-card,
+  .app-shell.mode-studio .toolbar-group {
+    border-color: var(--studio-line-strong);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .stage-status-card {
+    padding: 7px;
+  }
+
+  .app-shell.mode-studio .stage-toolbar {
+    right: 8px;
+    bottom: 8px;
+    gap: 4px;
+  }
+
+  .app-shell.mode-studio .stage-status {
+    left: 8px;
+    bottom: 8px;
+  }
+}
