@@ -1815,7 +1815,7 @@ export class App {
         </button>
         <button type="button" class="studio-chrome-utility" data-action="compile-project" aria-label="Compile runtime manifest" title="Compile runtime manifest">
           ${tablerIcon("build", "ui-icon")}
-          <span>Compile</span>
+          <span>Build</span>
         </button>
         <button type="button" class="studio-chrome-utility ${leftDockPressed ? "is-active" : ""}" data-action="toggle-left-dock" aria-pressed="${leftDockPressed}" aria-label="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}" title="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}">
           ${tablerIcon("route", "ui-icon")}
