@@ -83,11 +83,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 RuntimeResourceSystem max/control ownership
-  -> authored life/power max resolution, runtime power-delta clamping, and control writes now live in RuntimeResourceSystem
-  -> PlayableMatchRuntime, RuntimeDirectCombatWorld, and RuntimeReversalWorld use the shared boundary instead of local max helpers or inline writes
-  -> focused RuntimeResourceSystem, DirectCombatSystem, ReversalSystem, and PlayableMatchRuntime tests preserve current bounded semantics
-  -> no new controller semantics, exact CNS timing, helper/team/redirect ownership, or score claim
+R2 RuntimeResourceSystem resource-edge ownership
+  -> authored life/power max resolution, runtime power-delta clamping, bounded life deltas, and control writes now live in RuntimeResourceSystem
+  -> PlayableMatchRuntime, RuntimeDirectCombatWorld, RuntimeProjectileCombatWorld, RuntimeReversalWorld, and RuntimeTargetWorld use the shared boundary instead of local max helpers or inline writes
+  -> focused RuntimeResourceSystem, DirectCombatSystem, ProjectileCombatSystem, TargetSystem, ReversalSystem, and PlayableMatchRuntime tests preserve current bounded semantics
+  -> no new controller semantics, exact CNS timing, helper/team/redirect ownership, target/projectile parity, or score claim
 R2 RuntimeSnapshotWorld effect snapshot aggregation
   -> final Explod/Helper/Projectile effect snapshot aggregation moved out of PlayableMatchRuntime
   -> focused RuntimeSnapshotSystem tests cover stable p1/p2 effect ordering and clone isolation

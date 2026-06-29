@@ -17,6 +17,7 @@ import {
   runtimeProjectileWorldBox,
   type RuntimeProjectile,
 } from "./ProjectileSystem";
+import { applyRuntimeControl, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeHitOverrideSlot } from "./types";
 
 export type RuntimeProjectileCombatActor = {
@@ -125,14 +126,14 @@ export class RuntimeProjectileCombatWorld {
       } else {
         defender.runtime.moveType = "H";
       }
-      attacker.runtime.power = Math.min(attacker.runtime.powerMax ?? 3000, attacker.runtime.power + result.powerGain);
+      applyRuntimePowerDelta(attacker.runtime, result.powerGain);
       if (result.kind === "guard") {
         input.recordProjectileContact?.(attacker, defender, projectile, "guard");
         defender.runtime.guardStun = result.stun;
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.ctrl = false;
+        applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
           `${defender.label} guarded ${attacker.label} projectile for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,

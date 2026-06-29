@@ -1,6 +1,6 @@
 import type { BindToTargetControllerOp, TargetControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
-import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
+import { applyRuntimeLifeAdd, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
 
 export type RuntimeTarget = {
@@ -187,16 +187,13 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
       const kill = typed?.kill ?? (firstNumber(findControllerParam(options.controller, "kill")) ?? 1) !== 0;
       const scaledDamage = options.scaleIncomingDamage ?? ((_runtime, damage) => Math.round(damage));
       const delta = value < 0 && !absolute ? -scaledDamage(target.runtime, Math.abs(value)) : Math.round(value);
-      target.runtime.life =
-        delta < 0
-          ? applyRuntimeDamage(target.runtime.life, Math.abs(delta), canRuntimeDamageKill(target.runtime, kill))
-          : Math.max(0, Math.min(target.runtime.lifeMax ?? Number.POSITIVE_INFINITY, target.runtime.life + delta));
+      applyRuntimeLifeAdd(target.runtime, delta, kill);
     } else if (type === "targetpoweradd") {
       const value =
         options.operation?.controllerType === "targetpoweradd"
           ? options.operation.value
           : firstNumber(findControllerParam(options.controller, "value")) ?? 0;
-      target.runtime.power = Math.max(0, Math.min(target.runtime.powerMax ?? 3000, target.runtime.power + value));
+      applyRuntimePowerDelta(target.runtime, value);
     } else if (type === "targetfacing") {
       const value =
         options.operation?.controllerType === "targetfacing"

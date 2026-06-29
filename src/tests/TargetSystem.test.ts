@@ -233,6 +233,7 @@ describe("TargetSystem", () => {
       runtime: {
         life: 120,
         power: 30,
+        powerMax: 60,
         facing: -1,
         vel: { x: 1, y: 2 },
       },
@@ -280,7 +281,7 @@ describe("TargetSystem", () => {
 
     expect(operations).toEqual(["targetlifeadd"]);
     expect(target.runtime.life).toBe(95);
-    expect(target.runtime.power).toBe(70);
+    expect(target.runtime.power).toBe(60);
     expect(target.runtime.vel).toEqual({ x: 1, y: -3 });
     expect(target.runtime.facing).toBe(1);
     expect(target.runtime.pos).toEqual({ x: 136, y: -12 });

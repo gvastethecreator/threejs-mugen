@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeResourceSystem projectile/target ownership
+
+Changed:
+
+- Routed projectile hit/guard attacker power gain through `applyRuntimePowerDelta`.
+- Routed projectile guard control loss through `applyRuntimeControl`.
+- Routed `TargetLifeAdd` through `applyRuntimeLifeAdd`, preserving scaled damage, `kill`, and NoKO behavior.
+- Routed `TargetPowerAdd` through `applyRuntimePowerDelta`.
+- Extended projectile and target-system tests to prove resource max clamps and guard control behavior at those boundaries.
+- Updated R2 roadmap, workplan, issue, progress, and architecture docs to keep the resource ownership claim current.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/TargetSystem.test.ts src/tests/RuntimeResourceSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passes: 4 files / 101 tests.
+- `pnpm test` passes: 73 files / 639 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- `pnpm qa:smoke` passes in started-Vite mode at `http://127.0.0.1:5300`; visual spot-check inspected runtime desktop, command palette, Studio Build, Studio Evidence, and Studio Assets screenshots without obvious overflow or broken layout.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current direct, projectile, target-controller, pause, and reversal power/control/life mutation paths now use the named resource-system helpers where behavior already exists.
+
+Claim blocked:
+
+- This does not add new controller semantics, helper/team/redirect resource ownership, exact CNS resource tick-order, exact target/resource parity, projectile parity, or score movement.
+
 ## 2026-06-29 - RuntimeResourceSystem max/control ownership
 
 Changed:
