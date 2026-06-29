@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio Assets ledger visual pass
+
+Changed:
+
+- Added desktop-only Studio Assets CSS so project asset filters, selected asset detail, replacement flow, dependency sections, source/runtime map, filtered assets, provenance, playtest entries, and attention queue render as dense ledger rows.
+- Kept the change presentation-only: no runtime, parser, trace, export, package, or compatibility behavior changed.
+- Documented the visual QA closeout in the S1 Studio issue and interface docs.
+
+Evidence:
+
+- `pnpm test` passes: 66 files, 596 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:smoke` passes.
+- `git diff --check` passes.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-assets-replacement.png`, and `.scratch/qa/qa-smoke/studio-workbench.png`.
+- `pnpm qa:smoke` diagnostics confirm Studio Assets still exposes 6 asset records, 3 attention records, selected generated asset `nova-boxer`, 10 source/runtime records, 7 dependency graph nodes, replacement candidates, and a successful P1 replacement flow from `nova-boxer` to `mira-volt`.
+
+Claim allowed:
+
+- Studio Assets desktop surface is denser and easier to scan while still binding to real project asset, replacement, dependency, source/runtime, and QA bridge data.
+
+Claim blocked:
+
+- This is visual/product polish only. It does not prove persistent source handles, automatic regeneration, a production asset database, full editor workflows, runtime parity, or score movement.
+
 ## 2026-06-29 - RuntimeGuardWorld ownership extraction
 
 Changed:
