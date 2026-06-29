@@ -26730,3 +26730,190 @@ input {
     text-align: right;
   }
 }
+
+/* Desktop Studio top chrome: instrument strip over marketing/nav chrome. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .studio-chrome {
+    grid-template-columns: 286px minmax(0, 1fr) max-content;
+    min-height: 34px;
+    border-bottom: 1px solid #303842;
+    background: #040609;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      inset 0 -1px 0 #000;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand,
+  .app-shell.mode-studio .studio-chrome-readout,
+  .app-shell.mode-studio .studio-chrome-actions {
+    min-height: 34px;
+    border: 0;
+    border-right: 1px solid #252c34;
+    border-radius: 0;
+    background: #080b0f;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand {
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 7px;
+    padding: 4px 8px;
+    border-left: 1px solid #252c34;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand span,
+  .app-shell.mode-studio .studio-chrome-readout span {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-icon {
+    width: 14px;
+    height: 14px;
+    color: #8aa0b6;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand strong,
+  .app-shell.mode-studio .studio-chrome-brand small,
+  .app-shell.mode-studio .studio-chrome-readout b,
+  .app-shell.mode-studio .studio-chrome-readout small,
+  .app-shell.mode-studio .studio-chrome-actions span {
+    min-width: 0;
+    overflow: hidden;
+    letter-spacing: 0;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand strong,
+  .app-shell.mode-studio .studio-chrome-readout b {
+    color: #eef2f5;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .studio-chrome-brand small,
+  .app-shell.mode-studio .studio-chrome-readout small {
+    color: #8d98a4;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(128px, 1fr);
+    overflow: hidden;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span {
+    display: grid;
+    grid-template-columns: 16px minmax(0, 1fr);
+    grid-template-rows: 14px 12px;
+    min-height: 34px;
+    gap: 0 6px;
+    align-content: center;
+    padding: 4px 8px;
+    border-right: 1px solid #252c34;
+    background: #0a0d11;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .ui-icon {
+    grid-row: 1 / span 2;
+    width: 14px;
+    height: 14px;
+    align-self: center;
+    color: #7d8996;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout b {
+    align-self: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout small {
+    align-self: start;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(1) .ui-icon {
+    color: #87a9c2;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout > span:nth-child(2) .ui-icon {
+    color: #a0a78e;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .is-ok .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .is-ok b {
+    color: #8fb28f;
+  }
+
+  .app-shell.mode-studio .studio-chrome-readout .is-warn .ui-icon,
+  .app-shell.mode-studio .studio-chrome-readout .is-warn b {
+    color: #c59a68;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(50px, max-content);
+    overflow: hidden;
+    border-left: 1px solid #303842;
+    border-right: 1px solid #252c34;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button {
+    display: grid;
+    grid-template-columns: 14px minmax(0, max-content);
+    min-height: 34px;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    border: 0;
+    border-right: 1px solid #252c34;
+    border-radius: 0;
+    background: #0a0d11;
+    color: #d8e0e7;
+    font-size: 10.5px;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions .ui-icon {
+    width: 14px;
+    height: 14px;
+    color: #8b96a2;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button:hover,
+  .app-shell.mode-studio .studio-chrome-actions button:focus-visible {
+    background: #171e26;
+    color: #f3f6f8;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button.is-active {
+    background: #18212b;
+    color: #f2f5f7;
+    box-shadow: inset 0 -2px 0 #83909d;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button[data-action="open-command-palette"] .ui-icon {
+    color: #89afd2;
+  }
+
+  .app-shell.mode-studio .studio-chrome-actions button[data-action="compile-project"] .ui-icon {
+    color: #c59a68;
+  }
+}
