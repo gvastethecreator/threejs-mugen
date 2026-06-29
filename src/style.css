@@ -8130,19 +8130,6 @@ button:active,
   }
 }
 
-@media (min-width: 1161px) {
-
-  .app-shell.mode-studio .stage-status {
-    left: 10px;
-    right: auto;
-    bottom: 10px;
-    display: grid;
-    width: min(420px, calc(100% - 20px));
-    max-width: none;
-  }
-}
-
-
 /* Desktop Studio finish: hard editor bays, neutral states, fewer nested containers. */
 @media (min-width: 1161px) {
   .app-shell.mode-studio {
@@ -8168,17 +8155,6 @@ button:active,
     --info: #849bb4;
     grid-template-columns: minmax(292px, 316px) minmax(620px, 1fr) minmax(340px, 380px);
     background: var(--bg);
-  }
-
-.app-shell.mode-studio .studio-chrome {
-    min-height: 46px;
-    gap: 6px;
-    padding: 4px 6px;
-    border-bottom-color: var(--editor-edge-strong);
-    background: var(--editor-header);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.055),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.82);
   }
 
 .app-shell.mode-studio .studio-chrome-brand strong,
@@ -8265,22 +8241,6 @@ button:active,
   .app-shell.mode-studio .list-meta,
   .app-shell.mode-studio small {
     color: color-mix(in srgb, var(--muted) 84%, var(--text));
-  }
-
-.app-shell.mode-studio .studio-tab-section.is-compact {
-    padding-bottom: 0;
-  }
-
-.app-shell.mode-studio .studio-tab-section.is-compact .section-heading-row {
-    margin-bottom: 7px;
-  }
-
-.app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs {
-    gap: 0;
-    overflow: hidden;
-    border: 1px solid var(--editor-edge);
-    border-radius: 1px;
-    background: var(--editor-panel-pressed);
   }
 
 .app-shell.mode-studio .studio-tab-section.is-compact .tab:hover {
@@ -8454,14 +8414,6 @@ button:active,
     border-right: 0;
   }
 
-.app-shell.mode-studio .console-toolbar {
-    min-height: 28px;
-    border-bottom-color: var(--editor-edge);
-  }
-
-.app-shell.mode-studio .console-list {
-    font-size: 12px;
-  }
 }
 
 /* Final DCC authority: actual EOF rules after all legacy Studio passes. */
@@ -8502,15 +8454,6 @@ button:active,
 
 .app-shell.mode-studio .command-launcher small {
     display: none;
-  }
-
-.app-shell.mode-studio .studio-tab-section.is-compact {
-    padding-top: 7px;
-  }
-
-.app-shell.mode-studio .studio-tab-section.is-compact .section-heading-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
   }
 
 .app-shell.mode-studio .studio-tab-section.is-compact .tab-hint {
@@ -8583,12 +8526,6 @@ button:active,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record {
     min-height: 38px;
-  }
-
-.app-shell.mode-studio .console-title strong {
-    color: color-mix(in srgb, var(--section-accent) 62%, var(--text));
-    font-family: var(--mono);
-    font-size: 12px;
   }
 
 .app-shell.mode-studio .console-title span,
@@ -9459,14 +9396,6 @@ button:active,
     align-items: center;
   }
 
-.app-shell.mode-studio .stage {
-    border-inline-color: #000;
-    background: #020304;
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.026),
-      inset 0 32px 0 rgba(0, 0, 0, 0.18);
-  }
-
 .app-shell.mode-studio .toggle-pill {
     min-height: 30px;
   }
@@ -9485,11 +9414,6 @@ button:active,
     color: color-mix(in srgb, var(--subtle) 88%, var(--muted));
     font-family: var(--mono);
     font-size: 12px;
-  }
-
-.app-shell.mode-studio .console-toolbar {
-    min-height: 26px;
-    padding-block: 3px;
   }
 
 .app-shell.mode-studio .console-title,
@@ -12903,24 +12827,10 @@ button:active,
       inset 0 -1px 0 rgba(0, 0, 0, 0.78) !important;
   }
 
-.app-shell.mode-studio .console {
-    border-top-color: var(--editor-edge-strong);
-    background: #050609;
-  }
 }
 
 /* EOF DCC authority: enforced after legacy Studio cascade. */
-@media (min-width: 1161px) {  .app-shell.mode-studio .studio-tab-section.is-compact .tab {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    min-height: 35px;
-    align-items: center;
-    gap: 8px;
-    padding: 5px 7px;
-    border-width: 0 0 1px;
-    border-right: 0;
-    text-align: left;
-  }
+@media (min-width: 1161px) {
 
 .app-shell.mode-studio .studio-tab-section.is-compact .tab:last-child {
     border-bottom: 0;
@@ -12958,12 +12868,6 @@ button:active,
 
 .app-shell.mode-studio .workbench-action-bar button:last-child {
     border-bottom: 0;
-  }
-
-.app-shell.mode-studio .console-list {
-    gap: 0;
-    overflow: auto;
-    padding: 0 8px 5px;
   }
 
 .app-shell.mode-studio .log-line {
@@ -13062,25 +12966,6 @@ button:active,
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1.05;
-  }
-
-.app-shell.mode-studio .studio-chrome-actions button {
-    display: grid;
-    grid-template-columns: 15px minmax(0, auto);
-    min-width: 0;
-    min-height: 34px;
-    align-content: center;
-    align-items: center;
-    gap: 5px;
-    padding: 4px 8px;
-    border-width: 0 0 0 1px;
-    border-color: var(--editor-edge);
-    border-radius: 0;
-    background: var(--editor-command);
-    color: color-mix(in srgb, var(--text) 88%, var(--muted));
-    font-size: 12px;
-    line-height: 1;
-    box-shadow: none;
   }
 
 .app-shell.mode-studio .studio-chrome-actions button:first-child {
@@ -13292,18 +13177,6 @@ button:active,
     border-color: color-mix(in srgb, var(--pending) 30%, var(--editor-edge));
     background: color-mix(in srgb, var(--pending) 4%, #080a0d);
     color: color-mix(in srgb, var(--pending) 68%, var(--text));
-  }
-
-.app-shell.mode-studio .stage::before {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    border: 1px solid rgba(255, 255, 255, 0.055);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 0, 0, 0.74),
-      inset 0 24px 0 rgba(7, 9, 12, 0.5);
-    content: "";
   }
 
 .app-shell.mode-studio .hud-meter {
@@ -13758,19 +13631,6 @@ button:active,
     background: var(--dcc-row-hover);
   }
 
-.app-shell.mode-studio .studio-mission-step {
-    display: grid;
-    place-items: center;
-    width: 24px;
-    min-height: 20px;
-    justify-self: center;
-    border: 1px solid var(--dcc-line);
-    border-radius: 0;
-    background: var(--dcc-bay-deep);
-    color: color-mix(in srgb, var(--section-accent) 52%, var(--subtle));
-    font-size: 12px;
-  }
-
 .app-shell.mode-studio .studio-mission-main,
   .app-shell.mode-studio .studio-mission-detail {
     min-width: 0;
@@ -14011,21 +13871,6 @@ button:active,
     align-items: end;
   }
 
-.app-shell.mode-studio .stage {
-    background-color: #020304;
-    box-shadow:
-      inset 0 0 0 1px var(--dcc-line-strong),
-      inset 0 22px 0 rgba(5, 7, 10, 0.72),
-      inset 0 -16px 0 rgba(0, 0, 0, 0.48);
-  }
-
-.app-shell.mode-studio .stage::before {
-    border-color: rgba(255, 255, 255, 0.045);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 0, 0, 0.78),
-      inset 0 24px 0 rgba(6, 8, 10, 0.52);
-  }
-
 .app-shell.mode-studio .round-hud-panel,
   .app-shell.mode-studio .stage-status-card,
   .app-shell.mode-studio .toolbar-group {
@@ -14037,28 +13882,9 @@ button:active,
       inset 0 -1px 0 rgba(0, 0, 0, 0.86) !important;
   }
 
-.app-shell.mode-studio .round-hud-panel {
-    min-height: 62px;
-    padding: 6px 8px;
-  }
-
 .app-shell.mode-studio .hud-meter,
   .app-shell.mode-studio .toggle-pill::before {
     border-radius: 0;
-  }
-
-.app-shell.mode-studio .console-toolbar {
-    min-height: 25px;
-    padding: 2px 7px;
-    border-bottom: 1px solid var(--dcc-line);
-    background: var(--dcc-header);
-    box-shadow: none;
-  }
-
-.app-shell.mode-studio .console-list {
-    gap: 0;
-    padding: 0 8px 4px;
-    background: #020304;
   }
 
 .app-shell.mode-studio .log-line {
@@ -14237,37 +14063,6 @@ button:active,
   .app-shell.mode-studio .primary-action:hover {
     border-color: color-mix(in srgb, var(--section-accent) 40%, var(--dcc-line-hard));
     background: var(--dcc-control-hover);
-  }
-
-.app-shell.mode-studio .studio-mission-node {
-    position: relative;
-    grid-template-columns: 32px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    min-height: 52px;
-    padding: 6px 10px 6px 8px;
-    background: var(--dcc-row);
-  }
-
-.app-shell.mode-studio .studio-mission-node::before {
-    display: none !important;
-    content: none !important;
-  }
-
-.app-shell.mode-studio .studio-mission-node::after {
-    position: absolute !important;
-    top: 0 !important;
-    right: auto !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    grid-column: auto !important;
-    grid-row: auto !important;
-    width: 3px !important;
-    height: auto !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: var(--pending);
-    box-shadow: none !important;
-    opacity: 1;
   }
 
 .app-shell.mode-studio .badge,
@@ -14569,28 +14364,6 @@ button:active,
     gap: 7px;
     padding: 4px 7px;
     border-right: 0;
-  }
-
-.app-shell.mode-studio .studio-mission-node {
-    grid-template-columns: 26px minmax(0, 1fr);
-    min-height: 47px;
-    padding: 6px 8px 6px 10px;
-    border-right: 1px solid var(--dcc-line);
-    border-bottom: 1px solid var(--dcc-line);
-    background: var(--dcc-row);
-  }
-
-.app-shell.mode-studio .studio-mission-step {
-    width: 20px;
-    min-width: 20px;
-    height: 20px;
-    align-self: center;
-    border: 1px solid var(--dcc-line);
-    border-radius: 0;
-    background: var(--dcc-field);
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 12px;
   }
 
 .app-shell.mode-studio .studio-mission-main,

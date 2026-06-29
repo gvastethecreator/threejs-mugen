@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio command-center CSS overlap prune
+
+Changed:
+
+- Pruned legacy desktop Studio rules from `src/style.css` now owned by `src/styles/studio-command-center.css`, including old command chrome, compact tab, stage, console, round HUD, and mission-node override fragments.
+- Preserved the focused command-center module as the authority for Studio chrome, mission strip, viewport framing, toolbar/HUD, and console after the legacy base stylesheet.
+- Kept the mission strip status-text contract documented so mission state is not color-only.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,622 scanned rules, 113 duplicate selector keys / 259 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 217 repeated declaration groups, 40 cross-file duplicate selectors, 16 selectors shared with `src/style.css`, and 0 legacy `style.css` rules fully shadowed by later imports.
+
+Claim allowed:
+
+- Studio command-center ownership is cleaner: command-center overlaps against legacy `src/style.css` are reduced to 3 remaining structural selectors, while exact duplicate CSS rules remain zero.
+
+Claim blocked:
+
+- Remaining legacy overlaps are still cascade debt, mostly in shell/foundation selectors. This does not prove new Studio workflows, runtime compatibility, IKEMEN behavior, exported project readiness, or score movement.
+
 ## 2026-06-29 - Required Common1 fall get-hit entry order gate
 
 Changed:

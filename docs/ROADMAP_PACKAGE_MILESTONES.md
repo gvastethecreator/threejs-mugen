@@ -46,12 +46,18 @@ G1 setup-project refresh
 Latest Studio/UI checkpoint:
 
 ```txt
+S1 Studio command-center CSS overlap prune
+  -> command-center desktop overrides for chrome, compact tabs, stage, console, round HUD, and mission-node fragments pruned from legacy src/style.css
+  -> src/styles/studio-command-center.css owns Studio chrome, mission strip, viewport framing, HUD, toolbar, and console
+  -> mission rows expose textual status instead of color-only dots
+  -> pnpm qa:css reports 2,622 rules, 113 duplicate selector keys / 259 instances, 0 exact duplicate rules, 40 cross-file overlaps, 16 selectors shared with src/style.css, 3 command-center selectors still shared with legacy src/style.css, and 0 legacy style.css rules fully shadowed by later imports
+  -> no new Studio workflow or score claim
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
   -> Command Palette, Stage, and Inspector desktop density now live in src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css
   -> fully overridden module-covered rules plus old global Module ledger repair block pruned from legacy style.css
   -> src/styles/studio-system-ledgers.css owns two-line Module rows and 40px system actions
-  -> pnpm qa:css reads CSS in src/main.ts import order and reports 2,645 rules, 121 duplicate selector keys / 277 instances, 0 exact duplicate rules, 57 cross-file overlaps, 35 selectors shared with src/style.css, and 0 legacy style.css rules fully shadowed by later imports
+  -> pnpm qa:css reads CSS in src/main.ts import order and reports 2,622 rules, 113 duplicate selector keys / 259 instances, 0 exact duplicate rules, 40 cross-file overlaps, 16 selectors shared with src/style.css, and 0 legacy style.css rules fully shadowed by later imports
   -> pnpm qa:smoke plus screenshot inspection covered Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> no new Studio workflow or score claim
 S1 Studio command inspector readability and smoke stability
