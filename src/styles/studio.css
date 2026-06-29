@@ -1,0 +1,11 @@
+/* Studio CSS entrypoint.
+   Order matters: base -> legacy bridge -> editor/runtime passes -> desktop authority -> final feature modules. */
+
+@import "./base.css";
+@import "./legacy.css";
+@import "./editor.css";
+@import "./runtime.css";
+@import "./desktop.css";
+@import "./shell.css";
+@import "./command.css";
+@import "./workflows.css";

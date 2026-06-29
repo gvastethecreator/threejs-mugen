@@ -47,10 +47,10 @@ Latest Studio/UI checkpoint:
 
 ```txt
 S1 Studio CSS module split and shadow prune
-  -> legacy/editor/hardening/runtime command-room/shell/command-center/desktop authority CSS is split into smaller import-ordered modules after app-shell and before current focused Studio modules
+  -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
-  -> active command shell ownership lives in src/styles/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,626 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 168 repeated declaration groups, 135 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
+  -> pnpm qa:css reports 2,661 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail
@@ -68,9 +68,9 @@ S1 Studio command-center CSS overlap prune
   -> no new Studio workflow or score claim
 S1 Studio CSS cascade prune
   -> obsolete legacy Evidence/Release Desk blocks removed from src/style.css
-  -> Command Palette, Stage, and Inspector desktop density now live in src/styles/studio-command-palette.css, src/styles/studio-stage.css, and src/styles/studio-inspector.css
+  -> Command Palette, Stage, and Inspector desktop density now live in src/styles/command/studio-command-palette.css, src/styles/workflows/studio-stage.css, and src/styles/workflows/studio-inspector.css
   -> fully overridden module-covered rules plus old global Module ledger repair block pruned from legacy style.css
-  -> src/styles/studio-system-ledgers.css owns two-line Module rows and 40px system actions
+  -> src/styles/workflows/studio-system-ledgers.css owns two-line Module rows and 40px system actions
   -> pnpm qa:css reads CSS in src/main.ts import order and reports 2,622 rules, 115 duplicate selector keys / 264 instances, 0 exact duplicate rules, 40 cross-file overlaps, 16 selectors shared with src/style.css, and 0 legacy style.css rules fully shadowed by later imports
   -> pnpm qa:smoke plus screenshot inspection covered Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> no new Studio workflow or score claim

@@ -1,34 +1,5 @@
 /* Desktop DCC console authority: neutral surfaces, hard bevels, aligned command rails. */
 @media (min-width: 1161px) {
-  .app-shell.mode-studio {
-    --editor-header: #090b0e;
-    --editor-bay: #07090c;
-    --editor-bay-deep: #040507;
-    --editor-panel: #0c0f13;
-    --editor-panel-raised: #13171d;
-    --editor-command: #11151a;
-    --editor-command-hover: #171c22;
-    --editor-row: #0b0e12;
-    --editor-row-hover: #11161b;
-    --editor-panel-pressed: #05070a;
-    --editor-edge: rgba(214, 222, 232, 0.105);
-    --editor-edge-strong: rgba(220, 228, 236, 0.2);
-    --editor-edge-dark: rgba(0, 0, 0, 0.86);
-    --text: #eceff2;
-    --muted: #aab1bb;
-    --subtle: #7f8791;
-    --ok: #8ba081;
-    --warn: #a88a78;
-    --danger: #bd7071;
-    --pending: #8d98a5;
-    --planned: #938aa3;
-    --section-accent: #8ea3b2;
-    --surface-accent: var(--section-accent);
-    --accent: var(--section-accent);
-    grid-template-columns: minmax(298px, 318px) minmax(680px, 1fr) minmax(366px, 396px);
-    grid-template-rows: 44px minmax(0, 1fr) 74px;
-    background: #050608;
-  }
 
 .app-shell.mode-studio .studio-chrome-brand {
     grid-template-columns: 18px minmax(0, 1fr);
@@ -60,15 +31,6 @@
 
 .app-shell.mode-studio .studio-chrome-actions button:first-child {
     border-left: 0;
-  }
-
-.app-shell.mode-studio .pane > .section,
-  .app-shell.mode-studio .pane-right > .section,
-  .app-shell.mode-studio .pane > .workbench-ops-section,
-  .app-shell.mode-studio .pane-right > .workbench-ops-section {
-    padding: 7px 8px;
-    border-bottom: 1px solid var(--editor-edge);
-    background: transparent;
   }
 
 .app-shell.mode-studio .section-heading-row,

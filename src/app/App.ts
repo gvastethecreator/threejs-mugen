@@ -531,6 +531,7 @@ type BuildReadinessBaseRecord = {
 };
 type BuildReadinessRecord = BuildReadinessBaseRecord & StudioActionableFields;
 type StudioTrustLane = "runtime" | "source" | "assets" | "qa" | "build" | "compat" | "architecture";
+type StudioTrustTargetKind = "compile" | "trace" | "package" | "asset" | "source-package" | "gate" | "contract";
 type StudioTrustContractRow = {
   id: string;
   lane: StudioTrustLane;
@@ -540,6 +541,10 @@ type StudioTrustContractRow = {
   detail: string;
   impact: string;
   evidence: string;
+  freshness: string;
+  delta: string;
+  targetKind: StudioTrustTargetKind;
+  targetId: string;
   nextLabel: string;
   nextAction: StudioNextAction;
   blockedBy: string[];
@@ -6636,11 +6641,11 @@ export class App {
         <span class="studio-trust-contract-evidence">
           ${this.statusBadge(row.status)}
           <small>${escapeHtml(row.evidence)}</small>
-          <em>${escapeHtml(blockerLabel)}</em>
+          <em>${escapeHtml(row.delta || blockerLabel)}</em>
         </span>
         <span class="studio-trust-contract-next">
           <b>${escapeHtml(row.nextLabel)}</b>
-          <small>${escapeHtml(row.nextAction.targetId ?? row.id)}</small>
+          <small>${escapeHtml(`${row.freshness} / ${row.targetKind}:${row.targetId}`)}</small>
         </span>
       </button>
     `;
@@ -6650,6 +6655,9 @@ export class App {
     if (row.id === "runtime-manifest" && !this.lastCompiledProject) {
       return 'data-action="compile-project"';
     }
+    if (row.id === "runtime-manifest") {
+      return 'data-evidence-filter="compile"';
+    }
     if (row.id === "package-bundle") {
       if (!this.lastCompiledProject) {
         return 'data-action="compile-project"';
@@ -6657,15 +6665,29 @@ export class App {
       if (!this.lastProjectBundle) {
         return 'data-action="export-package"';
       }
+      return 'data-studio-tab="build"';
     }
     if (row.id === "evidence" && !this.lastTraceArtifact) {
       return 'data-action="export-trace-artifact"';
     }
+    if (row.id === "evidence") {
+      return 'data-evidence-filter="trace" data-trace-frame-index="0"';
+    }
     if (row.id === "asset-validation") {
-      return 'data-studio-tab="assets" data-asset-filter="attention"';
+      const assetAttribute = row.targetId && row.targetId !== row.id ? ` data-studio-asset-id="${escapeHtml(row.targetId)}"` : "";
+      return `data-studio-tab="assets" data-asset-filter="${row.status === "ok" ? "all" : "attention"}"${assetAttribute}`;
     }
     if (row.id === "source-packages" && row.blockedBy.length) {
-      return 'data-action="load-zip"';
+      return `data-action="relink-source" data-source-package-id="${escapeHtml(row.targetId)}"`;
+    }
+    if (row.id === "source-packages") {
+      return 'data-studio-tab="build"';
+    }
+    if (row.id === "compatibility-gates") {
+      return 'data-evidence-filter="gate"';
+    }
+    if (row.id === "architecture-boundaries") {
+      return 'data-evidence-filter="compile"';
     }
     return this.studioNextActionAttribute(row.nextAction);
   }
@@ -8267,6 +8289,8 @@ export class App {
       if (!record) {
         return [];
       }
+      const target = this.getStudioTrustTarget(record, summary);
+      const freshness = this.getStudioTrustFreshness(record, summary);
       return [
         {
           id: record.id,
@@ -8277,12 +8301,97 @@ export class App {
           detail: record.detail,
           impact: record.impact,
           evidence: this.getStudioTrustEvidenceLabel(record, summary),
+          freshness: freshness.label,
+          delta: freshness.delta,
+          targetKind: target.kind,
+          targetId: target.id,
           nextLabel: record.nextAction.label,
           nextAction: record.nextAction,
           blockedBy: record.blockedBy,
         },
       ];
     });
+  }
+
+  private getStudioTrustTarget(record: BuildReadinessRecord, summary: StudioProjectSummary): { kind: StudioTrustTargetKind; id: string } {
+    if (record.id === "runtime-manifest") {
+      return { kind: "compile", id: "compile:runtime-manifest" };
+    }
+    if (record.id === "evidence") {
+      return { kind: "trace", id: this.lastTraceArtifact?.trace.checksum ?? this.storedTraceEvidence[0]?.artifact.trace.checksum ?? "trace:smoke" };
+    }
+    if (record.id === "package-bundle") {
+      return { kind: "package", id: this.lastProjectBundle?.filename ?? "project-package" };
+    }
+    if (record.id === "asset-validation") {
+      const attentionAsset = summary.assets.find((asset) => isAttentionStatus(asset.status)) ?? summary.assets[0];
+      return { kind: "asset", id: attentionAsset?.id ?? "asset-validation" };
+    }
+    if (record.id === "source-packages") {
+      const sourcePackages = this.getProjectSourcePackages();
+      const target = sourcePackages.find((sourcePackage) => sourcePackage.status !== "linked") ?? sourcePackages[0];
+      return { kind: "source-package", id: target?.id ?? "source-packages" };
+    }
+    if (record.id === "compatibility-gates") {
+      const target = summary.gates.find((gate) => isAttentionStatus(gate.status)) ?? summary.gates[0];
+      return { kind: "gate", id: target?.id ?? "compatibility-gates" };
+    }
+    if (record.id === "architecture-boundaries") {
+      return { kind: "contract", id: "test:architecture-boundaries" };
+    }
+    return { kind: "gate", id: record.id };
+  }
+
+  private getStudioTrustFreshness(record: BuildReadinessRecord, summary: StudioProjectSummary): { label: string; delta: string } {
+    if (record.id === "runtime-manifest") {
+      const compiled = this.lastCompiledProject;
+      if (!compiled) {
+        return { label: "missing", delta: "compile required" };
+      }
+      const warnings = compiled.diagnostics.warnings.length;
+      const errors = compiled.diagnostics.errors.length;
+      return { label: errors ? "blocked" : warnings ? "review" : "current", delta: `${errors} errors / ${warnings} warnings` };
+    }
+    if (record.id === "evidence") {
+      const comparison = this.getPersistedTraceComparisons()[0];
+      if (comparison) {
+        return {
+          label: comparison.match === "same" ? "current" : comparison.match === "different" ? "changed" : "session",
+          delta:
+            comparison.match === "same"
+              ? "persisted trace matches current"
+              : `${comparison.match}: frames ${formatSignedDelta(comparison.frameDelta)}, events ${formatSignedDelta(comparison.eventDelta)}, gates ${formatSignedDelta(comparison.gateDelta)}`,
+        };
+      }
+      return this.lastTraceArtifact
+        ? { label: "session", delta: "current trace not persisted" }
+        : { label: this.storedTraceEvidence.length ? "stale" : "missing", delta: this.storedTraceEvidence.length ? "stored trace lacks current run" : "export trace required" };
+    }
+    if (record.id === "package-bundle") {
+      const bundle = this.lastProjectBundle;
+      return bundle
+        ? { label: "snapshot", delta: `${bundle.manifest.files.length} files / ${bundle.manifest.assets.binaryBundled} bundled assets` }
+        : { label: this.lastCompiledProject ? "ready" : "missing", delta: this.lastCompiledProject ? "export package to snapshot files" : "compile required before package" };
+    }
+    if (record.id === "asset-validation") {
+      const attention = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
+      const failed = summary.assets.filter((asset) => asset.status === "fail" || asset.status === "blocked").length;
+      return { label: attention ? "review" : "current", delta: `${attention} attention / ${failed} blocked` };
+    }
+    if (record.id === "source-packages") {
+      const sourcePackages = this.getProjectSourcePackages();
+      const missing = sourcePackages.filter((sourcePackage) => sourcePackage.status !== "linked").length;
+      return { label: missing ? "stale" : "linked", delta: sourcePackages.length ? `${missing} missing / ${sourcePackages.length} source package(s)` : "no source package required" };
+    }
+    if (record.id === "compatibility-gates") {
+      const attention = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+      const blocked = summary.gates.filter((gate) => gate.status === "fail" || gate.status === "blocked" || gate.status === "unsupported").length;
+      return { label: attention ? "review" : "current", delta: `${attention} attention / ${blocked} blocked` };
+    }
+    if (record.id === "architecture-boundaries") {
+      return { label: "guarded", delta: "pnpm check:boundaries" };
+    }
+    return { label: record.state, delta: record.blockedBy.length ? `${record.blockedBy.length} blocker(s)` : "no blockers" };
   }
 
   private getStudioTrustEvidenceLabel(record: BuildReadinessRecord, summary: StudioProjectSummary): string {

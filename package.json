@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "qa:css": "node scripts/audit_css_duplication.cjs",
+    "qa:css:detail": "node scripts/audit_css_duplication.cjs --detail-overlaps --detail-repeated",
     "fix:css": "node scripts/audit_css_duplication.cjs --fix-exact --fix-shadowed --fix-cross-file-shadowed",
     "qa:smoke": "node scripts/qa_smoke.cjs",
     "qa:trace": "node scripts/qa_traces.cjs",

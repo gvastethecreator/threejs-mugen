@@ -28,10 +28,10 @@ Latest Studio/UI truth:
 
 ```txt
 S1 Studio CSS module split and shadow prune
-  -> legacy/editor/hardening/runtime command-room/shell/command-center/desktop authority CSS is split into smaller import-ordered modules after app-shell and before current focused Studio modules
+  -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
-  -> active command shell ownership lives in src/styles/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> qa:css reports 2,626 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 168 repeated declaration groups, 135 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
+  -> qa:css reports 2,661 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
   -> requires qa:smoke and visual inspection; product-surface hygiene only
 S1 Studio command chrome label/grid follow-up
   -> compact command rail compile-project action now says Build
@@ -56,8 +56,8 @@ S1 Studio CSS cascade prune
   -> qa:smoke plus screenshots inspected Workbench, Modules, Modules contracts, and Runtime with no horizontal overflow or broken module rows
   -> product-surface hygiene only; deeper shared primitives and token cleanup remain open
 S1 Studio trust/system-ledger CSS extraction
-  -> Build/Evidence ownership lives in src/styles/studio-trust-ledgers.css
-  -> Modules/Debug ownership lives in src/styles/studio-system-ledgers.css
+  -> Build/Evidence ownership lives in src/styles/workflows/studio-trust-ledgers.css
+  -> Modules/Debug ownership lives in src/styles/workflows/studio-system-ledgers.css
   -> previous qa:css baseline reported 4,035 rules, 372 duplicate selector keys, and 0 exact duplicate rules
   -> qa:smoke plus screenshots inspected studio-modules, studio-debug, studio-build, and studio-evidence
   -> product-surface hygiene only; it does not change the next runtime/port slice

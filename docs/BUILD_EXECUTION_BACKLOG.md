@@ -1,5 +1,54 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS entrypoint and audit detail
+
+Changed:
+
+- Added `src/styles/studio.css` as the single ordered Studio/app CSS entrypoint, preserving the previous CSS import order while reducing `src/main.ts` to the base stylesheet plus the Studio entrypoint.
+- Grouped the CSS files into category folders with category entrypoints for base, legacy, editor, runtime, desktop, shell, command, surfaces, and workflows.
+- Updated `scripts/audit_css_duplication.cjs` so `pnpm qa:css` follows the `src/main.ts` import list plus local CSS `@import` graphs before scanning discovered CSS files, keeping duplication metrics honest after the entrypoint move.
+- Balanced the legacy split CSS modules so old braces no longer cross file boundaries between `studio-legacy-surfaces.css`, `studio-legacy-shell-refresh.css`, `studio-legacy-layout-refresh.css`, `studio-legacy-neutral-pass.css`, `studio-legacy-command-refinement.css`, and `studio-legacy-command-final.css`.
+- Added `pnpm qa:css:detail` for overlap plus repeated-declaration inspection so future primitive extraction can target real repeated CSS groups instead of broad visual rewrites.
+- Updated Studio/UI docs with the current CSS debt numbers and no-score/no-new-workflow claim wording.
+
+Evidence:
+
+- `pnpm fix:css` removes the newly exposed cross-file shadowed rules after category grouping.
+- `pnpm qa:css` passes: 2,661 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 126 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, 0 legacy `src/style.css` rules fully shadowed by later imports, and 0 cross-file rules fully shadowed by later imports.
+- `pnpm qa:css -- --detail-repeated --detail-repeated-limit=20` prints the biggest repeated declaration groups; the largest actionable buckets are hidden states, border-end resets, text truncation, grid resets, status colors, and ledger text atoms.
+- Full closeout gates and visual QA are recorded in the active run output for this cut.
+
+Claim allowed:
+
+- The Studio CSS cascade now has a single import contract in `src/styles/studio.css`, and the CSS audit still scans the real nested import graph with zero exact duplicates, zero same-file duplicate selectors, and zero fully shadowed cross-file rules.
+- Future CSS cleanup has a concrete repeated-declaration report through `pnpm qa:css:detail`.
+
+Claim blocked:
+
+- This is Studio/product-surface hygiene only. It does not add runtime compatibility, IKEMEN behavior, production editing/export workflow, new Studio data flow, or score movement.
+- Repeated declarations and cross-file overlaps remain; the next cleanup should extract shared chrome, truncation, ledger-row, status-cell, and command-action primitives instead of adding more override files.
+
+## 2026-06-29 - Studio Trust Chain targets and deltas
+
+Changed:
+
+- Extended `studioTrustChain` rows with target kind/id, freshness, and delta text so Build and Evidence can expose current/stale/missing/changed state without separate status logic.
+- Tightened Trust Chain row actions: runtime manifest targets compile evidence, trace evidence targets the trace filter and frame `0`, asset validation targets the first attention asset, compatibility gates target gate evidence, and missing source packages target the exact relink source package.
+- Strengthened `pnpm qa:smoke` to verify Trust Chain targets, deltas, button bindings, and Build/Evidence target parity instead of only checking shared row ids.
+
+Evidence:
+
+- `pnpm typecheck` passes.
+- Final full-gate evidence is recorded in the active run output for this cut.
+
+Claim allowed:
+
+- Trust Chain rows now carry real target and delta metadata for the next action, making the shared Build/Evidence contract less generic and easier to QA.
+
+Claim blocked:
+
+- This still does not add a new replay diff UI, package-file drilldown, persistent source handles, or production editing workflow.
+
 ## 2026-06-29 - Studio Build/Evidence Trust Chain
 
 Changed:

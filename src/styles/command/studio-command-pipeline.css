@@ -278,12 +278,6 @@
     box-shadow: inset 3px 0 0 var(--section-accent);
   }
 
-  .app-shell.mode-studio .workspace-action-grid button small {
-    justify-self: start;
-    max-width: 100%;
-    text-align: left;
-  }
-
   .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button,
   .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
     display: grid;

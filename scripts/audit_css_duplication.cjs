@@ -9,13 +9,87 @@ const shouldFixCrossFileShadowed = args.includes("--fix-cross-file-shadowed");
 const shouldFixEmptyAtRules = args.includes("--fix-empty-at-rules");
 const shouldFixLegacyStyleShadowed = args.includes("--fix-legacy-style-shadowed");
 const shouldPrintOverlapDetails = args.includes("--detail-overlaps");
+const shouldPrintRepeatedDetails = args.includes("--detail-repeated");
 const detailLimitArg = args.find((arg) => arg.startsWith("--detail-limit="));
 const detailLimit = Math.max(1, Number.parseInt(detailLimitArg?.slice("--detail-limit=".length) ?? "30", 10) || 30);
+const repeatedLimitArg = args.find((arg) => arg.startsWith("--detail-repeated-limit="));
+const repeatedLimit = Math.max(1, Number.parseInt(repeatedLimitArg?.slice("--detail-repeated-limit=".length) ?? "20", 10) || 20);
 const pruneSelectors = args
   .filter((arg) => arg.startsWith("--prune-selector="))
   .map((arg) => arg.slice("--prune-selector=".length))
   .filter(Boolean);
 const explicitFiles = args.filter((arg) => !arg.startsWith("--"));
+
+function cssImportTargets(file) {
+  const css = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  const imports = [];
+  const importPattern = /@import\s+(?:url\(\s*)?(?:"([^"]+\.css)"|'([^']+\.css)')\s*\)?[^;]*;/g;
+  for (const match of css.matchAll(importPattern)) {
+    const target = match[1] ?? match[2];
+    if (!target || !target.startsWith(".")) {
+      continue;
+    }
+    imports.push(path.resolve(path.dirname(file), target));
+  }
+  return imports;
+}
+
+function collectCssDependencyGraph(file, ordered, seen) {
+  const resolved = path.resolve(file);
+  if (seen.has(resolved) || !fs.existsSync(resolved)) {
+    return;
+  }
+
+  seen.add(resolved);
+  ordered.push(resolved);
+  for (const imported of cssImportTargets(resolved)) {
+    collectCssDependencyGraph(imported, ordered, seen);
+  }
+}
+
+function resolveLocalImport(fromFile, target) {
+  if (!target.startsWith(".")) {
+    return undefined;
+  }
+
+  const base = path.resolve(path.dirname(fromFile), target);
+  const candidates = [
+    base,
+    `${base}.ts`,
+    `${base}.tsx`,
+    `${base}.js`,
+    `${base}.mjs`,
+    `${base}.css`,
+    path.join(base, "index.ts"),
+    path.join(base, "index.tsx"),
+    path.join(base, "index.js"),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+function collectScriptCssDependencies(file, ordered, seenCss, seenScripts) {
+  const resolved = path.resolve(file);
+  if (seenScripts.has(resolved) || !fs.existsSync(resolved)) {
+    return;
+  }
+
+  seenScripts.add(resolved);
+  const source = fs.readFileSync(resolved, "utf8");
+  const importPattern = /import\s+(?:[^'";]+?\s+from\s+)?["']([^"']+)["'];/g;
+  for (const match of source.matchAll(importPattern)) {
+    const target = resolveLocalImport(resolved, match[1]);
+    if (!target) {
+      continue;
+    }
+    if (target.endsWith(".css")) {
+      collectCssDependencyGraph(target, ordered, seenCss);
+      continue;
+    }
+    if (/\.(?:tsx?|mjs|js)$/.test(target)) {
+      collectScriptCssDependencies(target, ordered, seenCss, seenScripts);
+    }
+  }
+}
 
 function defaultCssFiles() {
   const discovered = [path.join(repoRoot, "src", "style.css")];
@@ -29,25 +103,13 @@ function defaultCssFiles() {
   }
 
   const mainPath = path.join(repoRoot, "src", "main.ts");
-  if (!fs.existsSync(mainPath)) {
-    return discovered;
-  }
-
-  const imported = [];
-  const mainSource = fs.readFileSync(mainPath, "utf8");
-  const importPattern = /import\s+["'](.+?\.css)["'];/g;
-  for (const match of mainSource.matchAll(importPattern)) {
-    imported.push(path.resolve(path.dirname(mainPath), match[1]));
-  }
-
   const ordered = [];
   const seen = new Set();
-  for (const file of imported.concat(discovered)) {
-    if (seen.has(file)) {
-      continue;
-    }
-    seen.add(file);
-    ordered.push(file);
+  if (fs.existsSync(mainPath)) {
+    collectScriptCssDependencies(mainPath, ordered, seen, new Set());
+  }
+  for (const file of discovered) {
+    collectCssDependencyGraph(file, ordered, seen);
   }
   return ordered;
 }
@@ -679,6 +741,37 @@ function formatOverlapEntry(selector, fileMap) {
   return `  ${fileList} :: ${selector}`;
 }
 
+function collectRepeatedDeclarationDetails(summaryMap) {
+  const groups = new Map();
+
+  for (const [file, summary] of summaryMap) {
+    for (const rule of summary.rules) {
+      if (!rule.declarations) {
+        continue;
+      }
+      groups.set(rule.declarations, [
+        ...(groups.get(rule.declarations) ?? []),
+        {
+          file,
+          line: rule.line,
+          selector: rule.context ? `${rule.context} || ${rule.selector}` : rule.selector,
+        },
+      ]);
+    }
+  }
+
+  return [...groups.entries()]
+    .filter(([, rules]) => rules.length > 1)
+    .sort((a, b) => b[1].length - a[1].length || b[0].length - a[0].length);
+}
+
+function truncateText(input, maxLength) {
+  if (input.length <= maxLength) {
+    return input;
+  }
+  return `${input.slice(0, Math.max(0, maxLength - 3))}...`;
+}
+
 for (const [file, summary] of currentSummaries) {
   const rel = path.relative(repoRoot, file);
   console.log(`${rel}`);
@@ -722,6 +815,17 @@ if (shouldPrintOverlapDetails) {
     console.log(`src\\style.css overlap details first ${Math.min(detailLimit, crossFileOverlaps.legacyGroups.length)} of ${crossFileOverlaps.legacyGroups.length}`);
     for (const [selector, fileMap] of crossFileOverlaps.legacyGroups.slice(0, detailLimit)) {
       console.log(formatOverlapEntry(selector, fileMap));
+    }
+  }
+}
+
+if (shouldPrintRepeatedDetails) {
+  const repeatedDetails = collectRepeatedDeclarationDetails(currentSummaries);
+  console.log(`repeated declaration details first ${Math.min(repeatedLimit, repeatedDetails.length)} of ${repeatedDetails.length}`);
+  for (const [declarations, rules] of repeatedDetails.slice(0, repeatedLimit)) {
+    console.log(`  ${rules.length}x :: ${truncateText(declarations, 180)}`);
+    for (const rule of rules.slice(0, 5)) {
+      console.log(`    ${fileSummaryLabel(rule.file)}:${rule.line} :: ${truncateText(rule.selector, 160)}`);
     }
   }
 }

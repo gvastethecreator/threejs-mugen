@@ -112,12 +112,6 @@
   grid-template-rows: 48px minmax(0, 1fr) var(--console-reserved-height);
 }
 
-.app-shell.mode-studio .studio-chrome {
-  min-height: 48px;
-  grid-template-columns: minmax(214px, 0.5fr) minmax(0, 1.5fr) auto;
-  padding: 4px 8px;
-}
-
 .app-shell.mode-studio .studio-chrome-actions button,
 .app-shell.mode-studio .toolbar-group select,
 .app-shell.mode-studio .toggle-pill,
@@ -561,10 +555,6 @@
     min-height: min(420px, 54vh);
   }
 
-.app-shell.mode-studio .round-hud {
-    top: 58px;
-  }
-
 .app-shell.mode-studio .toolbar-group {
     width: 100%;
   }
@@ -603,10 +593,6 @@
     width: 100%;
     min-width: 0;
     max-width: none;
-  }
-
-.app-shell.mode-studio .studio-chrome {
-    order: 0;
   }
 
 .app-shell.mode-studio .stage {

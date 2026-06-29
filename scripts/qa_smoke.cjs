@@ -558,8 +558,19 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       bodyHasTrustChain: document.body.innerText.includes("Build Trust Chain"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
+      trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
+      trustChainDeltas: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.freshness}:${row.delta}`) ?? [],
       trustChainNextActions: bridge?.studioTrustChain?.map((row) => row.nextLabel).filter(Boolean) ?? [],
       trustChainBlocked: bridge?.studioTrustChain?.filter((row) => row.state === "blocked").map((row) => row.id) ?? [],
+      trustChainButtonBindings: [...document.querySelectorAll(".studio-trust-contract-row")].map((row) => ({
+        action: row.dataset.action,
+        studioTab: row.dataset.studioTab,
+        evidenceFilter: row.dataset.evidenceFilter,
+        assetFilter: row.dataset.assetFilter,
+        traceFrameIndex: row.dataset.traceFrameIndex,
+        sourcePackageId: row.dataset.sourcePackageId,
+        studioAssetId: row.dataset.studioAssetId,
+      })),
       bodyHasArchitectureBoundaries: document.body.innerText.includes("Architecture boundaries") || document.body.innerText.includes("Architecture Boundaries"),
       compiledProject: Boolean(bridge?.compiledProject),
       projectBundle: bridge?.projectBundle,
@@ -972,8 +983,19 @@ async function captureStudioEvidence(page, outDir) {
       bodyHasTrustChain: document.body.innerText.includes("Evidence Trust Chain"),
       trustChainRows: document.querySelectorAll(".studio-trust-contract-row").length,
       trustChainIds: bridge?.studioTrustChain?.map((row) => row.id) ?? [],
+      trustChainTargets: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.targetKind}:${row.targetId}`) ?? [],
+      trustChainDeltas: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.freshness}:${row.delta}`) ?? [],
       trustChainNextActions: bridge?.studioTrustChain?.map((row) => row.nextLabel).filter(Boolean) ?? [],
       trustChainBlocked: bridge?.studioTrustChain?.filter((row) => row.state === "blocked").map((row) => row.id) ?? [],
+      trustChainButtonBindings: [...document.querySelectorAll(".studio-trust-contract-row")].map((row) => ({
+        action: row.dataset.action,
+        studioTab: row.dataset.studioTab,
+        evidenceFilter: row.dataset.evidenceFilter,
+        assetFilter: row.dataset.assetFilter,
+        traceFrameIndex: row.dataset.traceFrameIndex,
+        sourcePackageId: row.dataset.sourcePackageId,
+        studioAssetId: row.dataset.studioAssetId,
+      })),
       bodyHasHistory: document.body.innerText.includes("Session Trace History"),
       bodyHasPersistedHistory: document.body.innerText.includes("Persisted Evidence History"),
       bodyHasPersistedComparison: document.body.innerText.includes("Comparison:"),
@@ -1523,9 +1545,27 @@ function assertSmoke(diagnostics) {
   ];
   const hasExpectedTrustChain = (check) =>
     expectedTrustChainIds.every((id) => check.trustChainIds?.includes(id)) &&
+    expectedTrustChainIds.every((id) => check.trustChainTargets?.some((target) => target.startsWith(`${id}:`))) &&
+    expectedTrustChainIds.every((id) => check.trustChainDeltas?.some((delta) => delta.startsWith(`${id}:`) && !delta.endsWith(":"))) &&
     (check.trustChainNextActions?.length ?? 0) >= expectedTrustChainIds.length;
   if (!studioBuild.bodyHasTrustChain || studioBuild.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioBuild)) {
-    failures.push("studio-build: shared Trust Chain rows were missing or not bound to Build Readiness next actions");
+    failures.push("studio-build: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions");
+  }
+  const trustBindingAt = (check, id) => {
+    const index = check.trustChainIds?.indexOf(id) ?? -1;
+    return index >= 0 ? check.trustChainButtonBindings?.[index] : undefined;
+  };
+  if (trustBindingAt(studioBuild, "runtime-manifest")?.evidenceFilter !== "compile") {
+    failures.push("studio-build: runtime manifest Trust Chain row did not target compile evidence");
+  }
+  if (trustBindingAt(studioBuild, "evidence")?.evidenceFilter !== "trace" || trustBindingAt(studioBuild, "evidence")?.traceFrameIndex !== "0") {
+    failures.push("studio-build: trace Trust Chain row did not target trace evidence frame 0");
+  }
+  if (trustBindingAt(studioBuild, "asset-validation")?.assetFilter !== "attention") {
+    failures.push("studio-build: asset Trust Chain row did not target asset attention");
+  }
+  if (trustBindingAt(studioBuild, "compatibility-gates")?.evidenceFilter !== "gate") {
+    failures.push("studio-build: compatibility Trust Chain row did not target gate evidence");
   }
   if (!studioBuild.compiledProject) {
     failures.push("studio-build: compiledProject missing after compile action");
@@ -1726,10 +1766,13 @@ function assertSmoke(diagnostics) {
     failures.push("studio-evidence: Evidence surface did not render");
   }
   if (!studioEvidence.bodyHasTrustChain || studioEvidence.trustChainRows < expectedTrustChainIds.length || !hasExpectedTrustChain(studioEvidence)) {
-    failures.push("studio-evidence: shared Trust Chain rows were missing or not bound to Build Readiness next actions");
+    failures.push("studio-evidence: shared Trust Chain rows were missing targets, deltas, or Build Readiness next actions");
   }
   if ((studioBuild.trustChainIds ?? []).join("|") !== (studioEvidence.trustChainIds ?? []).join("|")) {
     failures.push("studio-evidence: Trust Chain ids drifted from Studio Build");
+  }
+  if ((studioBuild.trustChainTargets ?? []).join("|") !== (studioEvidence.trustChainTargets ?? []).join("|")) {
+    failures.push("studio-evidence: Trust Chain targets drifted from Studio Build");
   }
   if (!studioEvidence.hasArchitectureGateRecord || !studioEvidence.hasArchitectureEvidenceRecord || studioEvidence.architectureEvidenceStatus !== "ok") {
     failures.push("studio-evidence: architecture boundary gate/evidence records were not exposed through the Evidence Browser bridge");
@@ -1984,6 +2027,8 @@ function summarizeDiagnostics(diagnostics) {
       bodyHasArchitectureBoundaries: diagnostics.checks.studioBuild.bodyHasArchitectureBoundaries,
       trustChainRows: diagnostics.checks.studioBuild.trustChainRows,
       trustChainIds: diagnostics.checks.studioBuild.trustChainIds,
+      trustChainTargets: diagnostics.checks.studioBuild.trustChainTargets,
+      trustChainDeltas: diagnostics.checks.studioBuild.trustChainDeltas,
       trustChainBlocked: diagnostics.checks.studioBuild.trustChainBlocked,
     },
     studioModules: {
@@ -2067,6 +2112,8 @@ function summarizeDiagnostics(diagnostics) {
       architectureEvidenceStatus: diagnostics.checks.studioEvidence.architectureEvidenceStatus,
       trustChainRows: diagnostics.checks.studioEvidence.trustChainRows,
       trustChainIds: diagnostics.checks.studioEvidence.trustChainIds,
+      trustChainTargets: diagnostics.checks.studioEvidence.trustChainTargets,
+      trustChainDeltas: diagnostics.checks.studioEvidence.trustChainDeltas,
       trustChainBlocked: diagnostics.checks.studioEvidence.trustChainBlocked,
     },
     studioDebug: {
