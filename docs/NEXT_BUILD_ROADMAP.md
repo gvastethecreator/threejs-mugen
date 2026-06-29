@@ -27,6 +27,11 @@ G1 setup-project refresh
 Latest Studio/UI truth:
 
 ```txt
+S1 Studio chrome CSS containment
+  -> duplicate desktop command-chrome correction block removed and merged into the main desktop command-desk block
+  -> qa:smoke confirms Workbench desktop/tablet have no horizontal overflow and Build/Compile action remains executable
+  -> static detector still reports repeated P2/P3 interface patterns, so deeper CSS primitive extraction remains open
+  -> does not change the next runtime/port slice
 S1 Studio command inspector readability and smoke stability
   -> compact Studio command/readability pass closed with qa:smoke, screenshots, tests, typecheck, build, and diff-check
   -> keeps Studio more usable for future workbench/build/evidence flows

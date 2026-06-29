@@ -1730,68 +1730,79 @@ export class App {
       return "";
     }
     const summary = this.getStudioProjectSummary();
-    const activeTab = STUDIO_TABS.find((tab) => tab.id === this.studioTab);
-    const activeStatus = this.getStudioTabStatus(this.studioTab);
-    const gateIssues = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
     const p1 = this.findFighter(this.selectedP1);
     const p2 = this.findFighter(this.selectedP2);
     const stage = this.findStage(this.selectedStageId);
-    const buildLabel = this.lastCompiledProject ? "build ready" : "manifest pending";
+    const runtimeLabel = this.snapshot.playing ? "Live" : "Paused";
+    const buildLabel = this.lastCompiledProject ? "Manifest ready" : "Manifest pending";
     const leftDockPressed = !this.studioFocusMode && this.studioLeftDockOpen;
     const rightDockPressed = !this.studioFocusMode && this.studioRightDockOpen;
     return `
       <div class="studio-chrome-brand">
-        ${tablerIcon("studio", "ui-icon studio-chrome-icon")}
-        <span>
-          <strong>${escapeHtml(activeTab?.label ?? "Studio")}</strong>
-          <small>${escapeHtml(activeStatus.label)}</small>
+        <span class="studio-chrome-brand-mark">${tablerIcon("studio", "ui-icon studio-chrome-icon")}</span>
+        <span class="studio-chrome-title">
+          <strong>Studio Workbench</strong>
+          <small>MUGEN / Ikemen Workbench</small>
         </span>
       </div>
       <div class="studio-chrome-readout" aria-label="Active studio context">
-        <span>
-          ${tablerIcon("match", "ui-icon")}
-          <b>${escapeHtml(p1?.displayName ?? "P1")}</b>
-          <small>vs ${escapeHtml(p2?.displayName ?? "CPU")}</small>
+        <span class="studio-chrome-field studio-chrome-matchup">
+          <small class="studio-chrome-kicker">Matchup</small>
+          <span class="studio-chrome-value">
+            <i class="studio-chrome-dot is-p1" aria-hidden="true"></i>
+            <b>${escapeHtml(p1?.displayName ?? "P1")}</b>
+            <em>vs</em>
+            <i class="studio-chrome-dot is-p2" aria-hidden="true"></i>
+            <b>${escapeHtml(p2?.displayName ?? "CPU")}</b>
+          </span>
         </span>
-        <span>
-          ${tablerIcon("stage", "ui-icon")}
-          <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
-          <small>${summary.stats.stages} stages</small>
+        <span class="studio-chrome-field">
+          <small class="studio-chrome-kicker">Stage</small>
+          <span class="studio-chrome-value">
+            ${tablerIcon("stage", "ui-icon")}
+            <b>${escapeHtml(stage?.displayName ?? "Stage")}</b>
+            <em>${summary.stats.stages} stages</em>
+          </span>
         </span>
-        <span class="${gateIssues ? "is-warn" : "is-ok"}">
-          ${tablerIcon(gateIssues ? "alert" : "check", "ui-icon")}
-          <b>${summary.gates.length - gateIssues}/${summary.gates.length}</b>
-          <small>gates</small>
+        <span class="studio-chrome-field ${this.snapshot.playing ? "is-ok" : "is-warn"}">
+          <small class="studio-chrome-kicker">Runtime</small>
+          <span class="studio-chrome-value">
+            <i class="studio-chrome-dot ${this.snapshot.playing ? "is-live" : "is-paused"}" aria-hidden="true"></i>
+            <b>${escapeHtml(runtimeLabel)}</b>
+          </span>
         </span>
-        <span class="${this.lastCompiledProject ? "is-ok" : "is-warn"}">
-          ${tablerIcon("build", "ui-icon")}
-          <b>${escapeHtml(buildLabel)}</b>
-          <small>${summary.stats.generatedAtlases} atlases</small>
+        <span class="studio-chrome-field ${this.lastCompiledProject ? "is-ok" : "is-warn"}">
+          <small class="studio-chrome-kicker">Build</small>
+          <span class="studio-chrome-value">
+            ${tablerIcon("build", "ui-icon")}
+            <b>${escapeHtml(buildLabel)}</b>
+            <em>${summary.stats.generatedAtlases} atlas${summary.stats.generatedAtlases === 1 ? "" : "es"}</em>
+          </span>
         </span>
       </div>
       <div class="studio-chrome-actions" aria-label="Studio command shortcuts">
-        <button type="button" data-action="open-command-palette" aria-label="Open command palette">
-          ${tablerIcon("search", "ui-icon")}
-          <span>Command</span>
+        <button type="button" class="studio-chrome-command" data-action="open-command-palette" aria-label="Open command palette">
+          <span class="studio-chrome-command-prefix" aria-hidden="true">&gt;_</span>
+          <span>Command Palette</span>
         </button>
-        <button type="button" data-mode="match" aria-label="Open playable runtime">
-          ${tablerIcon("match", "ui-icon")}
-          <span>Playtest</span>
+        <button type="button" class="studio-chrome-playtest" data-mode="match" aria-label="Open playable runtime">
+          ${tablerIcon("play", "ui-icon")}
+          <span>Playtest (F5)</span>
         </button>
-        <button type="button" data-action="compile-project" aria-label="Compile runtime manifest">
+        <button type="button" class="studio-chrome-utility" data-action="compile-project" aria-label="Compile runtime manifest" title="Compile runtime manifest">
           ${tablerIcon("build", "ui-icon")}
           <span>Compile</span>
         </button>
-        <button type="button" class="${leftDockPressed ? "is-active" : ""}" data-action="toggle-left-dock" aria-pressed="${leftDockPressed}" aria-label="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}" title="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}">
+        <button type="button" class="studio-chrome-utility ${leftDockPressed ? "is-active" : ""}" data-action="toggle-left-dock" aria-pressed="${leftDockPressed}" aria-label="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}" title="${leftDockPressed ? "Hide navigation dock" : "Show navigation dock"}">
           ${tablerIcon("route", "ui-icon")}
           <span>Nav</span>
         </button>
-        <button type="button" class="${rightDockPressed ? "is-active" : ""}" data-action="toggle-right-dock" aria-pressed="${rightDockPressed}" aria-label="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}" title="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}">
+        <button type="button" class="studio-chrome-utility ${rightDockPressed ? "is-active" : ""}" data-action="toggle-right-dock" aria-pressed="${rightDockPressed}" aria-label="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}" title="${rightDockPressed ? "Hide inspector dock" : "Show inspector dock"}">
           ${tablerIcon("data", "ui-icon")}
           <span>Inspect</span>
         </button>
-        <button type="button" class="${this.studioFocusMode ? "is-active" : ""}" data-action="toggle-focus-mode" aria-pressed="${this.studioFocusMode}" aria-label="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}" title="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}">
-          ${tablerIcon("activity", "ui-icon")}
+        <button type="button" class="studio-chrome-utility ${this.studioFocusMode ? "is-active" : ""}" data-action="toggle-focus-mode" aria-pressed="${this.studioFocusMode}" aria-label="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}" title="${this.studioFocusMode ? "Exit viewport focus" : "Focus viewport"}">
+          ${tablerIcon("tools", "ui-icon")}
           <span>Focus</span>
         </button>
       </div>
@@ -2842,6 +2853,10 @@ export class App {
       ].filter((candidate, index, candidates) => candidates.findIndex((item) => item.label === candidate.label) === index);
       return `
         <div class="workspace-actions" aria-label="Studio quick actions">
+          <div class="workspace-actions-head">
+            <span>Project Pipeline</span>
+            <b>${summary.gates.length - issueCount}/${summary.gates.length} Gates</b>
+          </div>
           ${this.renderStudioMissionStrip(summary, primaryGate, issueCount, compiled)}
           <div class="workspace-action-grid">
             ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}

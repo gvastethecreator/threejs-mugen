@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio chrome CSS containment
+
+Changed:
+
+- Merged the duplicate desktop Studio chrome correction block into the main command-desk media block instead of layering another tail-end override over the same selectors.
+- Removed the redundant correction block that hid the Build/Compile, dock, and inspector utility actions during smoke, keeping Compile/Nav/Inspect/Focus visible in the command bar.
+- Updated Studio interface/roadmap docs to record this as CSS containment only, with broader shared chrome/ledger/status primitive extraction still open.
+
+Evidence:
+
+- Static `improve-interfaces` detector output remains 50 findings, including 24 P2 and 26 P3; this confirms systemic CSS/UI debt still exists after the containment fix.
+- `pnpm qa:smoke` passes with Workbench desktop/tablet `overflowX: false`, command palette keyboard Enter executing Build, Studio Build compiling/exporting trace checksum `9c9f205b`, and Runtime desktop/mobile still rendering active player-source hit sparks.
+- Visual inspection completed for `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, and `.scratch/qa/qa-smoke/studio-build.png`.
+- `pnpm test` passes: 72 files, 621 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `git diff --check` passes, with the existing `src/style.css` CRLF warning still reported by Git.
+
+Claim allowed:
+
+- Studio command-desk CSS no longer depends on a duplicate desktop correction block for chrome/readout/action layout, and the critical Build/Compile action remains visible and executable in smoke.
+
+Claim blocked:
+
+- This is CSS containment and smoke repair only. It does not finish the global Studio CSS refactor, create shared UI primitives, prove new Studio editing workflows, change runtime compatibility, or move port scores.
+
 ## 2026-06-29 - RuntimeAssertSpecialWorld ownership extraction
 
 Changed:
@@ -1681,3 +1707,5 @@ These are future horizons, not blockers for the private usable MVP.
 226. Done IKEMEN text-system scanner expansion: `IkemenFeatureScanner` now recognizes IKEMEN-GO text lifecycle signals `RemoveText` and `NumText` from the local compiler/bytecode source map as scanner-only unsupported findings. Focused scanner coverage proves ZSS-style `removeText{}` blocks and `NumText(...)` trigger expressions are counted without creating runtime execution claims. Claim allowed: compatibility reports can classify these IKEMEN text-system features as recognized/unsupported. Claim blocked: no ZSS execution, Lua execution, text rendering, text removal/count semantics, screenpack/lifebar text parity, rollback/netplay, or IKEMEN runtime parity.
 
 227. Done RuntimeSnapshotWorld ownership cut: `RuntimeSnapshotWorld` now owns bounded stage/camera snapshot projection previously inline in `PlayableMatchRuntime`, including `ScreenBound moveCameraX = 0` camera exclusion, all-disabled camera-follow fallback, stage camera offsets, EnvShake camera-shake handoff, and EnvColor stage-flash handoff into `StageSnapshot`. `PlayableMatchRuntime.getSnapshot()` delegates the stage snapshot boundary while actor snapshots, effect snapshots, compatibility sessions, and round snapshots stay on their existing seams. Focused `RuntimeSnapshotSystem` coverage proves camera exclusion/fallback plus shake/envcolor/stage data projection, `MatchWorld` behavior coverage remains green, and `pnpm qa:trace` stays stable at 156/156 artifacts, 138 required and 18 optional. Claim allowed: current stage/camera snapshot projection has a named runtime ownership boundary. Claim blocked: exact stage/motif camera logic, actor snapshot projection, compatibility session projection, renderer parity, screenpack ownership, and full MUGEN/IKEMEN stage-camera parity.
+
+228. Done Studio chrome CSS containment cut: merged the duplicate desktop Studio chrome correction block into the main command-desk media block, removed the redundant override that hid the Build/Compile utility action during smoke, and documented remaining CSS debt as broader primitive extraction rather than a finished cleanup. `pnpm qa:smoke` passes with Workbench desktop/tablet overflow disabled, command palette keyboard Build execution, Studio Build trace checksum `9c9f205b`, and Runtime desktop/mobile hit-spark evidence; visual inspection covered Workbench desktop/tablet and Build screenshots. `pnpm test` passes 72 files / 621 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing large-chunk warning, and `git diff --check` passes with the existing `src/style.css` CRLF warning. Claim allowed: Studio chrome no longer depends on a duplicate desktop correction block and critical command actions remain visible/executable. Claim blocked: no global CSS primitive extraction, no new Studio workflow, no runtime compatibility change, and no score movement.
