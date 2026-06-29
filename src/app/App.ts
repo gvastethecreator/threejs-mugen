@@ -3158,7 +3158,7 @@ export class App {
                 <span class="tab-topline">
                   ${tablerIcon(iconForStudioTab(tab.id), "ui-icon tab-icon")}
                   <span class="tab-label">${escapeHtml(options.compact ? compactLabels[tab.id] : tab.label)}</span>
-                  <span class="tab-dot tab-dot-${status.tone}" aria-hidden="true"></span>
+                  <span class="tab-state tab-state-${status.tone}">${escapeHtml(this.compactTabStatusLabel(status.label, status.tone))}</span>
                 </span>
                 <span class="tab-status">${escapeHtml(status.label)}</span>
                 <span class="tab-hint">${escapeHtml(tab.summary)}</span>
@@ -3232,6 +3232,20 @@ export class App {
       return { label: "packaged", tone: "ok" };
     }
     return this.lastCompiledProject ? { label: "compiled", tone: "ok" } : { label: "compile", tone: "warn" };
+  }
+
+  private compactTabStatusLabel(label: string, tone: "ok" | "warn" | "error" | "neutral"): string {
+    if (tone === "ok") {
+      return "OK";
+    }
+    if (tone === "error") {
+      return "ERR";
+    }
+    if (tone === "warn") {
+      const count = label.match(/\d+/)?.[0];
+      return count ? `${count}!` : "WARN";
+    }
+    return label.length > 4 ? label.slice(0, 4).toUpperCase() : label.toUpperCase();
   }
 
   private renderStudioWorkbenchNavigator(): string {

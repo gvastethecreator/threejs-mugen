@@ -726,7 +726,7 @@
 
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
     display: grid;
-    grid-template-columns: 15px minmax(0, 1fr) 5px;
+    grid-template-columns: 15px minmax(0, 1fr) 34px;
     min-height: 40px;
     min-width: 0;
     align-items: center;
@@ -755,12 +755,41 @@
     display: none;
   }
 
-  .app-shell.mode-studio .studio-tab-section.is-compact .tab-dot {
-    width: 5px;
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state {
+    display: inline-grid;
+    min-width: 30px;
+    max-width: 34px;
     height: 18px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     border: 1px solid var(--desk-edge-strong);
-    border-radius: 0;
+    border-radius: 2px;
+    background: #06080b;
+    color: var(--desk-dim);
+    font-family: var(--mono);
+    font-size: 8.5px;
+    font-weight: 850;
+    line-height: 1;
     box-shadow: none;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-ok {
+    border-color: color-mix(in srgb, var(--desk-ok) 46%, var(--desk-edge-strong));
+    color: var(--desk-ok);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-warn {
+    border-color: color-mix(in srgb, var(--desk-warn) 48%, var(--desk-edge-strong));
+    color: var(--desk-warn);
+  }
+
+  .app-shell.mode-studio .studio-tab-section.is-compact .tab-state-error {
+    border-color: color-mix(in srgb, var(--desk-danger) 52%, var(--desk-edge-strong));
+    color: var(--desk-danger);
   }
 
   .app-shell.mode-studio .stage {

@@ -1009,7 +1009,7 @@ pre,
 .studio-mission-node {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) minmax(34px, auto);
   min-width: 0;
   min-height: 66px;
   gap: 3px 7px;
@@ -1027,6 +1027,7 @@ pre,
 }
 
 .studio-mission-node::after {
+  display: none;
   position: absolute;
   top: 8px;
   right: 8px;
@@ -1120,6 +1121,7 @@ pre,
 .studio-mission-main,
 .studio-mission-main strong,
 .studio-mission-main small,
+.studio-mission-state,
 .studio-mission-detail {
   min-width: 0;
 }
@@ -1144,11 +1146,59 @@ pre,
 }
 
 .studio-mission-main small,
+.studio-mission-state,
 .studio-mission-detail {
   overflow-wrap: anywhere;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.25;
+}
+
+.studio-mission-state {
+  display: inline-grid;
+  align-self: start;
+  justify-self: end;
+  min-width: 34px;
+  max-width: 46px;
+  padding: 2px 5px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--panel-border) 82%, #000);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--surface-flat) 88%, #000);
+  color: var(--subtle);
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.studio-mission-node.is-ok .studio-mission-state {
+  border-color: color-mix(in srgb, var(--ok) 42%, var(--panel-border));
+  color: var(--ok);
+}
+
+.studio-mission-node.is-warn .studio-mission-state,
+.studio-mission-node.is-partial .studio-mission-state {
+  border-color: color-mix(in srgb, var(--warn) 42%, var(--panel-border));
+  color: var(--warn);
+}
+
+.studio-mission-node.status-pending .studio-mission-state,
+.studio-mission-node.status-planned .studio-mission-state,
+.studio-mission-node.status-unknown .studio-mission-state {
+  border-color: color-mix(in srgb, var(--muted) 28%, var(--panel-border));
+  color: color-mix(in srgb, var(--muted) 72%, var(--subtle));
+}
+
+.studio-mission-node.is-error .studio-mission-state,
+.studio-mission-node.is-blocked .studio-mission-state,
+.studio-mission-node.is-unsupported .studio-mission-state {
+  border-color: color-mix(in srgb, var(--danger) 44%, var(--panel-border));
+  color: var(--danger);
 }
 
 .studio-mission-detail {
@@ -2585,31 +2635,6 @@ button.studio-primary-next {
   align-items: center;
   justify-content: space-between;
   gap: 7px;
-}
-
-.tab-dot {
-  width: 7px;
-  height: 7px;
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background: var(--subtle);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.035);
-}
-
-.tab-dot-ok {
-  background: var(--ok);
-}
-
-.tab-dot-warn {
-  background: var(--warn);
-}
-
-.tab-dot-error {
-  background: var(--danger);
-}
-
-.tab-dot-planned {
-  background: var(--warn);
 }
 
 .tab-label,
@@ -6472,7 +6497,6 @@ button.list-item:hover,
   text-overflow: ellipsis;
 }
 
-.tab-dot,
 .mode-dot {
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: none;
@@ -6770,7 +6794,6 @@ button.list-item:hover {
 .badge.ok,
 .is-ok .ui-icon,
 .workbench-route-button.is-ok .route-icon,
-.tab-dot-ok,
 .mode-dot.is-ok {
   color: var(--ok);
   border-color: color-mix(in srgb, var(--ok) 36%, var(--panel-border));
@@ -6780,7 +6803,6 @@ button.list-item:hover {
 .badge.warn,
 .is-warn .ui-icon,
 .workbench-route-button.is-warn .route-icon,
-.tab-dot-warn,
 .mode-dot.is-warn {
   color: var(--warn);
   border-color: color-mix(in srgb, var(--warn) 38%, var(--panel-border));
@@ -6788,8 +6810,7 @@ button.list-item:hover {
 
 .status-badge.error,
 .badge.error,
-.is-error .ui-icon,
-.tab-dot-error {
+.is-error .ui-icon {
   color: var(--danger);
   border-color: color-mix(in srgb, var(--danger) 40%, var(--panel-border));
 }
@@ -7112,7 +7133,6 @@ input {
 }
 
 .mode-dot,
-.tab-dot,
 .command-launcher::after {
   border-radius: 2px;
 }
@@ -8253,9 +8273,7 @@ button:active,
     color: color-mix(in srgb, var(--section-accent) 62%, var(--muted));
   }
 
-.app-shell.mode-studio .tab-dot-warn,
-  .app-shell.mode-studio .mode-dot.is-warn,
-  .app-shell.mode-studio .is-warn .tab-dot,
+.app-shell.mode-studio .mode-dot.is-warn,
   .app-shell.mode-studio .is-warn::after {
     background: var(--warn);
   }
@@ -9268,8 +9286,7 @@ button:active,
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--section-accent) 78%, transparent);
   }
 
-.app-shell.mode-studio .tab-dot,
-  .app-shell.mode-studio .mode-dot {
+.app-shell.mode-studio .mode-dot {
     width: 6px;
     height: 6px;
     border-radius: 1px;
@@ -13065,14 +13082,6 @@ button:active,
     box-shadow: none;
   }
 
-.app-shell.mode-studio .mode-dot.is-ok {
-    background: var(--ok);
-  }
-
-.app-shell.mode-studio .mode-dot.is-warn {
-    background: var(--pending);
-  }
-
 .app-shell.mode-studio .mode-switch button.is-active,
   .app-shell.mode-studio .studio-tab-section.is-compact .tab.is-active {
     background: color-mix(in srgb, var(--section-accent) 8%, var(--editor-row));
@@ -13520,27 +13529,19 @@ button:active,
     border-right: 0;
   }
 
-.app-shell.mode-studio .mode-dot,
-  .app-shell.mode-studio .tab-dot {
+.app-shell.mode-studio .mode-dot {
     width: 5px;
     height: 5px;
     border-radius: 0;
     box-shadow: none;
   }
 
-.app-shell.mode-studio .mode-dot.is-ok,
-  .app-shell.mode-studio .tab-dot-ok {
+.app-shell.mode-studio .mode-dot.is-ok {
     background: var(--ok);
   }
 
-.app-shell.mode-studio .mode-dot.is-warn,
-  .app-shell.mode-studio .tab-dot-warn,
-  .app-shell.mode-studio .tab-dot-neutral {
+.app-shell.mode-studio .mode-dot.is-warn {
     background: var(--pending);
-  }
-
-.app-shell.mode-studio .tab-dot-error {
-    background: var(--danger);
   }
 
 .app-shell.mode-studio .studio-tab-section.is-compact .studio-tabs,

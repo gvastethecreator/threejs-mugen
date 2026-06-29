@@ -117,7 +117,6 @@
   .app-shell.mode-studio .is-partial b,
   .app-shell.mode-studio .is-pending b,
   .app-shell.mode-studio .is-planned b,
-  .app-shell.mode-studio .tab-dot-warn,
   .app-shell.mode-studio .mode-dot.is-warn {
     border-color: color-mix(in srgb, var(--desk-warn) 38%, var(--desk-edge));
     color: var(--desk-warn);
