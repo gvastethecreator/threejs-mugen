@@ -46,6 +46,11 @@ G1 setup-project refresh
 Latest Studio/UI checkpoint:
 
 ```txt
+S1 Studio CSS module split and shadow prune
+  -> legacy/editor/hardening/runtime command-room/desktop authority CSS is split into smaller import-ordered modules after app-shell and before current focused Studio modules
+  -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector rules
+  -> pnpm qa:css reports 2,608 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 143 cross-file overlaps, 0 selectors shared with src/style.css, and 0 fully shadowed legacy style.css rules
+  -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
   -> compile-project action now reads Build in the compact command rail
   -> desktop utility buttons keep visible truncated labels inside fixed grid tracks instead of becoming icon-only

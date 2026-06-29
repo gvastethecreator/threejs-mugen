@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS module split and duplicate-selector prune
+
+Changed:
+
+- Split large legacy/editor/hardening/desktop Studio CSS cascades into smaller import-ordered modules under `src/styles/*`, keeping `src/style.css` as the base/reset file and preserving the existing focused command-center, workbench/assets, trust-ledger, system-ledger, command-palette, stage, and inspector ownership modules.
+- Updated `src/main.ts` CSS imports so the extracted modules keep their cascade order before the later focused Studio modules.
+- Updated `pnpm fix:css` so it removes exact duplicate rules plus fully shadowed same-selector rules through the existing CSS audit script.
+- Updated Studio/UI roadmap docs with the final CSS metrics and no-score/no-new-workflow claim wording.
+
+Evidence:
+
+- `pnpm test` passes: 73 files / 634 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large chunk warning.
+- `pnpm qa:css` passes: 2,608 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, 173 repeated declaration groups, 143 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, and 0 legacy `src/style.css` rules fully shadowed by later imports.
+- `pnpm qa:smoke` passes in started-Vite mode with runtime desktop/mobile, Studio Workbench, Build, Modules, Stage, Assets, Evidence, and Debug screenshots captured.
+- Visual QA inspected `runtime-desktop.png`, `runtime-mobile.png`, `studio-workbench.png`, `studio-build.png`, `studio-evidence.png`, `studio-modules.png`, `studio-stage.png`, and `studio-assets.png`; no obvious broken panels, text overlap, or horizontal overflow appeared from the CSS split.
+
+Claim allowed:
+
+- The Studio CSS cascade no longer has same-file duplicate selector keys or exact duplicate rules in the audited import order, and the previous large legacy/editor/hardening/desktop files are split into smaller named modules.
+- The visible Runtime and Studio surfaces remain smoke-green after the CSS module split.
+
+Claim blocked:
+
+- This is Studio/product-surface hygiene only. It does not add new Studio workflows, production editing/export behavior, runtime compatibility, IKEMEN behavior, or score movement.
+- Cross-file selector overlap and repeated declaration groups remain; the next CSS cleanup should extract shared chrome, ledger-row, status-cell, and command-action primitives rather than add more tail-end override modules.
+
 ## 2026-06-29 - RuntimeSnapshotWorld effect snapshot aggregation
 
 Changed:
