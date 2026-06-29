@@ -102,7 +102,7 @@ Priority:
 - HitDef, guard, HitBy/NotHitBy, partial HitOverride/ReversalDef, exact HitOverride/ReversalDef.
 - Pause/SuperPause, AssertSpecial, Width, SprPriority.
 - PlaySnd/StopSnd, PalFX, AfterImage, EnvShake.
-- Explod/RemoveExplod, Projectile, Helper, DestroySelf.
+- Explod/RemoveExplod, Projectile, Helper, real DestroySelf helper lifecycle.
 
 Done means:
 
@@ -178,7 +178,7 @@ Based on current fixture gap audits, the next controller families should be:
 | High | Exact `HitOverride` / `ReversalDef` | Partial `HitOverride` redirect and partial `ReversalDef` Clsn1 counter support exist; exact slot/guard/priority/custom-state parity remains required for defensive and counter-hit authored behavior. |
 | High | Exact fall/get-hit flow | Partial `FallEnvShake`, `HitFallDamage`, `HitFallSet`, and `HitFallVel` support exists, including synthetic attacker-owned custom get-hit controller-flow gates, defender-owned Common1 stand progression `5000 -> 5001 -> 0`, required synthetic fall `5000 -> 5030 -> 5050`, required synthetic bounded recovery `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 -> 0`, required synthetic recovery input `5050 -> 5210 -> 0`, required synthetic recovery-threshold actor-frame handoff, required synthetic actor-frame tick-order evidence, required synthetic air-recovery velocity, required synthetic ground-recovery selection/velocity, required synthetic too-early recovery-input rejection in `5050`, optional official KFM ground-impact/bounce/lie-down entry `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110`, optional official KFM get-up completion `5110 -> 5120 -> 0`, optional official KFM air recovery-input completion `5050 -> 5210 -> 52 -> 0`, optional official KFM too-early recovery-input rejection in `5050`, optional official KFM ground recovery-input completion `5050 -> 5200 -> 5201 -> 52 -> 0`, optional official KFM ordered threshold evidence from positive `5050` recover time into `5200` with `recoverTime = 0`, and bounded stand/crouch guard-hit `150 -> 151` / `152 -> 153`; next step is exact recovery threshold tables/velocity math beyond the bounded threshold/tick-order/air/ground/reject windows, broader recovery parity, exact guard behavior, exact controller/VM tick-order parity, and exact envshake timing. |
 | Medium | Exact `RemapPal` / ACT application | Partial `RemapPal` telemetry exists; next step is decoded ACT/SFF palette application and renderer material routing. |
-| Medium | `DestroySelf` | Required once helpers become real actors. |
+| Medium | real `DestroySelf` helper lifecycle | Required once helpers become real actors; current runtime accepts `DestroySelf` only as a counted no-op. |
 | Medium | Exact `AttackMulSet` interactions | Partial outgoing damage scaling exists; next step is exact interaction with projectiles, helpers, custom states, and engine tick order. |
 | Later | `ParentVarSet` / `ParentVarAdd` | Requires helper parent/root redirect semantics. |
 

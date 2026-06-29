@@ -216,7 +216,7 @@ describe("StateControllerExecutor", () => {
   });
 
   it("accepts debug clipboard controllers as no-op runtime controllers", () => {
-    for (const type of ["DisplayToClipboard", "AppendToClipboard", "ClearClipboard", "MakeDust"]) {
+    for (const type of ["DisplayToClipboard", "AppendToClipboard", "ClearClipboard", "MakeDust", "DestroySelf"]) {
       const compiled = compileControllerIr(
         controller(type, { text: '"state=%d"', params: "StateNo", pos: "0,0", spacing: "1" }),
       );
@@ -402,6 +402,7 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("RemapPal", { source: "1,1", dest: "2,3" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("ForceFeedback", { time: "8" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("MakeDust", { pos: "0,0", spacing: "1" }), state, (item) => unsupported.push(item));
+    state = executeStateController(controller("DestroySelf", {}), state, (item) => unsupported.push(item));
     state = executeStateController(controller("LifeSet", { value: "777" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("PowerSet", { value: "1234" }), state, (item) => unsupported.push(item));
     state = executeStateController(controller("VarRangeSet", { first: "2", last: "4", value: "9" }), state, (item) =>

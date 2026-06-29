@@ -127,6 +127,7 @@ const runtimeControllers = new Set([
   "appendtoclipboard",
   "clearclipboard",
   "makedust",
+  "destroyself",
   "assertspecial",
   "null",
 ]);

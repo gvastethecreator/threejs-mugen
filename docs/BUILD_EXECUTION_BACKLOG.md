@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-29 - DestroySelf no-op compatibility cut
+
+Changed:
+
+- Added MUGEN `DestroySelf` to the controller support registry as `noop("helper lifecycle no-op")`.
+- Routed `DestroySelf` through state-program runtime-controller dispatch and `StateControllerExecutor` no-op handling.
+- Extended `synthetic-imported-noop.json` to execute `DestroySelf` before the simple `HitDef` route.
+- Added focused compiler/runtime/preset tests for `DestroySelf` no-op support and trace requirements.
+- Updated compatibility docs and roadmap docs to name `DestroySelf` as accepted/countable no-op only.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 209 tests.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+- `synthetic-imported-noop.json` checksum is now `dbe1ee9e`.
+- `pnpm qa:trace` coverage reports 78 controller families.
+
+Claim allowed:
+
+- Imported CNS/Common1 `DestroySelf` controllers are accepted, counted, and visible in no-op compatibility telemetry without mutating runtime state or crashing the route.
+
+Claim blocked:
+
+- Real helper removal, recursive destruction, helper VM interruption, helper/redirect ownership, bound-player/explod cleanup, exact no-op timing, and full MUGEN/IKEMEN helper lifecycle parity are not implemented.
+
 ## 2026-06-29 - Studio CSS cross-file shadow prune
 
 Changed:

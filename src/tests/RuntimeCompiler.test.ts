@@ -131,6 +131,11 @@ time = 20
       level: "noop",
       runtimeLabel: "deprecated dust presentation no-op",
     });
+    expect(isRuntimeExecutableController("DestroySelf")).toBe(true);
+    expect(getControllerSupport("DestroySelf")).toEqual({
+      level: "noop",
+      runtimeLabel: "helper lifecycle no-op",
+    });
     expect(isRuntimeExecutableController("Trans")).toBe(true);
     expect(getControllerSupport("Trans").level).toBe("partial");
     expect(isRuntimeExecutableController("EnvColor")).toBe(true);

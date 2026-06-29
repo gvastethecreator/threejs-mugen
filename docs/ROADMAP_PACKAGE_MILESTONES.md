@@ -217,7 +217,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-air-guard-state.json` actor-frame telemetry
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
-- `synthetic-imported-noop.json` debug clipboard plus `MakeDust` no-op coverage
+- `synthetic-imported-noop.json` debug clipboard plus `MakeDust` / `DestroySelf` no-op coverage
 - `synthetic-imported-variable.json` `VarRandom` variable compatibility
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction
 - `RuntimeRandomSystem` deterministic random ownership extraction

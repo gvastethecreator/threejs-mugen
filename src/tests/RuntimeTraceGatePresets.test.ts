@@ -375,7 +375,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 200, animNo: 200 });
   });
 
-  it("creates a synthetic imported no-op artifact for Null, ForceFeedback, debug clipboard, and MakeDust controllers", () => {
+  it("creates a synthetic imported no-op artifact for Null, ForceFeedback, debug clipboard, MakeDust, and DestroySelf controllers", () => {
     const artifact = createSyntheticImportedNoOpTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -401,6 +401,7 @@ describe("RuntimeTraceGatePresets", () => {
       "AppendToClipboard",
       "ClearClipboard",
       "MakeDust",
+      "DestroySelf",
       "HitDef",
     ]);
     expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef"]);
@@ -410,6 +411,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.AppendToClipboard).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.ClearClipboard).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.MakeDust).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.DestroySelf).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");

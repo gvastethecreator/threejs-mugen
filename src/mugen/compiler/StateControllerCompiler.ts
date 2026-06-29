@@ -86,6 +86,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   appendtoclipboard: noop("debug clipboard no-op"),
   clearclipboard: noop("debug clipboard no-op"),
   makedust: noop("deprecated dust presentation no-op"),
+  destroyself: noop("helper lifecycle no-op"),
   turn: partial("facing"),
   null: noop("true no-op"),
 };
