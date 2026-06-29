@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio CSS module ownership cleanup
+
+Changed:
+
+- Reordered Studio stylesheet imports so `studio-desktop-foundation.css` and `studio-primitives.css` load before command-center, workbench, and assets modules.
+- Merged the final desktop Studio stage, HUD, stage-toolbar, compact-tab, and mission-strip cascade values into `src/styles/studio-command-center.css`, making it the single owner for shell/viewport framing.
+- Removed global shell/stage/mission overrides from `src/styles/studio-workbench.css` and `src/styles/studio-desktop-foundation.css`, leaving those files focused on workbench ledger panels and shared neutral atoms.
+- Kept `src/styles/studio-assets.css` focused on the Assets surface and left broader token/typography cleanup as follow-up debt.
+
+Evidence:
+
+- Focused before/after CSS audit for the five Studio module files reduced duplicate selectors from 19 to 4 and rules from 279 to 265; remaining duplicates are semantic variable scopes, tab-specific token scopes, or reduced-motion repeats rather than competing visual overrides.
+- `pnpm qa:css` passes: 4,033 scanned rules, 409 duplicate selector keys / 1,256 instances, 0 exact duplicate rule groups / 0 exact duplicate instances, and 312 repeated declaration groups.
+- `improve-interfaces` static detector passes with no P1 findings on changed Studio module files; remaining 68 P2/P3 findings are dense-product UI debt such as nowrap metadata, tiny labels, and literal color drift.
+- Playwright visual inspection on `http://localhost:5177/` checked match, Studio Workbench, and Studio Assets at 1440x960 with no page-level horizontal or vertical overflow.
+- `pnpm qa:smoke` passes, including runtime desktop/mobile, Studio Workbench desktop/tablet, command palette a11y, Studio Build, Modules, Assets, Evidence, Debug, IKEMEN scan, Stage, replacement flow, and generated screenshots under `.scratch/qa/qa-smoke/`.
+- `pnpm test` passes: 73 files, 628 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning; built CSS is 725.97 kB before gzip.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Studio desktop shell/stage/HUD/toolbar/compact-tab/mission-strip CSS no longer depends on later Workbench or foundation stylesheet overrides for its final global layout values.
+
+Claim blocked:
+
+- This is CSS ownership cleanup only. It does not finish token consolidation, remove the legacy `src/style.css` selector cascade, solve all dense UI typography warnings, create new Studio workflows, change runtime compatibility, or move port scores.
+
 ## 2026-06-29 - RuntimeSnapshotWorld player actor projection
 
 Changed:
