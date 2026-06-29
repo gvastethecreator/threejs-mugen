@@ -1,0 +1,412 @@
+@media (min-width: 1161px) {
+  .app-shell.mode-studio[data-studio-tab="inspector"] {
+    --inspector-bg: var(--studio-ledge-bg, #05070a);
+    --inspector-panel: var(--studio-ledge-panel, #090d12);
+    --inspector-header: var(--studio-ledge-header, #0d1217);
+    --inspector-row: var(--studio-ledge-row, #0c1116);
+    --inspector-row-alt: var(--studio-ledge-row-alt, #090d11);
+    --inspector-row-hot: #151a20;
+    --inspector-cell: #080c10;
+    --inspector-edge: var(--studio-ledge-edge, #252c34);
+    --inspector-edge-strong: var(--studio-ledge-edge-strong, #39424b);
+    --inspector-text: var(--studio-ledge-text, #eef2f4);
+    --inspector-muted: var(--studio-ledge-muted, #9aa5af);
+    --inspector-dim: var(--studio-ledge-dim, #707b85);
+    --inspector-ok: #8fa386;
+    --inspector-warn: #b68f61;
+    --inspector-danger: #bf6868;
+    --inspector-accent: #8796a2;
+    --section-accent: var(--inspector-accent);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] #left-pane,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .pane-right {
+    gap: 0;
+    padding: 0;
+    background: var(--inspector-bg);
+    scrollbar-gutter: stable;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] #left-pane > .section,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .pane-right > .section {
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge-strong);
+    border-radius: 0;
+    background: var(--inspector-panel);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] #left-pane > .section > h2,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .pane-right > .section > h2,
+  .app-shell.mode-studio[data-studio-tab="inspector"] #left-pane .section-heading-row,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .pane-right .section-heading-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    min-height: 31px;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 9px;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-header);
+    color: var(--inspector-text);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--inspector-accent) 72%, var(--inspector-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] #left-pane > .section > h2,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .pane-right > .section > h2,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .section-heading-row h2 {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--inspector-text);
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1.08;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .panel-kicker,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-meta,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .badge,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .status-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    line-height: 1.08;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-bg);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dt,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dd {
+    min-height: 26px;
+    margin: 0;
+    padding: 5px 8px;
+    border: 0;
+    border-right: 1px solid var(--inspector-edge);
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-row);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dt {
+    color: var(--inspector-muted);
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dd {
+    min-width: 0;
+    overflow: visible;
+    color: var(--inspector-text);
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat-grid,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-strip,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .compact-list,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-bg);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-strip {
+    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item {
+    display: grid;
+    min-width: 0;
+    min-height: 34px;
+    align-items: center;
+    gap: 2px 7px;
+    margin: 0;
+    padding: 6px 8px;
+    border: 0;
+    border-right: 1px solid var(--inspector-edge);
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-row);
+    color: var(--inspector-muted);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item {
+    grid-template-columns: minmax(0, 1fr) max-content;
+    border-right: 0;
+    text-align: left;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item > span {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item:hover,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item:focus-visible,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame.is-active {
+    background: var(--inspector-row-hot);
+    outline: 1px solid color-mix(in srgb, var(--inspector-accent) 44%, var(--inspector-edge-strong));
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item.is-selected {
+    background: var(--inspector-row-hot);
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--inspector-accent) 72%, var(--inspector-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-title,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-meta,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame strong,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame span,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-title,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame strong,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat strong {
+    color: var(--inspector-text);
+    font-size: 11.5px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame span,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame small,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat span {
+    color: var(--inspector-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .badge-row,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-bg);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .badge-row .badge,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls button {
+    min-width: 0;
+    min-height: 28px;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 6px;
+    border: 0;
+    border-right: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-row);
+    color: var(--inspector-muted);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls button:hover,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls button:focus-visible {
+    background: var(--inspector-row-hot);
+    color: var(--inspector-text);
+    outline: 1px solid color-mix(in srgb, var(--inspector-accent) 44%, var(--inspector-edge-strong));
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .empty-state {
+    min-height: 0;
+    margin: 0;
+    padding: 8px 9px;
+    border: 0;
+    border-bottom: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-row);
+    color: var(--inspector-muted);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage {
+    background: var(--inspector-bg);
+    box-shadow:
+      inset 0 0 0 1px var(--inspector-edge-strong),
+      inset 0 74px 0 rgba(255, 255, 255, 0.012),
+      inset 0 -1px 0 #000;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage-canvas {
+    outline: 1px solid var(--inspector-edge-strong);
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud {
+    top: 8px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud-panel.inspector {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+    min-height: 56px;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--inspector-edge-strong);
+    border-radius: 0;
+    background: var(--inspector-header);
+    color: var(--inspector-text);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud-panel.inspector > span,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud-panel.inspector > strong {
+    min-width: 0;
+    height: 100%;
+    align-content: center;
+    padding: 0 10px;
+    overflow: hidden;
+    border-right: 1px solid var(--inspector-edge);
+    font-family: var(--mono);
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud-panel.inspector > span:last-child {
+    border-right: 0;
+    text-align: right;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .round-hud-panel.inspector > strong {
+    min-width: 72px;
+    color: var(--inspector-text);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage-toolbar {
+    border: 1px solid var(--inspector-edge-strong);
+    border-radius: 0;
+    background: var(--inspector-header);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage-toolbar button,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage-toolbar label,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .stage-toolbar select {
+    border-radius: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 3px;
+    margin: 2px 0 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-row-main > .badge-row,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head .badge-row,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    min-width: 0;
+    gap: 3px;
+    margin: 4px 0 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row .badge {
+    min-height: 18px;
+    justify-content: center;
+    padding: 2px 5px;
+    border: 1px solid var(--inspector-edge);
+    border-radius: 0;
+    background: var(--inspector-cell);
+    color: var(--inspector-muted);
+    font-size: 9.5px;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-row-main > .badge-row .badge,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head .badge-row .badge,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-strip .controller-chip {
+    flex: 0 1 auto;
+    max-width: 116px;
+    min-width: 34px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="inspector"] .badge-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls button:nth-child(even) {
+    background: var(--inspector-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat:last-child,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame:last-child,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .badge-row .badge:last-child,
+  .app-shell.mode-studio[data-studio-tab="inspector"] .split-controls button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row .badge:nth-child(even) {
+    background: var(--inspector-row);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row .badge:last-child {
+    border-right: 1px solid var(--inspector-edge);
+  }
+}

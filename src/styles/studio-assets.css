@@ -106,23 +106,30 @@
 
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 0;
     border-bottom: 1px solid var(--studio-ledge-edge);
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button {
-    min-height: 34px;
+    min-width: 0;
+    min-height: 31px;
+    justify-content: start;
+    overflow: hidden;
+    padding: 0 9px;
     border: 0;
-    border-right: 1px solid var(--studio-ledge-edge);
+    border-bottom: 1px solid var(--studio-ledge-edge);
     border-radius: 0;
     background: var(--studio-ledge-action);
     color: var(--studio-ledge-text);
     font-size: 11px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .command-action-column button:last-child {
-    border-right: 0;
+    border-bottom: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .studio-tabs {

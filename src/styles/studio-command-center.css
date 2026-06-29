@@ -436,12 +436,12 @@
 
   .app-shell.mode-studio .studio-mission-node {
     display: grid;
-    grid-template-columns: 42px minmax(0, 1fr) 18px;
-    min-height: 82px;
+    grid-template-columns: 34px minmax(0, 1fr) 12px;
+    min-height: 76px;
     width: 100%;
-    gap: 5px 11px;
+    gap: 5px 8px;
     align-items: start;
-    padding: 10px 12px;
+    padding: 8px 9px;
     border: 0;
     border-bottom: 1px solid var(--command-edge);
     border-radius: 0;
@@ -494,9 +494,9 @@
     grid-column: 1;
     grid-row: 1 / 3;
     display: grid;
-    width: 32px;
-    height: 32px;
-    min-height: 32px;
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
     place-items: center;
     align-self: start;
     border: 1px solid var(--command-edge);
@@ -514,30 +514,40 @@
     display: grid;
     grid-column: 2;
     grid-row: 1;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-auto-flow: row;
     gap: 3px;
     min-width: 0;
   }
 
   .app-shell.mode-studio .studio-mission-main strong {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
+    display: flex;
+    grid-column: 1;
+    grid-row: 1;
     align-items: baseline;
     gap: 7px;
     min-width: 0;
+    overflow: hidden;
     color: var(--command-text);
     font-size: 12px;
     font-weight: 850;
     line-height: 1.1;
+    text-overflow: ellipsis;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .app-shell.mode-studio .studio-mission-main strong em {
+    flex: 0 0 auto;
+    min-width: 19px;
     margin-right: 0;
     color: var(--command-muted);
     font-family: var(--mono);
     font-size: 11px;
     font-style: normal;
     font-weight: 850;
+    text-align: right;
   }
 
   .app-shell.mode-studio .studio-mission-main small,
@@ -553,6 +563,8 @@
   }
 
   .app-shell.mode-studio .studio-mission-main small {
+    grid-column: 1;
+    grid-row: 2;
     margin-top: 0;
   }
 
@@ -562,7 +574,7 @@
     max-width: 100%;
     color: var(--command-dim);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 9.5px;
     justify-self: start;
     text-align: left;
   }
