@@ -79,6 +79,341 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Desktop Command Index: hard-panel launcher with table-grade scanning. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio .command-palette-shell {
+    display: grid;
+    place-items: start center;
+    padding-top: 42px;
+  }
+
+  .app-shell.mode-studio .command-palette-backdrop {
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: none;
+  }
+
+  .app-shell.mode-studio .command-palette-panel {
+    width: min(820px, calc(100vw - 96px));
+    max-height: min(720px, calc(100vh - 84px));
+    overflow: hidden;
+    border: 1px solid #3b444f;
+    border-radius: 0;
+    background: #07090c;
+    box-shadow:
+      0 18px 42px rgba(0, 0, 0, 0.62),
+      inset 0 1px 0 #151b22;
+  }
+
+  .app-shell.mode-studio .command-palette-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px 34px;
+    min-height: 36px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid #303842;
+    background: #0f141a;
+  }
+
+  .app-shell.mode-studio .command-palette-title-block {
+    display: grid;
+    grid-template-columns: 116px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 0 10px;
+    border-right: 1px solid #252c34;
+    box-shadow: inset 3px 0 0 #8797a8;
+  }
+
+  .app-shell.mode-studio .command-palette-header .panel-kicker,
+  .app-shell.mode-studio .command-palette-header h2,
+  .app-shell.mode-studio .command-palette-count,
+  .app-shell.mode-studio .command-palette-close {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .command-palette-header .panel-kicker {
+    color: #8f9ba8;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .command-palette-header h2 {
+    margin: 0;
+    color: #edf1f4;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .command-palette-count,
+  .app-shell.mode-studio .command-palette-close {
+    display: grid;
+    min-height: 36px;
+    align-content: center;
+    justify-content: center;
+    border: 0;
+    border-left: 1px solid #252c34;
+    border-radius: 0;
+    background: #0b0f14;
+    color: #a6b0ba;
+    font-family: var(--mono);
+    font-size: 10px;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .command-palette-close:hover,
+  .app-shell.mode-studio .command-palette-close:focus-visible {
+    background: #171d24;
+    color: #f1f4f6;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .command-palette-search {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    min-height: 39px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #303842;
+    border-radius: 0;
+    background: #080b0f;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .command-palette-search span {
+    display: grid;
+    align-content: center;
+    padding: 0 10px;
+    border-right: 1px solid #252c34;
+    color: #8f9ba8;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .command-palette-search input {
+    height: 38px;
+    min-width: 0;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 0;
+    background: #0b0f14;
+    color: #edf1f4;
+    font-family: var(--mono);
+    font-size: 12px;
+    outline: none;
+  }
+
+  .app-shell.mode-studio .command-palette-search input:focus-visible {
+    background: #10161d;
+    box-shadow: inset 0 0 0 1px #4a5663;
+  }
+
+  .app-shell.mode-studio .command-palette-grid-head {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 104px 86px;
+    min-height: 27px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #303842;
+    background: #0d1116;
+  }
+
+  .app-shell.mode-studio .command-palette-grid-head span {
+    display: grid;
+    min-width: 0;
+    align-content: center;
+    padding: 0 8px;
+    border-right: 1px solid #252c34;
+    color: #8f9ba8;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .command-palette-grid-head span:nth-child(1) {
+    grid-column: 2;
+  }
+
+  .app-shell.mode-studio .command-palette-grid-head span:nth-child(2) {
+    grid-column: 3;
+    justify-content: center;
+  }
+
+  .app-shell.mode-studio .command-palette-grid-head span:nth-child(3) {
+    grid-column: 4;
+    justify-content: center;
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .command-palette-results {
+    display: grid;
+    gap: 0;
+    max-height: calc(min(720px, 100vh - 84px) - 140px);
+    overflow: auto;
+    padding: 0;
+    background: #05070a;
+  }
+
+  .app-shell.mode-studio .command-result {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 104px 86px;
+    min-height: 43px;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #252c34;
+    border-radius: 0;
+    background: #0c1015;
+    color: #dfe5ea;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .command-result::before {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: #6f7f8f;
+    content: "";
+  }
+
+  .app-shell.mode-studio .command-result:nth-child(even) {
+    background: #090d12;
+  }
+
+  .app-shell.mode-studio .command-result.tone-ok::before {
+    background: #7f9a8c;
+  }
+
+  .app-shell.mode-studio .command-result.tone-warn::before,
+  .app-shell.mode-studio .command-result.tone-active::before {
+    background: #a68d72;
+  }
+
+  .app-shell.mode-studio .command-result.tone-error::before {
+    background: #ad7d7d;
+  }
+
+  .app-shell.mode-studio .command-result:hover,
+  .app-shell.mode-studio .command-result:focus-visible,
+  .app-shell.mode-studio .command-result.is-active,
+  .app-shell.mode-studio .command-result[aria-selected="true"] {
+    background: #171d24;
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .command-result-icon,
+  .app-shell.mode-studio .command-result-main,
+  .app-shell.mode-studio .command-result-meta {
+    min-width: 0;
+    padding: 5px 8px;
+    border-right: 1px solid #252c34;
+  }
+
+  .app-shell.mode-studio .command-result-icon {
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    color: #96a2ae;
+  }
+
+  .app-shell.mode-studio .command-result-main {
+    display: grid;
+    align-content: center;
+    gap: 3px;
+  }
+
+  .app-shell.mode-studio .command-result-main strong,
+  .app-shell.mode-studio .command-result-main small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.1;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .command-result-main strong {
+    color: #edf1f4;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio .command-result-main small {
+    color: #9aa5b1;
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .command-result-meta {
+    display: contents;
+  }
+
+  .app-shell.mode-studio .command-result-group,
+  .app-shell.mode-studio .command-result-signal {
+    display: grid;
+    min-width: 0;
+    min-height: 100%;
+    align-content: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 6px;
+    border: 0;
+    border-right: 1px solid #252c34;
+    border-radius: 0;
+    background: transparent;
+    color: #a6b0ba;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0;
+    line-height: 1;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .command-result-signal {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .command-result-signal.signal-ok {
+    color: #86a58d;
+  }
+
+  .app-shell.mode-studio .command-result-signal.signal-warn,
+  .app-shell.mode-studio .command-result-signal.signal-active {
+    color: #b99772;
+  }
+
+  .app-shell.mode-studio .command-result-signal.signal-error {
+    color: #b98282;
+  }
+
+  .app-shell.mode-studio .command-palette-results .empty-state.compact {
+    margin: 0;
+    padding: 16px;
+    border: 0;
+    border-radius: 0;
+    background: #0c1015;
+  }
+}
+
 /* Desktop Release Desk: align Build and Modules as dense command ledgers. */
 @media (min-width: 1161px) {
   .app-shell.mode-studio[data-studio-tab="build"],
