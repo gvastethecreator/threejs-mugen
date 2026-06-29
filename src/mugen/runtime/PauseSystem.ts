@@ -1,6 +1,10 @@
 import type { PauseControllerOp } from "../compiler/ControllerOps";
+import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
+import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import { findControllerParam } from "./StateProgramExecutor";
+import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import type { RuntimeMatchPauseSnapshot } from "./types";
 
 export type RuntimeMatchPause = RuntimeMatchPauseSnapshot & {
@@ -42,6 +46,32 @@ export type RuntimePausedMatchWorldInput<TActor extends RuntimePausedMatchActor>
   applyBindToTarget: (actor: TActor, opponent: TActor) => void;
   clampToStage: (actor: TActor) => void;
   advancePausedPresentation: (actor: TActor, pause: RuntimeMatchPause) => void;
+  tickPause: () => RuntimeMatchPause | undefined;
+};
+
+export type RuntimePausedMatchRuntimeActor = RuntimeEffectLifecycleActor &
+  RuntimeTargetWorldActor & {
+    targetWorld: Pick<RuntimeTargetWorld, "advance" | "applyTargetBindings" | "applyBindToTarget">;
+  };
+
+export type RuntimePausedMatchRuntimeWorldInput<TActor extends RuntimePausedMatchRuntimeActor> = {
+  p1: TActor;
+  p2: TActor;
+  p1Input: Set<string>;
+  p2Input: Set<string>;
+  p2Controlled: boolean;
+  stage: Pick<MugenStageDefinition, "bounds">;
+  actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "clampToStage">;
+  effectLifecycleWorld: Pick<
+    RuntimeEffectLifecycleWorld,
+    "advanceActive" | "advancePresentation" | "advancePausedPresentation"
+  >;
+  currentPause: () => RuntimeMatchPause | undefined;
+  canActorMove: (actorId: string) => boolean;
+  pushCommandBuffer: (actor: TActor, input: Set<string>) => void;
+  handlePlayerInput: (actor: TActor, input: Set<string>, opponent: TActor) => void;
+  handleAi: (actor: TActor, opponent: TActor) => void;
+  advanceFighter: (actor: TActor, opponent: TActor) => void;
   tickPause: () => RuntimeMatchPause | undefined;
 };
 
@@ -133,6 +163,34 @@ export class RuntimePausedMatchWorld {
     }
     input.tickPause();
     return { paused: true, sourceActorId: actor.id, actorMoved, interrupted: false, ticked: true };
+  }
+
+  advanceRuntime<TActor extends RuntimePausedMatchRuntimeActor>(
+    input: RuntimePausedMatchRuntimeWorldInput<TActor>,
+  ): RuntimePausedMatchAdvanceResult {
+    const { actorConstraintWorld, effectLifecycleWorld, stage } = input;
+
+    return this.advance({
+      p1: input.p1,
+      p2: input.p2,
+      p1Input: input.p1Input,
+      p2Input: input.p2Input,
+      p2Controlled: input.p2Controlled,
+      currentPause: input.currentPause,
+      canActorMove: input.canActorMove,
+      pushCommandBuffer: input.pushCommandBuffer,
+      handlePlayerInput: input.handlePlayerInput,
+      handleAi: input.handleAi,
+      advanceFighter: input.advanceFighter,
+      advanceTargetMemory: (actor) => actor.targetWorld.advance(actor),
+      advanceActiveEffects: (actor) => effectLifecycleWorld.advanceActive(actor, stage),
+      advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),
+      applyTargetBindings: (actor, opponent) => actor.targetWorld.applyTargetBindings(actor, [opponent]),
+      applyBindToTarget: (actor, opponent) => actor.targetWorld.applyBindToTarget(actor, [opponent]),
+      clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage),
+      advancePausedPresentation: (actor, pause) => effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage),
+      tickPause: input.tickPause,
+    });
   }
 }
 

@@ -453,12 +453,15 @@ export class PlayableMatchRuntime {
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
-    this.pausedMatchWorld.advance({
+    this.pausedMatchWorld.advanceRuntime({
       p1: this.p1,
       p2: this.p2,
       p1Input,
       p2Input,
       p2Controlled: input.p2 !== undefined,
+      stage: this.stage,
+      actorConstraintWorld: this.actorConstraintWorld,
+      effectLifecycleWorld: this.effectLifecycleWorld,
       currentPause: () => this.pauseWorld.current(),
       canActorMove: (actorId) => this.pauseWorld.canActorMove(actorId),
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(this.tick, actorInput, { hitPause: true }),
@@ -480,13 +483,6 @@ export class PlayableMatchRuntime {
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
           (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
         ),
-      advanceTargetMemory,
-      advanceActiveEffects: (actor) => this.effectLifecycleWorld.advanceActive(actor, this.stage),
-      advancePresentationEffects: (actor) => this.effectLifecycleWorld.advancePresentation(actor),
-      applyTargetBindings,
-      applyBindToTarget,
-      clampToStage: (actor) => this.actorConstraintWorld.clampToStage(actor.runtime, this.stage),
-      advancePausedPresentation: (actor, pause) => this.effectLifecycleWorld.advancePausedPresentation(actor, pause.type, this.stage),
       tickPause: () => this.pauseWorld.tick(),
     });
   }
@@ -1420,18 +1416,6 @@ function applyBindToTargetController(
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
   return stateAvailabilityWorld.canEnterState(target, stateId, owner);
-}
-
-function advanceTargetMemory(fighter: FighterMatchState): void {
-  fighter.targetWorld.advance(fighter);
-}
-
-function applyTargetBindings(fighter: FighterMatchState, opponent: FighterMatchState): void {
-  fighter.targetWorld.applyTargetBindings(fighter, [opponent]);
-}
-
-function applyBindToTarget(fighter: FighterMatchState, opponent: FighterMatchState): void {
-  fighter.targetWorld.applyBindToTarget(fighter, [opponent]);
 }
 
 function bindToTargetAnchor(target: FighterMatchState, postype: RuntimeTargetPostype): { x: number; y: number } {

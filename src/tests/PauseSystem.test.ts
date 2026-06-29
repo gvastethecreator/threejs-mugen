@@ -8,6 +8,7 @@ import {
   tickMatchPause,
   toMatchPauseSnapshot,
   type RuntimeMatchPause,
+  type RuntimePausedMatchRuntimeActor,
 } from "../mugen/runtime/PauseSystem";
 
 describe("PauseSystem", () => {
@@ -232,6 +233,62 @@ describe("PauseSystem", () => {
     expect(calls).toEqual(["buffer:p1", "buffer:p2", "paused-presentation:p1", "paused-presentation:p2", "tick-pause"]);
   });
 
+  it("wires paused runtime target, effect lifecycle, and constraint systems", () => {
+    const world = new RuntimePausedMatchWorld();
+    const calls: string[] = [];
+    const pause = runtimePause("p1", { remaining: 3, moveTime: 1 });
+    const p1 = runtimePausedActor("p1", 1, calls);
+    const p2 = runtimePausedActor("p2", 2, calls);
+    const runtimeLabels = new Map<object, string>([
+      [p1.runtime, p1.id],
+      [p2.runtime, p2.id],
+    ]);
+    const runtimeLabel = (runtime: object) => runtimeLabels.get(runtime) ?? "unknown";
+
+    const result = world.advanceRuntime({
+      p1,
+      p2,
+      p1Input: new Set(["F"]),
+      p2Input: new Set(["B"]),
+      p2Controlled: false,
+      stage: { bounds: { left: -160, right: 160 } },
+      actorConstraintWorld: {
+        clampToStage: (runtime) => calls.push(`clamp:${runtimeLabel(runtime)}`),
+      },
+      effectLifecycleWorld: {
+        advanceActive: (actor) => calls.push(`active-effects:${actor.id}`),
+        advancePresentation: (actor) => calls.push(`presentation:${actor.id}`),
+        advancePausedPresentation: (actor, pauseKind) => calls.push(`paused-presentation:${actor.id}:${pauseKind}`),
+      },
+      currentPause: () => pause,
+      canActorMove: (actorId) => actorId === "p1",
+      pushCommandBuffer: (actor, input) => calls.push(`buffer:${actor.id}:${[...input].join("+")}`),
+      handlePlayerInput: (actor, _input, opponent) => calls.push(`player:${actor.id}:${opponent.id}`),
+      handleAi: (actor, opponent) => calls.push(`ai:${actor.id}:${opponent.id}`),
+      advanceFighter: (actor, opponent) => calls.push(`fighter:${actor.id}:${opponent.id}`),
+      tickPause: () => {
+        calls.push("tick-pause");
+        return undefined;
+      },
+    });
+
+    expect(result).toEqual({ paused: true, sourceActorId: "p1", actorMoved: true, interrupted: false, ticked: true });
+    expect(calls).toEqual([
+      "buffer:p1:F",
+      "buffer:p2:B",
+      "player:p1:p2",
+      "fighter:p1:p2",
+      "target-memory:p1",
+      "active-effects:p1",
+      "presentation:p1",
+      "target-bind:p1:p2",
+      "bind-to-target:p1:p2",
+      "clamp:p1",
+      "paused-presentation:p2:Pause",
+      "tick-pause",
+    ]);
+  });
+
   it("stops paused-match presentation ticking when callbacks replace the active pause", () => {
     const world = new RuntimePausedMatchWorld();
     const calls: string[] = [];
@@ -290,6 +347,51 @@ function actor(id: string, stateNo: number) {
 
 function pausedActor(id: string) {
   return { id };
+}
+
+function runtimePausedActor(id: string, x: number, calls: string[]): RuntimePausedMatchRuntimeActor {
+  const runtime = {
+    pos: { x, y: 0 },
+    vel: { x: 0, y: 0 },
+    facing: 1,
+    stateNo: 0,
+    animNo: 0,
+    animTime: 0,
+    frameIndex: 0,
+    life: 1000,
+    power: 0,
+    ctrl: true,
+    stateType: "S",
+    moveType: "I",
+    physics: "S",
+    vars: [],
+    fvars: [],
+  };
+  return {
+    id,
+    runtime,
+    targets: [],
+    targetBindings: [],
+    targetWorld: {
+      advance: (actor) => calls.push(`target-memory:${actor.id}`),
+      applyTargetBindings: (actor, candidates) => {
+        calls.push(`target-bind:${actor.id}:${candidates[0]?.id ?? "none"}`);
+        return { appliedBindings: 1 };
+      },
+      applyBindToTarget: (actor, candidates) => {
+        calls.push(`bind-to-target:${actor.id}:${candidates[0]?.id ?? "none"}`);
+        return { appliedBindings: 1 };
+      },
+    },
+    effectActorWorld: {
+      advanceActiveEffects: () => undefined,
+      advancePresentationEffects: () => undefined,
+      explodSnapshots: () => [],
+      helperSnapshots: () => [],
+      projectileSnapshots: () => [],
+      removeExplodsOnGetHit: () => undefined,
+    },
+  } as RuntimePausedMatchRuntimeActor;
 }
 
 function runtimePause(actorId: string, overrides: Partial<RuntimeMatchPause> = {}): RuntimeMatchPause {

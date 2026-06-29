@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimePausedMatch runtime-system bridge
+
+Changed:
+
+- Added `RuntimePausedMatchWorld.advanceRuntime(...)` as the concrete paused-match bridge for source-movetime target/effect/constraint orchestration.
+- Moved `PlayableMatchRuntime` paused-match glue for target-memory aging, active-effect advance, presentation-effect advance, active target binding, stage clamp, and frozen-actor paused presentation behind that named bridge.
+- Kept the existing generic `advance(...)` ordering API for pure paused-order tests and future non-runtime call sites.
+- Removed now-dead local target/bind wrappers from `PlayableMatchRuntime`.
+- Extended `PauseSystem` tests to prove the paused runtime bridge wires actor-local `targetWorld`, `effectLifecycleWorld`, and `RuntimeActorConstraintWorld` in the same bounded source-movetime order.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/PauseSystem.test.ts` passes: 1 file / 13 tests.
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 641 tests.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 161/161 artifacts, 141 required and 20 optional.
+
+Claim allowed:
+
+- `RuntimePausedMatchWorld` now owns both bounded regular Pause/SuperPause source-movetime ordering and the runtime-system bridge for current target/effect/constraint side effects during source movetime.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add new pause semantics, helper VM execution during pause, exact MUGEN/IKEMEN pause layering, exact paused effect tick order, parent/root/team redirects, or score movement.
+
 ## 2026-06-29 - RuntimeMatchInteraction runtime-system bridge
 
 Changed:
