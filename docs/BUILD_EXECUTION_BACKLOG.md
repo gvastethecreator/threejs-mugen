@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio structural dead-selector CSS prune
+
+Changed:
+
+- Pruned unused structural Studio CSS hooks that no longer appear in `src` outside CSS: `build-readiness-list`, `evidence-record-list`, `asset-focus-panel`, `asset-flow-strip`, `trace-scrubber-section`, `studio-stat-card`, and `build-export-console`.
+- Collapsed the resulting duplicate `.triage-grid` legacy rule into one rule using the already-effective 3-column grid.
+- Tightened `pnpm qa:css:budget` from 2,500 to 2,498 max scanned rules; repeated declaration groups remain 144 and cross-file overlaps remain 123.
+
+Evidence:
+
+- `pnpm qa:css` passes: 2,498 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 144 repeated declaration groups, 123 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+
+Claim allowed:
+
+- The active Studio CSS budget is slightly smaller and dead structural hooks are removed without broad visual redesign.
+
+Claim blocked:
+
+- Remaining cross-file overlaps and repeated declaration groups still need shared chrome, ledger-row, status-cell, and command-action primitive extraction. This does not move runtime compatibility, Studio capability, or port score.
+
 ## 2026-06-29 - Projectile contact-effect package trace cut
 
 Changed:

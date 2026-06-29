@@ -217,8 +217,7 @@
 .app-shell.mode-studio .asset-lane-strip span,
 .app-shell.mode-studio .evidence-lane-strip span,
 .app-shell.mode-studio .workbench-lane-strip span,
-.app-shell.mode-studio .stage-status-metric,
-.app-shell.mode-studio .studio-stat-card {
+.app-shell.mode-studio .stage-status-metric {
   min-height: 32px;
   padding: 5px 6px;
   border: 0;
@@ -232,8 +231,7 @@
 .app-shell.mode-studio .asset-lane-strip span:last-child,
 .app-shell.mode-studio .evidence-lane-strip span:last-child,
 .app-shell.mode-studio .workbench-lane-strip span:last-child,
-.app-shell.mode-studio .stage-status-metric:last-child,
-.app-shell.mode-studio .studio-stat-card:last-child {
+.app-shell.mode-studio .stage-status-metric:last-child {
   border-right: 0;
 }
 
@@ -243,9 +241,7 @@
 .app-shell.mode-studio .debug-actor-list,
 .app-shell.mode-studio .debug-filter-grid,
 .app-shell.mode-studio .debug-effect-store-list,
-.app-shell.mode-studio .list,
-.app-shell.mode-studio .build-readiness-list,
-.app-shell.mode-studio .evidence-record-list {
+.app-shell.mode-studio .list {
   gap: 0;
   border: 1px solid color-mix(in srgb, var(--editor-edge) 72%, transparent);
   border-radius: 3px;

@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "qa:css": "node scripts/audit_css_duplication.cjs",
-    "qa:css:budget": "node scripts/audit_css_duplication.cjs --max-rules=2500 --max-duplicate-selector-keys=0 --max-exact-duplicate-rule-keys=0 --max-repeated-declaration-groups=144 --max-cross-file-overlaps=123 --max-src-style-overlaps=0 --max-cross-file-shadowed-rules=0",
+    "qa:css:budget": "node scripts/audit_css_duplication.cjs --max-rules=2498 --max-duplicate-selector-keys=0 --max-exact-duplicate-rule-keys=0 --max-repeated-declaration-groups=144 --max-cross-file-overlaps=123 --max-src-style-overlaps=0 --max-cross-file-shadowed-rules=0",
     "qa:css:detail": "node scripts/audit_css_duplication.cjs --detail-overlaps --detail-repeated",
     "fix:css": "node scripts/audit_css_duplication.cjs --fix-exact --fix-shadowed --fix-cross-file-shadowed",
     "qa:smoke": "node scripts/qa_smoke.cjs",

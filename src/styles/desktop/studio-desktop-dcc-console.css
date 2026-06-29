@@ -60,8 +60,6 @@
   .app-shell.mode-studio .workspace-action-grid,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .engine-module-table,
-  .app-shell.mode-studio .build-readiness-list,
-  .app-shell.mode-studio .evidence-record-list,
   .app-shell.mode-studio .debug-lens-grid,
   .app-shell.mode-studio .debug-lens-stat-grid,
   .app-shell.mode-studio .studio-kv {

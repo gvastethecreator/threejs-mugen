@@ -154,8 +154,6 @@
   .app-shell.mode-studio .studio-mission-strip,
   .app-shell.mode-studio .workbench-surface-grid,
   .app-shell.mode-studio .list,
-  .app-shell.mode-studio .build-readiness-list,
-  .app-shell.mode-studio .evidence-record-list,
   .app-shell.mode-studio .studio-tabs {
     border-color: color-mix(in srgb, var(--editor-edge) 78%, transparent);
     border-radius: 2px;
@@ -168,8 +166,7 @@
   .app-shell.mode-studio .evidence-lane-strip span,
   .app-shell.mode-studio .workbench-lane-strip span,
   .app-shell.mode-studio .stage-status-metric,
-  .app-shell.mode-studio .studio-stat,
-  .app-shell.mode-studio .studio-stat-card {
+  .app-shell.mode-studio .studio-stat {
     min-height: 31px;
     padding: 5px 7px;
     background: transparent;

@@ -49,8 +49,6 @@
   .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .engine-module-table,
-  .app-shell.mode-studio .build-readiness-list,
-  .app-shell.mode-studio .evidence-record-list,
   .app-shell.mode-studio .studio-kv {
     gap: 0;
     overflow: hidden;

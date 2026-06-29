@@ -103,10 +103,8 @@
 
   .app-shell.mode-studio[data-studio-tab="build"] .pane-right .compact-list,
   .app-shell.mode-studio[data-studio-tab="build"] .pane-right .list,
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-list,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .compact-list,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .list,
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record-list,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .compat-list,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-strip,
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-world-delta,

@@ -313,7 +313,6 @@
 }
 
 .app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-grid small,
-.app-shell.mode-studio[data-studio-tab="evidence"] .studio-stat-card small,
 .app-shell.mode-studio[data-studio-tab="evidence"] .command-meter-grid small {
   font-size: 12px;
   line-height: 1.12;

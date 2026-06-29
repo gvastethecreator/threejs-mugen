@@ -239,8 +239,6 @@
   .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .engine-module-table,
-  .app-shell.mode-studio .build-readiness-list,
-  .app-shell.mode-studio .evidence-record-list,
   .app-shell.mode-studio .debug-lens-grid,
   .app-shell.mode-studio .debug-lens-stat-grid,
   .app-shell.mode-studio .studio-kv {
@@ -440,7 +438,6 @@
   .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .acceptance-gates-section,
   .app-shell.mode-studio .debug-lens-section,
-  .app-shell.mode-studio .trace-scrubber-section,
   .app-shell.mode-studio .engine-modules-panel {
     border: 1px solid var(--dcc-line);
     border-radius: 0;

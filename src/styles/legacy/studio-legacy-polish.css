@@ -82,8 +82,7 @@
 .debug-lens-section,
 .debug-selection-panel,
 .debug-evidence-block,
-.engine-modules-panel,
-.asset-focus-panel {
+.engine-modules-panel {
   border: 1px solid color-mix(in srgb, var(--surface-border-strong) 74%, #000);
   background: color-mix(in srgb, var(--surface-flat) 92%, var(--surface-flat-raised));
 }

@@ -70,8 +70,7 @@
   .app-shell.mode-studio .acceptance-gates-section,
   .app-shell.mode-studio .studio-command-center,
   .app-shell.mode-studio .asset-command-center,
-  .app-shell.mode-studio .evidence-command-center,
-  .app-shell.mode-studio .build-export-console {
+  .app-shell.mode-studio .evidence-command-center {
     border-color: var(--editor-edge-dark);
     background: var(--editor-panel);
     background-image: none;
@@ -175,7 +174,6 @@
   .app-shell.mode-studio .mode-switch,
   .app-shell.mode-studio .list,
   .app-shell.mode-studio .compact-list,
-  .app-shell.mode-studio .build-readiness-list,
   .app-shell.mode-studio .debug-filter-grid,
   .app-shell.mode-studio .debug-actor-list,
   .app-shell.mode-studio .debug-lens-grid,

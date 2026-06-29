@@ -75,8 +75,6 @@
 .operator-callout small,
 .selection-summary strong,
 .selection-summary small,
-.asset-focus-panel strong,
-.asset-focus-panel small,
 .action-callout strong,
 .action-callout small,
 .record-route span,
@@ -653,18 +651,12 @@
   line-height: 1.15;
 }
 
-.asset-flow-strip,
 .triage-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
-.triage-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.asset-flow-strip span,
 .triage-grid span {
   display: grid;
   min-width: 0;
@@ -679,7 +671,6 @@
   box-shadow: var(--shadow-inset);
 }
 
-.asset-flow-strip b,
 .triage-grid b {
   min-width: 0;
   overflow: hidden;
@@ -697,7 +688,6 @@
   white-space: nowrap;
 }
 
-.asset-focus-panel,
 .action-callout {
   display: grid;
   min-width: 0;
@@ -709,18 +699,11 @@
   box-shadow: var(--shadow-inset);
 }
 
-.asset-focus-panel.compact {
-  border-color: var(--border);
-  background: var(--surface-flat);
-}
-
-.asset-focus-panel strong,
 .action-callout strong {
   color: var(--text);
   line-height: 1.25;
 }
 
-.asset-focus-panel small,
 .action-callout small {
   color: var(--muted);
   line-height: 1.35;
