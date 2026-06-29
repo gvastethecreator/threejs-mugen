@@ -530,6 +530,20 @@ type BuildReadinessBaseRecord = {
   detail: string;
 };
 type BuildReadinessRecord = BuildReadinessBaseRecord & StudioActionableFields;
+type StudioTrustLane = "runtime" | "source" | "assets" | "qa" | "build" | "compat" | "architecture";
+type StudioTrustContractRow = {
+  id: string;
+  lane: StudioTrustLane;
+  label: string;
+  status: StudioStatus;
+  state: BuildReadinessStatus;
+  detail: string;
+  impact: string;
+  evidence: string;
+  nextLabel: string;
+  nextAction: StudioNextAction;
+  blockedBy: string[];
+};
 type ProjectExportBundleManifest = {
   schemaVersion: "mugen-web-sandbox/export-bundle/v0";
   projectId: string;
@@ -6277,7 +6291,9 @@ export class App {
 
   private renderStudioBuildRightPane(): string {
     const summary = this.getStudioProjectSummary();
+    const trustRows = this.getStudioTrustContractRows(summary);
     return `
+      ${this.renderStudioTrustContract(trustRows, "build")}
       ${this.renderBuildReadinessPanel(summary)}
       ${this.renderSourcePackagePanel()}
       ${this.renderProjectBundlePanel()}
@@ -6514,11 +6530,13 @@ export class App {
   private renderStudioEvidenceRightPane(): string {
     const evidence = this.getStudioEvidenceSummary();
     const records = this.getFilteredEvidenceRecords(evidence);
+    const trustRows = this.getStudioTrustContractRows();
     const categories = new Map<StudioEvidenceCategory, number>();
     for (const record of evidence.records) {
       categories.set(record.category, (categories.get(record.category) ?? 0) + 1);
     }
     return `
+      ${this.renderStudioTrustContract(trustRows, "evidence")}
       <div class="section">
         <h2>Evidence Summary</h2>
         <dl class="kv studio-kv">
@@ -6552,6 +6570,104 @@ export class App {
         </div>
       </div>
     `;
+  }
+
+  private renderStudioTrustContract(rows: StudioTrustContractRow[], surface: "build" | "evidence"): string {
+    const attentionRows = rows.filter((row) => isAttentionStatus(row.status) || row.state === "partial" || row.state === "blocked");
+    const blockedRows = rows.filter((row) => row.state === "blocked");
+    const exportableRows = rows.filter((row) => row.state === "exportable" || row.state === "runnable");
+    const headline = surface === "build" ? "Build Trust Chain" : "Evidence Trust Chain";
+    const summary = blockedRows.length ? `${blockedRows.length} blocked` : attentionRows.length ? `${attentionRows.length} attention` : "ready";
+    const summaryStatus: StudioStatus = blockedRows.length ? "blocked" : attentionRows.length ? "warn" : "ok";
+    const primary = blockedRows[0] ?? attentionRows[0] ?? rows[0];
+    return `
+      <div class="section studio-trust-contract" aria-label="${escapeHtml(headline)}">
+        <div class="section-heading-row studio-trust-contract-head">
+          <div>
+            <span class="panel-kicker">Shared contract</span>
+            <h2>${escapeHtml(headline)}</h2>
+          </div>
+          <span class="badge ${this.statusClassName(summaryStatus)}">${escapeHtml(summary)}</span>
+        </div>
+        <div class="studio-trust-contract-summary">
+          <span>
+            <b>${exportableRows.length}/${rows.length}</b>
+            <small>exportable or runnable</small>
+          </span>
+          <span>
+            <b>${attentionRows.length}</b>
+            <small>attention states</small>
+          </span>
+          <span>
+            <b>${primary ? escapeHtml(primary.nextLabel) : "No action"}</b>
+            <small>primary next action</small>
+          </span>
+        </div>
+        <div class="studio-trust-contract-table" aria-label="${escapeHtml(headline)} rows">
+          <div class="studio-trust-contract-columns" aria-hidden="true">
+            <span>Lane</span>
+            <span>Proof</span>
+            <span>Evidence</span>
+            <span>Next</span>
+          </div>
+          ${rows.map((row) => this.renderStudioTrustContractRow(row)).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  private renderStudioTrustContractRow(row: StudioTrustContractRow): string {
+    const statusClass = this.statusClassName(row.status);
+    const actionAttribute = this.studioTrustActionAttribute(row);
+    const blockerLabel = row.blockedBy.length ? `blocked by ${row.blockedBy.slice(0, 2).join(" / ")}` : "no blockers";
+    const ariaLabel = `${row.label}: ${row.detail}. Next: ${row.nextLabel}`;
+    return `
+      <button type="button" class="studio-trust-contract-row is-${statusClass}" ${actionAttribute} aria-label="${escapeHtml(ariaLabel)}">
+        <span class="studio-trust-contract-lane">
+          ${tablerIcon(this.iconForStudioTrustLane(row.lane), "ui-icon studio-trust-contract-icon")}
+          <b>${escapeHtml(this.labelForStudioTrustLane(row.lane))}</b>
+          <small>${escapeHtml(row.state)}</small>
+        </span>
+        <span class="studio-trust-contract-proof">
+          <span class="studio-trust-contract-title">${escapeHtml(row.label)}</span>
+          <span class="studio-trust-contract-detail">${escapeHtml(row.detail)}</span>
+          <span class="studio-trust-contract-impact"><b>Impact</b>${escapeHtml(row.impact)}</span>
+        </span>
+        <span class="studio-trust-contract-evidence">
+          ${this.statusBadge(row.status)}
+          <small>${escapeHtml(row.evidence)}</small>
+          <em>${escapeHtml(blockerLabel)}</em>
+        </span>
+        <span class="studio-trust-contract-next">
+          <b>${escapeHtml(row.nextLabel)}</b>
+          <small>${escapeHtml(row.nextAction.targetId ?? row.id)}</small>
+        </span>
+      </button>
+    `;
+  }
+
+  private studioTrustActionAttribute(row: StudioTrustContractRow): string {
+    if (row.id === "runtime-manifest" && !this.lastCompiledProject) {
+      return 'data-action="compile-project"';
+    }
+    if (row.id === "package-bundle") {
+      if (!this.lastCompiledProject) {
+        return 'data-action="compile-project"';
+      }
+      if (!this.lastProjectBundle) {
+        return 'data-action="export-package"';
+      }
+    }
+    if (row.id === "evidence" && !this.lastTraceArtifact) {
+      return 'data-action="export-trace-artifact"';
+    }
+    if (row.id === "asset-validation") {
+      return 'data-studio-tab="assets" data-asset-filter="attention"';
+    }
+    if (row.id === "source-packages" && row.blockedBy.length) {
+      return 'data-action="load-zip"';
+    }
+    return this.studioNextActionAttribute(row.nextAction);
   }
 
   private renderTraceFrameScrubberPanel(): string {
@@ -8135,6 +8251,85 @@ export class App {
     return records.map((record) => this.withBuildReadinessAction(record));
   }
 
+  private getStudioTrustContractRows(summary = this.getStudioProjectSummary()): StudioTrustContractRow[] {
+    const readinessById = new Map(this.getBuildReadinessRecords(summary).map((record) => [record.id, record]));
+    const lanes: Array<{ id: string; lane: StudioTrustLane }> = [
+      { id: "runtime-manifest", lane: "runtime" },
+      { id: "evidence", lane: "qa" },
+      { id: "package-bundle", lane: "build" },
+      { id: "asset-validation", lane: "assets" },
+      { id: "source-packages", lane: "source" },
+      { id: "compatibility-gates", lane: "compat" },
+      { id: "architecture-boundaries", lane: "architecture" },
+    ];
+    return lanes.flatMap(({ id, lane }) => {
+      const record = readinessById.get(id);
+      if (!record) {
+        return [];
+      }
+      return [
+        {
+          id: record.id,
+          lane,
+          label: record.label,
+          status: record.status,
+          state: record.state,
+          detail: record.detail,
+          impact: record.impact,
+          evidence: this.getStudioTrustEvidenceLabel(record, summary),
+          nextLabel: record.nextAction.label,
+          nextAction: record.nextAction,
+          blockedBy: record.blockedBy,
+        },
+      ];
+    });
+  }
+
+  private getStudioTrustEvidenceLabel(record: BuildReadinessRecord, summary: StudioProjectSummary): string {
+    if (record.id === "runtime-manifest") {
+      const compiled = this.lastCompiledProject;
+      return compiled
+        ? `${compiled.schemaVersion} / active ${compiled.modules.active.length} / missing ${compiled.modules.missing.length}`
+        : "runtime-manifest/v0 not compiled";
+    }
+    if (record.id === "evidence") {
+      if (this.lastTraceArtifact) {
+        return `${this.lastTraceArtifact.trace.frameCount}f / ${this.lastTraceArtifact.trace.eventCount} events / ${this.lastTraceArtifact.trace.checksum}`;
+      }
+      return this.storedTraceEvidence.length ? `${this.storedTraceEvidence.length} stored trace(s), no current run` : "no current trace artifact";
+    }
+    if (record.id === "package-bundle") {
+      const bundle = this.lastProjectBundle;
+      return bundle
+        ? `${bundle.manifest.files.length} files / ${bundle.manifest.assets.binaryBundled} assets / ${formatBytes(bundle.manifest.assets.binaryBytes)}`
+        : this.lastCompiledProject
+          ? "manifest compiled, package not exported"
+          : "package export waits on compile";
+    }
+    if (record.id === "asset-validation") {
+      const attention = summary.assets.filter((asset) => isAttentionStatus(asset.status)).length;
+      return `${attention}/${summary.assets.length} attention / ${summary.stats.generatedAtlases} atlases`;
+    }
+    if (record.id === "source-packages") {
+      const sourcePackages = this.getProjectSourcePackages();
+      const linked = sourcePackages.filter((sourcePackage) => sourcePackage.status === "linked").length;
+      const requiredPaths = sourcePackages.reduce((total, sourcePackage) => total + sourcePackage.requiredPaths.length, 0);
+      return sourcePackages.length ? `${linked}/${sourcePackages.length} linked / ${requiredPaths} required paths` : "generated/local project sources only";
+    }
+    if (record.id === "compatibility-gates") {
+      const blocked = summary.gates.filter((gate) => gate.status === "fail" || gate.status === "blocked" || gate.status === "unsupported").length;
+      const attention = summary.gates.filter((gate) => isAttentionStatus(gate.status)).length;
+      return `${summary.gates.length - attention}/${summary.gates.length} clean / ${blocked} blocked`;
+    }
+    if (record.id === "architecture-boundaries") {
+      const compiled = this.lastCompiledProject;
+      return compiled
+        ? `${compiled.contracts.sharedContracts.length} contracts / ${compiled.contracts.verificationCommands.boundary}`
+        : "test:architecture-boundaries / module-contracts";
+    }
+    return record.evidenceIds.slice(0, 2).join(" / ") || record.id;
+  }
+
   private withBuildReadinessAction(record: BuildReadinessBaseRecord & Partial<StudioActionableFields>): BuildReadinessRecord {
     return {
       ...record,
@@ -8745,6 +8940,32 @@ export class App {
         <span>${escapeHtml(label)}</span>
       </div>
     `;
+  }
+
+  private iconForStudioTrustLane(lane: StudioTrustLane): StudioIconName {
+    const icons: Record<StudioTrustLane, StudioIconName> = {
+      runtime: "server",
+      source: "folder",
+      assets: "assets",
+      qa: "evidence",
+      build: "build",
+      compat: "shield",
+      architecture: "modules",
+    };
+    return icons[lane];
+  }
+
+  private labelForStudioTrustLane(lane: StudioTrustLane): string {
+    const labels: Record<StudioTrustLane, string> = {
+      runtime: "Runtime",
+      source: "Source",
+      assets: "Assets",
+      qa: "QA",
+      build: "Build",
+      compat: "Compat",
+      architecture: "Arch",
+    };
+    return labels[lane];
   }
 
   private statusBadge(status: StudioProjectSummary["gates"][number]["status"]): string {
@@ -9980,6 +10201,7 @@ export class App {
         studioDebug: StudioDebugSelectionSummary;
         studioDebugFilter: StudioDebugFilter;
         studioEvidence: StudioEvidenceSummary;
+        studioTrustChain: StudioTrustContractRow[];
         traceFrameScrubber: StudioTraceFrameScrubberSummary;
         studioTab: StudioTab;
         project: GameProjectManifest;
@@ -10011,6 +10233,7 @@ export class App {
       studioDebug: this.getStudioDebugSelection(),
       studioDebugFilter: this.studioDebugFilter,
       studioEvidence: this.getStudioEvidenceSummary(),
+      studioTrustChain: this.getStudioTrustContractRows(studio),
       traceFrameScrubber: this.getTraceFrameScrubberSummary(),
       studioTab: this.studioTab,
       project: this.getGameProjectManifest(studio),

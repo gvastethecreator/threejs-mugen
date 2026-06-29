@@ -38,7 +38,7 @@ Latest R2 ownership addendum: `RuntimeEffectActorWorld.countActors(...)` now own
 
 Latest Studio/UI checkpoint: the Studio CSS cascade now imports smaller ownership modules in `src/main.ts` import order after the base stylesheet: app shell, legacy/editor/hardening/runtime command-room/shell/command-center/desktop authority slices, runtime command decks, workbench/assets, Build/Evidence trust ledgers, Modules/Debug system ledgers, Command Palette, Stage, and Inspector. Active command shell ownership is split across `studio-command-shell.css`, `studio-command-pipeline.css`, `studio-command-playfield.css`, and `studio-command-console.css`. Current `pnpm qa:css` reports 2,626 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 168 repeated declaration groups, 135 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, 0 legacy `style.css` rules fully shadowed by later imports, and 0 cross-file rules fully shadowed by later imports. Workbench/command ledgers and Assets tablet/compact desktop rows have fresh density passes with smoke/manual visual evidence. Broader token consolidation, dense typography cleanup, shared chrome/status primitives, and remaining Studio cross-file selector reduction remain open. This is Studio/product-surface hygiene only; it does not replace the runtime next slice, prove new Studio workflows, or move port scores.
 
-Latest Studio/UI addendum: compact Studio command actions now show `Build` for the compile-project action and keep visible truncated labels in fixed utility-button grid tracks; Workbench Project Health now exposes a text `Readiness` band beside the numeric score. This is visible chrome/CSS hygiene only and requires smoke/visual proof; it does not add Studio workflows or score movement.
+Latest Studio/UI addendum: Studio Build and Evidence now share one Trust Chain contract sourced from Build Readiness data for runtime manifest, QA evidence, project package, asset validation, source packages, compatibility gates, and architecture boundaries. The rows expose lane, state, proof, evidence, impact, blockers, and one primary next action, and `pnpm qa:smoke` now asserts the shared row ids and next-action binding on both surfaces. This is S1 product workflow evidence only; it does not change runtime compatibility or port scores.
 
 ## Operating Snapshot
 
@@ -172,9 +172,9 @@ Issue: `.scratch/roadmap/issues/02-studio-evidence-workflow.md`
 
 Build next:
 
-- Make Evidence and Build read the same status contract for stale, missing, partial, blocked, unsupported, and exportable state.
-- Surface one primary next action per blocked item.
-- Link rows to trace/report/runtime data already produced by the app.
+- Deepen Trust Chain row jumps from generic surface actions into target-specific Evidence/Build rows once stable row ids exist for trace records, asset records, source packages, and package files.
+- Promote stale/current evidence deltas into the same Trust Chain contract without duplicating per-surface status logic.
+- Keep every Trust Chain row tied to trace/report/runtime/project data already produced by the app.
 
 Acceptance:
 

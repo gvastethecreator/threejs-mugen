@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-29 - Studio Build/Evidence Trust Chain
+
+Changed:
+
+- Added a shared Studio Trust Chain contract derived from Build Readiness records and rendered at the top of both Studio Build and Studio Evidence right panes.
+- Trust rows now cover runtime manifest, QA evidence, project package, asset validation, source packages, compatibility gates, and architecture boundaries with lane, state, evidence, impact, blockers, and next action.
+- Wired direct row actions for compile, export package, export trace, asset attention, and source package relink when the row can safely trigger the work instead of only navigating.
+- Exposed `studioTrustChain` through the browser QA bridge and strengthened `pnpm qa:smoke` so Build/Evidence fail if shared row ids or next-action binding drift.
+- Kept styling inside `src/styles/studio-trust-ledgers.css` with a compact two-level ledger layout for the narrow desktop right pane, then reduced the initial long prefixed component selectors to avoid adding another heavy override block.
+
+Evidence:
+
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 635 tests.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:css` passes: 2,666 scanned rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 173 repeated declaration groups, 135 cross-file duplicate selectors, 0 selectors shared with `src/style.css`, 0 legacy `src/style.css` rules fully shadowed by later imports, and 0 cross-file rules fully shadowed by later imports.
+- `pnpm qa:smoke` passes in started-Vite mode. Studio Build and Evidence each report 7 Trust Chain rows with ids `runtime-manifest`, `evidence`, `package-bundle`, `asset-validation`, `source-packages`, `compatibility-gates`, and `architecture-boundaries`; trace checksum remains `9c9f205b`.
+- Visual QA inspected `.scratch/qa/qa-smoke/studio-build.png` and `.scratch/qa/qa-smoke/studio-evidence.png`; Trust Chain rows keep lane labels, status/evidence, and next-action rows visible without obvious broken overlap or horizontal overflow.
+
+Claim allowed:
+
+- Studio Build and Studio Evidence now point at the same product trust contract for export/evidence readiness instead of separate summary panels, and smoke verifies that shared ids and next actions stay present on both surfaces.
+- The visible Trust Chain uses real readiness/evidence/project state and direct next actions where available.
+
+Claim blocked:
+
+- This is S1 Studio workflow evidence only. It does not add runtime compatibility, imported MUGEN/IKEMEN parity, a new production export backend, full editor workflow, replay diff UI, or deeper per-row evidence jumps beyond existing tab/action routing.
+- CSS cross-file overlap and repeated declaration groups remain known cascade debt; this cut preserves exact duplicate/shadow guards rather than finishing shared primitive extraction.
+
 ## 2026-06-29 - DestroySelf no-op compatibility cut
 
 Changed:
