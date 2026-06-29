@@ -26324,3 +26324,409 @@ input {
     line-height: 1.35;
   }
 }
+
+/* Desktop Studio workstation header: one command spine, clearer states, less button soup. */
+@media (min-width: 1161px) {
+  .app-shell.mode-studio {
+    --station-bg: #05070a;
+    --station-panel: #0a0d11;
+    --station-rail: #0f1318;
+    --station-row: #11161c;
+    --station-row-hot: #181f27;
+    --station-line: #252c34;
+    --station-line-strong: #323a43;
+    --station-text: #eef2f5;
+    --station-muted: #98a3af;
+    --station-soft: #66727f;
+    --station-ok: #87ad8a;
+    --station-warn: #c59a68;
+    --station-danger: #c87772;
+    --station-info: #85a9c8;
+  }
+
+  .app-shell.mode-studio .workspace-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+    padding: 6px;
+    border-bottom: 1px solid var(--station-line-strong);
+    background: var(--station-bg);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035),
+      inset -1px 0 0 #020304;
+  }
+
+  .app-shell.mode-studio .workspace-brand {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    min-height: 25px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 7px;
+    border: 1px solid var(--station-line);
+    background: #080b0f;
+  }
+
+  .app-shell.mode-studio .workspace-brand .workspace-eyebrow,
+  .app-shell.mode-studio .workspace-brand h1,
+  .app-shell.mode-studio .workspace-brand p {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-brand .workspace-eyebrow {
+    color: var(--station-muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .workspace-brand h1 {
+    margin: 0;
+    color: var(--station-text);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  .app-shell.mode-studio .workspace-brand p {
+    grid-column: 1 / -1;
+    margin: -2px 0 2px;
+    color: #7e8995;
+    font-size: 10.5px;
+  }
+
+  .app-shell.mode-studio .mode-control-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .app-shell.mode-studio .mode-switch {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--station-line-strong);
+    background: #07090d;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch button {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7px;
+    grid-template-rows: 15px 13px;
+    min-height: 33px;
+    gap: 0 5px;
+    padding: 4px 6px;
+    border: 0;
+    border-right: 1px solid var(--station-line);
+    border-radius: 0;
+    background: var(--station-panel);
+    color: #d9e0e7;
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch button:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-button-top {
+    display: grid;
+    grid-template-columns: 15px minmax(0, 1fr);
+    grid-column: 1;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-icon {
+    width: 13px;
+    height: 13px;
+    color: var(--station-soft);
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-label,
+  .app-shell.mode-studio .mode-switch .mode-hint,
+  .app-shell.mode-studio .mode-switch .mode-status {
+    min-width: 0;
+    overflow: hidden;
+    letter-spacing: 0;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-label {
+    color: #eef2f5;
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-hint {
+    grid-column: 1;
+    align-self: end;
+    color: #8d98a4;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-status {
+    display: none;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-dot {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    width: 6px;
+    height: 18px;
+    align-self: center;
+    border: 1px solid #38424c;
+    border-radius: 0;
+    background: #56616d;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-dot.is-ok {
+    background: var(--station-ok);
+    border-color: color-mix(in srgb, var(--station-ok) 54%, #38424c);
+  }
+
+  .app-shell.mode-studio .mode-switch .mode-dot.is-warn {
+    background: var(--station-warn);
+    border-color: color-mix(in srgb, var(--station-warn) 54%, #38424c);
+  }
+
+  .app-shell.mode-studio .mode-switch button:hover,
+  .app-shell.mode-studio .mode-switch button:focus-visible {
+    background: var(--station-row-hot);
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .mode-switch button.is-active {
+    background: #161c23;
+    box-shadow:
+      inset 0 2px 0 #788592,
+      inset 0 -1px 0 #020304;
+  }
+
+  .app-shell.mode-studio .workspace-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--station-line-strong);
+    background: #07090d;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-summary span {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 32px;
+    align-content: center;
+    gap: 2px;
+    padding: 4px 7px;
+    border: 0;
+    border-right: 1px solid var(--station-line);
+    border-radius: 0;
+    background: var(--station-rail);
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.74);
+  }
+
+  .app-shell.mode-studio .workspace-summary span:last-child {
+    border-right: 0;
+  }
+
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .workspace-summary small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-summary b {
+    color: var(--station-text);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .app-shell.mode-studio .workspace-summary small {
+    color: var(--station-muted);
+    font-size: 10px;
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio .workspace-summary .is-ok b {
+    color: var(--station-ok);
+  }
+
+  .app-shell.mode-studio .workspace-summary .is-warn b {
+    color: var(--station-warn);
+  }
+
+  .app-shell.mode-studio .command-launcher {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 34px;
+    min-height: 34px;
+    gap: 6px;
+    align-items: center;
+    padding: 5px 7px;
+    border: 1px solid var(--station-line-strong);
+    border-radius: 0;
+    background: #080b0f;
+    color: var(--station-text);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  }
+
+  .app-shell.mode-studio .command-launcher:hover,
+  .app-shell.mode-studio .command-launcher:focus-visible {
+    background: var(--station-row-hot);
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .command-launcher-icon {
+    width: 15px;
+    height: 15px;
+    color: var(--station-info);
+  }
+
+  .app-shell.mode-studio .command-launcher > span:not(.badge) {
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio .command-launcher strong,
+  .app-shell.mode-studio .command-launcher small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .command-launcher strong {
+    color: #eef2f5;
+    font-size: 11px;
+  }
+
+  .app-shell.mode-studio .command-launcher small {
+    color: #8d98a4;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .command-launcher .badge {
+    min-width: 28px;
+    height: 22px;
+    justify-content: center;
+    border: 1px solid var(--station-line);
+    border-radius: 0;
+    background: #0f1318;
+    color: #cfd7df;
+    font-family: var(--mono);
+    font-size: 10px;
+  }
+
+  .app-shell.mode-studio .workspace-actions {
+    gap: 0;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid var(--station-line-strong);
+    border-radius: 0;
+    background: #07090d;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-actions .studio-mission-strip,
+  .app-shell.mode-studio .workspace-actions .workspace-next {
+    margin: 0;
+    padding: 7px;
+    border: 0;
+    border-bottom: 1px solid var(--station-line);
+    border-radius: 0;
+    background: #0b0f14;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button,
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) minmax(60px, max-content);
+    min-height: 32px;
+    gap: 7px;
+    align-items: center;
+    padding: 5px 7px;
+    border: 0;
+    border-bottom: 1px solid var(--station-line);
+    border-radius: 0;
+    background: var(--station-row);
+    color: var(--station-text);
+    text-align: left;
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button:hover,
+  .app-shell.mode-studio .workspace-action-grid button:focus-visible {
+    background: var(--station-row-hot);
+    outline: 1px solid #4a5663;
+    outline-offset: -1px;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button.primary-action {
+    background: #17202a;
+    box-shadow: inset 3px 0 0 var(--station-warn);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .action-icon {
+    width: 15px;
+    height: 15px;
+    color: #a8b2bd;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button.primary-action .action-icon {
+    color: var(--station-warn);
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
+  .app-shell.mode-studio .workspace-action-grid button small {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label {
+    color: #eef2f5;
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .app-shell.mode-studio .workspace-action-grid button small {
+    justify-self: end;
+    max-width: 92px;
+    color: #8f9aa6;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: right;
+  }
+}
