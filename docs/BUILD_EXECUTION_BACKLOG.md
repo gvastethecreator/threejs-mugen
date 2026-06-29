@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-29 - RuntimeStateAvailabilityWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeStateAvailabilityWorld` / `StateAvailabilitySystem` as the named owner for bounded runtime state/action availability lookup.
+- Replaced inline `PlayableMatchRuntime` state lookup and `canEnterState` checks with the shared state-availability boundary used by get-hit, guard, custom-state, target, recovery, HitOverride, and ReversalDef routes.
+- Added focused `StateAvailabilitySystem` tests for compiled runtime-program state precedence, parsed state lookup, animation-only fallback, owner-backed custom-state lookup, and missing-state rejection.
+
+Evidence:
+
+- `pnpm test` passes: 69 files, 605 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 156/156 artifacts, 138 required and 18 optional; `synthetic-imported-target-owned-custom-state.json` remains checksum `410fb8c0`, `synthetic-imported-custom-state.json` remains `bf632df3`, `synthetic-imported-reversal.json` remains `88d91494`, and `synthetic-imported-variable.json` remains `3b33f7a8`.
+- `git diff --check` passes.
+- `pnpm qa:smoke` not required because this cut does not change renderer, Studio, stage, sprite, or visible UI behavior.
+
+Claim allowed:
+
+- Bounded state/action availability for current imported and native runtime routes now has a named runtime boundary.
+
+Claim blocked:
+
+- Exact StateDef lookup edge cases, redirects beyond current owner hook, helper/root/parent/team lookup, IKEMEN state lookup extensions, state-entry mutation, and full CNS VM state ownership parity remain unsupported.
+
 ## 2026-06-29 - RuntimeHitStateTransitionWorld ownership extraction
 
 Changed:

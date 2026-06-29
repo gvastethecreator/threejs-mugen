@@ -30,6 +30,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - Current setup-project checkpoint: `docs/agents/*` audit dates now match the 2026-06-29 repo `AGENTS.md` setup profile after the `RuntimeHitEligibilityWorld` ownership pass. The profile remains local markdown issues, canonical triage labels, and single-context domain docs; no score movement.
 - Current setup-project checkpoint: repo setup-project profile was rechecked during the `RuntimeHitStateTransitionWorld` pass. `AGENTS.md`, `docs/agents/*`, parent router `AGENTS.md`, root `CONTEXT.md`, `docs/adr/`, and `.scratch/roadmap/` remain aligned; no new tracker or duplicate agent file was created.
 - Current roadmap sync: roadmap/package/progress docs now name `RuntimeHitStateTransitionWorld` as the latest R2 ownership checkpoint so future work does not reselect default get-hit or custom-state transition ownership.
+- Current roadmap sync: roadmap/package/progress docs now name `RuntimeStateAvailabilityWorld` as the latest R2 ownership checkpoint so future work does not reselect state/action availability lookup.
 - Keep `docs/ROADMAP_EXECUTION_BOARD.md` as the current queue/handoff board.
 - Keep `docs/PROGRESS_TRACKER.md` compact and current after meaningful milestones.
 - Keep `docs/PORT_COMPLETION_SCORECARD.md` as the only 0-100 answer source.
@@ -63,7 +64,7 @@ Keep the roadmap, scorecard, issue tracker, and QA closeout rules synchronized s
 - `docs/BUILD_EXECUTION_BACKLOG.md` records the latest closed gate, so future agents can avoid treating already-closed gates as next work.
 - `docs/ROADMAP_OPERATIONAL_CHECKLIST.md` owns task-type execution checklists and closeout commands.
 - `docs/ROADMAP_EXECUTION_BOARD.md` owns the next concrete gates, including deeper FightFX/common spark presentation after the current package loading/provider/source-metadata route.
-- Latest implementation truth after this refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `RuntimeHitStateTransitionWorld` owns bounded direct-hit and ReversalDef `p1stateno` / `p2stateno` / `p2getp1state` transition routing, with stable trace aggregate 156/156 artifacts, 138 required, 18 optional.
+- Latest implementation truth after this refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `RuntimeStateAvailabilityWorld` owns bounded state/action availability lookup, with stable trace aggregate 156/156 artifacts, 138 required, 18 optional.
 - `docs/adr/0001-roadmap-control-and-local-issues.md` records the local tracker/source-of-truth decision.
 - `AGENTS.md` now records the latest setup-project audit date.
 - Latest implementation truth before this docs refresh comes from the top entry in `docs/BUILD_EXECUTION_BACKLOG.md`: `HitSparkAssetSystem` owns bounded player/common/FightFX spark asset-frame lookup before hit-effect event insertion. The latest trace aggregate remains 156/156 artifacts, 138 required, 18 optional, with `synthetic-imported-variable.json` checksum `3b33f7a8`.

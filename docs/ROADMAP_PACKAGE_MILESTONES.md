@@ -45,6 +45,10 @@ G1 setup-project refresh
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStateAvailabilityWorld ownership extraction
+  -> state/action availability lookup moved out of PlayableMatchRuntime
+  -> focused StateAvailabilitySystem tests cover compiled state precedence, parsed states, animation fallback, owner-backed lookup, and missing-state rejection
+  -> trace behavior unchanged; no new parity or score claim
 R2 RuntimeHitStateTransitionWorld ownership extraction
   -> direct-hit and ReversalDef p1/p2 state transition routing moved out of PlayableMatchRuntime
   -> focused HitStateTransitionSystem tests cover attacker-owned, target-owned, and unavailable-state behavior
@@ -122,12 +126,13 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeGuardWorld` ownership extraction
 - `RuntimeGetHitStateWorld` ownership extraction
 - `RuntimeHitStateTransitionWorld` ownership extraction
+- `RuntimeStateAvailabilityWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff.
-3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after hit-state transition ownership.
+3. R2 `MatchWorld` ownership around helper/effect/combat ordering with stable or documented trace behavior after state-availability ownership.
 
 ## Package Closeout Contract
 

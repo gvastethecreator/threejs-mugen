@@ -58,6 +58,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import { RuntimeStateAvailabilityWorld } from "./StateAvailabilitySystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
@@ -90,6 +91,8 @@ import type {
   MugenSnapshot,
   RuntimeSoundEvent,
 } from "./types";
+
+const stateAvailabilityWorld = new RuntimeStateAvailabilityWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1013,7 +1016,7 @@ function animationElapsedBeforeFrame(action: MugenAnimationAction, frameIndex: n
 function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove, options: EnterStateOptions = {}): void {
   const owner = options.clearStateOwner ? fighter : options.stateOwner ?? fighter.stateOwner ?? fighter;
   const ownerDefinition = owner.definition;
-  const state = owner.runtimeProgram?.states.find((candidate) => candidate.id === stateId)?.source ?? ownerDefinition.states?.find((candidate) => candidate.id === stateId);
+  const state = stateAvailabilityWorld.findState(owner, stateId);
   const actionId =
     options.animOverride ?? state?.anim ?? move?.actionId ?? (options.preserveAnimationWhenMissing ? undefined : stateId);
   recordStateExecution(fighter, stateId, owner);
@@ -1463,11 +1466,7 @@ function applyBindToTargetController(
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
-  return Boolean(
-    owner.runtimeProgram?.states.some((state) => state.id === stateId) ||
-      owner.definition.states?.some((state) => state.id === stateId) ||
-      owner.definition.animations.has(stateId),
-  );
+  return stateAvailabilityWorld.canEnterState(target, stateId, owner);
 }
 
 function advanceTargetMemory(fighter: FighterMatchState): void {
