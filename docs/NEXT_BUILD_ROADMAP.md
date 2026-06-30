@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimePauseControllerDispatchWorld ownership extraction
+  -> RuntimePauseControllerDispatchWorld now owns bounded active-state Pause/SuperPause side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed pause operation selection, apply-controller callback handoff, and operation telemetry through the dispatch boundary
+  -> match runtime still owns trigger filtering, active-state order, RuntimePauseWorld mutation, power/log application, paused-match progression, and hitpause ignored routing
+  -> focused PauseSystem coverage proves SuperPause telemetry/application through the dispatch boundary
+  -> no exact pause layering, super background/sound/spark timing, helper/redirect ownership, full pause VM parity, or score movement claim
 R2 RuntimeEnvShakeControllerDispatchWorld ownership extraction
   -> RuntimeEnvShakeControllerDispatchWorld now owns bounded active-state EnvShake side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed envshake operation selection, operation telemetry, and EnvShake event handoff through RuntimeEnvShakeWorld

@@ -86,7 +86,12 @@ import {
 import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
-import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
+import {
+  RuntimePauseControllerDispatchWorld,
+  RuntimePauseWorld,
+  RuntimePausedMatchWorld,
+  type MatchPauseControllerResult,
+} from "./PauseSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import {
   isRuntimeSpriteEffectControllerEffect,
@@ -125,6 +130,7 @@ const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
 const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
 const envShakeControllerDispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
+const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -197,7 +203,11 @@ type FighterMatchState = {
   contact: RuntimeContactMemory;
 };
 
-type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
+type PauseControllerHandler = (
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  operation?: PauseControllerOp,
+) => MatchPauseControllerResult | undefined;
 type EnvColorControllerHandler = (controller: MugenStateController, operation?: EnvColorControllerOp) => void;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
@@ -520,13 +530,14 @@ export class PlayableMatchRuntime {
     });
   }
 
-  private applyMatchPauseController(fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp): void {
+  private applyMatchPauseController(
+    fighter: FighterMatchState,
+    controller: MugenStateController,
+    operation?: PauseControllerOp,
+  ): MatchPauseControllerResult {
     const result = this.pauseWorld.applyController(fighter, controller, this.tick, operation);
     if (!result.pause) {
-      return;
-    }
-    if (operation) {
-      compatibilityTelemetryWorld.recordOperation(fighter, operation);
+      return result;
     }
     if (result.powerDelta !== 0) {
       applyRuntimePowerDelta(fighter.runtime, result.powerDelta, fighter.definition.constants);
@@ -534,6 +545,7 @@ export class PlayableMatchRuntime {
     this.logs.unshift(
       `${fighter.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
+    return result;
   }
 
   private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {
@@ -1108,8 +1120,13 @@ function runActiveStateControllers(
           getTargetConst: (target, name) => runtimeConst(target.definition, name),
         });
       } else if (dispatch.effect === "pause") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
+        pauseControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "sound") {
         audioControllerDispatchWorld.apply({
           actor: fighter,

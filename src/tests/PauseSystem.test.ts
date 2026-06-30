@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
   RuntimePausedMatchWorld,
+  RuntimePauseControllerDispatchWorld,
   RuntimePauseWorld,
   tickMatchPause,
   toMatchPauseSnapshot,
@@ -146,6 +148,40 @@ describe("PauseSystem", () => {
     world.reset();
     expect(world.current()).toBeUndefined();
     expect(world.snapshot()).toBeUndefined();
+  });
+
+  it("dispatches active Pause controllers with telemetry hooks", () => {
+    const dispatchWorld = new RuntimePauseControllerDispatchWorld();
+    const source = controller("SuperPause", { time: "9", movetime: "3", darken: "0", poweradd: "75" });
+    const ir = compileControllerIr(source);
+    const fighter = actor("p1", 400);
+    const appliedControllers: string[] = [];
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      applyController: (activeActor, activeController, operation) => {
+        appliedControllers.push(`${activeController.type}:${operation?.controllerType}:${operation?.time}`);
+        return createMatchPauseFromController(activeActor, activeController, 12, operation);
+      },
+      recordController: (_actor, activeController) => recordedControllers.push(activeController.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.controllerType}:${operation.time}`),
+    });
+
+    expect(result.result?.pause).toMatchObject({
+      type: "SuperPause",
+      remaining: 9,
+      moveTime: 3,
+      darken: false,
+      sourceStateNo: 400,
+    });
+    expect(result.result?.powerDelta).toBe(75);
+    expect(appliedControllers).toEqual(["SuperPause:superpause:9"]);
+    expect(recordedControllers).toEqual(["SuperPause"]);
+    expect(recordedOperations).toEqual(["superpause:9"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
   it("owns paused-match source movetime ordering and freezes the non-moving actor", () => {

@@ -1,4 +1,5 @@
 import type { PauseControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
@@ -83,6 +84,24 @@ export type RuntimePausedMatchAdvanceResult = {
   ticked: boolean;
 };
 
+export type RuntimePauseControllerDispatchOptions<TActor extends MatchPauseActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  applyController: (
+    actor: TActor,
+    controller: MugenStateController,
+    operation?: PauseControllerOp,
+  ) => MatchPauseControllerResult | undefined;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: PauseControllerOp) => void;
+};
+
+export type RuntimePauseControllerDispatchResult = {
+  result?: MatchPauseControllerResult;
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
+
 export class RuntimePauseWorld {
   private pause?: RuntimeMatchPause;
 
@@ -118,6 +137,24 @@ export class RuntimePauseWorld {
       this.pause = result.pause;
     }
     return result;
+  }
+}
+
+export class RuntimePauseControllerDispatchWorld {
+  apply<TActor extends MatchPauseActor>(
+    options: RuntimePauseControllerDispatchOptions<TActor>,
+  ): RuntimePauseControllerDispatchResult {
+    const operation = options.controller.operation?.kind === "pause" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    const result = options.applyController(options.actor, options.controller.source, operation);
+    if (result?.pause && operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    return {
+      result,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(result?.pause && operation && options.recordOperation),
+    };
   }
 }
 
