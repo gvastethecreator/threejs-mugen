@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime guard-distance ownership
+
+Changed:
+
+- Added `RuntimeGuardDistanceWorld` as a bounded runtime ownership boundary for `InGuardDist` / auto-guard proximity checks: current move presence, spent-hit rejection, pre-active guard-distance window, guardflag / `AssertSpecial` / unguardable filtering, caller-supplied hurtboxes, and authored/default `guard.dist` thresholds.
+- Replaced the inline `PlayableMatchRuntime` guard-distance helper logic with the new runtime system while preserving the existing fallback hurtbox and keeping `CombatResolver` as the low-level box/guard eligibility helper owner.
+- Added focused `RuntimeGuardDistanceSystem` tests for the pre-active guard-distance window, missing/spent/out-of-window rejects, guardflag and `AssertSpecial` rejects, unguardable attacks, and authored `guard.dist` thresholds.
+- Updated roadmap/workplan docs and the runtime local issue so `RuntimeGuardDistanceWorld` is tracked as the latest R2 ownership checkpoint.
+
+Evidence:
+
+- `pnpm test` passes: 78 files / 685 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-debug.png`, and `.scratch/qa/qa-smoke/studio-evidence.png`; actors, hit spark, HUD, runtime debug, Evidence trust chain, and Studio panels remain visible without obvious overlap or framing regression.
+
+Claim allowed:
+
+- Current `InGuardDist` / auto-guard distance logic has a named runtime-system boundary with focused unit coverage and no trace drift.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact MUGEN/IKEMEN proximity guard parity, guard-end timing, guard effects, air-guard landing, broad Common1 controller-loop parity, full guard VM parity, or score movement.
+
 ## 2026-06-30 - Studio Trust/System CSS budget trim
 
 Changed:

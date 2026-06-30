@@ -1,6 +1,6 @@
 # Next Build Roadmap
 
-Last updated: 2026-06-29
+Last updated: 2026-06-30
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeGuardDistanceWorld ownership
+  -> RuntimeGuardDistanceWorld owns bounded InGuardDist/auto-guard proximity checks previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current move presence, spent-hit rejection, pre-active guard-distance window, guardflag/AssertSpecial/unguardable checks, hurtbox fallback handoff, and authored/default guard.dist checks through that boundary
+  -> focused RuntimeGuardDistanceSystem tests prove the pre-active window, missing/spent/out-of-window rejects, guardflag and AssertSpecial rejects, unguardable attacks, and authored guard.dist thresholds
+  -> no exact proximity guard parity, guard-end timing, guard effects, air-guard landing, broad Common1 controller-loop parity, or score movement claim
 R2 RuntimeAnimationWorld ownership
   -> RuntimeAnimationWorld owns bounded actor animation advancement and timing helpers previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates current animTime/frameIndex/frameElapsed advancement, final-frame hold, loopStart completion, invalid-duration clamping, AnimTime/AnimElemTime helper math, and current HitDef active-window duration math through that boundary
@@ -262,7 +267,7 @@ I1 text-system scanner expansion
   -> no ZSS/Lua/text rendering/runtime execution claim
 ```
 
-Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus multi-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus multi-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -303,7 +308,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.

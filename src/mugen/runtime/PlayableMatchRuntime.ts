@@ -28,10 +28,8 @@ import {
   collisionBoxesIntersect,
   DEFAULT_RUNTIME_GUARD_DISTANCE,
   findRuntimeHitOverride,
-  hasRuntimeGuardDistance,
   hasRuntimeBoxContact,
   hitAttributeMatches,
-  isRuntimeGuarding,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
   scaleRuntimeIncomingDamage,
@@ -56,6 +54,7 @@ import { RuntimeGuardWorld } from "./GuardSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
+import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import {
@@ -114,6 +113,7 @@ import type {
 
 const stateAvailabilityWorld = new RuntimeStateAvailabilityWorld();
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
+const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -234,6 +234,7 @@ export class PlayableMatchRuntime {
   private readonly assertSpecialWorld = new RuntimeAssertSpecialWorld();
   private readonly orientationWorld = new RuntimeOrientationWorld();
   private readonly guardWorld = new RuntimeGuardWorld();
+  private readonly guardDistanceWorld = new RuntimeGuardDistanceWorld();
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
@@ -405,7 +406,7 @@ export class PlayableMatchRuntime {
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
     );
-    applyAutoGuardStart(this.p2, this.p1, this.guardWorld);
+    applyAutoGuardStart(this.p2, this.p1, this.guardWorld, this.guardDistanceWorld);
     if (!this.pauseWorld.current()) {
       advanceFighter(
         this.p2,
@@ -425,7 +426,7 @@ export class PlayableMatchRuntime {
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
       );
-      applyAutoGuardStart(this.p1, this.p2, this.guardWorld);
+      applyAutoGuardStart(this.p1, this.p2, this.guardWorld, this.guardDistanceWorld);
     }
     this.matchInteractionWorld.advanceRuntime({
       p1: this.p1,
@@ -1885,7 +1886,12 @@ function applyDefaultProjectileGetHitState(defender: FighterMatchState, getHitSt
   enterState(defender, stateNo, undefined, { clearStateOwner: true });
 }
 
-function applyAutoGuardStart(defender: FighterMatchState, attacker: FighterMatchState, guardWorld: RuntimeGuardWorld): void {
+function applyAutoGuardStart(
+  defender: FighterMatchState,
+  attacker: FighterMatchState,
+  guardWorld: RuntimeGuardWorld,
+  guardDistanceWorld: RuntimeGuardDistanceWorld,
+): void {
   if (defender.definition.source !== "imported") {
     return;
   }
@@ -1898,7 +1904,7 @@ function applyAutoGuardStart(defender: FighterMatchState, attacker: FighterMatch
   ) {
     return;
   }
-  if (!evaluateRuntimeInGuardDist(defender, attacker)) {
+  if (!evaluateRuntimeInGuardDist(defender, attacker, guardDistanceWorld)) {
     return;
   }
   const stateNo = guardWorld.defaultGuardStartStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
@@ -1924,30 +1930,20 @@ function isMoveActive(move: DemoMove, tick: number): boolean {
   return tick >= move.activeStart && tick <= move.activeEnd;
 }
 
-function isMoveInGuardDistanceWindow(move: DemoMove, tick: number): boolean {
-  return tick >= Math.max(0, move.activeStart - 1) && tick <= move.activeEnd;
-}
-
-function evaluateRuntimeInGuardDist(fighter: FighterMatchState, opponent: FighterMatchState): boolean {
-  const move = opponent.currentMove;
-  if (!move || opponent.hasHit || !isMoveInGuardDistanceWindow(move, opponent.moveTick)) {
-    return false;
-  }
-  if (
-    !isRuntimeGuarding(true, fighter.runtime.moveType, fighter.runtime.stateType, move.guardFlag ?? "MA", {
-      defenderAssertSpecial: fighter.runtime.assertSpecial,
-      attackUnguardable: opponent.runtime.assertSpecial?.unguardable,
-    })
-  ) {
-    return false;
-  }
+function evaluateRuntimeInGuardDist(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  guardDistanceWorld: RuntimeGuardDistanceWorld = defaultGuardDistanceWorld,
+): boolean {
   const hurtBoxes = getCurrentFrame(fighter)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
-  return hasRuntimeGuardDistance(
-    opponent.runtime,
-    move.hitbox,
-    fighter.runtime,
-    hurtBoxes,
-    move.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE,
+  return guardDistanceWorld.isInGuardDistance(
+    { runtime: fighter.runtime, hurtBoxes },
+    {
+      runtime: opponent.runtime,
+      currentMove: opponent.currentMove,
+      moveTick: opponent.moveTick,
+      hasHit: opponent.hasHit,
+    },
   );
 }
 

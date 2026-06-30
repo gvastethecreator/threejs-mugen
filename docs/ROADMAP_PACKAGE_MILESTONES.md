@@ -1,6 +1,6 @@
 # Roadmap Package Milestones
 
-Last updated: 2026-06-29
+Last updated: 2026-06-30
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeGuardDistanceWorld ownership
+  -> RuntimeGuardDistanceWorld owns bounded InGuardDist/auto-guard proximity checks previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current move presence, spent-hit rejection, pre-active guard-distance window, guardflag/AssertSpecial/unguardable checks, hurtbox fallback handoff, and authored/default guard.dist checks through that boundary
+  -> focused RuntimeGuardDistanceSystem tests prove the pre-active window, missing/spent/out-of-window rejects, guardflag and AssertSpecial rejects, unguardable attacks, and authored guard.dist thresholds
+  -> no exact proximity guard parity, guard-end timing, guard effects, air-guard landing, broad Common1 controller-loop parity, or score claim
 R2 RuntimeAnimationWorld ownership
   -> RuntimeAnimationWorld owns bounded actor animation advancement and timing helpers previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates current animTime/frameIndex/frameElapsed advancement, final-frame hold, loopStart completion, invalid-duration clamping, AnimTime/AnimElemTime helper math, and current HitDef active-window duration math through that boundary
@@ -303,6 +308,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeMoveLifecycleWorld` ownership extraction
 - `RuntimeInputControlWorld` ownership extraction
 - `RuntimeAnimationWorld` ownership extraction
+- `RuntimeGuardDistanceWorld` ownership extraction
 - `RuntimeKinematicsWorld` ownership extraction
 - visual-helper removal ownership
 - helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded parent/root read-only redirects
@@ -315,7 +321,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeAnimationWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeGuardDistanceWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 
