@@ -8065,6 +8065,64 @@ export function createSyntheticImportedHelperEnemyNearTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedHelperBindToParentTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-bindtoparent-attacker",
+    displayName: "Synthetic Imported Helper BindToParent Attacker",
+    withHelper: true,
+    helperBindToParentRoute: { stateNo: 1203, animNo: 923, pos: [40, -18], time: 2 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-bindtoparent-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-bindtoparent-golden",
+      label: "Synthetic imported Helper BindToParent route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper BindToParent trace proves the bounded helper-local micro-VM can bind a visual Helper to its current owner state using static pos/time params. It does not claim player-state BindToParent, BindToRoot trace parity, nested helper ancestry, keyctrl, teams, helper-owned combat, or exact MUGEN/IKEMEN helper binding parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-bindtoparent-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1203,
+            animNo: 923,
+            observedPosYAtLeast: -24,
+            observedPosYAtMost: -12,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1203, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9362,6 +9420,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperTriggerTime?: number;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
+  helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -9721,6 +9780,7 @@ ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
+${options.helperBindToParentRoute ? helperBindToParentRouteBlock(options.helperBindToParentRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
@@ -9914,6 +9974,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
             ...(options.helperEnemyNearRoute?.animNo === undefined
               ? []
               : ([[options.helperEnemyNearRoute.animNo, helperTraceAction(options.helperEnemyNearRoute.animNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
+            ...(options.helperBindToParentRoute?.animNo === undefined
+              ? []
+              : ([[options.helperBindToParentRoute.animNo, helperTraceAction(options.helperBindToParentRoute.animNo)]] as Array<[
                   number,
                   MugenAnimationAction,
                 ]>)),
@@ -12016,6 +12082,38 @@ type = ChangeState
 trigger1 = Time = 0
 trigger1 = EnemyNear, StateNo = ${opponentStateNo}
 trigger1 = EnemyNear, Life = ${opponentLife}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperBindToParentRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperBindToParentRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  const pos = route.pos ?? [40, -18];
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Bind To Parent]
+type = BindToParent
+trigger1 = Time = 0
+time = ${route.time ?? 2}
+pos = ${pos[0]},${pos[1]}
+
+[State 1200, Parent Bind Route]
+type = ChangeState
+trigger1 = Time = 0
 value = ${route.stateNo}
 ctrl = 0
 

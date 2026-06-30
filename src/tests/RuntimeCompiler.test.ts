@@ -182,6 +182,10 @@ time = 20
     expect(getControllerSupport("AssertSpecial").level).toBe("partial");
     expect(isRuntimeExecutableController("AngleDraw")).toBe(true);
     expect(getControllerSupport("AngleDraw").runtimeLabel).toBe("sprite rotation");
+    expect(isRuntimeExecutableController("BindToParent")).toBe(true);
+    expect(getControllerSupport("BindToParent").runtimeLabel).toBe("bounded helper binding");
+    expect(isRuntimeExecutableController("BindToRoot")).toBe(true);
+    expect(getControllerSupport("BindToRoot").runtimeLabel).toBe("bounded helper binding");
   });
 
   it("compiles accepted no-op controllers into typed operations", () => {
@@ -371,6 +375,22 @@ time = 20
       controllerType: "targetdrop",
       excludeId: 3,
       keepOne: true,
+    });
+  });
+
+  it("compiles helper owner bind controllers into typed helper-bind operations", () => {
+    expect(compileControllerIr(controller(6000, "BindToParent", [], { pos: "24,-18", time: "7", facing: "-1" })).operation).toEqual({
+      kind: "helper-bind",
+      controllerType: "bindtoparent",
+      pos: [24, -18],
+      time: 7,
+      facing: -1,
+    });
+    expect(compileControllerIr(controller(6000, "BindToRoot", [], { time: "-1" })).operation).toEqual({
+      kind: "helper-bind",
+      controllerType: "bindtoroot",
+      pos: [0, 0],
+      time: Number.POSITIVE_INFINITY,
     });
   });
 

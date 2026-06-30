@@ -400,6 +400,105 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("applies bounded helper-local BindToParent against owner runtime state", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("BindToParent", { pos: "24,-18", time: "2", facing: "-1" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6001, 901)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+      ]),
+    });
+    const ownerState = actor("p1", "Owner", { pos: { x: 100, y: 5 }, facing: -1 }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      parentState: ownerState,
+      rootState: ownerState,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["BindToParent", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6001,
+      animNo: 901,
+      pos: { x: 76, y: -13 },
+      facing: 1,
+      stateTime: 1,
+      age: 1,
+    });
+    expect(helper.ownerBind).toMatchObject({ target: "parent", offset: { x: 24, y: -18 }, remaining: 1 });
+
+    ownerState.pos = { x: 80, y: 6 };
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      parentState: ownerState,
+      rootState: ownerState,
+    });
+
+    expect(helper.pos).toEqual({ x: 56, y: -12 });
+    expect(helper.ownerBind).toBeUndefined();
+  });
+
+  it("applies bounded helper-local BindToRoot against root runtime state", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(state(6000, 900, [controller("BindToRoot", { pos: "5,-10", time: "1" }, ["Time = 0"])])),
+        ],
+      },
+      animations: new Map([[900, action(900, 4)]]),
+    });
+    const rootState = actor("p1", "Root", { pos: { x: 30, y: 7 }, facing: 1 }).runtime;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      rootState,
+    });
+
+    expect(helper).toMatchObject({
+      pos: { x: 35, y: -3 },
+      stateTime: 1,
+      age: 1,
+    });
+    expect(helper.ownerBind).toBeUndefined();
+  });
+
+  it("does not execute helper-local BindToParent when owner runtime state is missing", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [compileStateProgram(state(6000, 900, [controller("BindToParent", { pos: "24,-18", time: "2" }, ["Time = 0"])]))],
+      },
+      animations: new Map([[900, action(900, 4)]]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual([]);
+    expect(helper).toMatchObject({
+      pos: { x: 0, y: 0 },
+      stateTime: 1,
+      age: 1,
+    });
+    expect(helper.ownerBind).toBeUndefined();
+  });
+
   it("evaluates bounded helper EnemyNear redirects against opponent runtime state", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

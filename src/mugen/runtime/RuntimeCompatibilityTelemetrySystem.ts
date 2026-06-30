@@ -125,6 +125,9 @@ export class RuntimeCompatibilityTelemetryWorld {
     if (operation.kind === "bindtotarget") {
       return "bindtotarget";
     }
+    if (operation.kind === "helper-bind") {
+      return `helper-bind:${operation.controllerType}`;
+    }
     if (operation.kind === "pause") {
       return `pause:${operation.controllerType}`;
     }

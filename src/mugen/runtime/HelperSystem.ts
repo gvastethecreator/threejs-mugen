@@ -51,6 +51,14 @@ export type RuntimeHelper = {
   superMoveTime: number;
   spritePriority: number;
   soundEvents: RuntimeSoundEvent[];
+  ownerBind?: RuntimeHelperOwnerBind;
+};
+
+export type RuntimeHelperOwnerBind = {
+  target: "parent" | "root";
+  offset: { x: number; y: number };
+  remaining: number;
+  facing?: 1 | -1;
 };
 
 export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
@@ -147,7 +155,7 @@ export function advanceRuntimeHelpers(
         destroyed.add(helper.serialId);
         continue;
       }
-      advanceRuntimeHelper(helper);
+      advanceRuntimeHelper(helper, options);
       consumeRuntimeHelperPauseMoveTime(helper, options.pauseKind);
     }
   }
@@ -183,6 +191,13 @@ export function runRuntimeHelperStateControllers(
   }
   for (const controller of stateProgram.controllers) {
     if (!helperTriggersPass(helper, controller, options)) {
+      continue;
+    }
+    if (controller.normalizedType === "bindtoparent" || controller.normalizedType === "bindtoroot") {
+      if (!applyRuntimeHelperOwnerBindController(helper, controller, options)) {
+        continue;
+      }
+      options.onController?.(helper, controller);
       continue;
     }
     const dispatch = dispatchStateProgramController(controller);
@@ -271,6 +286,15 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           ignoreHitPause: helper.ignoreHitPause,
           pauseMoveTime: helper.pauseMoveTime,
           superMoveTime: helper.superMoveTime,
+          ...(helper.ownerBind
+            ? {
+                ownerBind: {
+                  target: helper.ownerBind.target,
+                  offset: { ...helper.ownerBind.offset },
+                  remaining: Number.isFinite(helper.ownerBind.remaining) ? helper.ownerBind.remaining : -1,
+                },
+              }
+            : {}),
         },
         runtime: {
           pos: { ...helper.pos },
@@ -412,6 +436,58 @@ function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
   helper.frameElapsed = 0;
 }
 
+function applyRuntimeHelperOwnerBindController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState">,
+): boolean {
+  const operation = controller.operation?.kind === "helper-bind" ? controller.operation : undefined;
+  const target = (operation?.controllerType ?? controller.normalizedType) === "bindtoroot" ? "root" : "parent";
+  const targetState = target === "root" ? options.rootState : options.parentState;
+  if (!targetState) {
+    return false;
+  }
+  const offset = operation?.pos ?? pairWithDefault(numberPair(findControllerParam(controller.source, "pos")));
+  const facing = normalizeFacing(operation?.facing ?? firstNumber(findControllerParam(controller.source, "facing")));
+  helper.ownerBind = {
+    target,
+    offset: { x: offset[0], y: offset[1] },
+    remaining: operation?.time ?? clampHelperBindTime(firstNumber(findControllerParam(controller.source, "time")) ?? 1),
+    ...(facing === undefined ? {} : { facing }),
+  };
+  applyRuntimeHelperOwnerBind(helper, { parentState: options.parentState, rootState: options.rootState }, false);
+  return true;
+}
+
+function applyRuntimeHelperOwnerBind(
+  helper: RuntimeHelper,
+  options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState">,
+  tickRemaining: boolean,
+): void {
+  const bind = helper.ownerBind;
+  if (!bind) {
+    return;
+  }
+  const targetState = bind.target === "root" ? options.rootState : options.parentState;
+  if (!targetState) {
+    helper.ownerBind = undefined;
+    return;
+  }
+  helper.pos = {
+    x: targetState.pos.x + bind.offset.x * targetState.facing,
+    y: targetState.pos.y + bind.offset.y,
+  };
+  if (bind.facing !== undefined) {
+    helper.facing = bind.facing === 1 ? targetState.facing : ((targetState.facing * -1) as 1 | -1);
+  }
+  if (tickRemaining && Number.isFinite(bind.remaining)) {
+    bind.remaining -= 1;
+    if (bind.remaining <= 0) {
+      helper.ownerBind = undefined;
+    }
+  }
+}
+
 function helperExpressionContext(
   helper: RuntimeHelper,
   options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState"> = {},
@@ -486,7 +562,7 @@ function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRunt
   helper.fvars = [...runtime.fvars];
 }
 
-function advanceRuntimeHelper(helper: RuntimeHelper): void {
+function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {
   helper.age += 1;
   helper.stateTime += 1;
   helper.pos.x += helper.vel.x;
@@ -498,6 +574,7 @@ function advanceRuntimeHelper(helper: RuntimeHelper): void {
     const next = helper.frameIndex + 1;
     helper.frameIndex = next < helper.action.frames.length ? next : helper.action.loopStart ?? helper.action.frames.length - 1;
   }
+  applyRuntimeHelperOwnerBind(helper, options, true);
 }
 
 function shouldAdvanceRuntimeHelper(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): boolean {
@@ -579,6 +656,10 @@ function numberPair(value: string | undefined): [number, number] | undefined {
   return Number.isFinite(x) && Number.isFinite(y) ? [x, y] : undefined;
 }
 
+function pairWithDefault(value: [number, number] | undefined): [number, number] {
+  return [value?.[0] ?? 0, value?.[1] ?? 0];
+}
+
 function clampHelperVelocity(value: number): number {
   return Math.max(-80, Math.min(80, value));
 }
@@ -597,6 +678,20 @@ function isDefaultScale(scale: { x: number; y: number }): boolean {
 
 function clampHelperTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(1200, Math.round(value)));
+}
+
+function clampHelperBindTime(value: number): number {
+  if (value < 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+  return Math.max(0, Math.min(3600, Math.round(value)));
+}
+
+function normalizeFacing(value: number | undefined): 1 | -1 | undefined {
+  if (value === 1 || value === -1) {
+    return value;
+  }
+  return undefined;
 }
 
 function booleanNumber(value: string | undefined): boolean | undefined {

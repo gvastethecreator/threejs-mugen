@@ -296,6 +296,11 @@ export type ActorEffectSnapshot =
       ignoreHitPause: boolean;
       pauseMoveTime: number;
       superMoveTime: number;
+      ownerBind?: {
+        target: "parent" | "root";
+        offset: { x: number; y: number };
+        remaining: number;
+      };
     }
   | {
       kind: "projectile";

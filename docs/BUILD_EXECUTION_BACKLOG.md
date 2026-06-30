@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local BindToParent trace gate
+
+Changed:
+
+- Added typed `helper-bind:*` controller op data for static `BindToParent` / `BindToRoot` params.
+- Registered `BindToParent` and `BindToRoot` as bounded helper-binding controller families.
+- Extended the bounded `HelperSystem` helper-local micro-VM so current visual Helpers can apply static owner/root binds against cloned owner runtime state when `RuntimeEffectLifecycleWorld` supplies parent/root context.
+- Added focused helper-runtime coverage for `BindToParent`, `BindToRoot`, persistence across bind time, facing-relative offsets, and fail-closed behavior when owner/root state is missing.
+- Added required `synthetic-imported-helper-bindtoparent.json` trace evidence where a spawned visual Helper routes from state `1200` to `1203` / anim `923` and exposes a parent-bound negative Y offset through effect actor-frame evidence.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 4 files / 237 tests.
+- `pnpm test` passes: 81 files / 713 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 171 / 171 artifacts, 151 required, 20 optional, 0 failed; `synthetic-imported-helper-bindtoparent.json` checksum is `f9922c0e`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current visual Helper actors running the bounded helper-local micro-VM can execute static `BindToParent` against the current owner runtime state; focused unit coverage also proves the same bounded helper-local path for `BindToRoot`.
+
+Claim blocked:
+
+- Player-state `BindToParent` / `BindToRoot`, nested helper ancestry, team/keyctrl ownership, helper-owned opponents/combat/effects/projectiles, exact binding tick order, root-vs-parent scope parity beyond first-generation visual Helpers, dynamic params, and full MUGEN/IKEMEN helper binding parity remain blocked.
+
 ## 2026-06-30 - Bounded helper-local EnemyNear trace gate
 
 Changed:

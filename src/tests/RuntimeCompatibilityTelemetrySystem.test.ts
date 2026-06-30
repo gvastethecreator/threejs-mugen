@@ -75,6 +75,9 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
     expect(world.operationKey({ kind: "bindtotarget", pos: [0, 0], postype: "foot", time: 1 } as ControllerOp)).toBe(
       "bindtotarget",
     );
+    expect(world.operationKey({ kind: "helper-bind", controllerType: "bindtoparent", pos: [0, 0], time: 1 } as ControllerOp)).toBe(
+      "helper-bind:bindtoparent",
+    );
     expect(world.operationKey({ kind: "pause", controllerType: "superpause", time: 10, moveTime: 2, darken: true, powerAdd: 0 })).toBe(
       "pause:superpause",
     );

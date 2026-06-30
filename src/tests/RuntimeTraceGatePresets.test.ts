@@ -94,6 +94,7 @@ import {
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperIsHelperTraceArtifact,
   createSyntheticImportedHelperEnemyNearTraceArtifact,
+  createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
   createSyntheticImportedHelperIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperPauseMoveTimeTraceArtifact,
@@ -1352,6 +1353,50 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(gate?.requirements.requiredActorFrames).toEqual([
       { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1202, animNo: 922, minFrames: 1 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper BindToParent artifact with helper-local owner bind evidence", () => {
+    const artifact = createSyntheticImportedHelperBindToParentTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-bindtoparent-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-bindtoparent-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "helper",
+          ownerId: "p1",
+          stateNo: 1203,
+          animNo: 923,
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "helper",
+        ownerId: "p1",
+        stateNo: 1203,
+        animNo: 923,
+        observedPosYAtLeast: -24,
+        observedPosYAtMost: -12,
+        minFrames: 1,
+      },
     ]);
   });
 

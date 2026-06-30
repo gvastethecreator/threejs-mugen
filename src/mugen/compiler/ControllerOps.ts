@@ -178,6 +178,14 @@ export type HelperControllerOp = {
   spritePriority: number;
 };
 
+export type HelperBindControllerOp = {
+  kind: "helper-bind";
+  controllerType: "bindtoparent" | "bindtoroot";
+  pos: [number, number];
+  time: number;
+  facing?: number;
+};
+
 export type ExplodControllerOp = {
   kind: "explod";
   explodId?: number;
@@ -453,6 +461,7 @@ export type ControllerOp =
   | ProjectileControllerOp
   | ModifyProjectileControllerOp
   | HelperControllerOp
+  | HelperBindControllerOp
   | ExplodControllerOp
   | RemoveExplodControllerOp
   | ModifyExplodControllerOp
@@ -574,6 +583,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "helper") {
     return compileHelperControllerOp(controller);
+  }
+  if (type === "bindtoparent" || type === "bindtoroot") {
+    return compileHelperBindControllerOp(controller, type);
   }
   if (type === "explod") {
     return compileExplodControllerOp(controller);
@@ -1317,6 +1329,16 @@ function helperScalePair(controller: MugenStateController): [number, number?] | 
   const x = firstNumber(findParam(controller, "size.xscale") ?? findParam(controller, "xscale"));
   const y = firstNumber(findParam(controller, "size.yscale") ?? findParam(controller, "yscale"));
   return x === undefined && y === undefined ? undefined : [x ?? 1, y ?? x ?? 1];
+}
+
+function compileHelperBindControllerOp(controller: MugenStateController, type: HelperBindControllerOp["controllerType"]): HelperBindControllerOp {
+  return definedObject({
+    kind: "helper-bind" as const,
+    controllerType: type,
+    pos: pairWithDefault(numberPair(findParam(controller, "pos"))),
+    time: controllerDuration(firstNumber(findParam(controller, "time")) ?? 1),
+    facing: firstNumber(findParam(controller, "facing")),
+  });
 }
 
 function compileExplodControllerOp(controller: MugenStateController): ExplodControllerOp {

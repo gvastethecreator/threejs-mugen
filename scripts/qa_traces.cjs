@@ -753,6 +753,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-bindtoparent",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperBindToParentTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-scale",
       required: true,
       artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),
