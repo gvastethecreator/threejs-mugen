@@ -212,15 +212,6 @@
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--section-accent) 72%, transparent);
   }
 
-.app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio :is(.asset-row, .evidence-record, .build-readiness-record):is(.is-warn, .is-planned, .is-partial) {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--warn) 84%, transparent);
-  }
-
-.app-shell.mode-studio :is(.asset-row, .evidence-record, .build-readiness-record):is(.is-error, .is-blocked) {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--danger) 88%, transparent);
-  }
-
 .app-shell.mode-studio .badge.warn,
   .app-shell.mode-studio .status-badge.warn,
   .app-shell.mode-studio .status-badge.partial,

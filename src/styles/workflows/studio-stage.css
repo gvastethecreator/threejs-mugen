@@ -217,18 +217,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row.is-ok {
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--stage-lab-accent) 74%, transparent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row.is-warn {
-    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--stage-lab-warn) 76%, transparent);
-  }
-
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row.is-error {
-    box-shadow: inset 3px 0 0 #c87772;
-  }
-
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .empty-state,
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .list-item {
     margin: 0;

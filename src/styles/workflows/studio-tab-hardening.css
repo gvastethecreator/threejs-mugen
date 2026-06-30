@@ -109,7 +109,6 @@
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--evidence-ok);
 }
 
 .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-warn,
@@ -117,7 +116,6 @@
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--evidence-warn);
 }
 
 .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-error,
@@ -125,7 +123,6 @@
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--evidence-danger);
 }
 
 .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-lane-strip .is-ok b,
@@ -286,21 +283,6 @@
   color: var(--evidence-danger);
   border-color: color-mix(in srgb, var(--evidence-danger) 34%, var(--editor-edge));
   background: color-mix(in srgb, var(--evidence-danger) 6%, var(--editor-row));
-}
-
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-ok {
-  box-shadow: inset 1px 0 0 var(--evidence-ok);
-}
-
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-warn,
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-planned,
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-partial {
-  box-shadow: inset 1px 0 0 var(--evidence-warn);
-}
-
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-error,
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-blocked {
-  box-shadow: inset 1px 0 0 var(--evidence-danger);
 }
 
 .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .section {
@@ -1132,21 +1114,18 @@
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--ok);
 }
 
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip .is-warn {
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--warn);
 }
 
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip .is-error {
   color: var(--text);
   border-color: color-mix(in srgb, var(--editor-edge) 64%, transparent);
   background: var(--editor-row);
-  box-shadow: inset 1px 0 0 var(--danger);
 }
 
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-lane-strip small,
@@ -1333,21 +1312,6 @@
 
 .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind {
   line-height: 1.15;
-}
-
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-ok {
-  box-shadow: inset 1px 0 0 var(--ok);
-}
-
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-warn,
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-planned,
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-partial {
-  box-shadow: inset 1px 0 0 var(--warn);
-}
-
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-error,
-.app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-blocked {
-  box-shadow: inset 1px 0 0 var(--danger);
 }
 
 .app-shell.mode-studio[data-studio-tab="assets"] .badge.ok,

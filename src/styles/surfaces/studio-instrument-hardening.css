@@ -196,29 +196,6 @@
   border-bottom: 0;
 }
 
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record.is-ok,
-.app-shell.mode-studio[data-studio-tab="build"] :is(.build-readiness-record, .source-package-row).is-ok,
-.app-shell.mode-studio[data-studio-tab="modules"] .module-node.is-active,
-.app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row.is-ok,
-.app-shell.mode-studio[data-studio-tab="stage"] .stage-layer-row.is-ok {
-  box-shadow: inset 2px 0 0 var(--ok);
-}
-
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record:is(.is-warn, .is-planned, .is-partial),
-.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record:is(.is-warn, .is-planned, .is-partial),
-.app-shell.mode-studio[data-studio-tab="modules"] .module-node.is-planned,
-.app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:is(.is-warn, .is-planned, .is-partial),
-.app-shell.mode-studio[data-studio-tab="stage"] .stage-layer-row.is-warn {
-  box-shadow: inset 2px 0 0 var(--warn);
-}
-
-.app-shell.mode-studio[data-studio-tab="evidence"] .evidence-record:is(.is-error, .is-blocked),
-.app-shell.mode-studio[data-studio-tab="build"] .build-readiness-record:is(.is-error, .is-blocked),
-.app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row:is(.is-error, .is-blocked),
-.app-shell.mode-studio[data-studio-tab="stage"] .stage-layer-row.is-error {
-  box-shadow: inset 2px 0 0 var(--danger);
-}
-
 .app-shell.mode-studio[data-studio-tab="evidence"] .record-kicker,
 .app-shell.mode-studio[data-studio-tab="build"] .record-kicker,
 .app-shell.mode-studio[data-studio-tab="modules"] .record-kicker {

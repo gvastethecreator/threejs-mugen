@@ -396,22 +396,6 @@
     line-height: 1.08;
   }
 
-.app-shell.mode-studio .studio-mission-node.is-ok::after,
-  .app-shell.mode-studio :is(.workbench-route-button, .asset-row, .engine-module-row, .evidence-record, .build-readiness-record).is-ok,
-  .app-shell.mode-studio .workbench-lane-strip .is-ok {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--ok) 66%, transparent);
-  }
-
-.app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio :is(.asset-row, .engine-module-row, .evidence-record, .build-readiness-record):is(.is-warn, .is-planned, .is-partial),
-  .app-shell.mode-studio .workbench-lane-strip .is-warn {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--warn) 60%, transparent);
-  }
-
-.app-shell.mode-studio :is(.asset-row, .engine-module-row, .evidence-record, .build-readiness-record):is(.is-error, .is-blocked) {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--danger) 68%, transparent);
-  }
-
 .app-shell.mode-studio .workbench-ops-section,
   .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .acceptance-gates-section,

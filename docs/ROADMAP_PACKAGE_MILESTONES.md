@@ -50,8 +50,8 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 2,446 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 131 repeated declaration groups, 111 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 2,446 rules, 131 repeated declaration groups, 111 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> pnpm qa:css reports 554,644 bytes, 2,432 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 130 repeated declaration groups, 111 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 554,644 bytes, 2,432 rules, 130 repeated declaration groups, 111 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
   -> latest narrow cleanup groups legacy Studio truncation/text-wrap/grid/align/text rows, absorbs redundant shell/header/status/summary overrides into base/surface owners, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader repeated declaration groups stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up

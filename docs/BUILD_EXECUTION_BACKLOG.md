@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS status-rail extraction
+
+Changed:
+
+- Added `src/styles/surfaces/studio-status-rails.css` as the late Studio owner for shared status side rails across Workbench lanes, Assets rows/lanes, Build/Evidence trust rows, Stage layer rows, and command/acceptance rows.
+- Removed duplicate status-rail `box-shadow` blocks from desktop/editor/surface polish files and from workflow modules that should own layout/content, not repeated state rails.
+- Kept `src/styles/studio.css` as the single ordered Studio cascade entrypoint and tightened `pnpm qa:css:budget` to the new 554,644-byte / 2,432-rule / 130 repeated-group ceiling while preserving the 111-overlap ceiling.
+
+Evidence:
+
+- `pnpm qa:css` reports 554,644 active CSS bytes, 2,432 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 130 repeated declaration groups, 111 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes against the new 554,644-byte / 2,432-rule / 130-repeated-group / 111-overlap ceiling.
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 656 tests.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5301`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-stage.png`, and `.scratch/qa/qa-smoke/runtime-desktop.png`.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Studio status rails now have one modular CSS owner instead of repeated rail blocks spread across editor, desktop, surface, and workflow polish files.
+
+Claim blocked:
+
+- This is CSS architecture and UI-state ownership cleanup only. It does not add runtime behavior, authoring workflows, IKEMEN support, or score movement.
+
 ## 2026-06-30 - Studio CSS byte-budget and selector compaction
 
 Changed:

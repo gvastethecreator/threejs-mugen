@@ -182,23 +182,7 @@
     background: var(--editor-row-hover);
   }
 
-.app-shell.mode-studio :is(.workbench-route-button, .asset-row, .evidence-record, .build-readiness-record).is-ok,
-  .app-shell.mode-studio .workbench-lane-strip .is-ok {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--ok) 68%, transparent);
-  }
-
-.app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio :is(.asset-row, .evidence-record, .build-readiness-record):is(.is-warn, .is-planned, .is-partial),
-  .app-shell.mode-studio .workbench-lane-strip .is-warn {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--warn) 66%, transparent);
-  }
-
-.app-shell.mode-studio :is(.asset-row, .evidence-record, .build-readiness-record):is(.is-error, .is-blocked),
-  .app-shell.mode-studio .workbench-lane-strip .is-error {
-    box-shadow: inset 1px 0 0 color-mix(in srgb, var(--danger) 72%, transparent);
-  }
-
-.app-shell.mode-studio .workbench-action-bar {
+  .app-shell.mode-studio .workbench-action-bar {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 

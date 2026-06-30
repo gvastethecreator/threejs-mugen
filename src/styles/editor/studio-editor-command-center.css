@@ -353,19 +353,6 @@
     background: color-mix(in srgb, var(--danger) 7%, var(--editor-panel-pressed));
   }
 
-  .app-shell.mode-studio :is(.workbench-route-button, .asset-row, .build-readiness-record, .engine-module-row, .evidence-record).is-ok {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--ok) 84%, transparent);
-  }
-
-.app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio :is(.asset-row, .build-readiness-record, .engine-module-row, .evidence-record):is(.is-warn, .is-planned, .is-partial) {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--warn) 82%, transparent);
-  }
-
-.app-shell.mode-studio :is(.asset-row, .build-readiness-record, .engine-module-row, .evidence-record):is(.is-error, .is-blocked) {
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--danger) 86%, transparent);
-  }
-
 .app-shell.mode-studio .mode-switch .mode-button-top,
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
     grid-template-columns: 16px minmax(0, 1fr) 7px;
