@@ -203,15 +203,6 @@
     color: color-mix(in srgb, var(--section-accent) 72%, var(--desk-muted));
   }
 
-  .app-shell.mode-studio .stage-status-metric small,
-  .app-shell.mode-studio .stage-status-metric b {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .stage-status-metric small {
     color: #a7b0ba;
   }

@@ -416,14 +416,6 @@
   border-right: 0;
 }
 
-.app-shell.mode-studio[data-studio-tab="build"] .build-runway b,
-.app-shell.mode-studio[data-studio-tab="build"] .build-runway small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .app-shell.mode-studio[data-studio-tab="build"] .build-runway b {
   color: color-mix(in srgb, var(--text) 92%, var(--build));
   font-family: var(--mono);

@@ -153,15 +153,6 @@
     padding: 4px 7px 4px 9px;
   }
 
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .list-title,
-  .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .list-meta {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row .list-title {
     grid-column: 1;
     grid-row: 1 / span 2;

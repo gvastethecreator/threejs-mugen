@@ -148,6 +148,7 @@
     .workbench-route-button span,
     .workbench-route-button strong,
     .workbench-route-button small,
+    .workbench-action-bar button span,
     .list-title,
     .list-meta,
     .workbench-lane-strip small,
@@ -155,10 +156,37 @@
     .workbench-lane-strip em,
     .engine-module-contracts b,
     .engine-module-contracts small,
-    .engine-module-blocked
+    .engine-module-blocked,
+    [data-studio-tab="build"] .build-runway b,
+    [data-studio-tab="build"] .build-runway small
   ) {
     min-width: 0;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio :is(
+    .workspace-brand .workspace-eyebrow,
+    .workspace-brand h1,
+    .workspace-brand p,
+    .mode-switch .mode-label,
+    .mode-switch .mode-hint,
+    .mode-switch .mode-status,
+    .workspace-summary b,
+    .workspace-summary small,
+    .command-launcher strong,
+    .command-launcher small,
+    .workspace-action-grid .workspace-action-label,
+    .workspace-action-grid button small,
+    .stage-status-metric small,
+    .stage-status-metric b,
+    [data-studio-tab="stage"] .pane-right .stage-layer-row .list-title,
+    [data-studio-tab="stage"] .pane-right .stage-layer-row .list-meta
+  ) {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;
   }

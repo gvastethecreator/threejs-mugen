@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS primitive truncation budget trim
+
+Changed:
+
+- Moved repeated desktop Studio truncation rules for workbench action labels, Build runway labels, shell/chrome labels, Stage layer labels, and Stage status metrics into shared `src/styles/surfaces/studio-primitives.css` selectors.
+- Removed the matching one-off truncation rules from command, desktop, shell, Stage, and Build workflow CSS modules without changing selector ownership for local color/layout rules.
+- Tightened `pnpm qa:css:budget` from 536,876 bytes / 2,368 rules to 536,051 bytes / 2,364 rules; repeated declaration groups remain 119 and cross-file overlap remains 108.
+- Updated Interface/System roadmap docs and the S1 local issue with the new CSS budget truth.
+
+Evidence:
+
+- `pnpm qa:css` passes: 536,051 active CSS bytes, 2,364 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 119 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the tightened ceilings above.
+- `pnpm test` passes: 78 files / 685 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/ROADMAP_PACKAGE_MILESTONES.md`, `src/styles/command/studio-command-pipeline.css`, and `src/styles/shell/studio-shell-workstation.css`.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-stage.png`, and `.scratch/qa/qa-smoke/runtime-mobile.png`; shell/chrome labels, Build rows, Stage layer diagnostics, stage framing, and mobile runtime panels remain visible without obvious overflow or overlap regression.
+
+Claim allowed:
+
+- Current active CSS still has no exact duplicate rules or same-file duplicate selector keys, and the guarded CSS payload/rule budget is lower through shared Studio truncation primitives.
+
+Claim blocked:
+
+- This is Studio CSS hygiene only. It does not reduce the remaining 119 repeated declaration groups or 108 cross-file selector overlaps, finish shared row/action/status primitive extraction, change Studio behavior, change runtime behavior, or move port scores.
+
 ## 2026-06-30 - Runtime guard-distance ownership
 
 Changed:

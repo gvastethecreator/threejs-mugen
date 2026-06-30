@@ -302,13 +302,6 @@
     box-shadow: inset 3px 0 0 var(--section-accent);
   }
 
-  .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .studio-tab-section.is-compact {
     padding: 0;
     border: 0;
