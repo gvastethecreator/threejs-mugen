@@ -53,6 +53,10 @@ Every controller family should have:
 
 - `RuntimeEffectSpawnControllerDispatchWorld` owns active-state Explod / RemoveExplod / ModifyExplod / Helper / Projectile / ModifyProjectile dispatch from compiled CNS classification into `RuntimeEffectSpawnWorld`: controller telemetry, typed effect operation selection, spawn/count mutation handoff, and success-gated operation telemetry. Focused `EffectSpawnSystem` coverage proves successful Explod telemetry/mutation and failed ModifyExplod no-operation gating. This is dispatch ownership only; exact effect spawn tick order, helper-owned effect namespaces, dynamic effect params, helper-owned projectile combat/contact/target memory, and full effect/helper/projectile VM parity remain partial.
 
+## Current State Transition Notes
+
+- `RuntimeStateTransitionControllerWorld` is the current named boundary for the basic `StateControllerExecutor` `ChangeState` / `SelfState` path. Focused `StateTransitionControllerSystem` coverage proves raw `value` / `stateno` expression fallback, previous-state metadata writes, animation timing reset, optional `ctrl`, missing-value reporting, unchanged-state timing reset behavior, and executor routing. This does not prove exact active-state entry tick order, persistent controller semantics, redirects, helper/team ownership, custom-state breadth, or full MUGEN/IKEMEN state-entry parity.
+
 ## Current Registry
 
 | Controller Family | Current Level | Evidence | Notes |

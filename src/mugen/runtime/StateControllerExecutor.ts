@@ -25,7 +25,6 @@ import {
 } from "./RuntimeResourceSystem";
 import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { applyRuntimeTurn } from "./OrientationSystem";
-import { applyRuntimeStateMetadataTransition } from "./RuntimeStateMetadataSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
 import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
@@ -34,6 +33,7 @@ import { RuntimeHitFallControllerWorld } from "./HitFallControllerSystem";
 import { RuntimeBoundsControllerWorld } from "./BoundsControllerSystem";
 import { RuntimeKinematicControllerWorld } from "./KinematicControllerSystem";
 import { RuntimeAnimationControllerWorld } from "./AnimationControllerSystem";
+import { RuntimeStateTransitionControllerWorld } from "./StateTransitionControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -45,6 +45,7 @@ const hitFallControllerWorld = new RuntimeHitFallControllerWorld();
 const boundsControllerWorld = new RuntimeBoundsControllerWorld();
 const kinematicControllerWorld = new RuntimeKinematicControllerWorld();
 const animationControllerWorld = new RuntimeAnimationControllerWorld();
+const stateTransitionControllerWorld = new RuntimeStateTransitionControllerWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -72,17 +73,10 @@ export function executeControllerIr(
   const type = controller.normalizedType;
 
   if (type === "changestate" || type === "selfstate") {
-    const value = numberParam(controller, next, context, "value", "stateno");
-    if (value === undefined) {
+    const result = stateTransitionControllerWorld.applyController(next, controller, context);
+    if (result.missingValue) {
       reportUnsupported(`${controller.type}:missing-value`);
       return next;
-    }
-    applyRuntimeStateMetadataTransition(next, value);
-    next.animTime = 0;
-    next.frameIndex = 0;
-    const ctrl = numberParam(controller, next, context, "ctrl");
-    if (ctrl !== undefined) {
-      next.ctrl = ctrl !== 0;
     }
   } else if (type === "changeanim" || type === "changeanim2") {
     animationControllerWorld.applyController(next, controller, context);

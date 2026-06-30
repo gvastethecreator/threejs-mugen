@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStateTransitionControllerWorld ownership extraction
+  -> RuntimeStateTransitionControllerWorld now owns bounded passive ChangeState/SelfState setup in the basic StateControllerExecutor path
+  -> StateControllerExecutor delegates raw-param value/stateno expression fallback, previous-state metadata writes, frame/time reset, optional ctrl, and missing-value reporting to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> RuntimeStateEntryWorld and PlayableMatchRuntime still own active-state entry, concrete state/action lookup, custom-state owner selection, and controller tick order
+  -> focused StateTransitionControllerSystem coverage proves expression fallback, metadata writes, reset, ctrl, missing-value no-op/reporting, unchanged-state timing reset, and executor routing
+  -> no exact ChangeState/SelfState tick-order parity, persistent controller semantics, redirects/helper/team ownership, full custom-state breadth, state-entry VM parity, or score claim
 R2 RuntimeAnimationControllerWorld ownership extraction
   -> RuntimeAnimationControllerWorld now owns bounded passive ChangeAnim/ChangeAnim2 setup in the basic StateControllerExecutor path
   -> StateControllerExecutor delegates raw-param animation retargeting, self/state-owner source marking, reset, and bounded elem/elemtime seeding to the world
@@ -551,6 +558,8 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeStateTransitionControllerWorld` ownership extraction
+- `RuntimeAnimationControllerWorld` ownership extraction
 - `RuntimeKinematicControllerWorld` ownership extraction
 - `RuntimeBoundsControllerWorld` ownership extraction
 - `RuntimeHitFallControllerWorld` ownership extraction

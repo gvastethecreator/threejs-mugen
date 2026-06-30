@@ -26,9 +26,9 @@ Near-term language must stay honest: this is **partial MUGEN compatibility with 
 
 Current implementation cursor:
 
-- Latest R2 ownership checkpoint: `RuntimeAnimationControllerWorld` owns bounded passive `ChangeAnim` / `ChangeAnim2` setup in the basic `StateControllerExecutor` path.
-- Previous R2 checkpoint: `RuntimeKinematicControllerWorld` owns bounded passive movement/position controller setup.
-- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed animation-controller or kinematic-controller ownership cuts.
+- Latest R2 ownership checkpoint: `RuntimeStateTransitionControllerWorld` owns bounded passive `ChangeState` / `SelfState` setup in the basic `StateControllerExecutor` path.
+- Previous R2 checkpoint: `RuntimeAnimationControllerWorld` owns bounded passive `ChangeAnim` / `ChangeAnim2` setup.
+- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed state-transition, animation-controller, or kinematic-controller ownership cuts.
 
 ## Authoritative Docs
 
