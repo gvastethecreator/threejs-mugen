@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime animation ownership
+
+Changed:
+
+- Added `RuntimeAnimationWorld` as a bounded runtime ownership boundary for actor animation advancement: `animTime`, `frameIndex`, `frameElapsed`, completion, final-frame hold, `loopStart`, invalid-duration clamping, `AnimTime` / `AnimElemTime` helper math, and current `HitDef` active-window duration math.
+- Replaced the inline `PlayableMatchRuntime` animation tick with the new runtime system while keeping `ChangeAnim` / `ChangeAnim2`, state-owner action selection, state/action entry, and controller ordering in the match runtime.
+- Added focused `RuntimeAnimationSystem` tests for empty actions, authored durations, frame changes, loop completion, final-frame hold, invalid-duration clamping, and timing helpers.
+- Updated roadmap/workplan docs and the runtime local issue so `RuntimeAnimationWorld` is tracked as the latest R2 ownership checkpoint.
+
+Evidence:
+
+- `pnpm test` passes: 77 files / 681 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, and `.scratch/qa/qa-smoke/studio-debug.png`; actors, hit spark, HUD, runtime debug, and Studio panels remain visible without obvious overlap or framing regression.
+
+Claim allowed:
+
+- Current actor animation advancement has a named runtime-system boundary with focused unit coverage and no trace drift.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact AIR negative-duration semantics, `elem` / `elemtime` parity, state-owner namespace behavior, controller tick-order parity, full MUGEN/IKEMEN animation VM parity, or score movement.
+
 ## 2026-06-30 - Studio CSS duplicate budget trim
 
 Changed:
@@ -3387,3 +3415,5 @@ These are future horizons, not blockers for the private usable MVP.
 235. Done Assets tablet responsive polish: `src/styles/studio-responsive-hardening.css` now gives the Assets tab a compact 900-1160px layout for source QA, project assets, triage, detail, provenance, replacement candidates, runtime maps, and attention queues without turning the right pane into an oversized card stack. `pnpm qa:smoke` passes, the manual 1024px Playwright capture `studio-assets-tablet-1024.png` reports `clientWidth/bodyScrollWidth/documentScrollWidth = 1024/1024/1024`, and visual inspection confirmed the Assets tablet surface remains dense and readable. `pnpm qa:css` reports 2,634 rules with 0 duplicate selector keys and 0 exact duplicate rules. Claim allowed: Assets tablet/compact desktop layout is visually checked and overflow-safe. Claim blocked: no new asset workflow, no sprite regeneration, no runtime compatibility change, no production export, no score movement, and broader CSS primitive extraction remains future work.
 
 236. Done bounded helper parent/root redirect cut: `ExpressionEvaluator` now routes leading `Parent, ...` and `Root, ...` expressions through read-only runtime states provided by `HelperSystem`, `ExpressionCompiler` classifies those leading redirects as executable, and `RuntimeEffectLifecycleWorld` passes the current owner runtime state as helper parent/root context during active and paused helper presentation passes. Focused `EffectActorSystem` tests prove helper-local branches on owner/root `Var`, `StateNo`, and `Vel X`, prove a `Root,Var(...)` `ChangeState` value, prove owner-state clone isolation, and prove fail-closed behavior when no parent/root state is provided; focused `RuntimeCompiler` coverage proves parent/root trigger classification. Claim allowed: current visual Helper actors can read bounded owner/root runtime state in simple leading redirect triggers and numeric controller values. Claim blocked: nested/general redirects inside composite expressions, team/keyctrl ownership, redirect mutation, nested helper ancestry, helper-owned combat/effects/projectiles, exact parent/root scopes, exact tick order, full helper VM, and score movement.
+
+237. Done RuntimeAnimationWorld ownership cut: `RuntimeAnimationWorld` now owns bounded actor animation advancement and timing helpers previously inline in `PlayableMatchRuntime`, including `animTime`, `frameIndex`, `frameElapsed`, completion, final-frame hold, `loopStart`, invalid-duration clamping, `AnimTime` / `AnimElemTime` helper math, and current `HitDef` active-window duration math. `PlayableMatchRuntime` delegates the per-fighter animation tick through the named system while still owning `ChangeAnim` / `ChangeAnim2`, state-owner action selection, state/action entry, and controller ordering. Focused `RuntimeAnimationSystem` tests prove empty actions, authored durations, frame changes, loop completion, final-frame hold, invalid-duration clamping, and timing helpers. Claim allowed: current actor animation advancement has a named runtime-system boundary without adding new behavior claims. Claim blocked: exact AIR negative-duration semantics, `elem` / `elemtime` parity, state-owner namespace behavior, controller tick-order parity, full MUGEN/IKEMEN animation VM parity, and score movement.

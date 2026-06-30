@@ -76,6 +76,13 @@ import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTeleme
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
 import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
+import {
+  RuntimeAnimationWorld,
+  runtimeAnimationElapsedBeforeFrame,
+  runtimeAnimationElementTime,
+  runtimeAnimationFrameDuration,
+  runtimeAnimationTimeRemaining,
+} from "./RuntimeAnimationSystem";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
@@ -233,6 +240,7 @@ export class PlayableMatchRuntime {
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
+  private readonly animationWorld = new RuntimeAnimationWorld();
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
@@ -391,6 +399,7 @@ export class PlayableMatchRuntime {
       this.hitEligibilityWorld,
       this.moveLifecycleWorld,
       this.kinematicsWorld,
+      this.animationWorld,
       this.stunWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -410,6 +419,7 @@ export class PlayableMatchRuntime {
         this.hitEligibilityWorld,
         this.moveLifecycleWorld,
         this.kinematicsWorld,
+        this.animationWorld,
         this.stunWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -495,6 +505,7 @@ export class PlayableMatchRuntime {
           this.hitEligibilityWorld,
           this.moveLifecycleWorld,
           this.kinematicsWorld,
+          this.animationWorld,
           this.stunWorld,
           this.tick,
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -799,6 +810,7 @@ function advanceFighter(
   hitEligibilityWorld: RuntimeHitEligibilityWorld,
   moveLifecycleWorld: RuntimeMoveLifecycleWorld,
   kinematicsWorld: RuntimeKinematicsWorld,
+  animationWorld: RuntimeAnimationWorld,
   stunWorld: RuntimeStunWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
@@ -832,7 +844,7 @@ function advanceFighter(
     changeIdleAction: () => changeAction(fighter, fighter.definition.idleAction),
   });
 
-  advanceAnimation(fighter);
+  animationWorld.advance(fighter);
   runActiveStateControllers(
     fighter,
     opponent,
@@ -905,20 +917,12 @@ function applyAnimationElement(fighter: FighterMatchState, options: AnimationEle
     return;
   }
   const frameIndex = Math.max(0, Math.min(frames.length - 1, Math.round(options.elem) - 1));
-  const frameDuration = Math.max(1, frames[frameIndex]?.duration ?? 1);
+  const frameDuration = runtimeAnimationFrameDuration(frames[frameIndex]);
   const elemTime = Math.max(0, Math.min(frameDuration - 1, Math.round(options.elemTime ?? 0)));
   fighter.runtime.frameIndex = frameIndex;
   fighter.frameElapsed = elemTime;
-  fighter.runtime.animTime = animationElapsedBeforeFrame(fighter.currentAction, frameIndex) + elemTime;
+  fighter.runtime.animTime = runtimeAnimationElapsedBeforeFrame(fighter.currentAction, frameIndex) + elemTime;
   fighter.animationComplete = false;
-}
-
-function animationElapsedBeforeFrame(action: MugenAnimationAction, frameIndex: number): number {
-  let elapsed = 0;
-  for (let index = 0; index < frameIndex; index += 1) {
-    elapsed += Math.max(1, action.frames[index]?.duration ?? 1);
-  }
-  return elapsed;
 }
 
 function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove, options: EnterStateOptions = {}): void {
@@ -965,27 +969,6 @@ function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove
   if (actionId !== undefined) {
     changeAction(fighter, actionId, owner === fighter ? "self" : "state-owner", ownerDefinition, options.animationElement);
   }
-}
-
-function advanceAnimation(fighter: FighterMatchState): void {
-  const frames = fighter.currentAction.frames;
-  if (frames.length === 0) {
-    return;
-  }
-  fighter.runtime.animTime += 1;
-  const frame = frames[fighter.runtime.frameIndex];
-  fighter.frameElapsed += 1;
-  if (fighter.frameElapsed < Math.max(1, frame?.duration ?? 1)) {
-    return;
-  }
-  fighter.frameElapsed = 0;
-  const next = fighter.runtime.frameIndex + 1;
-  if (next < frames.length) {
-    fighter.runtime.frameIndex = next;
-    return;
-  }
-  fighter.animationComplete = true;
-  fighter.runtime.frameIndex = fighter.currentAction.loopStart ?? Math.max(0, frames.length - 1);
 }
 
 function runHitPauseIgnoredControllers(
@@ -1496,7 +1479,7 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   }
   const existing = fighter.currentMove;
   const activeStart = fighter.moveTick;
-  const activeEnd = activeStart + Math.max(1, (frame?.duration ?? 1) - fighter.frameElapsed);
+  const activeEnd = activeStart + Math.max(1, runtimeAnimationFrameDuration(frame) - fighter.frameElapsed);
   const damage = operation?.damage ?? firstNumber(findParam(controller, "damage")) ?? existing?.damage ?? 45;
   const guardDamage = operation?.guardDamage ?? secondNumber(findParam(controller, "damage")) ?? existing?.guardDamage ?? 0;
   const kill = operation?.kill ?? booleanHitDefParam(controller, "kill") ?? existing?.kill ?? true;
@@ -2299,29 +2282,11 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
 }
 
 function getAnimTimeRemaining(fighter: FighterMatchState): number {
-  const frames = fighter.currentAction.frames;
-  if (frames.length === 0) {
-    return 0;
-  }
-  if (fighter.animationComplete) {
-    return 0;
-  }
-  let remaining = Math.max(0, (frames[fighter.runtime.frameIndex]?.duration ?? 1) - fighter.frameElapsed - 1);
-  for (let index = fighter.runtime.frameIndex + 1; index < frames.length; index += 1) {
-    remaining += Math.max(1, frames[index]?.duration ?? 1);
-  }
-  return remaining;
+  return runtimeAnimationTimeRemaining(fighter);
 }
 
 function getAnimElemTime(fighter: FighterMatchState, elementNumber: number): number | undefined {
-  const frames = fighter.currentAction.frames;
-  const elementIndex = Math.floor(elementNumber) - 1;
-  if (elementIndex < 0 || elementIndex >= frames.length) {
-    return undefined;
-  }
-  const currentElapsed = animationElapsedBeforeFrame(fighter.currentAction, fighter.runtime.frameIndex) + fighter.frameElapsed;
-  const targetElapsed = animationElapsedBeforeFrame(fighter.currentAction, elementIndex);
-  return currentElapsed - targetElapsed;
+  return runtimeAnimationElementTime(fighter, elementNumber);
 }
 
 function findParam(controller: { params: Record<string, string> }, key: string): string | undefined {

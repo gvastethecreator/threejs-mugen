@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeAnimationWorld ownership
+  -> RuntimeAnimationWorld owns bounded actor animation advancement and timing helpers previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current animTime/frameIndex/frameElapsed advancement, final-frame hold, loopStart completion, invalid-duration clamping, AnimTime/AnimElemTime helper math, and current HitDef active-window duration math through that boundary
+  -> focused RuntimeAnimationSystem tests prove empty actions, authored durations, frame changes, loop completion, final-frame hold, invalid-duration clamping, and timing helpers
+  -> no exact AIR negative-duration semantics, elem/elemtime parity, state-owner namespace behavior, controller tick-order parity, or score claim
 R2 RuntimeKinematicsWorld ownership
   -> RuntimeKinematicsWorld owns bounded actor position integration, sandbox gravity, ground snap, and landing idle-action request previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates current pos/vel advance, airborne gravity, imported hit-state ground-snap preservation, and no-current-move landing idle callback through that boundary
@@ -297,6 +302,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitPauseWorld` ownership extraction
 - `RuntimeMoveLifecycleWorld` ownership extraction
 - `RuntimeInputControlWorld` ownership extraction
+- `RuntimeAnimationWorld` ownership extraction
 - `RuntimeKinematicsWorld` ownership extraction
 - visual-helper removal ownership
 - helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded parent/root read-only redirects
@@ -309,7 +315,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeKinematicsWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeAnimationWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 
