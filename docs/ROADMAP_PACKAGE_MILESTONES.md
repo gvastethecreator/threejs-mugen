@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 TargetSystem active binding lifetime guard
+  -> TargetSystem requires matching live target memory before active TargetBind or BindToTarget position application moves actors
+  -> stale binding records now fail closed after target memory is dropped or expired
+  -> focused TargetSystem tests prove active binding success plus stale-binding no-mutation behavior
+  -> no helper/team/multi-target ownership, exact bind/drop tick order, throws/custom-state binding parity, target parity, or score movement claim
 R2 TargetSystem BindToTarget anchor ownership
   -> TargetSystem owns bounded BindToTarget postype anchor resolution previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime supplies only character constants; resolveRuntimeTargetAnchor owns Foot/Mid/Head size-constant lookup

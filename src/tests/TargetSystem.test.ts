@@ -411,6 +411,7 @@ describe("TargetSystem", () => {
   it("applies active TargetBind positions through the target world boundary", () => {
     const actor = targetActor("p1", {
       runtime: { pos: { x: 120, y: -16 }, facing: -1 },
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
       targetBindings: [binding({ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } })],
     });
     const target = targetActor("p2", {
@@ -421,11 +422,17 @@ describe("TargetSystem", () => {
 
     expect(result).toEqual({ appliedBindings: 1 });
     expect(target.runtime.pos).toEqual({ x: 84, y: -28 });
+
+    actor.targets = [];
+    target.runtime.pos = { x: 0, y: 0 };
+    expect(applyRuntimeTargetBindings(actor, [target])).toEqual({ appliedBindings: 0 });
+    expect(target.runtime.pos).toEqual({ x: 0, y: 0 });
   });
 
   it("applies active BindToTarget positions and ignores missing targets without mutation", () => {
     const actor = targetActor("p1", {
       runtime: { pos: { x: 0, y: 0 } },
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
     });
     actor.bindToTarget = binding({ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 18, y: -78 } });
     const target = targetActor("p2", {
@@ -437,6 +444,10 @@ describe("TargetSystem", () => {
 
     actor.runtime.pos = { x: 10, y: 20 };
     expect(applyRuntimeBindToTarget(actor, [targetActor("helper")])).toEqual({ appliedBindings: 0 });
+    expect(actor.runtime.pos).toEqual({ x: 10, y: 20 });
+
+    actor.targets = [];
+    expect(applyRuntimeBindToTarget(actor, [target])).toEqual({ appliedBindings: 0 });
     expect(actor.runtime.pos).toEqual({ x: 10, y: 20 });
   });
 });

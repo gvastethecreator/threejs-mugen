@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime target binding lifetime guard
+
+Changed:
+
+- Tightened `RuntimeTargetWorld.applyTargetBindings` and `applyBindToTarget` so active `TargetBind` / `BindToTarget` position mutation requires matching live target memory for the same actor id and target id.
+- Added a shared target-system lookup helper so stale binding records no longer move actors after target memory has been dropped or expired.
+- Updated focused `TargetSystem` coverage for active binding success plus stale-binding no-mutation behavior.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/TargetSystem.test.ts` passes: 1 file / 17 tests.
+- `pnpm test` passes: 79 files / 688 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 145 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git still warns that `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md` will normalize CRLF to LF when touched.
+
+Claim allowed:
+
+- Current bounded active `TargetBind` / `BindToTarget` position application is gated by live target memory inside `TargetSystem`.
+
+Claim blocked:
+
+- This is R2 target-lifetime cleanup only. It does not add helper/root/parent target ownership, teams, multi-target selection parity, exact bind/drop tick order, throws/custom-state binding parity, or score movement.
+
 ## 2026-06-30 - Runtime target anchor ownership
 
 Changed:

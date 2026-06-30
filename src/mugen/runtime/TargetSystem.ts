@@ -287,7 +287,7 @@ export function applyRuntimeTargetBindings<TActor extends RuntimeTargetWorldActo
 ): RuntimeTargetBindingApplyResult {
   let appliedBindings = 0;
   for (const binding of actor.targetBindings) {
-    const target = candidateTargets.find((candidate) => candidate.id === binding.actorId);
+    const target = findBoundRuntimeTargetActor(actor.targets, binding, candidateTargets);
     if (!target) {
       continue;
     }
@@ -305,7 +305,7 @@ export function applyRuntimeBindToTarget<TActor extends RuntimeTargetWorldActor>
   if (!binding) {
     return { appliedBindings: 0 };
   }
-  const target = candidateTargets.find((candidate) => candidate.id === binding.actorId);
+  const target = findBoundRuntimeTargetActor(actor.targets, binding, candidateTargets);
   if (!target) {
     return { appliedBindings: 0 };
   }
@@ -442,6 +442,17 @@ export function matchingRuntimeTargetActors<TActor extends { id: string }>(
 
 export function matchesRuntimeTargetId(target: { targetId?: number }, requestedId: number | undefined): boolean {
   return requestedId === undefined || requestedId < 0 || target.targetId === requestedId;
+}
+
+function findBoundRuntimeTargetActor<TActor extends { id: string }>(
+  targets: RuntimeTarget[],
+  binding: RuntimeTargetBinding,
+  candidates: TActor[],
+): TActor | undefined {
+  if (!targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
+    return undefined;
+  }
+  return candidates.find((candidate) => candidate.id === binding.actorId);
 }
 
 export function createRuntimeTargetBinding(input: {
