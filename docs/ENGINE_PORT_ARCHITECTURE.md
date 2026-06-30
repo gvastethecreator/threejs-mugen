@@ -146,6 +146,8 @@ The compiler classifies each piece as:
 
 `RuntimeResourceWorld` owns the bounded resource/control/variable mutation helpers that used to be free functions only: authored life/power max resolution, life and power clamping, `CtrlSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, and variable/range assignment. The existing exported helper functions still delegate to this world, so current match, direct-combat, projectile-combat, target, reversal, and controller-executor call sites preserve behavior while the resource boundary becomes testable and replaceable. This is ownership cleanup only; exact CNS resource timing, helper/team/redirect scopes, round/KO flow, and full MUGEN/IKEMEN resource parity remain blocked.
 
+`RuntimeControllerDispatchWorld` owns the bounded runtime-controller execution bridge that active imported states, State -1 setup controllers, and pre-facing `AssertSpecial` now share before falling through to `StateControllerExecutor`. It centralizes runtime-state replacement, evaluation context handoff (`Const`, `HitPauseTime`, random, stage time), optional controller/operation telemetry hooks, and unsupported-controller reporting. `PlayableMatchRuntime` still owns trigger filtering, `ChangeState` / `ChangeAnim`, side-effect controller dispatch, and exact ordering, so this is a dispatch ownership seam rather than new CNS VM parity.
+
 `RuntimeRoundSystem` owns the current bounded round timer, KO/time-over finish decision, winner selection, reset, and `RoundSnapshot` message/timer projection used by `PlayableMatchRuntime`. `RuntimeTraceGate.requiredRoundFrames` now lets required artifacts gate that snapshot evidence by round state, winner, message, frame count, and observed timer range; `synthetic-imported-round-ko.json` proves the bounded KO snapshot route after a lethal imported `HitDef`, and `synthetic-imported-round-timeover.json` proves a bounded time-over/draw route through a short `roundTimerFrames` fixture. The match loop still decides when combat/resources change life and when playback stops, so this is ownership cleanup plus evidence coverage for current sandbox round state, not MUGEN/IKEMEN round, lifebar, team, simul/tag, intro, winpose, or screenpack parity.
 
 `MatchWorldLifecycleSystem` owns the actor/effect lifecycle tracker used by `MatchWorld`: spawn/active/remove classification, first/last seen ticks, actor age, live/removed lists, and bounded recent-event history. `MatchWorld` still builds the registry from snapshots and stores, so this is lifecycle evidence ownership, not full actor simulation ownership.
@@ -209,6 +211,7 @@ MatchWorld
   RuntimeStateMetadataWorld
   RuntimeStateEntryWorld
   RuntimeResourceWorld
+  RuntimeControllerDispatchWorld
   RuntimePausedMatchWorld
   RuntimeHitPauseWorld
   RuntimeContactPresentationWorld
@@ -266,12 +269,13 @@ The current extraction order is:
 38. `RuntimeStateMetadataWorld`: own bounded previous-state transition metadata writes for `PrevStateNo`, `PrevAnim`, `PrevStateType`, and `PrevMoveType` outside inline state-entry mutation.
 39. `RuntimeStateEntryWorld`: own bounded state-entry availability, metadata/clock reset, custom-state owner assignment, StateDef metadata/control/velocity application, stale move/contact reset, and action handoff outside inline state-entry mutation.
 40. `RuntimeResourceWorld`: own bounded resource/control/variable writes, authored resource maxima, and power-delta clamping behind a named resource boundary while legacy helper functions delegate to it.
-41. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-42. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
-43. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
-44. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
-45. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-46. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
+41. `RuntimeControllerDispatchWorld`: own bounded runtime-controller execution dispatch, evaluation context handoff, optional telemetry hooks, and unsupported-controller reporting outside inline match-runtime branches.
+42. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+43. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
+44. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
+45. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
+46. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+47. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

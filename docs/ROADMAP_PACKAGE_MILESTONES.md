@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeControllerDispatchWorld ownership extraction
+  -> RuntimeControllerDispatchWorld now owns bounded runtime-controller execution dispatch for active imported state controllers, State -1 setup controllers, and pre-facing AssertSpecial application
+  -> PlayableMatchRuntime delegates runtime replacement, evaluation context handoff, controller telemetry, typed-operation telemetry, and unsupported reporting through the named world
+  -> focused RuntimeControllerDispatchSystem coverage proves runtime mutation, telemetry hook behavior, dynamic HitPauseTime context, and unsupported reporting
+  -> no exact CNS controller-loop order, persistent controller semantics, side-effect VM parity, helper/team/redirect execution, or score claim
 R2 RuntimeResourceWorld ownership extraction
   -> RuntimeResourceWorld now owns bounded life/power/control/variable mutation inside RuntimeResourceSystem
   -> exported helper functions delegate to the world, preserving existing call sites and behavior
@@ -430,6 +435,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeStateAvailabilityWorld` ownership extraction
 - `RuntimeStateEntryWorld` ownership extraction
 - `RuntimeResourceWorld` ownership extraction
+- `RuntimeControllerDispatchWorld` ownership extraction
 - `RuntimeStunWorld` ownership extraction
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction

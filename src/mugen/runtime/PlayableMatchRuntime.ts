@@ -72,6 +72,7 @@ import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
+import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
 import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
@@ -90,7 +91,6 @@ import {
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
-import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
 import {
   RuntimeSpriteEffectWorld,
@@ -118,6 +118,7 @@ const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
 const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
+const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -535,13 +536,17 @@ export class PlayableMatchRuntime {
       opponent,
       tick: this.tick,
       triggersPass,
-      executeController: (controller, actor, owner, tick) =>
-        executeControllerIr(controller, actor.runtime, () => undefined, {
-          getConst: (name) => runtimeConst(owner.definition, name),
-          hitPauseTime: () => actor.hitPause,
-          random: () => nextRuntimeRandom(actor),
-          stageTime: tick,
-        }),
+      executeController: (controller, actor, owner, tick) => {
+        controllerDispatchWorld.apply(actor, controller, {
+          context: {
+            getConst: (name) => runtimeConst(owner.definition, name),
+            hitPauseTime: () => actor.hitPause,
+            random: () => nextRuntimeRandom(actor),
+            stageTime: tick,
+          },
+        });
+        return actor.runtime;
+      },
     });
   }
 
@@ -1000,16 +1005,11 @@ function runActiveStateControllers(
     }
 
     if (dispatch.kind === "runtime-controller") {
-      compatibilityTelemetryWorld.recordController(fighter, rawController);
-      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
-        getConst: (name) => runtimeConst(owner.definition, name),
-        hitPauseTime: () => fighter.hitPause,
-        random: () => nextRuntimeRandom(fighter),
-        stageTime: tick,
+      controllerDispatchWorld.apply(fighter, controller, {
+        context: runtimeControllerContext(fighter, owner, tick),
+        recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+        recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
       });
-      if (controller.operation) {
-        compatibilityTelemetryWorld.recordOperation(fighter, controller.operation);
-      }
       continue;
     }
 
@@ -1174,6 +1174,15 @@ function runActiveStateControllers(
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {
   return (firstNumber(findParam(controller, "ignorehitpause")) ?? 0) !== 0;
+}
+
+function runtimeControllerContext(fighter: FighterMatchState, owner: FighterMatchState, tick: number) {
+  return {
+    getConst: (name: string) => runtimeConst(owner.definition, name),
+    hitPauseTime: () => fighter.hitPause,
+    random: () => nextRuntimeRandom(fighter),
+    stageTime: tick,
+  };
 }
 
 function applySprPriorityController(
@@ -1908,11 +1917,13 @@ function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: Fig
       continue;
     }
     if (isStateEntrySetupDispatch(dispatch)) {
-      compatibilityTelemetryWorld.recordController(fighter, controller.source);
-      fighter.runtime = executeControllerIr(controller, fighter.runtime, () => undefined, {
-        hitPauseTime: () => fighter.hitPause,
-        random: () => nextRuntimeRandom(fighter),
-        stageTime: tick,
+      controllerDispatchWorld.apply(fighter, controller, {
+        context: {
+          hitPauseTime: () => fighter.hitPause,
+          random: () => nextRuntimeRandom(fighter),
+          stageTime: tick,
+        },
+        recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
       });
     }
   }
