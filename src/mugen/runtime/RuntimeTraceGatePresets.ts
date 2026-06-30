@@ -8568,6 +8568,88 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedHelperProjGuardTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projguard-attacker",
+    displayName: "Synthetic Imported Helper ProjGuard Attacker",
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1218,
+      waitAnimNo: 938,
+      branchStateNo: 1219,
+      branchAnimNo: 947,
+      projectileAnimNo: 948,
+      projectileId: 8854,
+      pos: [360, -34],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projguard-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projguard-golden",
+      label: "Synthetic imported Helper ProjGuarded route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ProjGuarded trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side Projectile guard marker after a held-back P2 guards the projectile. It does not claim helper-owned Projectile target memory, exact ProjGuarded tick order or lifetime, teams, redirects, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projguard-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1218, animNo: 938, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1219, animNo: 947, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 948,
+            moveType: "A",
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1219, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 8854,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9862,6 +9944,13 @@ export function importedHelperScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedHelperProjectileGuardScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-helper-projguard-x", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "helper-projguard-settle", frames: 3, p1: [], p2: ["B"] },
+  ]);
+}
+
 export function importedExplodScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-explod-x", frames: 8, p1: ["x"], p2: [] },
@@ -10227,6 +10316,16 @@ export type SyntheticImportedTraceFighterOptions = {
     removeOnHit?: boolean;
   };
   helperProjHitRoute?: {
+    waitStateNo: number;
+    waitAnimNo?: number;
+    branchStateNo: number;
+    branchAnimNo?: number;
+    projectileAnimNo: number;
+    projectileId?: number;
+    pos?: [number, number];
+    velocity?: [number, number];
+  };
+  helperProjGuardRoute?: {
     waitStateNo: number;
     waitAnimNo?: number;
     branchStateNo: number;
@@ -10622,6 +10721,7 @@ ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperR
 ${options.helperModifyExplodRoute ? helperModifyExplodRouteBlock(options.helperModifyExplodRoute) : ""}
 ${options.helperModifyProjectileRoute ? helperModifyProjectileRouteBlock(options.helperModifyProjectileRoute) : ""}
 ${options.helperProjHitRoute ? helperProjHitRouteBlock(options.helperProjHitRoute) : ""}
+${options.helperProjGuardRoute ? helperProjGuardRouteBlock(options.helperProjGuardRoute) : ""}
 ${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
 ${options.helperNumHelperRoute ? helperNumHelperRouteBlock(options.helperNumHelperRoute) : ""}
 ${options.helperNumProjRoute ? helperNumProjRouteBlock(options.helperNumProjRoute) : ""}
@@ -10898,6 +10998,19 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperProjHitRoute.branchAnimNo ?? options.helperProjHitRoute.branchStateNo),
                   ],
                   [options.helperProjHitRoute.projectileAnimNo, projectileTraceAction(options.helperProjHitRoute.projectileAnimNo)],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperProjGuardRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperProjGuardRoute.waitAnimNo ?? options.helperProjGuardRoute.waitStateNo,
+                    helperTraceAction(options.helperProjGuardRoute.waitAnimNo ?? options.helperProjGuardRoute.waitStateNo),
+                  ],
+                  [
+                    options.helperProjGuardRoute.branchAnimNo ?? options.helperProjGuardRoute.branchStateNo,
+                    helperTraceAction(options.helperProjGuardRoute.branchAnimNo ?? options.helperProjGuardRoute.branchStateNo),
+                  ],
+                  [options.helperProjGuardRoute.projectileAnimNo, projectileTraceAction(options.helperProjGuardRoute.projectileAnimNo)],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperNumExplodRoute === undefined
               ? []
@@ -13403,6 +13516,71 @@ ctrl = 0
 [State ${route.waitStateNo}, Helper ProjHit Branch]
 type = ChangeState
 trigger1 = ProjHit(${projectileId})
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+`;
+}
+
+function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperProjGuardRoute"]>): string {
+  const waitAnimNo = route.waitAnimNo ?? route.waitStateNo;
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const projectileId = route.projectileId ?? 8854;
+  const pos = route.pos ?? [360, -34];
+  const velocity = route.velocity ?? [0, 0];
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper ProjGuard Spawn]
+type = Projectile
+trigger1 = Time = 0
+projid = ${projectileId}
+projpriority = 2
+projhits = 1
+projmisstime = 0
+projanim = ${route.projectileAnimNo}
+offset = ${pos[0]},${pos[1]}
+velocity = ${velocity[0]},${velocity[1]}
+projremovetime = 48
+projremove = 0
+damage = 18,2
+pausetime = 3,3
+ground.hittime = 11
+ground.velocity = -3
+guardflag = MA
+guard.pausetime = 2,2
+guard.hittime = 7
+guard.velocity = -2
+guard.dist = 100
+sprpriority = 6
+
+[State 1200, Helper ProjGuard Wait]
+type = ChangeState
+trigger1 = Time = 0
+value = ${route.waitStateNo}
+ctrl = 0
+
+[Statedef ${route.waitStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${waitAnimNo}
+ctrl = 0
+
+[State ${route.waitStateNo}, Helper ProjGuard Branch]
+type = ChangeState
+trigger1 = ProjGuarded(${projectileId}) && ProjGuardedTime(${projectileId}) >= 1
 value = ${route.branchStateNo}
 ctrl = 0
 

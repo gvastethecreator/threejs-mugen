@@ -1197,6 +1197,65 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("evaluates helper-local ProjGuardedTime against only helper-parented Projectile guard contact", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8871", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8871", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6298" }, ["ProjHit(8871)"]),
+              controller("ChangeState", { value: "6002" }, ["ProjGuarded(8871) && ProjGuardedTime(8871) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+          compileStateProgram(state(6298, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    recordRuntimeProjectileContact(playerProjectile, "guard");
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(hasRuntimeHelperProjectileContact(store, helper, "guard", 8871)).toBe(false);
+
+    recordRuntimeProjectileContact(helperProjectile, "guard");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "contact", 8871)).toBe(true);
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit", 8871)).toBe(false);
+    expect(hasRuntimeHelperProjectileContact(store, helper, "guard", 8871)).toBe(true);
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard", 8871)).toBe(0);
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard", 8871)).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+    });
+  });
+
   it("evaluates helper-local NumProj against only helper-parented Projectile actors", () => {
     const store = createRuntimeEffectActorStore();
     spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8850", projanim: "930" }));

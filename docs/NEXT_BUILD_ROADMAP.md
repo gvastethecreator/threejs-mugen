@@ -78,14 +78,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R2 helper-local ProjHit trace gate
-  -> synthetic-imported-helper-projhit.json checksum 3892716e is now a required qa:trace artifact
-  -> helper-local ProjHit(8853) branches after helper-parented owner-side Projectile contact
-  -> visual Helper routes 1200 -> 1216 -> 1217 / anims 936 and 937 after spawning owner-side Projectile anim 946 with parentId p1-helper-0
-  -> focused EffectActorSystem coverage proves same-id player-owned Projectile contact is ignored while helper-parented Projectile contact triggers the branch
-  -> current qa:trace aggregate is 183/183 artifacts, 163 required and 20 optional
-  -> previous helper-local ModifyProjectile checksum 77df008b and NumProj checksum 4f8612b0 remain required helper-projectile proofs
-  -> this narrows helper-local projectile-contact trigger evidence only; no helper-owned Projectile combat/contact presentation, helper-owned target memory, exact ProjContact/ProjHit tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, score movement, or full parity claim
+R2 helper-local ProjGuarded trace gate
+  -> synthetic-imported-helper-projguard.json checksum 3353eda7 is now a required qa:trace artifact
+  -> helper-local ProjGuarded(8854) and ProjGuardedTime(8854) >= 1 branch after helper-parented owner-side Projectile guard contact
+  -> visual Helper routes 1200 -> 1218 -> 1219 / anims 938 and 947 after spawning owner-side Projectile anim 948 with parentId p1-helper-0
+  -> focused EffectActorSystem coverage proves same-id player-owned Projectile guard contact is ignored while helper-parented Projectile guard contact triggers the branch after contact age advances
+  -> current qa:trace aggregate is 184/184 artifacts, 164 required and 20 optional
+  -> previous helper-local ProjHit checksum 3892716e, ModifyProjectile checksum 77df008b, and NumProj checksum 4f8612b0 remain required helper-projectile proofs
+  -> this narrows helper-local projectile-guard trigger evidence only; no helper-owned Projectile combat/contact presentation, helper-owned target memory, exact ProjContact/ProjHit/ProjGuarded tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, score movement, or full parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now a required qa:trace artifact
   -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now a required qa:trace artifact
@@ -401,7 +401,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper-local ProjHit gate is 183/183 artifacts, 163 required and 20 optional
+  -> current aggregate after the helper-local ProjGuarded gate is 184/184 artifacts, 164 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

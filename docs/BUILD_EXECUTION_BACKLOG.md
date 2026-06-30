@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-local ProjGuarded trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projguard.json` trace evidence for helper-local `ProjGuarded(8854)` / `ProjGuardedTime(8854) >= 1`.
+- Added a synthetic helper route where a visual Helper spawns owner-side Projectile anim `948` with `parentId = p1-helper-0`, waits in `1218` / anim `938`, then branches to `1219` / anim `947` after P2 guards the helper-parented Projectile.
+- Added focused `EffectActorSystem` coverage proving same-id player-owned Projectile guard contact does not satisfy helper-local `ProjGuarded`, while helper-parented Projectile guard contact does after contact age advances.
+- Registered the new required trace in `pnpm qa:trace`.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t ProjGuard` passed earlier in the round.
+- `pnpm test` passes: 95 files / 808 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 184 / 184 artifacts, 164 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-helper-projguard.json` `3353eda7`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors can branch on helper-local `ProjGuarded(id)` / `ProjGuardedTime(id)` from helper-parented owner-side Projectile guard contact.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact `ProjContact` / `ProjHit` / `ProjGuarded` tick order or lifetime, exact projectile namespace scopes, dynamic Projectile ids/params, teams, exact helper tick order, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - Helper-local ProjHit trace gate
 
 Changed:
