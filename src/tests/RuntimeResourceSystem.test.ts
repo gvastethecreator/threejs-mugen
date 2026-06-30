@@ -7,6 +7,7 @@ import {
   applyRuntimeStateDefControl,
   applyRuntimeVariableAssignment,
   applyRuntimeVariableRangeAssignment,
+  RuntimeResourceWorld,
   runtimeLifeMaxFromConstants,
   runtimePowerMaxForState,
   runtimePowerMaxFromConstants,
@@ -14,6 +15,21 @@ import {
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("RuntimeResourceSystem", () => {
+  it("exposes a named resource world boundary for life, power, ctrl, and variables", () => {
+    const world = new RuntimeResourceWorld();
+    const state = runtimeState({ life: 100, lifeMax: 250, power: 30, powerMax: 120, ctrl: true });
+
+    world.applyControl(state, false);
+    world.applyLifeAdd(state, -200, false);
+    world.applyResourceController(state, { kind: "resource", controllerType: "poweradd", value: 300 });
+    world.applyVariableAssignment(state, { variableType: "var", index: 2, value: 9 }, false);
+
+    expect(state.ctrl).toBe(false);
+    expect(state.life).toBe(1);
+    expect(state.power).toBe(120);
+    expect(state.vars[2]).toBe(9);
+  });
+
   it("applies bounded life and ctrl resource mutations", () => {
     const state = runtimeState({ life: 25, ctrl: true });
 

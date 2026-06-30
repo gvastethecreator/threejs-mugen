@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeResourceWorld ownership extraction
+  -> RuntimeResourceWorld now owns bounded life/power/control/variable mutation inside RuntimeResourceSystem
+  -> exported helper functions delegate to the world, preserving existing call sites and behavior
+  -> focused RuntimeResourceSystem coverage proves direct world mutation for life, power, ctrl, and vars
+  -> no exact CNS resource timing, helper/team/redirect ownership, round/KO flow, full resource parity, or score claim
 R1 resource actor-frame evidence gate
   -> RuntimeTraceGate.requiredActorFrames can require observed life/power ranges
   -> required synthetic-imported-resource.json checksum 7bbcb2e4 now proves imported P1 state/action 289 exposes life 750 and power 900 in actor-frame evidence after typed resource:lifeadd/resource:lifeset/resource:poweradd/resource:powerset route through Life/Power triggers
@@ -424,6 +429,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitStateTransitionWorld` ownership extraction
 - `RuntimeStateAvailabilityWorld` ownership extraction
 - `RuntimeStateEntryWorld` ownership extraction
+- `RuntimeResourceWorld` ownership extraction
 - `RuntimeStunWorld` ownership extraction
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
