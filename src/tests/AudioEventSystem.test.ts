@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   createRuntimeSoundEvent,
   parseMugenSoundValue,
   pushRuntimeSoundEvent,
+  RuntimeAudioControllerDispatchWorld,
   RuntimeAudioWorld,
 } from "../mugen/runtime/AudioEventSystem";
 import type { RuntimeSoundEvent } from "../mugen/runtime/types";
@@ -107,6 +109,30 @@ describe("AudioEventSystem", () => {
 
     expect(event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 });
     expect(fighter.soundEvents).toEqual([event]);
+  });
+
+  it("dispatches active audio controllers with telemetry hooks", () => {
+    const dispatchWorld = new RuntimeAudioControllerDispatchWorld();
+    const audioWorld = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
+    const ir = compileControllerIr(controller("PlaySnd", { value: "S5,0", channel: "2" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      runtimeTick: 120,
+      audioWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(result.event).toMatchObject({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200, runtimeTick: 120 });
+    expect(fighter.soundEvents).toEqual([result.event]);
+    expect(recordedControllers).toEqual(["PlaySnd"]);
+    expect(recordedOperations).toEqual(["audio:playsnd"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 
   it("wraps direct HitDef sound telemetry behind RuntimeAudioWorld", () => {

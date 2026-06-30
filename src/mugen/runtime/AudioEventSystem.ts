@@ -1,4 +1,5 @@
 import type { AudioControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeHitDefContactMetadata, RuntimeSoundEvent } from "./types";
@@ -12,6 +13,21 @@ export type RuntimeSoundActor = {
 
 export type RuntimeAudioWorldActor = RuntimeSoundActor & {
   soundEvents: RuntimeSoundEvent[];
+};
+
+export type RuntimeAudioControllerDispatchOptions<TActor extends RuntimeAudioWorldActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  runtimeTick: number;
+  audioWorld: RuntimeAudioWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: AudioControllerOp) => void;
+};
+
+export type RuntimeAudioControllerDispatchResult = {
+  event: RuntimeSoundEvent;
+  recordedController: boolean;
+  recordedOperation: boolean;
 };
 
 export function createRuntimeSoundEvent(
@@ -73,6 +89,24 @@ export class RuntimeAudioWorld {
     };
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;
+  }
+}
+
+export class RuntimeAudioControllerDispatchWorld {
+  apply<TActor extends RuntimeAudioWorldActor>(
+    options: RuntimeAudioControllerDispatchOptions<TActor>,
+  ): RuntimeAudioControllerDispatchResult {
+    const operation = options.controller.operation?.kind === "audio" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    const event = options.audioWorld.emitController(options.actor, options.controller.source, options.runtimeTick, operation);
+    return {
+      event,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
   }
 }
 

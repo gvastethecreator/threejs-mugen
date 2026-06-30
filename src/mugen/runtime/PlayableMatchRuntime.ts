@@ -1,6 +1,5 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
-  AudioControllerOp,
   EnvColorControllerOp,
   EnvShakeControllerOp,
   FallEnvShakeControllerOp,
@@ -14,7 +13,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAn
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
-import { RuntimeAudioWorld } from "./AudioEventSystem";
+import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
   RuntimeContactControllerDispatchWorld,
@@ -124,6 +123,7 @@ const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
+const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1110,12 +1110,14 @@ function runActiveStateControllers(
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
       } else if (dispatch.effect === "sound") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "audio" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        recordSoundEvent(fighter, rawController, tick, operation);
+        audioControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          audioWorld: fighter.audioWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "envcolor") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "envcolor" ? controller.operation : undefined;
@@ -1285,15 +1287,6 @@ function resolveProjectileCombat(
     },
     recordReceivedDamage: markReceivedDamage,
   });
-}
-
-function recordSoundEvent(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  runtimeTick: number,
-  operation?: AudioControllerOp,
-): void {
-  fighter.audioWorld.emitController(fighter, controller, runtimeTick, operation);
 }
 
 function recordEnvShakeEvent(

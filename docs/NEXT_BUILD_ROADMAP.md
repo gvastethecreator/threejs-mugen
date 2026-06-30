@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeAudioControllerDispatchWorld ownership extraction
+  -> RuntimeAudioControllerDispatchWorld now owns bounded active-state audio side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed audio operation selection, operation telemetry, and PlaySnd/StopSnd event handoff through RuntimeAudioWorld
+  -> match runtime still owns trigger filtering, active-state order, hit/contact timing, and actor context
+  -> focused AudioEventSystem coverage proves PlaySnd telemetry/mutation through the dispatch boundary
+  -> no exact SND playback, channel priority, mixing, FightFX/common fallback, full audio parity, or score movement claim
 R2 RuntimeContactControllerDispatchWorld ownership extraction
   -> RuntimeContactControllerDispatchWorld now owns bounded active-state contact-memory side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed contact operation selection, operation telemetry, HitAdd mutation, and MoveHitReset reset handoff through RuntimeContactMemoryWorld

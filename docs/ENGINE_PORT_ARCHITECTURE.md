@@ -152,6 +152,8 @@ The compiler classifies each piece as:
 
 `RuntimeContactControllerDispatchWorld` owns the bounded active-state contact-memory controller dispatch that used to live inline in `PlayableMatchRuntime`: controller telemetry, typed `contact:*` operation selection, operation telemetry, `HitAdd` mutation, and `MoveHitReset` direct contact reset through `RuntimeContactMemoryWorld`. `PlayableMatchRuntime` still owns trigger filtering, active-state order, and direct/projectile contact creation, so this is ownership cleanup for current contact counters, not exact combo lifetime, helper/projectile contact ownership, guard-count parity, or full CNS VM parity.
 
+`RuntimeAudioControllerDispatchWorld` owns the bounded active-state audio controller dispatch that used to live inline in `PlayableMatchRuntime`: controller telemetry, typed `audio:*` operation selection, operation telemetry, and `PlaySnd` / `StopSnd` event handoff into `RuntimeAudioWorld`. `PlayableMatchRuntime` still owns trigger filtering, active-state order, hit/contact timing, and actor context, so this is ownership cleanup for current sound-event telemetry, not exact SND playback, channel priority, mixing, FightFX/common fallback, or full audio parity.
+
 `RuntimeResourceWorld` owns the bounded resource/control/variable mutation helpers that used to be free functions only: authored life/power max resolution, life and power clamping, `CtrlSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, and variable/range assignment. The existing exported helper functions still delegate to this world, so current match, direct-combat, projectile-combat, target, reversal, and controller-executor call sites preserve behavior while the resource boundary becomes testable and replaceable. This is ownership cleanup only; exact CNS resource timing, helper/team/redirect scopes, round/KO flow, and full MUGEN/IKEMEN resource parity remain blocked.
 
 `RuntimeControllerDispatchWorld` owns the bounded runtime-controller execution bridge that active imported states, State -1 setup controllers, and pre-facing `AssertSpecial` now share before falling through to `StateControllerExecutor`. It centralizes runtime-state replacement, evaluation context handoff (`Const`, `HitPauseTime`, random, stage time), optional controller/operation telemetry hooks, and unsupported-controller reporting. `PlayableMatchRuntime` still owns trigger filtering, `ChangeState` / `ChangeAnim`, side-effect controller dispatch, and exact ordering, so this is a dispatch ownership seam rather than new CNS VM parity.
@@ -191,6 +193,7 @@ MatchWorld
   RuntimeSpriteEffectWorld
   RuntimeSpriteEffectControllerWorld
   RuntimeContactControllerDispatchWorld
+  RuntimeAudioControllerDispatchWorld
   RuntimeActorConstraintWorld
   RuntimeDirectCombatWorld
   RuntimeHitOverrideWorld
@@ -284,14 +287,15 @@ The current extraction order is:
 41. `RuntimeSpriteEffectControllerWorld`: own bounded active-state sprite-effect controller dispatch, telemetry hooks, typed `sprite-effect:*` operation selection, and handoff into `RuntimeSpriteEffectWorld` outside inline match-runtime branches.
 42. `RuntimeTargetControllerDispatchWorld`: own bounded active-state Target / BindToTarget controller dispatch, telemetry hooks, typed operation selection, and handoff into `RuntimeTargetWorld` outside inline match-runtime branches.
 43. `RuntimeContactControllerDispatchWorld`: own bounded active-state contact-memory controller dispatch, telemetry hooks, typed `contact:*` operation selection, `HitAdd`, and `MoveHitReset` handoff into `RuntimeContactMemoryWorld` outside inline match-runtime branches.
-44. `RuntimeResourceWorld`: own bounded resource/control/variable writes, authored resource maxima, and power-delta clamping behind a named resource boundary while legacy helper functions delegate to it.
-45. `RuntimeControllerDispatchWorld`: own bounded runtime-controller execution dispatch, evaluation context handoff, optional telemetry hooks, and unsupported-controller reporting outside inline match-runtime branches.
-46. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-47. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
-48. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
-49. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
-50. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-51. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
+44. `RuntimeAudioControllerDispatchWorld`: own bounded active-state audio controller dispatch, telemetry hooks, typed `audio:*` operation selection, and handoff into `RuntimeAudioWorld` outside inline match-runtime branches.
+45. `RuntimeResourceWorld`: own bounded resource/control/variable writes, authored resource maxima, and power-delta clamping behind a named resource boundary while legacy helper functions delegate to it.
+46. `RuntimeControllerDispatchWorld`: own bounded runtime-controller execution dispatch, evaluation context handoff, optional telemetry hooks, and unsupported-controller reporting outside inline match-runtime branches.
+47. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+48. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
+49. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
+50. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
+51. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+52. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
