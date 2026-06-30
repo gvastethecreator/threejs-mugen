@@ -72,6 +72,7 @@ export type RuntimeHelperAdvanceOptions = {
   opponentState?: CharacterRuntimeState;
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
   countHelpers?: (helper: RuntimeHelper, helperId?: number) => number;
+  countProjectiles?: (helper: RuntimeHelper, projectileId?: number) => number;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -195,6 +196,7 @@ export function runRuntimeHelperStateControllers(
     | "opponentState"
     | "countExplods"
     | "countHelpers"
+    | "countProjectiles"
     | "onSpawnExplod"
     | "onSpawnProjectile"
     | "onRemoveExplod"
@@ -428,7 +430,7 @@ function helperTriggersPass(
   controller: ControllerIr,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
   >,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
@@ -458,7 +460,7 @@ function resolveHelperNumber(
   expression: string | undefined,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
   >,
 ): number | undefined {
   if (value !== undefined) {
@@ -548,7 +550,7 @@ function helperExpressionContext(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
   > = {},
 ) {
   return {
@@ -562,6 +564,7 @@ function helperExpressionContext(
     stateTime: helper.stateTime,
     numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
     numHelper: (helperId?: number) => options.countHelpers?.(helper, helperId) ?? 0,
+    numProj: (projectileId?: number) => options.countProjectiles?.(helper, projectileId) ?? 0,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };

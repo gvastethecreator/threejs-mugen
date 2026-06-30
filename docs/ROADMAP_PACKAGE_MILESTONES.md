@@ -85,10 +85,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 helper-local NumProj trace gate
+  -> synthetic-imported-helper-numproj.json checksum 4f8612b0 is now required
+  -> helper-local NumProjID(8851) > 0 counts helper-parented owner-side Projectile actors only
+  -> visual Helper route 1200 -> 1213 / anim 933 follows owner-side Projectile anim 944 with parentId p1-helper-0
+  -> focused EffectActorSystem coverage proves same-id player-owned and removed helper-parented projectiles do not count
+  -> pnpm qa:trace passes 181/181 artifacts, 161 required and 20 optional
+  -> no helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespaces/scopes, dynamic ids, teams, exact tick order, score movement, or full Helper/Projectile parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now required
   -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now required
-  -> pnpm qa:trace passes 180/180 artifacts, 160 required and 20 optional
   -> no exact fall.recovertime tables, velocity math, controller-loop tick order, public KFM support, score movement, or full Common1 recovery parity claim
 R2 RuntimeCombatResolutionWorld ownership extraction
   -> RuntimeCombatResolutionWorld now owns bounded active direct/projectile contact orchestration from PlayableMatchRuntime
@@ -407,7 +413,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper-local Projectile gate is 178/178 artifacts, 158 required and 20 optional
+  -> current aggregate after the helper-local NumProj gate is 181/181 artifacts, 161 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

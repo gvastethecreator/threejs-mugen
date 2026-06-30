@@ -6,6 +6,7 @@ import type { CharacterRuntimeState } from "../mugen/runtime/types";
 import {
   advanceRuntimeExplodActors,
   advanceRuntimeHelperActors,
+  countRuntimeHelperProjectileActors,
   createRuntimeEffectActorStore,
   removeRuntimeHelperActors,
   removeRuntimeExplodActors,
@@ -1023,6 +1024,50 @@ describe("EffectActorSystem", () => {
       removeTime: 24,
       spritePriority: 6,
     });
+  });
+
+  it("evaluates helper-local NumProj against only helper-parented Projectile actors", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8850", projanim: "930" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeState", { value: "6199" }, ["NumProjID(8850) > 0"]),
+              controller("Projectile", { projid: "8850", projanim: "930", projremovetime: "24" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6101" }, ["NumProjID(8850) > 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6101, 901)),
+          compileStateProgram(state(6199, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Projectile", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6101,
+      animNo: 901,
+      stateTime: 1,
+      age: 1,
+    });
+    expect(store.projectiles.filter((projectile) => projectile.projectileId === 8850)).toHaveLength(2);
+    expect(countRuntimeHelperProjectileActors(store, helper, 8850)).toBe(1);
+    markRuntimeProjectileForRemoval(store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!, "hit");
+    expect(countRuntimeHelperProjectileActors(store, helper, 8850)).toBe(0);
   });
 
   it("evaluates helper-local NumHelper against owner-side Helper actors", () => {

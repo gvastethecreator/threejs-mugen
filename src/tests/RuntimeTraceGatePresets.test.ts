@@ -100,6 +100,7 @@ import {
   createSyntheticImportedHelperModifyExplodTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
+  createSyntheticImportedHelperNumProjTraceArtifact,
   createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperBindToRootTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
@@ -1651,6 +1652,43 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1211, minAge: 1 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper NumProj artifact with helper-local projectile count evidence", () => {
+    const artifact = createSyntheticImportedHelperNumProjTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-numproj-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-numproj-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1213, animNo: 933 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 944 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1213, minAge: 1 },
+      { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", effectId: 8851, minAge: 1, minPriority: 2 },
     ]);
   });
 

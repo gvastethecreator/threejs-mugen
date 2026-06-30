@@ -26,8 +26,9 @@ Near-term language must stay honest: this is **partial MUGEN compatibility with 
 
 Current implementation cursor:
 
+- Latest helper/effect checkpoint: required `synthetic-imported-helper-numproj.json` checksum `4f8612b0` now proves bounded helper-local `NumProjID(8851) > 0` against helper-parented owner-side Projectile actors; same-id player-owned or removed projectiles do not satisfy the helper-local count. Current trace aggregate is 181/181 artifacts, 161 required and 20 optional.
 - Latest asset compatibility checkpoint: `CompatibilityReport.sounds` now summarizes parsed SND archives with declared total, decoded WAV count, unsupported count, format counts, sample-rate counts, and channel counts. Loader reports use the already parsed `soundArchive`; this is inspection/compatibility evidence only, not exact audio playback parity.
-- Latest R1 evidence checkpoint: required `synthetic-imported-default-fall-official-recovery-threshold.json` checksum `86804271` and `synthetic-imported-default-fall-official-recovery-too-early.json` checksum `ef945ff5` now promote official-style synthetic Common1 recovery threshold / too-early rejection routes into `pnpm qa:trace`. Current trace aggregate is 180/180 artifacts, 160 required and 20 optional.
+- Previous R1 evidence checkpoint: required `synthetic-imported-default-fall-official-recovery-threshold.json` checksum `86804271` and `synthetic-imported-default-fall-official-recovery-too-early.json` checksum `ef945ff5` now promote official-style synthetic Common1 recovery threshold / too-early rejection routes into `pnpm qa:trace`.
 - Latest R2 ownership checkpoint: `RuntimeCombatResolutionWorld` owns bounded active direct/projectile contact orchestration from `PlayableMatchRuntime`.
 - Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed SND compatibility report summary, official-style recovery trace promotion, combat-resolution, target-candidate, expression-context, state-transition, animation-controller, or kinematic-controller cuts.
 

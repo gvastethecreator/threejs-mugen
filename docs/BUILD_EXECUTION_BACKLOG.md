@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-local NumProj trace gate
+
+Changed:
+
+- Added helper-local `NumProj` / `NumProjID(id)` reads for current visual Helpers running the bounded helper micro-VM.
+- `RuntimeEffectActorWorld` / `EffectActorSystem` now count only helper-parented owner-side Projectiles for helper-local projectile-count triggers and exclude removed projectiles.
+- Added focused `EffectActorSystem` coverage proving same-id player-owned Projectiles do not satisfy the helper-local count and removed helper-parented Projectiles are excluded.
+- Added required `synthetic-imported-helper-numproj.json` trace evidence and registered it in `pnpm qa:trace`.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/EffectActorSystem.test.ts -t "NumProj"` passed earlier in the round.
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper NumProj"` passed earlier in the round.
+- `pnpm test` passes: 95 files / 802 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 181 / 181 artifacts, 161 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-helper-numproj.json` `4f8612b0`.
+- `pnpm check:boundaries` passes.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors can branch on helper-local `NumProjID(id)` against helper-parented owner-side Projectile actors spawned through the bounded helper-local micro-VM.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespace scopes, dynamic Projectile ids/params, teams, `ProjContact` timing, exact helper tick order, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - SND compatibility summary in reports
 
 Changed:
@@ -4292,3 +4322,5 @@ These are future horizons, not blockers for the private usable MVP.
 269. Done RuntimeExpressionContextWorld ownership extraction: `RuntimeExpressionContextWorld` now owns bounded active runtime expression/trigger context creation for imported state triggers and dynamic controller-param fallback. `PlayableMatchRuntime` delegates target redirects, contact/projectile/effect count reads, command/const/state/anim/hitvar reads, `HitDefAttr`, `HitPauseTime`/`HitOver`/`HitShakeOver`, `InGuardDist`, random/stage/time wiring, and numeric expression truncation through that world while still owning trigger grouping/order, active-state dispatch, next-random source, animation timing callbacks, and exact VM timing. Focused `RuntimeExpressionContextSystem` coverage proves numeric reads, `Target` redirect, compiled trigger evaluation, const/state/HitVar helpers, and shared context creation. `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts` passes 1 file / 4 tests, `pnpm test` passes 94 files / 796 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, `pnpm qa:trace` passes 178/178 artifacts with 158 required and 20 optional, `pnpm check:boundaries` passes, and `git diff --check` passes with CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current active runtime expression/trigger read context has a named, testable world boundary without changing trace behavior. Claim blocked: full expression language parity, composite `HitDefAttr` parity, helper/team/redirect mutation, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN runtime parity.
 
 270. Done RuntimeTargetWorld candidate-resolution ownership extraction: `RuntimeTargetWorld.resolveCandidates` now owns bounded target-candidate filtering from live target memory before current Target* / BindToTarget controller application and active TargetBind / BindToTarget position application. `PlayableMatchRuntime` and the match/pause loops still supply the currently materialized concrete actor roster and own trigger ordering, state validation, helper/projectile actor materialization, and combat context. Focused `TargetSystem` coverage proves actor-id and target-id filtering plus mutation only against remembered targets. `pnpm exec vitest run src/tests/TargetSystem.test.ts` passes 1 file / 20 tests, `pnpm test` passes 94 files / 797 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, `pnpm qa:trace` passes 178/178 artifacts with 158 required and 20 optional, `pnpm check:boundaries` passes, and `git diff --check` passes with CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current two-actor Target* side effects and active target bindings have a named, testable candidate-resolution boundary without trace drift. Claim blocked: helper/projectile target ownership, exact team/multi-target selection, exact target lifetime, throw binding, exact bind tick order, visual parity, score movement, and full MUGEN/IKEMEN target VM parity.
+
+271. Done helper-local NumProj trace gate: `HelperSystem` can now evaluate bounded helper-local `NumProj` / `NumProjID(id)` through a projectile-count callback supplied by `RuntimeEffectActorWorld`, and `EffectActorSystem` counts only helper-parented owner-side Projectiles while excluding removed projectiles. Focused `EffectActorSystem` coverage proves same-id player-owned Projectiles do not satisfy the helper-local count and removed helper-parented Projectiles are excluded. Required `synthetic-imported-helper-numproj.json` checksum `4f8612b0` proves a visual Helper routes `1200 -> 1213` / anim `933` through `NumProjID(8851) > 0` after spawning owner-side Projectile anim `944` with `parentId = p1-helper-0`. `pnpm test` passes 95 files / 802 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing large-chunk warning, `pnpm qa:trace` passes 181/181 artifacts with 161 required and 20 optional, and `pnpm check:boundaries` passes. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current first-generation visual Helper actors can branch on helper-local `NumProjID(id)` against helper-parented owner-side Projectile actors. Claim blocked: helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespace scopes, dynamic ids/params, teams, `ProjContact` timing, exact helper tick order, visual parity, score movement, and full MUGEN/IKEMEN Helper/Projectile parity.

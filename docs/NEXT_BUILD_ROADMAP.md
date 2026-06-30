@@ -78,10 +78,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 helper-local NumProj trace gate
+  -> synthetic-imported-helper-numproj.json checksum 4f8612b0 is now a required qa:trace artifact
+  -> helper-local NumProjID(8851) > 0 counts helper-parented owner-side Projectile actors only
+  -> visual Helper routes 1200 -> 1213 / anim 933 after spawning owner-side Projectile anim 944 with parentId p1-helper-0
+  -> focused EffectActorSystem coverage proves same-id player-owned and removed helper-parented projectiles do not count
+  -> current qa:trace aggregate is 181/181 artifacts, 161 required and 20 optional
+  -> this narrows helper/effect count evidence only; no helper-owned Projectile combat/contact, helper-owned target memory, exact projectile namespaces/scopes, dynamic ids, teams, exact tick order, score movement, or full parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now a required qa:trace artifact
   -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now a required qa:trace artifact
-  -> current qa:trace aggregate is 180/180 artifacts, 160 required and 20 optional
   -> this narrows Common1 recovery threshold/rejection evidence only; no exact fall.recovertime tables, velocity math, controller-loop tick order, public KFM support, score movement, or full parity claim
 R2 RuntimeTargetWorld candidate-resolution ownership
   -> RuntimeTargetWorld.resolveCandidates now owns bounded target-candidate filtering from live target memory
@@ -394,7 +400,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper-local Projectile gate is 178/178 artifacts, 158 required and 20 optional
+  -> current aggregate after the helper-local NumProj gate is 181/181 artifacts, 161 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

@@ -364,6 +364,12 @@ export function advanceRuntimeHelperActors(
       }
       return countRuntimeHelperActors(store, helper, helperId);
     },
+    countProjectiles: (helper, projectileId) => {
+      if (options?.countProjectiles) {
+        return options.countProjectiles(helper, projectileId);
+      }
+      return countRuntimeHelperProjectileActors(store, helper, projectileId);
+    },
     onSpawnExplod: (helper, controller) => {
       if (options?.onSpawnExplod) {
         return options.onSpawnExplod(helper, controller);
@@ -498,6 +504,20 @@ export function countRuntimeHelperActors(
   helperId?: number,
 ): number {
   return store.helpers.filter((candidate) => helperId === undefined || candidate.helperId === helperId).length;
+}
+
+export function countRuntimeHelperProjectileActors(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  projectileId?: number,
+): number {
+  return store.projectiles.filter((projectile) => {
+    return (
+      !projectile.removalReason &&
+      projectile.parentId === helper.serialId &&
+      (projectileId === undefined || projectile.projectileId === projectileId)
+    );
+  }).length;
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
