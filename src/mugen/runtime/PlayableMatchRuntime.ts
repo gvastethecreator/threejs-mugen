@@ -1,11 +1,9 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   EnvColorControllerOp,
-  HitDefControllerOp,
   PauseControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
-import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
@@ -21,7 +19,6 @@ import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./
 import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
-  DEFAULT_RUNTIME_GUARD_DISTANCE,
   findRuntimeHitOverride,
   hasRuntimeBoxContact,
   hitAttributeMatches,
@@ -36,6 +33,7 @@ import {
   RuntimeEnvShakeWorld,
   RuntimeFallEnvShakeControllerDispatchWorld,
 } from "./EnvShakeSystem";
+import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalControllerDispatchWorld, RuntimeReversalWorld } from "./ReversalSystem";
@@ -141,6 +139,7 @@ const fallEnvShakeControllerDispatchWorld = new RuntimeFallEnvShakeControllerDis
 const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
+const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1043,7 +1042,13 @@ function runActiveStateControllers(
 
     if (dispatch.kind === "side-effect") {
       if (dispatch.effect === "hitdef") {
-        activateHitDef(fighter, rawController, controller.operation?.kind === "hitdef" ? controller.operation : undefined);
+        hitDefControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          frame: getCurrentFrame(fighter),
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "reversaldef") {
         reversalControllerDispatchWorld.apply({
           actor: fighter,
@@ -1300,98 +1305,6 @@ function resolveProjectileCombat(
   });
 }
 
-function activateHitDef(fighter: FighterMatchState, controller: MugenStateController, operation?: HitDefControllerOp): void {
-  const frame = getCurrentFrame(fighter);
-  const key = `${fighter.runtime.stateNo}:${controller.line}:${fighter.runtime.frameIndex}`;
-  if (fighter.firedHitDefs.has(key)) {
-    return;
-  }
-  fighter.firedHitDefs.add(key);
-  compatibilityTelemetryWorld.recordController(fighter, controller);
-  if (operation) {
-    compatibilityTelemetryWorld.recordOperation(fighter, operation);
-  }
-  const existing = fighter.currentMove;
-  const activeStart = fighter.moveTick;
-  const activeEnd = activeStart + Math.max(1, runtimeAnimationFrameDuration(frame) - fighter.frameElapsed);
-  const damage = operation?.damage ?? firstNumber(findParam(controller, "damage")) ?? existing?.damage ?? 45;
-  const guardDamage = operation?.guardDamage ?? secondNumber(findParam(controller, "damage")) ?? existing?.guardDamage ?? 0;
-  const kill = operation?.kill ?? booleanHitDefParam(controller, "kill") ?? existing?.kill ?? true;
-  const guardKill = operation?.guardKill ?? booleanHitDefParam(controller, "guard.kill") ?? existing?.guardKill ?? true;
-  const hitPause = operation?.pauseTime ?? firstNumber(findParam(controller, "pausetime")) ?? existing?.hitPause ?? (damage >= 60 ? 9 : 7);
-  const hitStun = operation?.groundHitTime ?? firstNumber(findParam(controller, "ground.hittime")) ?? existing?.hitStun ?? (damage >= 60 ? 28 : 22);
-  const priority = clampHitDefPriority(operation?.priority ?? firstNumber(findParam(controller, "priority")) ?? existing?.priority ?? 4);
-  const groundVelocity = operation?.groundVelocity ?? velocityPair(findParam(controller, "ground.velocity"));
-  const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
-  const guardPause =
-    operation?.guardPauseTime ?? firstNumber(findParam(controller, "guard.pausetime")) ?? existing?.guardPause ?? Math.max(1, Math.round(hitPause * 0.75));
-  const guardStun =
-    operation?.guardHitTime ?? firstNumber(findParam(controller, "guard.hittime")) ?? existing?.guardStun ?? Math.max(1, Math.round(hitStun * 0.55));
-  const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findParam(controller, "guard.slidetime")) ?? existing?.guardSlideTime;
-  const guardControlTime = operation?.guardControlTime ?? firstNumber(findParam(controller, "guard.ctrltime")) ?? existing?.guardControlTime;
-  const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(controller, "guard.velocity"));
-  const guardDistance =
-    operation?.guardDistance ?? firstNumber(findParam(controller, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
-  const guardPush =
-    Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
-  const groundType = operation?.groundType ?? hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")) ?? existing?.hitVars?.groundType ?? 1;
-  const airType = operation?.airType ?? hitType(findParam(controller, "air.type")) ?? existing?.hitVars?.airType ?? groundType;
-  const animType =
-    operation?.fallAnimType ??
-    hitAnimType(findParam(controller, "fall.animtype")) ??
-    operation?.animType ??
-    hitAnimType(findParam(controller, "animtype")) ??
-    existing?.hitVars?.animType ??
-    0;
-  const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(controller, "p1stateno"));
-  const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(controller, "p2stateno"));
-  const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : false);
-  const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
-  fighter.currentMove = {
-    actionId: fighter.runtime.stateNo,
-    startup: existing?.startup ?? 0,
-    activeStart,
-    activeEnd,
-    recovery: Math.max(existing?.recovery ?? 0, activeEnd + 12),
-    damage,
-    kill,
-    priority,
-    requiresHitDef: false,
-    attr: operation?.attr ?? stripMugenString(findParam(controller, "attr")) ?? existing?.attr ?? "S,NA",
-    targetId: operation?.id ?? firstNumber(findParam(controller, "id")) ?? existing?.targetId,
-    hitPause,
-    hitStun,
-    push,
-    hitVelocityY: groundVelocity?.[1] ?? existing?.hitVelocityY,
-    hitVars: { animType, groundType, airType },
-    guardDistance,
-    guardFlag: operation?.guardFlag ?? stripMugenString(findParam(controller, "guardflag")) ?? existing?.guardFlag ?? "MA",
-    guardDamage,
-    guardKill,
-    guardPause,
-    guardStun,
-    guardSlideTime,
-    guardControlTime,
-    guardPush,
-    guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
-    hitSound: operation?.hitSound ?? stripMugenString(findParam(controller, "hitsound")) ?? existing?.hitSound,
-    guardSound: operation?.guardSound ?? stripMugenString(findParam(controller, "guardsound")) ?? existing?.guardSound,
-    hitSpark: operation?.hitSpark ?? stripMugenString(findParam(controller, "sparkno")) ?? existing?.hitSpark,
-    guardSpark: operation?.guardSpark ?? stripMugenString(findParam(controller, "guard.sparkno")) ?? existing?.guardSpark,
-    sparkXy: operation?.sparkXy ? normalizeSparkOffset(operation.sparkXy) : numberPair(findParam(controller, "sparkxy")) ?? existing?.sparkXy,
-    p1StateNo,
-    p2StateNo,
-    p2GetP1State,
-    fall: buildMoveFallData(controller, existing, operation),
-    hitbox: cloneBox(frame?.clsn1[0] ?? fallbackHitbox),
-  };
-  fighter.currentMoveLabel = controller.name ?? "HitDef";
-  fighter.hasHit = false;
-  fighter.runtime.reversal = undefined;
-  fighter.runtime.moveType = "A";
-  applyRuntimeControl(fighter.runtime, false);
-}
-
 function resolveCombat(
   attacker: FighterMatchState,
   defender: FighterMatchState,
@@ -1478,65 +1391,6 @@ function resolveCombat(
   });
   contactPresentationWorld.emitHitDefContact({ attacker, defender, kind: outcome.kind, move, runtimeTick });
   log(outcome.message);
-}
-
-function buildMoveFallData(controller: MugenStateController, existing?: DemoMove, operation?: HitDefControllerOp): DemoMove["fall"] | undefined {
-  const enabled =
-    (operation?.fall.enabled === undefined ? undefined : operation.fall.enabled ? 1 : 0) ??
-    firstNumber(findParam(controller, "fall")) ??
-    firstNumber(findParam(controller, "air.fall")) ??
-    firstNumber(findParam(controller, "ground.fall"));
-  const damage = operation?.fall.damage ?? firstNumber(findParam(controller, "fall.damage")) ?? existing?.fall?.damage;
-  const defenceUp = operation?.fall.defenceUp ?? firstNumber(findParam(controller, "fall.defence_up")) ?? existing?.fall?.defenceUp;
-  const kill = operation?.fall.kill ?? booleanHitDefParam(controller, "fall.kill") ?? existing?.fall?.kill ?? true;
-  const xVelocity = operation?.fall.xVelocity ?? firstNumber(findParam(controller, "fall.xvelocity")) ?? existing?.fall?.velocity?.x;
-  const yVelocity = operation?.fall.yVelocity ?? firstNumber(findParam(controller, "fall.yvelocity")) ?? existing?.fall?.velocity?.y;
-  const envShakeTime = operation?.fall.envShakeTime ?? firstNumber(findParam(controller, "fall.envshake.time")) ?? existing?.fall?.envShake?.time;
-  const envShakeFreq = operation?.fall.envShakeFrequency ?? firstNumber(findParam(controller, "fall.envshake.freq")) ?? existing?.fall?.envShake?.freq;
-  const envShakeAmpl = operation?.fall.envShakeAmplitude ?? firstNumber(findParam(controller, "fall.envshake.ampl")) ?? existing?.fall?.envShake?.ampl;
-  const envShakePhase = operation?.fall.envShakePhase ?? firstNumber(findParam(controller, "fall.envshake.phase")) ?? existing?.fall?.envShake?.phase;
-  const recover = operation?.fall.recover === undefined ? firstNumber(findParam(controller, "fall.recover")) : operation.fall.recover ? 1 : 0;
-  const recoverTime = operation?.fall.recoverTime ?? firstNumber(findParam(controller, "fall.recovertime")) ?? existing?.fall?.recoverTime;
-  const downRecover =
-    operation?.fall.downRecover === undefined ? firstNumber(findParam(controller, "down.recover")) : operation.fall.downRecover ? 1 : 0;
-  const downRecoverTime =
-    operation?.fall.downRecoverTime ?? firstNumber(findParam(controller, "down.recovertime")) ?? existing?.fall?.downRecoverTime;
-  const hasAny =
-    enabled !== undefined ||
-    damage !== undefined ||
-    defenceUp !== undefined ||
-    operation?.fall.kill !== undefined ||
-    findParam(controller, "fall.kill") !== undefined ||
-    xVelocity !== undefined ||
-    yVelocity !== undefined ||
-    envShakeTime !== undefined ||
-    recover !== undefined ||
-    recoverTime !== undefined ||
-    downRecover !== undefined ||
-    downRecoverTime !== undefined;
-  if (!hasAny) {
-    return existing?.fall;
-  }
-  return {
-    enabled: enabled !== undefined ? enabled !== 0 : existing?.fall?.enabled ?? false,
-    damage,
-    defenceUp,
-    kill,
-    velocity: xVelocity !== undefined || yVelocity !== undefined ? { x: xVelocity, y: yVelocity } : existing?.fall?.velocity,
-    recover: recover !== undefined ? recover !== 0 : existing?.fall?.recover,
-    recoverTime,
-    downRecover: downRecover !== undefined ? downRecover !== 0 : existing?.fall?.downRecover,
-    downRecoverTime,
-    envShake:
-      envShakeTime !== undefined
-        ? {
-            time: envShakeTime,
-            freq: envShakeFreq ?? 60,
-            ampl: envShakeAmpl ?? -4,
-            phase: envShakePhase ?? 0,
-          }
-        : existing?.fall?.envShake,
-  };
 }
 
 function applyHitOverride(
@@ -1691,10 +1545,6 @@ function spriteOwnerSnapshot(fighter: FighterMatchState): {
     spriteOwnerDefinitionId: owner.definition.id,
     spriteOwnerLabel: owner.label,
   };
-}
-
-function cloneBox(box: CollisionBox): CollisionBox {
-  return { x1: box.x1, y1: box.y1, x2: box.x2, y2: box.y2 };
 }
 
 function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): boolean {
@@ -2031,102 +1881,4 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
-}
-
-function secondNumber(value: string | undefined): number | undefined {
-  const raw = value?.split(",")[1]?.trim();
-  if (!raw) {
-    return undefined;
-  }
-  const numberValue = Number(raw);
-  return Number.isFinite(numberValue) ? numberValue : undefined;
-}
-
-function booleanHitDefParam(controller: { params: Record<string, string> }, key: string): boolean | undefined {
-  const value = firstNumber(findParam(controller, key));
-  return value === undefined ? undefined : value !== 0;
-}
-
-function numberPair(value: string | undefined): [number, number] | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const numbers = value
-    .split(",")
-    .map((part) => Number(part.trim()))
-    .filter((numberValue) => Number.isFinite(numberValue));
-  if (numbers.length === 0 || numbers[0] === undefined) {
-    return undefined;
-  }
-  return [numbers[0], numbers[1] ?? numbers[0]];
-}
-
-function normalizeSparkOffset(value: [number, number?]): [number, number] {
-  return [value[0], value[1] ?? value[0]];
-}
-
-function velocityPair(value: string | undefined): [number, number] | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const numbers = value
-    .split(",")
-    .map((part) => Number(part.trim()))
-    .filter((numberValue) => Number.isFinite(numberValue));
-  if (numbers.length === 0 || numbers[0] === undefined) {
-    return undefined;
-  }
-  return [numbers[0], numbers[1] ?? 0];
-}
-
-function clampHitDefPriority(value: number): number {
-  return Math.max(0, Math.min(10, Math.round(value)));
-}
-
-function stripMugenString(value: string | undefined): string | undefined {
-  const trimmed = value?.trim();
-  if (!trimmed) {
-    return undefined;
-  }
-  return trimmed.replace(/^"|"$/g, "");
-}
-
-function hitAnimType(value: string | undefined): number | undefined {
-  const numeric = firstNumber(value);
-  if (numeric !== undefined) {
-    return numeric;
-  }
-  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
-  if (!normalized) {
-    return undefined;
-  }
-  const values: Record<string, number> = {
-    light: 0,
-    medium: 1,
-    med: 1,
-    hard: 2,
-    heavy: 2,
-    back: 3,
-    up: 4,
-    diagup: 5,
-    diagonalup: 5,
-  };
-  return values[normalized];
-}
-
-function hitType(value: string | undefined): number | undefined {
-  const numeric = firstNumber(value);
-  if (numeric !== undefined) {
-    return numeric;
-  }
-  const normalized = stripMugenString(value)?.replace(/[\s_-]+/g, "").toLowerCase();
-  if (!normalized) {
-    return undefined;
-  }
-  const values: Record<string, number> = {
-    high: 1,
-    low: 2,
-    trip: 3,
-  };
-  return values[normalized];
 }

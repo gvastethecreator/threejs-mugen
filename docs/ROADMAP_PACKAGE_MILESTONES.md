@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeHitDefControllerDispatchWorld ownership extraction
+  -> RuntimeHitDefControllerDispatchWorld now owns bounded active-state HitDef activation dispatch into the current attack payload
+  -> PlayableMatchRuntime delegates controller telemetry, typed hitdef operation selection, raw fallback attack params, fired-HitDef dedupe, current-frame Clsn1 hitbox handoff, currentMove mutation, attack movetype/control writes, and operation telemetry
+  -> match runtime still owns trigger filtering, active-state order, current-frame lookup, direct/projectile contact resolution, Common1/custom-state routing, and target/reversal consequences
+  -> focused HitDefSystem coverage proves activation payloads and duplicate suppression through the dispatch boundary
+  -> no exact HitDef trigger lifetime, contact ordering, multi-hit windows, helper/projectile/custom-state ownership, broad attr grammar, full HitDef VM parity, or score claim
 R2 RuntimeReversalControllerDispatchWorld ownership extraction
   -> RuntimeReversalControllerDispatchWorld now owns bounded active-state ReversalDef dispatch into RuntimeReversalWorld
   -> PlayableMatchRuntime delegates controller telemetry, typed reversaldef operation selection, raw fallback activation payload, activation handoff, and operation telemetry
