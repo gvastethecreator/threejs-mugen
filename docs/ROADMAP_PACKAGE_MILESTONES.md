@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 official-style recovery trace promotion
+  -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now required
+  -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now required
+  -> pnpm qa:trace passes 180/180 artifacts, 160 required and 20 optional
+  -> no exact fall.recovertime tables, velocity math, controller-loop tick order, public KFM support, score movement, or full Common1 recovery parity claim
 R2 RuntimeCombatResolutionWorld ownership extraction
   -> RuntimeCombatResolutionWorld now owns bounded active direct/projectile contact orchestration from PlayableMatchRuntime
   -> direct eligibility, reversal checks, HitBy/NotHitBy rejection, HitOverride hooks, target-memory remembering, hit/guard result handoff, projectile callbacks, received-damage/contact memory, and contact-presentation emission route through that world

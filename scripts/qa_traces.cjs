@@ -568,6 +568,40 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-fall-official-recovery-threshold",
+      required: true,
+      artifact: presets.createImportedDefaultFallRecoveryThresholdTraceArtifact(
+        presets.createSyntheticImportedTraceFighter({
+          id: "synthetic-imported-default-fall-official-recovery-threshold",
+          displayName: "Synthetic Imported Default Fall Official Recovery Threshold",
+          defaultGetHitFall: {
+            shakeStateNo: 5000,
+            slideStateNo: 5001,
+            airStateNo: 5030,
+            fallStateNo: 5050,
+            recoveryInputStateNo: 5200,
+            groundRecoveryStateNo: 5200,
+            groundRecoveryLandStateNo: 5201,
+            landStateNo: 52,
+            includeGroundRecovery: true,
+          },
+        }),
+        {
+          targetId: "synthetic-imported-default-fall-official-recovery-threshold-golden",
+          targetLabel: "Synthetic imported official-style recovery threshold route",
+          attacker: presets.createSyntheticImportedTraceFighter({
+            id: "synthetic-imported-default-fall-official-recovery-threshold-attacker",
+            displayName: "Synthetic Imported Default Fall Official Recovery Threshold Attacker",
+            groundVelocity: [-3, -6],
+            fall: { enabled: true, damage: 20, velocity: { x: 3, y: -6 }, recover: true, recoverTime: 10 },
+          }),
+          notes: [
+            "Synthetic imported official-style recovery-threshold trace proves the bounded runtime can count down fall.recovertime in 5050 and choose the 5200/5201 ground-recovery branch once the timer reaches 0. It does not claim exact MUGEN/IKEMEN threshold tables, velocity math, controller tick order, public KFM support, or full recovery parity.",
+          ],
+        },
+      ),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-fall-recovery-tick-order",
       required: true,
       artifact: presets.createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact(),
@@ -586,6 +620,31 @@ async function main() {
       name: "synthetic-imported-default-fall-recovery-too-early",
       required: true,
       artifact: presets.createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-default-fall-official-recovery-too-early",
+      required: true,
+      artifact: presets.createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
+        presets.createSyntheticImportedTraceFighter({
+          id: "synthetic-imported-default-fall-official-recovery-too-early",
+          displayName: "Synthetic Imported Default Fall Official Recovery Too Early",
+          defaultGetHitFall: {
+            shakeStateNo: 5000,
+            slideStateNo: 5001,
+            airStateNo: 5030,
+            fallStateNo: 5050,
+            recoveryInputStateNo: 5210,
+            includeRecoveryInput: true,
+          },
+        }),
+        {
+          targetId: "synthetic-imported-default-fall-official-recovery-too-early-golden",
+          targetLabel: "Synthetic imported official-style recovery input too-early reject route",
+          notes: [
+            "Synthetic imported official-style recovery-input negative trace proves the bounded runtime keeps the defender in 5050 when recovery is pressed before fall.recovertime reaches 0. It does not claim exact recovery threshold tables, velocity math, public KFM support, or full tick-order parity.",
+          ],
+        },
+      ),
     });
     artifacts.push({
       name: "synthetic-imported-state-exit",
@@ -1556,10 +1615,12 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-fall-defence-up",
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-default-fall-recovery-threshold",
+    "synthetic-imported-default-fall-official-recovery-threshold",
     "synthetic-imported-default-fall-recovery-tick-order",
     "synthetic-imported-default-fall-air-recovery-velocity",
     "synthetic-imported-default-fall-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
+    "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",
     "synthetic-imported-gravity",

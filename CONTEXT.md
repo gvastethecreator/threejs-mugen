@@ -26,9 +26,9 @@ Near-term language must stay honest: this is **partial MUGEN compatibility with 
 
 Current implementation cursor:
 
-- Latest R2 ownership checkpoint: `RuntimeTargetWorld.resolveCandidates` owns bounded target-candidate filtering from live target memory before current Target* / BindToTarget controller and active-binding application.
-- Previous R2 checkpoint: `RuntimeExpressionContextWorld` owns the bounded active runtime expression/trigger read context used by imported state triggers and dynamic controller-param fallback.
-- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed target-candidate, expression-context, state-transition, animation-controller, or kinematic-controller ownership cuts.
+- Latest R1 evidence checkpoint: required `synthetic-imported-default-fall-official-recovery-threshold.json` checksum `86804271` and `synthetic-imported-default-fall-official-recovery-too-early.json` checksum `ef945ff5` now promote official-style synthetic Common1 recovery threshold / too-early rejection routes into `pnpm qa:trace`. Current trace aggregate is 180/180 artifacts, 160 required and 20 optional.
+- Latest R2 ownership checkpoint: `RuntimeCombatResolutionWorld` owns bounded active direct/projectile contact orchestration from `PlayableMatchRuntime`.
+- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed official-style recovery trace promotion, combat-resolution, target-candidate, expression-context, state-transition, animation-controller, or kinematic-controller cuts.
 
 ## Authoritative Docs
 

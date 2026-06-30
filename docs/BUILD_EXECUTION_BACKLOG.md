@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Official-style recovery trace promotion
+
+Changed:
+
+- Promoted `synthetic-imported-default-fall-official-recovery-threshold` to a required `pnpm qa:trace` artifact using an official-style synthetic Common1 fall definition.
+- Promoted `synthetic-imported-default-fall-official-recovery-too-early` to a required `pnpm qa:trace` artifact for the matching early recovery-input rejection window.
+- Updated trace required-artifact coverage from 178/178 with 158 required to 180/180 with 160 required.
+- Updated runtime roadmap, scorecard, feature support, controller registry, QA gate, and local issue docs with the new checksums and blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "official-style"` passes: 1 file / 5 tests, 170 skipped.
+- `pnpm test` passes: 95 files / 799 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 180 / 180 artifacts, 160 required, 20 optional, 0 failed.
+- New required checksums: `synthetic-imported-default-fall-official-recovery-threshold.json` `86804271`, `synthetic-imported-default-fall-official-recovery-too-early.json` `ef945ff5`.
+- `pnpm check:boundaries` passes.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- The required trace suite now proves official-style synthetic Common1 recovery threshold behavior where `5050` countdown evidence reaches `recoverTime = 0` before the `5200 -> 5201 -> 52 -> 0` ground-recovery branch, plus a matching early-input rejection window where `command = "recovery"` is active but the defender remains in `5050` while minimum observed `recoverTime >= 1`.
+
+Claim blocked:
+
+- This does not prove exact `fall.recovertime` tables, exact controller-loop tick order, velocity math, public bundled KFM support, broad KFM/Common1 parity, visual parity, score movement, or full MUGEN/IKEMEN recovery semantics.
+
 ## 2026-06-30 - RuntimeCombatResolutionWorld ownership extraction
 
 Changed:
