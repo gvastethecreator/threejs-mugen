@@ -1,3 +1,7 @@
+import type { ContactControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
+import type { MugenStateController } from "../model/MugenState";
+
 export type RuntimeContactMemory = {
   moveContactState?: number;
   moveHitState?: number;
@@ -24,6 +28,26 @@ export type RuntimeContactMemory = {
 };
 
 export type RuntimeContactKind = "contact" | "hit" | "guard";
+
+export type RuntimeContactControllerActor = {
+  contact: RuntimeContactMemory;
+  runtime: { stateNo: number };
+};
+
+export type RuntimeContactControllerDispatchOptions<TActor extends RuntimeContactControllerActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  contactWorld: RuntimeContactMemoryWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: ContactControllerOp) => void;
+};
+
+export type RuntimeContactControllerDispatchResult = {
+  applied: boolean;
+  controllerType: string;
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
 
 export class RuntimeContactMemoryWorld {
   create(): RuntimeContactMemory {
@@ -104,6 +128,46 @@ export class RuntimeContactMemoryWorld {
     projectileId?: number,
   ): number {
     return runtimeProjectileContactTime(memory, stateNo, kind, projectileId);
+  }
+}
+
+export class RuntimeContactControllerDispatchWorld {
+  apply<TActor extends RuntimeContactControllerActor>(
+    options: RuntimeContactControllerDispatchOptions<TActor>,
+  ): RuntimeContactControllerDispatchResult {
+    const controllerType = options.controller.source.type.toLowerCase();
+    const operation = options.controller.operation?.kind === "contact" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+
+    if (controllerType === "hitadd") {
+      const value = operation?.controllerType === "hitadd" ? operation.value : firstNumber(findControllerParam(options.controller.source, "value"));
+      if (value === undefined) {
+        return {
+          applied: false,
+          controllerType,
+          recordedController: Boolean(options.recordController),
+          recordedOperation: Boolean(operation && options.recordOperation),
+        };
+      }
+      options.contactWorld.applyHitAdd(options.actor.contact, options.actor.runtime.stateNo, value);
+      return {
+        applied: true,
+        controllerType,
+        recordedController: Boolean(options.recordController),
+        recordedOperation: Boolean(operation && options.recordOperation),
+      };
+    }
+
+    options.contactWorld.resetMoveContact(options.actor.contact);
+    return {
+      applied: true,
+      controllerType,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
   }
 }
 
@@ -267,4 +331,18 @@ export function runtimeProjectileContactTime(
 
 function clampHitCount(value: number): number {
   return Math.max(0, Math.min(999, Math.round(value)));
+}
+
+function findControllerParam(controller: MugenStateController, key: string): string | undefined {
+  const lower = key.toLowerCase();
+  return Object.entries(controller.params).find(([candidate]) => candidate.toLowerCase() === lower)?.[1];
+}
+
+function firstNumber(value: string | undefined): number | undefined {
+  const raw = value?.split(",")[0]?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }

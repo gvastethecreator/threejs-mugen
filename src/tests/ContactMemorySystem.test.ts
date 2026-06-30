@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import {
   advanceRuntimeContactTimers,
   applyRuntimeHitAdd,
@@ -8,6 +9,7 @@ import {
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
   resetRuntimeMoveContact,
+  RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
@@ -95,4 +97,67 @@ describe("ContactMemorySystem", () => {
     expect(world.moveHitCountValue(memory, 200, false)).toBe(0);
     expect(world.hasProjectileContact(memory, 200, "guard", 77)).toBe(true);
   });
+
+  it("dispatches active HitAdd controllers with telemetry hooks", () => {
+    const world = new RuntimeContactControllerDispatchWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const actor = { contact: contactWorld.create(), runtime: { stateNo: 200 } };
+    const ir = compileControllerIr(controller("HitAdd", { value: "2" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      contactWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(contactWorld.moveHitCountValue(actor.contact, 200, false)).toBe(2);
+    expect(recordedControllers).toEqual(["HitAdd"]);
+    expect(recordedOperations).toEqual(["contact:hitadd"]);
+    expect(result).toEqual({
+      applied: true,
+      controllerType: "hitadd",
+      recordedController: true,
+      recordedOperation: true,
+    });
+  });
+
+  it("dispatches active MoveHitReset controllers with telemetry hooks", () => {
+    const world = new RuntimeContactControllerDispatchWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const actor = { contact: contactWorld.create(), runtime: { stateNo: 200 } };
+    contactWorld.markMoveContact(actor.contact, 200, "hit", "p2");
+    const ir = compileControllerIr(controller("MoveHitReset", {}));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      contactWorld,
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(contactWorld.moveHitCountValue(actor.contact, 200, false)).toBe(0);
+    expect(recordedOperations).toEqual(["contact:movehitreset"]);
+    expect(result).toEqual({
+      applied: true,
+      controllerType: "movehitreset",
+      recordedController: false,
+      recordedOperation: true,
+    });
+  });
 });
+
+function controller(type: string, params: Record<string, string> = {}) {
+  return {
+    stateId: 200,
+    type,
+    triggers: [],
+    params,
+    line: 1,
+    rawHeader: `[State 200, ${type}]`,
+  };
+}

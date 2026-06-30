@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeContactControllerDispatchWorld ownership extraction
+  -> RuntimeContactControllerDispatchWorld now owns bounded active-state contact-memory side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed contact operation selection, operation telemetry, HitAdd mutation, and MoveHitReset reset handoff through RuntimeContactMemoryWorld
+  -> match runtime still owns trigger filtering, active-state order, and direct/projectile contact creation
+  -> focused ContactMemorySystem coverage proves HitAdd telemetry/mutation and MoveHitReset reset telemetry through the dispatch boundary
+  -> no exact combo lifetime, helper/projectile contact ownership, guard-count parity, full CNS VM parity, or score claim
 R2 RuntimeTargetControllerDispatchWorld ownership extraction
   -> RuntimeTargetControllerDispatchWorld now owns bounded active-state Target / BindToTarget side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed target/bindtotarget operation selection, operation telemetry, and RuntimeTargetWorld mutation handoff

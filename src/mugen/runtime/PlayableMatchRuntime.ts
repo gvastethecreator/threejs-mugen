@@ -1,7 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   AudioControllerOp,
-  ContactControllerOp,
   EnvColorControllerOp,
   EnvShakeControllerOp,
   FallEnvShakeControllerOp,
@@ -18,6 +17,7 @@ import { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
+  RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
@@ -123,6 +123,7 @@ const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
+const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1130,16 +1131,13 @@ function runActiveStateControllers(
         }
         recordEnvShakeEvent(fighter, rawController, tick, operation);
       } else if (dispatch.effect === "contact") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "contact" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        if (rawController.type.toLowerCase() === "hitadd") {
-          applyHitAddController(fighter, rawController, operation?.controllerType === "hitadd" ? operation : undefined);
-        } else {
-          resetMoveContactState(fighter);
-        }
+        contactControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          contactWorld: fighter.contactWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       }
     }
   }
@@ -1185,22 +1183,6 @@ function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState
 
 function resetContactState(fighter: FighterMatchState): void {
   fighter.contact = fighter.contactWorld.create();
-}
-
-function resetMoveContactState(fighter: FighterMatchState): void {
-  fighter.contactWorld.resetMoveContact(fighter.contact);
-}
-
-function applyHitAddController(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  operation?: Extract<ContactControllerOp, { controllerType: "hitadd" }>,
-): void {
-  const value = operation?.value ?? firstNumber(findParam(controller, "value"));
-  if (value === undefined) {
-    return;
-  }
-  fighter.contactWorld.applyHitAdd(fighter.contact, fighter.runtime.stateNo, value);
 }
 
 function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
