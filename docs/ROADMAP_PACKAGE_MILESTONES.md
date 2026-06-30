@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeHitDefenseWorld ownership extraction
+  -> RuntimeHitDefenseWorld now owns bounded passive HitBy/NotHitBy/HitOverride slot setup/removal
+  -> StateControllerExecutor delegates typed eligibility/hitoverride operations and raw-param fallback mutations to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> focused HitDefenseSystem coverage proves typed and raw setup/removal semantics
+  -> no exact attr grammar, slot priority, helper/custom-state redirect breadth, forceair/forceguard edge order, full defensive-slot parity, or score claim
 R2 RuntimeHitDefControllerDispatchWorld ownership extraction
   -> RuntimeHitDefControllerDispatchWorld now owns bounded active-state HitDef activation dispatch into the current attack payload
   -> PlayableMatchRuntime delegates controller telemetry, typed hitdef operation selection, raw fallback attack params, fired-HitDef dedupe, current-frame Clsn1 hitbox handoff, currentMove mutation, attack movetype/control writes, and operation telemetry
@@ -506,6 +512,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeHitDefenseWorld` ownership extraction
 - `RuntimeOrientationWorld` ownership extraction
 - `RuntimeGuardWorld` ownership extraction
 - `RuntimeGetHitStateWorld` ownership extraction

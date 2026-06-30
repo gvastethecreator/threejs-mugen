@@ -4,9 +4,7 @@ import type {
   BoundsControllerOp,
   CollisionControllerOp,
   DamageScaleControllerOp,
-  HitEligibilityControllerOp,
   HitFallControllerOp,
-  HitOverrideControllerOp,
   KinematicControllerOp,
   MetadataControllerOp,
   MovementKinematicControllerOp,
@@ -30,9 +28,12 @@ import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRand
 import { applyRuntimeTurn } from "./OrientationSystem";
 import { applyRuntimeStateMetadataTransition } from "./RuntimeStateMetadataSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
-import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
+import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
+import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
+
+const hitDefenseWorld = new RuntimeHitDefenseWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -185,9 +186,14 @@ export function executeControllerIr(
     }
     applyRuntimeTurn(next);
   } else if (type === "hitby" || type === "nothitby") {
-    applyHitByController(next, controller, type === "hitby" ? "allow" : "deny", hitEligibilityOperation(controller, type));
+    const operation =
+      controller.operation?.kind === "eligibility" && controller.operation.controllerType === type
+        ? controller.operation
+        : undefined;
+    hitDefenseWorld.applyHitByController(next, controller, type === "hitby" ? "allow" : "deny", operation, context);
   } else if (type === "hitoverride") {
-    applyHitOverrideController(next, controller, hitOverrideOperation(controller));
+    const operation = controller.operation?.kind === "hitoverride" ? controller.operation : undefined;
+    hitDefenseWorld.applyHitOverrideController(next, controller, operation, context);
   } else if (type === "defencemulset") {
     const operation = damageScaleOperation(controller, "defencemulset");
     const value = operation?.multiplier ?? numberParam(controller, next, context, "value");
@@ -377,19 +383,6 @@ function variableOperation<T extends VariableControllerOp["controllerType"]>(
     : undefined;
 }
 
-function hitEligibilityOperation<T extends HitEligibilityControllerOp["controllerType"]>(
-  controller: ControllerIr,
-  controllerType: T,
-): Extract<HitEligibilityControllerOp, { controllerType: T }> | undefined {
-  return controller.operation?.kind === "eligibility" && controller.operation.controllerType === controllerType
-    ? (controller.operation as Extract<HitEligibilityControllerOp, { controllerType: T }>)
-    : undefined;
-}
-
-function hitOverrideOperation(controller: ControllerIr): HitOverrideControllerOp | undefined {
-  return controller.operation?.kind === "hitoverride" ? controller.operation : undefined;
-}
-
 function damageScaleOperation<T extends DamageScaleControllerOp["controllerType"]>(
   controller: ControllerIr,
   controllerType: T,
@@ -570,68 +563,6 @@ function variableRandomRange(
   return values.length > 1 ? [first, second] : [0, first];
 }
 
-function applyHitByController(
-  state: CharacterRuntimeState,
-  controller: ControllerExecutionSource,
-  mode: RuntimeHitBySlot["mode"],
-  operation?: HitEligibilityControllerOp,
-): void {
-  const hitBy = { ...(state.hitBy ?? {}) };
-  if (operation) {
-    for (const slot of operation.slots) {
-      if (slot.slot === 1) {
-        hitBy.slot1 = { mode: operation.mode, attr: slot.attr, remaining: slot.remaining };
-      } else {
-        hitBy.slot2 = { mode: operation.mode, attr: slot.attr, remaining: slot.remaining };
-      }
-    }
-    state.hitBy = hitBy;
-    return;
-  }
-  const time = controllerDuration(numberParam(controller, state, "time") ?? 1);
-  const value = findParam(controller, "value");
-  const value2 = findParam(controller, "value2");
-  if (value !== undefined) {
-    hitBy.slot1 = { mode, attr: value.trim(), remaining: time };
-  }
-  if (value2 !== undefined) {
-    hitBy.slot2 = { mode, attr: value2.trim(), remaining: time };
-  }
-  state.hitBy = hitBy;
-}
-
-function applyHitOverrideController(
-  state: CharacterRuntimeState,
-  controller: ControllerExecutionSource,
-  operation?: HitOverrideControllerOp,
-): void {
-  const slot = operation?.slot ?? clampIndex(Math.round(numberParam(controller, state, "slot") ?? 0), 7);
-  const attr = operation?.attr ?? findParam(controller, "attr")?.trim() ?? "";
-  const remaining = operation?.remaining ?? controllerDuration(numberParam(controller, state, "time") ?? 1);
-  const overrides = (state.hitOverrides ?? []).filter((entry) => entry.slot !== slot);
-
-  if (!attr || remaining <= 0) {
-    state.hitOverrides = overrides.length > 0 ? overrides : undefined;
-    return;
-  }
-
-  const stateNo = numberParam(controller, state, "stateno", "value");
-  const next: RuntimeHitOverrideSlot = {
-    slot,
-    attr,
-    remaining,
-    forceAir: operation?.forceAir ?? ((numberParam(controller, state, "forceair") ?? 0) !== 0),
-    forceGuard: operation?.forceGuard ?? ((numberParam(controller, state, "forceguard") ?? 0) !== 0),
-    keepState: operation?.keepState ?? ((numberParam(controller, state, "keepstate") ?? 0) !== 0),
-  };
-  const targetStateNo = operation?.stateNo ?? stateNo;
-  if (targetStateNo !== undefined && targetStateNo >= 0) {
-    next.stateNo = targetStateNo;
-  }
-
-  state.hitOverrides = [...overrides, next].sort((a, b) => a.slot - b.slot);
-}
-
 function applyAssertSpecialController(
   state: CharacterRuntimeState,
   controller: ControllerExecutionSource,
@@ -712,13 +643,6 @@ function addUnique(values: string[], value: string): void {
   if (!values.includes(value)) {
     values.push(value);
   }
-}
-
-function controllerDuration(value: number): number {
-  if (value < 0) {
-    return Number.POSITIVE_INFINITY;
-  }
-  return Math.max(0, Math.min(3600, Math.round(value)));
 }
 
 function clampIndex(value: number, max: number): number {
