@@ -189,6 +189,10 @@ export class RuntimeEffectActorWorld {
     return runtimeHelperActorsToSnapshots(this.getStore(ownerId), sourceStateNo);
   }
 
+  helpers(ownerId: string): RuntimeHelper[] {
+    return this.getStore(ownerId).helpers;
+  }
+
   countHelpers(ownerId: string, helperId?: number): number {
     return this.getStore(ownerId).helpers.filter((helper) => helperId === undefined || helper.helperId === helperId).length;
   }

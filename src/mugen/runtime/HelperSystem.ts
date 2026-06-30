@@ -5,10 +5,18 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
+import { createRuntimeContactMemory, type RuntimeContactMemory } from "./ContactMemorySystem";
+import type { DemoMove } from "./demoFighters";
+import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
-import type { ActorSnapshot, CharacterRuntimeState, RuntimeSoundEvent } from "./types";
+import {
+  normalizeRuntimeMoveType,
+  normalizeRuntimePhysics,
+  normalizeRuntimeStateType,
+} from "./RuntimeStateEntrySystem";
+import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
 
@@ -28,6 +36,12 @@ export type RuntimeHelper = {
   action: MugenAnimationAction;
   stateNo?: number;
   animNo: number;
+  currentMove?: DemoMove;
+  currentMoveLabel?: string;
+  moveTick: number;
+  hasHit: boolean;
+  firedHitDefs: Set<string>;
+  contact: RuntimeContactMemory;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   scale: { x: number; y: number };
@@ -53,6 +67,7 @@ export type RuntimeHelper = {
   superMoveTime: number;
   spritePriority: number;
   soundEvents: RuntimeSoundEvent[];
+  hitEffectEvents: RuntimeHitEffectEvent[];
   ownerBind?: RuntimeHelperOwnerBind;
 };
 
@@ -127,6 +142,12 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     action: input.action,
     stateNo: input.stateNo,
     animNo: input.animNo,
+    currentMove: undefined,
+    currentMoveLabel: undefined,
+    moveTick: 0,
+    hasHit: false,
+    firedHitDefs: new Set(),
+    contact: createRuntimeContactMemory(),
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
     scale: helperScale(input.controller, operation),
@@ -152,6 +173,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     superMoveTime: clampHelperMoveTime(operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime")) ?? 0),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 3))),
     soundEvents: [],
+    hitEffectEvents: [],
   };
 }
 
@@ -274,6 +296,14 @@ export function runRuntimeHelperStateControllers(
       emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
       continue;
     }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
+      if (activateRuntimeHelperHitDef(helper, controller)) {
+        options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
     if (dispatch.kind === "side-effect" && dispatch.effect === "explod") {
       if (options.onSpawnExplod?.(helper, controller)) {
         options.onController?.(helper, controller);
@@ -390,6 +420,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         clsn1: frame.clsn1.map(cloneBox),
         clsn2: frame.clsn2.map(cloneBox),
         soundEvents: helper.soundEvents.map((event) => ({ ...event })),
+        hitEffectEvents: helper.hitEffectEvents.map((event) => ({ ...event })),
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
@@ -424,6 +455,36 @@ const helperRuntimeControllers = new Set([
   "varrangeset",
   "null",
 ]);
+
+const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
+
+export function activateRuntimeHelperHitDef(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  hitDefWorld: RuntimeHitDefControllerDispatchWorld = helperHitDefWorld,
+): boolean {
+  const runtime = helperRuntimeState(helper);
+  const actor = {
+    runtime,
+    currentMove: helper.currentMove,
+    currentMoveLabel: helper.currentMoveLabel,
+    moveTick: helper.moveTick,
+    frameElapsed: helper.frameElapsed,
+    hasHit: helper.hasHit,
+    firedHitDefs: helper.firedHitDefs,
+  };
+  const result = hitDefWorld.apply({
+    actor,
+    controller,
+    frame: helper.action.frames[helper.frameIndex],
+  });
+  helper.currentMove = actor.currentMove;
+  helper.currentMoveLabel = actor.currentMoveLabel;
+  helper.moveTick = actor.moveTick;
+  helper.hasHit = actor.hasHit;
+  applyRuntimeStateToHelper(helper, runtime);
+  return result.activated || result.duplicate;
+}
 
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {
   const operation = controller.operation?.kind === "audio" ? controller.operation : undefined;
@@ -508,7 +569,24 @@ function resolveHelperNumber(
 function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?: number): void {
   helper.stateNo = stateNo;
   helper.stateTime = 0;
+  helper.currentMove = undefined;
+  helper.currentMoveLabel = undefined;
+  helper.moveTick = 0;
+  helper.hasHit = false;
+  helper.firedHitDefs.clear();
   const state = helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
+  if (state?.type) {
+    helper.stateType = normalizeRuntimeStateType(state.type, helper.stateType);
+  }
+  if (state?.moveType) {
+    helper.moveType = normalizeRuntimeMoveType(state.moveType, helper.moveType);
+  }
+  if (state?.physics) {
+    helper.physics = normalizeRuntimePhysics(state.physics, helper.physics);
+  }
+  if (state?.ctrl !== undefined) {
+    helper.ctrl = state.ctrl !== 0;
+  }
   const animNo = animOverride ?? state?.anim;
   if (animNo !== undefined) {
     changeHelperAction(helper, animNo);
@@ -616,7 +694,7 @@ function helperExpressionContext(
   };
 }
 
-function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
+export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
   return {
     pos: { ...helper.pos },
     vel: { ...helper.vel },
@@ -652,7 +730,7 @@ function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRu
   };
 }
 
-function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRuntimeState): void {
+export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRuntimeState): void {
   helper.pos = { ...runtime.pos };
   helper.vel = { ...runtime.vel };
   helper.facing = runtime.facing;
@@ -673,6 +751,7 @@ function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: CharacterRunt
 }
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {
+  advanceRuntimeHelperMove(helper);
   helper.age += 1;
   helper.stateTime += 1;
   helper.pos.x += helper.vel.x;
@@ -685,6 +764,22 @@ function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelper
     helper.frameIndex = next < helper.action.frames.length ? next : helper.action.loopStart ?? helper.action.frames.length - 1;
   }
   applyRuntimeHelperOwnerBind(helper, options, true);
+}
+
+function advanceRuntimeHelperMove(helper: RuntimeHelper): void {
+  if (!helper.currentMove) {
+    return;
+  }
+  helper.moveTick += 1;
+  helper.moveType = "A";
+  if (helper.moveTick <= helper.currentMove.startup + helper.currentMove.recovery) {
+    return;
+  }
+  helper.currentMove = undefined;
+  helper.currentMoveLabel = undefined;
+  helper.moveTick = 0;
+  helper.hasHit = false;
+  helper.moveType = "I";
 }
 
 function shouldAdvanceRuntimeHelper(helper: RuntimeHelper, pauseKind: RuntimeHelperPauseKind | undefined): boolean {

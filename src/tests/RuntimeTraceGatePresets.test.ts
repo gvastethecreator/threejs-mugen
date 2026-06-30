@@ -105,6 +105,7 @@ import {
   createSyntheticImportedHelperProjHitTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
+  createSyntheticImportedHelperHitDefTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -1924,6 +1925,107 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported Helper HitDef artifact with helper-owned direct combat evidence", () => {
+    const artifact = createSyntheticImportedHelperHitDefTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-hitdef-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-hitdef-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1222, animNo: 952 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 971 })]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1222, minAge: 2 },
+    ]);
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          type: "PlaySnd",
+          group: 5,
+          index: 0,
+          contactKind: "hit",
+        }),
+      ]),
+    );
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          kind: "hit",
+          sparkNo: 7006,
+          raw: "F7006",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7006,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          offset: { x: 9, y: -58 },
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7006,
+            raw: "F7006",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7006,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 9, y: -58 },
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        actorId: "p1-helper-0",
+        contactKind: "hit",
+        hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7006, offsetX: 9, offsetY: -58 }),
+      }),
+    ]);
   });
 
   it("creates a synthetic imported Helper NumExplod artifact with helper-local count evidence", () => {

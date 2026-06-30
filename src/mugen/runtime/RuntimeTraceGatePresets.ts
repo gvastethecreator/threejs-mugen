@@ -9097,6 +9097,148 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedHelperHitDefTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperHitDefScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-hitdef-attacker",
+    displayName: "Synthetic Imported Helper HitDef Attacker",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperHitDefRoute: {
+      branchStateNo: 1222,
+      branchAnimNo: 952,
+      damage: 29,
+      hitSound: "S5,0",
+      hitSpark: "F7006",
+      sparkXy: [9, -58],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7006, 8106),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-hitdef-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-hitdef-golden",
+      label: "Synthetic imported helper-owned HitDef route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported helper-owned HitDef trace proves a bounded helper-local micro-VM can activate a direct HitDef, hit P2 through MatchWorld helper combat resolution, emit helper-side contact sound/FightFX spark telemetry, and branch after observing EnemyNear life loss. It does not claim helper-owned target memory, custom-state targets, exact helper hitpause/tick order, teams, or full MUGEN/IKEMEN helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-hitdef-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredSoundEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            type: "PlaySnd",
+            group: 5,
+            index: 0,
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredHitEffectEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            kind: "hit",
+            sparkNo: 7006,
+            raw: "F7006",
+            rawPrefix: "F",
+            offsetX: 9,
+            offsetY: -58,
+            assetSource: "fightfx",
+            assetActionId: 7006,
+            assetFrameIndex: 0,
+            ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+            assetSpriteGroup: 8106,
+            assetSpriteIndex: 0,
+            minAssetFrameCount: 2,
+            minAssetTotalDuration: 11,
+            requiredAssetFrameIndices: [0, 1],
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 0,
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7006,
+              raw: "F7006",
+              rawPrefix: "F",
+              offsetX: 9,
+              offsetY: -58,
+              assetSource: "fightfx",
+              assetActionId: 7006,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8106,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920, moveType: "A", clsn1Count: 1, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1222, animNo: 952, moveType: "I", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 971, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 971 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1222, minAge: 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -10391,6 +10533,13 @@ export function importedHelperScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedHelperHitDefScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-helper-hitdef-x", frames: 12, p1: ["x"], p2: [] },
+    { label: "helper-hitdef-settle", frames: 3, p1: [], p2: [] },
+  ]);
+}
+
 export function importedHelperProjectileGuardScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-helper-projguard-x", frames: 14, p1: ["x"], p2: ["B"] },
@@ -10717,6 +10866,8 @@ export type SyntheticImportedTraceFighterOptions = {
   helperSuperMoveTime?: number;
   helperIgnoreHitPause?: boolean;
   helperTriggerTime?: number;
+  helperPos?: [number, number];
+  helperPostype?: string;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
   helperExplodRoute?: { stateNo: number; animNo?: number; explodAnimNo: number; pos?: [number, number] };
@@ -10813,6 +10964,14 @@ export type SyntheticImportedTraceFighterOptions = {
     guardSound?: string;
     hitSpark?: string;
     guardSpark?: string;
+    sparkXy?: [number, number];
+  };
+  helperHitDefRoute?: {
+    branchStateNo: number;
+    branchAnimNo?: number;
+    damage?: number;
+    hitSound?: string;
+    hitSpark?: string;
     sparkXy?: [number, number];
   };
   helperNumExplodRoute?: {
@@ -11145,6 +11304,8 @@ ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.hel
   superMoveTime: options.helperSuperMoveTime,
   ignoreHitPause: options.helperIgnoreHitPause,
   triggerTime: options.helperTriggerTime,
+  pos: options.helperPos,
+  postype: options.helperPostype,
 }) : ""}
 ${options.numHelperStateNo === undefined ? "" : contactBranchBlock("NumHelper(42) > 0", options.numHelperStateNo, "NumHelper Branch")}
 ${options.withExplod ? explodControllerBlock() : ""}
@@ -11203,6 +11364,7 @@ ${options.helperModifyProjectileRoute ? helperModifyProjectileRouteBlock(options
 ${options.helperProjHitRoute ? helperProjHitRouteBlock(options.helperProjHitRoute) : ""}
 ${options.helperProjGuardRoute ? helperProjGuardRouteBlock(options.helperProjGuardRoute) : ""}
 ${options.helperProjContactRoute ? helperProjContactRouteBlock(options.helperProjContactRoute) : ""}
+${options.helperHitDefRoute ? helperHitDefRouteBlock(options.helperHitDefRoute) : ""}
 ${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
 ${options.helperNumHelperRoute ? helperNumHelperRouteBlock(options.helperNumHelperRoute) : ""}
 ${options.helperNumProjRoute ? helperNumProjRouteBlock(options.helperNumProjRoute) : ""}
@@ -11505,6 +11667,14 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperProjContactRoute.branchAnimNo ?? options.helperProjContactRoute.branchStateNo),
                   ],
                   [options.helperProjContactRoute.projectileAnimNo, projectileTraceAction(options.helperProjContactRoute.projectileAnimNo)],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperHitDefRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo,
+                    helperTraceAction(options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo),
+                  ],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperNumExplodRoute === undefined
               ? []
@@ -13598,7 +13768,14 @@ ctrl = 0
 function helperControllerBlock(
   velocity?: [number, number],
   scale?: [number, number],
-  pause?: { pauseMoveTime?: number; superMoveTime?: number; ignoreHitPause?: boolean; triggerTime?: number },
+  pause?: {
+    pauseMoveTime?: number;
+    superMoveTime?: number;
+    ignoreHitPause?: boolean;
+    triggerTime?: number;
+    pos?: [number, number];
+    postype?: string;
+  },
 ): string {
   const velocityLine = velocity === undefined ? "" : `velset = ${velocity[0]},${velocity[1]}`;
   const scaleLine = scale === undefined ? "" : `scale = ${scale[0]},${scale[1]}`;
@@ -13606,6 +13783,8 @@ function helperControllerBlock(
   const superMoveTimeLine = pause?.superMoveTime === undefined ? "" : `supermovetime = ${pause.superMoveTime}`;
   const ignoreHitPauseLine = pause?.ignoreHitPause ? "ignorehitpause = 1" : "";
   const triggerTime = pause?.triggerTime ?? 2;
+  const pos = pause?.pos ?? [-44, -28];
+  const postype = pause?.postype ?? "p1";
   return `
 [State 200, Visual Helper]
 type = Helper
@@ -13614,8 +13793,8 @@ id = 42
 name = "Buddy"
 stateno = 1200
 anim = 920
-pos = -44,-28
-postype = p1
+pos = ${pos[0]},${pos[1]}
+postype = ${postype}
 facing = 1
 sprpriority = 8
 removetime = 30
@@ -14198,6 +14377,50 @@ ctrl = 0
 [State ${route.waitStateNo}, Helper ProjContact Branch]
 type = ChangeState
 trigger1 = ProjContact(${projectileId}) && ProjContactTime(${projectileId}) >= 1
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+`;
+}
+
+function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperHitDefRoute"]>): string {
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const damage = route.damage ?? 29;
+  const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
+  const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
+  const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
+  return `
+[Statedef 1200]
+type = S
+movetype = A
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper HitDef]
+type = HitDef
+trigger1 = Time = 0
+attr = S, NA
+damage = ${damage},0
+pausetime = 3,3
+ground.hittime = 8
+ground.velocity = -2
+guardflag = MA
+${hitSoundLine}
+${hitSparkLine}
+${sparkXyLine}
+priority = 4, Hit
+
+[State 1200, Helper HitDef Branch]
+type = ChangeState
+trigger1 = Time >= 1
+trigger1 = EnemyNear, Life <= ${1000 - damage}
 value = ${route.branchStateNo}
 ctrl = 0
 

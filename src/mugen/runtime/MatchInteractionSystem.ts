@@ -19,6 +19,7 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
   resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
   resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
   resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
+  resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
   clampToStage: (fighter: TFighter) => void;
   advancePresentationEffects: (fighter: TFighter) => void;
   log: (line: string) => void;
@@ -39,6 +40,7 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
+    resolveHelperCombat?: (attacker: TFighter, defender: TFighter) => void;
     log: (line: string) => void;
   };
 
@@ -66,6 +68,8 @@ export class RuntimeMatchInteractionWorld {
     input.resolveDirectCombat(p2, p1);
     input.resolveProjectileCombat(p1, p2);
     input.resolveProjectileCombat(p2, p1);
+    input.resolveHelperCombat?.(p1, p2);
+    input.resolveHelperCombat?.(p2, p1);
     input.clampToStage(p1);
     input.clampToStage(p2);
     input.advancePresentationEffects(p1);
@@ -94,6 +98,7 @@ export class RuntimeMatchInteractionWorld {
       resolvePriorityClash: input.resolvePriorityClash,
       resolveDirectCombat: input.resolveDirectCombat,
       resolveProjectileCombat: input.resolveProjectileCombat,
+      resolveHelperCombat: input.resolveHelperCombat,
       clampToStage: (fighter) => actorConstraintWorld.clampToStage(fighter.runtime, stage),
       advancePresentationEffects: (fighter) => effectLifecycleWorld.advancePresentation(fighter),
       log: input.log,

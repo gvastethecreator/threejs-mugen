@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 helper-owned HitDef direct-combat gate
+  -> synthetic-imported-helper-hitdef.json checksum 89f9e876 is now a required qa:trace artifact
+  -> helper-local state 1200 can activate a direct HitDef from the visual Helper micro-VM, hit P2 for 29 damage, emit helper-side S5,0 + FightFX F7006 contact-package telemetry, and branch to 1222/952 after EnemyNear, Life observes the hit
+  -> RuntimeMatchInteractionWorld now calls bounded helper combat resolution after direct/projectile combat, and helper ChangeState now applies authored Statedef type/movetype/physics/ctrl metadata
+  -> current qa:trace aggregate is 188/188 artifacts, 168 required and 20 optional
+  -> this narrows helper-owned direct combat evidence only; no helper-owned target memory, helper custom-state targets, throws, teams, exact helper hitpause/tick order, exact helper HitDef lifetime/multi-hit parity, visual parity, score movement, or full helper combat parity claim
 R1 presentation selected AIR-frame requirement gate
   -> RuntimeTraceGate.requiredHitEffectEvents now supports assetFrameOffsetX / assetFrameOffsetY / assetFrameDuration
   -> common/FightFX direct HitSpark, direct hit/guard effect package, Projectile hit/guard package, and helper-parented Projectile package gates now require the selected first AIR frame offset and duration
@@ -85,14 +91,14 @@ R1 presentation selected AIR-frame requirement gate
 R1 presentation spark-offset requirement gate
   -> RuntimeTraceGate.requiredHitEffectEvents now supports offsetX / offsetY
   -> direct HitDef hit/guard spark, common/FightFX multi-frame spark, direct hit/guard effect package, Projectile hit/guard package, and helper-parented Projectile package gates now require authored sparkxy offsets
-  -> affected behavior checksums remain stable; current qa:trace aggregate is 187/187 artifacts, 167 required and 20 optional
+  -> affected behavior checksums remained stable at that checkpoint; current qa:trace aggregate is 188/188 artifacts, 168 required and 20 optional
   -> this narrows trace precision only; no exact renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation ownership, score movement, or full presentation parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now a required qa:trace artifact
   -> gates official-style synthetic Common1 route 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne
   -> actor-frame sequence requires positive-to-zero fall.recovertime evidence in 5050, 5210 recovery velocity evidence, 52 landing y = 0 evidence, and final idle/control
   -> controller sequence requires VelAdd, ChangeState, VelSet, HitFallSet, CtrlSet and typed kinematic/hitfall/resource operation order
-  -> current qa:trace aggregate is 187/187 artifacts, 167 required and 20 optional
+  -> that checkpoint passed qa:trace at 187/187 artifacts, 167 required and 20 optional
   -> this narrows Common1 recovery precision only; no exact threshold tables, velocity math, controller-loop timing, public KFM support, visual parity, score movement, or full recovery parity claim
 R1 official-style ground recovery sequence gate
   -> synthetic-imported-default-fall-official-ground-recovery.json checksum 74b72495 remains required
@@ -277,22 +283,22 @@ R2 bounded helper-local Projectile gate
   -> HelperSystem can dispatch bounded helper-local Projectile through RuntimeEffectActorWorld for current visual Helpers
   -> required synthetic-imported-helper-projectile.json checksum 893f9427 proves a visual Helper routes from 1200 to 1212 / anim 932 while spawning owner-side projectile anim 943 with parentId p1-helper-0
   -> pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
-  -> no helper-owned projectile combat/contact presentation, helper-owned target memory, exact helper projectile namespace scopes, indexed/team/helper-owned redirects, helper-owned HitDef, helper combat/contact presentation, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no helper-owned projectile combat/contact presentation, helper-owned target memory, helper custom-state targets, exact helper projectile namespace scopes, indexed/team/helper-owned redirects, exact helper HitDef lifetime/multi-hit parity, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local NumHelper gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can evaluate bounded helper-local NumHelper(id) through RuntimeEffectActorWorld for current visual Helpers against owner-side visual Helper actors in the same effect store
   -> required synthetic-imported-helper-numhelper.json checksum 4e32e951 proves a visual Helper routes from 1200 to 1211 / anim 931 through NumHelper(42) > 0
-  -> no exact helper effect-count/ownership parity, indexed/team/helper-owned redirects, helper-owned HitDef, helper-owned Projectile, helper combat/contact presentation, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no exact helper effect-count/ownership parity, indexed/team/helper-owned redirects, exact helper HitDef lifetime/multi-hit parity, helper-owned Projectile combat/contact presentation, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local NumExplod gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can evaluate bounded helper-local NumExplod(id) through RuntimeEffectActorWorld for current visual Helpers after helper-local static Explod spawn
   -> required synthetic-imported-helper-numexplod.json checksum 4328278a proves a visual Helper routes from 1200 to 1210 / anim 930 after spawning owner-side Explod anim 942 and counting that helper-parented Explod by static id
-  -> no exact helper effect-count parity, helper-owned HitDef, helper-owned Projectile, helper combat/contact presentation, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no exact helper effect-count parity, exact helper HitDef lifetime/multi-hit parity, helper-owned Projectile combat/contact presentation, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local ModifyExplod gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can dispatch bounded helper-local static ModifyExplod mutation through RuntimeEffectActorWorld for current visual Helpers after helper-local static Explod spawn
   -> required synthetic-imported-helper-modifyexplod.json checksum 0749041c proves a visual Helper routes through 1200 -> 1208 -> 1209 / anims 928 and 929, spawns owner-side Explod anim 941, and mutates that helper-parented Explod by static id with velocity/scale/priority/pause/remove payload evidence
-  -> no helper-owned HitDef, helper-owned Projectile, helper combat/contact presentation, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no exact helper HitDef lifetime/multi-hit parity, helper-owned Projectile combat/contact presentation, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local RemoveExplod gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> required synthetic-imported-helper-removeexplod.json checksum ff8658a2 proves a visual Helper routes through 1200 -> 1206 -> 1207 / anims 926 and 927, spawns owner-side Explod anim 940, and removes it with parentId p1-helper-0 lifecycle/payload evidence
@@ -406,13 +412,13 @@ R2 helper-local micro-VM ownership
   -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
   -> helper-local redirects now include bounded Parent/Root read-only trigger/value evaluation against owner runtime state plus bounded EnemyNear read-only trigger/value evaluation against current opponent state, with focused EffectActorSystem and trace coverage
   -> helper-local static owner binding now includes bounded BindToParent / BindToRoot unit coverage and required BindToParent plus BindToRoot trace coverage with ownerBind target/offset payload requirements
-  -> no indexed redirects, EnemyNear(index), player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper visual effects, helper-owned HitDefs/Projectiles/Explods, helper combat, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
+  -> no indexed redirects, EnemyNear(index), player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper-owned target memory, helper custom-state targets, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper-owned Projectile combat/contact, helper-owned effect namespaces, exact helper HitDef lifetime/multi-hit parity, full helper combat parity, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns the p1/p2-isolated store mutation and reports removed counts
   -> RuntimeEffectSpawnWorld exposes the same handoff for future controller dispatch
   -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
-  -> no redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, exact lifecycle tick-order parity, or score movement claim
+  -> no redirects, parent/root/team ownership, helper-owned target memory, helper custom-state targets, helper-owned Projectile combat/contact, exact helper HitDef lifetime/multi-hit parity, exact lifecycle tick-order parity, or score movement claim
 R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c
@@ -420,7 +426,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus selected-frame/multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require selected first-frame offset 3,-4, first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the official-style air recovery gate is 187/187 artifacts, 167 required and 20 optional
+  -> current aggregate after the helper-owned HitDef gate is 188/188 artifacts, 168 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

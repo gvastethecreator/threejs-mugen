@@ -9,6 +9,7 @@ import {
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
+import { createRuntimeContactMemory } from "../mugen/runtime/ContactMemorySystem";
 
 const stage: Pick<MugenStageDefinition, "bounds"> = {
   bounds: {
@@ -73,6 +74,10 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     action,
     stateNo: 6000,
     animNo: 6100,
+    moveTick: 0,
+    hasHit: false,
+    firedHitDefs: new Set(),
+    contact: createRuntimeContactMemory(),
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
     scale: { x: 1, y: 1 },
@@ -98,6 +103,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     superMoveTime: 0,
     spritePriority: 3,
     soundEvents: [],
+    hitEffectEvents: [],
     ...overrides,
   };
 }

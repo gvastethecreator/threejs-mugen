@@ -16,9 +16,15 @@ import {
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./EnvColorSystem";
-import { scaleRuntimeIncomingDamage } from "./CombatResolver";
+import {
+  canRuntimeBeHitBy,
+  hasRuntimeBoxContact,
+  resolveRuntimeCombatHit,
+  runtimeWorldBox,
+  scaleRuntimeIncomingDamage,
+} from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
-import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
+import { RuntimeDirectCombatWorld, type RuntimeDirectCombatActor } from "./DirectCombatSystem";
 import {
   RuntimeEnvShakeControllerDispatchWorld,
   RuntimeEnvShakeWorld,
@@ -41,8 +47,10 @@ import {
 } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
+import { applyRuntimeStateToHelper, helperRuntimeState, type RuntimeHelper } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
+import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
@@ -211,6 +219,17 @@ type EnvColorControllerHandler = (controller: MugenStateController, operation?: 
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
+type HelperDirectCombatActor = Omit<RuntimeDirectCombatActor, "definition"> & {
+  definition: DemoFighterDefinition;
+  stateElapsed: number;
+  soundEvents: RuntimeSoundEvent[];
+  hitEffectEvents: RuntimeHitEffectEvent[];
+  audioWorld: RuntimeAudioWorld;
+  hitEffectWorld: RuntimeHitEffectWorld;
+  stateOwner?: { definition: DemoFighterDefinition };
+};
+
+const defaultRuntimeHurtBoxes: MugenAnimationFrame["clsn2"] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
 export class PlayableMatchRuntime {
   private tick = 0;
@@ -482,6 +501,7 @@ export class PlayableMatchRuntime {
           stateHooks: runtimeCombatStateHooks,
           log: (line) => this.logs.unshift(line),
         }),
+      resolveHelperCombat: (attacker, defender) => this.resolveHelperDirectCombat(attacker, defender),
       log: (line) => this.logs.unshift(line),
     });
 
@@ -645,6 +665,101 @@ export class PlayableMatchRuntime {
     this.envColorWorld.emitController(controller, runtimeTick, operation);
   }
 
+  private resolveHelperDirectCombat(owner: FighterMatchState, defender: FighterMatchState): void {
+    for (const helper of this.effectActorWorld.helpers(owner.id)) {
+      const attacker = helperDirectCombatActor(helper, owner);
+      const move = attacker.currentMove;
+      if (!move || attacker.hasHit || move.requiresHitDef || move.isReversal || !runtimeHelperMoveIsActive(move, attacker.moveTick)) {
+        continue;
+      }
+      const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
+      if (!hasRuntimeBoxContact(attackBox, defender.runtime, getRuntimeHurtBoxes(defender) ?? defaultRuntimeHurtBoxes)) {
+        continue;
+      }
+      if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")) {
+        this.logs.unshift(`${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`);
+        continue;
+      }
+      const result = resolveRuntimeCombatHit({
+        attacker: attacker.runtime,
+        defender: defender.runtime,
+        attack: move,
+        holdingBack: isRuntimeHoldingBack(defender.currentInput),
+      });
+      const outcome = this.directCombatWorld.applyResolvedHit<RuntimeDirectCombatActor>(attacker, defender, move, result, {
+        applyGuardHit: () => applyDefaultHelperGuardHitState(defender, this.guardWorld),
+        applyHitStateTransitions: () => {},
+        applyDefaultGetHit: () => applyDefaultHelperGetHitState(defender, this.getHitStateWorld),
+      });
+      this.contactPresentationWorld.emitHitDefContact({
+        attacker,
+        defender,
+        kind: outcome.kind,
+        move,
+        runtimeTick: this.tick,
+      });
+      syncHelperFromDirectCombatActor(helper, attacker);
+      this.logs.unshift(outcome.message);
+    }
+  }
+
+}
+
+function helperDirectCombatActor(helper: RuntimeHelper, owner: FighterMatchState): HelperDirectCombatActor {
+  return {
+    id: helper.serialId,
+    label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
+    definition: owner.definition,
+    stateOwner: { definition: owner.definition },
+    runtime: helperRuntimeState(helper),
+    currentMove: helper.currentMove,
+    currentMoveLabel: helper.currentMoveLabel,
+    moveTick: helper.moveTick,
+    hitStun: 0,
+    hitPause: 0,
+    hasHit: helper.hasHit,
+    contact: helper.contact,
+    effectActorWorld: owner.effectActorWorld,
+    stateElapsed: helper.stateTime,
+    soundEvents: helper.soundEvents,
+    hitEffectEvents: helper.hitEffectEvents,
+    audioWorld: owner.audioWorld,
+    hitEffectWorld: owner.hitEffectWorld,
+  };
+}
+
+function syncHelperFromDirectCombatActor(helper: RuntimeHelper, actor: HelperDirectCombatActor): void {
+  helper.currentMove = actor.currentMove;
+  helper.currentMoveLabel = actor.currentMoveLabel;
+  helper.moveTick = actor.moveTick;
+  helper.hasHit = actor.hasHit;
+  applyRuntimeStateToHelper(helper, actor.runtime);
+}
+
+function runtimeHelperMoveIsActive(move: DemoMove, tick: number): boolean {
+  return tick >= move.activeStart && tick <= move.activeEnd;
+}
+
+function applyDefaultHelperGetHitState(defender: FighterMatchState, getHitStateWorld: RuntimeGetHitStateWorld): void {
+  if (defender.definition.source !== "imported") {
+    return;
+  }
+  const stateNo = getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
+  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
+    return;
+  }
+  enterState(defender, stateNo, undefined, { clearStateOwner: true });
+}
+
+function applyDefaultHelperGuardHitState(defender: FighterMatchState, guardWorld: RuntimeGuardWorld): void {
+  if (defender.definition.source !== "imported") {
+    return;
+  }
+  const stateNo = guardWorld.defaultGuardHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
+  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
+    return;
+  }
+  enterState(defender, stateNo, undefined, { clearStateOwner: true });
 }
 
 function createFighterState(

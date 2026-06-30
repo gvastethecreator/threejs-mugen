@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-owned HitDef direct combat gate
+
+Changed:
+
+- Added bounded helper-local `HitDef` activation support so visual Helpers can activate a direct attack payload from their own CNS micro-VM state.
+- Routed helper-owned direct combat through `PlayableMatchRuntime` / `RuntimeMatchInteractionWorld` after normal direct and projectile combat, with helper-side contact presentation, sound, and HitSpark telemetry.
+- Applied `Statedef` metadata (`type`, `movetype`, `physics`, `ctrl`) when helper `ChangeState` runs, so helper branch snapshots reflect authored state metadata instead of stale attack movetype.
+- Added required `synthetic-imported-helper-hitdef.json` trace evidence: helper state `1200` activates `HitDef`, hits P2 for 29 damage, emits helper-side `S5,0` plus FightFX `F7006` package telemetry, and branches to state/action `1222/952` after `EnemyNear, Life` observes the hit.
+
+Evidence:
+
+- `pnpm test` passed: 95 files / 815 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; Vite emitted the existing >500 kB chunk-size warning.
+- `pnpm qa:trace` passes: 188 / 188 artifacts, 168 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- New required checksum: `synthetic-imported-helper-hitdef.json` `89f9e876`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local micro-VM can activate a direct `HitDef`, resolve helper-owned hit contact against the opponent, emit helper-side sound/FightFX spark contact packages, and branch afterward through current helper trigger context.
+
+Claim blocked:
+
+- This does not add helper-owned target memory, helper custom-state targets, helper throws, teams/simul, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper combat parity.
+
 ## 2026-06-30 - HitSpark AIR frame trace requirements
 
 Changed:
