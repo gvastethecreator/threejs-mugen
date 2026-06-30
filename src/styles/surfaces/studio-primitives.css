@@ -142,3 +142,33 @@
     }
   }
 }
+
+@media (min-width: 1161px) {
+  .app-shell.mode-studio :is(
+    .workbench-route-button span,
+    .workbench-route-button strong,
+    .workbench-route-button small,
+    .list-title,
+    .list-meta,
+    .workbench-lane-strip small,
+    .workbench-lane-strip b,
+    .workbench-lane-strip em,
+    .engine-module-contracts b,
+    .engine-module-contracts small,
+    .engine-module-blocked
+  ) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 900px) {
+  .app-shell.mode-studio .studio-ledger-drawer > summary :is(span, small) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

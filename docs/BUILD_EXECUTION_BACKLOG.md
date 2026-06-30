@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime kinematics ownership and CSS primitive trim
+
+Changed:
+
+- Added `RuntimeKinematicsWorld` as a bounded runtime ownership boundary for actor position integration: position advance, sandbox airborne gravity, ground snap, imported hit-state ground-snap preservation, and landing idle-action requests.
+- Replaced the inline `PlayableMatchRuntime` position/gravity/landing block with the new runtime system while keeping concrete state/action entry and recovery hooks in the match runtime.
+- Added focused `RuntimeKinematicsSystem` tests for grounded movement, airborne gravity, landing snap/idle, active-move landing, and imported hit-state preservation.
+- Consolidated repeated Studio desktop truncation into `src/styles/surfaces/studio-primitives.css` and removed matching editor/desktop/drawer overrides.
+- Grouped identical acceptance-gate/workbench-ops section declarations, tightened CSS budget from 539,198 bytes / 2,382 rules to 538,290 bytes / 2,379 rules, and updated Studio/runtime roadmap docs plus local issues.
+
+Evidence:
+
+- `pnpm test` passes: 76 files / 674 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:css:budget` passes: 538,290 active CSS bytes, 2,379 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- `pnpm check:boundaries` passes.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/studio-debug.png`, and `.scratch/qa/qa-smoke/studio-modules.png`; no obvious overflow, clipped ledger text, drawer summary regression, or runtime framing regression was visible.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Actor kinematic advance now has a named system boundary with unit coverage, and the match runtime delegates the bounded branch without trace checksum drift.
+- CSS does not have exact duplicate rules or same-file duplicate selector keys; current debt is live repeated declarations and cross-file cascade overlap, now guarded by a tighter byte/rule budget.
+
+Claim blocked:
+
+- This is ownership/CSS cleanup only. It does not add exact MUGEN physics, `yaccel` constants, landing timing, air recovery parity, helper physics ownership, new Studio behavior, full CSS architecture cleanup, runtime compatibility score movement, or full MUGEN/IKEMEN parity.
+
 ## 2026-06-30 - Runtime input control ownership
 
 Changed:

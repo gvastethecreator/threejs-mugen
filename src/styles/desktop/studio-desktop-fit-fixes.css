@@ -26,13 +26,4 @@
     gap: 8px;
     text-align: left;
   }
-
-.app-shell.mode-studio .engine-module-contracts b,
-  .app-shell.mode-studio .engine-module-contracts small,
-  .app-shell.mode-studio .engine-module-blocked {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
 }

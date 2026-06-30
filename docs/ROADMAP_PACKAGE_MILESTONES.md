@@ -50,8 +50,8 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 539,198 bytes, 2,382 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 539,198 bytes, 2,382 rules, 124 repeated declaration groups, 108 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> pnpm qa:css reports 538,290 bytes, 2,379 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 538,290 bytes, 2,379 rules, 124 repeated declaration groups, 108 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
   -> latest narrow cleanup splits base tokens/elements/accessibility out of src/style.css, removes unused root custom properties, centralizes reduced-motion handling in base accessibility, keeps src/styles/studio.css from reimporting base, groups Build/Evidence right-rail headers into shared Studio primitive selectors, removes local duplicate Assets action icon/primary rules, groups legacy Studio truncation/text-wrap/grid/align/text rows, absorbs redundant shell/header/status/summary overrides into base/surface owners, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader repeated declaration groups stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeKinematicsWorld ownership
+  -> RuntimeKinematicsWorld owns bounded actor position integration, sandbox gravity, ground snap, and landing idle-action request previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current pos/vel advance, airborne gravity, imported hit-state ground-snap preservation, and no-current-move landing idle callback through that boundary
+  -> focused RuntimeKinematicsSystem tests prove grounded movement, airborne gravity, landing snap/idle, active-move landing, and imported preserve behavior
+  -> no exact MUGEN physics, yaccel constants, landing timing, air recovery parity, helper physics ownership, or score claim
 R2 RuntimeInputControlWorld ownership
   -> RuntimeInputControlWorld owns bounded local player and simple AI control intent previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates crouch, jump, walk, idle, air drift, NoWalk suppression, AI chase, AI attack cooldown, and local punch/kick intent through that boundary
@@ -292,6 +297,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHitPauseWorld` ownership extraction
 - `RuntimeMoveLifecycleWorld` ownership extraction
 - `RuntimeInputControlWorld` ownership extraction
+- `RuntimeKinematicsWorld` ownership extraction
 - visual-helper removal ownership
 - helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded parent/root read-only redirects
 - `RuntimeAssertSpecialWorld` ownership extraction
@@ -303,7 +309,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeInputControlWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeKinematicsWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 

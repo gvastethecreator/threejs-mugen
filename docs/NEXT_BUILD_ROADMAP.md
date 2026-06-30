@@ -31,8 +31,8 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> qa:css reports 539,198 bytes, 2,382 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 539,198 bytes, 2,382 rules, 124 repeated declaration groups, 108 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> qa:css reports 538,290 bytes, 2,379 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 538,290 bytes, 2,379 rules, 124 repeated declaration groups, 108 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
   -> latest narrow cleanup moved Build/Evidence right-rail header chrome into shared Studio primitive selectors and removed local duplicate Assets action icon/primary rules
   -> prior narrow cleanup grouped legacy Studio truncation/text-wrap/grid/align/text rows into shared CSS atoms and passed CSS budget checks; visual smoke remains required for broader UI changes
   -> requires qa:smoke and visual inspection; product-surface hygiene only
@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeKinematicsWorld ownership
+  -> RuntimeKinematicsWorld owns bounded actor position integration, sandbox gravity, ground snap, and landing idle-action request previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current pos/vel advance, airborne gravity, imported hit-state ground-snap preservation, and no-current-move landing idle callback through that boundary
+  -> focused RuntimeKinematicsSystem tests prove grounded movement, airborne gravity, landing snap/idle, active-move landing, and imported preserve behavior
+  -> no exact MUGEN physics, yaccel constants, landing timing, air recovery parity, helper physics ownership, or score movement claim
 R2 RuntimeInputControlWorld ownership
   -> RuntimeInputControlWorld owns bounded local player and simple AI control intent previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates crouch, jump, walk, idle, air drift, NoWalk suppression, AI chase, AI attack cooldown, and local punch/kick intent through that boundary
@@ -252,7 +257,7 @@ I1 text-system scanner expansion
   -> no ZSS/Lua/text rendering/runtime execution claim
 ```
 
-Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus multi-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus multi-frame trace metadata, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -293,7 +298,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
+1. Keep `RuntimeRandomSystem`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeKinematicsWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.

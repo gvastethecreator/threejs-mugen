@@ -75,6 +75,7 @@ import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
+import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
@@ -231,6 +232,7 @@ export class PlayableMatchRuntime {
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
+  private readonly kinematicsWorld = new RuntimeKinematicsWorld();
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
@@ -388,6 +390,7 @@ export class PlayableMatchRuntime {
       this.recoveryWorld,
       this.hitEligibilityWorld,
       this.moveLifecycleWorld,
+      this.kinematicsWorld,
       this.stunWorld,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -406,6 +409,7 @@ export class PlayableMatchRuntime {
         this.recoveryWorld,
         this.hitEligibilityWorld,
         this.moveLifecycleWorld,
+        this.kinematicsWorld,
         this.stunWorld,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -490,6 +494,7 @@ export class PlayableMatchRuntime {
           this.recoveryWorld,
           this.hitEligibilityWorld,
           this.moveLifecycleWorld,
+          this.kinematicsWorld,
           this.stunWorld,
           this.tick,
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
@@ -793,6 +798,7 @@ function advanceFighter(
   recoveryWorld: RuntimeRecoverySystem,
   hitEligibilityWorld: RuntimeHitEligibilityWorld,
   moveLifecycleWorld: RuntimeMoveLifecycleWorld,
+  kinematicsWorld: RuntimeKinematicsWorld,
   stunWorld: RuntimeStunWorld,
   tick: number,
   onPauseController?: PauseControllerHandler,
@@ -821,20 +827,10 @@ function advanceFighter(
     changeIdleAction: () => changeAction(fighter, fighter.definition.idleAction),
   });
 
-  fighter.runtime.pos.x += fighter.runtime.vel.x;
-  fighter.runtime.pos.y += fighter.runtime.vel.y;
-  if (fighter.runtime.stateType === "A") {
-    fighter.runtime.vel.y += 0.55;
-  }
-  if (fighter.runtime.pos.y > 0 && !shouldPreserveImportedStateMoveType(fighter)) {
-    fighter.runtime.pos.y = 0;
-    fighter.runtime.vel.y = 0;
-    fighter.runtime.stateType = "S";
-    fighter.runtime.physics = "S";
-    if (!fighter.currentMove) {
-      changeAction(fighter, fighter.definition.idleAction);
-    }
-  }
+  kinematicsWorld.advance(fighter, {
+    preserveImportedStateMoveType,
+    changeIdleAction: () => changeAction(fighter, fighter.definition.idleAction),
+  });
 
   advanceAnimation(fighter);
   runActiveStateControllers(

@@ -8,14 +8,6 @@
     list-style: none;
   }
 
-  .app-shell.mode-studio .studio-ledger-drawer > summary span,
-  .app-shell.mode-studio .studio-ledger-drawer > summary small {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .studio-ledger-drawer > summary::-webkit-details-marker {
     display: none;
   }

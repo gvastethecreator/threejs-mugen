@@ -71,9 +71,7 @@
     background: color-mix(in srgb, var(--section-accent) 10%, var(--editor-command));
   }
 
-.app-shell.mode-studio .pane > .section,
-  .app-shell.mode-studio .pane-right > .section,
-  .app-shell.mode-studio .pane > .workbench-ops-section,
+.app-shell.mode-studio .pane > .workbench-ops-section,
   .app-shell.mode-studio .pane-right > .workbench-ops-section {
     margin: 0;
     padding: 8px 9px 9px;
@@ -175,17 +173,6 @@
   .app-shell.mode-studio .engine-module-row:last-child,
   .app-shell.mode-studio .studio-mission-node:last-child {
     border-bottom: 0;
-  }
-
-.app-shell.mode-studio .workbench-route-button span,
-  .app-shell.mode-studio .workbench-route-button strong,
-  .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .list-title,
-  .app-shell.mode-studio .list-meta {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
 .app-shell.mode-studio .workbench-route-button small,

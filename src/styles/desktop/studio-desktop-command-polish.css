@@ -434,20 +434,6 @@
     gap: 4px;
   }
 
-.app-shell.mode-studio .workbench-route-button span,
-  .app-shell.mode-studio .workbench-route-button strong,
-  .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .list-title,
-  .app-shell.mode-studio .list-meta,
-  .app-shell.mode-studio .workbench-lane-strip small,
-  .app-shell.mode-studio .workbench-lane-strip b,
-  .app-shell.mode-studio .workbench-lane-strip em {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
 .app-shell.mode-studio .workbench-route-button small {
     justify-self: end;
     text-align: right;
