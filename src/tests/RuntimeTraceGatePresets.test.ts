@@ -5199,6 +5199,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).not.toContain(5210);
     expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    expect(fallFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThan(fallFrame?.lastHitFallRecoverTime ?? Number.POSITIVE_INFINITY);
+    expect(fallFrame?.frames).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        observedHitFallRecoverTimeMinAtLeast: 1,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
+      },
+    ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 5050,
@@ -5473,6 +5490,23 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedStates).not.toContain(5200);
     expect(evidence?.executedStates).not.toContain(5201);
     expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    expect(fallFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThan(fallFrame?.lastHitFallRecoverTime ?? Number.POSITIVE_INFINITY);
+    expect(fallFrame?.frames).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        observedHitFallRecoverTimeMinAtLeast: 1,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
+      },
+    ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 5050,

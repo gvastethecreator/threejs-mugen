@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 Common1 too-early recovery-input positive-window gate
+  -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.recoverTime minimum-positive windows
+  -> required synthetic-imported-default-fall-recovery-too-early.json checksum 050e7e3c and optional kfm-official-default-fall-recovery-too-early.json checksum d2edbde4 now require P2 5050 actor-frame evidence with min recoverTime >= 1, first-to-last drop >= 1, and at least 2 summarized frames while recovery command is active and recovery states stay forbidden
+  -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the field and presets
+  -> no exact fall.recovertime tables, exact controller-loop tick order, velocity math, public bundled KFM support, full Common1 recovery parity, or score claim
 R1 optional KFM recovery-threshold drop gate
   -> optional kfm-official-default-fall-recovery-threshold.json checksum bf7b058a now requires real KFM P2 state 5050 actor-frame evidence with positive hitFall.recoverTime, first-to-last recoverTime drop >= 1, and at least 2 summarized frames before 5200 with recoverTime 0
   -> focused RuntimeTraceGatePresets coverage proves the official-style preset requirement
@@ -397,6 +402,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
 - `kfm-official-default-fall-recovery-threshold.json` optional drop/order evidence
+- `synthetic-imported-default-fall-recovery-too-early.json` and `kfm-official-default-fall-recovery-too-early.json` positive-window reject evidence
 - `synthetic-imported-noop.json` debug clipboard plus `MakeDust` / `DestroySelf` no-op coverage
 - `synthetic-imported-variable.json` `VarRandom` variable compatibility
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction

@@ -5194,7 +5194,7 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
       label: options.targetLabel ?? `${imported.displayName} Common1 recovery input too-early reject route`,
       source: "imported",
       notes: options.notes ?? [
-        "Imported Common1 recovery-input negative trace verifies that a real imported defender does not leave fall state 5050 through command = \"recovery\" while fall.recovertime is still positive. It still does not claim exact recovery thresholds, velocities, or tick-order parity.",
+        "Imported Common1 recovery-input negative trace verifies that a real imported defender does not leave fall state 5050 through command = \"recovery\" while the observed 5050 fall.recovertime window stays positive and still counts down. It still does not claim exact recovery thresholds, velocities, or tick-order parity.",
       ],
     },
     gates: [
@@ -5210,6 +5210,19 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            observedHitFallRecoverTimeMinAtLeast: 1,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
+          },
+        ],
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -5845,7 +5858,7 @@ export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
       label: "Synthetic imported Common1 recovery input too-early reject route",
       source: "imported",
       notes: [
-        "Synthetic imported recovery-input negative trace proves a bounded defender-owned Common1-style fall route does not leave 5050 through command = \"recovery\" while fall.recovertime is still positive. It does not claim exact MUGEN/IKEMEN recovery thresholds, velocities, or tick-order parity.",
+        "Synthetic imported recovery-input negative trace proves a bounded defender-owned Common1-style fall route does not leave 5050 through command = \"recovery\" while the observed 5050 fall.recovertime window stays positive and still counts down. It does not claim exact MUGEN/IKEMEN recovery thresholds, velocities, or tick-order parity.",
       ],
     },
     gates: [
@@ -5861,6 +5874,19 @@ export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            observedHitFallRecoverTimeMinAtLeast: 1,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
+          },
+        ],
         requiredFinalActors: [
           {
             actorId: "p2",

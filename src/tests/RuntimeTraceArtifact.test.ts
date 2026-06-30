@@ -333,6 +333,51 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
   });
 
+  it("gates actor-frame recovery timer still-positive minimum evidence", () => {
+    const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 3 });
+    const fallCountdown = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 2 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "fall", actors: [fall], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "fall-countdown", actors: [fallCountdown], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-30T00:00:00.000Z",
+      target: {
+        id: "synthetic-recovery-timer-positive-window",
+        label: "Synthetic recovery timer positive window",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "recovery-timer-positive-window",
+          requiredActorFrames: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 5050,
+              moveType: "H",
+              observedHitFallRecoverTimeAtLeast: 3,
+              observedHitFallRecoverTimeMinAtLeast: 2,
+              observedHitFallRecoverTimeDropAtLeast: 1,
+              minFrames: 2,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    const fallEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5050);
+    expect(fallEvidence?.maxHitFallRecoverTime).toBe(3);
+    expect(fallEvidence?.minHitFallRecoverTime).toBe(2);
+    expect(fallEvidence?.firstHitFallRecoverTime).toBe(3);
+    expect(fallEvidence?.lastHitFallRecoverTime).toBe(2);
+    expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
   it("fails actor-frame sequence gates when frames appear out of order", () => {
     const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
     const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });

@@ -485,6 +485,7 @@ export type RuntimeTraceActorFrameRequirement = {
   observedAngleAtLeast?: number;
   observedAngleAtMost?: number;
   observedHitFallRecoverTimeAtLeast?: number;
+  observedHitFallRecoverTimeMinAtLeast?: number;
   observedHitFallRecoverTimeAtMost?: number;
   observedHitFallRecoverTimeDropAtLeast?: number;
   observedHitFallDownRecoverTimeAtLeast?: number;
@@ -2857,6 +2858,8 @@ function matchesActorFrameRequirement(
     (requirement.observedAngleAtMost === undefined || actor.minAngle <= requirement.observedAngleAtMost) &&
     (requirement.observedHitFallRecoverTimeAtLeast === undefined ||
       (actor.maxHitFallRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallRecoverTimeAtLeast) &&
+    (requirement.observedHitFallRecoverTimeMinAtLeast === undefined ||
+      (actor.minHitFallRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallRecoverTimeMinAtLeast) &&
     (requirement.observedHitFallRecoverTimeAtMost === undefined ||
       (actor.minHitFallRecoverTime ?? Number.POSITIVE_INFINITY) <= requirement.observedHitFallRecoverTimeAtMost) &&
     (requirement.observedHitFallRecoverTimeDropAtLeast === undefined ||
