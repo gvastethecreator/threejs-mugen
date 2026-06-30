@@ -54,7 +54,16 @@
 
   .app-shell.mode-studio .workspace-brand .workspace-eyebrow,
   .app-shell.mode-studio .workspace-brand h1,
-  .app-shell.mode-studio .workspace-brand p {
+  .app-shell.mode-studio .workspace-brand p,
+  .app-shell.mode-studio .mode-switch .mode-label,
+  .app-shell.mode-studio .mode-switch .mode-hint,
+  .app-shell.mode-studio .mode-switch .mode-status,
+  .app-shell.mode-studio .workspace-summary b,
+  .app-shell.mode-studio .workspace-summary small,
+  .app-shell.mode-studio .command-launcher strong,
+  .app-shell.mode-studio .command-launcher small,
+  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
+  .app-shell.mode-studio .workspace-action-grid button small {
     min-width: 0;
     overflow: hidden;
     line-height: 1;
@@ -119,12 +128,7 @@
   .app-shell.mode-studio .mode-switch .mode-label,
   .app-shell.mode-studio .mode-switch .mode-hint,
   .app-shell.mode-studio .mode-switch .mode-status {
-    min-width: 0;
-    overflow: hidden;
     letter-spacing: 0;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .mode-switch .mode-hint {
@@ -199,15 +203,6 @@
     box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.74);
   }
 
-  .app-shell.mode-studio .workspace-summary b,
-  .app-shell.mode-studio .workspace-summary small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio .workspace-summary b {
     color: var(--station-text);
     font-family: var(--mono);
@@ -252,15 +247,6 @@
 
   .app-shell.mode-studio .command-launcher > span:not(.badge) {
     min-width: 0;
-  }
-
-  .app-shell.mode-studio .command-launcher strong,
-  .app-shell.mode-studio .command-launcher small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .command-launcher strong {
@@ -343,15 +329,6 @@
 
   .app-shell.mode-studio .workspace-action-grid button.primary-action .action-icon {
     color: var(--station-warn);
-  }
-
-  .app-shell.mode-studio .workspace-action-grid .workspace-action-label,
-  .app-shell.mode-studio .workspace-action-grid button small {
-    min-width: 0;
-    overflow: hidden;
-    line-height: 1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .workspace-action-grid .workspace-action-label {

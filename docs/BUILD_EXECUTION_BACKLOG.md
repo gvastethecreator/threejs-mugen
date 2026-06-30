@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS duplicate budget trim
+
+Changed:
+
+- Grouped repeated Studio desktop shell truncation rules in `src/styles/shell/studio-shell-workstation.css` across the workspace brand, mode switch, workspace summary, command launcher, and workspace action rows.
+- Grouped the duplicate left-pane panel-kicker/workspace-eyebrow rule in `src/styles/desktop/studio-desktop-foundation.css`.
+- Tightened `pnpm qa:css:budget` from 538,290 bytes / 2,379 rules / 124 repeated declaration groups to 537,761 bytes / 2,375 rules / 122 repeated declaration groups; cross-file selector overlap remains 108 because this pass did not migrate cascade ownership.
+
+Evidence:
+
+- `pnpm qa:css` passes: 537,761 active CSS bytes, 2,375 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 122 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the tightened ceilings above.
+- `pnpm test` passes: 76 files / 674 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- `pnpm check:boundaries` passes.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-modules.png`, and `.scratch/qa/qa-smoke/studio-debug.png`; no obvious overlap, broken truncation, missing shell labels, or runtime framing regression was visible.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/ROADMAP_PACKAGE_MILESTONES.md` and `src/styles/shell/studio-shell-workstation.css`.
+
+Claim allowed:
+
+- The current CSS has no exact duplicate rules or same-file duplicate selector keys, and the active duplicate-declaration budget is lower.
+
+Claim blocked:
+
+- This is Studio CSS hygiene only. It does not reduce cross-file selector overlap, finish CSS architecture cleanup, add Studio workflows, change runtime behavior, or move port scores.
+
 ## 2026-06-30 - Runtime kinematics ownership and CSS primitive trim
 
 Changed:

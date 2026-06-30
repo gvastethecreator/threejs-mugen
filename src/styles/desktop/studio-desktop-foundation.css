@@ -338,7 +338,8 @@
   }
 
   .app-shell.mode-studio #left-pane .section-heading-row .panel-kicker,
-  .app-shell.mode-studio #left-pane .command-center-header .panel-kicker {
+  .app-shell.mode-studio #left-pane .command-center-header .panel-kicker,
+  .app-shell.mode-studio #left-pane .workspace-brand .workspace-eyebrow {
     order: 2;
     width: 100%;
     max-width: 100%;
@@ -360,13 +361,4 @@
     line-height: 1.1;
   }
 
-  .app-shell.mode-studio #left-pane .workspace-brand .workspace-eyebrow {
-    order: 2;
-    width: 100%;
-    max-width: 100%;
-    color: color-mix(in srgb, var(--section-accent) 34%, var(--desk-muted));
-    font-size: 9.5px;
-    line-height: 1.15;
-    text-overflow: ellipsis;
-  }
 }
