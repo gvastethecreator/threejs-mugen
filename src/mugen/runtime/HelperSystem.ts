@@ -71,6 +71,7 @@ export type RuntimeHelperAdvanceOptions = {
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
+  countHelpers?: (helper: RuntimeHelper, helperId?: number) => number;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -192,6 +193,7 @@ export function runRuntimeHelperStateControllers(
     | "rootState"
     | "opponentState"
     | "countExplods"
+    | "countHelpers"
     | "onSpawnExplod"
     | "onRemoveExplod"
     | "onModifyExplod"
@@ -414,7 +416,10 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
 function helperTriggersPass(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods">,
+  options: Pick<
+    RuntimeHelperAdvanceOptions,
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+  >,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
   if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options)))) {
@@ -441,7 +446,10 @@ function resolveHelperNumber(
   helper: RuntimeHelper,
   value: number | undefined,
   expression: string | undefined,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods">,
+  options: Pick<
+    RuntimeHelperAdvanceOptions,
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+  >,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -528,7 +536,10 @@ function applyRuntimeHelperOwnerBind(
 
 function helperExpressionContext(
   helper: RuntimeHelper,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods"> = {},
+  options: Pick<
+    RuntimeHelperAdvanceOptions,
+    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers"
+  > = {},
 ) {
   return {
     self: helperRuntimeState(helper),
@@ -540,6 +551,7 @@ function helperExpressionContext(
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
     numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
+    numHelper: (helperId?: number) => options.countHelpers?.(helper, helperId) ?? 0,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };

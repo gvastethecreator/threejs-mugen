@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local NumHelper trace gate
+
+Changed:
+
+- Extended the helper-local expression context so current visual Helper actors can evaluate bounded `NumHelper(id)` through a helper-aware count callback.
+- Added `RuntimeEffectActorWorld`/`EffectActorSystem` counting for owner-side visual Helper actors in the same effect store with an optional static helper id.
+- Added focused `EffectActorSystem` coverage where helper-local `NumHelper(99) > 0` fails closed and helper-local `NumHelper(43) > 0` branches against a sibling owner-side Helper actor.
+- Added required `synthetic-imported-helper-numhelper.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 726 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 177 / 177 artifacts, 157 required, 20 optional, 0 failed; `synthetic-imported-helper-numhelper.json` checksum is `4e32e951`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can count owner-side visual Helper actors by static helper id in the same effect store; required trace evidence proves helper route `1200 -> 1211` / anim `931`, effect store serial progression, world spawn/active lifecycle, helper id `42` payload metadata, and helper-local `NumHelper(42) > 0` branch behavior.
+
+Claim blocked:
+
+- This does not add exact helper ownership scopes, indexed/team/helper-owned redirects, helper-owned `HitDef`, helper-owned `Projectile`, helper combat/contact presentation, helper-owned effect namespaces, exact helper effect-count parity, dynamic helper lookup params, nested helper ancestry, team/keyctrl ownership, or full MUGEN/IKEMEN helper/effect parity. No score movement.
+
 ## 2026-06-30 - Bounded helper-local NumExplod trace gate
 
 Changed:

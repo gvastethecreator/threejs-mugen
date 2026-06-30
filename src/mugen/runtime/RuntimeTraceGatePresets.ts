@@ -8330,6 +8330,57 @@ export function createSyntheticImportedHelperNumExplodTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedHelperNumHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-numhelper-attacker",
+    displayName: "Synthetic Imported Helper NumHelper Attacker",
+    withHelper: true,
+    helperNumHelperRoute: {
+      branchStateNo: 1211,
+      branchAnimNo: 931,
+      helperId: 42,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-numhelper-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-numhelper-golden",
+      label: "Synthetic imported Helper NumHelper route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper NumHelper trace proves the bounded helper-local micro-VM can branch on an owner-side visual Helper count. It does not claim exact helper ownership scopes, indexed/team/helper-owned redirects, helper-owned combat, or full MUGEN/IKEMEN helper trigger parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-numhelper-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [{ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1211, animNo: 931, minFrames: 1 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1211, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperBindToParentTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9804,6 +9855,11 @@ export type SyntheticImportedTraceFighterOptions = {
     explodId?: number;
     pos?: [number, number];
   };
+  helperNumHelperRoute?: {
+    branchStateNo: number;
+    branchAnimNo?: number;
+    helperId?: number;
+  };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   withExplod?: boolean;
@@ -10169,6 +10225,7 @@ ${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) 
 ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperRemoveExplodRoute) : ""}
 ${options.helperModifyExplodRoute ? helperModifyExplodRouteBlock(options.helperModifyExplodRoute) : ""}
 ${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
+${options.helperNumHelperRoute ? helperNumHelperRouteBlock(options.helperNumHelperRoute) : ""}
 ${options.helperBindToParentRoute ? helperBindToParentRouteBlock(options.helperBindToParentRoute) : ""}
 ${options.helperBindToRootRoute ? helperBindToRootRouteBlock(options.helperBindToRootRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
@@ -10413,6 +10470,14 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperNumExplodRoute.branchAnimNo ?? options.helperNumExplodRoute.branchStateNo),
                   ],
                   [options.helperNumExplodRoute.explodAnimNo, explodTraceAction(options.helperNumExplodRoute.explodAnimNo)],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperNumHelperRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperNumHelperRoute.branchAnimNo ?? options.helperNumHelperRoute.branchStateNo,
+                    helperTraceAction(options.helperNumHelperRoute.branchAnimNo ?? options.helperNumHelperRoute.branchStateNo),
+                  ],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperBindToParentRoute?.animNo === undefined
               ? []
@@ -12735,6 +12800,32 @@ trans = add
 [State 1200, Helper NumExplod Branch]
 type = ChangeState
 trigger1 = NumExplod(${explodId}) > 0
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+`;
+}
+
+function helperNumHelperRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperNumHelperRoute"]>): string {
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const trigger = route.helperId === undefined ? "NumHelper > 0" : `NumHelper(${route.helperId}) > 0`;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper NumHelper Branch]
+type = ChangeState
+trigger1 = ${trigger}
 value = ${route.branchStateNo}
 ctrl = 0
 

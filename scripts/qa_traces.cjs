@@ -773,6 +773,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperNumExplodTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-numhelper",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperNumHelperTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-bindtoparent",
       required: true,
       artifact: presets.createSyntheticImportedHelperBindToParentTraceArtifact(),

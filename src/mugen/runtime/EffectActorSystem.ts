@@ -358,6 +358,12 @@ export function advanceRuntimeHelperActors(
       }
       return countRuntimeHelperExplodActors(store, helper, explodId);
     },
+    countHelpers: (helper, helperId) => {
+      if (options?.countHelpers) {
+        return options.countHelpers(helper, helperId);
+      }
+      return countRuntimeHelperActors(store, helper, helperId);
+    },
     onSpawnExplod: (helper, controller) => {
       if (options?.onSpawnExplod) {
         return options.onSpawnExplod(helper, controller);
@@ -444,6 +450,14 @@ export function countRuntimeHelperExplodActors(
   return store.explods.filter((explod) => {
     return explod.parentId === helper.serialId && (explodId === undefined || explod.explodId === explodId);
   }).length;
+}
+
+export function countRuntimeHelperActors(
+  store: RuntimeEffectActorStore,
+  _helper: RuntimeHelper,
+  helperId?: number,
+): number {
+  return store.helpers.filter((candidate) => helperId === undefined || candidate.helperId === helperId).length;
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
