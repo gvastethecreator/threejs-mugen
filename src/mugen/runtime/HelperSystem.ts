@@ -5,7 +5,11 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
-import { createRuntimeContactMemory, type RuntimeContactMemory } from "./ContactMemorySystem";
+import {
+  advanceRuntimeContactTimers,
+  createRuntimeContactMemory,
+  type RuntimeContactMemory,
+} from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -16,6 +20,12 @@ import {
   normalizeRuntimePhysics,
   normalizeRuntimeStateType,
 } from "./RuntimeStateEntrySystem";
+import {
+  RuntimeTargetWorld,
+  type RuntimeTarget,
+  type RuntimeTargetBinding,
+  type RuntimeTargetWorldActor,
+} from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 
 export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
@@ -42,6 +52,9 @@ export type RuntimeHelper = {
   hasHit: boolean;
   firedHitDefs: Set<string>;
   contact: RuntimeContactMemory;
+  targets: RuntimeTarget[];
+  targetBindings: RuntimeTargetBinding[];
+  bindToTarget?: RuntimeTargetBinding;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   scale: { x: number; y: number };
@@ -84,6 +97,7 @@ export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
   stageTime?: number;
   runtimeTick?: number;
+  opponentId?: string;
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
@@ -148,6 +162,8 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     hasHit: false,
     firedHitDefs: new Set(),
     contact: createRuntimeContactMemory(),
+    targets: [],
+    targetBindings: [],
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
     scale: helperScale(input.controller, operation),
@@ -360,6 +376,10 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
       if (!frame) {
         return undefined;
       }
+      const runtime = helperRuntimeState(helper);
+      if (helper.stateNo === undefined) {
+        runtime.stateNo = sourceStateNo;
+      }
       return {
         id: helper.serialId,
         label: `Helper ${helper.name ?? helper.helperId ?? helper.stateNo ?? helper.animNo}`,
@@ -394,28 +414,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
               }
             : {}),
         },
-        runtime: {
-          pos: { ...helper.pos },
-          vel: { ...helper.vel },
-          facing: helper.facing,
-          spritePriority: helper.spritePriority,
-          stateNo: helper.stateNo ?? sourceStateNo,
-          animNo: helper.animNo,
-          animTime: helper.stateTime,
-          frameIndex: helper.frameIndex,
-          lifeMax: helper.lifeMax,
-          life: helper.life,
-          powerMax: helper.powerMax,
-          power: helper.power,
-          ctrl: helper.ctrl,
-          stateType: helper.stateType,
-          moveType: helper.moveType,
-          physics: helper.physics,
-          vars: [...helper.vars],
-          sysvars: [...helper.sysvars],
-          fvars: [...helper.fvars],
-          ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
-        },
+        runtime,
         frame,
         clsn1: frame.clsn1.map(cloneBox),
         clsn2: frame.clsn2.map(cloneBox),
@@ -457,6 +456,7 @@ const helperRuntimeControllers = new Set([
 ]);
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
+const helperTargetWorld = new RuntimeTargetWorld();
 
 export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
@@ -486,6 +486,17 @@ export function activateRuntimeHelperHitDef(
   return result.activated || result.duplicate;
 }
 
+export function rememberRuntimeHelperTarget(
+  helper: RuntimeHelper,
+  targetActorId: string,
+  targetId: number | undefined,
+  targetWorld: RuntimeTargetWorld = helperTargetWorld,
+): void {
+  const actor = runtimeHelperTargetActor(helper);
+  targetWorld.remember(actor, targetActorId, targetId);
+  syncRuntimeHelperTargetActor(helper, actor);
+}
+
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {
   const operation = controller.operation?.kind === "audio" ? controller.operation : undefined;
   pushRuntimeSoundEvent(
@@ -508,6 +519,7 @@ function helperTriggersPass(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageTime"
+    | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
@@ -546,6 +558,7 @@ function resolveHelperNumber(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageTime"
+    | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
@@ -661,6 +674,7 @@ function helperExpressionContext(
   options: Pick<
     RuntimeHelperAdvanceOptions,
     | "stageTime"
+    | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
@@ -680,6 +694,8 @@ function helperExpressionContext(
     helperId: helper.helperId,
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
+    target: (targetId?: number) => helperTargetRedirect(helper, options, targetId),
+    numTarget: (targetId?: number) => helperTargetWorld.count(runtimeHelperTargetActor(helper), targetId),
     numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
     numHelper: (helperId?: number) => options.countHelpers?.(helper, helperId) ?? 0,
     numProj: (projectileId?: number) => options.countProjectiles?.(helper, projectileId) ?? 0,
@@ -716,6 +732,24 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     sysvars: [...helper.sysvars],
     fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
+    targetCount: helper.targets.length,
+    targetRefs: helper.targets.map((target) => ({ ...target })),
+    targetBindings: helper.targetBindings.map((binding) => ({
+      actorId: binding.actorId,
+      targetId: binding.targetId,
+      remaining: binding.remaining === Number.POSITIVE_INFINITY ? "infinite" : binding.remaining,
+      offset: { ...binding.offset },
+    })),
+    ...(helper.bindToTarget
+      ? {
+          bindToTarget: {
+            actorId: helper.bindToTarget.actorId,
+            targetId: helper.bindToTarget.targetId,
+            remaining: helper.bindToTarget.remaining === Number.POSITIVE_INFINITY ? "infinite" : helper.bindToTarget.remaining,
+            offset: { ...helper.bindToTarget.offset },
+          },
+        }
+      : {}),
   };
 }
 
@@ -752,6 +786,8 @@ export function applyRuntimeStateToHelper(helper: RuntimeHelper, runtime: Charac
 
 function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelperAdvanceOptions, "parentState" | "rootState"> = {}): void {
   advanceRuntimeHelperMove(helper);
+  advanceRuntimeContactTimers(helper.contact);
+  advanceRuntimeHelperTargetMemory(helper);
   helper.age += 1;
   helper.stateTime += 1;
   helper.pos.x += helper.vel.x;
@@ -764,6 +800,46 @@ function advanceRuntimeHelper(helper: RuntimeHelper, options: Pick<RuntimeHelper
     helper.frameIndex = next < helper.action.frames.length ? next : helper.action.loopStart ?? helper.action.frames.length - 1;
   }
   applyRuntimeHelperOwnerBind(helper, options, true);
+}
+
+function advanceRuntimeHelperTargetMemory(helper: RuntimeHelper): void {
+  const actor = runtimeHelperTargetActor(helper);
+  helperTargetWorld.advance(actor);
+  syncRuntimeHelperTargetActor(helper, actor);
+}
+
+function helperTargetRedirect(
+  helper: RuntimeHelper,
+  options: Pick<RuntimeHelperAdvanceOptions, "opponentId" | "opponentState">,
+  targetId?: number,
+) {
+  if (!options.opponentId || !options.opponentState) {
+    return undefined;
+  }
+  const actor = runtimeHelperTargetActor(helper);
+  if (!helperTargetWorld.find(actor, options.opponentId, targetId)) {
+    return undefined;
+  }
+  return {
+    self: cloneRuntimeStateForRedirect(options.opponentState),
+    opponent: helperRuntimeState(helper),
+  };
+}
+
+function runtimeHelperTargetActor(helper: RuntimeHelper): RuntimeTargetWorldActor {
+  return {
+    id: helper.serialId,
+    runtime: helperRuntimeState(helper),
+    targets: helper.targets,
+    targetBindings: helper.targetBindings,
+    bindToTarget: helper.bindToTarget,
+  };
+}
+
+function syncRuntimeHelperTargetActor(helper: RuntimeHelper, actor: RuntimeTargetWorldActor): void {
+  helper.targets = actor.targets;
+  helper.targetBindings = actor.targetBindings;
+  helper.bindToTarget = actor.bindToTarget;
 }
 
 function advanceRuntimeHelperMove(helper: RuntimeHelper): void {

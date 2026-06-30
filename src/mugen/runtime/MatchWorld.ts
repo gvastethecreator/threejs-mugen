@@ -243,7 +243,8 @@ function actorRegistryKey(snapshot: MugenSnapshot, effectStores: RuntimeEffectAc
     ...snapshot.actors.map((actor) => actor.id),
     ...(snapshot.effects ?? []).map((effect) => effect.id),
   ];
-  const targetKey = snapshot.actors
+  const targetActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
+  const targetKey = targetActors
     .map((actor) => {
       const targets = (actor.runtime.targetRefs ?? [])
         .map((target) => `${target.actorId}:${target.targetId ?? "*"}:${target.age}`)

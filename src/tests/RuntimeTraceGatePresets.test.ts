@@ -106,6 +106,7 @@ import {
   createSyntheticImportedHelperProjGuardTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
   createSyntheticImportedHelperHitDefTraceArtifact,
+  createSyntheticImportedHelperTargetTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -2024,6 +2025,114 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p1-helper-0",
         contactKind: "hit",
         hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7006, offsetX: 9, offsetY: -58 }),
+      }),
+    ]);
+  });
+
+  it("creates a synthetic imported Helper Target artifact with helper-owned target redirect evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1-helper-0",
+          actorId: "p2",
+          targetId: 8877,
+          hasBinding: false,
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredTargetLinks).toEqual([
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8877, hasBinding: false, minFrames: 1 },
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1223, animNo: 953 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 969 })]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1223, minAge: 2 },
+    ]);
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          type: "PlaySnd",
+          group: 5,
+          index: 1,
+          contactKind: "hit",
+        }),
+      ]),
+    );
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          kind: "hit",
+          sparkNo: 7007,
+          raw: "F7007",
+          rawPrefix: "F",
+          assetSource: "fightfx",
+          assetActionId: 7007,
+          assetFrameCount: 2,
+          assetTotalDuration: 11,
+          offset: { x: 11, y: -56 },
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 1, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7007,
+            raw: "F7007",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7007,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 11, y: -56 },
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        actorId: "p1-helper-0",
+        contactKind: "hit",
+        hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7007, offsetX: 11, offsetY: -56 }),
       }),
     ]);
   });

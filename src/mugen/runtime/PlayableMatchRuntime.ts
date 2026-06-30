@@ -47,7 +47,7 @@ import {
 } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
-import { applyRuntimeStateToHelper, helperRuntimeState, type RuntimeHelper } from "./HelperSystem";
+import { applyRuntimeStateToHelper, helperRuntimeState, rememberRuntimeHelperTarget, type RuntimeHelper } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
@@ -691,6 +691,9 @@ export class PlayableMatchRuntime {
         applyHitStateTransitions: () => {},
         applyDefaultGetHit: () => applyDefaultHelperGetHitState(defender, this.getHitStateWorld),
       });
+      if (move.targetId !== undefined) {
+        rememberRuntimeHelperTarget(helper, defender.id, move.targetId, this.targetWorld);
+      }
       this.contactPresentationWorld.emitHitDefContact({
         attacker,
         defender,

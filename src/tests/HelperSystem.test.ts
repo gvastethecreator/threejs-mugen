@@ -78,6 +78,8 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     hasHit: false,
     firedHitDefs: new Set(),
     contact: createRuntimeContactMemory(),
+    targets: [],
+    targetBindings: [],
     pos: { x: 0, y: 0 },
     vel: { x: 0, y: 0 },
     scale: { x: 1, y: 1 },

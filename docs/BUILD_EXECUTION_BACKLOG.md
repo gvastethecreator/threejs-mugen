@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-owned target memory gate
+
+Changed:
+
+- Added bounded helper-owned target memory for helper-local direct `HitDef` when the authored HitDef carries an explicit `id`.
+- Helper snapshots now expose target refs and bindings, and MatchWorld registry target links include effect actors.
+- `RuntimeEffectLifecycleWorld` now passes opponent actor id into helper redirect context so helper-local `Target(id), ...` can resolve the current P2 only after remembered target memory exists.
+- Added required `synthetic-imported-helper-target.json` trace evidence: helper state `1200` activates `HitDef id = 8877`, hits P2 for 31 damage, records target link `p1-helper-0 -> p2 / 8877`, emits helper-side `S5,1` plus FightFX `F7007`, and branches to `1223/953` through `NumTarget(8877)` plus `Target(8877), Life`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Target"` passed.
+- `pnpm test` passed: 95 files / 816 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; Vite emitted the existing >500 kB chunk-size warning.
+- `pnpm qa:trace` passes: 189 / 189 artifacts, 169 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md`, `docs/PLAYABLE_V0_STATUS.md`, and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- New required checksum: `synthetic-imported-helper-target.json` `68f95b67`.
+- Stable existing helper direct-combat checksum: `synthetic-imported-helper-hitdef.json` `89f9e876`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local micro-VM can remember explicit-id helper HitDef targets, expose helper target links in MatchWorld and trace evidence, and branch on helper-local `NumTarget(id)` plus `Target(id), Life` against current P2.
+
+Claim blocked:
+
+- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned Projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
+
 ## 2026-06-30 - Helper-owned HitDef direct combat gate
 
 Changed:

@@ -87,14 +87,26 @@ function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: numbe
 function helperRedirectContext(
   actor: RuntimeEffectLifecycleActor,
   opponent?: RuntimeEffectLifecycleActor,
-): { parentState?: CharacterRuntimeState; rootState?: CharacterRuntimeState; opponentState?: CharacterRuntimeState } {
+): {
+  parentState?: CharacterRuntimeState;
+  rootState?: CharacterRuntimeState;
+  opponentId?: string;
+  opponentState?: CharacterRuntimeState;
+} {
   if (!isCompleteRuntimeState(actor.runtime)) {
     return {};
+  }
+  let opponentId: string | undefined;
+  let opponentState: CharacterRuntimeState | undefined;
+  if (opponent && isCompleteRuntimeState(opponent.runtime)) {
+    opponentId = opponent.id;
+    opponentState = opponent.runtime;
   }
   return {
     parentState: actor.runtime,
     rootState: actor.runtime,
-    opponentState: opponent && isCompleteRuntimeState(opponent.runtime) ? opponent.runtime : undefined,
+    opponentId,
+    opponentState,
   };
 }
 
