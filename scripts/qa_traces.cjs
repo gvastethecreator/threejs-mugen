@@ -758,6 +758,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperExplodTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-removeexplod",
       required: true,
       artifact: presets.createSyntheticImportedHelperRemoveExplodTraceArtifact(),

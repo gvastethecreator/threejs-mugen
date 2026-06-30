@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local Projectile trace gate
+
+Changed:
+
+- Extended the helper-local micro-VM dispatch path so current visual Helper actors can execute bounded static `Projectile` side effects through `RuntimeEffectActorWorld`.
+- Added `EffectActorSystem` helper-local Projectile spawning into the owner-side Projectile store while preserving the Helper runtime serial as `parentId`.
+- Added focused `EffectActorSystem` coverage for helper-local Projectile payload fields: owner/root/parent ids, proj id, anim, hit anim, offset, velocity, remove time, and sprite priority.
+- Added required `synthetic-imported-helper-projectile.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 728 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 178 / 178 artifacts, 158 required, 20 optional, 0 failed; `synthetic-imported-helper-projectile.json` checksum is `893f9427`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can spawn owner-side Projectile actors from static Projectile params when the referenced AIR action exists; required trace evidence proves Helper route `1200 -> 1212` / anim `932`, owner-side Projectile anim `943`, effect store serial progression, world spawn/active lifecycle, Projectile id `8850`, and helper `parentId = p1-helper-0` payload metadata.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespace scopes, dynamic Projectile params, helper-owned `HitDef`, helper combat/contact presentation, helper-owned effect namespaces, exact helper effect-count parity, nested helper ancestry, team/keyctrl ownership, exact tick order, or full MUGEN/IKEMEN Helper/Projectile parity. No score movement.
+
 ## 2026-06-30 - Bounded helper-local NumHelper trace gate
 
 Changed:

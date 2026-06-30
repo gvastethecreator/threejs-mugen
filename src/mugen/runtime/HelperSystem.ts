@@ -73,6 +73,7 @@ export type RuntimeHelperAdvanceOptions = {
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
   countHelpers?: (helper: RuntimeHelper, helperId?: number) => number;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
+  onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
@@ -195,6 +196,7 @@ export function runRuntimeHelperStateControllers(
     | "countExplods"
     | "countHelpers"
     | "onSpawnExplod"
+    | "onSpawnProjectile"
     | "onRemoveExplod"
     | "onModifyExplod"
     | "onController"
@@ -264,6 +266,14 @@ export function runRuntimeHelperStateControllers(
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "explod") {
       if (options.onSpawnExplod?.(helper, controller)) {
+        options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "projectile") {
+      if (options.onSpawnProjectile?.(helper, controller)) {
         options.onController?.(helper, controller);
         continue;
       }

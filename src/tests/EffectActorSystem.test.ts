@@ -970,6 +970,61 @@ describe("EffectActorSystem", () => {
     expect(store.explods.filter((explod) => explod.explodId === 8830 && explod.parentId === "p1-helper-0")).toHaveLength(1);
   });
 
+  it("spawns owner-side Projectile actors from the helper-local micro-VM", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8850",
+                  projanim: "930",
+                  projhitanim: "931",
+                  offset: "18,-20",
+                  velocity: "5,0",
+                  projremovetime: "24",
+                  damage: "20,3",
+                  sprpriority: "6",
+                },
+                ["Time = 0"],
+              ),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [930, action(930, 4)],
+        [931, action(931, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Projectile"]);
+    expect(store.projectiles).toHaveLength(1);
+    expect(store.projectiles[0]).toMatchObject({
+      serialId: "p1-projectile-0",
+      projectileId: 8850,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      animNo: 930,
+      hitAnimNo: 931,
+      pos: { x: 18, y: -20 },
+      vel: { x: 5, y: 0 },
+      removeTime: 24,
+      spritePriority: 6,
+    });
+  });
+
   it("evaluates helper-local NumHelper against owner-side Helper actors", () => {
     const store = createRuntimeEffectActorStore();
     spawnRuntimeHelperActor(store, "p1", helperInput({ id: "43", anim: "900" }));

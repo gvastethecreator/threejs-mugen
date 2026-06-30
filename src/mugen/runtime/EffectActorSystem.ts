@@ -1,4 +1,4 @@
-import type { ExplodControllerOp, ModifyExplodControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
+import type { ExplodControllerOp, ModifyExplodControllerOp, ProjectileControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import {
@@ -370,6 +370,12 @@ export function advanceRuntimeHelperActors(
       }
       return spawnRuntimeHelperExplodActor(store, helper, controller, options) !== undefined;
     },
+    onSpawnProjectile: (helper, controller) => {
+      if (options?.onSpawnProjectile) {
+        return options.onSpawnProjectile(helper, controller);
+      }
+      return spawnRuntimeHelperProjectileActor(store, helper, controller, options) !== undefined;
+    },
     onRemoveExplod: (helper, controller) => {
       if (options?.onRemoveExplod) {
         return options.onRemoveExplod(helper, controller);
@@ -384,6 +390,40 @@ export function advanceRuntimeHelperActors(
       modifyRuntimeHelperExplodActors(store, helper, controller);
       return true;
     },
+  });
+}
+
+export function spawnRuntimeHelperProjectileActor(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Pick<RuntimeHelperAdvanceOptions, "opponentState"> = {},
+): RuntimeProjectile | undefined {
+  const operation = projectileOperation(controller);
+  const animNo = operation?.projAnim ?? firstNumber(findControllerParam(controller, "projanim") ?? findControllerParam(controller, "anim")) ?? 0;
+  const action = helper.animations?.get(animNo);
+  if (!isPlayableAction(action)) {
+    return undefined;
+  }
+  const localPos = operation?.offset ?? operation?.pos ?? numberPair(findControllerParam(controller, "offset") ?? findControllerParam(controller, "pos")) ?? [0, 0];
+  const pos = resolveHelperExplodPosition(helper, options.opponentState, operation?.postype ?? findControllerParam(controller, "postype"), localPos);
+  if (!pos) {
+    return undefined;
+  }
+  return spawnRuntimeProjectileActor(store, helper.ownerId, {
+    controller: controller.source,
+    operation,
+    ownerId: helper.ownerId,
+    rootId: helper.rootId,
+    parentId: helper.serialId,
+    spriteOwnerId: helper.spriteOwnerId,
+    spriteOwnerDefinitionId: helper.spriteOwnerDefinitionId,
+    spriteOwnerLabel: helper.spriteOwnerLabel,
+    action,
+    animNo,
+    terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),
+    pos,
+    fallbackFacing: helper.facing,
   });
 }
 
@@ -513,6 +553,25 @@ function removeExplodOperation(controller: ControllerIr): RemoveExplodController
 
 function modifyExplodOperation(controller: ControllerIr): ModifyExplodControllerOp | undefined {
   return controller.operation?.kind === "modifyexplod" ? controller.operation : undefined;
+}
+
+function projectileOperation(controller: ControllerIr): ProjectileControllerOp | undefined {
+  return controller.operation?.kind === "projectile" ? controller.operation : undefined;
+}
+
+function resolveHelperProjectileTerminalActions(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  operation?: ProjectileControllerOp,
+): RuntimeProjectileSpawnInput["terminalActions"] {
+  const hitAnim = operation?.hitAnim ?? firstNumber(findControllerParam(controller, "projhitanim"));
+  const removeAnim = operation?.removeAnim ?? firstNumber(findControllerParam(controller, "projremanim"));
+  const cancelAnim = operation?.cancelAnim ?? firstNumber(findControllerParam(controller, "projcancelanim"));
+  return {
+    hit: hitAnim === undefined ? undefined : helper.animations?.get(hitAnim),
+    remove: removeAnim === undefined ? undefined : helper.animations?.get(removeAnim),
+    cancel: cancelAnim === undefined ? undefined : helper.animations?.get(cancelAnim),
+  };
 }
 
 function resolveHelperExplodPosition(
