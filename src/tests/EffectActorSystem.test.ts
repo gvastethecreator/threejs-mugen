@@ -1026,6 +1026,110 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("modifies only helper-parented Projectile actors by id from the helper-local micro-VM", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8860", projanim: "930", velocity: "1,0", projpriority: "2", projhits: "1" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller(
+                "Projectile",
+                {
+                  projid: "8860",
+                  projanim: "930",
+                  velocity: "1,0",
+                  projpriority: "2",
+                  projhits: "1",
+                  projmisstime: "0",
+                  projremovetime: "24",
+                  projremove: "1",
+                },
+                ["Time = 0"],
+              ),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller(
+                "ModifyProjectile",
+                {
+                  projid: "8860",
+                  velocity: "6,-1",
+                  accel: ".5,.25",
+                  velmul: "1.25,.5",
+                  projscale: "2,.75",
+                  projremovetime: "88",
+                  sprpriority: "8",
+                  projpriority: "4",
+                  projhits: "3",
+                  projmisstime: "7",
+                  projremove: "0",
+                },
+                ["Time = 1"],
+              ),
+              controller("ChangeState", { value: "6002" }, ["Time = 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    const playerProjectile = store.projectiles.find((projectile) => projectile.parentId === "p1");
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === "p1-helper-0");
+    expect(executed).toEqual(["Projectile", "ChangeState", "ModifyProjectile", "ChangeState"]);
+    expect(playerProjectile).toMatchObject({
+      projectileId: 8860,
+      parentId: "p1",
+      vel: { x: 1, y: 0 },
+      scale: { x: 1, y: 1 },
+      removeTime: -1,
+      spritePriority: 4,
+      priority: 2,
+      hitsRemaining: 1,
+      missTime: 0,
+      removeOnHit: true,
+    });
+    expect(helperProjectile).toMatchObject({
+      projectileId: 8860,
+      parentId: "p1-helper-0",
+      vel: { x: 6, y: -1 },
+      accel: { x: 0.5, y: 0.25 },
+      velMul: { x: 1.25, y: 0.5 },
+      scale: { x: 2, y: 0.75 },
+      removeTime: 88,
+      spritePriority: 8,
+      priority: 4,
+      hitsRemaining: 3,
+      missTime: 7,
+      removeOnHit: false,
+    });
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      stateTime: 1,
+      age: 2,
+    });
+  });
+
   it("evaluates helper-local NumProj against only helper-parented Projectile actors", () => {
     const store = createRuntimeEffectActorStore();
     spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8850", projanim: "930" }));

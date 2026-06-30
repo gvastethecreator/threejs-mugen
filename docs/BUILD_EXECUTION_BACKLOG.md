@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-local ModifyProjectile trace gate
+
+Changed:
+
+- Added helper-local `ModifyProjectile` dispatch for current visual Helpers running the bounded helper micro-VM.
+- `RuntimeEffectActorWorld` / `EffectActorSystem` now mutate only helper-parented owner-side Projectiles by static `projid` / `id` for helper-local `ModifyProjectile`.
+- Added focused `EffectActorSystem` coverage proving same-id player-owned Projectiles stay unchanged while helper-parented Projectiles mutate velocity, acceleration, velocity multiplier, scale, remove time, sprite priority, projectile priority, hit budget, miss time, and remove-on-hit.
+- Added required `synthetic-imported-helper-modifyprojectile.json` trace evidence and registered it in `pnpm qa:trace`.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/EffectActorSystem.test.ts -t "helper-parented Projectile"` passed earlier in the round.
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper ModifyProjectile"` passed earlier in the round.
+- `pnpm test` passes: 95 files / 804 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 182 / 182 artifacts, 162 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-helper-modifyprojectile.json` `77df008b`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors can execute helper-local static `ModifyProjectile` against helper-parented owner-side Projectile actors by static id after helper-local spawn.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespace scopes, dynamic Projectile ids/params, teams, `ProjContact` timing, exact helper tick order, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - Helper-local NumProj trace gate
 
 Changed:

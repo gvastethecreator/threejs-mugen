@@ -8387,6 +8387,105 @@ export function createSyntheticImportedHelperModifyExplodTraceArtifact(options: 
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-attacker",
+    displayName: "Synthetic Imported Helper ModifyProjectile Attacker",
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      projectileId: 8852,
+      velocity: [9, -1],
+      accel: [0.25, 0.25],
+      velocityMultiplier: [0.75, 1],
+      scale: [2, 0.5],
+      removeTime: 52,
+      spritePriority: 8,
+      priority: 4,
+      hits: 3,
+      missTime: 5,
+      removeOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-golden",
+      label: "Synthetic imported Helper ModifyProjectile route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ModifyProjectile trace proves the bounded helper-local micro-VM can mutate a helper-parented owner-side Projectile actor by static id after spawning it. It does not claim helper-owned Projectile combat/contact presentation, helper-owned target memory, dynamic projectile params, exact namespace scopes, ProjContact timing, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-modifyprojectile-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 945,
+            moveType: "A",
+            minFrames: 1,
+            observedVelXAtLeast: 6,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 8852,
+            minAge: 3,
+            minRemoveTime: 52,
+            minSpritePriority: 8,
+            minPriority: 4,
+            minHitsRemaining: 3,
+            maxHitsRemaining: 3,
+            hasHit: false,
+            scaleX: 2,
+            scaleY: 0.5,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -10025,6 +10124,26 @@ export type SyntheticImportedTraceFighterOptions = {
     pauseMoveTime?: number;
     superMoveTime?: number;
   };
+  helperModifyProjectileRoute?: {
+    modifyStateNo: number;
+    modifyAnimNo?: number;
+    finalStateNo: number;
+    finalAnimNo?: number;
+    projectileAnimNo: number;
+    projectileId?: number;
+    pos?: [number, number];
+    modifyTriggerTime?: number;
+    velocity?: [number, number];
+    accel?: [number, number];
+    velocityMultiplier?: [number, number];
+    scale?: [number, number];
+    removeTime?: number;
+    spritePriority?: number;
+    priority?: number;
+    hits?: number;
+    missTime?: number;
+    removeOnHit?: boolean;
+  };
   helperNumExplodRoute?: {
     branchStateNo: number;
     branchAnimNo?: number;
@@ -10409,6 +10528,7 @@ ${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) 
 ${options.helperProjectileRoute ? helperProjectileRouteBlock(options.helperProjectileRoute) : ""}
 ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperRemoveExplodRoute) : ""}
 ${options.helperModifyExplodRoute ? helperModifyExplodRouteBlock(options.helperModifyExplodRoute) : ""}
+${options.helperModifyProjectileRoute ? helperModifyProjectileRouteBlock(options.helperModifyProjectileRoute) : ""}
 ${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
 ${options.helperNumHelperRoute ? helperNumHelperRouteBlock(options.helperNumHelperRoute) : ""}
 ${options.helperNumProjRoute ? helperNumProjRouteBlock(options.helperNumProjRoute) : ""}
@@ -10656,6 +10776,22 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperModifyExplodRoute.finalAnimNo ?? options.helperModifyExplodRoute.finalStateNo),
                   ],
                   [options.helperModifyExplodRoute.explodAnimNo, explodTraceAction(options.helperModifyExplodRoute.explodAnimNo)],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperModifyProjectileRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperModifyProjectileRoute.modifyAnimNo ?? options.helperModifyProjectileRoute.modifyStateNo,
+                    helperTraceAction(options.helperModifyProjectileRoute.modifyAnimNo ?? options.helperModifyProjectileRoute.modifyStateNo),
+                  ],
+                  [
+                    options.helperModifyProjectileRoute.finalAnimNo ?? options.helperModifyProjectileRoute.finalStateNo,
+                    helperTraceAction(options.helperModifyProjectileRoute.finalAnimNo ?? options.helperModifyProjectileRoute.finalStateNo),
+                  ],
+                  [
+                    options.helperModifyProjectileRoute.projectileAnimNo,
+                    projectileTraceAction(options.helperModifyProjectileRoute.projectileAnimNo),
+                  ],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperNumExplodRoute === undefined
               ? []
@@ -13013,6 +13149,87 @@ sprpriority = ${spritePriority}
 trans = add
 
 [State ${route.modifyStateNo}, Helper ModifyExplod Final]
+type = ChangeState
+trigger1 = Time = ${modifyTriggerTime}
+value = ${route.finalStateNo}
+ctrl = 0
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${finalAnimNo}
+ctrl = 0
+`;
+}
+
+function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperModifyProjectileRoute"]>): string {
+  const modifyAnimNo = route.modifyAnimNo ?? route.modifyStateNo;
+  const finalAnimNo = route.finalAnimNo ?? route.finalStateNo;
+  const projectileId = route.projectileId ?? 8852;
+  const pos = route.pos ?? [22, -20];
+  const modifyTriggerTime = route.modifyTriggerTime ?? 2;
+  const velocity = route.velocity ?? [9, -1];
+  const accel = route.accel ?? [0.25, 0.25];
+  const velocityMultiplier = route.velocityMultiplier ?? [0.75, 1];
+  const scale = route.scale ?? [2, 0.5];
+  const removeTime = route.removeTime ?? 52;
+  const spritePriority = route.spritePriority ?? 8;
+  const priority = route.priority ?? 4;
+  const hits = route.hits ?? 3;
+  const missTime = route.missTime ?? 5;
+  const removeOnHit = route.removeOnHit ?? false;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper ModifyProjectile Spawn]
+type = Projectile
+trigger1 = Time = 0
+projid = ${projectileId}
+projanim = ${route.projectileAnimNo}
+offset = ${pos[0]},${pos[1]}
+velocity = 0,0
+projpriority = 2
+projhits = 1
+projmisstime = 0
+projremovetime = 40
+projremove = 1
+sprpriority = 4
+
+[State 1200, Helper ModifyProjectile Route]
+type = ChangeState
+trigger1 = Time = 0
+value = ${route.modifyStateNo}
+ctrl = 0
+
+[Statedef ${route.modifyStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${modifyAnimNo}
+ctrl = 0
+
+[State ${route.modifyStateNo}, Helper ModifyProjectile]
+type = ModifyProjectile
+trigger1 = Time = ${modifyTriggerTime}
+projid = ${projectileId}
+velocity = ${velocity[0]},${velocity[1]}
+accel = ${accel[0]},${accel[1]}
+velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}
+projscale = ${scale[0]},${scale[1]}
+projremovetime = ${removeTime}
+sprpriority = ${spritePriority}
+projpriority = ${priority}
+projhits = ${hits}
+projmisstime = ${missTime}
+projremove = ${removeOnHit ? 1 : 0}
+
+[State ${route.modifyStateNo}, Helper ModifyProjectile Final]
 type = ChangeState
 trigger1 = Time = ${modifyTriggerTime}
 value = ${route.finalStateNo}

@@ -832,6 +832,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperModifyExplodTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-numexplod",
       required: true,
       artifact: presets.createSyntheticImportedHelperNumExplodTraceArtifact(),

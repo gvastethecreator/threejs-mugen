@@ -1,4 +1,10 @@
-import type { ExplodControllerOp, ModifyExplodControllerOp, ProjectileControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
+import type {
+  ExplodControllerOp,
+  ModifyExplodControllerOp,
+  ModifyProjectileControllerOp,
+  ProjectileControllerOp,
+  RemoveExplodControllerOp,
+} from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import {
@@ -396,6 +402,13 @@ export function advanceRuntimeHelperActors(
       modifyRuntimeHelperExplodActors(store, helper, controller);
       return true;
     },
+    onModifyProjectile: (helper, controller) => {
+      if (options?.onModifyProjectile) {
+        return options.onModifyProjectile(helper, controller);
+      }
+      modifyRuntimeHelperProjectileActors(store, helper, controller);
+      return true;
+    },
   });
 }
 
@@ -483,6 +496,18 @@ export function modifyRuntimeHelperExplodActors(store: RuntimeEffectActorStore, 
     (explod) => explod.parentId === helper.serialId && (explodId === undefined || explod.explodId === explodId),
   );
   return modifyRuntimeExplods(helperExplods, {
+    controller: controller.source,
+    operation,
+  });
+}
+
+export function modifyRuntimeHelperProjectileActors(store: RuntimeEffectActorStore, helper: RuntimeHelper, controller: ControllerIr): number {
+  const operation = modifyProjectileOperation(controller);
+  const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(controller, "projid") ?? findControllerParam(controller, "id"));
+  const helperProjectiles = store.projectiles.filter(
+    (projectile) => projectile.parentId === helper.serialId && (projectileId === undefined || projectile.projectileId === projectileId),
+  );
+  return modifyRuntimeProjectiles(helperProjectiles, {
     controller: controller.source,
     operation,
   });
@@ -577,6 +602,10 @@ function modifyExplodOperation(controller: ControllerIr): ModifyExplodController
 
 function projectileOperation(controller: ControllerIr): ProjectileControllerOp | undefined {
   return controller.operation?.kind === "projectile" ? controller.operation : undefined;
+}
+
+function modifyProjectileOperation(controller: ControllerIr): ModifyProjectileControllerOp | undefined {
+  return controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
 }
 
 function resolveHelperProjectileTerminalActions(

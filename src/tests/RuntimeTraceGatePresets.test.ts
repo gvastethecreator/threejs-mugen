@@ -98,6 +98,7 @@ import {
   createSyntheticImportedHelperProjectileTraceArtifact,
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperModifyExplodTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -1581,6 +1582,67 @@ describe("RuntimeTraceGatePresets", () => {
         scaleY: 0.5,
       },
     ]);
+  });
+
+  it("creates a synthetic imported Helper ModifyProjectile artifact with helper-local mutation evidence", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-modifyprojectile-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 945 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 8852,
+        minAge: 3,
+        minRemoveTime: 52,
+        minSpritePriority: 8,
+        minPriority: 4,
+        minHitsRemaining: 3,
+        maxHitsRemaining: 3,
+        hasHit: false,
+        scaleX: 2,
+        scaleY: 0.5,
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8852, priority: 4, hitsRemaining: 3 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper NumExplod artifact with helper-local count evidence", () => {
