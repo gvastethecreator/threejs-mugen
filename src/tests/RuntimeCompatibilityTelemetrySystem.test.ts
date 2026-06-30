@@ -78,6 +78,7 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
     expect(world.operationKey({ kind: "pause", controllerType: "superpause", time: 10, moveTime: 2, darken: true, powerAdd: 0 })).toBe(
       "pause:superpause",
     );
+    expect(world.operationKey({ kind: "audio", controllerType: "playsnd", value: "S5,0", channel: 2 })).toBe("audio:playsnd");
     expect(world.operationKey({ kind: "eligibility", controllerType: "hitby", mode: "allow", slots: [] })).toBe(
       "eligibility:hitby",
     );

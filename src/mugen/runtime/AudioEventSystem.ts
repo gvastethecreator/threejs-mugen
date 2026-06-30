@@ -1,3 +1,4 @@
+import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeHitDefContactMetadata, RuntimeSoundEvent } from "./types";
@@ -17,14 +18,16 @@ export function createRuntimeSoundEvent(
   actor: RuntimeSoundActor,
   controller: MugenStateController,
   runtimeTick: number,
+  operation?: AudioControllerOp,
 ): RuntimeSoundEvent {
-  const parsed = parseMugenSoundValue(findControllerParam(controller, "value"));
+  const rawValue = operation?.value ?? findControllerParam(controller, "value");
+  const parsed = parseMugenSoundValue(rawValue);
   return {
-    type: soundEventType(controller),
+    type: operation ? operationSoundEventType(operation) : soundEventType(controller),
     group: parsed?.group,
     index: parsed?.index,
-    channel: firstNumber(findControllerParam(controller, "channel")),
-    raw: findControllerParam(controller, "value"),
+    channel: operation?.channel ?? firstNumber(findControllerParam(controller, "channel")),
+    raw: rawValue,
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -37,8 +40,13 @@ export function pushRuntimeSoundEvent(events: RuntimeSoundEvent[], event: Runtim
 }
 
 export class RuntimeAudioWorld {
-  emitController(actor: RuntimeAudioWorldActor, controller: MugenStateController, runtimeTick: number): RuntimeSoundEvent {
-    const event = createRuntimeSoundEvent(actor, controller, runtimeTick);
+  emitController(
+    actor: RuntimeAudioWorldActor,
+    controller: MugenStateController,
+    runtimeTick: number,
+    operation?: AudioControllerOp,
+  ): RuntimeSoundEvent {
+    const event = createRuntimeSoundEvent(actor, controller, runtimeTick, operation);
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;
   }
@@ -81,6 +89,10 @@ export function parseMugenSoundValue(value: string | undefined): { group: number
 
 function soundEventType(controller: MugenStateController): RuntimeSoundEvent["type"] {
   return controller.type.toLowerCase() === "stopsnd" ? "StopSnd" : "PlaySnd";
+}
+
+function operationSoundEventType(operation: AudioControllerOp): RuntimeSoundEvent["type"] {
+  return operation.controllerType === "stopsnd" ? "StopSnd" : "PlaySnd";
 }
 
 function firstNumber(value: string | undefined): number | undefined {

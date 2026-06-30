@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Typed audio controller operations
+
+Changed:
+
+- Added `AudioControllerOp` for static `PlaySnd` / `StopSnd` lowering into `audio:playsnd` and `audio:stopsnd` operation evidence.
+- Routed typed audio operations through `RuntimeAudioWorld`, `AudioEventSystem`, `PlayableMatchRuntime`, and helper-local sound emission while preserving raw controller fallback for unsupported/dynamic sound refs.
+- Strengthened the required `synthetic-imported-sound.json` gate so it now requires `hitdef`, `audio:playsnd`, and `audio:stopsnd` operation evidence next to bounded sound-event telemetry.
+- Updated support docs so audio remains `compiled, executed-partial`, not playback/channel parity.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/AudioEventSystem.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/PlayableMatchRuntime.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "audio|sound|PlaySnd|StopSnd|operation keys|Width, SprPriority"` passes: 5 files, 17 matching tests.
+- `pnpm test` passes: 81 files / 696 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 145 required, 20 optional, 0 failed; `synthetic-imported-sound.json` checksum is now `c9d880c0`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports the existing CRLF normalization warning for `docs/PLAYABLE_V0_STATUS.md`.
+
+Claim allowed:
+
+- Current bounded imported `PlaySnd` / `StopSnd` routes can be proven through typed audio operation evidence plus the existing runtime sound-event telemetry.
+
+Claim blocked:
+
+- Dynamic sound expressions, exact SND playback/mixing/channel priority, loops, pan, volume, system sound fallback, helper/redirect ownership, and full MUGEN/IKEMEN audio parity remain blocked.
+
 ## 2026-06-30 - Runtime state clock ownership
 
 Changed:
@@ -3448,7 +3475,7 @@ Use this as the next practical queue.
 147. Done bounded `MoveHitReset` trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-movehitreset.json` checksum `719c2cc7`, where imported P1 lands a direct `HitDef`, executes typed `contact:movehitreset`, stays in state `200`, and does not enter the later `MoveHit >= 1` branch state `263`. Claim allowed: imported owner states can clear bounded current-state direct contact memory before later direct `MoveHit` branches execute. Claim blocked: exact first-tick timing, hitpause accounting, helper/redirect/team ownership, multi-target lifetime, projectile memory reset semantics, and full MUGEN/IKEMEN contact-memory parity.
 148. Done bounded variable-controller trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-variable.json` checksum `a72c5b4e`, where imported P1 executes static typed `variable:varset`, `variable:varadd`, and `variable:varrangeset` operations in state `200`, fills `var(7)` and `var(2..4)`, then routes through a `var(...)` trigger into state `288`. Claim allowed: imported owner states can use bounded typed variable writes to drive later local CNS branches. Claim blocked: exact CNS variable scopes, helper/parent/root redirects, sysvar/fvar lifetime parity beyond current subsets, dynamic expression lowering completeness, IKEMEN map vars, and full controller VM parity.
 149. Done bounded resource-controller trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-resource.json` checksum `7bbcb2e4`, where imported P1 executes static typed `resource:lifeadd`, `resource:lifeset`, `resource:poweradd`, and `resource:powerset` operations in state `200`, mutates owner life/power, then routes through `Life = 750` and `Power = 900` triggers into state `289` with final P1 life `750` and power `900`. `RuntimeTrace` final-actor gate evidence now includes `power`, so resource gates can assert both life and power outcomes. Claim allowed: imported owner states can use bounded typed life/power writes to drive later local CNS branches. Claim blocked: exact resource scaling, helper/parent/root redirects, team modes, round/KO flow, dynamic expression lowering completeness, and full controller VM parity.
-150. Done bounded sound-controller trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-sound.json` checksum `911aa62d`, where imported P1 executes partial `PlaySnd value = S5,0 channel = 2` and `StopSnd channel = 2` controllers in state `200`; `RuntimeTrace` exports sound-event gate evidence and final actor sound-event history without folding that telemetry into behavior checksums. Claim allowed: imported owner states can emit bounded sound events for debugger/Web Audio consumption and trace-gate parsed group/index/channel/state data. Claim blocked: SND decode breadth, Web Audio timing/mixing, loops, volume, pan, priority/channel arbitration, helper/redirect ownership, and full MUGEN/IKEMEN audio parity.
+150. Done bounded sound-controller trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-sound.json` checksum `c9d880c0`, where imported P1 executes partial `PlaySnd value = S5,0 channel = 2` and `StopSnd channel = 2` controllers in state `200`; `RuntimeTrace` exports sound-event gate evidence and final actor sound-event history without folding that telemetry into behavior checksums. Claim allowed: imported owner states can emit bounded sound events for debugger/Web Audio consumption and trace-gate parsed group/index/channel/state data. Claim blocked: SND decode breadth, Web Audio timing/mixing, loops, volume, pan, priority/channel arbitration, helper/redirect ownership, and full MUGEN/IKEMEN audio parity.
 
 151. Done bounded EnvShake trace evidence cut: `pnpm qa:trace` now includes required `synthetic-imported-envshake.json` checksum `50e0ad4c`, where imported P1 executes partial `EnvShake time = 16`, `freq = 30`, `ampl = -7`, and `phase = 0.5` in state `200`; `RuntimeTrace` exports env-shake event gate evidence and final actor env-shake history without folding that telemetry into behavior checksums. Claim allowed: imported owner states can emit bounded EnvShake events for debugger/Three.js camera-shake consumption and trace-gate parsed time/frequency/amplitude/phase/state data. Claim blocked: dynamic EnvShake expressions, `mul`, exact pause/stage/layer behavior, helper/redirect ownership, and full MUGEN/IKEMEN camera-shake waveform parity.
 

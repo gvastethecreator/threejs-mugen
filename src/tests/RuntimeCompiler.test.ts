@@ -322,6 +322,25 @@ time = 20
     });
   });
 
+  it("compiles static PlaySnd and StopSnd controllers into typed audio operations", () => {
+    const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2" }));
+    const stop = compileControllerIr(controller(200, "StopSnd", [], { channel: "2" }));
+    const dynamic = compileControllerIr(controller(200, "PlaySnd", [], { value: "var(0),1" }));
+
+    expect(play.operation).toEqual({
+      kind: "audio",
+      controllerType: "playsnd",
+      value: "S5,0",
+      channel: 2,
+    });
+    expect(stop.operation).toEqual({
+      kind: "audio",
+      controllerType: "stopsnd",
+      channel: 2,
+    });
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles simple movement controllers into typed kinematic operations", () => {
     const velSet = compileControllerIr(controller(200, "VelSet", [], { value: "4,-3" }));
     const velAdd = compileControllerIr(controller(200, "VelAdd", [], { y: "0.5" }));

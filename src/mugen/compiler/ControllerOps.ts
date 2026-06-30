@@ -78,6 +78,13 @@ export type PauseControllerOp = {
   powerAdd: number;
 };
 
+export type AudioControllerOp = {
+  kind: "audio";
+  controllerType: "playsnd" | "stopsnd";
+  value?: string;
+  channel?: number;
+};
+
 export type ProjectileControllerOp = {
   kind: "projectile";
   projectileId?: number;
@@ -414,6 +421,7 @@ export type ControllerOp =
   | TargetControllerOp
   | BindToTargetControllerOp
   | PauseControllerOp
+  | AudioControllerOp
   | ProjectileControllerOp
   | ModifyProjectileControllerOp
   | HelperControllerOp
@@ -519,6 +527,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "pause" || type === "superpause") {
     return compilePauseControllerOp(controller, type);
+  }
+  if (type === "playsnd" || type === "stopsnd") {
+    return compileAudioControllerOp(controller, type);
   }
   if (type === "projectile") {
     return compileProjectileControllerOp(controller);
@@ -1133,6 +1144,20 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
   };
 }
 
+function compileAudioControllerOp(controller: MugenStateController, type: AudioControllerOp["controllerType"]): AudioControllerOp | undefined {
+  const value = staticSoundValueParam(controller, "value");
+  const channel = firstNumber(findParam(controller, "channel"));
+  if (type === "playsnd" && value === undefined) {
+    return undefined;
+  }
+  return definedObject({
+    kind: "audio" as const,
+    controllerType: type,
+    value,
+    channel,
+  });
+}
+
 function compileProjectileControllerOp(controller: MugenStateController): ProjectileControllerOp {
   return definedObject({
     kind: "projectile" as const,
@@ -1317,6 +1342,14 @@ function staticNumberParam(controller: MugenStateController, key: string, fallba
     return fallback;
   }
   return firstNumber(raw);
+}
+
+function staticSoundValueParam(controller: MugenStateController, key: string): string | undefined {
+  const value = stripMugenString(findParam(controller, key));
+  if (!value || !/^\s*S?\s*-?\d+\s*,\s*-?\d+/i.test(value)) {
+    return undefined;
+  }
+  return value;
 }
 
 function staticOptionalNumberParam(controller: MugenStateController, ...keys: string[]): number | true | false {

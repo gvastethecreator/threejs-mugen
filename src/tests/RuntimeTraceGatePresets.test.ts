@@ -687,6 +687,8 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(evidence?.executedControllers.PlaySnd).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.StopSnd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:stopsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 }),

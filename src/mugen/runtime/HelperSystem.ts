@@ -333,6 +333,7 @@ const helperRuntimeControllers = new Set([
 ]);
 
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {
+  const operation = controller.operation?.kind === "audio" ? controller.operation : undefined;
   pushRuntimeSoundEvent(
     helper.soundEvents,
     createRuntimeSoundEvent(
@@ -342,6 +343,7 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
       },
       controller.source,
       runtimeTick,
+      operation,
     ),
   );
 }

@@ -128,6 +128,9 @@ export class RuntimeCompatibilityTelemetryWorld {
     if (operation.kind === "pause") {
       return `pause:${operation.controllerType}`;
     }
+    if (operation.kind === "audio") {
+      return `audio:${operation.controllerType}`;
+    }
     if (operation.kind === "hitfall") {
       return `hitfall:${operation.controllerType}`;
     }

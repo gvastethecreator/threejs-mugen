@@ -50,6 +50,40 @@ describe("AudioEventSystem", () => {
     expect(event.index).toBeUndefined();
   });
 
+  it("uses typed audio operations when available while preserving runtime event shape", () => {
+    const event = createRuntimeSoundEvent(actor(200, 4), controller("PlaySnd", { value: "S1,1", channel: "7" }), 120, {
+      kind: "audio",
+      controllerType: "playsnd",
+      value: "S5,0",
+      channel: 2,
+    });
+
+    expect(event).toEqual({
+      type: "PlaySnd",
+      group: 5,
+      index: 0,
+      channel: 2,
+      raw: "S5,0",
+      stateNo: 200,
+      tick: 4,
+      runtimeTick: 120,
+    });
+  });
+
+  it("uses typed StopSnd channel data in RuntimeAudioWorld", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(300, 8), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitController(fighter, controller("StopSnd", { channel: "1" }), 140, {
+      kind: "audio",
+      controllerType: "stopsnd",
+      channel: 4,
+    });
+
+    expect(event).toMatchObject({ type: "StopSnd", channel: 4, stateNo: 300, tick: 8, runtimeTick: 140 });
+    expect(fighter.soundEvents).toEqual([event]);
+  });
+
   it("parses optional S prefix and negative sound ids", () => {
     expect(parseMugenSoundValue("5, 2")).toEqual({ group: 5, index: 2 });
     expect(parseMugenSoundValue("S-3,-7")).toEqual({ group: -3, index: -7 });

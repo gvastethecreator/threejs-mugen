@@ -1,5 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
+  AudioControllerOp,
   BindToTargetControllerOp,
   ContactControllerOp,
   EnvColorControllerOp,
@@ -1200,7 +1201,11 @@ function runActiveStateControllers(
         onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
       } else if (dispatch.effect === "sound") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
-        recordSoundEvent(fighter, rawController, tick);
+        const operation = controller.operation?.kind === "audio" ? controller.operation : undefined;
+        if (operation) {
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
+        }
+        recordSoundEvent(fighter, rawController, tick, operation);
       } else if (dispatch.effect === "envcolor") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "envcolor" ? controller.operation : undefined;
@@ -1447,8 +1452,9 @@ function recordSoundEvent(
   fighter: FighterMatchState,
   controller: MugenStateController,
   runtimeTick: number,
+  operation?: AudioControllerOp,
 ): void {
-  fighter.audioWorld.emitController(fighter, controller, runtimeTick);
+  fighter.audioWorld.emitController(fighter, controller, runtimeTick, operation);
 }
 
 function recordEnvShakeEvent(fighter: FighterMatchState, controller: MugenStateController, runtimeTick: number): void {

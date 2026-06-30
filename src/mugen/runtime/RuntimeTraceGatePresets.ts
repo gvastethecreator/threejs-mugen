@@ -330,7 +330,7 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd", "StopSnd"],
-      requiredExecutedOperations: ["hitdef"],
+      requiredExecutedOperations: ["hitdef", "audio:playsnd", "audio:stopsnd"],
       requiredSoundEvents: [
         { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 },
         { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
