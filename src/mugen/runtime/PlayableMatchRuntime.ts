@@ -37,7 +37,6 @@ import {
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
-import { resolveRuntimeHitSparkAssetFrames } from "./HitSparkAssetSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
@@ -55,6 +54,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
+import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import {
@@ -82,7 +82,6 @@ import {
   runtimeAnimationFrameDuration,
   runtimeAnimationTimeRemaining,
 } from "./RuntimeAnimationSystem";
-import type { RuntimeProjectile } from "./ProjectileSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -104,7 +103,6 @@ import type {
   RuntimeAfterImageSample,
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
-  RuntimeHitDefContactMetadata,
   RuntimeHitEffectEvent,
   RuntimeHitOverrideSlot,
   MugenSnapshot,
@@ -238,6 +236,7 @@ export class PlayableMatchRuntime {
   private readonly getHitStateWorld = new RuntimeGetHitStateWorld();
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
+  private readonly contactPresentationWorld = new RuntimeContactPresentationWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
@@ -450,6 +449,7 @@ export class PlayableMatchRuntime {
           this.guardWorld,
           this.getHitStateWorld,
           this.hitStateTransitionWorld,
+          this.contactPresentationWorld,
           this.tick,
           (line) => this.logs.unshift(line),
         ),
@@ -461,6 +461,7 @@ export class PlayableMatchRuntime {
           this.effectLifecycleWorld,
           this.guardWorld,
           this.getHitStateWorld,
+          this.contactPresentationWorld,
           this.tick,
           (line) => this.logs.unshift(line),
         ),
@@ -1432,6 +1433,7 @@ function resolveProjectileCombat(
   effectLifecycleWorld: RuntimeEffectLifecycleWorld,
   guardWorld: RuntimeGuardWorld,
   getHitStateWorld: RuntimeGetHitStateWorld,
+  contactPresentationWorld: RuntimeContactPresentationWorld,
   runtimeTick: number,
   log: (line: string) => void,
 ): void {
@@ -1449,8 +1451,9 @@ function resolveProjectileCombat(
     applyHitState: (target) => applyDefaultProjectileGetHitState(target, getHitStateWorld),
     markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
     recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
-    emitProjectileContactEffects: (source, _target, projectile, kind) =>
-      recordProjectileContactEffectEvents(source, projectile, kind, runtimeTick),
+    emitProjectileContactEffects: (source, _target, projectile, kind) => {
+      contactPresentationWorld.emitProjectileContact({ actor: source, projectile, kind, runtimeTick });
+    },
     recordReceivedDamage: markReceivedDamage,
   });
 }
@@ -1591,6 +1594,7 @@ function resolveCombat(
   guardWorld: RuntimeGuardWorld,
   getHitStateWorld: RuntimeGetHitStateWorld,
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
+  contactPresentationWorld: RuntimeContactPresentationWorld,
   runtimeTick: number,
   log: (line: string) => void,
 ): void {
@@ -1665,71 +1669,8 @@ function resolveCombat(
       applyHitStateTransitions(source, target, moveArg, hitStateTransitionWorld),
     applyDefaultGetHit: (target, moveArg) => applyDefaultGetHitState(target, moveArg, getHitStateWorld),
   });
-  const contact = createHitDefContactMetadata(attacker, defender, outcome.kind, runtimeTick);
-  recordHitDefSoundEvent(attacker, outcome.kind === "guard" ? move.guardSound : move.hitSound, runtimeTick, contact);
-  recordHitDefEffectEvent(attacker, outcome.kind, move, runtimeTick, contact);
+  contactPresentationWorld.emitHitDefContact({ attacker, defender, kind: outcome.kind, move, runtimeTick });
   log(outcome.message);
-}
-
-function createHitDefContactMetadata(
-  attacker: FighterMatchState,
-  defender: FighterMatchState,
-  kind: RuntimeHitDefContactMetadata["contactKind"],
-  runtimeTick: number,
-): RuntimeHitDefContactMetadata {
-  return {
-    contactId: `direct:${attacker.id}:${defender.id}:${runtimeTick}:${attacker.runtime.stateNo}:${attacker.stateElapsed}:${kind}`,
-    contactTick: runtimeTick,
-    contactKind: kind,
-  };
-}
-
-function recordHitDefSoundEvent(
-  fighter: FighterMatchState,
-  sound: string | undefined,
-  runtimeTick: number,
-  contact: RuntimeHitDefContactMetadata,
-): void {
-  fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick, contact);
-}
-
-function recordHitDefEffectEvent(
-  fighter: FighterMatchState,
-  kind: "hit" | "guard",
-  move: DemoMove,
-  runtimeTick: number,
-  contact: RuntimeHitDefContactMetadata,
-): void {
-  const spark = kind === "guard" ? move.guardSpark : move.hitSpark;
-  const assetFrames = resolveRuntimeHitSparkAssetFrames(fighter, spark);
-  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, move.sparkXy, runtimeTick, assetFrames[0], assetFrames, contact);
-}
-
-function createProjectileContactMetadata(
-  fighter: FighterMatchState,
-  projectile: RuntimeProjectile,
-  kind: RuntimeHitDefContactMetadata["contactKind"],
-  runtimeTick: number,
-): RuntimeHitDefContactMetadata {
-  return {
-    contactId: `projectile:${fighter.id}:${projectile.serialId}:${runtimeTick}:${kind}`,
-    contactTick: runtimeTick,
-    contactKind: kind,
-  };
-}
-
-function recordProjectileContactEffectEvents(
-  fighter: FighterMatchState,
-  projectile: RuntimeProjectile,
-  kind: RuntimeHitDefContactMetadata["contactKind"],
-  runtimeTick: number,
-): void {
-  const contact = createProjectileContactMetadata(fighter, projectile, kind, runtimeTick);
-  const sound = kind === "guard" ? projectile.guardSound : projectile.hitSound;
-  fighter.audioWorld.emitHitDefSound(fighter, sound, runtimeTick, contact);
-  const spark = kind === "guard" ? projectile.guardSpark : projectile.hitSpark;
-  const assetFrames = resolveRuntimeHitSparkAssetFrames(fighter, spark);
-  fighter.hitEffectWorld.emitHitDefEffect(fighter, kind, spark, projectile.sparkXy, runtimeTick, assetFrames[0], assetFrames, contact);
 }
 
 function recordFallEnvShakeEvent(

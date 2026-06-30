@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime contact presentation ownership
+
+Changed:
+
+- Added `RuntimeContactPresentationWorld` as the bounded owner for direct `HitDef` and `Projectile` contact presentation packages: shared `contactId` / `contactTick` / `contactKind` metadata, attacker-side `PlaySnd` telemetry, attacker-side HitSpark telemetry, and hit-spark asset-frame handoff.
+- Replaced inline `PlayableMatchRuntime` direct/projectile contact metadata and sound/spark emission helpers with the new runtime system while keeping combat resolution, damage, guard/hit state routing, contact memory, and projectile removal on their existing systems.
+- Added focused `RuntimeContactPresentationSystem` tests for direct-hit package metadata and projectile-guard package metadata shared across sound and spark events.
+- Updated runtime roadmap, progress, workplan, architecture, and local issue docs so this is tracked as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeContactPresentationSystem.test.ts` passes: 1 file / 2 tests.
+- `pnpm test` passes: 79 files / 687 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large-chunk warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/runtime-desktop.png`, `.scratch/qa/qa-smoke/runtime-mobile.png`, `.scratch/qa/qa-smoke/studio-debug-audio.png`, and `.scratch/qa/qa-smoke/studio-evidence.png`; actors, hit sparks, runtime HUD/debug, audio lens, Evidence trust chain, and console remain visible without obvious overlap or framing regression.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current direct `HitDef` and `Projectile` contact presentation package emission has a named runtime-system boundary with focused unit coverage and stable required trace behavior.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact intra-tick audio/spark ordering, SND playback/mixing/channel priority, exact FightFX/common lookup/binding/layering/timing/scale/palette, helper-owned contact presentation, multi-target presentation, full MUGEN/IKEMEN presentation parity, or score movement.
+
 ## 2026-06-30 - Studio CSS primitive truncation budget trim
 
 Changed:

@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeContactPresentationWorld ownership
+  -> RuntimeContactPresentationWorld owns bounded direct HitDef and Projectile contact presentation package emission previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates shared contactId/contactTick/contactKind metadata creation plus attacker-side HitDef/Projectile sound and HitSpark telemetry through that boundary
+  -> focused RuntimeContactPresentationSystem tests prove direct hit package metadata and projectile guard package metadata are shared across PlaySnd and HitSpark events while preserving hit-spark asset-frame handoff
+  -> no exact intra-tick audio/spark ordering, SND playback/mixing/channel priority, exact FightFX/common lookup/binding/layering/timing/scale/palette, helper-owned contact presentation, multi-target presentation, or score claim
 R2 RuntimeGuardDistanceWorld ownership
   -> RuntimeGuardDistanceWorld owns bounded InGuardDist/auto-guard proximity checks previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates current move presence, spent-hit rejection, pre-active guard-distance window, guardflag/AssertSpecial/unguardable checks, hurtbox fallback handoff, and authored/default guard.dist checks through that boundary
@@ -308,6 +313,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeMoveLifecycleWorld` ownership extraction
 - `RuntimeInputControlWorld` ownership extraction
 - `RuntimeAnimationWorld` ownership extraction
+- `RuntimeContactPresentationWorld` ownership extraction
 - `RuntimeGuardDistanceWorld` ownership extraction
 - `RuntimeKinematicsWorld` ownership extraction
 - visual-helper removal ownership
@@ -321,7 +327,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeGuardDistanceWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, deeper target ownership, or the next non-`RuntimeContactPresentationWorld` mutable boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 
