@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime state clock ownership
+
+Changed:
+
+- Added `RuntimeStateClockWorld` as the bounded owner for state elapsed-time advancement and changed-state elapsed reset.
+- Replaced inline `fighter.stateElapsed += 1` and changed-state `stateElapsed = -1` mutation in `PlayableMatchRuntime` with the new runtime-system boundary.
+- Kept current behavior intact: state elapsed starts at `-1`, advances to `0` on the first active frame, and resets to `-1` only when a real state-number transition requests elapsed reset.
+- Added focused `RuntimeStateClockSystem` coverage for advance, reset, and no-op transition behavior.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeStateClockSystem.test.ts src/tests/RuntimeStateMetadataSystem.test.ts src/tests/PlayableMatchRuntime.test.ts -t "Prev|state elapsed|RuntimeStateClock"` passes: 2 files passed / 1 skipped, 7 tests passed.
+- `pnpm test` passes: 81 files / 693 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 145 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git still warns that `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md` will normalize CRLF to LF when touched.
+
+Claim allowed:
+
+- Current bounded `Time` / state elapsed clock mutation has a named runtime-system boundary for per-frame advance and changed-state reset.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact CNS `Time` tick-order parity, persistent-controller timing parity, pause/hitpause timing changes, helper/team/redirect state clocks, or score movement.
+
 ## 2026-06-30 - Runtime state metadata ownership
 
 Changed:

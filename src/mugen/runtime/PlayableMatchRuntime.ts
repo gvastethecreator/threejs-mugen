@@ -82,6 +82,7 @@ import {
   runtimeAnimationFrameDuration,
   runtimeAnimationTimeRemaining,
 } from "./RuntimeAnimationSystem";
+import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { RuntimeStateMetadataWorld } from "./RuntimeStateMetadataSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
@@ -112,6 +113,7 @@ import type {
 const stateAvailabilityWorld = new RuntimeStateAvailabilityWorld();
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
+const stateClockWorld = new RuntimeStateClockWorld();
 const stateMetadataWorld = new RuntimeStateMetadataWorld();
 
 export type MatchInput = {
@@ -741,9 +743,7 @@ function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options:
     stateType: currentStateType(fighter),
     moveType: currentStateMoveType(fighter),
   });
-  if (result.changed && options.resetElapsed) {
-    fighter.stateElapsed = -1;
-  }
+  stateClockWorld.resetForTransition(fighter, result, options);
 }
 
 function currentStateType(fighter: FighterMatchState): CharacterRuntimeState["stateType"] {
@@ -819,7 +819,7 @@ function advanceFighter(
   hitOverrideWorld.tickSlots(fighter.runtime);
   advanceContactTimers(fighter);
   fighter.runtime.renderAngle = undefined;
-  fighter.stateElapsed += 1;
+  stateClockWorld.advance(fighter);
   actorConstraintWorld.resetFrameConstraints(fighter.runtime);
   recoveryWorld.tickHitFallRecoveryWindow(fighter);
   const tickStartPos = { ...fighter.runtime.pos };
