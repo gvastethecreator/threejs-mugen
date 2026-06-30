@@ -62,12 +62,10 @@ import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomS
 import {
   applyRuntimeControl,
   applyRuntimePowerDelta,
-  applyRuntimeStateDefControl,
   runtimeLifeMaxFromConstants,
   runtimePowerMaxFromConstants,
 } from "./RuntimeResourceSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
-import { RuntimeStateAvailabilityWorld } from "./StateAvailabilitySystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
 import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
@@ -84,8 +82,12 @@ import {
   runtimeAnimationFrameDuration,
   runtimeAnimationTimeRemaining,
 } from "./RuntimeAnimationSystem";
+import {
+  RuntimeStateEntryWorld,
+  type RuntimeStateEntryAnimationElementOptions,
+  type RuntimeStateEntryOptions,
+} from "./RuntimeStateEntrySystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
-import { RuntimeStateMetadataWorld } from "./RuntimeStateMetadataSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
@@ -112,11 +114,10 @@ import type {
   RuntimeSoundEvent,
 } from "./types";
 
-const stateAvailabilityWorld = new RuntimeStateAvailabilityWorld();
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
-const stateMetadataWorld = new RuntimeStateMetadataWorld();
+const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 
 export type MatchInput = {
   p1: Set<string>;
@@ -192,18 +193,8 @@ type FighterMatchState = {
 type PauseControllerHandler = (fighter: FighterMatchState, controller: MugenStateController, operation?: PauseControllerOp) => void;
 type EnvColorControllerHandler = (controller: MugenStateController, operation?: EnvColorControllerOp) => void;
 
-type EnterStateOptions = {
-  stateOwner?: FighterMatchState;
-  clearStateOwner?: boolean;
-  animOverride?: number;
-  preserveAnimationWhenMissing?: boolean;
-  animationElement?: AnimationElementOptions;
-};
-
-type AnimationElementOptions = {
-  elem?: number;
-  elemTime?: number;
-};
+type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
+type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
 
 export class PlayableMatchRuntime {
   private tick = 0;
@@ -741,27 +732,7 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
 }
 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
-  const result = stateMetadataWorld.setStateNo(fighter.runtime, stateNo, {
-    stateType: currentStateType(fighter),
-    moveType: currentStateMoveType(fighter),
-  });
-  stateClockWorld.resetForTransition(fighter, result, options);
-}
-
-function currentStateType(fighter: FighterMatchState): CharacterRuntimeState["stateType"] {
-  const owner = fighter.stateOwner ?? fighter;
-  const state =
-    owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
-    owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
-  return state?.type ? normalizeStateType(state.type, fighter.runtime.stateType) : fighter.runtime.stateType;
-}
-
-function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState["moveType"] {
-  const owner = fighter.stateOwner ?? fighter;
-  const state =
-    owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
-    owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
-  return state?.moveType ? normalizeMoveType(state.moveType, fighter.runtime.moveType) : fighter.runtime.moveType;
+  stateEntryWorld.setStateNo(fighter, stateNo, options);
 }
 
 function handlePlayerInput(
@@ -926,49 +897,13 @@ function applyAnimationElement(fighter: FighterMatchState, options: AnimationEle
 }
 
 function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove, options: EnterStateOptions = {}): void {
-  const owner = options.clearStateOwner ? fighter : options.stateOwner ?? fighter.stateOwner ?? fighter;
-  const ownerDefinition = owner.definition;
-  const state = stateAvailabilityWorld.findState(owner, stateId);
-  const actionId =
-    options.animOverride ?? state?.anim ?? move?.actionId ?? (options.preserveAnimationWhenMissing ? undefined : stateId);
-  compatibilityTelemetryWorld.recordStateExecution(fighter, stateId, owner);
-  if (!move && fighter.currentMove && fighter.currentMove.actionId !== stateId) {
-    fighter.currentMove = undefined;
-    fighter.currentMoveLabel = undefined;
-    fighter.moveTick = 0;
-    fighter.hasHit = false;
-    fighter.runtime.reversal = undefined;
-  }
-  if (owner !== fighter) {
-    fighter.stateOwner = owner;
-    fighter.runtime.customState = {
-      ownerId: owner.id,
-      stateNo: stateId,
-      getP1State: true,
-    };
-  } else {
-    fighter.stateOwner = undefined;
-    fighter.runtime.customState = undefined;
-  }
-  setRuntimeStateNo(fighter, stateId, { resetElapsed: true });
-  fighter.firedHitDefs.clear();
-  resetContactState(fighter);
-  if (state?.type) {
-    fighter.runtime.stateType = normalizeStateType(state.type, fighter.runtime.stateType);
-  }
-  if (state?.moveType) {
-    fighter.runtime.moveType = normalizeMoveType(state.moveType, fighter.runtime.moveType);
-  }
-  if (state?.physics) {
-    fighter.runtime.physics = normalizePhysics(state.physics, fighter.runtime.physics);
-  }
-  applyRuntimeStateDefControl(fighter.runtime, state?.ctrl);
-  if (state?.velSet) {
-    fighter.runtime.vel = { x: state.velSet[0], y: state.velSet[1] };
-  }
-  if (actionId !== undefined) {
-    changeAction(fighter, actionId, owner === fighter ? "self" : "state-owner", ownerDefinition, options.animationElement);
-  }
+  stateEntryWorld.enterState(fighter, stateId, move, options, {
+    recordStateExecution: (actor, executedStateId, owner) =>
+      compatibilityTelemetryWorld.recordStateExecution(actor, executedStateId, owner),
+    resetContactState,
+    changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
+      changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+  });
 }
 
 function runHitPauseIgnoredControllers(
@@ -1342,7 +1277,7 @@ function applyBindToTargetController(
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
-  return stateAvailabilityWorld.canEnterState(target, stateId, owner);
+  return stateEntryWorld.canEnterState(target, stateId, owner);
 }
 
 function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {
@@ -2364,19 +2299,4 @@ function hitType(value: string | undefined): number | undefined {
     trip: 3,
   };
   return values[normalized];
-}
-
-function normalizeStateType(value: string, fallback: CharacterRuntimeState["stateType"]): CharacterRuntimeState["stateType"] {
-  const upper = value.trim().toUpperCase();
-  return upper === "S" || upper === "C" || upper === "A" || upper === "L" ? upper : fallback;
-}
-
-function normalizeMoveType(value: string, fallback: CharacterRuntimeState["moveType"]): CharacterRuntimeState["moveType"] {
-  const upper = value.trim().toUpperCase();
-  return upper === "I" || upper === "A" || upper === "H" ? upper : fallback;
-}
-
-function normalizePhysics(value: string, fallback: CharacterRuntimeState["physics"]): CharacterRuntimeState["physics"] {
-  const upper = value.trim().toUpperCase();
-  return upper === "S" || upper === "C" || upper === "A" || upper === "N" ? upper : fallback;
 }

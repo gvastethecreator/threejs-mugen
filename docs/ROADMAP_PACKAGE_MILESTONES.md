@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStateEntryWorld ownership
+  -> RuntimeStateEntryWorld owns bounded state-entry mutation for availability lookup, state-number metadata, changed-state elapsed reset, owner-backed custom-state assignment/clearing, stale move/contact reset, StateDef metadata/control/velocity application, and self/state-owner animation handoff
+  -> PlayableMatchRuntime delegates concrete state entry while still supplying compatibility telemetry, contact reset, and action-change callbacks
+  -> focused RuntimeStateEntrySystem tests prove normal state entry, owner-backed custom states, owner-derived previous-state metadata, and metadata normalization
+  -> no exact CNS ChangeState/SelfState tick order, persistent-controller timing, helper/team/root redirects, full state-entry parity, or score claim
 R1 bounded Common1 recovery timer actor-frame gates
   -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges plus first-to-last drop
   -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range and first-to-last-drop evidence before the existing 5110 -> 5120 get-up order
@@ -312,6 +317,10 @@ R2 RuntimeStateAvailabilityWorld ownership extraction
   -> state/action availability lookup moved out of PlayableMatchRuntime
   -> focused StateAvailabilitySystem tests cover compiled state precedence, parsed states, animation fallback, owner-backed lookup, and missing-state rejection
   -> trace behavior unchanged; no new parity or score claim
+R2 RuntimeStateEntryWorld ownership extraction
+  -> state-entry availability, state-number metadata, elapsed reset, owner-backed custom-state assignment/clearing, stale move/contact reset, StateDef metadata/control/velocity application, and self/state-owner animation handoff moved out of PlayableMatchRuntime
+  -> focused RuntimeStateEntrySystem tests cover normal state entry, owner-backed custom states, owner-derived previous-state metadata, and metadata normalization
+  -> trace behavior expected unchanged; no new parity or score claim
 R2 RuntimeHitStateTransitionWorld ownership extraction
   -> direct-hit and ReversalDef p1/p2 state transition routing moved out of PlayableMatchRuntime
   -> focused HitStateTransitionSystem tests cover attacker-owned, target-owned, and unavailable-state behavior
@@ -397,6 +406,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeGetHitStateWorld` ownership extraction
 - `RuntimeHitStateTransitionWorld` ownership extraction
 - `RuntimeStateAvailabilityWorld` ownership extraction
+- `RuntimeStateEntryWorld` ownership extraction
 - `RuntimeStunWorld` ownership extraction
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
