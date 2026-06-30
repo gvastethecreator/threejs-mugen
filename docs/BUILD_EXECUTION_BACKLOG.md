@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Typed AssertSpecial controller operation
+
+Changed:
+
+- Added `AssertSpecialControllerOp` for static `AssertSpecial` flag lowering into typed `assertspecial` operation evidence.
+- Routed typed flags through `StateControllerExecutor` while preserving the existing raw fallback for dynamic/unparseable flags.
+- Strengthened `synthetic-imported-assertspecial-control.json` so it now requires typed `assertspecial` operation evidence next to bounded `NoAutoTurn`, `NoWalk`, and `Invisible` telemetry.
+- Updated support docs so `AssertSpecial` remains `compiled, executed-partial`, not persistence/global/helper/team parity.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "AssertSpecial|operation keys|controller support"` passes: 4 files, 12 matching tests.
+- `pnpm test` passes: 81 files / 699 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 0 failed; `synthetic-imported-assertspecial-control.json` checksum is now `144ac7bc`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current bounded imported `AssertSpecial` control flags can be proven through typed `assertspecial` operation evidence plus the existing control/render telemetry.
+
+Claim blocked:
+
+- Dynamic/unparseable flags, exact flag lifetime/persistence, priority, pause interaction, global/team/helper ownership, KFM/Common1 confirmation, round/no-KO semantics beyond existing bounded gates, and full MUGEN/IKEMEN `AssertSpecial` parity remain blocked.
+
 ## 2026-06-30 - Typed EnvShake controller operation
 
 Changed:

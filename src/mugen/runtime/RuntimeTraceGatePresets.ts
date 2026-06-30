@@ -2472,6 +2472,7 @@ export function createSyntheticImportedAssertSpecialControlTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredExecutedControllers: ["AssertSpecial"],
+        requiredExecutedOperations: ["assertspecial"],
         requiredActorFrames: [
           {
             actorId: "p1",

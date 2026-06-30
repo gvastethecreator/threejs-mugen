@@ -85,6 +85,12 @@ export type AudioControllerOp = {
   channel?: number;
 };
 
+export type AssertSpecialControllerOp = {
+  kind: "assertspecial";
+  flags: string[];
+  globalFlags: string[];
+};
+
 export type ProjectileControllerOp = {
   kind: "projectile";
   projectileId?: number;
@@ -430,6 +436,7 @@ export type ControllerOp =
   | BindToTargetControllerOp
   | PauseControllerOp
   | AudioControllerOp
+  | AssertSpecialControllerOp
   | ProjectileControllerOp
   | ModifyProjectileControllerOp
   | HelperControllerOp
@@ -539,6 +546,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "playsnd" || type === "stopsnd") {
     return compileAudioControllerOp(controller, type);
+  }
+  if (type === "assertspecial") {
+    return compileAssertSpecialControllerOp(controller);
   }
   if (type === "projectile") {
     return compileProjectileControllerOp(controller);
@@ -1170,6 +1180,26 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
   });
 }
 
+function compileAssertSpecialControllerOp(controller: MugenStateController): AssertSpecialControllerOp | undefined {
+  const enabledRaw = findParam(controller, "value") ?? findParam(controller, "enabled");
+  const enabled = enabledRaw === undefined ? true : booleanNumber(enabledRaw);
+  if (enabled !== true) {
+    return undefined;
+  }
+
+  const flags: string[] = [];
+  const globalFlags: string[] = [];
+  for (const rawFlag of assertSpecialFlagParams(controller)) {
+    const normalized = normalizeAssertSpecialFlag(rawFlag);
+    if (!normalized) {
+      return undefined;
+    }
+    addUnique(normalized.global ? globalFlags : flags, normalized.name);
+  }
+
+  return flags.length > 0 || globalFlags.length > 0 ? { kind: "assertspecial", flags, globalFlags } : undefined;
+}
+
 function compileProjectileControllerOp(controller: MugenStateController): ProjectileControllerOp {
   return definedObject({
     kind: "projectile" as const,
@@ -1572,6 +1602,34 @@ function normalizePhysics(value: string | undefined): MetadataControllerOp["phys
   return normalized === "S" || normalized === "C" || normalized === "A" || normalized === "N" ? normalized : undefined;
 }
 
+function assertSpecialFlagParams(controller: MugenStateController): string[] {
+  return Object.entries(controller.params)
+    .filter(([key]) => key.toLowerCase().startsWith("flag"))
+    .flatMap(([, value]) => value.split(",").map((part) => part.trim()))
+    .filter(Boolean);
+}
+
+function normalizeAssertSpecialFlag(rawFlag: string): { name: string; global: boolean } | undefined {
+  const name = stripMugenString(rawFlag)?.toLowerCase();
+  if (!name || !/^[a-z][a-z0-9_]*$/.test(name)) {
+    return undefined;
+  }
+  const globalFlags = new Set([
+    "intro",
+    "globalnoko",
+    "globalnoshadow",
+    "nobardisplay",
+    "nobg",
+    "nofg",
+    "nokoslow",
+    "nokosnd",
+    "nomusic",
+    "roundnotover",
+    "timerfreeze",
+  ]);
+  return { name, global: globalFlags.has(name) };
+}
+
 function booleanNumber(value: string | undefined): boolean | undefined {
   const numberValue = firstNumber(value);
   return numberValue === undefined ? undefined : numberValue !== 0;
@@ -1703,4 +1761,10 @@ function clampIndex(value: number, max: number): number {
 
 function definedObject<T extends Record<string, unknown>>(value: T): T {
   return Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined)) as T;
+}
+
+function addUnique<T>(values: T[], value: T): void {
+  if (!values.includes(value)) {
+    values.push(value);
+  }
 }

@@ -3122,6 +3122,8 @@ describe("RuntimeTraceGatePresets", () => {
     });
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.assertspecial).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["assertspecial"]);
     const actorFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p1" && actor.source === "imported" && actor.animNo === 0);
     expect(actorFrame).toMatchObject({
       animNo: 0,

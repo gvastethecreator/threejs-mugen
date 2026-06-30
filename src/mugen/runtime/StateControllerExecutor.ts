@@ -1,5 +1,6 @@
 import { compileControllerIr } from "../compiler/StateControllerCompiler";
 import type {
+  AssertSpecialControllerOp,
   BoundsControllerOp,
   CollisionControllerOp,
   DamageScaleControllerOp,
@@ -224,7 +225,7 @@ export function executeControllerIr(
       moveCameraY: operation?.moveCameraY ?? ((camera?.[1] ?? 0) !== 0),
     };
   } else if (type === "assertspecial") {
-    applyAssertSpecialController(next, controller);
+    applyAssertSpecialController(next, controller, assertSpecialOperation(controller));
   } else if (
     type === "hitdef" ||
     type === "width" ||
@@ -405,6 +406,10 @@ function spriteEffectOperation<T extends SpriteEffectControllerOp["controllerTyp
   return controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<SpriteEffectControllerOp, { controllerType: T }>)
     : undefined;
+}
+
+function assertSpecialOperation(controller: ControllerIr): AssertSpecialControllerOp | undefined {
+  return controller.operation?.kind === "assertspecial" ? controller.operation : undefined;
 }
 
 function applyRemapPalController(
@@ -627,14 +632,22 @@ function applyHitOverrideController(
   state.hitOverrides = [...overrides, next].sort((a, b) => a.slot - b.slot);
 }
 
-function applyAssertSpecialController(state: CharacterRuntimeState, controller: ControllerExecutionSource): void {
-  const enabled = (numberParam(controller, state, "value", "enabled") ?? 1) !== 0;
-  const rawFlags = Object.entries(controller.params)
-    .filter(([key]) => key.toLowerCase().startsWith("flag"))
-    .flatMap(([, value]) => value.split(",").map((part) => part.trim()))
-    .filter(Boolean);
+function applyAssertSpecialController(
+  state: CharacterRuntimeState,
+  controller: ControllerExecutionSource,
+  operation?: AssertSpecialControllerOp,
+): void {
+  const enabled = operation ? true : (numberParam(controller, state, "value", "enabled") ?? 1) !== 0;
+  const rawFlags = operation
+    ? []
+    : Object.entries(controller.params)
+        .filter(([key]) => key.toLowerCase().startsWith("flag"))
+        .flatMap(([, value]) => value.split(",").map((part) => part.trim()))
+        .filter(Boolean);
   if (!enabled || rawFlags.length === 0) {
-    return;
+    if (!operation) {
+      return;
+    }
   }
   const current: RuntimeAssertSpecial = state.assertSpecial
     ? {
@@ -644,11 +657,14 @@ function applyAssertSpecialController(state: CharacterRuntimeState, controller: 
       }
     : { flags: [], globalFlags: [] };
 
-  for (const rawFlag of rawFlags) {
-    const flag = normalizeAssertSpecialFlag(rawFlag);
-    if (!flag) {
-      continue;
-    }
+  const flags = operation
+    ? [
+        ...operation.flags.map((name) => ({ name, global: false })),
+        ...operation.globalFlags.map((name) => ({ name, global: true })),
+      ]
+    : rawFlags.map(normalizeAssertSpecialFlag).filter((flag): flag is { name: string; global: boolean } => Boolean(flag));
+
+  for (const flag of flags) {
     if (flag.global) {
       addUnique(current.globalFlags, flag.name);
     } else {

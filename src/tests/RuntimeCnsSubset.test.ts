@@ -434,9 +434,8 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("VarRangeSet", { first: "2", last: "4", value: "9" }), state, (item) =>
       unsupported.push(item),
     );
-    state = executeStateController(controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible" }), state, (item) =>
-      unsupported.push(item),
-    );
+    const compiledAssertSpecial = compileControllerIr(controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible" }));
+    state = executeControllerIr(compiledAssertSpecial, state, (item) => unsupported.push(item));
 
     expect(state.vel).toEqual({ x: -6, y: -9 });
     expect(compiledHitVelSet.operation).toEqual({ kind: "kinematic", controllerType: "hitvelset", x: 1, y: 1 });
@@ -470,6 +469,11 @@ describe("StateControllerExecutor", () => {
       noAutoTurn: true,
       noWalk: true,
       invisible: true,
+    });
+    expect(compiledAssertSpecial.operation).toEqual({
+      kind: "assertspecial",
+      flags: ["noautoturn", "nowalk", "invisible"],
+      globalFlags: [],
     });
     expect(state.renderOpacity).toBe(0);
     expect(unsupported).toEqual([]);

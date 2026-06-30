@@ -153,8 +153,29 @@ time = 20
     expect(getControllerSupport("Trans").level).toBe("partial");
     expect(isRuntimeExecutableController("EnvColor")).toBe(true);
     expect(getControllerSupport("EnvColor").level).toBe("partial");
+    expect(isRuntimeExecutableController("AssertSpecial")).toBe(true);
+    expect(getControllerSupport("AssertSpecial").level).toBe("partial");
     expect(isRuntimeExecutableController("AngleDraw")).toBe(true);
     expect(getControllerSupport("AngleDraw").runtimeLabel).toBe("sprite rotation");
+  });
+
+  it("compiles static AssertSpecial flags into typed operations", () => {
+    const compiled = compileControllerIr(
+      controller(200, "AssertSpecial", [], {
+        flag: "NoAutoTurn, NoWalk",
+        flag2: '"Invisible", GlobalNoKO, NoWalk',
+      }),
+    );
+    const disabled = compileControllerIr(controller(200, "AssertSpecial", [], { flag: "NoWalk", value: "0" }));
+    const dynamic = compileControllerIr(controller(200, "AssertSpecial", [], { flag: "IfElse(var(0), NoWalk, Invisible)" }));
+
+    expect(compiled.operation).toEqual({
+      kind: "assertspecial",
+      flags: ["noautoturn", "nowalk", "invisible"],
+      globalFlags: ["globalnoko"],
+    });
+    expect(disabled.operation).toBeUndefined();
+    expect(dynamic.operation).toBeUndefined();
   });
 
   it("compiles contact-memory controllers into typed operations", () => {
