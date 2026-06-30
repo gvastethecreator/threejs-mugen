@@ -59,6 +59,8 @@ export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
   stageTime?: number;
   runtimeTick?: number;
+  parentState?: CharacterRuntimeState;
+  rootState?: CharacterRuntimeState;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
@@ -169,28 +171,31 @@ export type RuntimeHelperControllerResult = "active" | "destroyed";
 
 export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "runtimeTick" | "onController" | "onUnsupportedController"> = {},
+  options: Pick<
+    RuntimeHelperAdvanceOptions,
+    "stageTime" | "runtimeTick" | "parentState" | "rootState" | "onController" | "onUnsupportedController"
+  > = {},
 ): RuntimeHelperControllerResult {
   const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
   if (!stateProgram) {
     return "active";
   }
   for (const controller of stateProgram.controllers) {
-    if (!helperTriggersPass(helper, controller, options.stageTime)) {
+    if (!helperTriggersPass(helper, controller, options)) {
       continue;
     }
     const dispatch = dispatchStateProgramController(controller);
     if (dispatch.kind === "change-state") {
-      const stateId = resolveHelperNumber(helper, dispatch.stateId, dispatch.stateExpression, options.stageTime);
+      const stateId = resolveHelperNumber(helper, dispatch.stateId, dispatch.stateExpression, options);
       if (stateId === undefined) {
         continue;
       }
       options.onController?.(helper, controller);
-      changeHelperState(helper, stateId, resolveHelperNumber(helper, dispatch.animOverride, dispatch.animExpression, options.stageTime));
+      changeHelperState(helper, stateId, resolveHelperNumber(helper, dispatch.animOverride, dispatch.animExpression, options));
       return "active";
     }
     if (dispatch.kind === "change-anim") {
-      const actionId = resolveHelperNumber(helper, dispatch.actionId, dispatch.actionExpression, options.stageTime);
+      const actionId = resolveHelperNumber(helper, dispatch.actionId, dispatch.actionExpression, options);
       if (actionId === undefined) {
         continue;
       }
@@ -341,9 +346,13 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
   );
 }
 
-function helperTriggersPass(helper: RuntimeHelper, controller: ControllerIr, stageTime?: number): boolean {
+function helperTriggersPass(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState">,
+): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
-  if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, stageTime)))) {
+  if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options)))) {
     return false;
   }
   const grouped = new Map<number, ControllerIr["triggers"]>();
@@ -359,7 +368,7 @@ function helperTriggersPass(helper: RuntimeHelper, controller: ControllerIr, sta
     return true;
   }
   return [...grouped.values()].some((triggers) =>
-    triggers.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, stageTime))),
+    triggers.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options))),
   );
 }
 
@@ -367,7 +376,7 @@ function resolveHelperNumber(
   helper: RuntimeHelper,
   value: number | undefined,
   expression: string | undefined,
-  stageTime?: number,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState">,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -375,7 +384,7 @@ function resolveHelperNumber(
   if (!expression) {
     return undefined;
   }
-  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, stageTime)));
+  const result = Number(evaluateExpression(expression, helperExpressionContext(helper, options)));
   return Number.isFinite(result) ? Math.trunc(result) : undefined;
 }
 
@@ -400,10 +409,15 @@ function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
   helper.frameElapsed = 0;
 }
 
-function helperExpressionContext(helper: RuntimeHelper, stageTime?: number) {
+function helperExpressionContext(
+  helper: RuntimeHelper,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState"> = {},
+) {
   return {
     self: helperRuntimeState(helper),
-    stageTime,
+    parent: options.parentState ? cloneRuntimeStateForRedirect(options.parentState) : undefined,
+    root: options.rootState ? cloneRuntimeStateForRedirect(options.rootState) : undefined,
+    stageTime: options.stageTime,
     stateTime: helper.stateTime,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
@@ -432,6 +446,17 @@ function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState {
     sysvars: [...helper.sysvars],
     fvars: [...helper.fvars],
     ...(isDefaultScale(helper.scale) ? {} : { renderScale: { ...helper.scale } }),
+  };
+}
+
+function cloneRuntimeStateForRedirect(state: CharacterRuntimeState): CharacterRuntimeState {
+  return {
+    ...state,
+    pos: { ...state.pos },
+    vel: { ...state.vel },
+    vars: [...state.vars],
+    sysvars: state.sysvars ? [...state.sysvars] : undefined,
+    fvars: [...state.fvars],
   };
 }
 

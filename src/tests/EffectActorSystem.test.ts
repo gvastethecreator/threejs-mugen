@@ -351,6 +351,93 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("evaluates bounded helper parent and root redirects against owner runtime state", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("VarSet", { v: "3", value: "99" }, ["Time = 0"]),
+              controller("CtrlSet", { value: "1" }, ["Parent,Var(3) = 7"]),
+              controller("ChangeAnim", { value: "901" }, ["Parent,StateNo = 200"]),
+              controller("ChangeState", { value: "Root,Var(5)" }, ["Root,Vel X = 4"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const ownerState = actor("p1", "Owner", {
+      stateNo: 200,
+      animNo: 201,
+      vel: { x: 4, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 7 : index === 5 ? 6002 : 0)),
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      parentState: ownerState,
+      rootState: ownerState,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["VarSet", "CtrlSet", "ChangeAnim", "ChangeState"]);
+    expect(ownerState.vars[3]).toBe(7);
+    expect(helper.vars[3]).toBe(99);
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      ctrl: true,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("does not satisfy helper parent and root redirects when owner runtime state is missing", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("VarSet", { v: "3", value: "99" }, ["Time = 0"]),
+              controller("CtrlSet", { value: "1" }, ["Parent,Var(3) = 7"]),
+              controller("ChangeState", { value: "Root,Var(5)" }, ["Root,Vel X = 4"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["VarSet"]);
+    expect(helper.vars[3]).toBe(99);
+    expect(helper).toMatchObject({
+      stateNo: 6000,
+      animNo: 900,
+      ctrl: false,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
   it("emits bounded helper-local sound events into helper snapshots", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

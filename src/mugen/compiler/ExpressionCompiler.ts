@@ -69,15 +69,20 @@ function stripRawFunctionArguments(expression: string): string {
 }
 
 function expressionForSupportScan(expression: string): { expression: string; unsupportedFeature?: string } {
-  const redirect = /^enemynear(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  const redirect = /^(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
     return { expression };
   }
-  const index = redirect[1]?.trim();
-  if (index && index !== "0") {
-    return { expression: redirect[2] ?? "", unsupportedFeature: "enemynear(index)" };
+  const target = redirect[1]?.toLowerCase();
+  const index = redirect[2]?.trim();
+  const body = redirect[3] ?? "";
+  if (target === "enemynear" && index && index !== "0") {
+    return { expression: body, unsupportedFeature: "enemynear(index)" };
   }
-  return { expression: redirect[2] ?? "" };
+  if ((target === "parent" || target === "root") && index) {
+    return { expression: body, unsupportedFeature: `${target}(index)` };
+  }
+  return expressionForSupportScan(body);
 }
 
 const supportedExpressionIdentifiers = new Set([

@@ -6,6 +6,8 @@ export { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
 export type ExpressionContext = {
   self: CharacterRuntimeState;
   opponent?: CharacterRuntimeState;
+  parent?: CharacterRuntimeState;
+  root?: CharacterRuntimeState;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
@@ -46,7 +48,7 @@ export type ExpressionContext = {
 
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
   const normalized = normalizeMugenExpression(expression);
-  const redirected = evaluateEnemyNearRedirect(normalized, context);
+  const redirected = evaluateActorRedirect(normalized, context);
   if (redirected !== undefined) {
     return redirected;
   }
@@ -69,24 +71,41 @@ type ExpressionValue = boolean | number | string;
 
 const commandIdentifierMarker = "__mugen_command_identifier__";
 
-function evaluateEnemyNearRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
-  const redirect = /^enemynear(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
+  const redirect = /^(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
     return undefined;
   }
-  const index = redirect[1]?.trim();
-  if (index && index !== "0") {
-    context.reportUnsupported?.("enemynear(index)");
+  const target = redirect[1]?.toLowerCase();
+  const index = redirect[2]?.trim();
+  const expressionBody = redirect[3] ?? "";
+  if (target === "enemynear") {
+    if (index && index !== "0") {
+      context.reportUnsupported?.("enemynear(index)");
+      return 0;
+    }
+    if (!context.opponent) {
+      context.reportUnsupported?.("enemynear");
+      return 0;
+    }
+    return evaluateExpression(expressionBody, {
+      ...context,
+      self: context.opponent,
+      opponent: context.self,
+    });
+  }
+  if (index) {
+    context.reportUnsupported?.(`${target}(index)`);
     return 0;
   }
-  if (!context.opponent) {
-    context.reportUnsupported?.("enemynear");
+  const redirectedSelf = target === "parent" ? context.parent : context.root;
+  if (!redirectedSelf) {
+    context.reportUnsupported?.(target ?? "redirect");
     return 0;
   }
-  return evaluateExpression(redirect[2] ?? "", {
+  return evaluateExpression(expressionBody, {
     ...context,
-    self: context.opponent,
-    opponent: context.self,
+    self: redirectedSelf,
   });
 }
 

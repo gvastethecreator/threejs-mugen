@@ -91,7 +91,8 @@ R2 helper-local micro-VM ownership
   -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, DestroySelf removal, helper-local CtrlSet/StateTypeSet, helper-local VarSet/VarAdd/VarRandom/VarRangeSet trigger branches, and helper-local PlaySnd/StopSnd sound-event telemetry on helper actors
   -> focused EffectSpawnSystem tests prove the handoff
   -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
-  -> no redirects, parent/root/team/keyctrl, exact helper resource semantics, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper visual effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
+  -> helper-local redirects now include bounded leading Parent/Root read-only trigger/value evaluation against owner runtime state, with focused EffectActorSystem coverage and compiler trigger classification coverage
+  -> no nested/general redirects inside composite expressions, team/keyctrl ownership, exact helper resource scopes, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper visual effects, helper-owned HitDefs/Projectiles/Explods, helper combat, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
@@ -280,7 +281,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
 - visual-helper removal ownership
-- helper-local micro-VM ownership, including helper-local sound-event telemetry
+- helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded leading parent/root read-only redirects
 - `RuntimeAssertSpecialWorld` ownership extraction
 - `RuntimeSnapshotWorld` ownership extraction
 - `RuntimeSnapshotWorld` player actor projection

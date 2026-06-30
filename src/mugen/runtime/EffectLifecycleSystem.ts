@@ -30,7 +30,7 @@ export type RuntimeEffectSnapshotGroups = {
 
 export class RuntimeEffectLifecycleWorld {
   advanceActive(actor: RuntimeEffectLifecycleActor, stage: Pick<MugenStageDefinition, "bounds">): void {
-    actor.effectActorWorld.advanceActiveEffects(actor.id, stage);
+    actor.effectActorWorld.advanceActiveEffects(actor.id, stage, helperRedirectContext(actor));
   }
 
   advancePresentation(actor: RuntimeEffectLifecycleActor): void {
@@ -42,7 +42,11 @@ export class RuntimeEffectLifecycleWorld {
     pauseKind: RuntimeExplodPauseKind,
     stage: Pick<MugenStageDefinition, "bounds">,
   ): void {
-    actor.effectActorWorld.advancePresentationEffects(actor.id, effectBindAnchor(actor), { pauseKind, stage });
+    actor.effectActorWorld.advancePresentationEffects(actor.id, effectBindAnchor(actor), {
+      pauseKind,
+      stage,
+      ...helperRedirectContext(actor),
+    });
   }
 
   markGetHit(actor: RuntimeEffectLifecycleActor): void {
@@ -73,4 +77,29 @@ function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: numbe
     pos: actor.runtime.pos,
     facing: actor.runtime.facing,
   };
+}
+
+function helperRedirectContext(actor: RuntimeEffectLifecycleActor): { parentState?: CharacterRuntimeState; rootState?: CharacterRuntimeState } {
+  if (!isCompleteRuntimeState(actor.runtime)) {
+    return {};
+  }
+  return { parentState: actor.runtime, rootState: actor.runtime };
+}
+
+function isCompleteRuntimeState(
+  runtime: RuntimeEffectLifecycleActor["runtime"],
+): runtime is CharacterRuntimeState {
+  return (
+    "vel" in runtime &&
+    "animNo" in runtime &&
+    "animTime" in runtime &&
+    "frameIndex" in runtime &&
+    "life" in runtime &&
+    "power" in runtime &&
+    "ctrl" in runtime &&
+    "stateType" in runtime &&
+    "physics" in runtime &&
+    "vars" in runtime &&
+    "fvars" in runtime
+  );
 }

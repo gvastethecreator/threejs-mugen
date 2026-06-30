@@ -43,6 +43,8 @@ time = 20
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const hitDefAttr = compileExpression("HitDefAttr = SC, NA, SA, HA");
     const enemyNear = compileExpression("enemynear, stateno = 5000");
+    const parentRedirect = compileExpression("Parent,Var(3) = 7");
+    const rootRedirect = compileExpression("Root,Vel X = 4");
     const p2Metrics = compileExpression(
       "NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A",
     );
@@ -80,6 +82,10 @@ time = 20
     expect(hitDefAttr.identifiers).toEqual(["HitDefAttr"]);
     expect(enemyNear.supportLevel).toBe("executable");
     expect(enemyNear.identifiers).toEqual(["stateno"]);
+    expect(parentRedirect.supportLevel).toBe("executable");
+    expect(parentRedirect.functions).toEqual(["Var"]);
+    expect(rootRedirect.supportLevel).toBe("executable");
+    expect(rootRedirect.identifiers).toEqual(["velx"]);
     expect(p2Metrics.supportLevel).toBe("executable");
     expect(p2Metrics.identifiers).toEqual([
       "Facing",

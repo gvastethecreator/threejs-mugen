@@ -70,7 +70,8 @@ export type RuntimeEffectActorStoreSummary = {
 
 export type RuntimeEffectActorCountKind = "explod" | "helper" | "projectile";
 
-export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions & {
+export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOptions &
+  RuntimeHelperAdvanceOptions & {
   stage?: Pick<MugenStageDefinition, "bounds">;
 };
 
@@ -126,8 +127,8 @@ export class RuntimeEffectActorWorld {
     advanceRuntimeExplodActors(this.getStore(ownerId), bindAnchor, options);
   }
 
-  advanceActiveEffects(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">): void {
-    this.advanceHelpers(ownerId, stage);
+  advanceActiveEffects(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
+    this.advanceHelpers(ownerId, stage, options);
     this.advanceProjectiles(ownerId, stage);
   }
 
