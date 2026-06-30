@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeInputControlWorld ownership
+  -> RuntimeInputControlWorld owns bounded local player and simple AI control intent previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates crouch, jump, walk, idle, air drift, NoWalk suppression, AI chase, AI attack cooldown, and local punch/kick intent through that boundary
+  -> focused RuntimeInputControlSystem tests prove blocked input, state-entry precedence, movement branches, NoWalk/air drift, and simple AI chase/attack routes
+  -> no new input semantics, exact command timing, exact AI behavior parity, full MUGEN/IKEMEN control routing, or score claim
 R2 RuntimeMoveLifecycleWorld ownership
   -> RuntimeMoveLifecycleWorld owns bounded active move lifecycle mutation previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates current move tick, non-reversal attack moveType/velocity lock, completed move cleanup, reversal cleanup, and idle/control restoration callbacks through that boundary
@@ -286,6 +291,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
 - `RuntimeMoveLifecycleWorld` ownership extraction
+- `RuntimeInputControlWorld` ownership extraction
 - visual-helper removal ownership
 - helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded parent/root read-only redirects
 - `RuntimeAssertSpecialWorld` ownership extraction
@@ -297,7 +303,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeMoveLifecycleWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeInputControlWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 

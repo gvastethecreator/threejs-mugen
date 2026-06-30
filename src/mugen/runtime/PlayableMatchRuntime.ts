@@ -54,7 +54,8 @@ import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
-import { hasRuntimeDirection, isRuntimeHoldingBack } from "./RuntimeInput";
+import { isRuntimeHoldingBack } from "./RuntimeInput";
+import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import {
@@ -229,6 +230,7 @@ export class PlayableMatchRuntime {
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
+  private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
@@ -369,11 +371,11 @@ export class PlayableMatchRuntime {
     this.round.tickTimer();
     this.p1.commandBuffer.push(this.tick, p1Input);
     this.p2.commandBuffer.push(this.tick, p2Input);
-    handlePlayerInput(this.p1, p1Input, this.p2, this.tick);
+    handlePlayerInput(this.p1, p1Input, this.p2, this.tick, this.inputControlWorld);
     if (input.p2) {
-      handlePlayerInput(this.p2, p2Input, this.p1, this.tick);
+      handlePlayerInput(this.p2, p2Input, this.p1, this.tick, this.inputControlWorld);
     } else {
-      handleSimpleAi(this.p2, this.p1, this.tick);
+      handleSimpleAi(this.p2, this.p1, this.tick, this.inputControlWorld);
     }
     advanceFighter(
       this.p1,
@@ -473,8 +475,9 @@ export class PlayableMatchRuntime {
       currentPause: () => this.pauseWorld.current(),
       canActorMove: (actorId) => this.pauseWorld.canActorMove(actorId),
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(this.tick, actorInput, { hitPause: true }),
-      handlePlayerInput: (actor, actorInput, opponent) => handlePlayerInput(actor, actorInput, opponent, this.tick),
-      handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick),
+      handlePlayerInput: (actor, actorInput, opponent) =>
+        handlePlayerInput(actor, actorInput, opponent, this.tick, this.inputControlWorld),
+      handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
         advanceFighter(
           actor,
@@ -745,94 +748,38 @@ function currentStateMoveType(fighter: FighterMatchState): CharacterRuntimeState
   return state?.moveType ? normalizeMoveType(state.moveType, fighter.runtime.moveType) : fighter.runtime.moveType;
 }
 
-function handlePlayerInput(fighter: FighterMatchState, input: Set<string>, opponent: FighterMatchState, tick: number): void {
-  if (hasRuntimeStun(fighter) || fighter.currentMove) {
-    return;
-  }
-  if (!fighter.runtime.ctrl || shouldPreserveImportedStateMoveType(fighter)) {
-    return;
-  }
-
-  runStateEntrySetupControllers(fighter, opponent, tick);
-  if (tryApplyStateEntry(fighter, opponent, tick)) {
-    return;
-  }
-
-  if (input.has("x") || input.has("y") || input.has("z")) {
-    startMove(fighter, "punch");
-    return;
-  }
-  if (input.has("a") || input.has("b") || input.has("c")) {
-    startMove(fighter, "kick");
-    return;
-  }
-  if (hasRuntimeDirection(input, "D") && fighter.runtime.stateType !== "A") {
-    changeAction(fighter, fighter.definition.crouchAction);
-    setRuntimeStateNo(fighter, fighter.definition.crouchAction);
-    fighter.runtime.stateType = "C";
-    fighter.runtime.physics = "C";
-    fighter.runtime.vel.x = 0;
-    return;
-  }
-  if (hasRuntimeDirection(input, "U") && fighter.runtime.stateType !== "A") {
-    fighter.runtime.vel.y = fighter.definition.jumpVelocity;
-    fighter.runtime.stateType = "A";
-    fighter.runtime.physics = "A";
-    changeAction(fighter, fighter.definition.jumpAction);
-    setRuntimeStateNo(fighter, fighter.definition.jumpAction);
-    return;
-  }
-
-  const direction = hasRuntimeDirection(input, "F") ? 1 : hasRuntimeDirection(input, "B") ? -1 : 0;
-  if (direction !== 0 && fighter.runtime.assertSpecial?.noWalk) {
-    fighter.runtime.vel.x = 0;
-    return;
-  }
-  if (direction !== 0 && fighter.runtime.stateType === "A" && !fighter.runtime.assertSpecial?.noWalk) {
-    fighter.runtime.vel.x = direction * fighter.runtime.facing * fighter.definition.speed;
-    return;
-  }
-  if (direction !== 0 && !fighter.runtime.assertSpecial?.noWalk) {
-    fighter.runtime.vel.x = direction * fighter.runtime.facing * fighter.definition.speed;
-    fighter.runtime.stateType = "S";
-    fighter.runtime.physics = "S";
-    changeAction(fighter, fighter.definition.walkAction);
-    setRuntimeStateNo(fighter, fighter.definition.walkAction);
-  } else {
-    fighter.runtime.vel.x = 0;
-    if (fighter.runtime.stateType !== "A") {
-      fighter.runtime.stateType = "S";
-      fighter.runtime.physics = "S";
-      changeAction(fighter, fighter.definition.idleAction);
-      setRuntimeStateNo(fighter, fighter.definition.idleAction);
-      applyRuntimeControl(fighter.runtime, true);
-    }
-  }
+function handlePlayerInput(
+  fighter: FighterMatchState,
+  input: Set<string>,
+  opponent: FighterMatchState,
+  tick: number,
+  inputControlWorld: RuntimeInputControlWorld,
+): void {
+  inputControlWorld.handlePlayerInput(fighter, input, {
+    hasStun: hasRuntimeStun(fighter),
+    preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
+    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, tick),
+    tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, tick),
+    startMove: (move) => startMove(fighter, move),
+    changeAction: (actionId) => changeAction(fighter, actionId),
+    setStateNo: (stateNo) => setRuntimeStateNo(fighter, stateNo),
+    restoreControl: () => applyRuntimeControl(fighter.runtime, true),
+  });
 }
 
-function handleSimpleAi(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
-  if (hasRuntimeStun(fighter) || fighter.currentMove) {
-    return;
-  }
-  if (!fighter.runtime.ctrl || shouldPreserveImportedStateMoveType(fighter)) {
-    return;
-  }
-  fighter.aiCooldown = Math.max(0, fighter.aiCooldown - 1);
-  const distance = Math.abs(opponent.runtime.pos.x - fighter.runtime.pos.x);
-  if (distance > 110 && !fighter.runtime.assertSpecial?.noWalk) {
-    fighter.runtime.vel.x = fighter.runtime.facing * fighter.definition.speed * 0.65;
-    changeAction(fighter, fighter.definition.walkAction);
-    setRuntimeStateNo(fighter, fighter.definition.walkAction);
-  } else {
-    fighter.runtime.vel.x = 0;
-    if (fighter.aiCooldown === 0) {
-      startMove(fighter, tick % 2 === 0 ? "punch" : "kick");
-      fighter.aiCooldown = 70;
-    } else {
-      changeAction(fighter, fighter.definition.idleAction);
-      setRuntimeStateNo(fighter, fighter.definition.idleAction);
-    }
-  }
+function handleSimpleAi(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  tick: number,
+  inputControlWorld: RuntimeInputControlWorld,
+): void {
+  inputControlWorld.handleSimpleAi(fighter, opponent, tick, {
+    hasStun: hasRuntimeStun(fighter),
+    preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
+    startMove: (move) => startMove(fighter, move),
+    changeAction: (actionId) => changeAction(fighter, actionId),
+    setStateNo: (stateNo) => setRuntimeStateNo(fighter, stateNo),
+  });
 }
 
 function advanceFighter(

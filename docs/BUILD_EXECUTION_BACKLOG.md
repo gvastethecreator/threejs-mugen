@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime input control ownership
+
+Changed:
+
+- Added `RuntimeInputControlWorld` as a bounded runtime ownership boundary for local player and simple AI control intent: blocked input gates, State -1 setup/entry precedence, punch/kick intent, crouch, jump, walk, idle, airborne drift, `AssertSpecial NoWalk`, AI chase, and AI attack cooldown.
+- Replaced inline `PlayableMatchRuntime` player/AI control branches with the new system while keeping state-entry, action-change, state-number, and move-start hooks explicit in the match runtime.
+- Added focused `RuntimeInputControlSystem` tests for blocked input, state-entry precedence, movement branches, NoWalk/air drift, and simple AI chase/attack behavior.
+- Updated runtime roadmap/progress docs and the local runtime issue with allowed/blocked wording.
+
+Evidence:
+
+- `pnpm test` passes: 75 files / 669 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+
+Claim allowed:
+
+- Local player/simple AI control intent now has a named system boundary with focused unit coverage, and the match runtime delegates those bounded control branches without behavior-checksum drift.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add new input semantics, exact command timing, exact AI behavior parity, AILevel support, full MUGEN/IKEMEN control routing, visual UI changes, or score movement.
+
 ## 2026-06-30 - Runtime move lifecycle ownership
 
 Changed:
