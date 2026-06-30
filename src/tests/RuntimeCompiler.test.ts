@@ -45,10 +45,12 @@ time = 20
     const enemyNear = compileExpression("enemynear, stateno = 5000");
     const parentRedirect = compileExpression("Parent,Var(3) = 7");
     const rootRedirect = compileExpression("Root,Vel X = 4");
+    const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
       "NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A",
     );
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
+    const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -86,6 +88,9 @@ time = 20
     expect(parentRedirect.functions).toEqual(["Var"]);
     expect(rootRedirect.supportLevel).toBe("executable");
     expect(rootRedirect.identifiers).toEqual(["velx"]);
+    expect(nestedRedirect.supportLevel).toBe("executable");
+    expect(nestedRedirect.functions).toEqual(["Var"]);
+    expect(nestedRedirect.identifiers).toEqual(["Time", "velx"]);
     expect(p2Metrics.supportLevel).toBe("executable");
     expect(p2Metrics.identifiers).toEqual([
       "Facing",
@@ -99,6 +104,8 @@ time = 20
     ]);
     expect(unsupported.supportLevel).toBe("unsupported");
     expect(unsupported.unsupportedFeatures).toEqual(["enemynear(index)"]);
+    expect(unsupportedParentIndex.supportLevel).toBe("unsupported");
+    expect(unsupportedParentIndex.unsupportedFeatures).toEqual(["parent(index)"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

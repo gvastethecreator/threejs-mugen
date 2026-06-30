@@ -360,9 +360,9 @@ describe("EffectActorSystem", () => {
           compileStateProgram(
             state(6000, 900, [
               controller("VarSet", { v: "3", value: "99" }, ["Time = 0"]),
-              controller("CtrlSet", { value: "1" }, ["Parent,Var(3) = 7"]),
-              controller("ChangeAnim", { value: "901" }, ["Parent,StateNo = 200"]),
-              controller("ChangeState", { value: "Root,Var(5)" }, ["Root,Vel X = 4"]),
+              controller("CtrlSet", { value: "1" }, ["Time = 0 && Parent,Var(3) = 7"]),
+              controller("ChangeAnim", { value: "901" }, ["IfElse(Parent,StateNo = 200, 1, 0)"]),
+              controller("ChangeState", { value: "1 + Root,Var(5) + Parent,Var(6)" }, ["Time = 0 && Root,Vel X = 4"]),
             ]),
           ),
           compileStateProgram(state(6002, 902)),
@@ -378,7 +378,7 @@ describe("EffectActorSystem", () => {
       stateNo: 200,
       animNo: 201,
       vel: { x: 4, y: 0 },
-      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 7 : index === 5 ? 6002 : 0)),
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 7 : index === 5 ? 5999 : index === 6 ? 2 : 0)),
     }).runtime;
     const executed: string[] = [];
 

@@ -137,6 +137,32 @@ describe("ExpressionEvaluator", () => {
     ).toBe(1);
   });
 
+  it("evaluates bounded parent and root redirects inside composite expressions", () => {
+    const helper = runtimeState({
+      stateNo: 6000,
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 99 : 0)),
+    });
+    const owner = runtimeState({
+      stateNo: 200,
+      vel: { x: 4, y: -1 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 7 : index === 5 ? 6002 : 0)),
+    });
+    const unsupported: string[] = [];
+
+    expect(
+      evaluateExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4", {
+        self: helper,
+        parent: owner,
+        root: owner,
+        reportUnsupported: (feature) => unsupported.push(feature),
+      }),
+    ).toBe(1);
+    expect(evaluateExpression("1 + Root,Var(5) + Parent,Vel Y", { self: helper, parent: owner, root: owner })).toBe(6002);
+    expect(evaluateExpression("IfElse(Parent,StateNo = 200, Root,Var(5), 0)", { self: helper, parent: owner, root: owner })).toBe(6002);
+    expect(evaluateExpression("Time = 0 && Parent,Var(3) = 7", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);
+    expect(unsupported).toContain("parent");
+  });
+
   it("evaluates partial hit-fall runtime trigger data", () => {
     const state = runtimeState({
       hitFall: {

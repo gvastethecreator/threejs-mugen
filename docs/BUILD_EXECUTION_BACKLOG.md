@@ -1,5 +1,59 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS base budget trim
+
+Changed:
+
+- Split the remaining base/reset payload behind `src/style.css` into `src/styles/base/tokens.css`, `src/styles/base/elements.css`, and `src/styles/base/accessibility.css` while keeping `src/styles/base/app-shell.css` as the app-shell owner.
+- Removed unused root custom properties from `tokens.css`, consolidated duplicate base hidden-state rules, removed button hover/active declarations that repeated the base state, and centralized reduced-motion handling in `base/accessibility.css`.
+- Kept `src/styles/studio.css` from reimporting the base layer already owned by `src/style.css`.
+- Tightened `pnpm qa:css:budget` from 540,088 bytes / 2,387 rules to 539,198 bytes / 2,382 rules while preserving the 124 repeated-declaration and 108 cross-file-overlap ceilings.
+- Updated Studio/UI roadmap docs and the S1 local issue with the current CSS debt truth.
+
+Evidence:
+
+- `pnpm qa:css:budget` passes: 539,198 active CSS bytes, 2,382 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm test` passes: 73 files / 660 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/runtime-desktop.png`, and `.scratch/qa/qa-smoke/runtime-mobile.png`; no obvious command-palette clipping, Workbench column breakage, or runtime/stage framing regression was visible.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- The active CSS budget is lower, base ownership is clearer, reduced-motion handling has one base owner, and exact duplicate rules / same-file duplicate selector keys remain zero.
+
+Claim blocked:
+
+- This is Studio/base CSS hygiene only. It does not add editor behavior, runtime compatibility, IKEMEN execution, generated-asset QA automation, or score movement. Remaining CSS debt is 124 repeated declaration groups and 108 cross-file overlaps; the next cleanup should extract shared row/action/status primitives.
+
+## 2026-06-30 - Composite helper parent/root redirects
+
+Changed:
+
+- Extended `ExpressionEvaluator` so bounded helper-local `Parent, ...` / `Root, ...` redirects can be evaluated as operands inside composite arithmetic, boolean, and `IfElse(...)` expressions, not only as leading expressions.
+- Updated `ExpressionCompiler` support scanning so composite parent/root redirects are classified as executable while indexed redirects remain unsupported.
+- Added focused runtime/compiler coverage for composite parent/root redirects, arithmetic values, `IfElse(...)`, and fail-closed missing parent/root behavior.
+- Updated runtime compatibility docs with claim allowed / blocked wording.
+
+Evidence:
+
+- Focused coverage is included in `pnpm test`: `RuntimeCnsSubset`, `RuntimeCompiler`, and `EffectActorSystem` assert composite helper parent/root redirect behavior.
+- `pnpm test` passes: 73 files / 660 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+
+Claim allowed:
+
+- Current visual Helper actors can read bounded owner/root runtime state through `Parent, ...` / `Root, ...` as leading expressions and as operands inside composite arithmetic, boolean, and `IfElse(...)` expressions.
+
+Claim blocked:
+
+- Indexed redirects, `EnemyNear(index)`, team/keyctrl ownership, redirect mutation, nested helper ancestry, helper-owned combat/effects/projectiles/HitDefs/Explods, exact parent/root scope/tick-order semantics, full Helper VM parity, and score movement remain blocked.
+
 ## 2026-06-30 - Studio CSS primitive budget trim
 
 Changed:

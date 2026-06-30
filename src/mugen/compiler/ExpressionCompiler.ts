@@ -25,8 +25,8 @@ export function compileExpression(expression: string): ExpressionIr {
   const identifiers = new Set<string>();
   const functions = new Set<string>();
 
-  if (redirect.unsupportedFeature) {
-    unsupportedFeatures.add(redirect.unsupportedFeature);
+  for (const feature of redirect.unsupportedFeatures) {
+    unsupportedFeatures.add(feature);
   }
   if (/[\[\]]/.test(withoutStrings)) {
     unsupportedFeatures.add("range syntax");
@@ -68,21 +68,23 @@ function stripRawFunctionArguments(expression: string): string {
   return expression.replace(/\b(const|const720p|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
 }
 
-function expressionForSupportScan(expression: string): { expression: string; unsupportedFeature?: string } {
-  const redirect = /^(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
-  if (!redirect) {
-    return { expression };
-  }
-  const target = redirect[1]?.toLowerCase();
-  const index = redirect[2]?.trim();
-  const body = redirect[3] ?? "";
-  if (target === "enemynear" && index && index !== "0") {
-    return { expression: body, unsupportedFeature: "enemynear(index)" };
-  }
-  if ((target === "parent" || target === "root") && index) {
-    return { expression: body, unsupportedFeature: `${target}(index)` };
-  }
-  return expressionForSupportScan(body);
+function expressionForSupportScan(expression: string): { expression: string; unsupportedFeatures: string[] } {
+  const unsupportedFeatures = new Set<string>();
+  const scanExpression = expression.replace(/\b(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*/gi, (_match, rawTarget: string, rawIndex: string | undefined) => {
+    const target = rawTarget.toLowerCase();
+    const index = rawIndex?.trim();
+    if (target === "enemynear" && index && index !== "0") {
+      unsupportedFeatures.add("enemynear(index)");
+    }
+    if ((target === "parent" || target === "root") && index) {
+      unsupportedFeatures.add(`${target}(index)`);
+    }
+    return "";
+  });
+  return {
+    expression: scanExpression,
+    unsupportedFeatures: [...unsupportedFeatures].sort((a, b) => a.localeCompare(b)),
+  };
 }
 
 const supportedExpressionIdentifiers = new Set([

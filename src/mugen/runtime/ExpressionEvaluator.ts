@@ -122,7 +122,7 @@ class ExpressionParser {
 
   constructor(
     private readonly tokens: Token[],
-    private readonly context: ExpressionContext,
+    private context: ExpressionContext,
   ) {}
 
   parse(): ExpressionValue {
@@ -240,6 +240,14 @@ class ExpressionParser {
       return token.value;
     }
     if (token.type === "identifier") {
+      const redirectedContext = this.tryConsumeRedirectContext(token.value);
+      if (redirectedContext === "fail") {
+        this.parseUnary();
+        return 0;
+      }
+      if (redirectedContext) {
+        return this.withContext(redirectedContext, () => this.parseUnary());
+      }
       if (this.matchParen("(")) {
         if (rawArgumentFunctions.has(token.value.toLowerCase())) {
           return this.evaluateFunction(token.value, this.parseRawArguments());
@@ -261,6 +269,86 @@ class ExpressionParser {
       return value;
     }
     return false;
+  }
+
+  private tryConsumeRedirectContext(identifier: string): ExpressionContext | "fail" | undefined {
+    const target = identifier.toLowerCase();
+    if (target !== "enemynear" && target !== "parent" && target !== "root") {
+      return undefined;
+    }
+    const cursorBeforeRedirect = this.cursor;
+    const index = this.tryConsumeRedirectIndex();
+    if (!this.matchComma()) {
+      this.cursor = cursorBeforeRedirect;
+      return undefined;
+    }
+    if (target === "enemynear") {
+      if (index && index !== "0") {
+        this.context.reportUnsupported?.("enemynear(index)");
+        return "fail";
+      }
+      if (!this.context.opponent) {
+        this.context.reportUnsupported?.("enemynear");
+        return "fail";
+      }
+      return {
+        ...this.context,
+        self: this.context.opponent,
+        opponent: this.context.self,
+      };
+    }
+    if (index) {
+      this.context.reportUnsupported?.(`${target}(index)`);
+      return "fail";
+    }
+    const redirectedSelf = target === "parent" ? this.context.parent : this.context.root;
+    if (!redirectedSelf) {
+      this.context.reportUnsupported?.(target);
+      return "fail";
+    }
+    return {
+      ...this.context,
+      self: redirectedSelf,
+    };
+  }
+
+  private tryConsumeRedirectIndex(): string | undefined {
+    if (!this.matchParen("(")) {
+      return undefined;
+    }
+    const tokens: Token[] = [];
+    let depth = 0;
+    while (this.peek()) {
+      const token = this.advance();
+      if (!token) {
+        break;
+      }
+      if (token.type === "paren" && token.value === "(") {
+        depth += 1;
+        tokens.push(token);
+        continue;
+      }
+      if (token.type === "paren" && token.value === ")") {
+        if (depth === 0) {
+          return tokens.map(tokenToText).join("").trim();
+        }
+        depth -= 1;
+        tokens.push(token);
+        continue;
+      }
+      tokens.push(token);
+    }
+    return tokens.map(tokenToText).join("").trim();
+  }
+
+  private withContext(context: ExpressionContext, evaluate: () => ExpressionValue): ExpressionValue {
+    const previousContext = this.context;
+    this.context = context;
+    try {
+      return evaluate();
+    } finally {
+      this.context = previousContext;
+    }
   }
 
   private evaluateIdentifier(identifier: string): ExpressionValue {
