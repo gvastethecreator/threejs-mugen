@@ -94,6 +94,7 @@ import {
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperIsHelperTraceArtifact,
   createSyntheticImportedHelperEnemyNearTraceArtifact,
+  createSyntheticImportedHelperExplodTraceArtifact,
   createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperBindToRootTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
@@ -1355,6 +1356,53 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredActorFrames).toEqual([
       { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1202, animNo: 922, minFrames: 1 },
     ]);
+  });
+
+  it("creates a synthetic imported Helper Explod artifact with helper-parented visual effect evidence", () => {
+    const artifact = createSyntheticImportedHelperExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-explod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-explod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "explod"]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1205, animNo: 925 }),
+        expect.objectContaining({ source: "effect", actorKind: "explod", ownerId: "p1", animNo: 939 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredWorldLifecycleEvents).toEqual([
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1205, minAge: 1 },
+      { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8800, minAge: 1, minRemoveTime: 24, minSpritePriority: 7 },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-explod-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "explod", id: 8800, spritePriority: 7 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper BindToParent artifact with helper-local owner bind evidence", () => {

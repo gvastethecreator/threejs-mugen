@@ -70,6 +70,7 @@ export type RuntimeHelperAdvanceOptions = {
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
+  onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
@@ -182,7 +183,14 @@ export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "runtimeTick" | "parentState" | "rootState" | "opponentState" | "onController" | "onUnsupportedController"
+    | "stageTime"
+    | "runtimeTick"
+    | "parentState"
+    | "rootState"
+    | "opponentState"
+    | "onSpawnExplod"
+    | "onController"
+    | "onUnsupportedController"
   > = {},
 ): RuntimeHelperControllerResult {
   const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
@@ -244,6 +252,14 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "side-effect" && dispatch.effect === "sound") {
       options.onController?.(helper, controller);
       emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "explod") {
+      if (options.onSpawnExplod?.(helper, controller)) {
+        options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
       continue;
     }
     options.onUnsupportedController?.(helper, controller);

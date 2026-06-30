@@ -1,3 +1,5 @@
+import type { ExplodControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import {
   advanceRuntimeExplods,
@@ -37,6 +39,7 @@ import {
   type RuntimeProjectileCombatActor,
   type RuntimeProjectileCombatInput,
 } from "./ProjectileCombatSystem";
+import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
 
 export type RuntimeEffectActorStore = {
@@ -345,7 +348,52 @@ export function advanceRuntimeHelperActors(
   stage: Pick<MugenStageDefinition, "bounds">,
   options?: RuntimeHelperAdvanceOptions,
 ): void {
-  store.helpers = advanceRuntimeHelpers(store.helpers, stage, options);
+  store.helpers = advanceRuntimeHelpers(store.helpers, stage, {
+    ...options,
+    onSpawnExplod: (helper, controller) => {
+      if (options?.onSpawnExplod) {
+        return options.onSpawnExplod(helper, controller);
+      }
+      return spawnRuntimeHelperExplodActor(store, helper, controller, options) !== undefined;
+    },
+  });
+}
+
+export function spawnRuntimeHelperExplodActor(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  options: Pick<RuntimeHelperAdvanceOptions, "opponentState"> = {},
+): RuntimeExplod | undefined {
+  const operation = explodOperation(controller);
+  const animNo = operation?.animNo ?? firstNumber(findControllerParam(controller, "anim"));
+  if (animNo === undefined) {
+    return undefined;
+  }
+  const action = helper.animations?.get(animNo);
+  if (!isPlayableAction(action)) {
+    return undefined;
+  }
+  const localPos = operation?.pos ?? numberPair(findControllerParam(controller, "pos")) ?? [0, 0];
+  const pos = resolveHelperExplodPosition(helper, options.opponentState, operation?.postype ?? findControllerParam(controller, "postype"), localPos);
+  if (!pos) {
+    return undefined;
+  }
+  return spawnRuntimeExplodActor(store, helper.ownerId, {
+    controller: controller.source,
+    operation,
+    ownerId: helper.ownerId,
+    rootId: helper.rootId,
+    parentId: helper.serialId,
+    spriteOwnerId: helper.spriteOwnerId,
+    spriteOwnerDefinitionId: helper.spriteOwnerDefinitionId,
+    spriteOwnerLabel: helper.spriteOwnerLabel,
+    action,
+    animNo,
+    pos,
+    fallbackFacing: helper.facing,
+    defaultRemoveTime: actionDuration(action),
+  });
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
@@ -389,4 +437,64 @@ export function removeRuntimeProjectilesMarkedForRemoval(store: RuntimeEffectAct
 
 export function runtimeProjectileActorsToSnapshots(store: RuntimeEffectActorStore, sourceStateNo: number): ActorSnapshot[] {
   return runtimeProjectilesToSnapshots(store.projectiles, sourceStateNo);
+}
+
+function explodOperation(controller: ControllerIr): ExplodControllerOp | undefined {
+  return controller.operation?.kind === "explod" ? controller.operation : undefined;
+}
+
+function resolveHelperExplodPosition(
+  helper: RuntimeHelper,
+  opponentState: RuntimeHelperAdvanceOptions["opponentState"],
+  postype: string | undefined,
+  localPos: [number, number],
+): { x: number; y: number } | undefined {
+  const type = postype?.trim().toLowerCase() ?? "p1";
+  if (type === "p2") {
+    if (!opponentState) {
+      return undefined;
+    }
+    return { x: opponentState.pos.x + localPos[0] * opponentState.facing, y: opponentState.pos.y + localPos[1] };
+  }
+  if (type === "front") {
+    return { x: helper.pos.x + localPos[0] * helper.facing + 48 * helper.facing, y: helper.pos.y + localPos[1] };
+  }
+  if (type === "back") {
+    return { x: helper.pos.x + localPos[0] * helper.facing - 48 * helper.facing, y: helper.pos.y + localPos[1] };
+  }
+  if (type === "left") {
+    return { x: localPos[0], y: localPos[1] };
+  }
+  return { x: helper.pos.x + localPos[0] * helper.facing, y: helper.pos.y + localPos[1] };
+}
+
+function isPlayableAction(action: RuntimeHelper["action"] | undefined): action is RuntimeHelper["action"] {
+  return Boolean(action && action.frames.length > 0);
+}
+
+function firstNumber(value: string | undefined): number | undefined {
+  const raw = value?.split(",")[0]?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const numberValue = Number(raw);
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const numbers = value
+    .split(",")
+    .map((part) => Number(part.trim()))
+    .filter((numberValue) => Number.isFinite(numberValue));
+  if (numbers.length === 0 || numbers[0] === undefined) {
+    return undefined;
+  }
+  return [numbers[0], numbers[1] ?? 0];
+}
+
+function actionDuration(action: RuntimeHelper["action"]): number {
+  return action.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0);
 }

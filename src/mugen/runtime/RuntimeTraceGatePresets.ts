@@ -8065,6 +8065,61 @@ export function createSyntheticImportedHelperEnemyNearTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedHelperExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-explod-attacker",
+    displayName: "Synthetic Imported Helper Explod Attacker",
+    withHelper: true,
+    helperExplodRoute: { stateNo: 1205, animNo: 925, explodAnimNo: 939, pos: [32, -24] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-explod-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-explod-golden",
+      label: "Synthetic imported Helper Explod route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Explod trace proves the bounded helper-local micro-VM can spawn an owner-side visual Explod actor with the Helper recorded as parent. It does not claim helper-owned combat, Projectile, bind-to-helper timing, FightFX/common routing, dynamic Explod params, or full MUGEN/IKEMEN helper effect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-explod-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1205, animNo: 925, minFrames: 1 },
+          { source: "effect", actorKind: "explod", ownerId: "p1", animNo: 939, minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minExplods: 1, minNextHelperSerial: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1205, minAge: 1 },
+          { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8800, minAge: 1, minRemoveTime: 24, minSpritePriority: 7 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperBindToParentTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9502,6 +9557,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperTriggerTime?: number;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
+  helperExplodRoute?: { stateNo: number; animNo?: number; explodAnimNo: number; pos?: [number, number] };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   withExplod?: boolean;
@@ -9863,6 +9919,7 @@ ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
+${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) : ""}
 ${options.helperBindToParentRoute ? helperBindToParentRouteBlock(options.helperBindToParentRoute) : ""}
 ${options.helperBindToRootRoute ? helperBindToRootRouteBlock(options.helperBindToRootRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
@@ -10058,6 +10115,18 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
             ...(options.helperEnemyNearRoute?.animNo === undefined
               ? []
               : ([[options.helperEnemyNearRoute.animNo, helperTraceAction(options.helperEnemyNearRoute.animNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
+            ...(options.helperExplodRoute?.animNo === undefined
+              ? []
+              : ([[options.helperExplodRoute.animNo, helperTraceAction(options.helperExplodRoute.animNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
+            ...(options.helperExplodRoute === undefined
+              ? []
+              : ([[options.helperExplodRoute.explodAnimNo, explodTraceAction(options.helperExplodRoute.explodAnimNo)]] as Array<[
                   number,
                   MugenAnimationAction,
                 ]>)),
@@ -12172,6 +12241,43 @@ type = ChangeState
 trigger1 = Time = 0
 trigger1 = EnemyNear, StateNo = ${opponentStateNo}
 trigger1 = EnemyNear, Life = ${opponentLife}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperExplodRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperExplodRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  const pos = route.pos ?? [32, -24];
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper Explod]
+type = Explod
+trigger1 = Time = 0
+id = 8800
+anim = ${route.explodAnimNo}
+pos = ${pos[0]},${pos[1]}
+postype = p1
+sprpriority = 7
+removetime = 24
+trans = add
+
+[State 1200, Helper Explod Route]
+type = ChangeState
+trigger1 = Time = 0
 value = ${route.stateNo}
 ctrl = 0
 

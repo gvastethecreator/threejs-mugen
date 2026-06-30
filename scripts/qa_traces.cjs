@@ -753,6 +753,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-explod",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperExplodTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-bindtoparent",
       required: true,
       artifact: presets.createSyntheticImportedHelperBindToParentTraceArtifact(),

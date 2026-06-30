@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local Explod trace gate
+
+Changed:
+
+- Extended `HelperSystem` with a helper-local `Explod` side-effect hook so current visual Helper actors can request bounded visual Explod spawns from their local micro-VM.
+- Connected that hook through `RuntimeEffectActorWorld`, spawning owner-side Explod actors with `ownerId`/`rootId` preserved and `parentId` set to the Helper runtime serial.
+- Added focused `EffectActorSystem` coverage for helper-local Explod spawn metadata, facing-aware position resolution, velocity, remove time, sprite priority, and renderer snapshot payload.
+- Added required `synthetic-imported-helper-explod.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 2 files / 198 tests.
+- `pnpm qa:trace` passes: 173 / 173 artifacts, 153 required, 20 optional, 0 failed; `synthetic-imported-helper-explod.json` checksum is `87ae363f`.
+- Full closeout gates passed: `pnpm test` (81 files / 717 tests), `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can spawn an owner-side visual `Explod` actor from static `Explod` params when the referenced AIR action exists; required trace evidence proves helper route `1200 -> 1205` / anim `925`, Explod anim `939`, effect store serial progression, world spawn/active lifecycle, and `parentId = p1-helper-0` payload/lifecycle metadata.
+
+Claim blocked:
+
+- This does not add helper-owned `HitDef`, helper-owned `Projectile`, helper combat/contact presentation, helper-bound Explod timing, dynamic Explod params beyond the current static subset, FightFX/common animation routing, exact spawn/tick order, nested helper ancestry, team/keyctrl ownership, or full MUGEN/IKEMEN helper/effect parity. No score movement.
+
 ## 2026-06-30 - Helper ownerBind payload trace strengthening
 
 Changed:

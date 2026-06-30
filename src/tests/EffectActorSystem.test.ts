@@ -685,6 +685,68 @@ describe("EffectActorSystem", () => {
     expect(runtimeHelperActorsToSnapshots(store, 200)[0]?.soundEvents).toEqual(helper.soundEvents);
   });
 
+  it("spawns bounded helper-local Explod actors with helper ownership metadata", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Explod", { id: "8800", anim: "930", pos: "12,-6", sprpriority: "6", removetime: "8", vel: "2,0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6001, 901)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+      ]),
+      pos: { x: 30, y: -10 },
+      fallbackFacing: -1,
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Explod", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6001,
+      animNo: 901,
+      stateTime: 1,
+      age: 1,
+    });
+    expect(store.explods).toHaveLength(1);
+    expect(store.explods[0]).toMatchObject({
+      serialId: "p1-explod-0",
+      explodId: 8800,
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      spriteOwnerId: "p1",
+      animNo: 930,
+      pos: { x: 18, y: -16 },
+      vel: { x: 2, y: 0 },
+      facing: -1,
+      removeTime: 8,
+      spritePriority: 6,
+    });
+    expect(runtimeExplodActorsToSnapshots(store, 200)[0]).toMatchObject({
+      id: "p1-explod-0",
+      actorKind: "explod",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1-helper-0",
+      effect: { kind: "explod", id: 8800, removeTime: 8, spritePriority: 6 },
+      runtime: { pos: { x: 18, y: -16 }, facing: -1, animNo: 930 },
+    });
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 
