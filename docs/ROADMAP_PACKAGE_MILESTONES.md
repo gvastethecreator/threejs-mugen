@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeFallEnvShakeControllerDispatchWorld ownership extraction
+  -> RuntimeFallEnvShakeControllerDispatchWorld now owns bounded active-state FallEnvShake side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed fallenvshake operation selection, fall-shake event handoff, hitFall.envShake cleanup, and operation telemetry through RuntimeEnvShakeWorld
+  -> match runtime still owns trigger filtering, active-state order, actor/world ownership, and upstream HitDef fall metadata
+  -> focused EnvShakeSystem coverage proves FallEnvShake telemetry/mutation through the dispatch boundary
+  -> no exact waveform, pause/stage/layer interaction, helper/redirect ownership, full presentation parity, or score claim
 R2 RuntimeActorConstraintControllerDispatchWorld ownership extraction
   -> RuntimeActorConstraintControllerDispatchWorld now owns bounded active-state Width side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed collision:width operation selection, operation telemetry, and body-width mutation handoff through RuntimeActorConstraintWorld

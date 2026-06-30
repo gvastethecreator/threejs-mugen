@@ -8,6 +8,7 @@ import {
   pushRuntimeEnvShakeEvent,
   RuntimeEnvShakeControllerDispatchWorld,
   RuntimeEnvShakeWorld,
+  RuntimeFallEnvShakeControllerDispatchWorld,
 } from "../mugen/runtime/EnvShakeSystem";
 import type { RuntimeEnvShakeEvent } from "../mugen/runtime/types";
 
@@ -139,6 +140,31 @@ describe("EnvShakeSystem", () => {
     expect(recordedControllers).toEqual(["EnvShake"]);
     expect(recordedOperations).toEqual(["envshake:16"]);
     expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
+  });
+
+  it("dispatches active FallEnvShake controllers with telemetry hooks", () => {
+    const dispatchWorld = new RuntimeFallEnvShakeControllerDispatchWorld();
+    const envShakeWorld = new RuntimeEnvShakeWorld();
+    const fighter = actor(5050, 9, { time: 15, freq: 30, ampl: -8, phase: 0.25 });
+    const ir = compileControllerIr(controller("FallEnvShake", {}));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      runtimeTick: 121,
+      envShakeWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(result.event).toMatchObject({ type: "EnvShake", time: 15, ampl: -8, stateNo: 5050, runtimeTick: 121 });
+    expect(fighter.envShakeEvents).toEqual([result.event]);
+    expect(fighter.runtime.hitFall?.envShake).toBeUndefined();
+    expect(recordedControllers).toEqual(["FallEnvShake"]);
+    expect(recordedOperations).toEqual(["fallenvshake"]);
+    expect(result).toMatchObject({ clearedFallEnvShake: true, recordedController: true, recordedOperation: true });
   });
 });
 

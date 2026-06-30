@@ -1,4 +1,4 @@
-import type { EnvShakeControllerOp } from "../compiler/ControllerOps";
+import type { EnvShakeControllerOp, FallEnvShakeControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -31,6 +31,22 @@ export type RuntimeEnvShakeControllerDispatchOptions<TActor extends RuntimeEnvSh
 
 export type RuntimeEnvShakeControllerDispatchResult = {
   event?: RuntimeEnvShakeEvent;
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
+
+export type RuntimeFallEnvShakeControllerDispatchOptions<TActor extends RuntimeEnvShakeWorldActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  runtimeTick: number;
+  envShakeWorld: RuntimeEnvShakeWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: FallEnvShakeControllerOp) => void;
+};
+
+export type RuntimeFallEnvShakeControllerDispatchResult = {
+  event?: RuntimeEnvShakeEvent;
+  clearedFallEnvShake: boolean;
   recordedController: boolean;
   recordedOperation: boolean;
 };
@@ -131,6 +147,38 @@ export class RuntimeEnvShakeControllerDispatchWorld {
     );
     return {
       event,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
+  }
+}
+
+export class RuntimeFallEnvShakeControllerDispatchWorld {
+  apply<TActor extends RuntimeEnvShakeWorldActor>(
+    options: RuntimeFallEnvShakeControllerDispatchOptions<TActor>,
+  ): RuntimeFallEnvShakeControllerDispatchResult {
+    const operation = options.controller.operation?.kind === "fallenvshake" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    const hitFall = options.actor.runtime.hitFall;
+    const event = options.envShakeWorld.emitFall(options.actor, options.runtimeTick);
+    if (!event || !hitFall) {
+      return {
+        event,
+        clearedFallEnvShake: false,
+        recordedController: Boolean(options.recordController),
+        recordedOperation: false,
+      };
+    }
+    options.actor.runtime.hitFall = {
+      ...hitFall,
+      envShake: undefined,
+    };
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    return {
+      event,
+      clearedFallEnvShake: true,
       recordedController: Boolean(options.recordController),
       recordedOperation: Boolean(operation && options.recordOperation),
     };
