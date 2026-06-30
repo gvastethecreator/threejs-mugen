@@ -847,6 +847,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projcontact",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjContactTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-numexplod",
       required: true,
       artifact: presets.createSyntheticImportedHelperNumExplodTraceArtifact(),
@@ -1617,6 +1622,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-ishelper",
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projguard",
+    "synthetic-imported-helper-projcontact",
     "synthetic-imported-helper-numproj",
     "synthetic-imported-modifyexplod",
     "synthetic-imported-explod-bind",

@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-local ProjContactTime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projcontact.json` trace evidence for helper-local `ProjContact(8855)` / `ProjContactTime(8855) >= 1`.
+- Added a synthetic helper route where a visual Helper spawns owner-side Projectile anim `951` with `parentId = p1-helper-0`, waits in `1220` / anim `949`, then branches to `1221` / anim `950` after P2 guards the helper-parented Projectile and the generic contact age advances.
+- Added focused `EffectActorSystem` coverage proving same-id player-owned Projectile contact does not satisfy helper-local `ProjContact`, while helper-parented Projectile contact does after contact age advances.
+- Registered the new required trace in `pnpm qa:trace`.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "ProjContact|Helper ProjContact"` passed.
+- `pnpm test` passes: 95 files / 810 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 185 / 185 artifacts, 165 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-helper-projcontact.json` `07653cee`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors can branch on helper-local `ProjContact(id)` / `ProjContactTime(id)` from helper-parented owner-side Projectile generic contact markers.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact `ProjContact` / `ProjHit` / `ProjGuarded` tick order or lifetime, exact projectile namespace scopes, dynamic Projectile ids/params, teams, exact helper tick order, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - Helper-local ProjGuarded trace gate
 
 Changed:
