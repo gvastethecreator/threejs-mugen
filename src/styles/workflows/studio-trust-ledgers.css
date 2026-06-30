@@ -157,15 +157,16 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row:not(.record-evidence) .badge:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .badge-row:not(.record-evidence) .badge:nth-child(even) {
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .badge-row:not(.record-evidence) .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="build"] .pane-right :is(.build-readiness-record, .source-package-row):nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right :is(.evidence-record, .compat-row, .trace-frame-button, .trace-frame-delta-row):nth-child(even),
+  .studio-trust-contract-row:nth-child(even) {
     background: var(--trust-row-alt);
   }
 
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row:not(.record-evidence) .badge:last-child,
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .badge-row:not(.record-evidence) .badge:nth-child(2n),
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .badge-row:not(.record-evidence) .badge:last-child,
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .badge-row:not(.record-evidence) .badge:nth-child(2n) {
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .badge-row:not(.record-evidence) .badge:is(:last-child, :nth-child(2n)),
+  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-button:nth-child(7n),
+  .studio-trust-contract-summary span:last-child {
     border-right: 0;
   }
 
@@ -202,11 +203,6 @@
     border-radius: 0;
     background: var(--trust-row);
     box-shadow: inset 3px 0 0 color-mix(in srgb, var(--trust-accent) 66%, var(--trust-edge-strong));
-  }
-
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .evidence-record:nth-child(even) {
-    background: var(--trust-row-alt);
   }
 
   .app-shell.mode-studio[data-studio-tab="build"] .pane-right .build-readiness-record:hover,
@@ -339,7 +335,8 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="build"] .build-command-center .build-action-grid button:last-child {
+  .app-shell.mode-studio[data-studio-tab="build"] .build-command-center .build-action-grid button:last-child,
+  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center .command-action-column button:last-child {
     border-bottom: 0;
   }
 
@@ -427,10 +424,6 @@
     font-size: 10.5px;
     text-align: left;
     box-shadow: none;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center .command-action-column button:last-child {
-    border-bottom: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="evidence"] .evidence-command-center .command-action-column .action-label {
@@ -537,13 +530,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .compat-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-button:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-delta-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="build"] .pane-right .source-package-row:nth-child(even) {
-    background: var(--trust-row-alt);
-  }
-
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-strip {
     grid-template-columns: repeat(7, minmax(0, 1fr));
   }
@@ -553,10 +539,6 @@
     align-content: center;
     border-right: 1px solid var(--trust-edge);
     text-align: center;
-  }
-
-  .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-button:nth-child(7n) {
-    border-right: 0;
   }
 
   .app-shell.mode-studio[data-studio-tab="evidence"] .pane-right .trace-frame-button.is-selected {
@@ -596,10 +578,6 @@
     padding: 5px 8px;
     overflow: hidden;
     border-right: 1px solid var(--trust-edge);
-  }
-
-  .studio-trust-contract-summary span:last-child {
-    border-right: 0;
   }
 
   .studio-trust-contract-summary b,
@@ -658,10 +636,6 @@
     color: var(--trust-text);
     text-align: left;
     box-shadow: none;
-  }
-
-  .studio-trust-contract-row:nth-child(even) {
-    background: var(--trust-row-alt);
   }
 
   .studio-trust-contract-row:hover,

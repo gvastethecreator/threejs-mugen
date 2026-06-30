@@ -544,11 +544,6 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card:nth-child(even) {
-    border-right: 0;
-    background: var(--system-row-alt);
-  }
-
   .app-shell.mode-studio[data-studio-tab="modules"] .full-width-action,
   .app-shell.mode-studio[data-studio-tab="debug"] .full-width-action {
     min-height: 40px;
@@ -801,6 +796,7 @@
   .app-shell.mode-studio[data-studio-tab="debug"] .badge-row .badge:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="modules"] .contract-pill-row .badge:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="debug"] .contract-pill-row .badge:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="modules"] .module-node:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="modules"] .pipeline-step:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="debug"] .pipeline-step:nth-child(even),
@@ -833,6 +829,7 @@
 
   .app-shell.mode-studio[data-studio-tab="modules"] .studio-stat:last-child,
   .app-shell.mode-studio[data-studio-tab="debug"] .studio-stat:last-child,
+  .app-shell.mode-studio[data-studio-tab="modules"] .module-boundary-card:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="modules"] .engine-module-row > span:last-child {
     border-right: 0;
   }

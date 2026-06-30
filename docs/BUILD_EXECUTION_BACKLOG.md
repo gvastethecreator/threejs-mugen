@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio Trust/System CSS budget trim
+
+Changed:
+
+- Grouped Build/Evidence Trust Chain alternating-row backgrounds, end-border resets, and final action-button borders in `src/styles/workflows/studio-trust-ledgers.css`.
+- Folded the Modules boundary-card alternating/background/end-border reset into the existing Modules/Debug system-ledger grouped selectors in `src/styles/workflows/studio-system-ledgers.css`.
+- Tightened `pnpm qa:css:budget` from 537,761 bytes / 2,375 rules / 122 repeated declaration groups to 536,876 bytes / 2,368 rules / 119 repeated declaration groups; cross-file selector overlap remains 108 because this pass only compacted low-risk ledger declarations.
+- Updated the Studio/UI CSS docs and S1 local issue with the current CSS budget truth.
+
+Evidence:
+
+- `pnpm qa:css` passes: 536,876 active CSS bytes, 2,368 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 119 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes with the tightened ceilings above.
+- `pnpm test` passes: 77 files / 681 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports an existing CRLF normalization warning for `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/studio-modules.png`, `.scratch/qa/qa-smoke/studio-debug.png`, and `.scratch/qa/qa-smoke/studio-workbench.png`; Trust/System ledger rows, action rows, stage framing, and command surfaces remain visible without obvious overlap or broken row rhythm.
+
+Claim allowed:
+
+- Current active CSS still has no exact duplicate rules or same-file duplicate selector keys, and the guarded CSS payload/repeated-declaration budget is lower.
+
+Claim blocked:
+
+- This is Studio CSS hygiene only. It does not reduce the remaining 108 cross-file selector overlaps, finish shared chrome/action primitive extraction, change Studio behavior, change runtime behavior, or move port scores.
+
 ## 2026-06-30 - Runtime animation ownership
 
 Changed:
