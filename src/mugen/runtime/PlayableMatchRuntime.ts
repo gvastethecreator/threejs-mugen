@@ -94,7 +94,6 @@ import {
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
-  type RuntimeTargetPostype,
 } from "./TargetSystem";
 import { trainingStage } from "./demoStage";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -1330,24 +1329,13 @@ function applyBindToTargetController(
     candidateTargets: [opponent],
     controller,
     operation,
-    targetAnchor: bindToTargetAnchor,
+    getTargetConst: (target, name) => runtimeConst(target.definition, name),
     onOperation: (executedOperation) => compatibilityTelemetryWorld.recordOperation(fighter, executedOperation),
   });
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
   return stateAvailabilityWorld.canEnterState(target, stateId, owner);
-}
-
-function bindToTargetAnchor(target: FighterMatchState, postype: RuntimeTargetPostype): { x: number; y: number } {
-  if (postype === "foot") {
-    return { x: 0, y: 0 };
-  }
-  const key = postype === "head" ? "size.head.pos" : "size.mid.pos";
-  return {
-    x: runtimeConst(target.definition, `${key}.x`) ?? runtimeConst(target.definition, key) ?? 0,
-    y: runtimeConst(target.definition, `${key}.y`) ?? 0,
-  };
 }
 
 function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {

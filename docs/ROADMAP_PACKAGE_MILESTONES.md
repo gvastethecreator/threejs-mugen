@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 TargetSystem BindToTarget anchor ownership
+  -> TargetSystem owns bounded BindToTarget postype anchor resolution previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime supplies only character constants; resolveRuntimeTargetAnchor owns Foot/Mid/Head size-constant lookup
+  -> focused TargetSystem tests prove constant-backed anchor math and existing BindToTarget placement
+  -> no exact bind tick order, helper/team/multi-target ownership, throws/custom-state binding, target parity, or score movement claim
 R2 RuntimeContactPresentationWorld ownership
   -> RuntimeContactPresentationWorld owns bounded direct HitDef and Projectile contact presentation package emission previously inline in PlayableMatchRuntime
   -> PlayableMatchRuntime delegates shared contactId/contactTick/contactKind metadata creation plus attacker-side HitDef/Projectile sound and HitSpark telemetry through that boundary

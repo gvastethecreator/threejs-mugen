@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime target anchor ownership
+
+Changed:
+
+- Moved `BindToTarget` `postype` anchor resolution out of `PlayableMatchRuntime` and into `TargetSystem` through `resolveRuntimeTargetAnchor`.
+- Replaced the old match-runtime `targetAnchor` callback with a narrower `getTargetConst` hook so the target boundary owns MUGEN `Foot` / `Mid` / `Head` anchor semantics while the match runtime only supplies character constants.
+- Preserved current bounded behavior: `Foot` resolves to `0,0`, `Head` reads `size.head.pos.x/y`, and `Mid` reads `size.mid.pos.x/y` with the legacy scalar `size.*.pos` x fallback.
+- Added focused `TargetSystem` coverage for direct `BindToTarget` placement plus constant-backed `postype` anchor resolution.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/TargetSystem.test.ts` passes: 1 file / 17 tests.
+- `pnpm test` passes: 79 files / 688 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large-chunk warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm check:boundaries` passes.
+
+Claim allowed:
+
+- Current bounded `BindToTarget` `postype` anchor math is owned by `TargetSystem` instead of inline match-runtime glue.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact MUGEN/IKEMEN bind tick order, multi-target/team/helper target ownership, custom-state throw binding, exact target lifetime/drop parity, or score movement.
+
 ## 2026-06-30 - Runtime contact presentation ownership
 
 Changed:

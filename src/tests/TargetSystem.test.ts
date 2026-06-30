@@ -13,6 +13,7 @@ import {
   hasRuntimeTarget,
   matchesRuntimeTargetId,
   rememberRuntimeTarget,
+  resolveRuntimeTargetAnchor,
   resolveRuntimeTargetBindingPosition,
   RuntimeTargetWorld,
   type RuntimeTarget,
@@ -351,7 +352,7 @@ describe("TargetSystem", () => {
       actor,
       candidateTargets: [target],
       controller: controller("BindToTarget", { id: "77", pos: "12,-8,Head", time: "5" }),
-      targetAnchor: (_target, postype) => (postype === "head" ? { x: 6, y: -70 } : { x: 0, y: 0 }),
+      getTargetConst: (_target, name) => ({ "size.head.pos.x": 6, "size.head.pos.y": -70 })[name],
       onOperation: (operation) => operations.push(`${operation.kind}:${operation.postype}:${operation.time}`),
     });
 
@@ -359,6 +360,21 @@ describe("TargetSystem", () => {
     expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 5, offset: { x: 18, y: -78 } });
     expect(actor.runtime.pos).toEqual({ x: 82, y: -98 });
     expect(operations).toEqual(["bindtotarget:head:5"]);
+  });
+
+  it("resolves BindToTarget postype anchors from MUGEN size constants", () => {
+    const target = targetActor("p2");
+    const constants: Record<string, number> = {
+      "size.head.pos.x": 6,
+      "size.head.pos.y": -70,
+      "size.mid.pos": 4,
+      "size.mid.pos.y": -38,
+    };
+    const getConst = (_target: RuntimeTargetWorldActor, name: string) => constants[name];
+
+    expect(resolveRuntimeTargetAnchor(target, "foot", getConst)).toEqual({ x: 0, y: 0 });
+    expect(resolveRuntimeTargetAnchor(target, "head", getConst)).toEqual({ x: 6, y: -70 });
+    expect(resolveRuntimeTargetAnchor(target, "mid", getConst)).toEqual({ x: 4, y: -38 });
   });
 
   it("applies typed BindToTarget ops and reports misses without mutation", () => {

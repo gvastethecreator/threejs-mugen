@@ -73,7 +73,7 @@ export type RuntimeBindToTargetControllerOptions<TActor extends RuntimeTargetWor
   controller: MugenStateController;
   operation?: BindToTargetControllerOp;
   onOperation?: (operation: BindToTargetControllerOp) => void;
-  targetAnchor?: (target: TActor, postype: RuntimeTargetPostype) => { x: number; y: number };
+  getTargetConst?: (target: TActor, name: string) => number | undefined;
 };
 
 export type RuntimeTargetBindingApplyResult = {
@@ -256,7 +256,7 @@ export function applyRuntimeBindToTargetController<TActor extends RuntimeTargetW
 
   const memoryTarget = options.actor.targets.find((candidate) => candidate.actorId === target.id && matchesRuntimeTargetId(candidate, requestedId));
   const bindParams = options.operation ? { pos: options.operation.pos, postype: options.operation.postype } : bindToTargetParams(options.controller);
-  const anchor = options.targetAnchor?.(target, bindParams.postype) ?? { x: 0, y: 0 };
+  const anchor = resolveRuntimeTargetAnchor(target, bindParams.postype, options.getTargetConst);
   const offset = {
     x: anchor.x + bindParams.pos[0],
     y: anchor.y + bindParams.pos[1],
@@ -490,6 +490,21 @@ export function resolveRuntimeTargetBindingPosition(
   return {
     x: ownerPos.x + binding.offset.x * ownerFacing,
     y: ownerPos.y + binding.offset.y,
+  };
+}
+
+export function resolveRuntimeTargetAnchor<TActor>(
+  target: TActor,
+  postype: RuntimeTargetPostype,
+  getConst?: (target: TActor, name: string) => number | undefined,
+): { x: number; y: number } {
+  if (postype === "foot") {
+    return { x: 0, y: 0 };
+  }
+  const key = postype === "head" ? "size.head.pos" : "size.mid.pos";
+  return {
+    x: getConst?.(target, `${key}.x`) ?? getConst?.(target, key) ?? 0,
+    y: getConst?.(target, `${key}.y`) ?? 0,
   };
 }
 
