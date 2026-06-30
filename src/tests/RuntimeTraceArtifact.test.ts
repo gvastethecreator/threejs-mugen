@@ -219,10 +219,12 @@ describe("RuntimeTraceArtifact", () => {
 
   it("gates actor-frame down-recovery timer evidence", () => {
     const lieDown = playerActor({ animNo: 5110, moveType: "H", hitFallDownRecoverTime: 2 });
+    const lieDownCountdown = playerActor({ animNo: 5110, moveType: "H", hitFallDownRecoverTime: 1 });
     const getUp = playerActor({ animNo: 5120, moveType: "I", hitFallDownRecoverTime: 0 });
     const trace = traceFromFrames([
       traceFrame({ frameIndex: 0, tick: 1, checksum: "liedown", actors: [lieDown], effects: [] }),
-      traceFrame({ frameIndex: 1, tick: 2, checksum: "get-up", actors: [getUp], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "liedown-countdown", actors: [lieDownCountdown], effects: [] }),
+      traceFrame({ frameIndex: 2, tick: 3, checksum: "get-up", actors: [getUp], effects: [] }),
     ]);
 
     const artifact = createRuntimeTraceArtifact({
@@ -243,7 +245,9 @@ describe("RuntimeTraceArtifact", () => {
               actorKind: "player",
               animNo: 5110,
               moveType: "H",
-              observedHitFallDownRecoverTimeAtLeast: 1,
+              observedHitFallDownRecoverTimeAtLeast: 2,
+              observedHitFallDownRecoverTimeAtMost: 1,
+              minFrames: 2,
             },
             {
               actorId: "p2",
@@ -262,6 +266,8 @@ describe("RuntimeTraceArtifact", () => {
     const lieDownEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5110);
     const getUpEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5120);
     expect(lieDownEvidence?.maxHitFallDownRecoverTime).toBe(2);
+    expect(lieDownEvidence?.minHitFallDownRecoverTime).toBe(1);
+    expect(lieDownEvidence?.frames).toBeGreaterThanOrEqual(2);
     expect(getUpEvidence?.minHitFallDownRecoverTime).toBe(0);
     expect(artifact.gates[0]?.failures).toEqual([]);
   });

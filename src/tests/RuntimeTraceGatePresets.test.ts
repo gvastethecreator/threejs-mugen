@@ -4846,7 +4846,9 @@ describe("RuntimeTraceGatePresets", () => {
     const getUpFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5120);
     expect(lieDownFrame?.moveType).toBe("H");
     expect(getUpFrame?.moveType).toBe("I");
-    expect(lieDownFrame?.maxHitFallDownRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(lieDownFrame?.frames).toBeGreaterThanOrEqual(2);
+    expect(lieDownFrame?.maxHitFallDownRecoverTime).toBeGreaterThanOrEqual(58);
+    expect(lieDownFrame?.minHitFallDownRecoverTime).toBeLessThanOrEqual(54);
     expect(lieDownFrame?.lastTick ?? 0).toBeLessThan(getUpFrame?.firstTick ?? 0);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
       {
@@ -4855,8 +4857,9 @@ describe("RuntimeTraceGatePresets", () => {
         actorKind: "player",
         animNo: 5110,
         moveType: "H",
-        observedHitFallDownRecoverTimeAtLeast: 1,
-        minFrames: 1,
+        observedHitFallDownRecoverTimeAtLeast: 58,
+        observedHitFallDownRecoverTimeAtMost: 54,
+        minFrames: 2,
       },
     ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
