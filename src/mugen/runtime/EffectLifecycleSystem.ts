@@ -29,8 +29,12 @@ export type RuntimeEffectSnapshotGroups = {
 };
 
 export class RuntimeEffectLifecycleWorld {
-  advanceActive(actor: RuntimeEffectLifecycleActor, stage: Pick<MugenStageDefinition, "bounds">): void {
-    actor.effectActorWorld.advanceActiveEffects(actor.id, stage, helperRedirectContext(actor));
+  advanceActive(
+    actor: RuntimeEffectLifecycleActor,
+    stage: Pick<MugenStageDefinition, "bounds">,
+    opponent?: RuntimeEffectLifecycleActor,
+  ): void {
+    actor.effectActorWorld.advanceActiveEffects(actor.id, stage, helperRedirectContext(actor, opponent));
   }
 
   advancePresentation(actor: RuntimeEffectLifecycleActor): void {
@@ -41,11 +45,12 @@ export class RuntimeEffectLifecycleWorld {
     actor: RuntimeEffectLifecycleActor,
     pauseKind: RuntimeExplodPauseKind,
     stage: Pick<MugenStageDefinition, "bounds">,
+    opponent?: RuntimeEffectLifecycleActor,
   ): void {
     actor.effectActorWorld.advancePresentationEffects(actor.id, effectBindAnchor(actor), {
       pauseKind,
       stage,
-      ...helperRedirectContext(actor),
+      ...helperRedirectContext(actor, opponent),
     });
   }
 
@@ -79,11 +84,18 @@ function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: numbe
   };
 }
 
-function helperRedirectContext(actor: RuntimeEffectLifecycleActor): { parentState?: CharacterRuntimeState; rootState?: CharacterRuntimeState } {
+function helperRedirectContext(
+  actor: RuntimeEffectLifecycleActor,
+  opponent?: RuntimeEffectLifecycleActor,
+): { parentState?: CharacterRuntimeState; rootState?: CharacterRuntimeState; opponentState?: CharacterRuntimeState } {
   if (!isCompleteRuntimeState(actor.runtime)) {
     return {};
   }
-  return { parentState: actor.runtime, rootState: actor.runtime };
+  return {
+    parentState: actor.runtime,
+    rootState: actor.runtime,
+    opponentState: opponent && isCompleteRuntimeState(opponent.runtime) ? opponent.runtime : undefined,
+  };
 }
 
 function isCompleteRuntimeState(

@@ -81,7 +81,7 @@ export class RuntimeMatchInteractionWorld {
       p1,
       p2,
       advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
-      advanceActiveEffects: (fighter) => effectLifecycleWorld.advanceActive(fighter, stage),
+      advanceActiveEffects: (fighter) => effectLifecycleWorld.advanceActive(fighter, stage, fighter === p1 ? p2 : p1),
       resolveProjectileClashes: (left, right) =>
         left.effectActorWorld.resolveProjectileClashes(left.id, right.id, {
           leftLabel: left.label,

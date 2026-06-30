@@ -78,7 +78,8 @@ export class RuntimeHitPauseWorld {
       p2Input: input.p2Input,
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(input.tick, actorInput, { hitPause: true }),
       runIgnoredControllers: input.runIgnoredControllers,
-      advancePausedPresentation: (actor) => input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage),
+      advancePausedPresentation: (actor) =>
+        input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, actor === input.p1 ? input.p2 : input.p1),
     });
   }
 }

@@ -183,12 +183,13 @@ export class RuntimePausedMatchWorld {
       handleAi: input.handleAi,
       advanceFighter: input.advanceFighter,
       advanceTargetMemory: (actor) => actor.targetWorld.advance(actor),
-      advanceActiveEffects: (actor) => effectLifecycleWorld.advanceActive(actor, stage),
+      advanceActiveEffects: (actor) => effectLifecycleWorld.advanceActive(actor, stage, actor === input.p1 ? input.p2 : input.p1),
       advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),
       applyTargetBindings: (actor, opponent) => actor.targetWorld.applyTargetBindings(actor, [opponent]),
       applyBindToTarget: (actor, opponent) => actor.targetWorld.applyBindToTarget(actor, [opponent]),
       clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage),
-      advancePausedPresentation: (actor, pause) => effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage),
+      advancePausedPresentation: (actor, pause) =>
+        effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, actor === input.p1 ? input.p2 : input.p1),
       tickPause: input.tickPause,
     });
   }

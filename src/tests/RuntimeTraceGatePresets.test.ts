@@ -93,6 +93,7 @@ import {
   createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
   createSyntheticImportedHelperIsHelperTraceArtifact,
+  createSyntheticImportedHelperEnemyNearTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
   createSyntheticImportedHelperIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperPauseMoveTimeTraceArtifact,
@@ -1323,6 +1324,34 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(gate?.requirements.requiredActorFrames).toEqual([
       { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1201, animNo: 921, minFrames: 1 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper EnemyNear artifact with helper-local opponent branch evidence", () => {
+    const artifact = createSyntheticImportedHelperEnemyNearTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-enemynear-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-enemynear-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1202, animNo: 922 })]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1202, animNo: 922, minFrames: 1 },
     ]);
   });
 

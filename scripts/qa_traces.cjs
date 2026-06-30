@@ -748,6 +748,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperIsHelperTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-enemynear",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperEnemyNearTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-scale",
       required: true,
       artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),

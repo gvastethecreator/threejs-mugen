@@ -8018,6 +8018,53 @@ export function createSyntheticImportedHelperIsHelperTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHelperEnemyNearTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-enemynear-attacker",
+    displayName: "Synthetic Imported Helper EnemyNear Attacker",
+    withHelper: true,
+    helperEnemyNearRoute: { stateNo: 1202, animNo: 922, opponentStateNo: 0, opponentLife: 1000 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-enemynear-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-enemynear-golden",
+      label: "Synthetic imported Helper EnemyNear route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper EnemyNear trace proves the bounded helper-local micro-VM can evaluate read-only EnemyNear redirects against the current two-player opponent state and branch helper-local state. It does not claim EnemyNear(index), teams, helper-owned opponents, helper combat, or full MUGEN/IKEMEN helper redirect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-enemynear-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [{ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1202, animNo: 922, minFrames: 1 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1202, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9314,6 +9361,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperIgnoreHitPause?: boolean;
   helperTriggerTime?: number;
   helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
+  helperEnemyNearRoute?: { stateNo: number; animNo?: number; opponentStateNo?: number; opponentLife?: number };
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -9672,6 +9720,7 @@ ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
+${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
@@ -9859,6 +9908,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
             ...(options.helperIsHelperRoute?.animNo === undefined
               ? []
               : ([[options.helperIsHelperRoute.animNo, helperTraceAction(options.helperIsHelperRoute.animNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
+            ...(options.helperEnemyNearRoute?.animNo === undefined
+              ? []
+              : ([[options.helperEnemyNearRoute.animNo, helperTraceAction(options.helperEnemyNearRoute.animNo)]] as Array<[
                   number,
                   MugenAnimationAction,
                 ]>)),
@@ -11932,6 +11987,35 @@ ctrl = 0
 type = ChangeState
 trigger1 = Time = 0
 trigger1 = ${trigger}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperEnemyNearRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperEnemyNearRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  const opponentStateNo = route.opponentStateNo ?? 0;
+  const opponentLife = route.opponentLife ?? 1000;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, EnemyNear Route]
+type = ChangeState
+trigger1 = Time = 0
+trigger1 = EnemyNear, StateNo = ${opponentStateNo}
+trigger1 = EnemyNear, Life = ${opponentLife}
 value = ${route.stateNo}
 ctrl = 0
 

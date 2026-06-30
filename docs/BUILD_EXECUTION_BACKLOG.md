@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local EnemyNear trace gate
+
+Changed:
+
+- Added read-only `opponentState` context to the bounded `HelperSystem` helper-local micro-VM.
+- Wired normal match interaction, regular Pause/SuperPause source-movetime paths, and hitpause paused-presentation paths so visual Helpers can evaluate bounded `EnemyNear, ...` redirects against the current two-player opponent runtime state.
+- Added focused helper-runtime coverage for `EnemyNear, StateNo`, `EnemyNear, Life`, `EnemyNear, Pos X`, and `EnemyNear, Var(...)`, including fail-closed behavior when no opponent state is supplied.
+- Added required `synthetic-imported-helper-enemynear.json` trace evidence where a spawned visual Helper routes from state `1200` to `1202` / anim `922` through helper-local `EnemyNear, StateNo` plus `EnemyNear, Life` reads.
+
+Evidence:
+
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 2 files / 191 tests.
+- `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/PauseSystem.test.ts src/tests/RuntimeHitPauseSystem.test.ts src/tests/MatchInteractionSystem.test.ts` passes: 4 files / 42 tests.
+- `pnpm test` passes: 81 files / 708 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 170 / 170 artifacts, 150 required, 20 optional, 0 failed; `synthetic-imported-helper-enemynear.json` checksum is `35498955`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current visual Helper actors can read the current two-player opponent through bounded helper-local `EnemyNear, ...` redirects and branch inside the helper-local micro-VM.
+
+Claim blocked:
+
+- `EnemyNear(index)`, teams/simul/turns, helper-owned opponents, helper combat, helper-owned HitDefs/Projectiles/Explods/visual effects, `keyctrl`, nested helper ancestry, exact helper/opponent selection, exact tick order, and full MUGEN/IKEMEN helper redirect parity remain blocked.
+
 ## 2026-06-30 - Bounded dynamic Target redirect gate
 
 Changed:

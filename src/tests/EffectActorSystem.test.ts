@@ -400,6 +400,86 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("evaluates bounded helper EnemyNear redirects against opponent runtime state", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["Time = 0 && EnemyNear,StateNo = 5000"]),
+              controller("ChangeState", { value: "6000 + EnemyNear,Var(3)" }, ["EnemyNear,Life = 777", "EnemyNear,Pos X = 64"]),
+            ]),
+          ),
+          compileStateProgram(state(6004, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const opponentState = actor("p2", "Opponent", {
+      stateNo: 5000,
+      life: 777,
+      pos: { x: 64, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 4 : 0)),
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      opponentState,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["ChangeAnim", "ChangeState"]);
+    expect(opponentState.vars[3]).toBe(4);
+    expect(helper).toMatchObject({
+      stateNo: 6004,
+      animNo: 902,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("does not satisfy helper EnemyNear redirects when opponent runtime state is missing", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["EnemyNear,StateNo = 5000"]),
+              controller("ChangeState", { value: "6004" }, ["EnemyNear,Life = 777"]),
+            ]),
+          ),
+          compileStateProgram(state(6004, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual([]);
+    expect(helper).toMatchObject({
+      stateNo: 6000,
+      animNo: 900,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
   it("evaluates bounded helper identity triggers inside the helper-local micro-VM", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

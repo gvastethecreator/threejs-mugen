@@ -61,6 +61,7 @@ export type RuntimeHelperAdvanceOptions = {
   runtimeTick?: number;
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
+  opponentState?: CharacterRuntimeState;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
@@ -173,7 +174,7 @@ export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "runtimeTick" | "parentState" | "rootState" | "onController" | "onUnsupportedController"
+    "stageTime" | "runtimeTick" | "parentState" | "rootState" | "opponentState" | "onController" | "onUnsupportedController"
   > = {},
 ): RuntimeHelperControllerResult {
   const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
@@ -351,7 +352,7 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
 function helperTriggersPass(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState">,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState">,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
   if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options)))) {
@@ -378,7 +379,7 @@ function resolveHelperNumber(
   helper: RuntimeHelper,
   value: number | undefined,
   expression: string | undefined,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState">,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState">,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -413,10 +414,11 @@ function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
 
 function helperExpressionContext(
   helper: RuntimeHelper,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState"> = {},
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState"> = {},
 ) {
   return {
     self: helperRuntimeState(helper),
+    opponent: options.opponentState ? cloneRuntimeStateForRedirect(options.opponentState) : undefined,
     parent: options.parentState ? cloneRuntimeStateForRedirect(options.parentState) : undefined,
     root: options.rootState ? cloneRuntimeStateForRedirect(options.rootState) : undefined,
     isHelper: true,
