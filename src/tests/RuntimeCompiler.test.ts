@@ -48,13 +48,14 @@ time = 20
     const parentRedirect = compileExpression("Parent,Var(3) = 7");
     const rootRedirect = compileExpression("Root,Vel X = 4");
     const targetRedirect = compileExpression("Target(77), Life < 1000 && Target, StateNo >= 5000");
+    const dynamicTargetRedirect = compileExpression("Target(var(0) + 1), Life > 0");
     const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
       'NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
-    const unsupportedTargetDynamic = compileExpression("Target(var(0)), Life > 0");
+    const unsupportedTargetDynamic = compileExpression("Target(enemynear(1), stateno), Life > 0");
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
 
     expect(clean.normalized).toBe(
@@ -101,6 +102,9 @@ time = 20
     expect(rootRedirect.identifiers).toEqual(["velx"]);
     expect(targetRedirect.supportLevel).toBe("executable");
     expect(targetRedirect.identifiers).toEqual(["Life", "StateNo"]);
+    expect(dynamicTargetRedirect.supportLevel).toBe("executable");
+    expect(dynamicTargetRedirect.functions).toEqual(["var"]);
+    expect(dynamicTargetRedirect.identifiers).toEqual(["Life"]);
     expect(nestedRedirect.supportLevel).toBe("executable");
     expect(nestedRedirect.functions).toEqual(["Var"]);
     expect(nestedRedirect.identifiers).toEqual(["Time", "velx"]);
@@ -124,7 +128,7 @@ time = 20
     expect(unsupportedParentIndex.supportLevel).toBe("unsupported");
     expect(unsupportedParentIndex.unsupportedFeatures).toEqual(["parent(index)"]);
     expect(unsupportedTargetDynamic.supportLevel).toBe("unsupported");
-    expect(unsupportedTargetDynamic.unsupportedFeatures).toEqual(["target(dynamic)"]);
+    expect(unsupportedTargetDynamic.unsupportedFeatures).toEqual(["enemynear(index)"]);
     expect(unsupportedTargetNegative.supportLevel).toBe("unsupported");
     expect(unsupportedTargetNegative.unsupportedFeatures).toEqual(["target(negative)"]);
   });

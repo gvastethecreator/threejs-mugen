@@ -618,6 +618,11 @@ async function main() {
       artifact: presets.createSyntheticImportedTargetRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-target-dynamic-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetDynamicRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-target-noko",
       required: true,
       artifact: presets.createSyntheticImportedTargetNoKoTraceArtifact(),

@@ -78,24 +78,24 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 bounded target-redirect trigger gate
+R1 bounded dynamic Target redirect trigger gate
   -> ExpressionCompiler and ExpressionEvaluator classify bounded Target, ... and static Target(id), ... trigger redirects as executable in the current two-player target-memory context
   -> PlayableMatchRuntime resolves Target(id) from RuntimeTargetWorld target memory for active-state and State -1 trigger evaluation
-  -> required synthetic-imported-target-redirect.json checksum 89580963 proves direct HitDef target id 77 can feed Target(77), Life and branch P1 state 200 -> 286
-  -> pnpm qa:trace now passes 168/168 artifacts, 148 required and 20 optional
-  -> no helper/projectile targets, dynamic target ids, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, full target redirect parity, or score movement claim
+  -> required synthetic-imported-target-dynamic-redirect.json checksum 9985b62a proves direct HitDef target id 77 plus owner-local var(0) = 77 can feed Target(var(0)), Life and branch P1 state 200 -> 287; previous synthetic-imported-target-redirect.json checksum 89580963 keeps the static Target(77), Life route gated
+  -> pnpm qa:trace now passes 169/169 artifacts, 149 required and 20 optional
+  -> no helper/projectile targets, unsupported or negative target-id expressions, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, full target redirect parity, or score movement claim
 R1 bounded identity-trigger gate
   -> ExpressionCompiler and ExpressionEvaluator classify Name/P1Name/P2Name/AuthorName as executable in the current two-actor runtime context
   -> PlayableMatchRuntime passes fighter display name plus author metadata into active-state, State -1, setup, and dynamic dispatch trigger evaluation
   -> EnemyNear redirect contexts now swap identity metadata as well as actor state, including composite expressions
   -> required synthetic-imported-identity.json checksum c9be5cf1 proves the route into state 276
-  -> superseded by target-redirect gate; pnpm qa:trace now passes 168/168 artifacts, 148 required and 20 optional
+  -> superseded by dynamic-target redirect gate; pnpm qa:trace now passes 169/169 artifacts, 149 required and 20 optional
   -> no team/simul/helper/player-indexed identity selection, parent/root/target identity redirects, exact string edge parity, or score movement claim
 R2 bounded helper-local IsHelper gate
   -> ExpressionCompiler and ExpressionEvaluator classify IsHelper and IsHelper(id) as executable in helper-local contexts
   -> HelperSystem passes helper identity into visual Helper actor trigger evaluation
   -> required synthetic-imported-helper-ishelper.json checksum 37877602 proves helper state 1200 branches to 1201 / anim 921
-  -> superseded by target-redirect gate; pnpm qa:trace now passes 168/168 artifacts, 148 required and 20 optional
+  -> superseded by dynamic-target redirect gate; pnpm qa:trace now passes 169/169 artifacts, 149 required and 20 optional
   -> no full helper VM, helper-owned combat, parent/root mutation, nested helper ancestry, team ownership, exact tick order, or score movement claim
 R2 RuntimeStateClockWorld ownership
   -> RuntimeStateClockWorld owns bounded Time/stateElapsed mutation for active-frame advance and changed-state elapsed reset
@@ -173,7 +173,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the target-redirect gate is 168/168 artifacts, 148 required and 20 optional
+  -> current aggregate after the dynamic-target redirect gate is 169/169 artifacts, 149 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
@@ -202,12 +202,12 @@ R2 RuntimeSnapshotWorld effect snapshot aggregation
 R1 required Common1 fall get-hit entry trace strengthening
   -> synthetic-imported-default-fall-gethit.json checksum 6af73a91
   -> required trace now gates ordered P2 5000 ChangeState before 5030 VelAdd / HitVelSet / kinematic:hitvelset / ChangeState before 5050 VelAdd / ChangeState plus actor-frame 5000 -> 5030 -> 5050
-  -> optional kfm-official-default-fall-gethit.json checksum 813ff55d now requires bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation order and actor-frame order when the private fixture exists
+  -> optional kfm-official-default-fall-gethit.json checksum 0b3ece0c now requires bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation order and actor-frame order when the private fixture exists
   -> no exact Common1 controller-loop tick order, fall/bounce/liedown velocity math, recovery branching, guard-state parity, public bundled KFM, or full fall get-hit parity claim
 R1 required Common1 lie-down/get-up recovery trace strengthening
   -> synthetic-imported-default-fall-recovery.json checksum d83797d9
   -> required trace now gates ordered P2 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState plus actor-frame 5110 -> 5120
-  -> optional kfm-official-default-fall-recovery.json checksum 978b8343 now requires bounded official KFM 5110/5120 controller/typed-operation order when the private fixture exists
+  -> optional kfm-official-default-fall-recovery.json checksum b1c6456a now requires bounded official KFM 5110/5120 controller/typed-operation order when the private fixture exists
   -> no exact Common1 controller-loop tick order, threshold table, velocity math, recovery-input branching, public bundled KFM, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening
   -> synthetic-imported-default-gethit-progression.json checksum ef2a67f8

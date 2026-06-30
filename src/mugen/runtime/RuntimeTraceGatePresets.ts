@@ -6346,6 +6346,51 @@ export function createSyntheticImportedTargetRedirectTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedTargetDynamicRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-dynamic-redirect-attacker",
+    displayName: "Synthetic Imported Target Dynamic Redirect Attacker",
+    targetDynamicRedirectStateNo: 287,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-target-dynamic-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-dynamic-redirect-golden",
+      label: "Synthetic imported dynamic Target redirect trigger route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic Target redirect trace proves bounded Target(var(0)), Life trigger reads can resolve a target id from owner-local variables after direct HitDef contact. It does not claim helper/projectile targets, mutation through redirects, teams, multi-target selection, exact target lifetime, or full MUGEN/IKEMEN target redirect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-dynamic-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 287],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "VarSet"],
+        requiredExecutedOperations: ["hitdef", "variable:varset"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 287, animNo: 287 },
+          { actorId: "p2", actorKind: "player", life: 963 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetNoKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetScript();
@@ -9182,6 +9227,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
   targetRedirectStateNo?: number;
+  targetDynamicRedirectStateNo?: number;
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
   withTargetDrop?: boolean;
@@ -9571,6 +9617,7 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgn
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
 ${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock("Target(77), Life < 1000", options.targetRedirectStateNo, "Target Redirect Branch")}
+${options.targetDynamicRedirectStateNo === undefined ? "" : targetDynamicRedirectBlock(options.targetDynamicRedirectStateNo)}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
   pauseMoveTime: options.helperPauseMoveTime,
   superMoveTime: options.helperSuperMoveTime,
@@ -9632,6 +9679,7 @@ ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
 ${options.targetRedirectStateNo === undefined ? "" : simpleStateBlock(options.targetRedirectStateNo, "I")}
+${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(options.targetDynamicRedirectStateNo, "I")}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -9731,6 +9779,11 @@ ${options.targetRedirectStateNo === undefined ? "" : simpleStateBlock(options.ta
       ...(options.targetRedirectStateNo === undefined
         ? []
         : ([[options.targetRedirectStateNo, traceAction(options.targetRedirectStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.targetDynamicRedirectStateNo === undefined
+        ? []
+        : ([[options.targetDynamicRedirectStateNo, traceAction(options.targetDynamicRedirectStateNo)]] as Array<
+            [number, MugenAnimationAction]
+          >)),
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.prevStateRoute === undefined
         ? []
@@ -11321,6 +11374,22 @@ function contactBranchBlock(trigger: string, stateNo: number, label: string): st
 [State 200, ${label}]
 type = ChangeState
 trigger1 = ${trigger}
+value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function targetDynamicRedirectBlock(stateNo: number): string {
+  return `
+[State 200, Target ID Var Seed]
+type = VarSet
+trigger1 = MoveHit >= 1
+v = 0
+value = 77
+
+[State 200, Target Dynamic Redirect Branch]
+type = ChangeState
+trigger1 = Target(var(0)), Life < 1000
 value = ${stateNo}
 ctrl = 0
 `;

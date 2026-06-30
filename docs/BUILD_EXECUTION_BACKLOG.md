@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded dynamic Target redirect gate
+
+Changed:
+
+- Added bounded dynamic target-id evaluation for `Target(expr), ...` redirects in `ExpressionEvaluator`, including owner-local expressions such as `Target(var(0)), ...`.
+- Updated `ExpressionCompiler` support scanning so executable target-id expressions participate in trigger support instead of being classified as `target(dynamic)`.
+- Fixed parser-level redirect fail-closed behavior so a missing redirect inside comparisons cannot turn into false-positive numeric comparisons such as `0 < 1000`.
+- Added required `synthetic-imported-target-dynamic-redirect.json` trace evidence where direct `HitDef` target id `77` plus owner-local `VarSet` `var(0) = 77` routes P1 from state `200` to `287` through `Target(var(0)), Life < 1000`.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 3 files / 223 tests.
+- `pnpm test` passes: 81 files / 705 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 169 / 169 artifacts, 149 required, 20 optional, 0 failed; `synthetic-imported-target-dynamic-redirect.json` checksum is `9985b62a`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git reports CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current imported owner states can read a recent player target through bounded dynamic executable target-id expressions such as `Target(var(0)), ...` in the two-player sandbox.
+
+Claim blocked:
+
+- Helper/projectile targets, unsupported or negative target-id expressions, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, and full MUGEN/IKEMEN target redirect parity remain blocked.
+
 ## 2026-06-30 - Bounded Target redirect trigger gate
 
 Changed:

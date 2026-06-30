@@ -86,6 +86,7 @@ export function evaluateExpression(expression: string, context: ExpressionContex
 type ExpressionValue = boolean | number | string;
 
 const commandIdentifierMarker = "__mugen_command_identifier__";
+const failedRedirectMarker = "__mugen_failed_redirect__";
 
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
   const redirect = /^(enemynear|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
@@ -115,7 +116,7 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
     });
   }
   if (target === "target") {
-    const targetId = parseStaticRedirectTargetId(index, context);
+    const targetId = resolveRedirectTargetId(index, context);
     if (targetId === "unsupported") {
       return 0;
     }
@@ -168,7 +169,8 @@ class ExpressionParser {
     if (this.tokens.length === 0) {
       return false;
     }
-    return this.parseOr();
+    const value = this.parseOr();
+    return isFailedRedirect(value) ? 0 : value;
   }
 
   private parseOr(): ExpressionValue {
@@ -201,6 +203,9 @@ class ExpressionParser {
   }
 
   private compareEquality(left: ExpressionValue, right: ExpressionValue, negated: boolean): number {
+    if (isFailedRedirect(left) || isFailedRedirect(right)) {
+      return 0;
+    }
     if (left === commandIdentifierMarker) {
       const active = typeof right === "string" && this.context.commandActive?.(right) ? 1 : 0;
       return negated ? (active ? 0 : 1) : active;
@@ -217,13 +222,17 @@ class ExpressionParser {
     let left = this.parseTerm();
     while (true) {
       if (this.matchOperator("<=")) {
-        left = compareValues(left, this.parseTerm()) <= 0 ? 1 : 0;
+        const right = this.parseTerm();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) <= 0 ? 1 : 0;
       } else if (this.matchOperator(">=")) {
-        left = compareValues(left, this.parseTerm()) >= 0 ? 1 : 0;
+        const right = this.parseTerm();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) >= 0 ? 1 : 0;
       } else if (this.matchOperator("<")) {
-        left = compareValues(left, this.parseTerm()) < 0 ? 1 : 0;
+        const right = this.parseTerm();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) < 0 ? 1 : 0;
       } else if (this.matchOperator(">")) {
-        left = compareValues(left, this.parseTerm()) > 0 ? 1 : 0;
+        const right = this.parseTerm();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) > 0 ? 1 : 0;
       } else {
         return left;
       }
@@ -234,9 +243,11 @@ class ExpressionParser {
     let left = this.parseFactor();
     while (true) {
       if (this.matchOperator("+")) {
-        left = numeric(left) + numeric(this.parseFactor());
+        const right = this.parseFactor();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) + numeric(right);
       } else if (this.matchOperator("-")) {
-        left = numeric(left) - numeric(this.parseFactor());
+        const right = this.parseFactor();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) - numeric(right);
       } else {
         return left;
       }
@@ -247,10 +258,12 @@ class ExpressionParser {
     let left = this.parseUnary();
     while (true) {
       if (this.matchOperator("*")) {
-        left = numeric(left) * numeric(this.parseUnary());
+        const right = this.parseUnary();
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : numeric(left) * numeric(right);
       } else if (this.matchOperator("/")) {
-        const divisor = numeric(this.parseUnary());
-        left = divisor === 0 ? 0 : numeric(left) / divisor;
+        const right = this.parseUnary();
+        const divisor = numeric(right);
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : divisor === 0 ? 0 : numeric(left) / divisor;
       } else {
         return left;
       }
@@ -259,10 +272,12 @@ class ExpressionParser {
 
   private parseUnary(): ExpressionValue {
     if (this.matchOperator("!")) {
-      return truthy(this.parseUnary()) ? 0 : 1;
+      const value = this.parseUnary();
+      return isFailedRedirect(value) ? failedRedirectMarker : truthy(value) ? 0 : 1;
     }
     if (this.matchOperator("-")) {
-      return -numeric(this.parseUnary());
+      const value = this.parseUnary();
+      return isFailedRedirect(value) ? failedRedirectMarker : -numeric(value);
     }
     return this.parsePrimary();
   }
@@ -282,7 +297,7 @@ class ExpressionParser {
       const redirectedContext = this.tryConsumeRedirectContext(token.value);
       if (redirectedContext === "fail") {
         this.parseUnary();
-        return 0;
+        return failedRedirectMarker;
       }
       if (redirectedContext) {
         return this.withContext(redirectedContext, () => this.parseUnary());
@@ -341,7 +356,7 @@ class ExpressionParser {
       };
     }
     if (target === "target") {
-      const targetId = parseStaticRedirectTargetId(index, this.context);
+      const targetId = resolveRedirectTargetId(index, this.context);
       if (targetId === "unsupported") {
         return "fail";
       }
@@ -952,6 +967,9 @@ function defaultHitVar(name: string): number {
 }
 
 function truthy(value: ExpressionValue): boolean {
+  if (isFailedRedirect(value)) {
+    return false;
+  }
   if (typeof value === "number") {
     return value !== 0;
   }
@@ -988,21 +1006,43 @@ function optionalPositiveInteger(value: ExpressionValue | undefined): number | u
   return Number.isFinite(numberValue) ? Math.max(0, Math.trunc(numberValue)) : undefined;
 }
 
-function parseStaticRedirectTargetId(index: string | undefined, context: ExpressionContext): number | "unsupported" | undefined {
+function isFailedRedirect(value: ExpressionValue): boolean {
+  return value === failedRedirectMarker;
+}
+
+function resolveRedirectTargetId(index: string | undefined, context: ExpressionContext): number | "unsupported" | undefined {
   if (!index) {
     return undefined;
   }
   const trimmed = index.trim();
   if (/^-?\d+$/.test(trimmed)) {
-    const numericId = Number(trimmed);
-    if (numericId < 0) {
-      context.reportUnsupported?.("target(negative)");
-      return "unsupported";
-    }
-    return numericId;
+    return normalizeRedirectTargetId(Number(trimmed), context);
   }
-  context.reportUnsupported?.("target(dynamic)");
-  return "unsupported";
+  let indexUnsupported = false;
+  const value = evaluateExpression(trimmed, {
+    ...context,
+    reportUnsupported: (feature) => {
+      indexUnsupported = true;
+      context.reportUnsupported?.(feature);
+    },
+  });
+  if (indexUnsupported) {
+    return "unsupported";
+  }
+  return normalizeRedirectTargetId(numeric(value), context);
+}
+
+function normalizeRedirectTargetId(value: number, context: ExpressionContext): number | "unsupported" {
+  if (!Number.isFinite(value)) {
+    context.reportUnsupported?.("target(dynamic-invalid)");
+    return "unsupported";
+  }
+  const targetId = Math.trunc(value);
+  if (targetId < 0) {
+    context.reportUnsupported?.("target(negative)");
+    return "unsupported";
+  }
+  return targetId;
 }
 
 function numeric(value: ExpressionValue): number {

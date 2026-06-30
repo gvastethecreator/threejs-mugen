@@ -115,10 +115,20 @@ function stripRedirectContextsForSupportScan(expression: string, unsupportedFeat
       unsupportedFeatures.add(`${target}(index)`);
     }
     if (target === "target" && index) {
-      if (!/^-?\d+$/.test(index)) {
-        unsupportedFeatures.add("target(dynamic)");
-      } else if (Number(index) < 0) {
-        unsupportedFeatures.add("target(negative)");
+      if (/^-?\d+$/.test(index)) {
+        if (Number(index) < 0) {
+          unsupportedFeatures.add("target(negative)");
+        }
+      } else {
+        const indexScan = expressionForSupportScan(index);
+        for (const feature of indexScan.unsupportedFeatures) {
+          unsupportedFeatures.add(feature);
+        }
+        output += expression.slice(cursor, redirectStart);
+        output += ` (${indexScan.expression}) `;
+        cursor = position + 1;
+        redirectPattern.lastIndex = cursor;
+        continue;
       }
     }
 
