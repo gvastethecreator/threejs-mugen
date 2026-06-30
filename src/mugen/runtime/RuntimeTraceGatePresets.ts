@@ -5647,7 +5647,7 @@ export function createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact
       label: "Synthetic imported Common1 recovery threshold route",
       source: "mixed",
       notes: [
-        "Synthetic imported recovery-threshold trace proves the defender stays in Common1-style fall state 5050 while hitFall.recoverTime is still positive, then reaches recovery state 5210 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" routes. It does not claim exact MUGEN/IKEMEN thresholds, velocities, or tick-order parity.",
+        "Synthetic imported recovery-threshold trace proves the defender stays in Common1-style fall state 5050 while hitFall.recoverTime is still positive, observes a first-to-last recoverTime drop in that summarized bucket, then reaches recovery state 5210 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" routes. It does not claim exact MUGEN/IKEMEN thresholds, velocities, or tick-order parity.",
       ],
     },
     gates: [
@@ -5670,7 +5670,9 @@ export function createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact
             animNo: 5050,
             moveType: "H",
             observedHitFallRecoverTimeAtLeast: 1,
-            minFrames: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
           },
           {
             actorId: "p2",
@@ -5731,7 +5733,7 @@ export function createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact
       label: "Synthetic imported Common1 recovery actor-frame tick-order route",
       source: "mixed",
       notes: [
-        "Synthetic imported recovery tick-order trace proves summarized actor-frame evidence can require 5050 with positive fall.recovertime before 5210 with recoverTime = 0 on the bounded recovery-input route, and can require a bounded controller-event sequence for the same route. It does not claim exact MUGEN/IKEMEN VM tick order, full controller-loop ordering, or official KFM threshold tables.",
+        "Synthetic imported recovery tick-order trace proves summarized actor-frame evidence can require 5050 with positive fall.recovertime, a first-to-last recoverTime drop, and ordering before 5210 with recoverTime = 0 on the bounded recovery-input route; it can also require a bounded controller-event sequence for the same route. It does not claim exact MUGEN/IKEMEN VM tick order, full controller-loop ordering, or official KFM threshold tables.",
       ],
     },
     gates: [
@@ -5773,7 +5775,9 @@ export function createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact
                 animNo: 5050,
                 moveType: "H",
                 observedHitFallRecoverTimeAtLeast: 1,
-                minFrames: 1,
+                observedHitFallRecoverTimeAtMost: 0,
+                observedHitFallRecoverTimeDropAtLeast: 1,
+                minFrames: 2,
               },
               {
                 actorId: "p2",

@@ -486,6 +486,7 @@ export type RuntimeTraceActorFrameRequirement = {
   observedAngleAtMost?: number;
   observedHitFallRecoverTimeAtLeast?: number;
   observedHitFallRecoverTimeAtMost?: number;
+  observedHitFallRecoverTimeDropAtLeast?: number;
   observedHitFallDownRecoverTimeAtLeast?: number;
   observedHitFallDownRecoverTimeAtMost?: number;
   observedHitFallDownRecoverTimeDropAtLeast?: number;
@@ -552,6 +553,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxAngle: number;
   minHitFallRecoverTime?: number;
   maxHitFallRecoverTime?: number;
+  firstHitFallRecoverTime?: number;
+  lastHitFallRecoverTime?: number;
   minHitFallDownRecoverTime?: number;
   maxHitFallDownRecoverTime?: number;
   firstHitFallDownRecoverTime?: number;
@@ -1475,6 +1478,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxAngle: Math.max(existing.maxAngle, actor.renderAngle ?? 0),
               minHitFallRecoverTime: minOptionalTraceNumber(existing.minHitFallRecoverTime, actor.hitFall?.recoverTime),
               maxHitFallRecoverTime: maxOptionalTraceNumber(existing.maxHitFallRecoverTime, actor.hitFall?.recoverTime),
+              firstHitFallRecoverTime:
+                frame.tick < existing.firstTick ? actor.hitFall?.recoverTime : existing.firstHitFallRecoverTime,
+              lastHitFallRecoverTime:
+                frame.tick >= existing.lastTick ? actor.hitFall?.recoverTime : existing.lastHitFallRecoverTime,
               minHitFallDownRecoverTime: minOptionalTraceNumber(existing.minHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
               maxHitFallDownRecoverTime: maxOptionalTraceNumber(existing.maxHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
               firstHitFallDownRecoverTime:
@@ -1509,6 +1516,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxAngle: actor.renderAngle ?? 0,
               minHitFallRecoverTime: actor.hitFall?.recoverTime,
               maxHitFallRecoverTime: actor.hitFall?.recoverTime,
+              firstHitFallRecoverTime: actor.hitFall?.recoverTime,
+              lastHitFallRecoverTime: actor.hitFall?.recoverTime,
               minHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
               maxHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
               firstHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
@@ -2807,6 +2816,10 @@ function matchesActorFrameRequirement(
   actor: RuntimeTraceGateActorFrameEvidence,
   requirement: RuntimeTraceActorFrameRequirement,
 ): boolean {
+  const hitFallRecoverTimeDrop =
+    actor.firstHitFallRecoverTime === undefined || actor.lastHitFallRecoverTime === undefined
+      ? undefined
+      : actor.firstHitFallRecoverTime - actor.lastHitFallRecoverTime;
   const hitFallDownRecoverTimeDrop =
     actor.firstHitFallDownRecoverTime === undefined || actor.lastHitFallDownRecoverTime === undefined
       ? undefined
@@ -2846,6 +2859,8 @@ function matchesActorFrameRequirement(
       (actor.maxHitFallRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallRecoverTimeAtLeast) &&
     (requirement.observedHitFallRecoverTimeAtMost === undefined ||
       (actor.minHitFallRecoverTime ?? Number.POSITIVE_INFINITY) <= requirement.observedHitFallRecoverTimeAtMost) &&
+    (requirement.observedHitFallRecoverTimeDropAtLeast === undefined ||
+      (hitFallRecoverTimeDrop ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallRecoverTimeDropAtLeast) &&
     (requirement.observedHitFallDownRecoverTimeAtLeast === undefined ||
       (actor.maxHitFallDownRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallDownRecoverTimeAtLeast) &&
     (requirement.observedHitFallDownRecoverTimeAtMost === undefined ||

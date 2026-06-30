@@ -275,6 +275,64 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
   });
 
+  it("gates actor-frame recovery timer drop evidence", () => {
+    const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 2 });
+    const fallCountdown = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 0 });
+    const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "fall", actors: [fall], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "fall-countdown", actors: [fallCountdown], effects: [] }),
+      traceFrame({ frameIndex: 2, tick: 3, checksum: "recovery", actors: [recovery], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-recovery-timer",
+        label: "Synthetic recovery timer",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "recovery-timer",
+          requiredActorFrames: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 5050,
+              moveType: "H",
+              observedHitFallRecoverTimeAtLeast: 2,
+              observedHitFallRecoverTimeAtMost: 0,
+              observedHitFallRecoverTimeDropAtLeast: 2,
+              minFrames: 2,
+            },
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 5210,
+              moveType: "I",
+              observedHitFallRecoverTimeAtMost: 0,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    const fallEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5050);
+    const recoveryEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5210);
+    expect(fallEvidence?.maxHitFallRecoverTime).toBe(2);
+    expect(fallEvidence?.minHitFallRecoverTime).toBe(0);
+    expect(fallEvidence?.firstHitFallRecoverTime).toBe(2);
+    expect(fallEvidence?.lastHitFallRecoverTime).toBe(0);
+    expect(fallEvidence?.frames).toBeGreaterThanOrEqual(2);
+    expect(recoveryEvidence?.minHitFallRecoverTime).toBe(0);
+    expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
   it("fails actor-frame sequence gates when frames appear out of order", () => {
     const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
     const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });

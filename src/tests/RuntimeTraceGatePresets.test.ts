@@ -4976,6 +4976,9 @@ describe("RuntimeTraceGatePresets", () => {
       animNo: 5050,
     });
     expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
     const recoveryFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5210);
     expect(recoveryFrame).toMatchObject({
       actorId: "p2",
@@ -4991,7 +4994,9 @@ describe("RuntimeTraceGatePresets", () => {
         animNo: 5050,
         moveType: "H",
         observedHitFallRecoverTimeAtLeast: 1,
-        minFrames: 1,
+        observedHitFallRecoverTimeAtMost: 0,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
       },
       {
         actorId: "p2",
@@ -5034,6 +5039,9 @@ describe("RuntimeTraceGatePresets", () => {
       (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.animNo === 5210 && frame.moveType === "I",
     );
     expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(fallFrame?.lastTick).toBeLessThan(recoveryFrame?.firstTick ?? 0);
     expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
@@ -5054,7 +5062,9 @@ describe("RuntimeTraceGatePresets", () => {
             animNo: 5050,
             moveType: "H",
             observedHitFallRecoverTimeAtLeast: 1,
-            minFrames: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
           },
           {
             actorId: "p2",
