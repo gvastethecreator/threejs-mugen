@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeActorConstraintControllerDispatchWorld ownership extraction
+  -> RuntimeActorConstraintControllerDispatchWorld now owns bounded active-state Width side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed collision:width operation selection, operation telemetry, and body-width mutation handoff through RuntimeActorConstraintWorld
+  -> match runtime still owns trigger filtering, active-state order, per-frame constraint reset, stage clamp, and body-push ordering
+  -> focused ActorConstraintSystem coverage proves Width telemetry/mutation through the dispatch boundary
+  -> no exact player/edge collision, team/helper push behavior, screen-edge/camera parity, Width edge semantics, full constraint VM parity, or score movement claim
 R2 RuntimePauseControllerDispatchWorld ownership extraction
   -> RuntimePauseControllerDispatchWorld now owns bounded active-state Pause/SuperPause side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed pause operation selection, apply-controller callback handoff, and operation telemetry through the dispatch boundary

@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { RuntimeActorConstraintWorld, type RuntimeActorConstraintState } from "../mugen/runtime/ActorConstraintSystem";
+import {
+  RuntimeActorConstraintControllerDispatchWorld,
+  RuntimeActorConstraintWorld,
+  type RuntimeActorConstraintState,
+} from "../mugen/runtime/ActorConstraintSystem";
 
 describe("ActorConstraintSystem", () => {
   it("applies bounded Width params from raw and typed controllers", () => {
@@ -17,6 +22,27 @@ describe("ActorConstraintSystem", () => {
       back: 0,
     });
     expect(state.bodyWidth).toEqual({ front: 160, back: 1 });
+  });
+
+  it("dispatches active Width controllers with telemetry hooks", () => {
+    const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
+    const actor = { runtime: actorState() };
+    const ir = compileControllerIr(controller("Width", { player: "18,44" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor,
+      controller: ir,
+      actorConstraintWorld: new RuntimeActorConstraintWorld(),
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(actor.runtime.bodyWidth).toEqual({ front: 18, back: 44 });
+    expect(recordedControllers).toEqual(["Width"]);
+    expect(recordedOperations).toEqual(["collision:width"]);
+    expect(result).toEqual({ recordedController: true, recordedOperation: true });
   });
 
   it("resets one-frame constraints and preserves frozen position axes", () => {

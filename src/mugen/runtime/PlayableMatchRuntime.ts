@@ -11,7 +11,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
-import { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import { RuntimeActorConstraintControllerDispatchWorld, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
 import { CommandBuffer } from "./CommandBuffer";
 import {
@@ -125,6 +125,7 @@ const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
+const actorConstraintControllerDispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
@@ -1042,12 +1043,13 @@ function runActiveStateControllers(
         }
         activateReversalDef(fighter, rawController, reversalWorld, operation);
       } else if (dispatch.effect === "width") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "collision" && controller.operation.controllerType === "width" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        actorConstraintWorld.applyWidth(fighter.runtime, rawController, operation);
+        actorConstraintControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          actorConstraintWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "fallenvshake") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         recordFallEnvShakeEvent(

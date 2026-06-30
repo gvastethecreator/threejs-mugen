@@ -1,4 +1,5 @@
 import type { CollisionControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -8,6 +9,19 @@ export type RuntimeActorConstraintState = Pick<
   CharacterRuntimeState,
   "pos" | "facing" | "bodyWidth" | "playerPush" | "posFreeze" | "screenBound"
 >;
+
+export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { runtime: RuntimeActorConstraintState }> = {
+  actor: TActor;
+  controller: ControllerIr;
+  actorConstraintWorld: RuntimeActorConstraintWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: Extract<CollisionControllerOp, { controllerType: "width" }>) => void;
+};
+
+export type RuntimeActorConstraintControllerDispatchResult = {
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
 
 export class RuntimeActorConstraintWorld {
   resetFrameConstraints(state: RuntimeActorConstraintState): void {
@@ -63,6 +77,26 @@ export class RuntimeActorConstraintWorld {
     const direction = delta > 0 ? 1 : -1;
     left.pos.x -= push * direction;
     right.pos.x += push * direction;
+  }
+}
+
+export class RuntimeActorConstraintControllerDispatchWorld {
+  apply<TActor extends { runtime: RuntimeActorConstraintState }>(
+    options: RuntimeActorConstraintControllerDispatchOptions<TActor>,
+  ): RuntimeActorConstraintControllerDispatchResult {
+    const operation =
+      options.controller.operation?.kind === "collision" && options.controller.operation.controllerType === "width"
+        ? options.controller.operation
+        : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    options.actorConstraintWorld.applyWidth(options.actor.runtime, options.controller.source, operation);
+    return {
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
   }
 }
 
