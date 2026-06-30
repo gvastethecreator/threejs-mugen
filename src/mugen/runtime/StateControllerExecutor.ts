@@ -3,7 +3,6 @@ import type {
   AssertSpecialControllerOp,
   BoundsControllerOp,
   CollisionControllerOp,
-  DamageScaleControllerOp,
   HitFallControllerOp,
   KinematicControllerOp,
   MetadataControllerOp,
@@ -29,11 +28,13 @@ import { applyRuntimeTurn } from "./OrientationSystem";
 import { applyRuntimeStateMetadataTransition } from "./RuntimeStateMetadataSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
+import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
 
 const hitDefenseWorld = new RuntimeHitDefenseWorld();
+const damageScaleWorld = new RuntimeDamageScaleWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -195,17 +196,17 @@ export function executeControllerIr(
     const operation = controller.operation?.kind === "hitoverride" ? controller.operation : undefined;
     hitDefenseWorld.applyHitOverrideController(next, controller, operation, context);
   } else if (type === "defencemulset") {
-    const operation = damageScaleOperation(controller, "defencemulset");
-    const value = operation?.multiplier ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
-      next.defenseMultiplier = Math.max(0, Math.min(10, value));
-    }
+    const operation =
+      controller.operation?.kind === "damage-scale" && controller.operation.controllerType === "defencemulset"
+        ? controller.operation
+        : undefined;
+    damageScaleWorld.applyController(next, controller, "defencemulset", operation, context);
   } else if (type === "attackmulset") {
-    const operation = damageScaleOperation(controller, "attackmulset");
-    const value = operation?.multiplier ?? numberParam(controller, next, context, "value");
-    if (value !== undefined) {
-      next.attackMultiplier = Math.max(0, Math.min(10, value));
-    }
+    const operation =
+      controller.operation?.kind === "damage-scale" && controller.operation.controllerType === "attackmulset"
+        ? controller.operation
+        : undefined;
+    damageScaleWorld.applyController(next, controller, "attackmulset", operation, context);
   } else if (type === "remappal") {
     applyRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"));
   } else if (type === "trans") {
@@ -380,15 +381,6 @@ function variableOperation<T extends VariableControllerOp["controllerType"]>(
 ): Extract<VariableControllerOp, { controllerType: T }> | undefined {
   return controller.operation?.kind === "variable" && controller.operation.controllerType === controllerType
     ? (controller.operation as Extract<VariableControllerOp, { controllerType: T }>)
-    : undefined;
-}
-
-function damageScaleOperation<T extends DamageScaleControllerOp["controllerType"]>(
-  controller: ControllerIr,
-  controllerType: T,
-): DamageScaleControllerOp | undefined {
-  return controller.operation?.kind === "damage-scale" && controller.operation.controllerType === controllerType
-    ? controller.operation
     : undefined;
 }
 
