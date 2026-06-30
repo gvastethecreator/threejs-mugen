@@ -1,7 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   EnvColorControllerOp,
-  EnvShakeControllerOp,
   FallEnvShakeControllerOp,
   HitDefControllerOp,
   PauseControllerOp,
@@ -34,7 +33,7 @@ import {
 } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
-import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
+import { RuntimeEnvShakeControllerDispatchWorld, RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
@@ -125,6 +124,7 @@ const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld()
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
 const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
+const envShakeControllerDispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1129,12 +1129,14 @@ function runActiveStateControllers(
           recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
         });
       } else if (dispatch.effect === "envshake") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "envshake" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        recordEnvShakeEvent(fighter, rawController, tick, operation);
+        envShakeControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          envShakeWorld: fighter.envShakeWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "contact") {
         contactControllerDispatchWorld.apply({
           actor: fighter,
@@ -1290,15 +1292,6 @@ function resolveProjectileCombat(
     },
     recordReceivedDamage: markReceivedDamage,
   });
-}
-
-function recordEnvShakeEvent(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  runtimeTick: number,
-  operation?: EnvShakeControllerOp,
-): void {
-  fighter.envShakeWorld.emitController(fighter, controller, runtimeTick, operation);
 }
 
 function activateHitDef(fighter: FighterMatchState, controller: MugenStateController, operation?: HitDefControllerOp): void {

@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeEnvShakeControllerDispatchWorld ownership extraction
+  -> RuntimeEnvShakeControllerDispatchWorld now owns bounded active-state EnvShake side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed envshake operation selection, operation telemetry, and EnvShake event handoff through RuntimeEnvShakeWorld
+  -> match runtime still owns trigger filtering, active-state order, actor/world ownership, and FallEnvShake routing
+  -> focused EnvShakeSystem coverage proves EnvShake telemetry/mutation through the dispatch boundary
+  -> no exact waveform, pause/stage/layer interaction, helper/redirect ownership, full presentation parity, or score movement claim
 R2 RuntimeEnvColorControllerDispatchWorld ownership extraction
   -> RuntimeEnvColorControllerDispatchWorld now owns bounded active-state EnvColor side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed envcolor operation selection, operation telemetry, and EnvColor event handoff through RuntimeEnvColorWorld

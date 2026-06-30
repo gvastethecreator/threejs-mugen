@@ -1,4 +1,5 @@
 import type { EnvShakeControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeEnvShakeEvent } from "./types";
@@ -17,6 +18,21 @@ export type RuntimeCameraShake = {
   y: number;
   remaining: number;
   amplitude: number;
+};
+
+export type RuntimeEnvShakeControllerDispatchOptions<TActor extends RuntimeEnvShakeWorldActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  runtimeTick: number;
+  envShakeWorld: RuntimeEnvShakeWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: EnvShakeControllerOp) => void;
+};
+
+export type RuntimeEnvShakeControllerDispatchResult = {
+  event?: RuntimeEnvShakeEvent;
+  recordedController: boolean;
+  recordedOperation: boolean;
 };
 
 export function createRuntimeEnvShakeEvent(
@@ -95,6 +111,29 @@ export class RuntimeEnvShakeWorld {
       runtimeTick,
       actors.flatMap((actor) => actor.envShakeEvents),
     );
+  }
+}
+
+export class RuntimeEnvShakeControllerDispatchWorld {
+  apply<TActor extends RuntimeEnvShakeWorldActor>(
+    options: RuntimeEnvShakeControllerDispatchOptions<TActor>,
+  ): RuntimeEnvShakeControllerDispatchResult {
+    const operation = options.controller.operation?.kind === "envshake" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    const event = options.envShakeWorld.emitController(
+      options.actor,
+      options.controller.source,
+      options.runtimeTick,
+      operation,
+    );
+    return {
+      event,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
   }
 }
 
