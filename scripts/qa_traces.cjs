@@ -617,6 +617,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-fall-official-ground-recovery",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-fall-recovery-too-early",
       required: true,
       artifact: presets.createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(),
@@ -1648,6 +1653,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-fall-recovery-tick-order",
     "synthetic-imported-default-fall-air-recovery-velocity",
     "synthetic-imported-default-fall-ground-recovery",
+    "synthetic-imported-default-fall-official-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
     "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",

@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Official-style ground recovery trace gate
+
+Changed:
+
+- Added required `synthetic-imported-default-fall-official-ground-recovery.json` trace evidence for a bounded official-style synthetic Common1 `5050 -> 5200 -> 5201 -> 52 -> 0` ground-recovery route.
+- Added `createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact()` with actor-frame sequence requirements for positive-to-zero `fall.recovertime`, bounded `5201` recovery velocity/position telemetry, `52` landing y = 0 evidence, and final idle/control.
+- Registered the artifact as required in `pnpm qa:trace`.
+- Added focused `RuntimeTraceGatePresets` coverage proving the artifact, requirements, observed actor frames, and final actor state.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm test -- src/tests/RuntimeTraceGatePresets.test.ts -t "official-style Common1 ground-recovery sequence"` passed.
+- `pnpm test` passes: 95 files / 811 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 186 / 186 artifacts, 166 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-default-fall-official-ground-recovery.json` `74b72495`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded imported-runtime trace suite proves an official-style synthetic Common1 ground-recovery sequence from fall state `5050` into `5200`, `5201`, `52`, and final idle/control when recovery input is accepted near ground.
+
+Claim blocked:
+
+- This does not add exact `fall.recovertime` tables, exact controller-loop timing, exact velocity math, public bundled KFM support, visual parity, score movement, or full MUGEN/IKEMEN Common1 recovery parity.
+
 ## 2026-06-30 - Helper-local ProjContactTime trace gate
 
 Changed:

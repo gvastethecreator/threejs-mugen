@@ -5386,6 +5386,94 @@ export function createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-official-ground-recovery",
+    displayName: "Synthetic Imported Default Fall Official Ground Recovery",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      groundRecoveryStateNo: 5200,
+      groundRecoveryLandStateNo: 5201,
+      landStateNo: 52,
+      includeGroundRecovery: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-official-ground-recovery-attacker",
+    displayName: "Synthetic Imported Default Fall Official Ground Recovery Attacker",
+    groundVelocity: [-3, -6],
+    fall: {
+      ...commonGetHitFallData(),
+      velocity: { x: 3, y: -6 },
+      recover: true,
+      recoverTime: 10,
+    },
+  });
+  const fallFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 5050,
+    moveType: "H",
+    observedHitFallRecoverTimeAtLeast: 1,
+    observedHitFallRecoverTimeAtMost: 0,
+    observedHitFallRecoverTimeDropAtLeast: 1,
+    minFrames: 2,
+  };
+  const recoverFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 5200,
+    moveType: "H",
+    observedHitFallRecoverTimeAtMost: 0,
+    minFrames: 1,
+  };
+  const landPrepFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 5201,
+    moveType: "H",
+    observedVelXAtMost: -0.15,
+    observedVelYAtMost: -3.5,
+    observedPosYAtMost: 0,
+    minFrames: 1,
+  };
+  const landFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 52,
+    moveType: "I",
+    observedPosYAtLeast: 0,
+    observedPosYAtMost: 0,
+    minFrames: 1,
+  };
+  return createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {
+    ...options,
+    attacker,
+    targetId: "synthetic-imported-default-fall-official-ground-recovery-golden",
+    targetLabel: "Synthetic imported official-style Common1 ground recovery route",
+    notes: [
+      "Synthetic imported official-style ground-recovery trace proves a bounded Common1-style defender can wait through a positive fall.recovertime window, accept command = \"recovery\" near ground, route 5050 -> 5200 -> 5201 -> 52, apply recovery/land kinematic operations, and settle back to idle/control. It does not claim exact MUGEN/IKEMEN threshold tables, velocity math, controller-loop timing, public KFM support, or full recovery parity.",
+    ],
+    requiredActorFrames: [fallFrame, recoverFrame, landPrepFrame, landFrame],
+    requiredActorFrameSequences: [
+      {
+        label: "5050 recoverTime countdown before 5200/5201/52 ground recovery",
+        steps: [fallFrame, recoverFrame, landPrepFrame, landFrame],
+      },
+    ],
+    requiredControllerEventSequences: [defaultGroundRecoveryControllerSequence()],
+  });
+}
+
 export function defaultGroundRecoveryControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "5050/5200/5201/52 named ground-recovery controller and typed operation order",

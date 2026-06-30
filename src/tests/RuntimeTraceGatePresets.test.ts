@@ -12,6 +12,7 @@ import {
   createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
+  createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
   createSyntheticImportedFallDefenceUpTraceArtifact,
   createSyntheticImportedGetHitVarAnimTypeTraceArtifact,
@@ -5863,6 +5864,98 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported official-style Common1 ground-recovery sequence artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-official-ground-recovery-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-ground-recovery-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    const fallFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5050,
+    );
+    const groundFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5201,
+    );
+    const landFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 52,
+    );
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(groundFrame?.minVel.x).toBeLessThanOrEqual(-0.15);
+    expect(groundFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(landFrame?.maxPos.y).toBe(0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 recoverTime countdown before 5200/5201/52 ground recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5200,
+            moveType: "H",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5201,
+            moveType: "H",
+            observedVelXAtMost: -0.15,
+            observedVelYAtMost: -3.5,
+            observedPosYAtMost: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 52,
+            moveType: "I",
+            observedPosYAtLeast: 0,
+            observedPosYAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+      },
+    ]);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,
