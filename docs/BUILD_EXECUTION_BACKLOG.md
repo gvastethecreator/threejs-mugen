@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime state metadata ownership
+
+Changed:
+
+- Added `RuntimeStateMetadataWorld` as the bounded owner for previous-state transition metadata: `prevStateNo`, `prevAnimNo`, `prevStateType`, and `prevMoveType`.
+- Replaced inline previous-state metadata writes in `PlayableMatchRuntime` state transitions with the new runtime-system boundary while preserving current `currentStateType` / `currentStateMoveType` lookup behavior.
+- Routed basic `StateControllerExecutor` `ChangeState` / `SelfState` output through the same transition helper so parser/runtime-only executor paths also preserve previous state and animation metadata.
+- Added focused `RuntimeStateMetadataSystem` coverage for changed-state metadata capture and unchanged-state no-op behavior.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeStateMetadataSystem.test.ts src/tests/RuntimeCnsSubset.test.ts` passes: 2 files / 22 tests.
+- `pnpm exec vitest run src/tests/PlayableMatchRuntime.test.ts -t "Prev"` passes: 4 matching tests.
+- `pnpm test` passes: 80 files / 690 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 145 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git still warns that `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md` will normalize CRLF to LF when touched.
+
+Claim allowed:
+
+- Current bounded `PrevStateNo`, `PrevAnim`, `PrevStateType`, and `PrevMoveType` transition metadata writes have a named runtime-system boundary shared by match runtime state entry and the basic CNS executor path.
+
+Claim blocked:
+
+- This is R2 ownership cleanup only. It does not add exact MUGEN/IKEMEN state-entry tick order, redirects/helper/team previous-state ownership, persistent controller semantics, full `ChangeState` / `SelfState` parity, or score movement.
+
 ## 2026-06-30 - Runtime target binding expiry pruning
 
 Changed:

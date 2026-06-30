@@ -112,6 +112,8 @@ The compiler classifies each piece as:
 
 `RuntimeAnimationWorld` owns the bounded actor animation advancement that used to live inline in `PlayableMatchRuntime`: `animTime`, `frameIndex`, `frameElapsed`, completion, final-frame hold, `loopStart`, and shared duration/timing helpers used by `AnimTime`, `AnimElemTime`, and the current `HitDef` active-window calculation. `PlayableMatchRuntime` still owns `ChangeAnim` / `ChangeAnim2` dispatch, state-owner action selection, concrete state/action entry, and controller ordering, so this is current-behavior ownership cleanup, not exact AIR negative-duration semantics, `elem` / `elemtime` parity, state-owner namespace parity, or full MUGEN/IKEMEN animation VM parity.
 
+`RuntimeStateMetadataWorld` owns the bounded previous-state transition metadata writes that used to live inline in `PlayableMatchRuntime`: `prevStateNo`, `prevAnimNo`, `prevStateType`, and `prevMoveType`. Match-runtime state entry supplies the current StateDef-derived state and move type, and the basic `StateControllerExecutor` `ChangeState` / `SelfState` path uses the same helper when producing runtime-only executor output. This is current-behavior ownership cleanup for `PrevStateNo`, `PrevAnim`, `PrevStateType`, and `PrevMoveType`, not exact state-entry tick order, redirects/helper/team previous-state ownership, persistent controller semantics, or full MUGEN/IKEMEN previous-state parity.
+
 `RuntimeAssertSpecialWorld` owns the bounded pre-facing `AssertSpecial` pass that used to live inline in `PlayableMatchRuntime`: imported active-state lookup, owner-backed state lookup, `AssertSpecial` controller filtering, trigger gating, and controller application before automatic facing. `PlayableMatchRuntime` still supplies trigger evaluation, constants, random, and controller execution context, so this is current-order ownership cleanup, not exact persistence layering, global/team/helper ownership, pause interaction, or full MUGEN/IKEMEN `AssertSpecial` parity.
 
 `RuntimeSnapshotWorld` owns the bounded stage/camera, player-actor, and final effect snapshot projection that used to live inline in `PlayableMatchRuntime`: camera center selection honors `ScreenBound` `moveCameraX = 0`, falls back to all actors when every actor disables camera following, applies stage camera offsets, carries current EnvShake camera shake plus EnvColor stage-flash data into `StageSnapshot`, projects player actor identity/source/sprite-owner metadata, clones runtime state, attaches target refs/bindings, chooses active move or AIR-frame collision boxes, applies the current fallback hurtbox, clones sound, hit-effect, and env-shake event histories, then aggregates cloned Explod/Helper/Projectile snapshots in stable owner/kind order. Compatibility sessions, full stage controller timing, motif/screenpack camera logic, target semantics, effect VM semantics, renderer parity, and full MUGEN/IKEMEN snapshot parity remain outside this cut.
@@ -197,6 +199,7 @@ MatchWorld
   RuntimeStunWorld
   RuntimeInputControlWorld
   RuntimeMoveLifecycleWorld
+  RuntimeStateMetadataWorld
   RuntimePausedMatchWorld
   RuntimeHitPauseWorld
   RuntimeContactPresentationWorld
@@ -250,12 +253,13 @@ The current extraction order is:
 34. `RuntimeInputControlWorld`: own bounded local player/simple AI control intent for input blocking, state-entry precedence, crouch/jump/walk/idle, air drift, NoWalk, AI chase/cooldown, and punch/kick intent outside inline match-loop branching.
 35. `RuntimeKinematicsWorld`: own bounded actor position integration, sandbox gravity, ground snap, imported hit-state ground-snap preservation, and landing idle-action callback outside inline match-loop branching.
 36. `RuntimeAnimationWorld`: own bounded actor animation advancement, `loopStart` / final-frame completion, and shared animation timing helpers outside inline match-loop branching.
-37. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
-38. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
-39. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
-40. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
-41. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
-42. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
+37. `RuntimeStateMetadataWorld`: own bounded previous-state transition metadata writes for `PrevStateNo`, `PrevAnim`, `PrevStateType`, and `PrevMoveType` outside inline state-entry mutation.
+38. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
+39. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
+40. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
+41. `RuntimeContactPresentationWorld`: own bounded direct HitDef and Projectile contact package metadata plus sound/spark telemetry emission outside inline `PlayableMatchRuntime` branching.
+42. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
+43. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned contact presentation, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 

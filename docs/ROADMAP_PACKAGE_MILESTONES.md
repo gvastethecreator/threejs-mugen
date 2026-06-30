@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStateMetadataWorld ownership
+  -> RuntimeStateMetadataWorld owns bounded previous-state transition metadata writes for prevStateNo, prevAnimNo, prevStateType, and prevMoveType
+  -> PlayableMatchRuntime delegates state-number changes through that boundary, preserving current StateDef-derived type/move-type capture
+  -> StateControllerExecutor ChangeState / SelfState output uses the same helper for the basic runtime-only executor path
+  -> focused RuntimeStateMetadataSystem, RuntimeCnsSubset, and PlayableMatchRuntime Prev-trigger tests prove changed-state capture and unchanged-state no-op behavior
+  -> no exact state-entry tick order, redirects/helper/team previous-state ownership, persistent controller semantics, full ChangeState/SelfState parity, or score claim
 R2 TargetSystem stale binding pruning
   -> TargetSystem drops TargetBind binding records during target-memory advance when the bound actor id / target id no longer survives expiry
   -> the same live-target binding check is shared by target-memory advance, TargetDrop, active TargetBind, and active BindToTarget application

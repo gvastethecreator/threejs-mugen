@@ -27,6 +27,7 @@ import {
 } from "./RuntimeResourceSystem";
 import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { applyRuntimeTurn } from "./OrientationSystem";
+import { applyRuntimeStateMetadataTransition } from "./RuntimeStateMetadataSystem";
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -62,11 +63,7 @@ export function executeControllerIr(
       reportUnsupported(`${controller.type}:missing-value`);
       return next;
     }
-    if (next.stateNo !== value) {
-      next.prevStateNo = next.stateNo;
-      next.prevAnimNo = next.animNo;
-    }
-    next.stateNo = value;
+    applyRuntimeStateMetadataTransition(next, value);
     next.animTime = 0;
     next.frameIndex = 0;
     const ctrl = numberParam(controller, next, context, "ctrl");
