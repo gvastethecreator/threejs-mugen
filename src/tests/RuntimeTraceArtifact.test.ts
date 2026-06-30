@@ -796,6 +796,104 @@ describe("RuntimeTraceArtifact", () => {
       "Missing hit-effect event: actorId=p1, kind=hit, sparkNo=7002, raw=F7002, rawPrefix=F, offsetX=19, offsetY=-68 >= 1 (actual 0)",
     ]);
   });
+
+  it("fails hit-effect gates when selected AIR frame metadata does not match", () => {
+    const assetFrame = {
+      source: "fightfx" as const,
+      actionId: 7002,
+      frameIndex: 0,
+      spriteGroup: 8102,
+      spriteIndex: 0,
+      offsetX: 3,
+      offsetY: -4,
+      duration: 5,
+    };
+    const attacker: RuntimeTraceFrame["actors"][number] = {
+      ...playerActor({ animNo: 200, moveType: "A" }),
+      id: "p1",
+      label: "Imported Attacker",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      facing: 1,
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          offset: { x: 18, y: -68 },
+          assetFrame,
+          assetFrames: [
+            assetFrame,
+            {
+              source: "fightfx",
+              actionId: 7002,
+              frameIndex: 1,
+              spriteGroup: 8102,
+              spriteIndex: 1,
+              offsetX: 4,
+              offsetY: -5,
+              duration: 6,
+            },
+          ],
+          stateNo: 200,
+          tick: 1,
+        },
+      ],
+    };
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-hit-effect-air-frame", actors: [attacker], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-30T00:00:00.000Z",
+      target: {
+        id: "synthetic-hit-effect-air-frame-mismatch",
+        label: "Synthetic hit-effect AIR frame mismatch",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "hit-effect-air-frame",
+          requiredHitEffectEvents: [
+            {
+              actorId: "p1",
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              assetFrameOffsetX: 4,
+              assetFrameOffsetY: -4,
+              assetFrameDuration: 5,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.evidence.hitEffectEvents).toEqual([
+      expect.objectContaining({
+        actorId: "p1",
+        kind: "hit",
+        sparkNo: 7002,
+        assetFrameOffsetX: 3,
+        assetFrameOffsetY: -4,
+        assetFrameDuration: 5,
+      }),
+    ]);
+    expect(artifact.gates[0]?.failures).toEqual([
+      "Missing hit-effect event: actorId=p1, kind=hit, sparkNo=7002, raw=F7002, rawPrefix=F, assetSource=fightfx, assetActionId=7002, assetFrameIndex=0, assetFrameOffsetX=4, assetFrameOffsetY=-4, assetFrameDuration=5, assetSpriteGroup=8102, assetSpriteIndex=0 >= 1 (actual 0)",
+    ]);
+  });
 });
 
 function traceFromFrames(frames: RuntimeTraceFrame[]): RuntimeTrace {

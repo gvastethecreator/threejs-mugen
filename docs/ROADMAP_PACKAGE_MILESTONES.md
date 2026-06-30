@@ -419,11 +419,11 @@ R2 visual-helper removal ownership
   -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
   -> no redirects, parent/root/team ownership, helper-owned HitDefs/Projectiles, exact lifecycle tick-order parity, or score claim
 R1 required combined hit/guard-effect contact-package trace strengthening
-  -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus multi-frame AIR metadata for guard.sparkno 7003
-  -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for guard.sparkno F7004
-  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata sharing one contact package
-  -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata sharing one contact package
-  -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
+  -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno 7003
+  -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno F7004
+  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
+  -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
+  -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
   -> current aggregate after the official-style air recovery gate is 187/187 artifacts, 167 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
@@ -463,9 +463,9 @@ R1 required Common1 stand get-hit progression trace strengthening
   -> actor-frame evidence now requires imported P2 5000 before 5001, with final idle/control evidence
   -> no exact HitShakeOver/HitOver timing, fall/bounce/liedown/recovery, helper/custom-state breadth, or full Common1 VM claim
 R1 required common/FightFX HitSpark asset-frame trace strengthening
-  -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame plus multi-frame AIR metadata for sparkno 7001
-  -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame plus multi-frame AIR metadata for sparkno F7002
-  -> required traces now require at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
+  -> synthetic-imported-hitdef-common-spark.json checksum 5ea054d7 gates unprefixed common/default source-frame plus selected-frame/multi-frame AIR metadata for sparkno 7001
+  -> synthetic-imported-hitdef-fightfx-spark.json checksum 11537b56 gates F-prefixed FightFX source-frame plus selected-frame/multi-frame AIR metadata for sparkno F7002
+  -> required traces now require selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer handoff
   -> required trace evidence only; no exact renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, or full spark parity claim
 R1 optional KFM x HitDef presentation trace strengthening
   -> kfm-official-x-hit-sound.json checksum bd153db9 gates bounded real KFM x hitsound S5,0 telemetry
@@ -557,7 +557,7 @@ Default next implementation slice after docs/setup work:
 
 ```txt
 R1 Common1/FightFX precision
-  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame plus multi-frame AIR evidence
+  -> move one guard/fall/recovery or FightFX/common route beyond current bounded source-frame plus selected-frame/multi-frame AIR evidence
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
 ```
 
@@ -636,7 +636,7 @@ Current closed gates that must not be reselected as "next":
 After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
-2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
+2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus selected-frame/multi-frame trace metadata.
 3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned combat/contact, helper-bound effect mutation/timing, effect/combat ordering, deeper target ownership, or the next non-`RuntimeContactPresentationWorld` mutable boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract

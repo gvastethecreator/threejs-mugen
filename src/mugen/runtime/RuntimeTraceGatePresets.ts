@@ -28,6 +28,15 @@ export type RuntimeTraceGatePresetOptions = {
   stage?: MugenStageDefinition;
 };
 
+const SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT = {
+  assetFrameOffsetX: 3,
+  assetFrameOffsetY: -4,
+  assetFrameDuration: 5,
+} satisfies Pick<
+  RuntimeTraceHitEffectEventRequirement,
+  "assetFrameOffsetX" | "assetFrameOffsetY" | "assetFrameDuration"
+>;
+
 export function createNativeHitTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = nativeHitScript();
@@ -2695,6 +2704,7 @@ export function createSyntheticImportedHitDefCommonSparkTraceArtifact(options: R
         assetSource: "common",
         assetActionId: 7001,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 7101,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -2738,6 +2748,7 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
         assetSource: "fightfx",
         assetActionId: 7002,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 8102,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -2795,6 +2806,7 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
         assetSource: "fightfx",
         assetActionId: 7002,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 8102,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -2827,6 +2839,7 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
           assetSource: "fightfx",
           assetActionId: 7002,
           assetFrameIndex: 0,
+          ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
           assetSpriteGroup: 8102,
           assetSpriteIndex: 0,
           minAssetFrameCount: 2,
@@ -2910,6 +2923,7 @@ export function createSyntheticImportedHitDefCommonGuardSparkTraceArtifact(
         assetSource: "common",
         assetActionId: 7003,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 7103,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -2956,6 +2970,7 @@ export function createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact(
         assetSource: "fightfx",
         assetActionId: 7004,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 8104,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -3014,6 +3029,7 @@ export function createSyntheticImportedHitDefGuardEffectPackageTraceArtifact(
         assetSource: "fightfx",
         assetActionId: 7004,
         assetFrameIndex: 0,
+        ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
         assetSpriteGroup: 8104,
         assetSpriteIndex: 0,
         minAssetFrameCount: 2,
@@ -3046,6 +3062,7 @@ export function createSyntheticImportedHitDefGuardEffectPackageTraceArtifact(
           assetSource: "fightfx",
           assetActionId: 7004,
           assetFrameIndex: 0,
+          ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
           assetSpriteGroup: 8104,
           assetSpriteIndex: 0,
           minAssetFrameCount: 2,
@@ -7854,6 +7871,7 @@ export function createSyntheticImportedProjectileContactTraceArtifact(options: R
               assetSource: "fightfx",
               assetActionId: 7002,
               assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
               assetSpriteGroup: 8102,
               assetSpriteIndex: 0,
               minAssetFrameCount: 2,
@@ -7996,6 +8014,7 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
               assetSource: "fightfx",
               assetActionId: 7004,
               assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
               assetSpriteGroup: 8104,
               assetSpriteIndex: 0,
               minAssetFrameCount: 2,
@@ -8779,6 +8798,7 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
               assetSource: "fightfx",
               assetActionId: 7002,
               assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
               assetSpriteGroup: 8102,
               assetSpriteIndex: 0,
               minAssetFrameCount: 2,
@@ -8902,6 +8922,7 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
               assetSource: "fightfx",
               assetActionId: 7004,
               assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
               assetSpriteGroup: 8104,
               assetSpriteIndex: 0,
               minAssetFrameCount: 2,
@@ -9025,6 +9046,7 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
               assetSource: "fightfx",
               assetActionId: 7004,
               assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
               assetSpriteGroup: 8104,
               assetSpriteIndex: 0,
               minAssetFrameCount: 2,

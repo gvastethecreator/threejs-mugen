@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - HitSpark AIR frame trace requirements
+
+Changed:
+
+- Added `assetFrameOffsetX`, `assetFrameOffsetY`, and `assetFrameDuration` to `RuntimeTraceGate.requiredHitEffectEvents`, with matching evidence extracted from the selected `HitSpark` AIR frame.
+- Strengthened common/FightFX direct HitSpark gates plus direct HitDef, Projectile, and helper-parented Projectile package gates so the first selected AIR frame must preserve authored frame offset `3,-4` and duration `5` alongside source/action/sprite/frame-list metadata.
+- Added positive preset assertions for the new evidence fields and a negative artifact test proving wrong selected-frame metadata fails the gate.
+- Updated runtime support docs, progress tracker, scorecard, roadmap board, workplan, and local runtime issue wording to keep the claim limited to trace precision before renderer/audio handoff.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceArtifact.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passed: 2 files / 197 tests.
+- `pnpm test` passes: 95 files / 814 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 187 / 187 artifacts, 167 required, 20 optional, 0 failed.
+- Affected required behavior checksums remain stable: `synthetic-imported-hitdef-common-spark.json` `5ea054d7`, `synthetic-imported-hitdef-fightfx-spark.json` `11537b56`, `synthetic-imported-hitdef-common-guard-spark.json` `7650a09c`, `synthetic-imported-hitdef-fightfx-guard-spark.json` `32f3e92d`, `synthetic-imported-hitdef-hit-effect-package.json` `46aa5ce1`, `synthetic-imported-hitdef-guard-effect-package.json` `1c3167b7`, `synthetic-imported-projectile-contact.json` `ba22ed74`, `synthetic-imported-projectile-guard.json` `4bcc5650`, `synthetic-imported-helper-projhit.json` `3892716e`, `synthetic-imported-helper-projguard.json` `3353eda7`, and `synthetic-imported-helper-projcontact.json` `07653cee`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded common/FightFX HitSpark and contact-package trace gates can require selected AIR frame offset and duration metadata before renderer/audio handoff.
+
+Claim blocked:
+
+- This does not add exact visual binding, render timing, layer ordering, scale, palette, SND playback, helper-owned presentation ownership, score movement, or full MUGEN/IKEMEN presentation parity.
+
 ## 2026-06-30 - Spark offset trace gate requirements
 
 Changed:

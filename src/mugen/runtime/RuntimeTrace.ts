@@ -729,6 +729,9 @@ export type RuntimeTraceHitEffectEventRequirement = {
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
   assetActionId?: number;
   assetFrameIndex?: number;
+  assetFrameOffsetX?: number;
+  assetFrameOffsetY?: number;
+  assetFrameDuration?: number;
   assetSpriteGroup?: number;
   assetSpriteIndex?: number;
   minAssetFrameCount?: number;
@@ -756,6 +759,9 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
   assetActionId?: number;
   assetFrameIndex?: number;
+  assetFrameOffsetX?: number;
+  assetFrameOffsetY?: number;
+  assetFrameDuration?: number;
   assetSpriteGroup?: number;
   assetSpriteIndex?: number;
   assetFrameCount?: number;
@@ -2227,6 +2233,9 @@ function summarizeHitEffectEventEvidence(
     assetSource: event.assetFrame?.source,
     assetActionId: event.assetFrame?.actionId,
     assetFrameIndex: event.assetFrame?.frameIndex,
+    assetFrameOffsetX: event.assetFrame?.offsetX,
+    assetFrameOffsetY: event.assetFrame?.offsetY,
+    assetFrameDuration: event.assetFrame?.duration,
     assetSpriteGroup: event.assetFrame?.spriteGroup,
     assetSpriteIndex: event.assetFrame?.spriteIndex,
     assetFrameCount: assetFrameSummary?.count,
@@ -2257,6 +2266,9 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.assetSource ?? "",
     event.assetActionId ?? "",
     event.assetFrameIndex ?? "",
+    event.assetFrameOffsetX ?? "",
+    event.assetFrameOffsetY ?? "",
+    event.assetFrameDuration ?? "",
     event.assetSpriteGroup ?? "",
     event.assetSpriteIndex ?? "",
     event.assetFrameCount ?? "",
@@ -2288,6 +2300,9 @@ function matchesHitEffectEventRequirement(
     (requirement.assetSource === undefined || event.assetSource === requirement.assetSource) &&
     (requirement.assetActionId === undefined || event.assetActionId === requirement.assetActionId) &&
     (requirement.assetFrameIndex === undefined || event.assetFrameIndex === requirement.assetFrameIndex) &&
+    (requirement.assetFrameOffsetX === undefined || sameTraceNumber(event.assetFrameOffsetX ?? NaN, requirement.assetFrameOffsetX)) &&
+    (requirement.assetFrameOffsetY === undefined || sameTraceNumber(event.assetFrameOffsetY ?? NaN, requirement.assetFrameOffsetY)) &&
+    (requirement.assetFrameDuration === undefined || sameTraceNumber(event.assetFrameDuration ?? NaN, requirement.assetFrameDuration)) &&
     (requirement.assetSpriteGroup === undefined || event.assetSpriteGroup === requirement.assetSpriteGroup) &&
     (requirement.assetSpriteIndex === undefined || event.assetSpriteIndex === requirement.assetSpriteIndex) &&
     (requirement.minAssetFrameCount === undefined || (event.assetFrameCount ?? 0) >= requirement.minAssetFrameCount) &&
