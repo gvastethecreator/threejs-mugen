@@ -617,6 +617,36 @@ export function createSyntheticImportedP2MetricsTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedIdentityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-identity",
+      displayName: "Synthetic Imported Identity",
+      authorName: "Trace Author",
+      identityEntry: {
+        name: "Synthetic Imported Identity",
+        p2Name: "Mira Volt",
+        authorName: "Trace Author",
+        enemyAuthorName: "mugen-web-sandbox",
+        stateNo: 276,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-identity-golden",
+      targetLabel: "Synthetic imported identity trigger route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [276],
+      requiredExecutedStates: [276],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported identity trace proves bounded State -1 routing can compare Name/P1Name, P2Name, AuthorName, and EnemyNear, AuthorName against current runtime fighter metadata. Teams, multiple opponents, helper ownership, and exact MUGEN/IKEMEN identity-selection parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedSelfStateNoExistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -8982,6 +9012,7 @@ export function importedAssertSpecialControlScript(): RuntimeTraceInputFrame[] {
 export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
+  authorName?: string;
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
@@ -9127,6 +9158,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
+  identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
   dataStats?: { attack?: number; defence?: number; life?: number; power?: number };
   selfStateNoExistEntry?: { existingStateNo: number; missingStateNo: number; stateNo: number };
   selfCommandEntry?: { commandName: string; stateNo: number };
@@ -9317,6 +9349,7 @@ time = 5
 const stateEntryControllers = parseCns(`
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
+${options.identityEntry === undefined ? "" : identityStateEntryBlock(options.identityEntry)}
 ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
 ${options.selfCommandEntry === undefined ? "" : selfCommandStateEntryBlock(options.selfCommandEntry)}
 ${options.stageTimeEntry === undefined ? "" : stageTimeStateEntryBlock(options.stageTimeEntry)}
@@ -9482,6 +9515,7 @@ ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRout
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
+${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
@@ -9535,6 +9569,7 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBloc
     id: options.id ?? "synthetic-imported-trace",
     source: "imported",
     displayName: options.displayName ?? "Synthetic Imported Trace",
+    authorName: options.authorName,
     palette: "#fff",
     spriteGroupBase: 0,
     speed: 3,
@@ -9628,6 +9663,9 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBloc
       ...(options.p2MetricsStateEntry === undefined
         ? []
         : ([[options.p2MetricsStateEntry.stateNo, traceAction(options.p2MetricsStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.identityEntry === undefined
+        ? []
+        : ([[options.identityEntry.stateNo, traceAction(options.identityEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.selfStateNoExistEntry === undefined
         ? []
         : ([[options.selfStateNoExistEntry.stateNo, traceAction(options.selfStateNoExistEntry.stateNo)]] as Array<
@@ -11547,6 +11585,21 @@ trigger1 = Facing = 1
 trigger1 = P2Facing = -1
 trigger1 = P2Life = 1000
 trigger1 = P2Power = 0
+`;
+}
+
+function identityStateEntryBlock(route: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number }): string {
+  return `
+[State -1, Identity Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = ctrl
+trigger1 = Name = "${route.name}"
+trigger1 = P1Name = "${route.name}"
+trigger1 = P2Name = "${route.p2Name}"
+trigger1 = AuthorName = "${route.authorName}"
+trigger1 = EnemyNear, AuthorName = "${route.enemyAuthorName}"
 `;
 }
 

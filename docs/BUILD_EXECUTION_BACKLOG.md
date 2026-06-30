@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded identity trigger gate
+
+Changed:
+
+- Added runtime/compiler support for bounded identity triggers: `Name`, `P1Name`, `P2Name`, and `AuthorName`.
+- Passed fighter display names and author metadata into active-state, State -1, setup, and dynamic dispatch trigger contexts for imported and generated runtime fighters.
+- Extended `EnemyNear` redirect contexts so `EnemyNear, AuthorName` and composite expressions with redirected identity metadata read the current two-actor opponent metadata.
+- Added required `synthetic-imported-identity.json` trace evidence for a State -1 route gated by current P1/P2 identity and opponent author checks.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 701 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 166 / 166 artifacts, 146 required, 20 optional, 0 failed; `synthetic-imported-identity.json` checksum is `c9be5cf1`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Imported State -1 routing can branch on bounded current fighter identity (`Name`/`P1Name`), current opponent display name (`P2Name`), current author (`AuthorName`), and redirected current-opponent author (`EnemyNear, AuthorName`) in the two-actor sandbox.
+
+Claim blocked:
+
+- Team/simul/turns identity selection, multiple opponents, helper-owned identities, parent/root/target identity redirects, exact string/localization edge behavior, player-indexed identity semantics, and full MUGEN/IKEMEN identity trigger parity remain blocked.
+
 ## 2026-06-30 - Typed no-op controller operations
 
 Changed:

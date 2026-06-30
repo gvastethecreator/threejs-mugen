@@ -27,6 +27,7 @@ Every controller family should have:
 
 ## Current Trigger Notes
 
+- `Name`, `P1Name`, `P2Name`, and `AuthorName` are supported expression identifiers in the compiler/evaluator for the current bounded two-actor runtime context. Required `synthetic-imported-identity.json` checksum `c9be5cf1` gates State -1 routing through current owner display name, opponent display name, owner author, and redirected current-opponent author via `EnemyNear, AuthorName`. This is trigger subset support, not a controller family, and not team/simul/helper/player-indexed identity parity.
 - `HitPauseTime` is now a supported expression identifier in the compiler/evaluator and can read the current actor hitpause counter through runtime expression contexts. Imported active-state controllers with `ignorehitpause = 1` can run in a bounded controller-only pass during global hitpause, and required `synthetic-imported-hitpausetime-ignorehitpause.json` checksum `a3a78bb8` gates P1 player advance into state `220` while P2 player freeze evidence remains present. This is trigger/controller-loop subset support, not a new controller family, not persistent parity, and not exact hitpause-loop parity.
 
 ## Current Guard Notes

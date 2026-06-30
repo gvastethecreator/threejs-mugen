@@ -77,6 +77,7 @@ export type DemoFighterDefinition = {
   id: string;
   source?: "demo" | "imported";
   displayName: string;
+  authorName?: string;
   palette: string;
   spriteGroupBase: number;
   speed: number;
@@ -181,6 +182,7 @@ function createFighter(options: FighterOptions): DemoFighterDefinition {
     id: options.id,
     source: "demo",
     displayName: options.displayName,
+    authorName: "mugen-web-sandbox",
     palette: options.palette,
     spriteGroupBase: options.spriteGroupBase,
     speed: options.speed,

@@ -109,6 +109,30 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("P2Life = 1000", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Power = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("NumEnemy", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression('Name = "Kung Fu Man"', { self: state, name: "Kung Fu Man" })).toBe(1);
+    expect(evaluateExpression('P1Name = "Kung Fu Man"', { self: state, name: "Kung Fu Man" })).toBe(1);
+    expect(evaluateExpression('P2Name = "Mira Volt"', { self: state, opponent, opponentName: "Mira Volt" })).toBe(1);
+    expect(evaluateExpression('AuthorName = "Elecbyte"', { self: state, authorName: "Elecbyte" })).toBe(1);
+    expect(
+      evaluateExpression('EnemyNear, AuthorName = "Mugen Sandbox"', {
+        self: state,
+        opponent,
+        name: "Kung Fu Man",
+        opponentName: "Mira Volt",
+        authorName: "Elecbyte",
+        opponentAuthorName: "Mugen Sandbox",
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression('Time >= 0 && EnemyNear, AuthorName = "Mugen Sandbox"', {
+        self: state,
+        opponent,
+        name: "Kung Fu Man",
+        opponentName: "Mira Volt",
+        authorName: "Elecbyte",
+        opponentAuthorName: "Mugen Sandbox",
+      }),
+    ).toBe(1);
     expect(evaluateExpression("EnemyNear, StateNo = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear(0), MoveType = H", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);

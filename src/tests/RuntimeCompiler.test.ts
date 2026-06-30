@@ -47,7 +47,7 @@ time = 20
     const rootRedirect = compileExpression("Root,Vel X = 4");
     const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
-      "NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A",
+      'NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
@@ -93,10 +93,14 @@ time = 20
     expect(nestedRedirect.identifiers).toEqual(["Time", "velx"]);
     expect(p2Metrics.supportLevel).toBe("executable");
     expect(p2Metrics.identifiers).toEqual([
+      "AuthorName",
       "Facing",
+      "Name",
       "NumEnemy",
+      "P1Name",
       "P2Facing",
       "P2Life",
+      "P2Name",
       "P2Power",
       "PrevAnim",
       "PrevMoveType",

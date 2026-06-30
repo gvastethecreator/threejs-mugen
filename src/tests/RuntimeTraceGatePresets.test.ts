@@ -169,6 +169,7 @@ import {
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
   createSyntheticImportedP2MetricsTraceArtifact,
+  createSyntheticImportedIdentityTraceArtifact,
   createSyntheticImportedPrevAnimTraceArtifact,
   createSyntheticImportedPrevMoveTypeTraceArtifact,
   createSyntheticImportedPrevStateTypeTraceArtifact,
@@ -935,6 +936,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([275]);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([275]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 275)).toBe(true);
+  });
+
+  it("creates a synthetic imported identity artifact with name trigger evidence", () => {
+    const artifact = createSyntheticImportedIdentityTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-identity-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(276);
+    expect(evidence?.executedStates).toContain(276);
+    expect(artifact.gates[0]?.requirements.requiredRoutedStates).toEqual([276]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([276]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 276)).toBe(true);
   });
 
   it("creates a synthetic imported SelfStateNoExist artifact with state-existence branch evidence", () => {

@@ -8,6 +8,10 @@ export type ExpressionContext = {
   opponent?: CharacterRuntimeState;
   parent?: CharacterRuntimeState;
   root?: CharacterRuntimeState;
+  name?: string;
+  authorName?: string;
+  opponentName?: string;
+  opponentAuthorName?: string;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
@@ -92,6 +96,10 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
       ...context,
       self: context.opponent,
       opponent: context.self,
+      name: context.opponentName,
+      authorName: context.opponentAuthorName,
+      opponentName: context.name,
+      opponentAuthorName: context.authorName,
     });
   }
   if (index) {
@@ -295,6 +303,10 @@ class ExpressionParser {
         ...this.context,
         self: this.context.opponent,
         opponent: this.context.self,
+        name: this.context.opponentName,
+        authorName: this.context.opponentAuthorName,
+        opponentName: this.context.name,
+        opponentAuthorName: this.context.authorName,
       };
     }
     if (index) {
@@ -367,6 +379,15 @@ class ExpressionParser {
     }
     if (lower === "animtime") {
       return this.context.animTimeRemaining ?? 0;
+    }
+    if (lower === "name" || lower === "p1name") {
+      return this.context.name ?? "";
+    }
+    if (lower === "p2name") {
+      return this.context.opponentName ?? "";
+    }
+    if (lower === "authorname") {
+      return this.context.authorName ?? "";
     }
     if (lower === "anim") {
       return this.context.self.animNo;

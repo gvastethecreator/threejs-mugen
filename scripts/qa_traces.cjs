@@ -126,6 +126,11 @@ async function main() {
       artifact: presets.createSyntheticImportedP2MetricsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-identity",
+      required: true,
+      artifact: presets.createSyntheticImportedIdentityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-selfstatenoexist",
       required: true,
       artifact: presets.createSyntheticImportedSelfStateNoExistTraceArtifact(),

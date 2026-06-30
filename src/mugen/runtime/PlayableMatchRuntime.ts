@@ -2013,6 +2013,10 @@ function resolveDispatchNumber(
   const evaluated = evaluateExpression(expression, {
     self: fighter.runtime,
     opponent: opponent.runtime,
+    name: fighter.definition.displayName,
+    authorName: fighter.definition.authorName,
+    opponentName: opponent.definition.displayName,
+    opponentAuthorName: opponent.definition.authorName,
     stageTime,
     stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),
@@ -2076,6 +2080,10 @@ function evaluateRuntimeTrigger(
   return evaluateTriggerIr(trigger, {
     self: fighter.runtime,
     opponent: opponent.runtime,
+    name: fighter.definition.displayName,
+    authorName: fighter.definition.authorName,
+    opponentName: opponent.definition.displayName,
+    opponentAuthorName: opponent.definition.authorName,
     stageTime,
     stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),
