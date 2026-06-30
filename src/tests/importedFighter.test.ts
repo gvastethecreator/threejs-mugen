@@ -112,6 +112,7 @@ function fakeCharacter(animations: Map<number, MugenAnimationAction>, withSprite
     character: "Test Karate",
     loaded: true,
     files: { def: true, sff: withSprites, air: true, cmd: false, cns: false, snd: false },
+    sounds: { total: 0, decoded: 0, wav: 0, unsupported: 0, formats: {}, sampleRates: {}, channels: {} },
     animations: { total: animations.size, loaded: animations.size, withCollisionBoxes: 0 },
     states: {
       total: 0,

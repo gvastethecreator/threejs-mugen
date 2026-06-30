@@ -9858,6 +9858,7 @@ export class App {
         character: "Runtime atlas prototype roster",
         loaded: true,
         files: { def: false, sff: false, air: false, cmd: false, cns: false, snd: false },
+        sounds: { total: 0, decoded: 0, wav: 0, unsupported: 0, formats: {}, sampleRates: {}, channels: {} },
         animations: {
           total: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
           loaded: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
@@ -10210,6 +10211,7 @@ export class App {
         character: "Runtime atlas prototype roster",
         loaded: true,
         files: { def: false, sff: false, air: false, cmd: false, cns: false, snd: false },
+        sounds: { total: 0, decoded: 0, wav: 0, unsupported: 0, formats: {}, sampleRates: {}, channels: {} },
         animations: {
           total: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
           loaded: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),

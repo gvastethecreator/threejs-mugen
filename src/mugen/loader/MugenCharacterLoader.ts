@@ -190,6 +190,7 @@ export class MugenCharacterLoader {
       stateEntryControllers,
       runtimeProgram,
       mugenVersion: definition.info.mugenVersion,
+      soundArchive,
       ikemen,
       diagnostics,
       unsupported: unsupported.list(),

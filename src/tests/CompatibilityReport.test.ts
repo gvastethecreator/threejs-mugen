@@ -5,6 +5,7 @@ import {
   isRuntimeSupportedController,
 } from "../mugen/compatibility/CompatibilityReport";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
+import type { SndArchive } from "../mugen/model/MugenSound";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 
 describe("createCompatibilityReport", () => {
@@ -74,6 +75,57 @@ describe("createCompatibilityReport", () => {
     expect(report.triggers.unsupportedFeatures).toEqual({});
     expect(report.states.triggerSupported).toBe(1);
     expect(report.states.runtimeRoutable).toBe(1);
+  });
+
+  it("summarizes parsed SND archive compatibility", () => {
+    const report = createCompatibilityReport({
+      name: "Sound Karate",
+      loaded: true,
+      files: { states: [], commonStates: [], palettes: [], missing: [], def: "k.def", sound: "k.snd" },
+      animations: new Map<number, MugenAnimationAction>(),
+      states: [],
+      diagnostics: [],
+      unsupported: [],
+      soundArchive: {
+        version: "4.0",
+        warnings: [],
+        metadata: { soundTotal: 3, decodedTotal: 2 },
+        sounds: [
+          {
+            group: 0,
+            index: 0,
+            length: 1,
+            format: "wav",
+            data: new ArrayBuffer(1),
+            sampleRate: 8000,
+            channels: 1,
+            bitsPerSample: 8,
+          },
+          {
+            group: 5,
+            index: 0,
+            length: 1,
+            format: "wav",
+            data: new ArrayBuffer(1),
+            sampleRate: 44100,
+            channels: 2,
+            bitsPerSample: 16,
+          },
+          { group: 9, index: 9, length: 1, format: "unknown", data: new ArrayBuffer(1) },
+        ],
+      } satisfies SndArchive,
+    });
+
+    expect(report.files.snd).toBe(true);
+    expect(report.sounds).toEqual({
+      total: 3,
+      decoded: 2,
+      wav: 2,
+      unsupported: 1,
+      formats: { wav: 2, unknown: 1 },
+      sampleRates: { "8000": 1, "44100": 1 },
+      channels: { "1": 1, "2": 1 },
+    });
   });
 
   it("exposes the same controller and trigger classifiers used by the State Browser", () => {

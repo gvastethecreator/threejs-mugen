@@ -2,6 +2,7 @@ import { compileControllerIr, compileRuntimeProgram, hasUnsupportedTriggers, isR
 import type { CompileReport, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenCharacter, ResolvedCharacterFiles } from "../model/MugenCharacter";
 import type { MugenDiagnostic } from "../model/MugenAnimation";
+import type { SndArchive } from "../model/MugenSound";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { CompatibilityProfileId, IkemenScanReport } from "./IkemenFeatureScanner";
 import { createEmptyIkemenScanReport } from "./IkemenFeatureScanner";
@@ -19,6 +20,15 @@ export type CompatibilityReport = {
     cmd: boolean;
     cns: boolean;
     snd: boolean;
+  };
+  sounds: {
+    total: number;
+    decoded: number;
+    wav: number;
+    unsupported: number;
+    formats: Record<string, number>;
+    sampleRates: Record<string, number>;
+    channels: Record<string, number>;
   };
   animations: {
     total: number;
@@ -76,6 +86,7 @@ export function createCompatibilityReport(input: {
   stateEntryControllers?: MugenCharacter["stateEntryControllers"];
   runtimeProgram?: RuntimeProgramIr;
   mugenVersion?: string;
+  soundArchive?: SndArchive;
   ikemen?: IkemenScanReport;
   diagnostics: MugenDiagnostic[];
   unsupported: UnsupportedFeature[];
@@ -113,6 +124,7 @@ export function createCompatibilityReport(input: {
       cns: Boolean(input.files.cns || input.files.states.length > 0),
       snd: Boolean(input.files.sound),
     },
+    sounds: summarizeSounds(input.soundArchive),
     animations: {
       total: actions.length,
       loaded: actions.length,
@@ -150,6 +162,34 @@ export function createCompatibilityReport(input: {
     unsupported: input.unsupported,
     warnings,
     errors,
+  };
+}
+
+function summarizeSounds(archive: SndArchive | undefined): CompatibilityReport["sounds"] {
+  const formats: Record<string, number> = {};
+  const sampleRates: Record<string, number> = {};
+  const channels: Record<string, number> = {};
+  for (const sound of archive?.sounds ?? []) {
+    formats[sound.format] = (formats[sound.format] ?? 0) + 1;
+    if (sound.sampleRate !== undefined) {
+      const key = String(sound.sampleRate);
+      sampleRates[key] = (sampleRates[key] ?? 0) + 1;
+    }
+    if (sound.channels !== undefined) {
+      const key = String(sound.channels);
+      channels[key] = (channels[key] ?? 0) + 1;
+    }
+  }
+  const total = archive?.metadata.soundTotal ?? 0;
+  const decoded = archive?.metadata.decodedTotal ?? 0;
+  return {
+    total,
+    decoded,
+    wav: formats.wav ?? 0,
+    unsupported: Math.max(0, total - decoded),
+    formats,
+    sampleRates,
+    channels,
   };
 }
 

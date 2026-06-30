@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - SND compatibility summary in reports
+
+Changed:
+
+- Added `CompatibilityReport.sounds` so loaded characters expose parsed SND package telemetry in compatibility exports.
+- The report now derives declared sound total, decoded WAV count, unsupported/raw count, format counts, sample-rate counts, and channel counts from the parsed `SndArchive`.
+- Passed the already parsed `soundArchive` from `MugenCharacterLoader` into `createCompatibilityReport`.
+- Updated native export fallbacks and typed test fixtures with an empty sound summary.
+- Documented the summary as asset compatibility telemetry, not audio playback parity.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/CompatibilityReport.test.ts` passes: 1 file / 4 tests.
+- `pnpm test` passes: 95 files / 800 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 180 / 180 artifacts, 160 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- No `pnpm qa:smoke` was run because this cut did not change visible UI, CSS, renderer output, sprites, or gameplay presentation.
+
+Claim allowed:
+
+- Compatibility reports and exports can now inspect SND decoding coverage instead of only showing `files.snd = true`.
+
+Claim blocked:
+
+- This does not prove exact SND playback, channel priority, mixing, panning, loop points, timing, helper/redirect audio ownership, or full MUGEN/IKEMEN audio parity.
+
 ## 2026-06-30 - Official-style recovery trace promotion
 
 Changed:
