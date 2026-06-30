@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeHitFallControllerWorld ownership extraction
+  -> RuntimeHitFallControllerWorld now owns bounded passive HitFallVel/HitFallDamage/HitFallSet mutation
+  -> StateControllerExecutor delegates typed hitfall operations and raw-param fallback mutations to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> focused HitFallControllerSystem coverage proves typed setup, raw expression fallback, stored fall velocity, fall.defence_up scaling, and nonlethal fall damage
+  -> no exact Common1 controller-loop order, helper/team/redirect ownership, exact recovery thresholds/velocity math, full fall/get-hit parity, or score claim
 R2 RuntimeStateTypeWorld ownership extraction
   -> RuntimeStateTypeWorld now owns bounded passive StateTypeSet stateType/moveType/physics setup
   -> StateControllerExecutor delegates typed metadata operations and raw-param fallback mutations to the world
@@ -524,6 +530,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeHitFallControllerWorld` ownership extraction
 - `RuntimeStateTypeWorld` ownership extraction
 - `RuntimeDamageScaleWorld` ownership extraction
 - `RuntimeHitDefenseWorld` ownership extraction

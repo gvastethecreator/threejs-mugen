@@ -14,7 +14,6 @@ import type {
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
-import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
   applyRuntimeLifeAdd,
@@ -30,6 +29,7 @@ import { applyRuntimeAngleController, applyRuntimeTransController } from "./Spri
 import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
 import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
 import { RuntimeStateTypeWorld } from "./StateTypeSystem";
+import { RuntimeHitFallControllerWorld } from "./HitFallControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -37,6 +37,7 @@ type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | 
 const hitDefenseWorld = new RuntimeHitDefenseWorld();
 const damageScaleWorld = new RuntimeDamageScaleWorld();
 const stateTypeWorld = new RuntimeStateTypeWorld();
+const hitFallControllerWorld = new RuntimeHitFallControllerWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -109,21 +110,11 @@ export function executeControllerIr(
       next.vel.y = next.hitVelocity.y;
     }
   } else if (type === "hitfallvel") {
-    if (next.moveType === "H" && next.hitFall) {
-      if (next.hitFall.velocity.x !== undefined) {
-        next.vel.x = next.hitFall.velocity.x;
-      }
-      next.vel.y = next.hitFall.velocity.y;
-    }
+    hitFallControllerWorld.applyController(next, controller, hitFallOperation(controller, "hitfallvel"), context);
   } else if (type === "hitfalldamage") {
-    if (next.moveType === "H" && next.hitFall && next.hitFall.damage > 0) {
-      const defenceScale = next.hitFall.defenceUp === undefined ? 1 : Math.max(0, Math.min(10, next.hitFall.defenceUp / 100));
-      const scaledDamage = Math.max(0, Math.round(next.hitFall.damage * defenceScale));
-      next.life = applyRuntimeDamage(next.life, scaledDamage, canRuntimeDamageKill(next, next.hitFall.kill ?? true));
-      next.hitFall = { ...next.hitFall, damage: 0 };
-    }
+    hitFallControllerWorld.applyController(next, controller, hitFallOperation(controller, "hitfalldamage"), context);
   } else if (type === "hitfallset") {
-    applyHitFallSet(next, controller, hitFallOperation(controller, "hitfallset"), context);
+    hitFallControllerWorld.applyController(next, controller, hitFallOperation(controller, "hitfallset"), context);
   } else if (type === "posset") {
     const operation = kinematicOperation(controller, "posset");
     const pair = pairParam(controller, next, context, "value");
@@ -272,41 +263,6 @@ export function executeControllerIr(
   }
 
   return next;
-}
-
-function applyHitFallSet(
-  state: CharacterRuntimeState,
-  controller: ControllerExecutionSource,
-  operation?: HitFallControllerOp,
-  context: RuntimeControllerEvaluationContext = {},
-): void {
-  const current = state.hitFall ?? {
-    falling: false,
-    damage: 0,
-    velocity: { y: -4.5 },
-  };
-  const value =
-    operation?.controllerType === "hitfallset" && operation.falling !== undefined
-      ? operation.falling
-        ? 1
-        : 0
-      : numberParam(controller, state, context, "value");
-  const x =
-    operation?.controllerType === "hitfallset"
-      ? operation.xVelocity ?? numberParam(controller, state, context, "xvel", "x")
-      : numberParam(controller, state, context, "xvel", "x");
-  const y =
-    operation?.controllerType === "hitfallset"
-      ? operation.yVelocity ?? numberParam(controller, state, context, "yvel", "y")
-      : numberParam(controller, state, context, "yvel", "y");
-  state.hitFall = {
-    ...current,
-    falling: value !== undefined ? value !== 0 : current.falling,
-    velocity: {
-      x: x ?? current.velocity.x,
-      y: y ?? current.velocity.y,
-    },
-  };
 }
 
 function hitFallOperation(
