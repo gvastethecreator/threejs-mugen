@@ -4983,6 +4983,8 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
+    requiredControllerEventSequences?: RuntimeTraceGate["requiredControllerEventSequences"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -5028,6 +5030,8 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
         requiredActorFrames: options.requiredActorFrames,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredFinalActors: [
           {
             actorId: "p2",
@@ -5169,6 +5173,86 @@ export function createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifa
         minFrames: 1,
       },
     ],
+  });
+}
+
+export function createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-official-air-recovery",
+    displayName: "Synthetic Imported Default Fall Official Air Recovery",
+    defaultGetHitFall: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      landStateNo: 52,
+      includeRecoveryInput: true,
+      includeRecoveryInputLanding: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-fall-official-air-recovery-attacker",
+    displayName: "Synthetic Imported Default Fall Official Air Recovery Attacker",
+    groundVelocity: [-3, -6],
+    fall: {
+      ...commonGetHitFallData(),
+      velocity: { x: 3, y: -6 },
+      recover: true,
+      recoverTime: 10,
+    },
+  });
+  const fallFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 5050,
+    moveType: "H",
+    observedHitFallRecoverTimeAtLeast: 1,
+    observedHitFallRecoverTimeAtMost: 0,
+    observedHitFallRecoverTimeDropAtLeast: 1,
+    minFrames: 2,
+  };
+  const recoverFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 5210,
+    moveType: "I",
+    observedHitFallRecoverTimeAtMost: 0,
+    observedVelXAtLeast: 0,
+    observedVelXAtMost: 0,
+    observedVelYAtMost: -2,
+    minFrames: 1,
+  };
+  const landFrame: RuntimeTraceActorFrameRequirement = {
+    actorId: "p2",
+    source: "imported",
+    actorKind: "player",
+    stateNo: 52,
+    moveType: "I",
+    observedPosYAtLeast: 0,
+    observedPosYAtMost: 0,
+    minFrames: 1,
+  };
+  return createImportedDefaultFallRecoveryInputTraceArtifact(imported, {
+    ...options,
+    attacker,
+    targetId: "synthetic-imported-default-fall-official-air-recovery-golden",
+    targetLabel: "Synthetic imported official-style Common1 air recovery route",
+    notes: [
+      "Synthetic imported official-style air-recovery trace proves a bounded Common1-style defender can wait through a positive fall.recovertime window, accept command = \"recovery\" in air, route 5050 -> 5210 -> 52, apply air-recovery/land kinematic operations, and settle back to idle/control. It does not claim exact MUGEN/IKEMEN threshold tables, velocity math, controller-loop timing, public KFM support, or full recovery parity.",
+    ],
+    requiredActorFrames: [fallFrame, recoverFrame, landFrame],
+    requiredActorFrameSequences: [
+      {
+        label: "5050 recoverTime countdown before 5210/52 air recovery",
+        steps: [fallFrame, recoverFrame, landFrame],
+      },
+    ],
+    requiredControllerEventSequences: [defaultAirRecoveryLandControllerSequence()],
   });
 }
 
@@ -5490,6 +5574,30 @@ export function defaultGroundRecoveryControllerSequence(): RuntimeTraceControlle
       { stateNo: 5201, controller: "NotHitBy", name: "Safe Recovery" },
       { stateNo: 5201, operation: "eligibility:nothitby" },
       { stateNo: 5201, controller: "ChangeState", name: "Land" },
+      { stateNo: 52, controller: "VelSet", name: "Land Velocity" },
+      { stateNo: 52, operation: "kinematic:velset" },
+      { stateNo: 52, controller: "PosSet", name: "Land Position" },
+      { stateNo: 52, operation: "kinematic:posset" },
+      { stateNo: 52, controller: "CtrlSet", name: "Land Ctrl" },
+      { stateNo: 52, operation: "resource:ctrlset" },
+    ],
+  };
+}
+
+export function defaultAirRecoveryLandControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "5050/5210/52 named air-recovery controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5050, controller: "VelAdd", name: "Gravity" },
+      { stateNo: 5050, controller: "ChangeState", name: "Recovery Input" },
+      { stateNo: 5210, controller: "VelSet", name: "Air Recovery Velocity" },
+      { stateNo: 5210, operation: "kinematic:velset" },
+      { stateNo: 5210, controller: "HitFallSet", name: "Fall Recovery Settled" },
+      { stateNo: 5210, operation: "hitfall:hitfallset" },
+      { stateNo: 5210, controller: "VelAdd", name: "Air Recovery Gravity" },
+      { stateNo: 5210, controller: "ChangeState", name: "Land" },
       { stateNo: 52, controller: "VelSet", name: "Land Velocity" },
       { stateNo: 52, operation: "kinematic:velset" },
       { stateNo: 52, controller: "PosSet", name: "Land Position" },
@@ -10348,6 +10456,7 @@ export type SyntheticImportedTraceFighterOptions = {
     landAnimNo?: number;
     includeRecoveryChain?: boolean;
     includeRecoveryInput?: boolean;
+    includeRecoveryInputLanding?: boolean;
     includeGroundRecovery?: boolean;
   };
   withTargetControllers?: boolean;
@@ -11379,6 +11488,11 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   traceAction(options.defaultGetHitFall.recoveryInputAnimNo ?? options.defaultGetHitFall.recoveryInputStateNo ?? 5210),
                 ]] as Array<[number, MugenAnimationAction]>)
               : []),
+            ...(options.defaultGetHitFall.includeRecoveryInputLanding
+              ? ([[options.defaultGetHitFall.landStateNo ?? 52, traceAction(options.defaultGetHitFall.landAnimNo ?? options.defaultGetHitFall.landStateNo ?? 52)]] as Array<
+                  [number, MugenAnimationAction]
+                >)
+              : []),
             ...(options.defaultGetHitFall.includeGroundRecovery
               ? ([
                   [
@@ -12261,6 +12375,7 @@ function defaultGetHitFallBlock(state: {
   landAnimNo?: number;
   includeRecoveryChain?: boolean;
   includeRecoveryInput?: boolean;
+  includeRecoveryInputLanding?: boolean;
   includeGroundRecovery?: boolean;
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 5000;
@@ -12379,7 +12494,7 @@ trigger1 = Time = ${settleTime}
 value = ${settleTarget}
 ctrl = ${settleCtrl}
 ${state.includeRecoveryChain ? defaultFallRecoveryChainBlock({ groundStateNo, bounceStateNo, liedownStateNo, recoverStateNo, groundAnimNo, bounceAnimNo, liedownAnimNo, recoverAnimNo }) : ""}
-${state.includeRecoveryInput ? defaultFallRecoveryInputBlock({ recoveryInputStateNo, recoveryInputAnimNo }) : ""}
+${state.includeRecoveryInput ? defaultFallRecoveryInputBlock({ recoveryInputStateNo, recoveryInputAnimNo, landStateNo, landAnimNo, includeLanding: state.includeRecoveryInputLanding === true }) : ""}
 ${state.includeGroundRecovery ? defaultGroundRecoveryInputBlock({ groundRecoveryStateNo, groundRecoveryLandStateNo, landStateNo, groundRecoveryAnimNo, groundRecoveryLandAnimNo, landAnimNo }) : ""}
 `;
 }
@@ -12439,7 +12554,60 @@ time = 1
 type = ChangeState
 trigger1 = Time = 3
 value = ${state.landStateNo}
+${defaultLandStateBlock({ landStateNo: state.landStateNo, landAnimNo: state.landAnimNo })}
+`;
+}
 
+function defaultFallRecoveryInputBlock(state: {
+  recoveryInputStateNo: number;
+  recoveryInputAnimNo: number;
+  landStateNo: number;
+  landAnimNo: number;
+  includeLanding: boolean;
+}): string {
+  return `
+[Statedef ${state.recoveryInputStateNo}]
+type = A
+movetype = I
+physics = N
+anim = ${state.recoveryInputAnimNo}
+ctrl = 0
+
+[State ${state.recoveryInputStateNo}, Air Recovery Velocity]
+type = VelSet
+trigger1 = Time = 1
+x = 0
+y = -2
+
+[State ${state.recoveryInputStateNo}, Fall Recovery Settled]
+type = HitFallSet
+trigger1 = Time = 2
+value = 1
+
+${state.includeLanding ? `[State ${state.recoveryInputStateNo}, Air Recovery Gravity]
+type = VelAdd
+trigger1 = Time >= 2
+y = 0.55
+
+[State ${state.recoveryInputStateNo}, Land]
+type = ChangeState
+triggerall = Time >= 5
+trigger1 = Vel Y > 0 && Pos Y >= 0
+trigger2 = Time >= 18
+value = ${state.landStateNo}
+` : ""}
+${state.includeLanding ? "" : `[State ${state.recoveryInputStateNo}, Stand]
+type = ChangeState
+trigger1 = Time = 3
+value = 0
+ctrl = 1
+`}
+${state.includeLanding ? defaultLandStateBlock({ landStateNo: state.landStateNo, landAnimNo: state.landAnimNo }) : ""}
+`;
+}
+
+function defaultLandStateBlock(state: { landStateNo: number; landAnimNo: number }): string {
+  return `
 [Statedef ${state.landStateNo}]
 type = S
 movetype = I
@@ -12465,37 +12633,6 @@ value = 1
 [State ${state.landStateNo}, Stand]
 type = ChangeState
 trigger1 = Time = 5
-value = 0
-ctrl = 1
-`;
-}
-
-function defaultFallRecoveryInputBlock(state: {
-  recoveryInputStateNo: number;
-  recoveryInputAnimNo: number;
-}): string {
-  return `
-[Statedef ${state.recoveryInputStateNo}]
-type = A
-movetype = I
-physics = N
-anim = ${state.recoveryInputAnimNo}
-ctrl = 0
-
-[State ${state.recoveryInputStateNo}, Air Recovery Velocity]
-type = VelSet
-trigger1 = Time = 1
-x = 0
-y = -2
-
-[State ${state.recoveryInputStateNo}, Fall Recovery Settled]
-type = HitFallSet
-trigger1 = Time = 2
-value = 1
-
-[State ${state.recoveryInputStateNo}, Stand]
-type = ChangeState
-trigger1 = Time = 3
 value = 0
 ctrl = 1
 `;

@@ -12,6 +12,7 @@ import {
   createSyntheticImportedDefaultFallRecoveryTickOrderTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryTraceArtifact,
+  createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifact,
   createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact,
   createSyntheticImportedFallTraceArtifact,
   createSyntheticImportedFallDefenceUpTraceArtifact,
@@ -43,6 +44,7 @@ import {
   officialKfmFallGetHitControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmFallLieDownGetUpControllerSequence,
+  defaultAirRecoveryLandControllerSequence,
   officialKfmGroundRecoveryControllerSequence,
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
@@ -5254,6 +5256,94 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+  });
+
+  it("creates a required synthetic imported official-style Common1 air-recovery landing artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-official-air-recovery-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-recovery-input-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5210, 52]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    const fallFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5050,
+    );
+    const airRecoveryFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 5210,
+    );
+    const landFrame = evidence?.actorFrames.find(
+      (frame) => frame.actorId === "p2" && frame.source === "imported" && frame.stateNo === 52,
+    );
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(airRecoveryFrame?.minVel.x).toBeLessThanOrEqual(0);
+    expect(airRecoveryFrame?.maxVel.x).toBeGreaterThanOrEqual(0);
+    expect(airRecoveryFrame?.minVel.y).toBeLessThanOrEqual(-2);
+    expect(landFrame?.maxPos.y).toBe(0);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 recoverTime countdown before 5210/52 air recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5210,
+            moveType: "I",
+            observedHitFallRecoverTimeAtMost: 0,
+            observedVelXAtLeast: 0,
+            observedVelXAtMost: 0,
+            observedVelYAtMost: -2,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 52,
+            moveType: "I",
+            observedPosYAtLeast: 0,
+            observedPosYAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultAirRecoveryLandControllerSequence(),
+    ]);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
   });
 
   it("creates a synthetic imported default Common1 recovery-threshold artifact", () => {

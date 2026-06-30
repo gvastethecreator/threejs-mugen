@@ -612,6 +612,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-fall-official-air-recovery",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-fall-ground-recovery",
       required: true,
       artifact: presets.createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact(),

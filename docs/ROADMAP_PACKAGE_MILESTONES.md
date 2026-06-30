@@ -85,13 +85,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R1 official-style ground recovery sequence gate
-  -> synthetic-imported-default-fall-official-ground-recovery.json checksum 74b72495 is now required
-  -> official-style synthetic Common1 ground recovery routes 5050 -> 5200 -> 5201 -> 52 -> 0 after command = "recovery" near ground
-  -> actor-frame sequence proves fall.recovertime drops from positive to 0 before ground recovery, 5201 exposes bounded recovery velocity/position telemetry, 52 observes y = 0 landing, and final P2 returns to idle/control
-  -> controller/order evidence requires VelAdd, ChangeState, SelfState, VelSet, PosSet, NotHitBy, CtrlSet plus typed kinematic/eligibility/resource operations
-  -> pnpm qa:trace passes 186/186 artifacts, 166 required and 20 optional
+R1 official-style air recovery sequence gate
+  -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now required
+  -> official-style synthetic Common1 air recovery routes 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne
+  -> actor-frame sequence proves fall.recovertime drops from positive to 0 before air recovery, 5210 exposes bounded recovery velocity telemetry, 52 observes y = 0 landing, and final P2 returns to idle/control
+  -> controller/order evidence requires VelAdd, ChangeState, VelSet, HitFallSet, CtrlSet plus typed kinematic/hitfall/resource operations
+  -> pnpm qa:trace passes 187/187 artifacts, 167 required and 20 optional
   -> no exact fall.recovertime tables, velocity math, controller-loop timing, public KFM support, score movement, visual parity, or full Common1 recovery parity claim
+R1 official-style ground recovery sequence gate
+  -> synthetic-imported-default-fall-official-ground-recovery.json checksum 74b72495 remains required
+  -> official-style synthetic Common1 ground recovery routes 5050 -> 5200 -> 5201 -> 52 -> 0 after command = "recovery" near ground
 R2 helper-local ProjContactTime trace gate
   -> synthetic-imported-helper-projcontact.json checksum 07653cee is now required
   -> helper-local ProjContact(8855) and ProjContactTime(8855) >= 1 branch after helper-parented owner-side Projectile generic contact
@@ -421,7 +424,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the official-style ground recovery gate is 186/186 artifacts, 166 required and 20 optional
+  -> current aggregate after the official-style air recovery gate is 187/187 artifacts, 167 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

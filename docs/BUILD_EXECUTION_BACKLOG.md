@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Official-style air recovery trace gate
+
+Changed:
+
+- Added required `synthetic-imported-default-fall-official-air-recovery.json` trace evidence for a bounded official-style synthetic Common1 `5050 -> 5210 -> 52 -> 0` air-recovery route.
+- Added `includeRecoveryInputLanding` to the synthetic Common1 fallback so recovery-input state `5210` can land through state `52` instead of only jumping straight to idle.
+- Added `createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifact()` with actor-frame sequence requirements for positive-to-zero `fall.recovertime`, `5210` air-recovery velocity telemetry, `52` landing y = 0 evidence, ordered controller/typed-operation evidence, and final idle/control.
+- Registered the artifact as required in `pnpm qa:trace`.
+- Added focused `RuntimeTraceGatePresets` coverage proving the artifact, requirements, observed actor frames, controller sequence, and final actor state.
+
+Evidence:
+
+- Focused `pnpm test -- src/tests/RuntimeTraceGatePresets.test.ts -t "air-recovery landing"` passed; current Vitest run reports 95 files / 812 tests.
+- `pnpm test` passes: 95 files / 812 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 187 / 187 artifacts, 167 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-default-fall-official-air-recovery.json` `b0363be9`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded imported-runtime trace suite proves an official-style synthetic Common1 air-recovery sequence from fall state `5050` into `5210`, landing state `52`, and final idle/control when recovery input is accepted while airborne.
+
+Claim blocked:
+
+- This does not add exact `fall.recovertime` tables, exact controller-loop timing, exact velocity math, public bundled KFM support, visual parity, score movement, or full MUGEN/IKEMEN Common1 recovery parity.
+
 ## 2026-06-30 - Official-style ground recovery trace gate
 
 Changed:
