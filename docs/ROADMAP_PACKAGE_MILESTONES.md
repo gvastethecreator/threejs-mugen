@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeTargetWorld candidate-resolution ownership
+  -> RuntimeTargetWorld.resolveCandidates now owns bounded target-candidate filtering from live target memory
+  -> Target* / BindToTarget controller application and active TargetBind / BindToTarget position application pass through that filter before mutation
+  -> PlayableMatchRuntime still owns trigger ordering, state validation, the concrete actor roster, helper/projectile actor materialization, and combat context
+  -> focused TargetSystem coverage proves actor-id and target-id filtering plus mutation only against remembered targets
+  -> no helper/projectile target ownership, exact team/multi-target selection, exact target lifetime, throw binding, exact bind tick order, visual parity, or score claim
 R2 RuntimeExpressionContextWorld ownership extraction
   -> RuntimeExpressionContextWorld now owns bounded active runtime ExpressionContext creation for imported triggers and dynamic controller-param fallback
   -> PlayableMatchRuntime delegates target redirects, contact/projectile/effect count reads, command/const/state/anim/hitvar reads, HitDefAttr, HitPauseTime/HitOver/HitShakeOver, InGuardDist, random/stage/time wiring to that world
@@ -563,6 +569,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeRecoverySystem` fall/down-recovery ownership extraction
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
+- `RuntimeTargetWorld.resolveCandidates` target-candidate ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
 - `RuntimeExpressionContextWorld` ownership extraction
 - `RuntimeStateTransitionControllerWorld` ownership extraction

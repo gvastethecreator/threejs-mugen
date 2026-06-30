@@ -143,30 +143,49 @@ export class RuntimeTargetWorld {
     return actor.targets.find((target) => target.actorId === actorId && matchesRuntimeTargetId(target, requestedId));
   }
 
+  resolveCandidates<TActor extends { id: string }>(
+    actor: RuntimeTargetControllerActor,
+    candidateTargets: TActor[],
+    requestedId?: number,
+  ): TActor[] {
+    return matchingRuntimeTargetActors(actor.targets, candidateTargets, requestedId);
+  }
+
   applyController<TActor extends RuntimeTargetControllerActor>(
     options: RuntimeTargetControllerOptions<TActor>,
   ): RuntimeTargetControllerResult {
-    return applyRuntimeTargetController(options);
+    const requestedId =
+      options.operation?.controllerType === "targetdrop"
+        ? undefined
+        : options.operation?.requestedId ?? firstNumber(findControllerParam(options.controller, "id"));
+    return applyRuntimeTargetController({
+      ...options,
+      candidateTargets: this.resolveCandidates(options.actor, options.candidateTargets, requestedId),
+    });
   }
 
   applyBindToTargetController<TActor extends RuntimeTargetWorldActor>(
     options: RuntimeBindToTargetControllerOptions<TActor>,
   ): RuntimeTargetControllerResult {
-    return applyRuntimeBindToTargetController(options);
+    const requestedId = options.operation?.requestedId ?? firstNumber(findControllerParam(options.controller, "id")) ?? -1;
+    return applyRuntimeBindToTargetController({
+      ...options,
+      candidateTargets: this.resolveCandidates(options.actor, options.candidateTargets, requestedId),
+    });
   }
 
   applyTargetBindings<TActor extends RuntimeTargetWorldActor>(
     actor: TActor,
     candidateTargets: TActor[],
   ): RuntimeTargetBindingApplyResult {
-    return applyRuntimeTargetBindings(actor, candidateTargets);
+    return applyRuntimeTargetBindings(actor, this.resolveCandidates(actor, candidateTargets));
   }
 
   applyBindToTarget<TActor extends RuntimeTargetWorldActor>(
     actor: TActor,
     candidateTargets: TActor[],
   ): RuntimeTargetBindingApplyResult {
-    return applyRuntimeBindToTarget(actor, candidateTargets);
+    return applyRuntimeBindToTarget(actor, this.resolveCandidates(actor, candidateTargets));
   }
 }
 

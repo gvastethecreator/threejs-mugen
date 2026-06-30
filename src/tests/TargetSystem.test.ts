@@ -54,6 +54,34 @@ describe("TargetSystem", () => {
     expect(findRuntimeTargetId(targets, "helper")).toBe(2);
   });
 
+  it("resolves concrete target candidates through RuntimeTargetWorld target memory", () => {
+    const world = new RuntimeTargetWorld();
+    const actor = targetActor("p1", {
+      targets: [
+        { actorId: "p2", targetId: 77, age: 0 },
+        { actorId: "helper", targetId: 88, age: 0 },
+      ],
+    });
+    const p2 = targetActor("p2", { runtime: { life: 120 } });
+    const helper = targetActor("helper", { runtime: { life: 120 } });
+    const stranger = targetActor("stranger", { runtime: { life: 120 } });
+
+    expect(world.resolveCandidates(actor, [stranger, p2, helper]).map((target) => target.id)).toEqual(["p2", "helper"]);
+    expect(world.resolveCandidates(actor, [p2, helper], 88).map((target) => target.id)).toEqual(["helper"]);
+
+    const result = world.applyController({
+      actor,
+      candidateTargets: [helper, p2, stranger],
+      controller: controller("TargetLifeAdd", { id: "77", value: "-20" }),
+      operation: { kind: "target", controllerType: "targetlifeadd", requestedId: 77, value: -20, absolute: false, kill: true },
+    });
+
+    expect(result).toEqual({ controllerType: "targetlifeadd", matchedTargets: 1, operationExecuted: true });
+    expect(p2.runtime.life).toBe(100);
+    expect(helper.runtime.life).toBe(120);
+    expect(stranger.runtime.life).toBe(120);
+  });
+
   it("wraps target memory mutation behind RuntimeTargetWorld", () => {
     const world = new RuntimeTargetWorld();
     const actor = targetActor("p1", {

@@ -26,9 +26,9 @@ Near-term language must stay honest: this is **partial MUGEN compatibility with 
 
 Current implementation cursor:
 
-- Latest R2 ownership checkpoint: `RuntimeExpressionContextWorld` owns the bounded active runtime expression/trigger read context used by imported state triggers and dynamic controller-param fallback.
-- Previous R2 checkpoint: `RuntimeStateTransitionControllerWorld` owns bounded passive `ChangeState` / `SelfState` setup in the basic `StateControllerExecutor` path.
-- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed expression-context, state-transition, animation-controller, or kinematic-controller ownership cuts.
+- Latest R2 ownership checkpoint: `RuntimeTargetWorld.resolveCandidates` owns bounded target-candidate filtering from live target memory before current Target* / BindToTarget controller and active-binding application.
+- Previous R2 checkpoint: `RuntimeExpressionContextWorld` owns the bounded active runtime expression/trigger read context used by imported state triggers and dynamic controller-param fallback.
+- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed target-candidate, expression-context, state-transition, animation-controller, or kinematic-controller ownership cuts.
 
 ## Authoritative Docs
 
