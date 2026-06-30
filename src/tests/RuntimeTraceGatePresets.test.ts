@@ -1691,6 +1691,7 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p1-projectile-0",
         kind: "projectile",
         ownerId: "p1",
+        parentId: "p1-helper-0",
         effectId: 8853,
         minAge: 1,
         minPriority: 2,
@@ -1698,6 +1699,31 @@ describe("RuntimeTraceGatePresets", () => {
         hasHit: true,
       },
     ]);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 8853 }]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8853 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7002,
+            raw: "F7002",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7002,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+          }),
+        }),
+      ]),
+    );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -1750,6 +1776,7 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p1-projectile-0",
         kind: "projectile",
         ownerId: "p1",
+        parentId: "p1-helper-0",
         effectId: 8854,
         minAge: 1,
         minPriority: 2,
@@ -1757,6 +1784,31 @@ describe("RuntimeTraceGatePresets", () => {
         hasHit: true,
       },
     ]);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 8854 }]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8854 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+          hitEffect: expect.objectContaining({
+            kind: "guard",
+            sparkNo: 7004,
+            raw: "F7004",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7004,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+          }),
+        }),
+      ]),
+    );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -1809,6 +1861,7 @@ describe("RuntimeTraceGatePresets", () => {
         actorId: "p1-projectile-0",
         kind: "projectile",
         ownerId: "p1",
+        parentId: "p1-helper-0",
         effectId: 8855,
         minAge: 1,
         minPriority: 2,
@@ -1816,6 +1869,31 @@ describe("RuntimeTraceGatePresets", () => {
         hasHit: true,
       },
     ]);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 8855 }]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8855 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
+          hitEffect: expect.objectContaining({
+            kind: "guard",
+            sparkNo: 7004,
+            raw: "F7004",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7004,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+          }),
+        }),
+      ]),
+    );
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

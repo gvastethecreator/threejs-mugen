@@ -301,6 +301,7 @@ export type RuntimeTraceEffectPayloadRequirement = {
   actorId?: string;
   actorKind?: RuntimeActorKind;
   ownerId?: string;
+  parentId?: string;
   source?: ActorSnapshot["source"];
   kind?: RuntimeTraceEffectSummary["kind"];
   effectId?: number;
@@ -1769,6 +1770,7 @@ function matchesEffectPayloadRequirement(
     (requirement.actorId === undefined || payload.actorId === requirement.actorId) &&
     (requirement.actorKind === undefined || payload.actorKind === requirement.actorKind) &&
     (requirement.ownerId === undefined || payload.ownerId === requirement.ownerId) &&
+    (requirement.parentId === undefined || payload.parentId === requirement.parentId) &&
     (requirement.source === undefined || payload.source === requirement.source) &&
     (requirement.kind === undefined || effect.kind === requirement.kind) &&
     (requirement.effectId === undefined || effect.id === requirement.effectId) &&

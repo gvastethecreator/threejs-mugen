@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-parented Projectile contact package gates
+
+Changed:
+
+- Added `parentId` support to `RuntimeTraceGate.requiredEffectPayloads`, so trace gates can require helper-parented Projectile payload ownership instead of only checking it in ad hoc assertions.
+- Strengthened `synthetic-imported-helper-projhit.json`, `synthetic-imported-helper-projguard.json`, and `synthetic-imported-helper-projcontact.json` requirements to prove owner-side target-link evidence plus shared sound/FightFX spark package telemetry for helper-parented Projectile contacts.
+- Extended the synthetic helper Projectile route fixtures with optional `hitsound`, `guardsound`, `sparkno`, `guard.sparkno`, and `sparkxy` params.
+- Updated runtime support docs, QA gates, progress tracker, and scorecard to record the stricter helper-parented Projectile contact evidence without claiming full helper-owned target parity.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Proj"` passed: 1 file, 4 tests.
+- `pnpm test` passes: 95 files / 812 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 187 / 187 artifacts, 167 required, 20 optional, 0 failed.
+- Required helper checksums remain behavior-stable: `synthetic-imported-helper-projhit.json` `3892716e`, `synthetic-imported-helper-projguard.json` `3353eda7`, and `synthetic-imported-helper-projcontact.json` `07653cee`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local Projectile contact gates prove `ProjHit`, `ProjGuarded`, and `ProjContact` routes can read helper-parented owner-side Projectile contact markers while preserving `parentId = p1-helper-0`, owner-side target-link evidence, and shared sound/FightFX spark package metadata.
+
+Claim blocked:
+
+- This does not add exact helper-owned Projectile target ownership, exact `ProjContact` / `ProjHit` / `ProjGuarded` tick order or lifetime, dynamic helper-local Projectile params, exact namespace/team semantics, full helper combat, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - Official-style air recovery trace gate
 
 Changed:

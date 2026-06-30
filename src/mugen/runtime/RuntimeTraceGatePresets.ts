@@ -8697,7 +8697,11 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
       projectileAnimNo: 946,
       projectileId: 8853,
       pos: [360, -34],
+      hitSound: "S5,0",
+      hitSpark: "F7002",
+      sparkXy: [18, -68],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-helper-projhit-golden",
@@ -8711,7 +8715,7 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
       label: "Synthetic imported Helper ProjHit route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper ProjHit trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side Projectile hit marker after the projectile contacts P2. It does not claim helper-owned Projectile target memory, exact ProjContact tick order, teams, redirects, or full MUGEN/IKEMEN helper projectile parity.",
+        "Synthetic imported Helper ProjHit trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side Projectile hit marker after the projectile contacts P2, with owner-side target-link evidence and shared hit sound/FightFX spark package telemetry. It does not claim exact ProjContact tick order, teams, redirects, helper-owned custom-state targets, or full MUGEN/IKEMEN helper projectile parity.",
       ],
     },
     gates: [
@@ -8727,6 +8731,39 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 0,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7002,
+              assetFrameIndex: 0,
+              assetSpriteGroup: 8102,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1216, animNo: 936, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1217, animNo: 937, minFrames: 1 },
@@ -8752,6 +8789,7 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
             actorId: "p1-projectile-0",
             kind: "projectile",
             ownerId: "p1",
+            parentId: "p1-helper-0",
             effectId: 8853,
             minAge: 1,
             minPriority: 2,
@@ -8759,6 +8797,7 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
             hasHit: true,
           },
         ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8853 }],
       },
     ],
   });
@@ -8779,7 +8818,11 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
       projectileAnimNo: 948,
       projectileId: 8854,
       pos: [360, -34],
+      guardSound: "S6,0",
+      guardSpark: "F7004",
+      sparkXy: [15, -63],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-helper-projguard-golden",
@@ -8793,7 +8836,7 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
       label: "Synthetic imported Helper ProjGuarded route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper ProjGuarded trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side Projectile guard marker after a held-back P2 guards the projectile. It does not claim helper-owned Projectile target memory, exact ProjGuarded tick order or lifetime, teams, redirects, or full MUGEN/IKEMEN helper projectile parity.",
+        "Synthetic imported Helper ProjGuarded trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side Projectile guard marker after a held-back P2 guards the projectile, with owner-side target-link evidence and shared guard sound/FightFX spark package telemetry. It does not claim exact ProjGuarded tick order or lifetime, teams, redirects, helper-owned custom-state targets, or full MUGEN/IKEMEN helper projectile parity.",
       ],
     },
     gates: [
@@ -8809,6 +8852,39 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7004,
+              raw: "F7004",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7004,
+              assetFrameIndex: 0,
+              assetSpriteGroup: 8104,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1218, animNo: 938, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1219, animNo: 947, minFrames: 1 },
@@ -8834,6 +8910,7 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
             actorId: "p1-projectile-0",
             kind: "projectile",
             ownerId: "p1",
+            parentId: "p1-helper-0",
             effectId: 8854,
             minAge: 1,
             minPriority: 2,
@@ -8841,6 +8918,7 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
             hasHit: true,
           },
         ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8854 }],
       },
     ],
   });
@@ -8861,7 +8939,11 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
       projectileAnimNo: 951,
       projectileId: 8855,
       pos: [360, -34],
+      guardSound: "S6,0",
+      guardSpark: "F7004",
+      sparkXy: [15, -63],
     },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
     label: "synthetic-imported-helper-projcontact-golden",
@@ -8875,7 +8957,7 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
       label: "Synthetic imported Helper ProjContact route",
       source: "mixed",
       notes: [
-        "Synthetic imported Helper ProjContact trace proves the bounded helper-local micro-VM can branch on a generic helper-parented owner-side Projectile contact marker after a guarded projectile contact. It does not claim exact ProjContact tick order or lifetime, teams, redirects, target memory, or full MUGEN/IKEMEN helper projectile parity.",
+        "Synthetic imported Helper ProjContact trace proves the bounded helper-local micro-VM can branch on a generic helper-parented owner-side Projectile contact marker after a guarded projectile contact, with owner-side target-link evidence and shared guard sound/FightFX spark package telemetry. It does not claim exact ProjContact tick order or lifetime, teams, redirects, helper-owned custom-state targets, or full MUGEN/IKEMEN helper projectile parity.",
       ],
     },
     gates: [
@@ -8891,6 +8973,39 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 0,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7004,
+              raw: "F7004",
+              rawPrefix: "F",
+              assetSource: "fightfx",
+              assetActionId: 7004,
+              assetFrameIndex: 0,
+              assetSpriteGroup: 8104,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
         requiredActorFrames: [
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1220, animNo: 949, minFrames: 1 },
           { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1221, animNo: 950, minFrames: 1 },
@@ -8916,6 +9031,7 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
             actorId: "p1-projectile-0",
             kind: "projectile",
             ownerId: "p1",
+            parentId: "p1-helper-0",
             effectId: 8855,
             minAge: 1,
             minPriority: 2,
@@ -8923,6 +9039,7 @@ export function createSyntheticImportedHelperProjContactTraceArtifact(options: R
             hasHit: true,
           },
         ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8855 }],
       },
     ],
   });
@@ -10610,6 +10727,11 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileId?: number;
     pos?: [number, number];
     velocity?: [number, number];
+    hitSound?: string;
+    guardSound?: string;
+    hitSpark?: string;
+    guardSpark?: string;
+    sparkXy?: [number, number];
   };
   helperProjGuardRoute?: {
     waitStateNo: number;
@@ -10620,6 +10742,11 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileId?: number;
     pos?: [number, number];
     velocity?: [number, number];
+    hitSound?: string;
+    guardSound?: string;
+    hitSpark?: string;
+    guardSpark?: string;
+    sparkXy?: [number, number];
   };
   helperProjContactRoute?: {
     waitStateNo: number;
@@ -10630,6 +10757,11 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileId?: number;
     pos?: [number, number];
     velocity?: [number, number];
+    hitSound?: string;
+    guardSound?: string;
+    hitSpark?: string;
+    guardSpark?: string;
+    sparkXy?: [number, number];
   };
   helperNumExplodRoute?: {
     branchStateNo: number;
@@ -13807,6 +13939,11 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const projectileId = route.projectileId ?? 8853;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
+  const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
+  const guardSoundLine = route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`;
+  const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
+  const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
+  const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
   return `
 [Statedef 1200]
 type = S
@@ -13827,6 +13964,11 @@ offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 48
 projremove = 0
+${hitSoundLine}
+${guardSoundLine}
+${hitSparkLine}
+${guardSparkLine}
+${sparkXyLine}
 damage = 18,2
 pausetime = 3,3
 ground.hittime = 11
@@ -13872,6 +14014,11 @@ function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFigh
   const projectileId = route.projectileId ?? 8854;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
+  const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
+  const guardSoundLine = route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`;
+  const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
+  const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
+  const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
   return `
 [Statedef 1200]
 type = S
@@ -13892,6 +14039,11 @@ offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 48
 projremove = 0
+${hitSoundLine}
+${guardSoundLine}
+${hitSparkLine}
+${guardSparkLine}
+${sparkXyLine}
 damage = 18,2
 pausetime = 3,3
 ground.hittime = 11
@@ -13937,6 +14089,11 @@ function helperProjContactRouteBlock(route: NonNullable<SyntheticImportedTraceFi
   const projectileId = route.projectileId ?? 8855;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
+  const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
+  const guardSoundLine = route.guardSound === undefined ? "" : `guardsound = ${route.guardSound}`;
+  const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
+  const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
+  const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
   return `
 [Statedef 1200]
 type = S
@@ -13957,6 +14114,11 @@ offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 48
 projremove = 0
+${hitSoundLine}
+${guardSoundLine}
+${hitSparkLine}
+${guardSparkLine}
+${sparkXyLine}
 damage = 18,2
 pausetime = 3,3
 ground.hittime = 11
