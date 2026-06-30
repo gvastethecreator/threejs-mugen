@@ -1525,6 +1525,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.PlaySnd).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["audio:playsnd"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.EnvShake).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations.envshake).toBe(1);
   });
 
   it("executes imported Turn, PlayerPush, LifeSet, and PowerSet controllers", () => {

@@ -341,6 +341,30 @@ time = 20
     expect(dynamic.operation).toBeUndefined();
   });
 
+  it("compiles static EnvShake controllers into typed camera-shake operations", () => {
+    const shake = compileControllerIr(controller(200, "EnvShake", [], { time: "999", freq: "-30", ampl: "-99", phase: "1.5" }));
+    const defaults = compileControllerIr(controller(200, "EnvShake", [], { time: "8" }));
+    const zero = compileControllerIr(controller(200, "EnvShake", [], { time: "0" }));
+    const dynamic = compileControllerIr(controller(200, "EnvShake", [], { time: "var(0)" }));
+
+    expect(shake.operation).toEqual({
+      kind: "envshake",
+      time: 240,
+      freq: 30,
+      ampl: -64,
+      phase: 1.5,
+    });
+    expect(defaults.operation).toEqual({
+      kind: "envshake",
+      time: 8,
+      freq: 60,
+      ampl: -4,
+      phase: 0,
+    });
+    expect(zero.operation).toBeUndefined();
+    expect(dynamic.operation).toBeUndefined();
+  });
+
   it("compiles simple movement controllers into typed kinematic operations", () => {
     const velSet = compileControllerIr(controller(200, "VelSet", [], { value: "4,-3" }));
     const velAdd = compileControllerIr(controller(200, "VelAdd", [], { y: "0.5" }));

@@ -33,6 +33,27 @@ describe("EnvShakeSystem", () => {
     expect(createRuntimeEnvShakeEvent(actor(200, 1), controller("EnvShake", { time: "0" }), 10)).toBeUndefined();
   });
 
+  it("uses typed EnvShake operations when available while preserving event shape", () => {
+    const event = createRuntimeEnvShakeEvent(actor(200, 4), controller("EnvShake", { time: "1", freq: "2" }), 120, {
+      kind: "envshake",
+      time: 16,
+      freq: 30,
+      ampl: -7,
+      phase: 0.5,
+    });
+
+    expect(event).toEqual({
+      type: "EnvShake",
+      time: 16,
+      freq: 30,
+      ampl: -7,
+      phase: 0.5,
+      stateNo: 200,
+      tick: 4,
+      runtimeTick: 120,
+    });
+  });
+
   it("creates FallEnvShake events from hit fall metadata", () => {
     const event = createRuntimeFallEnvShakeEvent(
       actor(5050, 9, { time: 15, freq: 178, ampl: 6, phase: 0.25 }),

@@ -395,7 +395,7 @@ export function createSyntheticImportedEnvShakeTraceArtifact(options: RuntimeTra
       requireHitEvent: true,
       requiredExecutedStates: [200],
       requiredExecutedControllers: ["ChangeState", "EnvShake", "HitDef"],
-      requiredExecutedOperations: ["hitdef"],
+      requiredExecutedOperations: ["hitdef", "envshake"],
       requiredEnvShakeEvents: [
         {
           actorId: "p1",

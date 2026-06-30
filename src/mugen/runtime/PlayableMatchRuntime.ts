@@ -4,6 +4,7 @@ import type {
   BindToTargetControllerOp,
   ContactControllerOp,
   EnvColorControllerOp,
+  EnvShakeControllerOp,
   FallEnvShakeControllerOp,
   HitDefControllerOp,
   PauseControllerOp,
@@ -1215,7 +1216,11 @@ function runActiveStateControllers(
         onEnvColorController?.(rawController, operation);
       } else if (dispatch.effect === "envshake") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
-        recordEnvShakeEvent(fighter, rawController, tick);
+        const operation = controller.operation?.kind === "envshake" ? controller.operation : undefined;
+        if (operation) {
+          compatibilityTelemetryWorld.recordOperation(fighter, operation);
+        }
+        recordEnvShakeEvent(fighter, rawController, tick, operation);
       } else if (dispatch.effect === "contact") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "contact" ? controller.operation : undefined;
@@ -1457,8 +1462,13 @@ function recordSoundEvent(
   fighter.audioWorld.emitController(fighter, controller, runtimeTick, operation);
 }
 
-function recordEnvShakeEvent(fighter: FighterMatchState, controller: MugenStateController, runtimeTick: number): void {
-  fighter.envShakeWorld.emitController(fighter, controller, runtimeTick);
+function recordEnvShakeEvent(
+  fighter: FighterMatchState,
+  controller: MugenStateController,
+  runtimeTick: number,
+  operation?: EnvShakeControllerOp,
+): void {
+  fighter.envShakeWorld.emitController(fighter, controller, runtimeTick, operation);
 }
 
 function activateHitDef(fighter: FighterMatchState, controller: MugenStateController, operation?: HitDefControllerOp): void {

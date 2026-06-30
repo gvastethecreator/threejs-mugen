@@ -219,6 +219,14 @@ export type FallEnvShakeControllerOp = {
   kind: "fallenvshake";
 };
 
+export type EnvShakeControllerOp = {
+  kind: "envshake";
+  time: number;
+  freq: number;
+  ampl: number;
+  phase: number;
+};
+
 export type EnvColorControllerOp = {
   kind: "envcolor";
   color: [number, number, number];
@@ -430,6 +438,7 @@ export type ControllerOp =
   | ModifyExplodControllerOp
   | HitFallControllerOp
   | FallEnvShakeControllerOp
+  | EnvShakeControllerOp
   | EnvColorControllerOp
   | KinematicControllerOp
   | BoundsControllerOp
@@ -554,6 +563,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "fallenvshake") {
     return { kind: "fallenvshake" };
+  }
+  if (type === "envshake") {
+    return compileEnvShakeControllerOp(controller);
   }
   if (type === "envcolor") {
     return compileEnvColorControllerOp(controller);
@@ -1313,6 +1325,27 @@ function compileHitFallControllerOp(
   return { kind: "hitfall", controllerType: type };
 }
 
+function compileEnvShakeControllerOp(controller: MugenStateController): EnvShakeControllerOp | undefined {
+  const time = staticNumberParam(controller, "time", 0);
+  const freq = staticNumberParam(controller, "freq", 60);
+  const ampl = staticNumberParam(controller, "ampl", -4);
+  const phase = staticNumberParam(controller, "phase", 0);
+  if (time === undefined || freq === undefined || ampl === undefined || phase === undefined) {
+    return undefined;
+  }
+  const clampedTime = clampShakeTime(time);
+  if (clampedTime <= 0) {
+    return undefined;
+  }
+  return {
+    kind: "envshake",
+    time: clampedTime,
+    freq: clampShakeFrequency(freq),
+    ampl: clampShakeAmplitude(ampl),
+    phase,
+  };
+}
+
 function compileEnvColorControllerOp(controller: MugenStateController): EnvColorControllerOp {
   return {
     kind: "envcolor",
@@ -1643,6 +1676,18 @@ function normalizeRandomRange(first: number, second: number): [number, number] {
 
 function clampEnvColorTime(value: number): number {
   return Math.max(0, Math.min(240, Math.round(value)));
+}
+
+function clampShakeTime(value: number): number {
+  return Math.max(0, Math.min(240, Math.round(value)));
+}
+
+function clampShakeFrequency(value: number): number {
+  return Math.max(1, Math.min(180, Math.abs(value)));
+}
+
+function clampShakeAmplitude(value: number): number {
+  return Math.max(-64, Math.min(64, value));
 }
 
 function controllerDuration(value: number): number {

@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Typed EnvShake controller operation
+
+Changed:
+
+- Added `EnvShakeControllerOp` for static `EnvShake` lowering into typed `envshake` operation evidence.
+- Routed typed `EnvShake` operations through `RuntimeEnvShakeWorld` while preserving raw controller fallback for unsupported/dynamic params.
+- Strengthened the required `synthetic-imported-envshake.json` gate so it now requires `hitdef` and `envshake` operation evidence next to bounded shake-event telemetry.
+- Updated support docs so `EnvShake` remains `compiled, executed-partial`, not camera-waveform or pause/layer parity.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/EnvShakeSystem.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/PlayableMatchRuntime.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "EnvShake|envshake|operation keys|Width, SprPriority"` passes: 5 files, 13 matching tests.
+- `pnpm test` passes: 81 files / 698 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 0 failed; `synthetic-imported-envshake.json` checksum is now `061f17d5`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current bounded imported `EnvShake` routes can be proven through typed `envshake` operation evidence plus the existing runtime shake-event telemetry.
+
+Claim blocked:
+
+- Dynamic params, `mul`, exact pause/stage/layer behavior, helper/redirect ownership, waveform parity, and full MUGEN/IKEMEN presentation parity remain blocked.
+
 ## 2026-06-30 - Typed audio controller operations
 
 Changed:

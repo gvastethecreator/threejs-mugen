@@ -1,3 +1,4 @@
+import type { EnvShakeControllerOp } from "../compiler/ControllerOps";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeEnvShakeEvent } from "./types";
@@ -22,17 +23,18 @@ export function createRuntimeEnvShakeEvent(
   actor: RuntimeEnvShakeActor,
   controller: MugenStateController,
   runtimeTick: number,
+  operation?: EnvShakeControllerOp,
 ): RuntimeEnvShakeEvent | undefined {
-  const time = clampShakeTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
+  const time = operation?.time ?? clampShakeTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
   if (time <= 0) {
     return undefined;
   }
   return {
     type: "EnvShake",
     time,
-    freq: clampShakeFrequency(firstNumber(findControllerParam(controller, "freq")) ?? 60),
-    ampl: clampShakeAmplitude(firstNumber(findControllerParam(controller, "ampl")) ?? -4),
-    phase: firstNumber(findControllerParam(controller, "phase")) ?? 0,
+    freq: operation?.freq ?? clampShakeFrequency(firstNumber(findControllerParam(controller, "freq")) ?? 60),
+    ampl: operation?.ampl ?? clampShakeAmplitude(firstNumber(findControllerParam(controller, "ampl")) ?? -4),
+    phase: operation?.phase ?? firstNumber(findControllerParam(controller, "phase")) ?? 0,
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -65,8 +67,13 @@ export function pushRuntimeEnvShakeEvent(events: RuntimeEnvShakeEvent[], event: 
 }
 
 export class RuntimeEnvShakeWorld {
-  emitController(actor: RuntimeEnvShakeWorldActor, controller: MugenStateController, runtimeTick: number): RuntimeEnvShakeEvent | undefined {
-    const event = createRuntimeEnvShakeEvent(actor, controller, runtimeTick);
+  emitController(
+    actor: RuntimeEnvShakeWorldActor,
+    controller: MugenStateController,
+    runtimeTick: number,
+    operation?: EnvShakeControllerOp,
+  ): RuntimeEnvShakeEvent | undefined {
+    const event = createRuntimeEnvShakeEvent(actor, controller, runtimeTick, operation);
     if (!event) {
       return undefined;
     }

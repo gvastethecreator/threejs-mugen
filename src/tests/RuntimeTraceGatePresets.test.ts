@@ -2093,6 +2093,7 @@ describe("RuntimeTraceGatePresets", () => {
       },
     ]);
     expect(evidence?.executedControllers.EnvShake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.envshake).toBeGreaterThanOrEqual(1);
     expect(evidence?.envShakeEvents).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ actorId: "p1", time: 16, freq: 30, ampl: -7, phase: 0.5, stateNo: 200 }),
