@@ -31,7 +31,7 @@ async function main() {
   const server = await resolveServer();
   const browser = await chromium.launch({
     headless: true,
-    args: ["--disable-dev-shm-usage", "--use-angle=swiftshader", "--use-gl=swiftshader"],
+    args: ["--disable-dev-shm-usage", "--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"],
   });
   const context = await browser.newContext({
     acceptDownloads: true,

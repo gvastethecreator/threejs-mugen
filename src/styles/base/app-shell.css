@@ -15,11 +15,11 @@
   grid-template-columns: clamp(300px, 22vw, 360px) minmax(560px, 1fr) clamp(300px, 22vw, 360px);
 }
 
-.app-shell.mode-studio .workspace-brand p {
-  display: none;
-}
-
-.app-shell.mode-studio .workspace-next small {
+.app-shell.mode-studio .workspace-brand p,
+.app-shell.mode-studio .workspace-next small,
+.hud-fighter-role,
+.touch-controls,
+.app-shell.mode-studio .toolbar-label {
   display: none;
 }
 
@@ -331,10 +331,6 @@
   white-space: normal;
 }
 
-.hud-fighter-role {
-  display: none;
-}
-
 .hud-meter {
   height: 12px;
   overflow: hidden;
@@ -380,10 +376,6 @@
   color: var(--warn);
 }
 
-.touch-controls {
-  display: none;
-}
-
 .toolbar-group {
   display: inline-flex;
   flex: 0 0 auto;
@@ -404,10 +396,6 @@
   letter-spacing: 0;
   overflow-wrap: anywhere;
   white-space: normal;
-}
-
-.app-shell.mode-studio .toolbar-label {
-  display: none;
 }
 
 .toolbar-group select {

@@ -1,0 +1,36 @@
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-3);
+  box-shadow: var(--focus-ring);
+  transform: translateY(-140%);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+
+  button:active,
+  .button:active,
+  .touch-cluster button.is-pressed,
+  .skip-link:focus-visible {
+    transform: none;
+  }
+}

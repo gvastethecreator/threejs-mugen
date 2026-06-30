@@ -1,7 +1,5 @@
-/* Studio CSS entrypoint.
-   Order matters: base -> legacy bridge -> editor/runtime passes -> desktop authority -> final feature modules. */
+/* Studio CSS entrypoint. Base imports stay in src/style.css. */
 
-@import "./base.css";
 @import "./legacy.css";
 @import "./editor.css";
 @import "./runtime.css";

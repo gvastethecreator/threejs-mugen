@@ -39,7 +39,7 @@
 
   .app-shell.mode-studio .command-palette-title-block {
     display: grid;
-    grid-template-columns: 104px minmax(0, 1fr);
+    grid-template-columns: 132px minmax(0, 1fr);
     align-items: center;
     gap: 9px;
     min-width: 0;
@@ -52,9 +52,12 @@
     border-right: 1px solid #303842;
     color: #9aa5b1;
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   .app-shell.mode-studio .command-palette-header h2 {
@@ -151,7 +154,7 @@
     border-right: 1px solid #303842;
     color: #98a3af;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0;
     text-transform: uppercase;
   }
@@ -281,25 +284,30 @@
     padding-right: 4px;
   }
 
-  .app-shell.mode-studio .command-result-main strong,
-  .app-shell.mode-studio .command-result-main small {
+  .app-shell.mode-studio .command-result-main strong {
     min-width: 0;
     overflow: hidden;
+    color: #f0f3f6;
+    font-size: 13px;
+    font-weight: 700;
     letter-spacing: 0;
     line-height: 1.08;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .app-shell.mode-studio .command-result-main strong {
-    color: #f0f3f6;
-    font-size: 13px;
-    font-weight: 700;
-  }
-
   .app-shell.mode-studio .command-result-main small {
+    display: -webkit-box;
+    min-width: 0;
+    overflow: hidden;
     color: #9ca6b1;
     font-size: 12px;
+    letter-spacing: 0;
+    line-height: 1.15;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .app-shell.mode-studio .command-result-meta {
@@ -326,7 +334,7 @@
     background: transparent;
     color: #c4ccd5;
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
     text-transform: uppercase;
