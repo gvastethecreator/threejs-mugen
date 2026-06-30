@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
+import { compileControllerIr, compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
 import {
   resolveEffectSpawnBind,
   resolveEffectSpawnPosition,
+  RuntimeEffectSpawnControllerDispatchWorld,
   RuntimeEffectSpawnWorld,
   type RuntimeEffectSpawnActor,
 } from "../mugen/runtime/EffectSpawnSystem";
@@ -89,6 +90,59 @@ describe("EffectSpawnSystem", () => {
 
     expect(spawnWorld.removeExplods(fighter, controller("RemoveExplod", { id: "77" }))).toBe(true);
     expect(effectActorWorld.getStore("p1").explods).toHaveLength(0);
+  });
+
+  it("dispatches active effect-spawn controllers with telemetry hooks", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const spawnWorld = new RuntimeEffectSpawnWorld();
+    const dispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+    const fighter = actor("p1", effectActorWorld);
+    const opponent = actor("p2", effectActorWorld, {
+      pos: { x: 220, y: 0 },
+      facing: -1,
+    });
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const spawned = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("Explod", { anim: "910", id: "77" })),
+      effect: "explod",
+      effectSpawnWorld: spawnWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(spawned).toMatchObject({
+      changed: true,
+      changedCount: 1,
+      recordedController: true,
+      recordedOperation: true,
+    });
+    expect(spawned.operation).toMatchObject({ kind: "explod", animNo: 910, explodId: 77 });
+    expect(effectActorWorld.getStore("p1").explods[0]).toMatchObject({ animNo: 910, explodId: 77 });
+    expect(recordedControllers).toEqual(["Explod"]);
+    expect(recordedOperations).toEqual(["explod"]);
+
+    const missed = dispatchWorld.apply({
+      actor: fighter,
+      opponent,
+      controller: compileControllerIr(controller("ModifyExplod", { id: "999", vel: "4,0" })),
+      effect: "modifyexplod",
+      effectSpawnWorld: spawnWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(missed).toMatchObject({
+      changed: false,
+      changedCount: 0,
+      recordedController: true,
+      recordedOperation: false,
+    });
+    expect(recordedControllers).toEqual(["Explod", "ModifyExplod"]);
+    expect(recordedOperations).toEqual(["explod"]);
   });
 
   it("owns ModifyExplod dispatch for live owner-side visual actors", () => {

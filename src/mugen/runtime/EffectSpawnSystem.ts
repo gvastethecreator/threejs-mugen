@@ -6,7 +6,7 @@ import type {
   ProjectileControllerOp,
   RemoveExplodControllerOp,
 } from "../compiler/ControllerOps";
-import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
+import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { DemoFighterDefinition } from "./demoFighters";
@@ -28,6 +28,53 @@ export type RuntimeEffectSpawnActor = {
     "spawnExplod" | "removeExplods" | "modifyExplods" | "spawnHelper" | "removeHelpers" | "spawnProjectile" | "modifyProjectiles"
   >;
 };
+
+export type RuntimeEffectSpawnControllerDispatchEffect =
+  | "explod"
+  | "removeexplod"
+  | "modifyexplod"
+  | "helper"
+  | "projectile"
+  | "modifyprojectile";
+
+export type RuntimeEffectSpawnControllerDispatchOperation =
+  | ExplodControllerOp
+  | RemoveExplodControllerOp
+  | ModifyExplodControllerOp
+  | HelperControllerOp
+  | ProjectileControllerOp
+  | ModifyProjectileControllerOp;
+
+export type RuntimeEffectSpawnControllerDispatchOptions<TActor extends RuntimeEffectSpawnActor> = {
+  actor: TActor;
+  opponent: TActor;
+  controller: ControllerIr;
+  effect: RuntimeEffectSpawnControllerDispatchEffect;
+  effectSpawnWorld: RuntimeEffectSpawnWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: RuntimeEffectSpawnControllerDispatchOperation) => void;
+};
+
+export type RuntimeEffectSpawnControllerDispatchResult = {
+  changed: boolean;
+  changedCount: number;
+  recordedController: boolean;
+  recordedOperation: boolean;
+  operation?: RuntimeEffectSpawnControllerDispatchOperation;
+};
+
+export function isRuntimeEffectSpawnControllerDispatchEffect(
+  effect: string,
+): effect is RuntimeEffectSpawnControllerDispatchEffect {
+  return (
+    effect === "explod" ||
+    effect === "removeexplod" ||
+    effect === "modifyexplod" ||
+    effect === "helper" ||
+    effect === "projectile" ||
+    effect === "modifyprojectile"
+  );
+}
 
 export class RuntimeEffectSpawnWorld {
   spawnExplod(
@@ -169,6 +216,27 @@ export class RuntimeEffectSpawnWorld {
   }
 }
 
+export class RuntimeEffectSpawnControllerDispatchWorld {
+  apply<TActor extends RuntimeEffectSpawnActor>(
+    options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  ): RuntimeEffectSpawnControllerDispatchResult {
+    const operation = effectSpawnOperation(options.controller, options.effect);
+    options.recordController?.(options.actor, options.controller.source);
+    const changedCount = dispatchEffectSpawnOperation(options, operation);
+    const changed = changedCount > 0;
+    if (changed && operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    return {
+      changed,
+      changedCount,
+      operation,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(changed && operation && options.recordOperation),
+    };
+  }
+}
+
 export function resolveEffectSpawnPosition(
   fighter: Pick<RuntimeEffectSpawnActor, "runtime">,
   opponent: Pick<RuntimeEffectSpawnActor, "runtime">,
@@ -268,4 +336,71 @@ function numberPair(value: string | undefined): [number, number] | undefined {
 
 function actionDuration(action: MugenAnimationAction): number {
   return action.frames.reduce((total, frame) => total + Math.max(1, frame.duration), 0);
+}
+
+function effectSpawnOperation(
+  controller: ControllerIr,
+  effect: RuntimeEffectSpawnControllerDispatchEffect,
+): RuntimeEffectSpawnControllerDispatchOperation | undefined {
+  const operation = controller.operation;
+  if (operation?.kind === effect) {
+    return operation;
+  }
+  return undefined;
+}
+
+function dispatchEffectSpawnOperation<TActor extends RuntimeEffectSpawnActor>(
+  options: RuntimeEffectSpawnControllerDispatchOptions<TActor>,
+  operation: RuntimeEffectSpawnControllerDispatchOperation | undefined,
+): number {
+  const { actor, opponent, controller, effect, effectSpawnWorld } = options;
+  switch (effect) {
+    case "explod":
+      return effectSpawnWorld.spawnExplod(
+        actor,
+        opponent,
+        controller.source,
+        operation?.kind === "explod" ? operation : undefined,
+      )
+        ? 1
+        : 0;
+    case "removeexplod":
+      return effectSpawnWorld.removeExplods(
+        actor,
+        controller.source,
+        operation?.kind === "removeexplod" ? operation : undefined,
+      )
+        ? 1
+        : 0;
+    case "modifyexplod":
+      return effectSpawnWorld.modifyExplods(
+        actor,
+        controller.source,
+        operation?.kind === "modifyexplod" ? operation : undefined,
+      );
+    case "helper":
+      return effectSpawnWorld.spawnHelper(
+        actor,
+        opponent,
+        controller.source,
+        operation?.kind === "helper" ? operation : undefined,
+      )
+        ? 1
+        : 0;
+    case "projectile":
+      return effectSpawnWorld.spawnProjectile(
+        actor,
+        opponent,
+        controller.source,
+        operation?.kind === "projectile" ? operation : undefined,
+      )
+        ? 1
+        : 0;
+    case "modifyprojectile":
+      return effectSpawnWorld.modifyProjectiles(
+        actor,
+        controller.source,
+        operation?.kind === "modifyprojectile" ? operation : undefined,
+      );
+  }
 }

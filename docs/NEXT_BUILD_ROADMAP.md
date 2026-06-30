@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeEffectSpawnControllerDispatchWorld ownership extraction
+  -> RuntimeEffectSpawnControllerDispatchWorld now owns bounded active-state Explod/RemoveExplod/ModifyExplod/Helper/Projectile/ModifyProjectile dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed effect operation selection, spawn/count mutation handoff, and success-gated operation telemetry through RuntimeEffectSpawnWorld
+  -> match runtime still owns trigger filtering, active-state order, actor/opponent context, effect actor world ownership, and exact spawn/combat ordering
+  -> focused EffectSpawnSystem coverage proves successful Explod telemetry/mutation and failed ModifyExplod no-operation gating through the dispatch boundary
+  -> no exact effect spawn tick order, helper-owned effect namespaces, dynamic effect params, helper-owned projectile combat/contact/target memory, full effect/helper/projectile VM parity, or score movement claim
 R2 RuntimeFallEnvShakeControllerDispatchWorld ownership extraction
   -> RuntimeFallEnvShakeControllerDispatchWorld now owns bounded active-state FallEnvShake side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed fallenvshake operation selection, fall-shake event handoff, hitFall.envShake cleanup, and operation telemetry through RuntimeEnvShakeWorld

@@ -47,7 +47,11 @@ import {
   type RuntimeEffectActorStoreSummary,
 } from "./EffectActorSystem";
 import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
-import { RuntimeEffectSpawnWorld } from "./EffectSpawnSystem";
+import {
+  isRuntimeEffectSpawnControllerDispatchEffect,
+  RuntimeEffectSpawnControllerDispatchWorld,
+  RuntimeEffectSpawnWorld,
+} from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
@@ -136,6 +140,7 @@ const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWor
 const envShakeControllerDispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
 const fallEnvShakeControllerDispatchWorld = new RuntimeFallEnvShakeControllerDispatchWorld();
 const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
+const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1073,42 +1078,16 @@ function runActiveStateControllers(
           recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
           recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
         });
-      } else if (dispatch.effect === "explod") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "explod" ? controller.operation : undefined;
-        if (effectSpawnWorld.spawnExplod(fighter, opponent, rawController, operation) && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-      } else if (dispatch.effect === "removeexplod") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "removeexplod" ? controller.operation : undefined;
-        if (effectSpawnWorld.removeExplods(fighter, rawController, operation) && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-      } else if (dispatch.effect === "modifyexplod") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "modifyexplod" ? controller.operation : undefined;
-        if (effectSpawnWorld.modifyExplods(fighter, rawController, operation) > 0 && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-      } else if (dispatch.effect === "helper") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "helper" ? controller.operation : undefined;
-        if (effectSpawnWorld.spawnHelper(fighter, opponent, rawController, operation) && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-      } else if (dispatch.effect === "projectile") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "projectile" ? controller.operation : undefined;
-        if (effectSpawnWorld.spawnProjectile(fighter, opponent, rawController, operation) && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-      } else if (dispatch.effect === "modifyprojectile") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "modifyprojectile" ? controller.operation : undefined;
-        if (effectSpawnWorld.modifyProjectiles(fighter, rawController, operation) > 0 && operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
+      } else if (isRuntimeEffectSpawnControllerDispatchEffect(dispatch.effect)) {
+        effectSpawnControllerDispatchWorld.apply({
+          actor: fighter,
+          opponent,
+          controller,
+          effect: dispatch.effect,
+          effectSpawnWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (isRuntimeTargetControllerDispatchEffect(dispatch.effect)) {
         targetControllerDispatchWorld.apply({
           actor: fighter,

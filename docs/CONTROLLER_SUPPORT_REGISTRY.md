@@ -48,6 +48,10 @@ Every controller family should have:
 
 - Required `synthetic-imported-projectile-contact.json` checksum `ba22ed74` now requires a bounded Projectile hit contact package: attacker-side `hitsound = S5,0` `PlaySnd` telemetry plus FightFX `sparkno = F7002` multi-frame metadata sharing the same non-empty projectile `contactId`, `contactTick`, and `contactKind = hit`. Required `synthetic-imported-projectile-guard.json` checksum `4bcc5650` applies the same package shape to held-back projectile guard contact with `guardsound = S6,0`, FightFX `guard.sparkno = F7004`, and `contactKind = guard`. This keeps `Projectile` presentation at `executed-partial`: exact projectile effect timing, SND playback, channel/mixing parity, renderer lookup, binding, layering, scale, palette, helper-owned projectile effects, multi-target presentation, and full Projectile parity remain partial.
 
+## Current Effect Spawn Dispatch Notes
+
+- `RuntimeEffectSpawnControllerDispatchWorld` owns active-state Explod / RemoveExplod / ModifyExplod / Helper / Projectile / ModifyProjectile dispatch from compiled CNS classification into `RuntimeEffectSpawnWorld`: controller telemetry, typed effect operation selection, spawn/count mutation handoff, and success-gated operation telemetry. Focused `EffectSpawnSystem` coverage proves successful Explod telemetry/mutation and failed ModifyExplod no-operation gating. This is dispatch ownership only; exact effect spawn tick order, helper-owned effect namespaces, dynamic effect params, helper-owned projectile combat/contact/target memory, and full effect/helper/projectile VM parity remain partial.
+
 ## Current Registry
 
 | Controller Family | Current Level | Evidence | Notes |
