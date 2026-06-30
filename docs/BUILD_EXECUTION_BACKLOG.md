@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local BindToRoot trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-bindtoroot.json` trace evidence for the existing bounded helper-local `BindToRoot` execution path.
+- Extended synthetic helper trace fighter generation with a `BindToRoot` route and action.
+- Registered the new artifact in `scripts/qa_traces.cjs`.
+- Added focused trace-preset coverage for the helper-root bind artifact.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` passes: 1 file / 169 tests.
+- `pnpm test` passes: 81 files / 714 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 172 / 172 artifacts, 152 required, 20 optional, 0 failed; `synthetic-imported-helper-bindtoroot.json` checksum is `bf72306c`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current visual Helper actors running the bounded helper-local micro-VM have required trace evidence for static `BindToRoot` against the supplied root runtime state.
+
+Claim blocked:
+
+- Player-state `BindToParent` / `BindToRoot`, nested helper ancestry where root differs from parent, team/keyctrl ownership, helper-owned opponents/combat/effects/projectiles, exact binding tick order, dynamic params, and full MUGEN/IKEMEN helper binding parity remain blocked.
+
 ## 2026-06-30 - Bounded helper-local BindToParent trace gate
 
 Changed:

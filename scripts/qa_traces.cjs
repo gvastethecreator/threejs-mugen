@@ -758,6 +758,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperBindToParentTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-bindtoroot",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperBindToRootTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-scale",
       required: true,
       artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),
