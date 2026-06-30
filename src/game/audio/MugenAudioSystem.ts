@@ -41,11 +41,12 @@ export class MugenAudioSystem {
   }
 
   processSnapshot(snapshot: MugenSnapshot): void {
-    if (!this.archive || snapshot.actors.length === 0) {
+    const soundActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
+    if (!this.archive || soundActors.length === 0) {
       return;
     }
-    for (const actor of snapshot.actors) {
-      if (actor.source !== "imported") {
+    for (const actor of soundActors) {
+      if (actor.source !== "imported" && actor.source !== "effect") {
         continue;
       }
       for (const event of [...(actor.soundEvents ?? [])].reverse()) {

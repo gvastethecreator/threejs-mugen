@@ -75,7 +75,6 @@
   .app-shell.mode-studio .workbench-route-button strong,
   .app-shell.mode-studio .workbench-route-button span,
   .app-shell.mode-studio .list-title,
-  .app-shell.mode-studio .asset-row-title strong,
   .app-shell.mode-studio .engine-module-name strong {
     color: var(--text);
     font-family: var(--sans);
@@ -90,7 +89,6 @@
   .app-shell.mode-studio .tab-status,
   .app-shell.mode-studio .workspace-action-grid small,
   .app-shell.mode-studio .list-meta,
-  .app-shell.mode-studio .asset-row-detail,
   .app-shell.mode-studio .studio-mission-main small,
   .app-shell.mode-studio .studio-mission-detail,
   .app-shell.mode-studio .workbench-lane-strip small,
@@ -161,10 +159,7 @@
 
 .app-shell.mode-studio .badge,
   .app-shell.mode-studio .status-badge,
-  .app-shell.mode-studio .tab-count,
-  .app-shell.mode-studio .asset-row-kind,
-  .app-shell.mode-studio .asset-row-action,
-  .app-shell.mode-studio .asset-row-export {
+  .app-shell.mode-studio .tab-count {
     display: inline-grid;
     grid-template-columns: auto;
     min-height: 19px;

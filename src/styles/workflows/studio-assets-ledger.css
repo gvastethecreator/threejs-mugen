@@ -10,8 +10,7 @@
     background: var(--studio-ledge-bg);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate,
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(.asset-row, .replacement-candidate),
   .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item,
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item {
     display: grid;
@@ -37,18 +36,19 @@
     padding: var(--asset-inline-row-padding);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:nth-child(even),
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:nth-child(even),
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(.asset-row, .replacement-candidate):nth-child(even),
   .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-item:nth-child(even),
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-item:nth-child(even) {
     background: var(--asset-ledger-row-alt);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:hover,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row:focus-visible,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row.is-selected,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:hover,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate:focus-visible {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(
+    .asset-row:hover,
+    .asset-row:focus-visible,
+    .asset-row.is-selected,
+    .replacement-candidate:hover,
+    .replacement-candidate:focus-visible
+  ) {
     background: var(--studio-ledge-row-hot);
     outline: 1px solid #4c5864;
     outline-offset: -1px;
@@ -81,16 +81,18 @@
     min-width: 0;
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-title .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-meta,
-  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-meta,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-meta {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(
+    .asset-row-title .list-title,
+    .asset-row-kind,
+    .asset-row-detail,
+    .asset-row-action,
+    .replacement-candidate .list-title,
+    .replacement-candidate .list-meta,
+    .source-runtime-map .list-title,
+    .source-runtime-map .list-meta,
+    .asset-side-panel .list-title,
+    .asset-side-panel .list-meta
+  ) {
     min-width: 0;
     overflow: hidden;
     line-height: 1.1;
@@ -131,8 +133,7 @@
     -webkit-line-clamp: var(--asset-meta-line-clamp);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary span,
-  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary small {
+  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary :is(span, small) {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -151,21 +152,25 @@
     max-width: 116px;
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-title .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-title,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-title {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(
+    .asset-row-title,
+    .replacement-candidate,
+    .source-runtime-map,
+    .asset-side-panel
+  ) .list-title {
     color: var(--studio-ledge-text);
     font-size: var(--asset-row-title-size);
     font-weight: 800;
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-kind,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-detail,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-action,
-  .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .list-meta,
-  .app-shell.mode-studio[data-studio-tab="assets"] .source-runtime-map .list-meta,
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-side-panel .list-meta {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(
+    .asset-row-kind,
+    .asset-row-detail,
+    .asset-row-action,
+    .replacement-candidate .list-meta,
+    .source-runtime-map .list-meta,
+    .asset-side-panel .list-meta
+  ) {
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
     font-size: var(--asset-row-meta-size);
@@ -276,15 +281,11 @@
     box-shadow: none;
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-ok,
-  .app-shell.mode-studio[data-studio-tab="assets"] .badge.ok,
-  .app-shell.mode-studio[data-studio-tab="assets"] .status-badge.ok {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(.asset-row-export.is-ok, .badge.ok, .status-badge.ok) {
     color: var(--asset-ledger-ok);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export.is-warn,
-  .app-shell.mode-studio[data-studio-tab="assets"] .badge.warn,
-  .app-shell.mode-studio[data-studio-tab="assets"] .status-badge.warn {
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(.asset-row-export.is-warn, .badge.warn, .status-badge.warn) {
     color: var(--asset-ledger-warn);
   }
 }

@@ -351,6 +351,37 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("emits bounded helper-local sound events into helper snapshots", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("PlaySnd", { value: "S7,3", channel: "4" }, ["Time = 0"]),
+              controller("StopSnd", { channel: "4" }, ["Time = 0"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([[900, action(900, 4)]]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      runtimeTick: 123,
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["PlaySnd", "StopSnd"]);
+    expect(helper.soundEvents).toEqual([
+      { type: "StopSnd", channel: 4, raw: undefined, stateNo: 6000, tick: 0, runtimeTick: 123 },
+      { type: "PlaySnd", group: 7, index: 3, channel: 4, raw: "S7,3", stateNo: 6000, tick: 0, runtimeTick: 123 },
+    ]);
+    expect(runtimeHelperActorsToSnapshots(store, 200)[0]?.soundEvents).toEqual(helper.soundEvents);
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

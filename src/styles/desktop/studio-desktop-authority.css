@@ -147,7 +147,6 @@
   }
 
 .app-shell.mode-studio .workbench-ops-section,
-  .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .acceptance-gates-section,
   .app-shell.mode-studio .debug-lens-section {
     border: 1px solid var(--editor-edge);
@@ -160,7 +159,6 @@
 
 .app-shell.mode-studio .workbench-directive,
   .app-shell.mode-studio .workbench-route-button,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
   .app-shell.mode-studio .engine-module-row,
@@ -175,7 +173,6 @@
   }
 
 .app-shell.mode-studio .workbench-route-button:hover,
-  .app-shell.mode-studio .asset-row:hover,
   .app-shell.mode-studio .evidence-record:hover,
   .app-shell.mode-studio .build-readiness-record:hover,
   .app-shell.mode-studio .engine-module-row:hover {

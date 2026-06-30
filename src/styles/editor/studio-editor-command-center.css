@@ -69,7 +69,6 @@
   .app-shell.mode-studio .workbench-ops-section,
   .app-shell.mode-studio .acceptance-gates-section,
   .app-shell.mode-studio .studio-command-center,
-  .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .evidence-command-center {
     border-color: var(--editor-edge-dark);
     background: var(--editor-panel);
@@ -162,7 +161,6 @@
 .app-shell.mode-studio .workspace-summary,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .command-meter-grid,
-  .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .evidence-lane-strip,
   .app-shell.mode-studio .workbench-lane-strip,
   .app-shell.mode-studio .stage-status-grid,
@@ -179,7 +177,6 @@
   .app-shell.mode-studio .debug-lens-grid,
   .app-shell.mode-studio .debug-lens-stat-grid,
   .app-shell.mode-studio .debug-evidence-grid,
-  .app-shell.mode-studio .asset-graph-map,
   .app-shell.mode-studio .pipeline-list,
   .app-shell.mode-studio .compat-list {
     gap: 0;
@@ -193,7 +190,6 @@
 .app-shell.mode-studio .workspace-summary span,
   .app-shell.mode-studio .studio-stat,
   .app-shell.mode-studio .command-meter-grid span,
-  .app-shell.mode-studio .asset-lane-strip span,
   .app-shell.mode-studio .evidence-lane-strip span,
   .app-shell.mode-studio .workbench-lane-strip span,
   .app-shell.mode-studio .stage-status-metric,
@@ -202,7 +198,6 @@
   .app-shell.mode-studio .tab,
   .app-shell.mode-studio .mode-switch button,
   .app-shell.mode-studio .list-item,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
   .app-shell.mode-studio .debug-filter-button,
@@ -231,14 +226,12 @@
 
 .app-shell.mode-studio .workspace-summary span:last-child,
   .app-shell.mode-studio .command-meter-grid span:last-child,
-  .app-shell.mode-studio .asset-lane-strip span:last-child,
   .app-shell.mode-studio .evidence-lane-strip span:last-child,
   .app-shell.mode-studio .workbench-lane-strip span:last-child,
   .app-shell.mode-studio .stage-status-metric:last-child,
   .app-shell.mode-studio .studio-mission-node:last-child,
   .app-shell.mode-studio .workbench-route-button:last-child,
   .app-shell.mode-studio .list-item:last-child,
-  .app-shell.mode-studio .asset-row:last-child,
   .app-shell.mode-studio .evidence-record:last-child,
   .app-shell.mode-studio .build-readiness-record:last-child,
   .app-shell.mode-studio .debug-filter-button:last-child,
@@ -257,7 +250,6 @@
 
 .app-shell.mode-studio .workspace-summary span:last-child,
   .app-shell.mode-studio .command-meter-grid span:last-child,
-  .app-shell.mode-studio .asset-lane-strip span:last-child,
   .app-shell.mode-studio .evidence-lane-strip span:last-child,
   .app-shell.mode-studio .workbench-lane-strip span:last-child,
   .app-shell.mode-studio .stage-status-metric:last-child {
@@ -269,7 +261,6 @@
   .app-shell.mode-studio .tab:hover,
   .app-shell.mode-studio .mode-switch button:hover,
   .app-shell.mode-studio .list-item:hover,
-  .app-shell.mode-studio .asset-row:hover,
   .app-shell.mode-studio .evidence-record:hover,
   .app-shell.mode-studio .build-readiness-record:hover,
   .app-shell.mode-studio .debug-filter-button:hover,
@@ -308,15 +299,13 @@
   .app-shell.mode-studio .mode-switch button.is-active,
   .app-shell.mode-studio .debug-filter-button.is-selected,
   .app-shell.mode-studio .debug-actor-button.is-selected,
-  .app-shell.mode-studio .list-item.is-selected,
-  .app-shell.mode-studio .asset-row.is-selected {
+  .app-shell.mode-studio .list-item.is-selected {
     background: color-mix(in srgb, var(--section-accent) 9%, var(--editor-row));
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--section-accent) 78%, transparent);
   }
 
 .app-shell.mode-studio .badge,
   .app-shell.mode-studio .status-badge,
-  .app-shell.mode-studio .asset-row-export,
   .app-shell.mode-studio .tab-count {
     border-color: var(--editor-edge-strong);
     border-radius: 2px;
@@ -328,8 +317,7 @@
   .app-shell.mode-studio .status-badge.warn,
   .app-shell.mode-studio .status-badge.pending,
   .app-shell.mode-studio .status-badge.partial,
-  .app-shell.mode-studio .status-badge.planned,
-  .app-shell.mode-studio .asset-row-export.is-warn {
+  .app-shell.mode-studio .status-badge.planned {
     color: color-mix(in srgb, var(--warn) 84%, var(--text));
     border-color: color-mix(in srgb, var(--warn) 42%, var(--editor-edge));
     background: color-mix(in srgb, var(--warn) 6%, var(--editor-panel-pressed));
@@ -337,8 +325,7 @@
 
 .app-shell.mode-studio .badge.ok,
   .app-shell.mode-studio .status-badge.ok,
-  .app-shell.mode-studio .badge.active,
-  .app-shell.mode-studio .asset-row-export.is-ok {
+  .app-shell.mode-studio .badge.active {
     color: color-mix(in srgb, var(--ok) 84%, var(--text));
     border-color: color-mix(in srgb, var(--ok) 38%, var(--editor-edge));
     background: color-mix(in srgb, var(--ok) 5%, var(--editor-panel-pressed));

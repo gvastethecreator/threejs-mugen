@@ -88,7 +88,6 @@
 
 .app-shell.mode-studio .engine-module-row,
   .app-shell.mode-studio .acceptance-gate-row,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record {
     min-height: 38px;

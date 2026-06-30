@@ -97,6 +97,7 @@ function helper(overrides: Partial<RuntimeHelper> = {}): RuntimeHelper {
     pauseMoveTime: 0,
     superMoveTime: 0,
     spritePriority: 3,
+    soundEvents: [],
     ...overrides,
   };
 }

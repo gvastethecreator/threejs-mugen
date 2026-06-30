@@ -145,7 +145,6 @@
 
 .app-shell.mode-studio .workspace-summary,
   .app-shell.mode-studio .command-meter-grid,
-  .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .evidence-lane-strip,
   .app-shell.mode-studio .workbench-lane-strip,
   .app-shell.mode-studio .stage-status-grid,
@@ -162,7 +161,6 @@
 
 .app-shell.mode-studio .workspace-summary span,
   .app-shell.mode-studio .command-meter-grid span,
-  .app-shell.mode-studio .asset-lane-strip span,
   .app-shell.mode-studio .evidence-lane-strip span,
   .app-shell.mode-studio .workbench-lane-strip span,
   .app-shell.mode-studio .stage-status-metric,
@@ -174,7 +172,6 @@
 
 .app-shell.mode-studio .workspace-summary b,
   .app-shell.mode-studio .command-meter-grid b,
-  .app-shell.mode-studio .asset-lane-strip b,
   .app-shell.mode-studio .evidence-lane-strip b,
   .app-shell.mode-studio .workbench-lane-strip b,
   .app-shell.mode-studio .stage-status-metric b,
@@ -193,7 +190,6 @@
 .app-shell.mode-studio .workspace-action-grid button,
   .app-shell.mode-studio .workbench-route-button,
   .app-shell.mode-studio .studio-mission-node,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
   .app-shell.mode-studio .debug-filter-button,

@@ -149,7 +149,6 @@
 
 .app-shell.mode-studio .workbench-directive,
   .app-shell.mode-studio .workbench-route-button,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
   .app-shell.mode-studio .engine-module-row,
@@ -165,14 +164,12 @@
   }
 
 .app-shell.mode-studio .workbench-route-button,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record {
     padding: 8px 9px;
   }
 
 .app-shell.mode-studio .workbench-route-button:last-child,
-  .app-shell.mode-studio .asset-row:last-child,
   .app-shell.mode-studio .evidence-record:last-child,
   .app-shell.mode-studio .build-readiness-record:last-child,
   .app-shell.mode-studio .engine-module-row:last-child,
@@ -183,8 +180,6 @@
 .app-shell.mode-studio .workbench-route-button span,
   .app-shell.mode-studio .workbench-route-button strong,
   .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .asset-row-title strong,
-  .app-shell.mode-studio .asset-row-detail,
   .app-shell.mode-studio .list-title,
   .app-shell.mode-studio .list-meta {
     min-width: 0;
@@ -194,7 +189,6 @@
   }
 
 .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .asset-row-detail,
   .app-shell.mode-studio .evidence-record .list-meta,
   .app-shell.mode-studio .build-readiness-record .list-meta {
     color: color-mix(in srgb, var(--muted) 82%, var(--text));
@@ -237,8 +231,7 @@
     border-bottom: 0;
   }
 
-.app-shell.mode-studio .asset-row-main,
-  .app-shell.mode-studio .evidence-record-main,
+.app-shell.mode-studio .evidence-record-main,
   .app-shell.mode-studio .build-readiness-main {
     min-width: 0;
   }

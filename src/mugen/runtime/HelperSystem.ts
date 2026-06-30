@@ -4,10 +4,11 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
+import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
-import type { ActorSnapshot, CharacterRuntimeState } from "./types";
+import type { ActorSnapshot, CharacterRuntimeState, RuntimeSoundEvent } from "./types";
 
 export type RuntimeHelper = {
   serialId: string;
@@ -49,6 +50,7 @@ export type RuntimeHelper = {
   pauseMoveTime: number;
   superMoveTime: number;
   spritePriority: number;
+  soundEvents: RuntimeSoundEvent[];
 };
 
 export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
@@ -56,6 +58,7 @@ export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
 export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
   stageTime?: number;
+  runtimeTick?: number;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
@@ -125,6 +128,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     pauseMoveTime: clampHelperMoveTime(operation?.pauseMoveTime ?? firstNumber(findControllerParam(input.controller, "pausemovetime")) ?? 0),
     superMoveTime: clampHelperMoveTime(operation?.superMoveTime ?? firstNumber(findControllerParam(input.controller, "supermovetime")) ?? 0),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 3))),
+    soundEvents: [],
   };
 }
 
@@ -165,7 +169,7 @@ export type RuntimeHelperControllerResult = "active" | "destroyed";
 
 export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "onController" | "onUnsupportedController"> = {},
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "runtimeTick" | "onController" | "onUnsupportedController"> = {},
 ): RuntimeHelperControllerResult {
   const stateProgram = helper.runtimeProgram?.states.find((candidate) => candidate.id === helper.stateNo);
   if (!stateProgram) {
@@ -204,12 +208,21 @@ export function runRuntimeHelperStateControllers(
         continue;
       }
       options.onController?.(helper, controller);
+      if (controller.normalizedType === "playsnd" || controller.normalizedType === "stopsnd") {
+        emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
+        continue;
+      }
       applyRuntimeStateToHelper(
         helper,
         executeControllerIr(controller, helperRuntimeState(helper), () => undefined, {
           stageTime: options.stageTime,
         }),
       );
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "sound") {
+      options.onController?.(helper, controller);
+      emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
       continue;
     }
     options.onUnsupportedController?.(helper, controller);
@@ -278,6 +291,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
         frame,
         clsn1: frame.clsn1.map(cloneBox),
         clsn2: frame.clsn2.map(cloneBox),
+        soundEvents: helper.soundEvents.map((event) => ({ ...event })),
       };
     })
     .filter((snapshot): snapshot is ActorSnapshot => snapshot !== undefined);
@@ -312,6 +326,20 @@ const helperRuntimeControllers = new Set([
   "varrangeset",
   "null",
 ]);
+
+function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {
+  pushRuntimeSoundEvent(
+    helper.soundEvents,
+    createRuntimeSoundEvent(
+      {
+        runtime: { stateNo: helper.stateNo ?? 0 },
+        stateElapsed: helper.stateTime,
+      },
+      controller.source,
+      runtimeTick,
+    ),
+  );
+}
 
 function helperTriggersPass(helper: RuntimeHelper, controller: ControllerIr, stageTime?: number): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);

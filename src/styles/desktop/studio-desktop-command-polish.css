@@ -86,8 +86,7 @@
   .app-shell.mode-studio .mode-status,
   .app-shell.mode-studio .tab-status,
   .app-shell.mode-studio .workspace-action-grid small,
-  .app-shell.mode-studio .list-meta,
-  .app-shell.mode-studio .asset-row-detail {
+  .app-shell.mode-studio .list-meta {
     color: var(--subtle);
     font-family: var(--mono);
     font-size: 12px;
@@ -236,7 +235,6 @@
   .app-shell.mode-studio .workbench-action-bar,
   .app-shell.mode-studio .workspace-action-grid,
   .app-shell.mode-studio .command-meter-grid,
-  .app-shell.mode-studio .asset-lane-strip,
   .app-shell.mode-studio .studio-stat-grid,
   .app-shell.mode-studio .engine-module-table,
   .app-shell.mode-studio .debug-lens-grid,
@@ -256,7 +254,6 @@
   .app-shell.mode-studio .studio-tab-section.is-compact .tab,
   .app-shell.mode-studio .workspace-summary span,
   .app-shell.mode-studio .command-meter-grid span,
-  .app-shell.mode-studio .asset-lane-strip span,
   .app-shell.mode-studio .studio-stat,
   .app-shell.mode-studio .stage-status-metric,
   .app-shell.mode-studio .debug-lens-meter {
@@ -271,8 +268,7 @@
 
 .app-shell.mode-studio .mode-switch button:nth-child(3n),
   .app-shell.mode-studio .workspace-summary span:last-child,
-  .app-shell.mode-studio .command-meter-grid span:last-child,
-  .app-shell.mode-studio .asset-lane-strip span:last-child {
+  .app-shell.mode-studio .command-meter-grid span:last-child {
     border-right: 0;
   }
 
@@ -301,7 +297,6 @@
 
 .app-shell.mode-studio .workspace-summary b,
   .app-shell.mode-studio .command-meter-grid b,
-  .app-shell.mode-studio .asset-lane-strip b,
   .app-shell.mode-studio .studio-stat strong,
   .app-shell.mode-studio .stage-status-metric b {
     color: var(--text);
@@ -312,8 +307,6 @@
 
 .app-shell.mode-studio .workspace-summary small,
   .app-shell.mode-studio .command-meter-grid small,
-  .app-shell.mode-studio .asset-lane-strip small,
-  .app-shell.mode-studio .asset-lane-strip em,
   .app-shell.mode-studio .studio-stat span,
   .app-shell.mode-studio .stage-status-metric small {
     color: var(--subtle);
@@ -324,7 +317,6 @@
 
 .app-shell.mode-studio .workspace-summary .is-ok b,
   .app-shell.mode-studio .command-meter-grid .is-ok b,
-  .app-shell.mode-studio .asset-lane-strip .is-ok b,
   .app-shell.mode-studio .workbench-lane-strip .is-ok b,
   .app-shell.mode-studio .stage-status-metric.is-ok b {
     color: color-mix(in srgb, var(--ok) 86%, var(--text));
@@ -332,7 +324,6 @@
 
 .app-shell.mode-studio .workspace-summary .is-warn b,
   .app-shell.mode-studio .command-meter-grid .is-warn b,
-  .app-shell.mode-studio .asset-lane-strip .is-warn b,
   .app-shell.mode-studio .workbench-lane-strip .is-warn b,
   .app-shell.mode-studio .stage-status-metric.is-warn b {
     color: color-mix(in srgb, var(--warn) 72%, var(--text));
@@ -342,7 +333,6 @@
   .app-shell.mode-studio .workbench-directive,
   .app-shell.mode-studio .workbench-route-button,
   .app-shell.mode-studio .operator-callout,
-  .app-shell.mode-studio .asset-row,
   .app-shell.mode-studio .list-item,
   .app-shell.mode-studio .evidence-record,
   .app-shell.mode-studio .build-readiness-record,
@@ -356,8 +346,7 @@
     box-shadow: none;
   }
 
-.app-shell.mode-studio .asset-row:nth-child(even),
-  .app-shell.mode-studio .list-item:nth-child(even),
+.app-shell.mode-studio .list-item:nth-child(even),
   .app-shell.mode-studio .engine-module-row:nth-child(even) {
     background: var(--dcc-row-alt);
   }
@@ -365,7 +354,6 @@
 .app-shell.mode-studio .studio-mission-node:hover,
   .app-shell.mode-studio .workbench-directive:hover,
   .app-shell.mode-studio .workbench-route-button:hover,
-  .app-shell.mode-studio .asset-row:hover,
   .app-shell.mode-studio .list-item:hover,
   .app-shell.mode-studio .evidence-record:hover,
   .app-shell.mode-studio .build-readiness-record:hover,
@@ -397,7 +385,6 @@
   }
 
 .app-shell.mode-studio .workbench-ops-section,
-  .app-shell.mode-studio .asset-command-center,
   .app-shell.mode-studio .acceptance-gates-section,
   .app-shell.mode-studio .debug-lens-section,
   .app-shell.mode-studio .engine-modules-panel {
@@ -424,7 +411,6 @@
 .app-shell.mode-studio .workbench-directive strong,
   .app-shell.mode-studio .operator-callout strong,
   .app-shell.mode-studio .list-title,
-  .app-shell.mode-studio .asset-row-title strong,
   .app-shell.mode-studio .engine-module-name strong {
     color: var(--text);
     font-size: 12px;
@@ -451,8 +437,6 @@
 .app-shell.mode-studio .workbench-route-button span,
   .app-shell.mode-studio .workbench-route-button strong,
   .app-shell.mode-studio .workbench-route-button small,
-  .app-shell.mode-studio .asset-row-title strong,
-  .app-shell.mode-studio .asset-row-detail,
   .app-shell.mode-studio .list-title,
   .app-shell.mode-studio .list-meta,
   .app-shell.mode-studio .workbench-lane-strip small,
@@ -485,7 +469,6 @@
   .app-shell.mode-studio .studio-mission-node:last-child,
   .app-shell.mode-studio .workbench-route-button:last-child,
   .app-shell.mode-studio .workbench-lane-strip span:last-child,
-  .app-shell.mode-studio .asset-row:last-child,
   .app-shell.mode-studio .list-item:last-child,
   .app-shell.mode-studio .engine-module-row:last-child {
     border-bottom: 0;
@@ -500,10 +483,7 @@
 
 .app-shell.mode-studio .badge,
   .app-shell.mode-studio .status-badge,
-  .app-shell.mode-studio .tab-count,
-  .app-shell.mode-studio .asset-row-kind,
-  .app-shell.mode-studio .asset-row-action,
-  .app-shell.mode-studio .asset-row-export {
+  .app-shell.mode-studio .tab-count {
     min-height: 19px;
     align-items: center;
     padding: 2px 5px;
@@ -560,15 +540,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-.app-shell.mode-studio .asset-row-title {
-    gap: 5px;
-    min-width: 0;
-  }
-
-.app-shell.mode-studio .asset-row-side {
-    align-items: end;
   }
 
 .app-shell.mode-studio .round-hud-panel,

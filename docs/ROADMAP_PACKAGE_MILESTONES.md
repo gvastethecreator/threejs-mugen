@@ -50,8 +50,8 @@ S1 Studio CSS module split and shadow prune
   -> src/styles/studio.css is the single Studio CSS entrypoint, delegating to base/legacy/editor/runtime/desktop/shell/command/workflows category modules
   -> pnpm fix:css now removes exact duplicate rules plus fully shadowed same-selector and cross-file rules
   -> active command shell ownership lives in src/styles/command/studio-command-shell.css, studio-command-pipeline.css, studio-command-playfield.css, and studio-command-console.css
-  -> pnpm qa:css reports 554,644 bytes, 2,432 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 130 repeated declaration groups, 111 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
-  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 554,644 bytes, 2,432 rules, 130 repeated declaration groups, 111 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
+  -> pnpm qa:css reports 541,328 bytes, 2,392 rules, 0 duplicate selector keys / 0 instances, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 selectors shared with src/style.css, 0 fully shadowed legacy style.css rules, and 0 fully shadowed cross-file rules
+  -> pnpm qa:css:budget now freezes current debt ceilings for CSS cleanup/review rounds: 541,328 bytes, 2,392 rules, 124 repeated declaration groups, 108 cross-file overlaps, and zero exact/shadowed/src-style overlap regressions
   -> latest narrow cleanup groups legacy Studio truncation/text-wrap/grid/align/text rows, absorbs redundant shell/header/status/summary overrides into base/surface owners, removes redundant responsive shell rules, prunes one redundant base Studio workspace-header override, and removes unused structural Build/Evidence list, old asset focus/flow, trace scrubber, stat-card, and build-export-console hooks; the broader repeated declaration groups stay queued for shared primitive extraction
   -> requires qa:smoke and visual inspection; product-surface hygiene only, no new Studio workflow or score claim
 S1 Studio command chrome label/grid follow-up
@@ -88,10 +88,10 @@ Latest implementation checkpoint:
 R2 helper-local micro-VM ownership
   -> HelperSystem runs a bounded helper-local micro-VM for current visual Helper actors spawned with owner runtime-program data
   -> RuntimeEffectSpawnWorld passes owner runtimeProgram and animation maps into HelperSystem
-  -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, DestroySelf removal, helper-local CtrlSet/StateTypeSet, and helper-local VarSet/VarAdd/VarRandom/VarRangeSet trigger branches on helper actors
+  -> focused EffectActorSystem tests prove Time-triggered VelSet, ChangeAnim, ChangeState, DestroySelf removal, helper-local CtrlSet/StateTypeSet, helper-local VarSet/VarAdd/VarRandom/VarRangeSet trigger branches, and helper-local PlaySnd/StopSnd sound-event telemetry on helper actors
   -> focused EffectSpawnSystem tests prove the handoff
   -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
-  -> no redirects, parent/root/team/keyctrl, exact helper resource semantics, helper fvar/sysvar VarRandom, exact random stream parity, helper audio/effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
+  -> no redirects, parent/root/team/keyctrl, exact helper resource semantics, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper visual effects, helper-owned HitDefs/Projectiles/Explods, helper combat, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
@@ -280,7 +280,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
 - visual-helper removal ownership
-- helper-local micro-VM ownership
+- helper-local micro-VM ownership, including helper-local sound-event telemetry
 - `RuntimeAssertSpecialWorld` ownership extraction
 - `RuntimeSnapshotWorld` ownership extraction
 - `RuntimeSnapshotWorld` player actor projection
@@ -290,7 +290,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries or effect/combat ordering with stable or documented trace behavior after the helper-local micro-VM cut.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, or effect/combat ordering with stable or documented trace behavior after the helper-local micro-VM sound-event cut.
 
 ## Package Closeout Contract
 

@@ -1,5 +1,56 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio Assets CSS graph and budget prune
+
+Changed:
+
+- Extracted Assets dependency graph styling into `src/styles/workflows/studio-assets-graph.css` and kept `src/styles/workflows.css` as the ordered workflow import owner.
+- Pruned Assets row/panel selectors from older desktop/editor finish modules so `studio-assets.css`, `studio-assets-ledger.css`, and `studio-assets-graph.css` own the current Assets surface.
+- Compacted repeated Assets ledger/graph selector lists with scoped `:is(...)` groups and tightened `pnpm qa:css:budget` to the new 541,328-byte / 2,392-rule / 124 repeated-group / 108-overlap ceiling.
+- Updated Studio/UI roadmap docs and the S1 local issue with the current CSS truth.
+
+Evidence:
+
+- `pnpm qa:css:budget` passes: 541,328 active CSS bytes, 2,392 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm test` passes: 73 files / 657 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-assets-replacement.png`, and `.scratch/qa/qa-smoke/studio-workbench-tablet.png`; no obvious Assets row/graph overflow, broken panel chrome, or tablet horizontal overflow was visible.
+
+Claim allowed:
+
+- Studio Assets CSS has lower measured payload/overlap debt, graph ownership is separated from generic tab hardening, and future CSS growth is guarded by the tighter budget.
+
+Claim blocked:
+
+- This is Studio CSS architecture and product-surface hygiene only. It does not add authoring behavior, runtime compatibility, generated asset QA automation, IKEMEN execution, or score movement. Remaining CSS debt is shared chrome/action primitives, token cleanup, and deeper cross-file cascade reduction.
+
+## 2026-06-30 - Helper-local sound event telemetry
+
+Changed:
+
+- Added helper-local `PlaySnd` / `StopSnd` event emission inside `HelperSystem` for current visual Helpers running owner runtime-program data.
+- Helpers now carry bounded local `RuntimeSoundEvent` history and helper snapshots clone those events.
+- `MugenAudioSystem` scans effect actor snapshots as well as player snapshots so helper-local sound telemetry can reach the browser audio adapter.
+- Updated runtime compatibility docs with claim allowed / blocked wording around helper-local sound.
+
+Evidence:
+
+- `pnpm test` passes: 73 files / 657 tests, including focused helper/effect/audio runtime coverage.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+
+Claim allowed:
+
+- Current visual Helper actors can emit bounded helper-local `PlaySnd` / `StopSnd` telemetry into cloned effect snapshots, and the browser audio adapter now sees effect actor sound events.
+
+Claim blocked:
+
+- No exact helper-local audio timing/channel/mixing/redirect ownership, no helper-owned HitDefs/Projectiles/Explods/visual effects/combat, no parent/root/team/keyctrl, no full Helper VM parity, and no score movement.
+
 ## 2026-06-30 - Studio CSS status-rail extraction
 
 Changed:

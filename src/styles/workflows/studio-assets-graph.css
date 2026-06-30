@@ -1,0 +1,101 @@
+@media (min-width:900px){
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-map {
+    display: grid;
+    gap: 0;
+    overflow: hidden;
+    border: 0;
+    border-top: 1px solid var(--studio-ledge-edge);
+    background: var(--studio-ledge-bg);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] :is(.asset-graph-branches, .asset-graph-branch) {
+    display: grid;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-branch {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-connector {
+    display: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node {
+    display: grid;
+    grid-template-columns: minmax(54px, 0.34fr) minmax(0, 1fr) auto;
+    min-width: 0;
+    min-height: 40px;
+    gap: 6px 8px;
+    padding: var(--asset-inline-row-padding);
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledge-edge);
+    border-radius: 0;
+    background: var(--asset-ledger-row);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node:nth-child(even) {
+    background: var(--asset-ledger-row-alt);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node.is-root {
+    background: color-mix(in srgb, var(--section-accent) 7%, var(--asset-ledger-row));
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--section-accent) 68%, var(--studio-ledge-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node.is-ok {
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--asset-ledger-ok) 70%, var(--studio-ledge-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node:is(.is-warn,.is-planned,.is-partial) {
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--asset-ledger-warn) 76%, var(--studio-ledge-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node:is(.is-error,.is-blocked) {
+    box-shadow: inset 3px 0 0 color-mix(in srgb, var(--danger) 70%, var(--studio-ledge-edge-strong));
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node :is(strong,small,.asset-graph-kind) {
+    min-width: 0;
+    overflow: hidden;
+    line-height: 1.12;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node strong {
+    color: var(--studio-ledge-text);
+    font-size: var(--asset-row-title-size);
+    font-weight: 800;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node small {
+    grid-column:2/-1;
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: var(--asset-row-meta-size);
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-kind {
+    color: var(--studio-ledge-muted);
+    font-family: var(--mono);
+    font-size: var(--asset-row-meta-size);
+    text-transform: uppercase;
+  }
+
+  .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node>.badge {
+    justify-self:end;
+  }
+}
