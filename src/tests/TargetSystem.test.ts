@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import {
   addRuntimeTargetBinding,
   advanceRuntimeTargetMemory,
@@ -15,6 +16,7 @@ import {
   rememberRuntimeTarget,
   resolveRuntimeTargetAnchor,
   resolveRuntimeTargetBindingPosition,
+  RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
@@ -288,6 +290,80 @@ describe("TargetSystem", () => {
     expect(target.runtime.facing).toBe(1);
     expect(target.runtime.pos).toEqual({ x: 136, y: -12 });
     expect(actor.targetBindings).toMatchObject([{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } }]);
+  });
+
+  it("dispatches active Target controllers with telemetry hooks", () => {
+    const world = new RuntimeTargetControllerDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
+    });
+    const target = targetActor("p2", {
+      runtime: { life: 120 },
+    });
+    const ir = compileControllerIr(controller("TargetLifeAdd", { id: "77", value: "-20" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      candidateTargets: [target],
+      controller: ir,
+      effect: "target",
+      targetWorld,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(`${operation.kind}:${"controllerType" in operation ? operation.controllerType : operation.postype}`),
+      scaleIncomingDamage: (_runtime, damage) => damage + 5,
+    });
+
+    expect(target.runtime.life).toBe(95);
+    expect(recordedControllers).toEqual(["TargetLifeAdd"]);
+    expect(recordedOperations).toEqual(["target:targetlifeadd"]);
+    expect(result).toEqual({
+      controllerType: "targetlifeadd",
+      matchedTargets: 1,
+      operationExecuted: true,
+      recordedController: true,
+      recordedOperation: true,
+    });
+  });
+
+  it("dispatches active BindToTarget controllers with telemetry hooks", () => {
+    const world = new RuntimeTargetControllerDispatchWorld();
+    const targetWorld = new RuntimeTargetWorld();
+    const actor = targetActor("p1", {
+      targets: [{ actorId: "p2", targetId: 77, age: 0 }],
+    });
+    const target = targetActor("p2", {
+      runtime: { pos: { x: 100, y: -20 }, facing: -1 },
+    });
+    const ir = compileControllerIr(controller("BindToTarget", { id: "77", pos: "12,-8,Head", time: "5" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      candidateTargets: [target],
+      controller: ir,
+      effect: "bindtotarget",
+      targetWorld,
+      recordOperation: (_actor, operation) =>
+        recordedOperations.push(
+          `${operation.kind}:${"controllerType" in operation ? operation.controllerType : operation.postype}:${"time" in operation ? operation.time : "none"}`,
+        ),
+      getTargetConst: (_target, name) => ({ "size.head.pos.x": 6, "size.head.pos.y": -70 })[name],
+    });
+
+    expect(actor.bindToTarget).toMatchObject({ actorId: "p2", targetId: 77, remaining: 5, offset: { x: 18, y: -78 } });
+    expect(actor.runtime.pos).toEqual({ x: 82, y: -98 });
+    expect(recordedOperations).toEqual(["bindtotarget:head:5"]);
+    expect(result).toEqual({
+      controllerType: "bindtotarget",
+      matchedTargets: 1,
+      operationExecuted: true,
+      recordedController: false,
+      recordedOperation: true,
+    });
   });
 
   it("respects target NoKO when TargetLifeAdd would kill", () => {

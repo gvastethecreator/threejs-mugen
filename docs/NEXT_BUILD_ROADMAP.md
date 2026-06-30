@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeTargetControllerDispatchWorld ownership extraction
+  -> RuntimeTargetControllerDispatchWorld now owns bounded active-state Target / BindToTarget side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed target/bindtotarget operation selection, operation telemetry, and RuntimeTargetWorld mutation handoff
+  -> match runtime still supplies damage scaling, TargetState entry validation, target constants, candidate selection, trigger filtering, and active-state order
+  -> focused TargetSystem coverage proves TargetLifeAdd telemetry/mutation and BindToTarget anchor/position telemetry through the dispatch boundary
+  -> no helper/projectile target ownership, exact multi-target semantics, throw binding, full CNS VM parity, or score movement claim
 R2 RuntimeSpriteEffectControllerWorld ownership extraction
   -> RuntimeSpriteEffectControllerWorld now owns bounded active-state sprite-effect side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, and Angle*

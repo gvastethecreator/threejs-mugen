@@ -1,7 +1,6 @@
 import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   AudioControllerOp,
-  BindToTargetControllerOp,
   ContactControllerOp,
   EnvColorControllerOp,
   EnvShakeControllerOp,
@@ -9,7 +8,6 @@ import type {
   HitDefControllerOp,
   PauseControllerOp,
   ReversalDefControllerOp,
-  TargetControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
@@ -98,6 +96,8 @@ import {
   RuntimeSpriteEffectWorld,
 } from "./SpriteEffectSystem";
 import {
+  isRuntimeTargetControllerDispatchEffect,
+  RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
@@ -122,6 +122,7 @@ const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
+const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1086,12 +1087,24 @@ function runActiveStateControllers(
         if (effectSpawnWorld.modifyProjectiles(fighter, rawController, operation) > 0 && operation) {
           compatibilityTelemetryWorld.recordOperation(fighter, operation);
         }
-      } else if (dispatch.effect === "target") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        applyTargetController(fighter, opponent, rawController, controller.operation?.kind === "target" ? controller.operation : undefined);
-      } else if (dispatch.effect === "bindtotarget") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        applyBindToTargetController(fighter, opponent, rawController, controller.operation?.kind === "bindtotarget" ? controller.operation : undefined);
+      } else if (isRuntimeTargetControllerDispatchEffect(dispatch.effect)) {
+        targetControllerDispatchWorld.apply({
+          actor: fighter,
+          candidateTargets: [opponent],
+          controller,
+          effect: dispatch.effect,
+          targetWorld: fighter.targetWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+          scaleIncomingDamage: scaleRuntimeIncomingDamage,
+          enterTargetState: (target, stateId) => {
+            const controllerOwner = fighter.stateOwner ?? fighter;
+            if (canEnterState(target, stateId, controllerOwner)) {
+              enterState(target, stateId, undefined, { stateOwner: controllerOwner });
+            }
+          },
+          getTargetConst: (target, name) => runtimeConst(target.definition, name),
+        });
       } else if (dispatch.effect === "pause") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         onPauseController?.(fighter, rawController, controller.operation?.kind === "pause" ? controller.operation : undefined);
@@ -1160,44 +1173,6 @@ function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSa
     offsetX: frame.offsetX,
     offsetY: frame.offsetY,
   };
-}
-
-function applyTargetController(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  controller: MugenStateController,
-  operation?: TargetControllerOp,
-): void {
-  fighter.targetWorld.applyController({
-    actor: fighter,
-    candidateTargets: [opponent],
-    controller,
-    operation,
-    onOperation: (executedOperation) => compatibilityTelemetryWorld.recordOperation(fighter, executedOperation),
-    scaleIncomingDamage: scaleRuntimeIncomingDamage,
-    enterTargetState: (target, stateId) => {
-      const controllerOwner = fighter.stateOwner ?? fighter;
-      if (canEnterState(target, stateId, controllerOwner)) {
-        enterState(target, stateId, undefined, { stateOwner: controllerOwner });
-      }
-    },
-  });
-}
-
-function applyBindToTargetController(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  controller: MugenStateController,
-  operation?: BindToTargetControllerOp,
-): void {
-  fighter.targetWorld.applyBindToTargetController({
-    actor: fighter,
-    candidateTargets: [opponent],
-    controller,
-    operation,
-    getTargetConst: (target, name) => runtimeConst(target.definition, name),
-    onOperation: (executedOperation) => compatibilityTelemetryWorld.recordOperation(fighter, executedOperation),
-  });
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {

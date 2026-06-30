@@ -1,4 +1,5 @@
 import type { BindToTargetControllerOp, TargetControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { applyRuntimeLifeAdd, applyRuntimePowerDelta } from "./RuntimeResourceSystem";
 import type { CharacterRuntimeState, RuntimeTargetBindingSnapshot, RuntimeTargetSnapshot } from "./types";
@@ -86,6 +87,28 @@ export type RuntimeTargetControllerResult = {
   operationExecuted: boolean;
 };
 
+export type RuntimeTargetControllerDispatchEffect = "target" | "bindtotarget";
+
+export type RuntimeTargetControllerDispatchOperation = TargetControllerOp | BindToTargetControllerOp;
+
+export type RuntimeTargetControllerDispatchOptions<TActor extends RuntimeTargetWorldActor> = {
+  actor: TActor;
+  candidateTargets: TActor[];
+  controller: ControllerIr;
+  effect: RuntimeTargetControllerDispatchEffect;
+  targetWorld: RuntimeTargetWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: RuntimeTargetControllerDispatchOperation) => void;
+  scaleIncomingDamage?: (runtime: CharacterRuntimeState, damage: number) => number;
+  enterTargetState?: (target: TActor, stateId: number) => void;
+  getTargetConst?: (target: TActor, name: string) => number | undefined;
+};
+
+export type RuntimeTargetControllerDispatchResult = RuntimeTargetControllerResult & {
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
+
 export class RuntimeTargetWorld {
   remember(actor: RuntimeTargetControllerActor, targetActorId: string, targetId: number | undefined): void {
     actor.targets = rememberRuntimeTarget(actor.targets, targetActorId, targetId);
@@ -145,6 +168,56 @@ export class RuntimeTargetWorld {
   ): RuntimeTargetBindingApplyResult {
     return applyRuntimeBindToTarget(actor, candidateTargets);
   }
+}
+
+export class RuntimeTargetControllerDispatchWorld {
+  apply<TActor extends RuntimeTargetWorldActor>(
+    options: RuntimeTargetControllerDispatchOptions<TActor>,
+  ): RuntimeTargetControllerDispatchResult {
+    let recordedOperation = false;
+    options.recordController?.(options.actor, options.controller.source);
+
+    if (options.effect === "target") {
+      const result = options.targetWorld.applyController({
+        actor: options.actor,
+        candidateTargets: options.candidateTargets,
+        controller: options.controller.source,
+        operation: options.controller.operation?.kind === "target" ? options.controller.operation : undefined,
+        onOperation: (operation) => {
+          recordedOperation = true;
+          options.recordOperation?.(options.actor, operation);
+        },
+        scaleIncomingDamage: options.scaleIncomingDamage,
+        enterTargetState: options.enterTargetState,
+      });
+      return {
+        ...result,
+        recordedController: Boolean(options.recordController),
+        recordedOperation,
+      };
+    }
+
+    const result = options.targetWorld.applyBindToTargetController({
+      actor: options.actor,
+      candidateTargets: options.candidateTargets,
+      controller: options.controller.source,
+      operation: options.controller.operation?.kind === "bindtotarget" ? options.controller.operation : undefined,
+      onOperation: (operation) => {
+        recordedOperation = true;
+        options.recordOperation?.(options.actor, operation);
+      },
+      getTargetConst: options.getTargetConst,
+    });
+    return {
+      ...result,
+      recordedController: Boolean(options.recordController),
+      recordedOperation,
+    };
+  }
+}
+
+export function isRuntimeTargetControllerDispatchEffect(effect: string): effect is RuntimeTargetControllerDispatchEffect {
+  return effect === "target" || effect === "bindtotarget";
 }
 
 export function applyRuntimeTargetController<TActor extends RuntimeTargetControllerActor>(
