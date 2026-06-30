@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R1 resource actor-frame evidence gate
+  -> RuntimeTraceGate.requiredActorFrames can require observed life/power ranges
+  -> required synthetic-imported-resource.json checksum 7bbcb2e4 now proves imported P1 state/action 289 exposes life 750 and power 900 in actor-frame evidence after typed resource:lifeadd/resource:lifeset/resource:poweradd/resource:powerset route through Life/Power triggers
+  -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the fields and preset
+  -> no exact resource scaling, helper/team/redirect resource ownership, round/KO flow, dynamic lowering, full controller VM parity, or score claim
 R1 Common1 too-early recovery-input positive-window gate
   -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.recoverTime minimum-positive windows
   -> required synthetic-imported-default-fall-recovery-too-early.json checksum 050e7e3c and optional kfm-official-default-fall-recovery-too-early.json checksum d2edbde4 now require P2 5050 actor-frame evidence with min recoverTime >= 1, first-to-last drop >= 1, and at least 2 summarized frames while recovery command is active and recovery states stay forbidden
@@ -403,6 +408,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
 - `kfm-official-default-fall-recovery-threshold.json` optional drop/order evidence
 - `synthetic-imported-default-fall-recovery-too-early.json` and `kfm-official-default-fall-recovery-too-early.json` positive-window reject evidence
+- `synthetic-imported-resource.json` actor-frame life/power evidence
 - `synthetic-imported-noop.json` debug clipboard plus `MakeDust` / `DestroySelf` no-op coverage
 - `synthetic-imported-variable.json` `VarRandom` variable compatibility
 - `RuntimeContactMemoryWorld` direct/projectile contact-memory ownership extraction

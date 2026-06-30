@@ -468,6 +468,10 @@ export type RuntimeTraceActorFrameRequirement = {
   clsn1Count?: number;
   clsn2Count?: number;
   minFrames?: number;
+  observedLifeAtLeast?: number;
+  observedLifeAtMost?: number;
+  observedPowerAtLeast?: number;
+  observedPowerAtMost?: number;
   observedPosXAtLeast?: number;
   observedPosXAtMost?: number;
   observedPosYAtLeast?: number;
@@ -542,6 +546,10 @@ export type RuntimeTraceGateActorFrameEvidence = {
   physics: string;
   clsn1Count: number;
   clsn2Count: number;
+  minLife: number;
+  maxLife: number;
+  minPower: number;
+  maxPower: number;
   minPos: { x: number; y: number };
   maxPos: { x: number; y: number };
   minVel: { x: number; y: number };
@@ -1449,6 +1457,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               firstTick: Math.min(existing.firstTick, frame.tick),
               lastTick: Math.max(existing.lastTick, frame.tick),
               frames: existing.frames + 1,
+              minLife: Math.min(existing.minLife, actor.life),
+              maxLife: Math.max(existing.maxLife, actor.life),
+              minPower: Math.min(existing.minPower, actor.power),
+              maxPower: Math.max(existing.maxPower, actor.power),
               minPos: {
                 x: Math.min(existing.minPos.x, actor.pos.x),
                 y: Math.min(existing.minPos.y, actor.pos.y),
@@ -1505,6 +1517,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               physics: actor.physics,
               clsn1Count: actor.clsn1Count,
               clsn2Count: actor.clsn2Count,
+              minLife: actor.life,
+              maxLife: actor.life,
+              minPower: actor.power,
+              maxPower: actor.power,
               minPos: { ...actor.pos },
               maxPos: { ...actor.pos },
               minVel: { ...actor.vel },
@@ -2786,6 +2802,8 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.physics,
     actor.clsn1Count,
     actor.clsn2Count,
+    `life${actor.minLife}:${actor.maxLife}`,
+    `power${actor.minPower}:${actor.maxPower}`,
     actor.bodyWidthFront === undefined ? "wf*" : `wf${actor.bodyWidthFront}`,
     actor.bodyWidthBack === undefined ? "wb*" : `wb${actor.bodyWidthBack}`,
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
@@ -2840,6 +2858,10 @@ function matchesActorFrameRequirement(
     (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&
     (requirement.clsn2Count === undefined || actor.clsn2Count === requirement.clsn2Count) &&
     (requirement.minFrames === undefined || actor.frames >= requirement.minFrames) &&
+    (requirement.observedLifeAtLeast === undefined || actor.maxLife >= requirement.observedLifeAtLeast) &&
+    (requirement.observedLifeAtMost === undefined || actor.minLife <= requirement.observedLifeAtMost) &&
+    (requirement.observedPowerAtLeast === undefined || actor.maxPower >= requirement.observedPowerAtLeast) &&
+    (requirement.observedPowerAtMost === undefined || actor.minPower <= requirement.observedPowerAtMost) &&
     (requirement.observedPosXAtLeast === undefined || actor.maxPos.x >= requirement.observedPosXAtLeast) &&
     (requirement.observedPosXAtMost === undefined || actor.minPos.x <= requirement.observedPosXAtMost) &&
     (requirement.observedPosYAtLeast === undefined || actor.maxPos.y >= requirement.observedPosYAtLeast) &&

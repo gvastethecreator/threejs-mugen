@@ -252,11 +252,25 @@ export function createSyntheticImportedResourceTraceArtifact(options: RuntimeTra
       requiredExecutedStates: [200, 289],
       requiredExecutedControllers: ["ChangeState", "HitDef", "LifeAdd", "LifeSet", "PowerAdd", "PowerSet"],
       requiredExecutedOperations: ["hitdef", "resource:lifeadd", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 289,
+          animNo: 289,
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          minFrames: 1,
+        },
+      ],
       requiredFinalActors: [
         { actorId: "p1", source: "imported", actorKind: "player", stateNo: 289, animNo: 289, life: 750, power: 900 },
       ],
       notes: [
-        "Synthetic imported resource trace proves static LifeAdd, LifeSet, PowerAdd, and PowerSet can execute as typed resource operations and drive a later Life/Power ChangeState branch in the owner state. Scaling, redirects, round/KO flow, helpers, teams, and exact MUGEN/IKEMEN resource semantics remain future work.",
+        "Synthetic imported resource trace proves static LifeAdd, LifeSet, PowerAdd, and PowerSet can execute as typed resource operations, drive a later Life/Power ChangeState branch in the owner state, and expose the resulting life/power values in actor-frame evidence before final snapshot checks. Scaling, redirects, round/KO flow, helpers, teams, and exact MUGEN/IKEMEN resource semantics remain future work.",
       ],
     },
   );

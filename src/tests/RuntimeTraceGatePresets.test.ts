@@ -597,6 +597,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          stateNo: 289,
+          animNo: 289,
+          minLife: 750,
+          maxLife: 750,
+          minPower: 900,
+          maxPower: 900,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 289,
+        animNo: 289,
+        observedLifeAtLeast: 750,
+        observedLifeAtMost: 750,
+        observedPowerAtLeast: 900,
+        observedPowerAtMost: 900,
+        minFrames: 1,
+      },
+    ]);
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
       stateNo: 289,
       animNo: 289,

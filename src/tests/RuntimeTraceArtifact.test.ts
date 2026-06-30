@@ -378,6 +378,52 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
   });
 
+  it("gates actor-frame life and power range evidence", () => {
+    const resourceStart = playerActor({ animNo: 289, moveType: "I", life: 980, power: 200 });
+    const resourceSettled = playerActor({ animNo: 289, moveType: "I", life: 750, power: 900 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "resource-start", actors: [resourceStart], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "resource-settled", actors: [resourceSettled], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-30T00:00:00.000Z",
+      target: {
+        id: "synthetic-resource-frame-range",
+        label: "Synthetic resource frame range",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "resource-frame-range",
+          requiredActorFrames: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 289,
+              observedLifeAtLeast: 980,
+              observedLifeAtMost: 750,
+              observedPowerAtLeast: 900,
+              observedPowerAtMost: 200,
+              minFrames: 2,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    const evidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 289);
+    expect(evidence?.maxLife).toBe(980);
+    expect(evidence?.minLife).toBe(750);
+    expect(evidence?.maxPower).toBe(900);
+    expect(evidence?.minPower).toBe(200);
+    expect(evidence?.frames).toBeGreaterThanOrEqual(2);
+    expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
   it("fails actor-frame sequence gates when frames appear out of order", () => {
     const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
     const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });
@@ -779,6 +825,8 @@ function effectActor(
 function playerActor(input: {
   animNo: number;
   moveType: string;
+  life?: number;
+  power?: number;
   hitFallRecoverTime?: number;
   hitFallDownRecoverTime?: number;
 }): RuntimeTraceFrame["actors"][number] {
@@ -794,8 +842,8 @@ function playerActor(input: {
     animNo: input.animNo,
     animTime: 0,
     frameIndex: 0,
-    life: 1000,
-    power: 0,
+    life: input.life ?? 1000,
+    power: input.power ?? 0,
     ctrl: input.moveType === "I",
     stateType: input.moveType === "H" ? "A" : "S",
     moveType: input.moveType,
