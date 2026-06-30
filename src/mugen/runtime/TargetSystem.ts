@@ -338,9 +338,10 @@ export function advanceRuntimeTargetMemory(memory: RuntimeTargetMemory, maxAge =
       binding.remaining -= 1;
     }
   }
+  const targets = memory.targets.filter((target) => target.age <= maxAge);
   return {
-    targets: memory.targets.filter((target) => target.age <= maxAge),
-    bindings: memory.bindings.filter((binding) => binding.remaining > 0),
+    targets,
+    bindings: memory.bindings.filter((binding) => binding.remaining > 0 && hasRuntimeTargetBindingTarget(targets, binding)),
   };
 }
 
@@ -411,7 +412,7 @@ export function dropRuntimeTargets(
   const boundedTargets = keepOne ? keptTargets.slice(0, 1) : keptTargets;
   return {
     targets: boundedTargets,
-    bindings: memory.bindings.filter((binding) => boundedTargets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)),
+    bindings: memory.bindings.filter((binding) => hasRuntimeTargetBindingTarget(boundedTargets, binding)),
   };
 }
 
@@ -449,10 +450,17 @@ function findBoundRuntimeTargetActor<TActor extends { id: string }>(
   binding: RuntimeTargetBinding,
   candidates: TActor[],
 ): TActor | undefined {
-  if (!targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
+  if (!hasRuntimeTargetBindingTarget(targets, binding)) {
     return undefined;
   }
   return candidates.find((candidate) => candidate.id === binding.actorId);
+}
+
+function hasRuntimeTargetBindingTarget(
+  targets: RuntimeTarget[],
+  binding: Pick<RuntimeTargetBinding, "actorId" | "targetId">,
+): boolean {
+  return targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId);
 }
 
 export function createRuntimeTargetBinding(input: {
@@ -483,7 +491,7 @@ export function tickRuntimeBindToTarget(
   binding: RuntimeTargetBinding | undefined,
   targets: RuntimeTarget[],
 ): RuntimeTargetBinding | undefined {
-  if (!binding || !targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId)) {
+  if (!binding || !hasRuntimeTargetBindingTarget(targets, binding)) {
     return undefined;
   }
   if (binding.remaining === Number.POSITIVE_INFINITY) {

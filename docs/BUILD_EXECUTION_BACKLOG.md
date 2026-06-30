@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime target binding expiry pruning
+
+Changed:
+
+- Tightened `advanceRuntimeTargetMemory` so `TargetBind` binding records are pruned when their bound actor id / target id no longer survives target-memory expiry.
+- Reused one live-target binding helper across target-memory advance, `TargetDrop`, active `TargetBind`, and active `BindToTarget` application.
+- Updated focused `TargetSystem` coverage so an infinite-duration binding survives only while matching target memory is still live.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/TargetSystem.test.ts` passes: 1 file / 17 tests.
+- `pnpm test` passes: 79 files / 688 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 145 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes; Git still warns that `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md` will normalize CRLF to LF when touched.
+
+Claim allowed:
+
+- Current bounded `TargetBind` binding records are dropped by `TargetSystem` when target memory expiry removes the bound target.
+
+Claim blocked:
+
+- This is R2 target-lifetime cleanup only. It does not add exact MUGEN/IKEMEN target persistence, bind/drop tick order parity, helper/root/parent target ownership, teams, multi-target selection, throws/custom-state binding parity, or score movement.
+
 ## 2026-06-30 - Runtime target binding lifetime guard
 
 Changed:

@@ -134,18 +134,19 @@ describe("TargetSystem", () => {
   it("advances target memory and target bindings with expiry", () => {
     const finiteBinding = binding({ actorId: "p2", targetId: 1, remaining: 1 });
     const infiniteBinding = binding({ actorId: "helper", targetId: 2, remaining: Number.POSITIVE_INFINITY });
+    const staleBinding = binding({ actorId: "old", targetId: 3, remaining: 9 });
     const next = advanceRuntimeTargetMemory(
       {
         targets: [
-          { actorId: "fresh", targetId: 1, age: 0 },
-          { actorId: "old", targetId: 2, age: 2 },
+          { actorId: "helper", targetId: 2, age: 0 },
+          { actorId: "old", targetId: 3, age: 2 },
         ],
-        bindings: [finiteBinding, infiniteBinding],
+        bindings: [finiteBinding, infiniteBinding, staleBinding],
       },
       2,
     );
 
-    expect(next.targets).toEqual([{ actorId: "fresh", targetId: 1, age: 1 }]);
+    expect(next.targets).toEqual([{ actorId: "helper", targetId: 2, age: 1 }]);
     expect(next.bindings).toEqual([infiniteBinding]);
   });
 

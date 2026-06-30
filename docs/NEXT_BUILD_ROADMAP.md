@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 TargetSystem stale binding pruning
+  -> TargetSystem now drops TargetBind binding records during target-memory advance when the bound actor id / target id no longer survives expiry
+  -> the same live-target binding check is shared by target-memory advance, TargetDrop, active TargetBind, and active BindToTarget application
+  -> focused TargetSystem tests prove infinite-duration bindings survive only while matching target memory is live
+  -> no exact bind/drop tick order, helper/team/multi-target ownership, throws/custom-state binding, full target parity, or score movement claim
 R2 TargetSystem active binding lifetime guard
   -> TargetSystem now requires matching live target memory before active TargetBind or BindToTarget position application moves actors
   -> focused TargetSystem tests prove active binding success plus stale-binding no-mutation behavior
