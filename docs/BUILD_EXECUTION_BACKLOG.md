@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper ownerBind payload trace strengthening
+
+Changed:
+
+- Extended `RuntimeTraceEffectPayloadRequirement` with helper `ownerBind` target, offset, and remaining-time predicates.
+- Hardened required `synthetic-imported-helper-bindtoparent.json` and `synthetic-imported-helper-bindtoroot.json` gates so they assert effect payload `ownerBindTarget` plus static bind offsets, not only helper actor-frame position.
+- Deep-cloned helper `ownerBind` payloads in runtime trace and artifact export paths.
+- Added focused positive and mismatch coverage for helper `ownerBind` effect payload gates.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeTraceArtifact.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "effect payload|Helper BindTo"` passes: 2 files / 4 matching tests.
+- `pnpm test` passes: 81 files / 715 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 172 / 172 artifacts, 152 required, 20 optional, 0 failed; `synthetic-imported-helper-bindtoparent.json` remains checksum `f9922c0e` and `synthetic-imported-helper-bindtoroot.json` remains checksum `bf72306c`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Required helper-local static `BindToParent` / `BindToRoot` traces now prove the visual Helper payload carries the intended bounded owner-bind target and static offset metadata in addition to actor-frame position evidence.
+
+Claim blocked:
+
+- This is trace-gate strengthening only. It does not add player-state `BindToParent` / `BindToRoot`, nested helper ancestry where root differs from parent, dynamic bind params, team/keyctrl ownership, helper-owned opponents/combat/effects/projectiles, exact binding tick order, or full MUGEN/IKEMEN helper binding parity.
+
 ## 2026-06-30 - Bounded helper-local BindToRoot trace gate
 
 Changed:

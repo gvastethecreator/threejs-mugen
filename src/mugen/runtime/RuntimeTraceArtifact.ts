@@ -636,6 +636,13 @@ function cloneTraceEffect(effect: RuntimeTraceArtifactEffect): RuntimeTraceArtif
     return {
       ...effect,
       scale: { ...effect.scale },
+      ownerBind: effect.ownerBind
+        ? {
+            target: effect.ownerBind.target,
+            offset: { ...effect.ownerBind.offset },
+            remaining: effect.ownerBind.remaining,
+          }
+        : undefined,
     };
   }
   const exhaustive: never = effect;

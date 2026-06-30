@@ -324,6 +324,11 @@ export type RuntimeTraceEffectPayloadRequirement = {
   minSuperMoveTime?: number;
   minBindRemaining?: number;
   maxBindRemaining?: number;
+  ownerBindTarget?: "parent" | "root";
+  ownerBindOffsetX?: number;
+  ownerBindOffsetY?: number;
+  minOwnerBindRemaining?: number;
+  maxOwnerBindRemaining?: number;
   scaleX?: number;
   scaleY?: number;
 };
@@ -1740,13 +1745,47 @@ function matchesHelperPayloadRequirement(
   effect: RuntimeTraceEffectSummary,
   requirement: RuntimeTraceEffectPayloadRequirement,
 ): boolean {
-  if (requirement.name === undefined && requirement.helperStateNo === undefined) {
+  const hasHelperRequirement =
+    requirement.name !== undefined ||
+    requirement.helperStateNo !== undefined ||
+    requirement.ownerBindTarget !== undefined ||
+    requirement.ownerBindOffsetX !== undefined ||
+    requirement.ownerBindOffsetY !== undefined ||
+    requirement.minOwnerBindRemaining !== undefined ||
+    requirement.maxOwnerBindRemaining !== undefined;
+  if (!hasHelperRequirement) {
     return true;
   }
   return (
     effect.kind === "helper" &&
     (requirement.name === undefined || effect.name === requirement.name) &&
-    (requirement.helperStateNo === undefined || effect.stateNo === requirement.helperStateNo)
+    (requirement.helperStateNo === undefined || effect.stateNo === requirement.helperStateNo) &&
+    matchesHelperOwnerBindPayloadRequirement(effect, requirement)
+  );
+}
+
+function matchesHelperOwnerBindPayloadRequirement(
+  effect: Extract<RuntimeTraceEffectSummary, { kind: "helper" }>,
+  requirement: RuntimeTraceEffectPayloadRequirement,
+): boolean {
+  const hasOwnerBindRequirement =
+    requirement.ownerBindTarget !== undefined ||
+    requirement.ownerBindOffsetX !== undefined ||
+    requirement.ownerBindOffsetY !== undefined ||
+    requirement.minOwnerBindRemaining !== undefined ||
+    requirement.maxOwnerBindRemaining !== undefined;
+  if (!hasOwnerBindRequirement) {
+    return true;
+  }
+  if (!effect.ownerBind) {
+    return false;
+  }
+  return (
+    (requirement.ownerBindTarget === undefined || effect.ownerBind.target === requirement.ownerBindTarget) &&
+    (requirement.ownerBindOffsetX === undefined || sameTraceNumber(effect.ownerBind.offset.x, requirement.ownerBindOffsetX)) &&
+    (requirement.ownerBindOffsetY === undefined || sameTraceNumber(effect.ownerBind.offset.y, requirement.ownerBindOffsetY)) &&
+    (requirement.minOwnerBindRemaining === undefined || effect.ownerBind.remaining >= requirement.minOwnerBindRemaining) &&
+    (requirement.maxOwnerBindRemaining === undefined || effect.ownerBind.remaining <= requirement.maxOwnerBindRemaining)
   );
 }
 
@@ -3287,6 +3326,16 @@ function cloneTraceEffect(effect: RuntimeTraceEffectSummary): RuntimeTraceEffect
         x: roundTraceNumber(effect.scale.x),
         y: roundTraceNumber(effect.scale.y),
       },
+      ownerBind: effect.ownerBind
+        ? {
+            target: effect.ownerBind.target,
+            offset: {
+              x: roundTraceNumber(effect.ownerBind.offset.x),
+              y: roundTraceNumber(effect.ownerBind.offset.y),
+            },
+            remaining: roundTraceNumber(effect.ownerBind.remaining),
+          }
+        : undefined,
     };
   }
   const exhaustive: never = effect;

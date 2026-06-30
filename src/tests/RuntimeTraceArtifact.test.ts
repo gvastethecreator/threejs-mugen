@@ -419,7 +419,7 @@ describe("RuntimeTraceArtifact", () => {
     }
   });
 
-  it("gates typed effect payload samples across projectile and explod traces", () => {
+  it("gates typed effect payload samples across projectile, explod, and helper traces", () => {
     const projectile = effectActor(
       "fx-p1-proj-1",
       "Nova fireball",
@@ -435,7 +435,14 @@ describe("RuntimeTraceArtifact", () => {
         pauseMoveTime: 4,
       }),
     );
-    const frame = traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-payload", effects: [projectile, explod] });
+    const helper = effectActor(
+      "fx-p1-helper-1",
+      "Nova helper",
+      helperEffect({
+        ownerBind: { target: "root", offset: { x: -36, y: -16 }, remaining: 2 },
+      }),
+    );
+    const frame = traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-payload", effects: [projectile, explod, helper] });
     const trace = traceFromFrames([frame]);
 
     const artifact = createRuntimeTraceArtifact({
@@ -452,6 +459,18 @@ describe("RuntimeTraceArtifact", () => {
           requiredEffectPayloads: [
             { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit", minTerminalAge: 1 },
             { kind: "explod", ownerId: "p1", effectId: 8, ignoreHitPause: true, minPauseMoveTime: 4, maxBindRemaining: 3, scaleX: 1.5, scaleY: 0.75 },
+            {
+              kind: "helper",
+              ownerId: "p1",
+              effectId: 42,
+              name: "Nova helper",
+              helperStateNo: 1204,
+              ownerBindTarget: "root",
+              ownerBindOffsetX: -36,
+              ownerBindOffsetY: -16,
+              minOwnerBindRemaining: 1,
+              maxOwnerBindRemaining: 2,
+            },
           ],
         },
       ],
@@ -461,9 +480,55 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
       { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit", minTerminalAge: 1 },
       { kind: "explod", ownerId: "p1", effectId: 8, ignoreHitPause: true, minPauseMoveTime: 4, maxBindRemaining: 3, scaleX: 1.5, scaleY: 0.75 },
+      {
+        kind: "helper",
+        ownerId: "p1",
+        effectId: 42,
+        name: "Nova helper",
+        helperStateNo: 1204,
+        ownerBindTarget: "root",
+        ownerBindOffsetX: -36,
+        ownerBindOffsetY: -16,
+        minOwnerBindRemaining: 1,
+        maxOwnerBindRemaining: 2,
+      },
     ]);
-    expect(artifact.gates[0]?.evidence.effectPayloads.map((payload) => payload.effect.kind)).toEqual(["explod", "projectile"]);
+    expect(artifact.gates[0]?.evidence.effectPayloads.map((payload) => payload.effect.kind)).toEqual(["explod", "helper", "projectile"]);
     expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
+  it("fails helper ownerBind payload gates when target or offset does not match", () => {
+    const helper = effectActor(
+      "fx-p1-helper-1",
+      "Nova helper",
+      helperEffect({
+        ownerBind: { target: "parent", offset: { x: 40, y: -18 }, remaining: 2 },
+      }),
+    );
+    const trace = traceFromFrames([traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-helper-bind", effects: [helper] })]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-helper-ownerbind-mismatch",
+        label: "Synthetic helper ownerBind mismatch",
+        source: "native",
+      },
+      gates: [
+        {
+          label: "helper-ownerbind",
+          requiredEffectPayloads: [
+            { kind: "helper", ownerId: "p1", effectId: 42, ownerBindTarget: "root", ownerBindOffsetX: 40, ownerBindOffsetY: -18 },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.failures).toEqual([
+      "Missing effect payload: kind=helper, ownerId=p1, effectId=42, ownerBindTarget=root, ownerBindOffsetX=40, ownerBindOffsetY=-18",
+    ]);
   });
 });
 
@@ -639,6 +704,26 @@ function explodEffect(
     superMoveTime: 0,
     bindRemaining: 8,
     bindOffset: { x: 0, y: 0 },
+    ...overrides,
+  };
+}
+
+function helperEffect(
+  overrides: Partial<Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "helper" }>> = {},
+): Extract<NonNullable<RuntimeTraceFrame["effects"][number]["effect"]>, { kind: "helper" }> {
+  return {
+    kind: "helper",
+    id: 42,
+    name: "Nova helper",
+    stateNo: 1204,
+    age: 2,
+    stateTime: 1,
+    removeTime: 30,
+    spritePriority: 3,
+    scale: { x: 1, y: 1 },
+    ignoreHitPause: false,
+    pauseMoveTime: 0,
+    superMoveTime: 0,
     ...overrides,
   };
 }

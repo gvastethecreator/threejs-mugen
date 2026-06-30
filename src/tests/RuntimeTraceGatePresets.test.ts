@@ -1399,6 +1399,29 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "helper",
+        ownerId: "p1",
+        effectId: 42,
+        name: "Buddy",
+        helperStateNo: 1203,
+        minAge: 1,
+        ownerBindTarget: "parent",
+        ownerBindOffsetX: 40,
+        ownerBindOffsetY: -18,
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          effect: expect.objectContaining({
+            kind: "helper",
+            ownerBind: expect.objectContaining({ target: "parent", offset: { x: 40, y: -18 } }),
+          }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper BindToRoot artifact with helper-local owner bind evidence", () => {
@@ -1443,6 +1466,29 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "helper",
+        ownerId: "p1",
+        effectId: 42,
+        name: "Buddy",
+        helperStateNo: 1204,
+        minAge: 1,
+        ownerBindTarget: "root",
+        ownerBindOffsetX: -36,
+        ownerBindOffsetY: -16,
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          effect: expect.objectContaining({
+            kind: "helper",
+            ownerBind: expect.objectContaining({ target: "root", offset: { x: -36, y: -16 } }),
+          }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported NumExplod artifact with explod-count branch evidence", () => {

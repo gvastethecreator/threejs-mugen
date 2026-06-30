@@ -8117,7 +8117,19 @@ export function createSyntheticImportedHelperBindToParentTraceArtifact(options: 
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
-        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1203, minAge: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "helper",
+            ownerId: "p1",
+            effectId: 42,
+            name: "Buddy",
+            helperStateNo: 1203,
+            minAge: 1,
+            ownerBindTarget: "parent",
+            ownerBindOffsetX: 40,
+            ownerBindOffsetY: -18,
+          },
+        ],
       },
     ],
   });
@@ -8175,7 +8187,19 @@ export function createSyntheticImportedHelperBindToRootTraceArtifact(options: Ru
           { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
         ],
         requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
-        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1204, minAge: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "helper",
+            ownerId: "p1",
+            effectId: 42,
+            name: "Buddy",
+            helperStateNo: 1204,
+            minAge: 1,
+            ownerBindTarget: "root",
+            ownerBindOffsetX: -36,
+            ownerBindOffsetY: -16,
+          },
+        ],
       },
     ],
   });
