@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS primitive budget trim
+
+Changed:
+
+- Moved Build/Evidence right-rail header chrome into the shared Studio primitive header selectors in `src/styles/surfaces/studio-primitives.css`.
+- Removed local duplicate Assets action icon and primary-action rules from `src/styles/workflows/studio-assets.css`; the Assets workbench actions now rely on existing Studio action primitives.
+- Kept the visible Assets action icons added in `src/app/App.ts` while tightening `pnpm qa:css:budget` from the previous 541,328-byte / 2,392-rule ceiling to 540,088 bytes / 2,387 rules.
+- Updated Studio/UI roadmap docs and the S1 local issue with the current CSS debt truth.
+
+Evidence:
+
+- `pnpm qa:css:budget` passes: 540,088 active CSS bytes, 2,387 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm test` passes: 73 files / 659 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-command-palette.png`, `.scratch/qa/qa-smoke/studio-source-relink.png`, and `.scratch/qa/qa-smoke/runtime-desktop.png`; no obvious broken shared headers, Assets action overflow, command palette clipping, or runtime framing regression was visible.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md`, `docs/ROADMAP_PACKAGE_MILESTONES.md`, and `src/styles/command/studio-command-shell.css`.
+
+Claim allowed:
+
+- Current Studio CSS has no exact duplicate rules or same-file duplicate selector keys, and the CSS budget is lower than the previous baseline while preserving visible Studio actions and Trust Chain rows.
+
+Claim blocked:
+
+- This is Studio CSS/product-surface hygiene only. It does not add authoring behavior, runtime compatibility, IKEMEN execution, generated-asset QA automation, or score movement. Remaining CSS debt is 124 repeated declaration groups and 108 cross-file overlaps; the next cleanup should extract shared row/action/status primitives instead of adding final override blocks.
+
 ## 2026-06-30 - Studio Assets CSS graph and budget prune
 
 Changed:
