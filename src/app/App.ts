@@ -3582,10 +3582,10 @@ export class App {
           </div>
           <div class="command-action-column" aria-label="Asset workbench actions">
             <button type="button" class="primary-action" data-asset-filter="${attentionAssets.length ? "attention" : "all"}">${
-              attentionAssets.length ? "Review Attention" : "Review Assets"
-            }</button>
-            <button type="button" data-action="compile-project">Compile Runtime</button>
-            <button type="button" data-studio-tab="evidence">Open Evidence</button>
+              tablerIcon(attentionAssets.length ? "alert" : "assets", "ui-icon action-icon")
+            }<span>${attentionAssets.length ? "Review Attention" : "Review Assets"}</span></button>
+            <button type="button" data-action="compile-project">${tablerIcon("build", "ui-icon action-icon")}<span>Compile Runtime</span></button>
+            <button type="button" data-studio-tab="evidence">${tablerIcon("evidence", "ui-icon action-icon")}<span>Open Evidence</span></button>
           </div>
         </div>
       </section>
