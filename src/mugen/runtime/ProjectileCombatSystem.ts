@@ -90,8 +90,6 @@ export class RuntimeProjectileCombatWorld {
         input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
         continue;
       }
-      recordRuntimeProjectileContact(projectile);
-      input.rememberTarget(attacker, defender, projectile.targetId);
       const result = resolveRuntimeCombatHit({
         attacker: attacker.runtime,
         defender: defender.runtime,
@@ -114,6 +112,8 @@ export class RuntimeProjectileCombatWorld {
         },
         holdingBack: input.holdingBack,
       });
+      recordRuntimeProjectileContact(projectile, result.kind);
+      input.rememberTarget(attacker, defender, projectile.targetId);
       attacker.hitPause = result.pause;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));

@@ -8,8 +8,10 @@ import {
   canRuntimeProjectileContact,
   createRuntimeProjectile,
   getRuntimeProjectileHitboxes,
+  hasRuntimeProjectileContact,
   modifyRuntimeProjectiles,
   recordRuntimeProjectileContact,
+  runtimeProjectileContactTime,
   runtimeProjectileWorldBox,
   runtimeProjectilesToSnapshots,
   describeRuntimeProjectileRemoval,
@@ -285,11 +287,16 @@ describe("ProjectileSystem", () => {
 
     expect(canRuntimeProjectileContact(shot)).toBe(true);
 
-    recordRuntimeProjectileContact(shot);
+    recordRuntimeProjectileContact(shot, "hit");
 
     expect(shot).toMatchObject({ hitsRemaining: 0, hasHit: true, missTimeRemaining: 0, removeOnHit: false });
+    expect(hasRuntimeProjectileContact(shot, "contact", 77)).toBe(true);
+    expect(hasRuntimeProjectileContact(shot, "hit", 77)).toBe(true);
+    expect(hasRuntimeProjectileContact(shot, "guard", 77)).toBe(false);
+    expect(runtimeProjectileContactTime(shot, "hit", 77)).toBe(0);
     expect(canRuntimeProjectileContact(shot)).toBe(false);
     expect(advanceRuntimeProjectiles([shot], stage)).toHaveLength(1);
+    expect(runtimeProjectileContactTime(shot, "hit", 77)).toBe(1);
   });
 
   it("applies bounded projectile velocity multipliers after acceleration", () => {
@@ -361,7 +368,7 @@ describe("ProjectileSystem", () => {
       terminalActions: { hit: terminalAction },
     });
 
-    recordRuntimeProjectileContact(shot);
+    recordRuntimeProjectileContact(shot, "hit");
 
     expect(shot).toMatchObject({
       hasHit: true,

@@ -33,10 +33,13 @@ import {
 import {
   advanceRuntimeProjectiles,
   createRuntimeProjectile,
+  hasRuntimeProjectileContact,
   modifyRuntimeProjectiles,
+  runtimeProjectileContactTime,
   runtimeProjectilesToSnapshots,
   shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
+  type RuntimeProjectileContactKind,
   type RuntimeProjectileModifyInput,
   type RuntimeProjectileSpawnInput,
 } from "./ProjectileSystem";
@@ -376,6 +379,18 @@ export function advanceRuntimeHelperActors(
       }
       return countRuntimeHelperProjectileActors(store, helper, projectileId);
     },
+    projectileContact: (helper, kind, projectileId) => {
+      if (options?.projectileContact) {
+        return options.projectileContact(helper, kind, projectileId);
+      }
+      return hasRuntimeHelperProjectileContact(store, helper, kind, projectileId);
+    },
+    projectileContactTime: (helper, kind, projectileId) => {
+      if (options?.projectileContactTime) {
+        return options.projectileContactTime(helper, kind, projectileId);
+      }
+      return runtimeHelperProjectileContactTime(store, helper, kind, projectileId);
+    },
     onSpawnExplod: (helper, controller) => {
       if (options?.onSpawnExplod) {
         return options.onSpawnExplod(helper, controller);
@@ -543,6 +558,30 @@ export function countRuntimeHelperProjectileActors(
       (projectileId === undefined || projectile.projectileId === projectileId)
     );
   }).length;
+}
+
+export function hasRuntimeHelperProjectileContact(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  kind: RuntimeProjectileContactKind,
+  projectileId?: number,
+): boolean {
+  return store.projectiles.some((projectile) => {
+    return projectile.parentId === helper.serialId && hasRuntimeProjectileContact(projectile, kind, projectileId);
+  });
+}
+
+export function runtimeHelperProjectileContactTime(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  kind: RuntimeProjectileContactKind,
+  projectileId?: number,
+): number {
+  const times = store.projectiles
+    .filter((projectile) => projectile.parentId === helper.serialId)
+    .map((projectile) => runtimeProjectileContactTime(projectile, kind, projectileId))
+    .filter((time) => time >= 0);
+  return times.length === 0 ? -1 : Math.min(...times);
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {

@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper-local ProjHit trace gate
+
+Changed:
+
+- Added helper-local `ProjContact` / `ProjHit` / `ProjGuarded` marker reads plus `Proj*Time` reads for current visual Helpers running the bounded helper micro-VM.
+- `ProjectileSystem` now records last contact kind and contact age on runtime Projectiles; `ProjectileCombatSystem` writes hit/guard contact kind after resolution.
+- `RuntimeEffectActorWorld` / `EffectActorSystem` now expose helper-local projectile contact reads only from helper-parented owner-side Projectiles.
+- Added focused `EffectActorSystem` coverage proving same-id player-owned Projectile contact does not satisfy helper-local `ProjHit`, while helper-parented Projectile contact routes the helper.
+- Added required `synthetic-imported-helper-projhit.json` trace evidence and registered it in `pnpm qa:trace`.
+- Updated runtime/support docs, scorecard, QA gate docs, roadmap boards, and local issue wording with allowed/blocked claims.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/ProjectileSystem.test.ts src/tests/EffectActorSystem.test.ts -t "Projectile contact|ProjHit|projhits"` passed earlier in the round.
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper ProjHit"` passed earlier in the round.
+- `pnpm test` passes: 95 files / 806 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 183 / 183 artifacts, 163 required, 20 optional, 0 failed.
+- New required checksum: `synthetic-imported-helper-projhit.json` `3892716e`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors can branch on helper-local `ProjHit(id)` / contact markers from helper-parented owner-side Projectile contact.
+
+Claim blocked:
+
+- This does not add helper-owned Projectile combat/contact presentation, helper-owned target memory, exact `ProjContact` / `ProjHit` tick order or lifetime, exact projectile namespace scopes, dynamic Projectile ids/params, teams, exact helper tick order, visual parity, score movement, or full MUGEN/IKEMEN Helper/Projectile parity.
+
 ## 2026-06-30 - Helper-local ModifyProjectile trace gate
 
 Changed:

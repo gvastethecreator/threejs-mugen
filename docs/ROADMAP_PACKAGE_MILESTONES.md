@@ -85,13 +85,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 helper-local ModifyProjectile trace gate
-  -> synthetic-imported-helper-modifyprojectile.json checksum 77df008b is now required
-  -> helper-local ModifyProjectile mutates helper-parented owner-side Projectile actors by static id after helper-local spawn
-  -> visual Helper route 1200 -> 1214 -> 1215 / anims 934 and 935 follows owner-side Projectile anim 945 with parentId p1-helper-0
-  -> focused EffectActorSystem coverage proves same-id player-owned Projectiles stay unchanged while helper-parented Projectiles mutate
-  -> pnpm qa:trace passes 182/182 artifacts, 162 required and 20 optional
-  -> no helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespaces/scopes, dynamic ids/params, teams, exact tick order, visual parity, score movement, or full Helper/Projectile parity claim
+R2 helper-local ProjHit trace gate
+  -> synthetic-imported-helper-projhit.json checksum 3892716e is now required
+  -> helper-local ProjHit(8853) branches after helper-parented owner-side Projectile contact
+  -> visual Helper route 1200 -> 1216 -> 1217 / anims 936 and 937 follows owner-side Projectile anim 946 with parentId p1-helper-0
+  -> focused EffectActorSystem coverage proves same-id player-owned Projectile contact stays ignored while helper-parented Projectile contact triggers the helper branch
+  -> pnpm qa:trace passes 183/183 artifacts, 163 required and 20 optional
+  -> previous helper-local ModifyProjectile checksum 77df008b and NumProj checksum 4f8612b0 remain required helper-projectile proofs
+  -> no helper-owned Projectile combat/contact presentation, helper-owned target memory, exact ProjContact/ProjHit tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, visual parity, score movement, or full Helper/Projectile parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now required
   -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now required
@@ -413,7 +414,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper-local ModifyProjectile gate is 182/182 artifacts, 162 required and 20 optional
+  -> current aggregate after the helper-local ProjHit gate is 183/183 artifacts, 163 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

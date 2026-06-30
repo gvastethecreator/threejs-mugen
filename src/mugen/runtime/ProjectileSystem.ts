@@ -65,9 +65,12 @@ export type RuntimeProjectile = {
   hitbox: CollisionBox;
   removeOnHit: boolean;
   hasHit: boolean;
+  lastContactKind?: RuntimeProjectileContactKind;
+  lastContactTime?: number;
 };
 
 export type RuntimeProjectileRemovalReason = "hit" | "timeout" | "bounds" | "cancel";
+export type RuntimeProjectileContactKind = "contact" | "hit" | "guard";
 
 export type RuntimeProjectileTerminalActions = {
   hit?: MugenAnimationAction;
@@ -258,6 +261,7 @@ export function advanceRuntimeProjectiles(
   stage: Pick<MugenStageDefinition, "bounds">,
 ): RuntimeProjectile[] {
   for (const projectile of projectiles) {
+    advanceRuntimeProjectileContactTimer(projectile);
     if (projectile.terminalPlayback) {
       advanceRuntimeProjectileTerminalPlayback(projectile);
       continue;
@@ -413,7 +417,9 @@ export function canRuntimeProjectileContact(projectile: RuntimeProjectile): bool
   return !projectile.removalReason && !projectile.terminalPlayback && !projectile.hasHit && projectile.hitsRemaining > 0 && projectile.missTimeRemaining <= 0;
 }
 
-export function recordRuntimeProjectileContact(projectile: RuntimeProjectile): void {
+export function recordRuntimeProjectileContact(projectile: RuntimeProjectile, kind: Exclude<RuntimeProjectileContactKind, "contact"> | undefined = undefined): void {
+  projectile.lastContactKind = kind;
+  projectile.lastContactTime = 0;
   projectile.hitsRemaining = Math.max(0, projectile.hitsRemaining - 1);
   if (projectile.hitsRemaining <= 0) {
     projectile.hasHit = true;
@@ -424,6 +430,28 @@ export function recordRuntimeProjectileContact(projectile: RuntimeProjectile): v
     return;
   }
   projectile.missTimeRemaining = projectile.missTime;
+}
+
+export function hasRuntimeProjectileContact(
+  projectile: RuntimeProjectile,
+  kind: RuntimeProjectileContactKind,
+  projectileId?: number,
+): boolean {
+  if (projectileId !== undefined && projectile.projectileId !== projectileId) {
+    return false;
+  }
+  if (projectile.lastContactTime === undefined) {
+    return false;
+  }
+  return kind === "contact" || projectile.lastContactKind === kind;
+}
+
+export function runtimeProjectileContactTime(
+  projectile: RuntimeProjectile,
+  kind: RuntimeProjectileContactKind,
+  projectileId?: number,
+): number {
+  return hasRuntimeProjectileContact(projectile, kind, projectileId) ? (projectile.lastContactTime ?? 0) : -1;
 }
 
 export function markRuntimeProjectileForRemoval(
@@ -520,6 +548,12 @@ function advanceRuntimeProjectileTerminalPlayback(projectile: RuntimeProjectile)
     projectile.frameElapsed = 0;
     const next = projectile.frameIndex + 1;
     projectile.frameIndex = next < projectile.action.frames.length ? next : projectile.action.frames.length - 1;
+  }
+}
+
+function advanceRuntimeProjectileContactTimer(projectile: RuntimeProjectile): void {
+  if (projectile.lastContactTime !== undefined) {
+    projectile.lastContactTime += 1;
   }
 }
 

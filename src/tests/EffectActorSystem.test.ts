@@ -8,11 +8,13 @@ import {
   advanceRuntimeHelperActors,
   countRuntimeHelperProjectileActors,
   createRuntimeEffectActorStore,
+  hasRuntimeHelperProjectileContact,
   removeRuntimeHelperActors,
   removeRuntimeExplodActors,
   removeRuntimeExplodActorsOnGetHit,
   removeRuntimeProjectilesMarkedForRemoval,
   RuntimeEffectActorWorld,
+  runtimeHelperProjectileContactTime,
   runtimeExplodActorsToSnapshots,
   runtimeHelperActorsToSnapshots,
   runtimeProjectileActorsToSnapshots,
@@ -21,7 +23,7 @@ import {
   spawnRuntimeProjectileActor,
   summarizeRuntimeEffectActorStore,
 } from "../mugen/runtime/EffectActorSystem";
-import { markRuntimeProjectileForRemoval } from "../mugen/runtime/ProjectileSystem";
+import { advanceRuntimeProjectiles, markRuntimeProjectileForRemoval, recordRuntimeProjectileContact } from "../mugen/runtime/ProjectileSystem";
 
 describe("EffectActorSystem", () => {
   it("owns effect actor serials, bounded stores, and renderer snapshots", () => {
@@ -1127,6 +1129,71 @@ describe("EffectActorSystem", () => {
       animNo: 902,
       stateTime: 1,
       age: 2,
+    });
+  });
+
+  it("evaluates helper-local ProjHit against only helper-parented Projectile contact", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8870", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8870", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6199" }, ["ProjGuarded(8870)"]),
+              controller("ChangeState", { value: "6101" }, ["ProjHit(8870)", "ProjHitTime(8870) >= 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6101, 902)),
+          compileStateProgram(state(6199, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    recordRuntimeProjectileContact(playerProjectile, "hit");
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit", 8870)).toBe(false);
+
+    recordRuntimeProjectileContact(helperProjectile, "hit");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "contact", 8870)).toBe(true);
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit", 8870)).toBe(true);
+    expect(hasRuntimeHelperProjectileContact(store, helper, "guard", 8870)).toBe(false);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit", 8870)).toBe(0);
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit", 8870)).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Projectile", "ChangeState", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6101,
+      animNo: 902,
     });
   });
 

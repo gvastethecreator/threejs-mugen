@@ -10,6 +10,8 @@ import { dispatchStateProgramController, findControllerParam } from "./StateProg
 import { evaluateTriggerIr } from "./TriggerEvaluator";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeSoundEvent } from "./types";
 
+export type RuntimeHelperProjectileContactKind = "contact" | "hit" | "guard";
+
 export type RuntimeHelper = {
   serialId: string;
   helperId?: number;
@@ -73,6 +75,8 @@ export type RuntimeHelperAdvanceOptions = {
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
   countHelpers?: (helper: RuntimeHelper, helperId?: number) => number;
   countProjectiles?: (helper: RuntimeHelper, projectileId?: number) => number;
+  projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
+  projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -198,6 +202,8 @@ export function runRuntimeHelperStateControllers(
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
+    | "projectileContact"
+    | "projectileContactTime"
     | "onSpawnExplod"
     | "onSpawnProjectile"
     | "onRemoveExplod"
@@ -440,7 +446,15 @@ function helperTriggersPass(
   controller: ControllerIr,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
+    | "stageTime"
+    | "parentState"
+    | "rootState"
+    | "opponentState"
+    | "countExplods"
+    | "countHelpers"
+    | "countProjectiles"
+    | "projectileContact"
+    | "projectileContactTime"
   >,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
@@ -470,7 +484,15 @@ function resolveHelperNumber(
   expression: string | undefined,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
+    | "stageTime"
+    | "parentState"
+    | "rootState"
+    | "opponentState"
+    | "countExplods"
+    | "countHelpers"
+    | "countProjectiles"
+    | "projectileContact"
+    | "projectileContactTime"
   >,
 ): number | undefined {
   if (value !== undefined) {
@@ -560,7 +582,15 @@ function helperExpressionContext(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
-    "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods" | "countHelpers" | "countProjectiles"
+    | "stageTime"
+    | "parentState"
+    | "rootState"
+    | "opponentState"
+    | "countExplods"
+    | "countHelpers"
+    | "countProjectiles"
+    | "projectileContact"
+    | "projectileContactTime"
   > = {},
 ) {
   return {
@@ -575,6 +605,12 @@ function helperExpressionContext(
     numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
     numHelper: (helperId?: number) => options.countHelpers?.(helper, helperId) ?? 0,
     numProj: (projectileId?: number) => options.countProjectiles?.(helper, projectileId) ?? 0,
+    projContact: (projectileId?: number) => options.projectileContact?.(helper, "contact", projectileId) ?? false,
+    projHit: (projectileId?: number) => options.projectileContact?.(helper, "hit", projectileId) ?? false,
+    projGuarded: (projectileId?: number) => options.projectileContact?.(helper, "guard", projectileId) ?? false,
+    projContactTime: (projectileId?: number) => options.projectileContactTime?.(helper, "contact", projectileId) ?? -1,
+    projHitTime: (projectileId?: number) => options.projectileContactTime?.(helper, "hit", projectileId) ?? -1,
+    projGuardedTime: (projectileId?: number) => options.projectileContactTime?.(helper, "guard", projectileId) ?? -1,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };
