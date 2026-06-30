@@ -3,7 +3,6 @@ import type {
   EnvColorControllerOp,
   HitDefControllerOp,
   PauseControllerOp,
-  ReversalDefControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
@@ -39,7 +38,7 @@ import {
 } from "./EnvShakeSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
-import { RuntimeReversalWorld } from "./ReversalSystem";
+import { RuntimeReversalControllerDispatchWorld, RuntimeReversalWorld } from "./ReversalSystem";
 import { evaluateExpression, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import {
   RuntimeEffectActorWorld,
@@ -141,6 +140,7 @@ const envShakeControllerDispatchWorld = new RuntimeEnvShakeControllerDispatchWor
 const fallEnvShakeControllerDispatchWorld = new RuntimeFallEnvShakeControllerDispatchWorld();
 const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
+const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1045,12 +1045,14 @@ function runActiveStateControllers(
       if (dispatch.effect === "hitdef") {
         activateHitDef(fighter, rawController, controller.operation?.kind === "hitdef" ? controller.operation : undefined);
       } else if (dispatch.effect === "reversaldef") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        activateReversalDef(fighter, rawController, reversalWorld, operation);
+        reversalControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          hitbox: getCurrentFrame(fighter)?.clsn1[0],
+          reversalWorld,
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "width") {
         actorConstraintControllerDispatchWorld.apply({
           actor: fighter,
@@ -1388,29 +1390,6 @@ function activateHitDef(fighter: FighterMatchState, controller: MugenStateContro
   fighter.runtime.reversal = undefined;
   fighter.runtime.moveType = "A";
   applyRuntimeControl(fighter.runtime, false);
-}
-
-function activateReversalDef(
-  fighter: FighterMatchState,
-  controller: MugenStateController,
-  reversalWorld: RuntimeReversalWorld,
-  operation?: ReversalDefControllerOp,
-): void {
-  const attr = (operation?.attr ?? stripMugenString(findParam(controller, "reversal.attr")))?.trim() ?? "";
-  const frame = getCurrentFrame(fighter);
-  const hitPause = operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(controller, "pausetime")) ?? 0));
-  const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(controller, "p1stateno"));
-  const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(controller, "p2stateno"));
-  const targetId = operation?.targetId ?? firstNumber(findParam(controller, "id"));
-  reversalWorld.activate(fighter, {
-    attr,
-    hitbox: frame?.clsn1[0],
-    label: controller.name ?? "ReversalDef",
-    hitPause,
-    p1StateNo,
-    p2StateNo,
-    targetId,
-  });
 }
 
 function resolveCombat(

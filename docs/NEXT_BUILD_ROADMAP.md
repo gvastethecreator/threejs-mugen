@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeReversalControllerDispatchWorld ownership extraction
+  -> RuntimeReversalControllerDispatchWorld now owns bounded active-state ReversalDef dispatch into RuntimeReversalWorld
+  -> PlayableMatchRuntime delegates controller telemetry, typed reversaldef operation selection, raw fallback activation payload, activation handoff, and operation telemetry
+  -> match runtime still owns trigger filtering, active-state order, current-frame hitbox lookup, and later counter-result state routing
+  -> focused ReversalSystem coverage proves controller/op telemetry plus activation through the dispatch boundary
+  -> no exact ReversalDef priority, guard/projectile/helper/custom-state counter breadth, attr grammar, trigger lifetime, hitpause/tick order, full ReversalDef VM parity, or score movement claim
 R2 RuntimeEffectSpawnControllerDispatchWorld ownership extraction
   -> RuntimeEffectSpawnControllerDispatchWorld now owns bounded active-state Explod/RemoveExplod/ModifyExplod/Helper/Projectile/ModifyProjectile dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed effect operation selection, spawn/count mutation handoff, and success-gated operation telemetry through RuntimeEffectSpawnWorld

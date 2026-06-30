@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { CollisionBox } from "../mugen/model/CollisionBox";
+import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   createRuntimeContactMemory,
   RuntimeContactMemoryWorld,
@@ -8,6 +10,7 @@ import {
 } from "../mugen/runtime/ContactMemorySystem";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import {
+  RuntimeReversalControllerDispatchWorld,
   RuntimeReversalWorld,
   type RuntimeReversalActor,
   type RuntimeReversalHooks,
@@ -15,6 +18,54 @@ import {
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("ReversalSystem", () => {
+  it("dispatches active ReversalDef controllers with telemetry hooks", () => {
+    const world = new RuntimeReversalWorld();
+    const dispatchWorld = new RuntimeReversalControllerDispatchWorld();
+    const fighter = actor("p1", "Reverser", { stateNo: 300 });
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+    const ir = compileControllerIr(controller("ReversalDef", {
+      "reversal.attr": "SA,AA",
+      pausetime: "5",
+      p1stateno: "777",
+      p2stateno: "778",
+      id: "9",
+    }));
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      hitbox: { x1: 1, y1: -40, x2: 32, y2: -8 },
+      reversalWorld: world,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(operation.kind),
+    });
+
+    expect(result).toMatchObject({
+      activated: true,
+      recordedController: true,
+      recordedOperation: true,
+    });
+    expect(result.operation).toMatchObject({
+      kind: "reversaldef",
+      attr: "SA,AA",
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 778,
+      targetId: 9,
+    });
+    expect(fighter.currentMove).toMatchObject({
+      isReversal: true,
+      reversalAttr: "SA,AA",
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 778,
+      targetId: 9,
+    });
+    expect(recordedControllers).toEqual(["ReversalDef"]);
+    expect(recordedOperations).toEqual(["reversaldef"]);
+  });
+
   it("activates and clears bounded ReversalDef runtime state", () => {
     const world = new RuntimeReversalWorld();
     const fighter = actor("p1", "Reverser", { stateNo: 300 });
@@ -222,6 +273,17 @@ function hooks(overrides: Partial<RuntimeReversalHooks> = {}): RuntimeReversalHo
     enterState: () => undefined,
     enterTargetHitState: () => undefined,
     ...overrides,
+  };
+}
+
+function controller(type: string, params: Record<string, string>): MugenStateController {
+  return {
+    stateId: 300,
+    type,
+    triggers: [],
+    params,
+    line: 1,
+    rawHeader: `[State 300, ${type}]`,
   };
 }
 

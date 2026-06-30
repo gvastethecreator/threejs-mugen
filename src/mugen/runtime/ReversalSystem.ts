@@ -1,9 +1,13 @@
+import type { ReversalDefControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { CollisionBox } from "../model/CollisionBox";
+import type { MugenStateController } from "../model/MugenState";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { markRuntimeEffectActorGotHit } from "./EffectLifecycleSystem";
 import { RuntimeContactMemoryWorld, type RuntimeContactMemory } from "./ContactMemorySystem";
 import { applyRuntimePowerDelta } from "./RuntimeResourceSystem";
+import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeReversalActor = {
@@ -47,6 +51,55 @@ export type RuntimeReversalOutcome = {
   p2StateNo?: number;
   message: string;
 };
+
+export type RuntimeReversalControllerDispatchOptions<TActor extends RuntimeReversalActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  hitbox?: CollisionBox;
+  reversalWorld: RuntimeReversalWorld;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: ReversalDefControllerOp) => void;
+};
+
+export type RuntimeReversalControllerDispatchResult = {
+  activated: boolean;
+  recordedController: boolean;
+  recordedOperation: boolean;
+  operation?: ReversalDefControllerOp;
+};
+
+export class RuntimeReversalControllerDispatchWorld {
+  apply<TActor extends RuntimeReversalActor>({
+    actor,
+    controller,
+    hitbox,
+    reversalWorld,
+    recordController,
+    recordOperation,
+  }: RuntimeReversalControllerDispatchOptions<TActor>): RuntimeReversalControllerDispatchResult {
+    const source = controller.source;
+    const operation = controller.operation?.kind === "reversaldef" ? controller.operation : undefined;
+    recordController?.(actor, source);
+    if (operation) {
+      recordOperation?.(actor, operation);
+    }
+    const activated = reversalWorld.activate(actor, {
+      attr: (operation?.attr ?? stripMugenString(findParam(source, "reversal.attr")))?.trim() ?? "",
+      hitbox,
+      label: source.name ?? "ReversalDef",
+      hitPause: operation?.hitPause ?? Math.max(0, Math.round(firstNumber(findParam(source, "pausetime")) ?? 0)),
+      p1StateNo: operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno")),
+      p2StateNo: operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno")),
+      targetId: operation?.targetId ?? firstNumber(findParam(source, "id")),
+    });
+    return {
+      activated,
+      recordedController: recordController !== undefined,
+      recordedOperation: operation !== undefined && recordOperation !== undefined,
+      ...(operation ? { operation } : {}),
+    };
+  }
+}
 
 export class RuntimeReversalWorld {
   constructor(private readonly contactWorld: RuntimeContactMemoryWorld = new RuntimeContactMemoryWorld()) {}
@@ -170,4 +223,21 @@ function interruptCurrentMove(actor: RuntimeReversalActor): void {
 
 function cloneBox(box: CollisionBox): CollisionBox {
   return { x1: box.x1, y1: box.y1, x2: box.x2, y2: box.y2 };
+}
+
+function findParam(controller: { params: Record<string, string> }, key: string): string | undefined {
+  return findControllerParam(controller, key);
+}
+
+function firstNumber(value: string | undefined): number | undefined {
+  const raw = value?.split(",")[0]?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const numberValue = Number(raw);
+  return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function stripMugenString(value: string | undefined): string | undefined {
+  return value?.trim().replace(/^"(.*)"$/, "$1");
 }
