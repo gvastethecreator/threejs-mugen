@@ -37,7 +37,6 @@ import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalControllerDispatchWorld, RuntimeReversalWorld } from "./ReversalSystem";
-import { evaluateExpression, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStores,
@@ -54,6 +53,7 @@ import { RuntimeGuardWorld } from "./GuardSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
+import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
@@ -110,7 +110,6 @@ import {
   type RuntimeTargetBinding,
 } from "./TargetSystem";
 import { trainingStage } from "./demoStage";
-import { evaluateTriggerIr } from "./TriggerEvaluator";
 import type {
   CharacterRuntimeState,
   RuntimeAfterImageSample,
@@ -140,6 +139,7 @@ const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
+const expressionContextWorld = new RuntimeExpressionContextWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -566,7 +566,7 @@ export class PlayableMatchRuntime {
       executeController: (controller, actor, owner, tick) => {
         controllerDispatchWorld.apply(actor, controller, {
           context: {
-            getConst: (name) => runtimeConst(owner.definition, name),
+            getConst: (name) => runtimeDefinitionConst(owner.definition, name),
             hitPauseTime: () => actor.hitPause,
             random: () => nextRuntimeRandom(actor),
             stageTime: tick,
@@ -1111,7 +1111,7 @@ function runActiveStateControllers(
               enterState(target, stateId, undefined, { stateOwner: controllerOwner });
             }
           },
-          getTargetConst: (target, name) => runtimeConst(target.definition, name),
+          getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
         });
       } else if (dispatch.effect === "pause") {
         pauseControllerDispatchWorld.apply({
@@ -1167,7 +1167,7 @@ function controllerIgnoresHitPause(controller: ControllerIr): boolean {
 
 function runtimeControllerContext(fighter: FighterMatchState, owner: FighterMatchState, tick: number) {
   return {
-    getConst: (name: string) => runtimeConst(owner.definition, name),
+    getConst: (name: string) => runtimeDefinitionConst(owner.definition, name),
     hitPauseTime: () => fighter.hitPause,
     random: () => nextRuntimeRandom(fighter),
     stageTime: tick,
@@ -1213,64 +1213,6 @@ function markProjectileContact(fighter: FighterMatchState, projectileId: number 
 
 function advanceContactTimers(fighter: FighterMatchState): void {
   fighter.contactWorld.advance(fighter.contact);
-}
-
-function moveContactValue(fighter: FighterMatchState, kind: "contact" | "hit" | "guard"): number {
-  return fighter.contactWorld.moveContactValue(fighter.contact, fighter.runtime.stateNo, kind);
-}
-
-function moveHitCountValue(fighter: FighterMatchState, unique: boolean): number {
-  return fighter.contactWorld.moveHitCountValue(fighter.contact, fighter.runtime.stateNo, unique);
-}
-
-function moveReversedValue(fighter: FighterMatchState): number {
-  return fighter.contactWorld.moveReversedValue(fighter.contact, fighter.runtime.stateNo);
-}
-
-function receivedDamageValue(fighter: FighterMatchState): number {
-  return fighter.contactWorld.receivedDamageValue(fighter.contact, fighter.runtime.stateNo);
-}
-
-function receivedHitsValue(fighter: FighterMatchState): number {
-  return fighter.contactWorld.receivedHitsValue(fighter.contact, fighter.runtime.stateNo);
-}
-
-function hasProjectileContact(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): boolean {
-  return fighter.contactWorld.hasProjectileContact(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
-}
-
-function projectileContactTime(fighter: FighterMatchState, kind: "contact" | "hit" | "guard", projectileId?: number): number {
-  return fighter.contactWorld.projectileContactTime(fighter.contact, fighter.runtime.stateNo, kind, projectileId);
-}
-
-function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): number {
-  return fighter.targetWorld.count(fighter, targetId);
-}
-
-function resolveRuntimeTargetRedirect(
-  fighter: FighterMatchState,
-  opponent: FighterMatchState,
-  targetId?: number,
-): ExpressionRedirectTarget | undefined {
-  if (!fighter.targetWorld.find(fighter, opponent.id, targetId)) {
-    return undefined;
-  }
-  return {
-    self: opponent.runtime,
-    opponent: fighter.runtime,
-    name: opponent.definition.displayName,
-    authorName: opponent.definition.authorName,
-    opponentName: fighter.definition.displayName,
-    opponentAuthorName: fighter.definition.authorName,
-  };
-}
-
-function countRuntimeEffectActors(
-  fighter: FighterMatchState,
-  kind: "explod" | "helper" | "projectile",
-  actorId?: number,
-): number {
-  return fighter.effectActorWorld.countActors(fighter.id, kind, actorId);
 }
 
 function resolveProjectileCombat(
@@ -1643,50 +1585,16 @@ function resolveDispatchNumber(
   if (!expression) {
     return undefined;
   }
-  const evaluated = evaluateExpression(expression, {
-    self: fighter.runtime,
-    opponent: opponent.runtime,
-    name: fighter.definition.displayName,
-    authorName: fighter.definition.authorName,
-    opponentName: opponent.definition.displayName,
-    opponentAuthorName: opponent.definition.authorName,
-    target: (targetId) => resolveRuntimeTargetRedirect(fighter, opponent, targetId),
+  return expressionContextWorld.evaluateNumber(expression, {
+    actor: fighter,
+    opponent,
+    owner,
     stageTime,
-    stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
-    animExists: (animationId) => fighter.definition.animations.has(animationId),
-    stateExists: (stateNo) => fighterHasState(fighter, stateNo),
-    commandActive: (name) => fighter.commandBuffer.isCommandActive(name, fighter.definition.commands ?? []),
-    getConst: (name) => runtimeConst(owner.definition, name),
-    getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
-    hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
-    hitCount: () => moveHitCountValue(fighter, false),
-    hitPauseTime: () => fighter.hitPause,
-    hitShakeOver: () => fighter.hitPause <= 0,
-    hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
-    moveContact: () => moveContactValue(fighter, "contact"),
-    moveHit: () => moveContactValue(fighter, "hit"),
-    moveGuarded: () => moveContactValue(fighter, "guard"),
-    moveReversed: () => moveReversedValue(fighter),
-    receivedDamage: () => receivedDamageValue(fighter),
-    receivedHits: () => receivedHitsValue(fighter),
-    numExplod: (explodId) => countRuntimeEffectActors(fighter, "explod", explodId),
-    numHelper: (helperId) => countRuntimeEffectActors(fighter, "helper", helperId),
-    numProj: (projectileId) => countRuntimeEffectActors(fighter, "projectile", projectileId),
-    numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
-    projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
-    projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
-    projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
-    projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
-    projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
-    projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
-    uniqueHitCount: () => moveHitCountValue(fighter, true),
   });
-  const numberValue = Number(evaluated);
-  return Number.isFinite(numberValue) ? Math.trunc(numberValue) : undefined;
 }
 
 function resolveDispatchBoolean(
@@ -1711,61 +1619,16 @@ function evaluateRuntimeTrigger(
   owner: FighterMatchState = fighter,
   stageTime?: number,
 ): boolean {
-  return evaluateTriggerIr(trigger, {
-    self: fighter.runtime,
-    opponent: opponent.runtime,
-    name: fighter.definition.displayName,
-    authorName: fighter.definition.authorName,
-    opponentName: opponent.definition.displayName,
-    opponentAuthorName: opponent.definition.authorName,
-    target: (targetId) => resolveRuntimeTargetRedirect(fighter, opponent, targetId),
+  return expressionContextWorld.evaluateTrigger(trigger, {
+    actor: fighter,
+    opponent,
+    owner,
     stageTime,
-    stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),
     animTimeRemaining: getAnimTimeRemaining(fighter),
     animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
-    animExists: (animationId) => fighter.definition.animations.has(animationId),
-    stateExists: (stateNo) => fighterHasState(fighter, stateNo),
-    commandActive: (name) => fighter.commandBuffer.isCommandActive(name, fighter.definition.commands ?? []),
-    getConst: (name) => runtimeConst(owner.definition, name),
-    getHitVar: (name) => runtimeHitVar(fighter.runtime, name),
-    hitDefAttr: (filter) => (fighter.currentMove ? hitAttributeMatches(filter, fighter.currentMove.attr ?? "S,NA") : false),
-    hitCount: () => moveHitCountValue(fighter, false),
-    hitPauseTime: () => fighter.hitPause,
-    hitShakeOver: () => fighter.hitPause <= 0,
-    hitOver: () => fighter.hitStun <= 0 && (fighter.runtime.guardStun ?? 0) <= 0,
     inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
-    moveContact: () => moveContactValue(fighter, "contact"),
-    moveHit: () => moveContactValue(fighter, "hit"),
-    moveGuarded: () => moveContactValue(fighter, "guard"),
-    moveReversed: () => moveReversedValue(fighter),
-    receivedDamage: () => receivedDamageValue(fighter),
-    receivedHits: () => receivedHitsValue(fighter),
-    numExplod: (explodId) => countRuntimeEffectActors(fighter, "explod", explodId),
-    numHelper: (helperId) => countRuntimeEffectActors(fighter, "helper", helperId),
-    numProj: (projectileId) => countRuntimeEffectActors(fighter, "projectile", projectileId),
-    numTarget: (targetId) => countRuntimeTargets(fighter, targetId),
-    projContact: (projectileId) => hasProjectileContact(fighter, "contact", projectileId),
-    projHit: (projectileId) => hasProjectileContact(fighter, "hit", projectileId),
-    projGuarded: (projectileId) => hasProjectileContact(fighter, "guard", projectileId),
-    projContactTime: (projectileId) => projectileContactTime(fighter, "contact", projectileId),
-    projHitTime: (projectileId) => projectileContactTime(fighter, "hit", projectileId),
-    projGuardedTime: (projectileId) => projectileContactTime(fighter, "guard", projectileId),
-    uniqueHitCount: () => moveHitCountValue(fighter, true),
   });
-}
-
-function fighterHasState(fighter: FighterMatchState, stateNo: number): boolean {
-  const id = Math.trunc(stateNo);
-  return (
-    fighter.runtimeProgram?.states.some((state) => state.id === id) ??
-    fighter.definition.states?.some((state) => state.id === id) ??
-    false
-  );
-}
-
-function runtimeConst(definition: DemoFighterDefinition, name: string): number | undefined {
-  return definition.constants?.[name.trim().toLowerCase()];
 }
 
 function runtimeAttackMultiplier(definition: DemoFighterDefinition): number | undefined {
@@ -1783,83 +1646,6 @@ function boundedRuntimeDamageMultiplier(value: number): number {
     return 1;
   }
   return Math.max(0, Math.min(10, Math.round(value * 1000) / 1000));
-}
-
-function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
-  const key = name.trim().toLowerCase();
-  if (key === "animtype") {
-    return state.hitVars?.animType ?? 0;
-  }
-  if (key === "groundtype") {
-    return state.hitVars?.groundType ?? 0;
-  }
-  if (key === "airtype") {
-    return state.hitVars?.airType ?? 0;
-  }
-  if (key === "isbound") {
-    return state.hitVars?.isBound ? 1 : 0;
-  }
-  if (key === "fall") {
-    return state.hitFall?.falling ? 1 : 0;
-  }
-  if (key === "fall.damage") {
-    return state.hitFall?.damage ?? 0;
-  }
-  if (key === "fall.defence_up") {
-    return state.hitFall?.defenceUp ?? 100;
-  }
-  if (key === "fall.kill") {
-    return state.hitFall?.kill === false ? 0 : 1;
-  }
-  if (key === "fall.xvel" || key === "fall.xvelocity") {
-    return state.hitFall?.velocity.x ?? 0;
-  }
-  if (key === "fall.yvel" || key === "fall.yvelocity") {
-    return state.hitFall?.velocity.y ?? 0;
-  }
-  if (key === "fall.recover") {
-    return state.hitFall?.recover && (state.hitFall.recoverTime ?? 0) <= 0 ? 1 : 0;
-  }
-  if (key === "fall.recovertime") {
-    return state.hitFall?.recoverTime ?? 0;
-  }
-  if (key === "down.recover") {
-    return state.hitFall?.downRecover === false ? 0 : 1;
-  }
-  if (key === "recovertime" || key === "down.recovertime") {
-    return state.hitFall?.downRecoverTime ?? 0;
-  }
-  if (key === "fall.envshake.time") {
-    return state.hitFall?.envShake?.time ?? 0;
-  }
-  if (key === "fall.envshake.freq") {
-    return state.hitFall?.envShake?.freq ?? 60;
-  }
-  if (key === "fall.envshake.ampl") {
-    return state.hitFall?.envShake?.ampl ?? 0;
-  }
-  if (key === "fall.envshake.phase") {
-    return state.hitFall?.envShake?.phase ?? 0;
-  }
-  if (key === "xvel") {
-    return state.hitVelocity?.x ?? 0;
-  }
-  if (key === "yvel") {
-    return state.hitVelocity?.y ?? 0;
-  }
-  if (key === "hittime") {
-    return state.guardStun ?? 0;
-  }
-  if (key === "slidetime") {
-    return state.guardSlideTime ?? 0;
-  }
-  if (key === "ctrltime") {
-    return state.guardControlTime ?? 0;
-  }
-  if (key === "yaccel") {
-    return 0.44;
-  }
-  return undefined;
 }
 
 function getAnimTimeRemaining(fighter: FighterMatchState): number {

@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeExpressionContextWorld ownership extraction
+  -> RuntimeExpressionContextWorld now owns bounded active runtime ExpressionContext creation for imported triggers and dynamic controller-param fallback
+  -> PlayableMatchRuntime delegates target redirects, contact/projectile/effect count reads, command/const/state/anim/hitvar reads, HitDefAttr, HitPauseTime/HitOver/HitShakeOver, InGuardDist, random/stage/time wiring to that world
+  -> PlayableMatchRuntime still owns trigger grouping/order, active-state dispatch, next-random source, animation timing callbacks, and exact VM timing
+  -> focused RuntimeExpressionContextSystem coverage proves numeric reads, Target redirect, compiled trigger evaluation, const/state/HitVar helpers, and shared context creation
+  -> no full expression language parity, composite HitDefAttr parity, helper/team/redirect mutation, exact VM timing, visual parity, or score claim
 R2 RuntimeStateTransitionControllerWorld ownership extraction
   -> RuntimeStateTransitionControllerWorld now owns bounded passive ChangeState/SelfState setup in the basic StateControllerExecutor path
   -> StateControllerExecutor delegates raw-param value/stateno expression fallback, previous-state metadata writes, frame/time reset, optional ctrl, and missing-value reporting to the world
@@ -558,6 +564,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeExpressionContextWorld` ownership extraction
 - `RuntimeStateTransitionControllerWorld` ownership extraction
 - `RuntimeAnimationControllerWorld` ownership extraction
 - `RuntimeKinematicControllerWorld` ownership extraction
