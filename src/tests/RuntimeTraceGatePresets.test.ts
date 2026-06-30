@@ -1720,10 +1720,17 @@ describe("RuntimeTraceGatePresets", () => {
             assetActionId: 7002,
             assetFrameCount: 2,
             assetTotalDuration: 11,
+            offset: { x: 18, y: -68 },
           }),
         }),
       ]),
     );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "hit",
+        hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7002, offsetX: 18, offsetY: -68 }),
+      }),
+    ]);
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -1805,10 +1812,17 @@ describe("RuntimeTraceGatePresets", () => {
             assetActionId: 7004,
             assetFrameCount: 2,
             assetTotalDuration: 11,
+            offset: { x: 15, y: -63 },
           }),
         }),
       ]),
     );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "guard",
+        hitEffect: expect.objectContaining({ kind: "guard", sparkNo: 7004, offsetX: 15, offsetY: -63 }),
+      }),
+    ]);
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -1890,10 +1904,17 @@ describe("RuntimeTraceGatePresets", () => {
             assetActionId: 7004,
             assetFrameCount: 2,
             assetTotalDuration: 11,
+            offset: { x: 15, y: -63 },
           }),
         }),
       ]),
     );
+    expect(gate?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "guard",
+        hitEffect: expect.objectContaining({ kind: "guard", sparkNo: 7004, offsetX: 15, offsetY: -63 }),
+      }),
+    ]);
     expect(evidence?.effectPayloads).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -3304,6 +3325,14 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "hit",
+        raw: "S7001",
+        offsetX: 10,
+        offsetY: -72,
+      }),
+    ]);
   });
 
   it("creates a synthetic imported HitDef common-spark artifact with asset-frame evidence", () => {
@@ -3351,6 +3380,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
       expect.objectContaining({
         assetSource: "common",
+        offsetX: 16,
+        offsetY: -66,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3403,6 +3434,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
       expect.objectContaining({
         assetSource: "fightfx",
+        offsetX: 18,
+        offsetY: -68,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3473,7 +3506,13 @@ describe("RuntimeTraceGatePresets", () => {
       actorKind: "player",
       contactKind: "hit",
       sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
-      hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7002, assetSource: "fightfx", contactKind: "hit" }),
+      hitEffect: expect.objectContaining({
+        kind: "hit",
+        sparkNo: 7002,
+        assetSource: "fightfx",
+        offset: { x: 18, y: -68 },
+        contactKind: "hit",
+      }),
     });
     expect(contactPackage?.contactId).toBe(contactPackage?.sound.contactId);
     expect(contactPackage?.contactId).toBe(contactPackage?.hitEffect.contactId);
@@ -3490,6 +3529,8 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({
         kind: "hit",
         assetSource: "fightfx",
+        offsetX: 18,
+        offsetY: -68,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3506,6 +3547,8 @@ describe("RuntimeTraceGatePresets", () => {
           kind: "hit",
           sparkNo: 7002,
           assetSource: "fightfx",
+          offsetX: 18,
+          offsetY: -68,
           requiredAssetFrameIndices: [0, 1],
           requireContactId: true,
         }),
@@ -3548,6 +3591,14 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "guard",
+        raw: "S7000",
+        offsetX: 12,
+        offsetY: -64,
+      }),
+    ]);
   });
 
   it("creates a synthetic imported HitDef common guard-spark artifact with asset-frame evidence", () => {
@@ -3597,6 +3648,8 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({
         kind: "guard",
         assetSource: "common",
+        offsetX: 14,
+        offsetY: -62,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3651,6 +3704,8 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({
         kind: "guard",
         assetSource: "fightfx",
+        offsetX: 15,
+        offsetY: -63,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3721,7 +3776,13 @@ describe("RuntimeTraceGatePresets", () => {
       actorKind: "player",
       contactKind: "guard",
       sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 0, contactKind: "guard" }),
-      hitEffect: expect.objectContaining({ kind: "guard", sparkNo: 7004, assetSource: "fightfx", contactKind: "guard" }),
+      hitEffect: expect.objectContaining({
+        kind: "guard",
+        sparkNo: 7004,
+        assetSource: "fightfx",
+        offset: { x: 15, y: -63 },
+        contactKind: "guard",
+      }),
     });
     expect(contactPackage?.contactId).toBe(contactPackage?.sound.contactId);
     expect(contactPackage?.contactId).toBe(contactPackage?.hitEffect.contactId);
@@ -3738,6 +3799,8 @@ describe("RuntimeTraceGatePresets", () => {
       expect.objectContaining({
         kind: "guard",
         assetSource: "fightfx",
+        offsetX: 15,
+        offsetY: -63,
         minAssetFrameCount: 2,
         minAssetTotalDuration: 11,
         requiredAssetFrameIndices: [0, 1],
@@ -3754,6 +3817,8 @@ describe("RuntimeTraceGatePresets", () => {
           kind: "guard",
           sparkNo: 7004,
           assetSource: "fightfx",
+          offsetX: 15,
+          offsetY: -63,
           requiredAssetFrameIndices: [0, 1],
           requireContactId: true,
         }),
@@ -7214,10 +7279,17 @@ describe("RuntimeTraceGatePresets", () => {
             assetActionId: 7002,
             assetFrameCount: 2,
             assetTotalDuration: 11,
+            offset: { x: 18, y: -68 },
           }),
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "hit",
+        hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7002, offsetX: 18, offsetY: -68 }),
+      }),
+    ]);
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
@@ -7308,10 +7380,17 @@ describe("RuntimeTraceGatePresets", () => {
             assetActionId: 7004,
             assetFrameCount: 2,
             assetTotalDuration: 11,
+            offset: { x: 15, y: -63 },
           }),
         }),
       ]),
     );
+    expect(artifact.gates[0]?.requirements.requiredContactEffectPackages).toEqual([
+      expect.objectContaining({
+        contactKind: "guard",
+        hitEffect: expect.objectContaining({ kind: "guard", sparkNo: 7004, offsetX: 15, offsetY: -63 }),
+      }),
+    ]);
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );

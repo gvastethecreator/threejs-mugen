@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 presentation spark-offset requirement gate
+  -> RuntimeTraceGate.requiredHitEffectEvents now supports offsetX / offsetY
+  -> direct HitDef hit/guard spark, common/FightFX multi-frame spark, direct hit/guard effect package, Projectile hit/guard package, and helper-parented Projectile package gates now require authored sparkxy offsets
+  -> affected behavior checksums remain stable; current qa:trace aggregate is 187/187 artifacts, 167 required and 20 optional
+  -> this narrows trace precision only; no exact renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation ownership, score movement, or full presentation parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now a required qa:trace artifact
   -> gates official-style synthetic Common1 route 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne

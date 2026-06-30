@@ -737,6 +737,65 @@ describe("RuntimeTraceArtifact", () => {
       "Missing effect payload: kind=helper, ownerId=p1, effectId=42, ownerBindTarget=root, ownerBindOffsetX=40, ownerBindOffsetY=-18",
     ]);
   });
+
+  it("fails hit-effect gates when authored spark offset does not match", () => {
+    const attacker: RuntimeTraceFrame["actors"][number] = {
+      ...playerActor({ animNo: 200, moveType: "A" }),
+      id: "p1",
+      label: "Imported Attacker",
+      ownerId: "p1",
+      rootId: "p1",
+      parentId: "p1",
+      facing: 1,
+      hitEffectEvents: [
+        {
+          type: "HitSpark",
+          kind: "hit",
+          sparkNo: 7002,
+          raw: "F7002",
+          rawPrefix: "F",
+          offset: { x: 18, y: -68 },
+          stateNo: 200,
+          tick: 1,
+        },
+      ],
+    };
+    const trace = traceFromFrames([traceFrame({ frameIndex: 0, tick: 1, checksum: "stable-hit-effect-offset", actors: [attacker], effects: [] })]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-30T00:00:00.000Z",
+      target: {
+        id: "synthetic-hit-effect-offset-mismatch",
+        label: "Synthetic hit-effect offset mismatch",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "hit-effect-offset",
+          requiredHitEffectEvents: [
+            {
+              actorId: "p1",
+              kind: "hit",
+              sparkNo: 7002,
+              raw: "F7002",
+              rawPrefix: "F",
+              offsetX: 19,
+              offsetY: -68,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("failed");
+    expect(artifact.gates[0]?.evidence.hitEffectEvents).toEqual([
+      expect.objectContaining({ actorId: "p1", kind: "hit", sparkNo: 7002, offset: { x: 18, y: -68 } }),
+    ]);
+    expect(artifact.gates[0]?.failures).toEqual([
+      "Missing hit-effect event: actorId=p1, kind=hit, sparkNo=7002, raw=F7002, rawPrefix=F, offsetX=19, offsetY=-68 >= 1 (actual 0)",
+    ]);
+  });
 });
 
 function traceFromFrames(frames: RuntimeTraceFrame[]): RuntimeTrace {

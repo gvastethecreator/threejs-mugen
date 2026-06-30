@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Spark offset trace gate requirements
+
+Changed:
+
+- Added `offsetX` / `offsetY` to `RuntimeTraceGate.requiredHitEffectEvents`, with matching comparison against `HitSpark` event `sparkxy` evidence.
+- Strengthened direct HitDef, common/FightFX, Projectile, and helper-parented Projectile contact package gates so authored spark offsets are required alongside existing sound, contact, source-frame, and multi-frame AIR metadata.
+- Added a negative artifact test proving wrong spark offset requirements fail instead of being ignored.
+- Updated runtime support docs, QA gates, progress tracker, scorecard, roadmap board, next-build roadmap, workplan, and local runtime issue wording to keep the claim limited to trace precision.
+
+Evidence:
+
+- Focused `pnpm exec vitest run src/tests/RuntimeTraceArtifact.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passed: 2 files / 196 tests.
+- `pnpm test` passes: 95 files / 813 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 187 / 187 artifacts, 167 required, 20 optional, 0 failed.
+- Affected required behavior checksums remain stable: `synthetic-imported-hitdef-hit-effect-package.json` `46aa5ce1`, `synthetic-imported-hitdef-guard-effect-package.json` `1c3167b7`, `synthetic-imported-projectile-contact.json` `ba22ed74`, `synthetic-imported-projectile-guard.json` `4bcc5650`, `synthetic-imported-helper-projhit.json` `3892716e`, `synthetic-imported-helper-projguard.json` `3353eda7`, and `synthetic-imported-helper-projcontact.json` `07653cee`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with the existing CRLF-normalization warning for `docs/NEXT_BUILD_ROADMAP.md`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded HitSpark/package trace gates can require authored `sparkxy` offsets before renderer/audio handoff, including direct HitDef, common/FightFX, Projectile, and helper-parented Projectile package routes.
+
+Claim blocked:
+
+- This does not add exact visual binding, render timing, layering, scale, palette, SND playback, helper-owned presentation ownership, score movement, or full MUGEN/IKEMEN presentation parity.
+
 ## 2026-06-30 - Helper-parented Projectile contact package gates
 
 Changed:

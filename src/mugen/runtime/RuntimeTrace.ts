@@ -724,6 +724,8 @@ export type RuntimeTraceHitEffectEventRequirement = {
   sparkNo?: number;
   raw?: string;
   rawPrefix?: string;
+  offsetX?: number;
+  offsetY?: number;
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
   assetActionId?: number;
   assetFrameIndex?: number;
@@ -2281,6 +2283,8 @@ function matchesHitEffectEventRequirement(
     (requirement.sparkNo === undefined || event.sparkNo === requirement.sparkNo) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
     (requirement.rawPrefix === undefined || event.rawPrefix === requirement.rawPrefix) &&
+    (requirement.offsetX === undefined || sameTraceNumber(event.offset?.x ?? NaN, requirement.offsetX)) &&
+    (requirement.offsetY === undefined || sameTraceNumber(event.offset?.y ?? NaN, requirement.offsetY)) &&
     (requirement.assetSource === undefined || event.assetSource === requirement.assetSource) &&
     (requirement.assetActionId === undefined || event.assetActionId === requirement.assetActionId) &&
     (requirement.assetFrameIndex === undefined || event.assetFrameIndex === requirement.assetFrameIndex) &&
