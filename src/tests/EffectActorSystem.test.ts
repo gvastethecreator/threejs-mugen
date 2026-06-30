@@ -928,6 +928,48 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("evaluates helper-local NumExplod against only helper-parented Explod actors", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeExplodActor(store, "p1", explodInput({ id: "8840", anim: "930", removetime: "30" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeState", { value: "6199" }, ["NumExplod(8840) > 0"]),
+              controller("Explod", { id: "8830", anim: "930", pos: "12,-6", removetime: "80" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6101" }, ["NumExplod(8830) > 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6101, 901)),
+          compileStateProgram(state(6199, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Explod", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6101,
+      animNo: 901,
+      stateTime: 1,
+      age: 1,
+    });
+    expect(store.explods.filter((explod) => explod.explodId === 8840)).toHaveLength(1);
+    expect(store.explods.filter((explod) => explod.explodId === 8830 && explod.parentId === "p1-helper-0")).toHaveLength(1);
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

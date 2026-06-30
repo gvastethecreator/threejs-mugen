@@ -8271,6 +8271,65 @@ export function createSyntheticImportedHelperModifyExplodTraceArtifact(options: 
   });
 }
 
+export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-numexplod-attacker",
+    displayName: "Synthetic Imported Helper NumExplod Attacker",
+    withHelper: true,
+    helperNumExplodRoute: {
+      branchStateNo: 1210,
+      branchAnimNo: 930,
+      explodAnimNo: 942,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-numexplod-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-numexplod-golden",
+      label: "Synthetic imported Helper NumExplod route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper NumExplod trace proves the bounded helper-local micro-VM can branch on a helper-parented owner-side visual Explod count after spawning it. It does not claim helper-owned effect namespaces, helper-owned combat, dynamic effect params, exact parent/root/team scopes, or full MUGEN/IKEMEN helper trigger parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-numexplod-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "explod"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1210, animNo: 930, minFrames: 1 },
+          { source: "effect", actorKind: "explod", ownerId: "p1", animNo: 942, minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minExplods: 1, minNextHelperSerial: 1, minNextExplodSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1210, minAge: 1 },
+          { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8830, minAge: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperBindToParentTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9738,6 +9797,13 @@ export type SyntheticImportedTraceFighterOptions = {
     pauseMoveTime?: number;
     superMoveTime?: number;
   };
+  helperNumExplodRoute?: {
+    branchStateNo: number;
+    branchAnimNo?: number;
+    explodAnimNo: number;
+    explodId?: number;
+    pos?: [number, number];
+  };
   helperBindToParentRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   helperBindToRootRoute?: { stateNo: number; animNo?: number; pos?: [number, number]; time?: number };
   withExplod?: boolean;
@@ -10102,6 +10168,7 @@ ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNe
 ${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) : ""}
 ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperRemoveExplodRoute) : ""}
 ${options.helperModifyExplodRoute ? helperModifyExplodRouteBlock(options.helperModifyExplodRoute) : ""}
+${options.helperNumExplodRoute ? helperNumExplodRouteBlock(options.helperNumExplodRoute) : ""}
 ${options.helperBindToParentRoute ? helperBindToParentRouteBlock(options.helperBindToParentRoute) : ""}
 ${options.helperBindToRootRoute ? helperBindToRootRouteBlock(options.helperBindToRootRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
@@ -10337,6 +10404,15 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperModifyExplodRoute.finalAnimNo ?? options.helperModifyExplodRoute.finalStateNo),
                   ],
                   [options.helperModifyExplodRoute.explodAnimNo, explodTraceAction(options.helperModifyExplodRoute.explodAnimNo)],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperNumExplodRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperNumExplodRoute.branchAnimNo ?? options.helperNumExplodRoute.branchStateNo,
+                    helperTraceAction(options.helperNumExplodRoute.branchAnimNo ?? options.helperNumExplodRoute.branchStateNo),
+                  ],
+                  [options.helperNumExplodRoute.explodAnimNo, explodTraceAction(options.helperNumExplodRoute.explodAnimNo)],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperBindToParentRoute?.animNo === undefined
               ? []
@@ -12629,6 +12705,44 @@ type = S
 movetype = I
 physics = N
 anim = ${finalAnimNo}
+ctrl = 0
+`;
+}
+
+function helperNumExplodRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperNumExplodRoute"]>): string {
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const explodId = route.explodId ?? 8830;
+  const pos = route.pos ?? [18, -24];
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper NumExplod Spawn]
+type = Explod
+trigger1 = Time = 0
+id = ${explodId}
+anim = ${route.explodAnimNo}
+pos = ${pos[0]},${pos[1]}
+postype = p1
+sprpriority = 4
+removetime = 80
+trans = add
+
+[State 1200, Helper NumExplod Branch]
+type = ChangeState
+trigger1 = NumExplod(${explodId}) > 0
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
 ctrl = 0
 `;
 }

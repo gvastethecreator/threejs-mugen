@@ -97,6 +97,7 @@ import {
   createSyntheticImportedHelperExplodTraceArtifact,
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperModifyExplodTraceArtifact,
+  createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperBindToRootTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
@@ -1501,6 +1502,43 @@ describe("RuntimeTraceGatePresets", () => {
         scaleX: 2,
         scaleY: 0.5,
       },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper NumExplod artifact with helper-local count evidence", () => {
+    const artifact = createSyntheticImportedHelperNumExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-numexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-numexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1210, animNo: 930 }),
+        expect.objectContaining({ source: "effect", actorKind: "explod", ownerId: "p1", animNo: 942 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1210, minAge: 1 },
+      { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8830, minAge: 1 },
     ]);
   });
 

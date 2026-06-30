@@ -70,6 +70,7 @@ export type RuntimeHelperAdvanceOptions = {
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
+  countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -190,6 +191,7 @@ export function runRuntimeHelperStateControllers(
     | "parentState"
     | "rootState"
     | "opponentState"
+    | "countExplods"
     | "onSpawnExplod"
     | "onRemoveExplod"
     | "onModifyExplod"
@@ -412,7 +414,7 @@ function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, r
 function helperTriggersPass(
   helper: RuntimeHelper,
   controller: ControllerIr,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState">,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods">,
 ): boolean {
   const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
   if (!triggerAll.every((trigger) => evaluateTriggerIr(trigger, helperExpressionContext(helper, options)))) {
@@ -439,7 +441,7 @@ function resolveHelperNumber(
   helper: RuntimeHelper,
   value: number | undefined,
   expression: string | undefined,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState">,
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods">,
 ): number | undefined {
   if (value !== undefined) {
     return value;
@@ -526,7 +528,7 @@ function applyRuntimeHelperOwnerBind(
 
 function helperExpressionContext(
   helper: RuntimeHelper,
-  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState"> = {},
+  options: Pick<RuntimeHelperAdvanceOptions, "stageTime" | "parentState" | "rootState" | "opponentState" | "countExplods"> = {},
 ) {
   return {
     self: helperRuntimeState(helper),
@@ -537,6 +539,7 @@ function helperExpressionContext(
     helperId: helper.helperId,
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
+    numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };

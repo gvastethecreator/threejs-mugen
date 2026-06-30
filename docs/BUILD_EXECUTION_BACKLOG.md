@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local NumExplod trace gate
+
+Changed:
+
+- Extended the helper-local expression context so current visual Helper actors can evaluate bounded `NumExplod(id)` through a helper-aware count callback.
+- Added `RuntimeEffectActorWorld`/`EffectActorSystem` counting for helper-parented owner-side Explods, filtering by Helper runtime serial and optional static Explod id.
+- Added focused `EffectActorSystem` coverage where helper-local `NumExplod(8840) > 0` ignores a same-id player-owned Explod, while helper-local `NumExplod(8830) > 0` branches after the Helper spawns its own Explod.
+- Added required `synthetic-imported-helper-numexplod.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 724 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 176 / 176 artifacts, 156 required, 20 optional, 0 failed; `synthetic-imported-helper-numexplod.json` checksum is `4328278a`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can count helper-parented owner-side visual `Explod` actors by static `id` after spawning them; required trace evidence proves helper route `1200 -> 1210` / anim `930`, Explod anim `942`, effect store serial progression, world spawn/active lifecycle, `parentId = p1-helper-0` metadata, and helper-local `NumExplod(8830) > 0` branch behavior.
+
+Claim blocked:
+
+- This does not add exact helper effect-count parity, helper-owned `HitDef`, helper-owned `Projectile`, helper combat/contact presentation, helper-owned effect namespaces, dynamic effect params, parent/root/team scopes, helper-bound Explod timing beyond this bounded static spawn/count route, FightFX/common animation routing, exact spawn/count tick order, nested helper ancestry, team/keyctrl ownership, or full MUGEN/IKEMEN helper/effect parity. No score movement.
+
 ## 2026-06-30 - Bounded helper-local ModifyExplod trace gate
 
 Changed:

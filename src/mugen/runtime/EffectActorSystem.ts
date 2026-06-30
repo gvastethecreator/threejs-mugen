@@ -352,6 +352,12 @@ export function advanceRuntimeHelperActors(
 ): void {
   store.helpers = advanceRuntimeHelpers(store.helpers, stage, {
     ...options,
+    countExplods: (helper, explodId) => {
+      if (options?.countExplods) {
+        return options.countExplods(helper, explodId);
+      }
+      return countRuntimeHelperExplodActors(store, helper, explodId);
+    },
     onSpawnExplod: (helper, controller) => {
       if (options?.onSpawnExplod) {
         return options.onSpawnExplod(helper, controller);
@@ -428,6 +434,16 @@ export function modifyRuntimeHelperExplodActors(store: RuntimeEffectActorStore, 
     controller: controller.source,
     operation,
   });
+}
+
+export function countRuntimeHelperExplodActors(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  explodId?: number,
+): number {
+  return store.explods.filter((explod) => {
+    return explod.parentId === helper.serialId && (explodId === undefined || explod.explodId === explodId);
+  }).length;
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
