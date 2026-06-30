@@ -12,6 +12,8 @@ export type ExpressionContext = {
   authorName?: string;
   opponentName?: string;
   opponentAuthorName?: string;
+  isHelper?: boolean;
+  helperId?: number;
   animExists?: (animationId: number) => boolean;
   stateExists?: (stateNo: number) => boolean;
   commandActive?: (name: string) => boolean;
@@ -525,6 +527,9 @@ class ExpressionParser {
     if (lower === "inguarddist") {
       return this.context.inGuardDist?.() ? 1 : 0;
     }
+    if (lower === "ishelper") {
+      return this.isHelper();
+    }
     if (lower === "movecontact") {
       return contactTriggerValue(this.context.moveContact?.());
     }
@@ -623,6 +628,9 @@ class ExpressionParser {
     }
     if (lower === "hitdefattr") {
       return this.context.hitDefAttr?.(args.map(String).join(",")) ? 1 : 0;
+    }
+    if (lower === "ishelper") {
+      return this.isHelper(optionalPositiveInteger(args[0]));
     }
     if (lower === "numtarget") {
       return this.numTarget(optionalPositiveInteger(args[0]));
@@ -723,6 +731,13 @@ class ExpressionParser {
 
   private numHelper(helperId?: number): number {
     return this.context.numHelper?.(helperId) ?? 0;
+  }
+
+  private isHelper(helperId?: number): number {
+    if (!this.context.isHelper) {
+      return 0;
+    }
+    return helperId === undefined || this.context.helperId === helperId ? 1 : 0;
   }
 
   private numProj(projectileId?: number): number {

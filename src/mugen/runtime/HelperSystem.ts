@@ -419,6 +419,8 @@ function helperExpressionContext(
     self: helperRuntimeState(helper),
     parent: options.parentState ? cloneRuntimeStateForRedirect(options.parentState) : undefined,
     root: options.rootState ? cloneRuntimeStateForRedirect(options.rootState) : undefined,
+    isHelper: true,
+    helperId: helper.helperId,
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,

@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local IsHelper trace gate
+
+Changed:
+
+- Added runtime/compiler support for bounded helper identity triggers: `IsHelper` and `IsHelper(id)`.
+- Passed visual Helper identity into `HelperSystem` helper-local trigger contexts, while normal player contexts keep `IsHelper` false.
+- Added required `synthetic-imported-helper-ishelper.json` trace evidence for a helper-local branch from state `1200` to `1201` / anim `921`.
+- Added focused evaluator/compiler/helper-runtime coverage for player-false, helper-true, id match/mismatch, and helper-local state routing.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 703 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 167 / 167 artifacts, 147 required, 20 optional, 0 failed; `synthetic-imported-helper-ishelper.json` checksum is `37877602`.
+- `pnpm check:boundaries` passes.
+
+Claim allowed:
+
+- Current visual Helper actors can evaluate bounded helper-local `IsHelper` / `IsHelper(42)` and branch inside the current helper-local micro-VM.
+
+Claim blocked:
+
+- `keyctrl`, nested helper ancestry, helper-owned combat/effects/projectiles, helper resource exactness, teams, exact helper tick order, full helper VM, and full MUGEN/IKEMEN helper parity remain blocked.
+
 ## 2026-06-30 - Bounded identity trigger gate
 
 Changed:

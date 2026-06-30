@@ -152,6 +152,10 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("PowerMax = 1200", { self: runtimeState({ powerMax: 1200 }) })).toBe(1);
     expect(evaluateExpression("LifeMax = 750", { self: state, lifeMax: 750 })).toBe(1);
     expect(evaluateExpression("PowerMax = 1200", { self: state, powerMax: 1200 })).toBe(1);
+    expect(evaluateExpression("IsHelper", { self: state })).toBe(0);
+    expect(evaluateExpression("IsHelper", { self: state, isHelper: true, helperId: 42 })).toBe(1);
+    expect(evaluateExpression("IsHelper(42)", { self: state, isHelper: true, helperId: 42 })).toBe(1);
+    expect(evaluateExpression("IsHelper(43)", { self: state, isHelper: true, helperId: 42 })).toBe(0);
     expect(evaluateExpression("ifelse(ctrl, 10, 20)", { self: state })).toBe(10);
     expect(
       evaluateExpression("Const(movement.down.bounce.offset.y) = 24", {

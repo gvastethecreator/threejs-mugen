@@ -92,6 +92,7 @@ import {
   createSyntheticImportedExplodVelocityTraceArtifact,
   createSyntheticImportedHitPauseTimeIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperTraceArtifact,
+  createSyntheticImportedHelperIsHelperTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
   createSyntheticImportedHelperIgnoreHitPauseTraceArtifact,
   createSyntheticImportedHelperPauseMoveTimeTraceArtifact,
@@ -1293,6 +1294,34 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 273]);
+  });
+
+  it("creates a synthetic imported Helper IsHelper artifact with helper-local branch evidence", () => {
+    const artifact = createSyntheticImportedHelperIsHelperTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-ishelper-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-ishelper-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1201, animNo: 921 })]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1201, animNo: 921, minFrames: 1 },
+    ]);
   });
 
   it("creates a synthetic imported NumExplod artifact with explod-count branch evidence", () => {

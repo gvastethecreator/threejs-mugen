@@ -733,6 +733,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperVelocityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-ishelper",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperIsHelperTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-scale",
       required: true,
       artifact: presets.createSyntheticImportedHelperScaleTraceArtifact(),
@@ -1474,6 +1479,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
     "synthetic-imported-explod-velocity",
+    "synthetic-imported-helper-ishelper",
     "synthetic-imported-modifyexplod",
     "synthetic-imported-explod-bind",
     "synthetic-imported-explod-scale",

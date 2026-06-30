@@ -7881,6 +7881,53 @@ export function createSyntheticImportedHelperVelocityTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHelperIsHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-ishelper-attacker",
+    displayName: "Synthetic Imported Helper IsHelper Attacker",
+    withHelper: true,
+    helperIsHelperRoute: { stateNo: 1201, animNo: 921, helperId: 42 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-ishelper-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-ishelper-golden",
+      label: "Synthetic imported Helper IsHelper route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper IsHelper trace proves the bounded helper-local micro-VM can evaluate IsHelper(42) against current helper identity and branch helper-local state. It does not claim keyctrl, nested helper ancestry, helper-owned combat/effects/projectiles, redirects beyond the bounded helper context, or full MUGEN/IKEMEN helper parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-ishelper-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [{ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1201, animNo: 921, minFrames: 1 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1201, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -9174,6 +9221,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperSuperMoveTime?: number;
   helperIgnoreHitPause?: boolean;
   helperTriggerTime?: number;
+  helperIsHelperRoute?: { stateNo: number; animNo?: number; helperId?: number };
   withExplod?: boolean;
   withPauseMoveExplod?: boolean;
   withSuperMoveExplod?: boolean;
@@ -9529,6 +9577,7 @@ ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defau
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
+${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.defaultGetHitFall ? defaultGetHitFallBlock(options.defaultGetHitFall) : ""}
 ${options.passiveReversalDef ? passiveReversalStateBlock(options.passiveReversalDef) : ""}
 ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.stateNo, "I") : ""}
@@ -9700,7 +9749,17 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBloc
         : ([[options.assertSpecialControlState.stateNo, traceAction(options.assertSpecialControlState.stateNo)]] as Array<
             [number, MugenAnimationAction]
           >)),
-      ...(options.withHelper ? ([[920, helperTraceAction(920)]] as Array<[number, MugenAnimationAction]>) : []),
+      ...(options.withHelper
+        ? ([
+            [920, helperTraceAction(920)],
+            ...(options.helperIsHelperRoute?.animNo === undefined
+              ? []
+              : ([[options.helperIsHelperRoute.animNo, helperTraceAction(options.helperIsHelperRoute.animNo)]] as Array<[
+                  number,
+                  MugenAnimationAction,
+                ]>)),
+          ] as Array<[number, MugenAnimationAction]>)
+        : []),
       ...(options.withExplod ? ([[930, explodTraceAction(930)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withPauseMoveExplod ? ([[936, explodTraceAction(936)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.withSuperMoveExplod ? ([[935, explodTraceAction(935)]] as Array<[number, MugenAnimationAction]>) : []),
@@ -11735,6 +11794,33 @@ ${scaleLine}
 ${pauseMoveTimeLine}
 ${superMoveTimeLine}
 ${ignoreHitPauseLine}
+`;
+}
+
+function helperIsHelperRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperIsHelperRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  const trigger = route.helperId === undefined ? "IsHelper" : `IsHelper(${route.helperId})`;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, IsHelper Route]
+type = ChangeState
+trigger1 = Time = 0
+trigger1 = ${trigger}
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
 `;
 }
 

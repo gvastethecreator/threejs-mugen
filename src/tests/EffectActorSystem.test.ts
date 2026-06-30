@@ -400,6 +400,43 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("evaluates bounded helper identity triggers inside the helper-local micro-VM", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["Time = 0 && IsHelper"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0 && IsHelper(42)"]),
+              controller("VarSet", { v: "3", value: "13" }, ["Time = 0 && IsHelper(43)"]),
+            ]),
+          ),
+          compileStateProgram(state(6001, 901)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["ChangeAnim", "ChangeState"]);
+    expect(helper.vars[3]).toBe(0);
+    expect(helper).toMatchObject({
+      stateNo: 6001,
+      animNo: 901,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
   it("does not satisfy helper parent and root redirects when owner runtime state is missing", () => {
     const store = createRuntimeEffectActorStore();
     const helper = spawnRuntimeHelperActor(store, "p1", {

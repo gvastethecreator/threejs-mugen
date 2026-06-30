@@ -90,8 +90,14 @@ R1 bounded identity-trigger gate
   -> PlayableMatchRuntime passes fighter display name plus author metadata into active-state, State -1, setup, and dynamic dispatch trigger evaluation
   -> EnemyNear redirect contexts now swap identity metadata as well as actor state, including composite expressions
   -> required synthetic-imported-identity.json checksum c9be5cf1 proves the route into state 276
-  -> pnpm qa:trace now passes 166/166 artifacts, 146 required and 20 optional
+  -> superseded by helper-local IsHelper gate; pnpm qa:trace now passes 167/167 artifacts, 147 required and 20 optional
   -> no team/simul/helper/player-indexed identity selection, parent/root/target identity redirects, exact string edge parity, or score claim
+R2 bounded helper-local IsHelper gate
+  -> ExpressionCompiler and ExpressionEvaluator classify IsHelper and IsHelper(id) as executable in helper-local contexts
+  -> HelperSystem passes helper identity into visual Helper actor trigger evaluation
+  -> required synthetic-imported-helper-ishelper.json checksum 37877602 proves helper state 1200 branches to 1201 / anim 921
+  -> pnpm qa:trace now passes 167/167 artifacts, 147 required and 20 optional
+  -> no full helper VM, helper-owned combat, parent/root mutation, nested helper ancestry, team ownership, exact tick order, or score claim
 R2 RuntimeStateClockWorld ownership
   -> RuntimeStateClockWorld owns bounded Time/stateElapsed mutation for active-frame advance and changed-state elapsed reset
   -> PlayableMatchRuntime delegates the inline stateElapsed += 1 and stateElapsed = -1 paths through that boundary
@@ -168,7 +174,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the identity-trigger gate is 166/166 artifacts, 146 required and 20 optional
+  -> current aggregate after the helper-local IsHelper gate is 167/167 artifacts, 147 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
