@@ -1,4 +1,5 @@
 import type { SpriteEffectControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { CharacterRuntimeState, RuntimeAfterImageSample } from "./types";
@@ -9,6 +10,28 @@ export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angleset" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
+
+export type RuntimeSpriteEffectControllerEffect = "sprpriority" | "palfx" | "afterimage" | "afterimagetime" | "angle";
+
+export type RuntimeSpriteEffectControllerActor = {
+  runtime: CharacterRuntimeState;
+};
+
+export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSpriteEffectControllerActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  effect: RuntimeSpriteEffectControllerEffect;
+  spriteEffectWorld: RuntimeSpriteEffectWorld;
+  sampleFactory: RuntimeAfterImageSampleFactory;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
+};
+
+export type RuntimeSpriteEffectControllerApplyResult = {
+  applied: boolean;
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
 
 export class RuntimeSpriteEffectWorld {
   applySpritePriority(
@@ -56,6 +79,71 @@ export class RuntimeSpriteEffectWorld {
     tickRuntimePaletteFx(state);
     tickRuntimeAfterImage(state, sampleFactory);
   }
+}
+
+export class RuntimeSpriteEffectControllerWorld {
+  apply<TActor extends RuntimeSpriteEffectControllerActor>(
+    input: RuntimeSpriteEffectControllerApplyInput<TActor>,
+  ): RuntimeSpriteEffectControllerApplyResult {
+    const operation = spriteEffectOperationFor(input.effect, input.controller.operation);
+    input.recordController?.(input.actor, input.controller.source);
+    if (operation) {
+      input.recordOperation?.(input.actor, operation);
+    }
+
+    if (input.effect === "sprpriority") {
+      input.spriteEffectWorld.applySpritePriority(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "sprpriority" ? operation : undefined,
+      );
+    } else if (input.effect === "palfx") {
+      input.spriteEffectWorld.applyPaletteFx(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "palfx" ? operation : undefined,
+      );
+    } else if (input.effect === "afterimage") {
+      input.spriteEffectWorld.applyAfterImage(
+        input.actor.runtime,
+        input.controller.source,
+        input.sampleFactory,
+        operation?.controllerType === "afterimage" ? operation : undefined,
+      );
+    } else if (input.effect === "afterimagetime") {
+      input.spriteEffectWorld.applyAfterImageTime(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "afterimagetime" ? operation : undefined,
+      );
+    } else {
+      input.spriteEffectWorld.applyAngle(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "angleset" ||
+          operation?.controllerType === "angleadd" ||
+          operation?.controllerType === "angledraw"
+          ? operation
+          : undefined,
+      );
+    }
+
+    return {
+      applied: true,
+      recordedController: Boolean(input.recordController),
+      recordedOperation: Boolean(operation && input.recordOperation),
+    };
+  }
+}
+
+export function isRuntimeSpriteEffectControllerEffect(effect: string): effect is RuntimeSpriteEffectControllerEffect {
+  return (
+    effect === "sprpriority" ||
+    effect === "palfx" ||
+    effect === "afterimage" ||
+    effect === "afterimagetime" ||
+    effect === "angle"
+  );
 }
 
 export function applyRuntimeSpritePriorityController(
@@ -242,6 +330,23 @@ export function captureRuntimeAfterImageSample(
   }
   effect.samples.unshift(sample);
   effect.samples.splice(effect.length);
+}
+
+function spriteEffectOperationFor(
+  effect: RuntimeSpriteEffectControllerEffect,
+  operation: ControllerIr["operation"],
+): SpriteEffectControllerOp | undefined {
+  if (operation?.kind !== "sprite-effect") {
+    return undefined;
+  }
+  if (effect === "angle") {
+    return operation.controllerType === "angleset" ||
+      operation.controllerType === "angleadd" ||
+      operation.controllerType === "angledraw"
+      ? operation
+      : undefined;
+  }
+  return operation.controllerType === effect ? operation : undefined;
 }
 
 function firstNumber(value: string | undefined): number | undefined {

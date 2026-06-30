@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeSpriteEffectControllerWorld ownership extraction
+  -> RuntimeSpriteEffectControllerWorld now owns bounded active-state sprite-effect side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, and Angle*
+  -> RuntimeSpriteEffectWorld remains the mutation/ticking owner for actor presentation state
+  -> focused SpriteEffectSystem coverage proves PalFX telemetry/mutation and AfterImage sampling through the dispatch boundary
+  -> no exact visual tick order, helper/redirect ownership, renderer parity, full CNS VM parity, or score claim
 R2 RuntimeStateEntrySetupWorld ownership extraction
   -> RuntimeStateEntrySetupWorld now owns bounded imported State -1 setup-controller selection before command routing
   -> PlayableMatchRuntime delegates imported-only guard, ChangeState bypass, trigger gating, setup-controller classification, and execution handoff through the named world

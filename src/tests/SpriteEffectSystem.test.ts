@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   applyRuntimeAfterImageController,
@@ -7,6 +8,7 @@ import {
   applyRuntimePaletteFxController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  RuntimeSpriteEffectControllerWorld,
   RuntimeSpriteEffectWorld,
   tickRuntimeAfterImage,
   tickRuntimePaletteFx,
@@ -268,6 +270,66 @@ describe("SpriteEffectSystem", () => {
     expect(state.paletteFx?.remaining).toBe(1);
     expect(state.afterImage).toMatchObject({ remaining: 2, time: 3 });
     expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([1, 0]);
+  });
+
+  it("dispatches active-state sprite effect controllers with telemetry hooks", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(
+      controller("PalFX", {
+        time: "5",
+        add: "10,20,30",
+        mul: "256,200,180",
+        color: "128",
+      }),
+    );
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "palfx",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(actor.runtime.paletteFx).toMatchObject({
+      remaining: 5,
+      time: 5,
+      add: [10, 20, 30],
+      mul: [256, 200, 180],
+      color: 128,
+    });
+    expect(recordedControllers).toEqual(["PalFX"]);
+    expect(recordedOperations).toEqual(["sprite-effect:palfx"]);
+    expect(result).toEqual({ applied: true, recordedController: true, recordedOperation: true });
+  });
+
+  it("dispatches AfterImage controllers through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("AfterImage", { time: "4", length: "2", timegap: "1", framegap: "1" }));
+    const recordedOperations: string[] = [];
+
+    world.apply({
+      actor,
+      controller: ir,
+      effect: "afterimage",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => sample(9),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(actor.runtime.afterImage).toMatchObject({
+      remaining: 4,
+      time: 4,
+      length: 2,
+    });
+    expect(actor.runtime.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([9]);
+    expect(recordedOperations).toEqual(["sprite-effect:afterimage"]);
   });
 });
 

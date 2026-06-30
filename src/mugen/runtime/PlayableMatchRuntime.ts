@@ -9,7 +9,6 @@ import type {
   HitDefControllerOp,
   PauseControllerOp,
   ReversalDefControllerOp,
-  SpriteEffectControllerOp,
   TargetControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
@@ -94,8 +93,9 @@ import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import {
+  isRuntimeSpriteEffectControllerEffect,
+  RuntimeSpriteEffectControllerWorld,
   RuntimeSpriteEffectWorld,
-  type RuntimeAngleSpriteEffectOp,
 } from "./SpriteEffectSystem";
 import {
   RuntimeTargetWorld,
@@ -121,6 +121,7 @@ const stateClockWorld = new RuntimeStateClockWorld();
 const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
+const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1039,59 +1040,16 @@ function runActiveStateControllers(
           tick,
           controller.operation?.kind === "fallenvshake" ? controller.operation : undefined,
         );
-      } else if (dispatch.effect === "sprpriority") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation =
-          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "sprpriority"
-            ? controller.operation
-            : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        applySprPriorityController(fighter, spriteEffectWorld, rawController, operation);
-      } else if (dispatch.effect === "palfx") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation =
-          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "palfx"
-            ? controller.operation
-            : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        applyPalFxController(fighter, spriteEffectWorld, rawController, operation);
-      } else if (dispatch.effect === "afterimage") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation =
-          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimage"
-            ? controller.operation
-            : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        applyAfterImageController(fighter, spriteEffectWorld, rawController, operation);
-      } else if (dispatch.effect === "afterimagetime") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation =
-          controller.operation?.kind === "sprite-effect" && controller.operation.controllerType === "afterimagetime"
-            ? controller.operation
-            : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        applyAfterImageTimeController(fighter, spriteEffectWorld, rawController, operation);
-      } else if (dispatch.effect === "angle") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation =
-          controller.operation?.kind === "sprite-effect" &&
-          (controller.operation.controllerType === "angleset" ||
-            controller.operation.controllerType === "angleadd" ||
-            controller.operation.controllerType === "angledraw")
-            ? controller.operation
-            : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        applyAngleController(fighter, spriteEffectWorld, rawController, operation);
+      } else if (isRuntimeSpriteEffectControllerEffect(dispatch.effect)) {
+        spriteEffectControllerWorld.apply({
+          actor: fighter,
+          controller,
+          effect: dispatch.effect,
+          spriteEffectWorld,
+          sampleFactory: () => createAfterImageSample(fighter),
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "explod") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "explod" ? controller.operation : undefined;
@@ -1185,51 +1143,6 @@ function runtimeControllerContext(fighter: FighterMatchState, owner: FighterMatc
     random: () => nextRuntimeRandom(fighter),
     stageTime: tick,
   };
-}
-
-function applySprPriorityController(
-  fighter: FighterMatchState,
-  spriteEffectWorld: RuntimeSpriteEffectWorld,
-  controller: MugenStateController,
-  operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
-): void {
-  spriteEffectWorld.applySpritePriority(fighter.runtime, controller, operation);
-}
-
-function applyPalFxController(
-  fighter: FighterMatchState,
-  spriteEffectWorld: RuntimeSpriteEffectWorld,
-  controller: MugenStateController,
-  operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
-): void {
-  spriteEffectWorld.applyPaletteFx(fighter.runtime, controller, operation);
-}
-
-function applyAfterImageController(
-  fighter: FighterMatchState,
-  spriteEffectWorld: RuntimeSpriteEffectWorld,
-  controller: MugenStateController,
-  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimage" }>,
-): void {
-  spriteEffectWorld.applyAfterImage(fighter.runtime, controller, () => createAfterImageSample(fighter), operation);
-}
-
-function applyAfterImageTimeController(
-  fighter: FighterMatchState,
-  spriteEffectWorld: RuntimeSpriteEffectWorld,
-  controller: MugenStateController,
-  operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
-): void {
-  spriteEffectWorld.applyAfterImageTime(fighter.runtime, controller, operation);
-}
-
-function applyAngleController(
-  fighter: FighterMatchState,
-  spriteEffectWorld: RuntimeSpriteEffectWorld,
-  controller: MugenStateController,
-  operation?: RuntimeAngleSpriteEffectOp,
-): void {
-  spriteEffectWorld.applyAngle(fighter.runtime, controller, operation);
 }
 
 function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSample | undefined {
