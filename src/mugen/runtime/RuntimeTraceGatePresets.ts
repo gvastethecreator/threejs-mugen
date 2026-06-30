@@ -5518,6 +5518,17 @@ export function createSyntheticImportedDefaultFallRecoveryTraceArtifact(
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            animNo: 5110,
+            moveType: "H",
+            observedHitFallDownRecoverTimeAtLeast: 1,
+            minFrames: 1,
+          },
+        ],
         requiredControllerEventSequences: [defaultFallLieDownGetUpControllerSequence()],
         requiredActorFrameSequences: [defaultFallLieDownGetUpActorFrameSequence()],
         requiredFinalActors: [

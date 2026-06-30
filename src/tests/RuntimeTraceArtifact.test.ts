@@ -217,6 +217,55 @@ describe("RuntimeTraceArtifact", () => {
     expect(artifact.gates[0]?.failures).toEqual([]);
   });
 
+  it("gates actor-frame down-recovery timer evidence", () => {
+    const lieDown = playerActor({ animNo: 5110, moveType: "H", hitFallDownRecoverTime: 2 });
+    const getUp = playerActor({ animNo: 5120, moveType: "I", hitFallDownRecoverTime: 0 });
+    const trace = traceFromFrames([
+      traceFrame({ frameIndex: 0, tick: 1, checksum: "liedown", actors: [lieDown], effects: [] }),
+      traceFrame({ frameIndex: 1, tick: 2, checksum: "get-up", actors: [getUp], effects: [] }),
+    ]);
+
+    const artifact = createRuntimeTraceArtifact({
+      trace,
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      target: {
+        id: "synthetic-down-recovery-timer",
+        label: "Synthetic down recovery timer",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "down-recovery-timer",
+          requiredActorFrames: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 5110,
+              moveType: "H",
+              observedHitFallDownRecoverTimeAtLeast: 1,
+            },
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              animNo: 5120,
+              moveType: "I",
+              observedHitFallDownRecoverTimeAtMost: 0,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(artifact.status).toBe("passed");
+    const lieDownEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5110);
+    const getUpEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5120);
+    expect(lieDownEvidence?.maxHitFallDownRecoverTime).toBe(2);
+    expect(getUpEvidence?.minHitFallDownRecoverTime).toBe(0);
+    expect(artifact.gates[0]?.failures).toEqual([]);
+  });
+
   it("fails actor-frame sequence gates when frames appear out of order", () => {
     const fall = playerActor({ animNo: 5050, moveType: "H", hitFallRecoverTime: 1 });
     const recovery = playerActor({ animNo: 5210, moveType: "I", hitFallRecoverTime: 0 });
@@ -619,6 +668,7 @@ function playerActor(input: {
   animNo: number;
   moveType: string;
   hitFallRecoverTime?: number;
+  hitFallDownRecoverTime?: number;
 }): RuntimeTraceFrame["actors"][number] {
   return {
     id: "p2",
@@ -645,7 +695,7 @@ function playerActor(input: {
     guarding: false,
     guardStun: 0,
     hitFall:
-      input.hitFallRecoverTime === undefined
+      input.hitFallRecoverTime === undefined && input.hitFallDownRecoverTime === undefined
         ? undefined
         : {
             falling: true,
@@ -653,6 +703,8 @@ function playerActor(input: {
             velocity: { x: 3, y: -6 },
             recover: true,
             recoverTime: input.hitFallRecoverTime,
+            downRecover: true,
+            downRecoverTime: input.hitFallDownRecoverTime,
           },
     targetCount: 0,
     clsn1Count: 0,

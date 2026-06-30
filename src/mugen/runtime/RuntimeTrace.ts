@@ -486,6 +486,8 @@ export type RuntimeTraceActorFrameRequirement = {
   observedAngleAtMost?: number;
   observedHitFallRecoverTimeAtLeast?: number;
   observedHitFallRecoverTimeAtMost?: number;
+  observedHitFallDownRecoverTimeAtLeast?: number;
+  observedHitFallDownRecoverTimeAtMost?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -549,6 +551,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxAngle: number;
   minHitFallRecoverTime?: number;
   maxHitFallRecoverTime?: number;
+  minHitFallDownRecoverTime?: number;
+  maxHitFallDownRecoverTime?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -1468,6 +1472,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxAngle: Math.max(existing.maxAngle, actor.renderAngle ?? 0),
               minHitFallRecoverTime: minOptionalTraceNumber(existing.minHitFallRecoverTime, actor.hitFall?.recoverTime),
               maxHitFallRecoverTime: maxOptionalTraceNumber(existing.maxHitFallRecoverTime, actor.hitFall?.recoverTime),
+              minHitFallDownRecoverTime: minOptionalTraceNumber(existing.minHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
+              maxHitFallDownRecoverTime: maxOptionalTraceNumber(existing.maxHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
             }
           : {
               actorId: actor.id,
@@ -1496,6 +1502,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxAngle: actor.renderAngle ?? 0,
               minHitFallRecoverTime: actor.hitFall?.recoverTime,
               maxHitFallRecoverTime: actor.hitFall?.recoverTime,
+              minHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
+              maxHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
               bodyWidthFront: actor.bodyWidth?.front,
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
@@ -2775,6 +2783,9 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
       ? "ai*"
       : `ai${actor.afterImageTime}:${actor.afterImageLength}:${actor.afterImageTimeGap}:${actor.afterImageFrameGap}:${actor.afterImageSampleCount}:${actor.afterImageOpacity}`,
     actor.minHitFallRecoverTime === undefined ? "hfrt*" : `hfrt${actor.minHitFallRecoverTime}:${actor.maxHitFallRecoverTime}`,
+    actor.minHitFallDownRecoverTime === undefined
+      ? "hfdrt*"
+      : `hfdrt${actor.minHitFallDownRecoverTime}:${actor.maxHitFallDownRecoverTime}`,
     actor.posFreezeX === undefined ? "pfx*" : `pfx${actor.posFreezeX ? 1 : 0}`,
     actor.posFreezeY === undefined ? "pfy*" : `pfy${actor.posFreezeY ? 1 : 0}`,
     actor.screenBound === undefined ? "sb*" : `sb${actor.screenBound ? 1 : 0}`,
@@ -2822,6 +2833,10 @@ function matchesActorFrameRequirement(
       (actor.maxHitFallRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallRecoverTimeAtLeast) &&
     (requirement.observedHitFallRecoverTimeAtMost === undefined ||
       (actor.minHitFallRecoverTime ?? Number.POSITIVE_INFINITY) <= requirement.observedHitFallRecoverTimeAtMost) &&
+    (requirement.observedHitFallDownRecoverTimeAtLeast === undefined ||
+      (actor.maxHitFallDownRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallDownRecoverTimeAtLeast) &&
+    (requirement.observedHitFallDownRecoverTimeAtMost === undefined ||
+      (actor.minHitFallDownRecoverTime ?? Number.POSITIVE_INFINITY) <= requirement.observedHitFallDownRecoverTimeAtMost) &&
     (requirement.bodyWidthFront === undefined || sameTraceNumber(actor.bodyWidthFront ?? NaN, requirement.bodyWidthFront)) &&
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&
