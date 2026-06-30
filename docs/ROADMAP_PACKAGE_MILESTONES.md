@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeMoveLifecycleWorld ownership
+  -> RuntimeMoveLifecycleWorld owns bounded active move lifecycle mutation previously inline in PlayableMatchRuntime
+  -> PlayableMatchRuntime delegates current move tick, non-reversal attack moveType/velocity lock, completed move cleanup, reversal cleanup, and idle/control restoration callbacks through that boundary
+  -> focused RuntimeMoveLifecycleSystem tests prove no-op, active non-reversal move, completed non-reversal move, and completed reversal routes
+  -> no new move semantics, exact input/cancel timing, exact MUGEN/IKEMEN active-move lifecycle parity, or score claim
 R2 helper-local micro-VM ownership
   -> HelperSystem runs a bounded helper-local micro-VM for current visual Helper actors spawned with owner runtime-program data
   -> RuntimeEffectSpawnWorld passes owner runtimeProgram and animation maps into HelperSystem
@@ -280,6 +285,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeStunWorld` ownership extraction
 - `RuntimePausedMatchWorld` ownership extraction
 - `RuntimeHitPauseWorld` ownership extraction
+- `RuntimeMoveLifecycleWorld` ownership extraction
 - visual-helper removal ownership
 - helper-local micro-VM ownership, including helper-local sound-event telemetry and bounded parent/root read-only redirects
 - `RuntimeAssertSpecialWorld` ownership extraction
@@ -291,7 +297,7 @@ After docs-only/setup work, return to one of these evidence-producing cuts:
 
 1. R1 Common1 recovery/guard controller-loop precision.
 2. R1 FightFX/common presentation proof beyond current package-frame handoff and source-frame plus multi-frame trace metadata.
-3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, or effect/combat ordering with stable or documented trace behavior after the helper-local micro-VM sound-event cut.
+3. R2 `MatchWorld` ownership around deeper helper parent/root/redirect boundaries, helper-owned effects/combat, effect/combat ordering, or the next non-`RuntimeMoveLifecycleWorld` mutable actor lifecycle boundary with stable or documented trace behavior.
 
 ## Package Closeout Contract
 

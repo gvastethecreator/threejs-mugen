@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Runtime move lifecycle ownership
+
+Changed:
+
+- Added `RuntimeMoveLifecycleWorld` as a small runtime ownership boundary for active-move lifecycle mutation: tick advance, non-reversal attack lock, completed move cleanup, reversal cleanup, and idle/control restoration callbacks.
+- Replaced the inline `PlayableMatchRuntime` current-move lifecycle block with the new runtime system while preserving fighting-specific idle state/action callbacks in the match runtime.
+- Added focused `RuntimeMoveLifecycleSystem` tests for no current move, active non-reversal move, completed non-reversal move, and completed reversal move.
+- Updated roadmap/progress docs with the current allowed/blocked claim and next non-`RuntimeMoveLifecycleWorld` ownership candidate.
+- Re-ran the CSS budget audit for the current UI debt answer without changing CSS.
+
+Evidence:
+
+- `pnpm qa:css:budget` passes: 539,198 active CSS bytes, 2,382 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 124 repeated declaration groups, 108 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm test` passes: 74 files / 664 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 165/165 artifacts, 145 required and 20 optional.
+- `git diff --check` passes; Git reports existing CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Active move lifecycle mutation now has a named system boundary with unit coverage, and the match runtime delegates this bounded branch without behavior-checksum drift.
+- Current CSS has no exact duplicate rules or same-file duplicate selector keys; remaining CSS debt is measured as repeated declaration groups and cross-file overlaps.
+
+Claim blocked:
+
+- This is ownership cleanup only. It does not add new move cancel semantics, input timing parity, exact active-move MUGEN/IKEMEN parity, Studio UI behavior, CSS primitive extraction, or score movement.
+
 ## 2026-06-30 - Studio CSS base budget trim
 
 Changed:
