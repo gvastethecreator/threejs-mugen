@@ -96,6 +96,7 @@ import {
   createSyntheticImportedHelperEnemyNearTraceArtifact,
   createSyntheticImportedHelperExplodTraceArtifact,
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
+  createSyntheticImportedHelperModifyExplodTraceArtifact,
   createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperBindToRootTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
@@ -1448,6 +1449,58 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1207, minAge: 2 },
       { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8810, minAge: 1, minRemoveTime: 80, minSpritePriority: 7 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper ModifyExplod artifact with helper-local mutation evidence", () => {
+    const artifact = createSyntheticImportedHelperModifyExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-modifyexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1208, animNo: 928 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1209, animNo: 929 }),
+        expect.objectContaining({ source: "effect", actorKind: "explod", ownerId: "p1", animNo: 941 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1209, minAge: 2 },
+      {
+        actorId: "p1-explod-0",
+        kind: "explod",
+        ownerId: "p1",
+        effectId: 8820,
+        minAge: 3,
+        minRemoveTime: 90,
+        minSpritePriority: 8,
+        removeOnGetHit: true,
+        ignoreHitPause: true,
+        minPauseMoveTime: 3,
+        minSuperMoveTime: 4,
+        scaleX: 2,
+        scaleY: 0.5,
+      },
     ]);
   });
 

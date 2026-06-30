@@ -839,6 +839,95 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("modifies only helper-parented Explod actors by id from the helper-local micro-VM", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeExplodActor(store, "p1", explodInput({ id: "8820", anim: "930", removetime: "30", sprpriority: "3" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Explod", { id: "8820", anim: "930", pos: "12,-6", removetime: "80", sprpriority: "4" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller(
+                "ModifyExplod",
+                {
+                  id: "8820",
+                  vel: "4,-2",
+                  accel: ".5,1",
+                  scale: "1.5,.75",
+                  removetime: "99",
+                  removeongethit: "1",
+                  ignorehitpause: "1",
+                  pausemovetime: "12",
+                  supermovetime: "13",
+                  sprpriority: "9",
+                  trans: "add",
+                },
+                ["Time = 1"],
+              ),
+              controller("ChangeState", { value: "6002" }, ["Time = 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    const playerExplod = store.explods.find((explod) => explod.parentId === "p1");
+    const helperExplod = store.explods.find((explod) => explod.parentId === "p1-helper-0");
+    expect(executed).toEqual(["Explod", "ChangeState", "ModifyExplod", "ChangeState"]);
+    expect(playerExplod).toMatchObject({
+      explodId: 8820,
+      parentId: "p1",
+      vel: { x: 0, y: 0 },
+      scale: { x: 1, y: 1 },
+      removeTime: 30,
+      spritePriority: 3,
+      removeOnGetHit: false,
+      ignoreHitPause: false,
+    });
+    expect(helperExplod).toMatchObject({
+      explodId: 8820,
+      parentId: "p1-helper-0",
+      vel: { x: 4, y: -2 },
+      accel: { x: 0.5, y: 1 },
+      scale: { x: 1.5, y: 0.75 },
+      removeTime: 99,
+      removeOnGetHit: true,
+      ignoreHitPause: true,
+      pauseMoveTime: 12,
+      superMoveTime: 13,
+      spritePriority: 9,
+      opacity: 0.78,
+    });
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      stateTime: 1,
+      age: 2,
+    });
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

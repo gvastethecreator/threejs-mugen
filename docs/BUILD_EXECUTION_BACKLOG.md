@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local ModifyExplod trace gate
+
+Changed:
+
+- Extended the helper-local micro-VM side-effect bridge with `ModifyExplod`, so current visual Helper actors can request bounded owner-side Explod mutation from local CNS state controllers.
+- Routed helper-local `ModifyExplod` through `RuntimeEffectActorWorld`, filtering mutation to Explods whose `parentId` matches the Helper runtime serial so same-id player-owned Explods stay untouched.
+- Added focused `EffectActorSystem` coverage where a Helper spawns Explod id `8820`, changes state, mutates only that helper-parented Explod by id, and leaves a same-id player-owned Explod unchanged.
+- Added required `synthetic-imported-helper-modifyexplod.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 722 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 175 / 175 artifacts, 155 required, 20 optional, 0 failed; `synthetic-imported-helper-modifyexplod.json` checksum is `0749041c`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can mutate a helper-parented owner-side visual `Explod` actor by static `id` after spawning it; required trace evidence proves helper route `1200 -> 1208 -> 1209` / anims `928` and `929`, Explod anim `941`, effect store serial progression, world spawn/active lifecycle, `parentId = p1-helper-0` metadata, and velocity/scale/priority/pause/remove payload mutation.
+
+Claim blocked:
+
+- This does not add helper-owned `HitDef`, helper-owned `Projectile`, helper combat/contact presentation, helper-owned effect namespaces, dynamic `ModifyExplod` params, position rebinding, helper-bound Explod timing beyond this static owner-side route, FightFX/common animation routing, exact spawn/mutate tick order, nested helper ancestry, team/keyctrl ownership, or full MUGEN/IKEMEN helper/effect parity. No score movement.
+
 ## 2026-06-30 - Bounded helper-local RemoveExplod trace gate
 
 Changed:

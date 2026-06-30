@@ -1,4 +1,4 @@
-import type { ExplodControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
+import type { ExplodControllerOp, ModifyExplodControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import {
@@ -365,6 +365,13 @@ export function advanceRuntimeHelperActors(
       removeRuntimeHelperExplodActors(store, helper, controller);
       return true;
     },
+    onModifyExplod: (helper, controller) => {
+      if (options?.onModifyExplod) {
+        return options.onModifyExplod(helper, controller);
+      }
+      modifyRuntimeHelperExplodActors(store, helper, controller);
+      return true;
+    },
   });
 }
 
@@ -409,6 +416,18 @@ export function removeRuntimeHelperExplodActors(store: RuntimeEffectActorStore, 
   const operation = removeExplodOperation(controller);
   const explodId = operation?.explodId ?? firstNumber(findControllerParam(controller, "id"));
   return removeRuntimeExplodActors(store, explodId);
+}
+
+export function modifyRuntimeHelperExplodActors(store: RuntimeEffectActorStore, helper: RuntimeHelper, controller: ControllerIr): number {
+  const operation = modifyExplodOperation(controller);
+  const explodId = operation?.explodId ?? firstNumber(findControllerParam(controller, "id"));
+  const helperExplods = store.explods.filter(
+    (explod) => explod.parentId === helper.serialId && (explodId === undefined || explod.explodId === explodId),
+  );
+  return modifyRuntimeExplods(helperExplods, {
+    controller: controller.source,
+    operation,
+  });
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
@@ -460,6 +479,10 @@ function explodOperation(controller: ControllerIr): ExplodControllerOp | undefin
 
 function removeExplodOperation(controller: ControllerIr): RemoveExplodControllerOp | undefined {
   return controller.operation?.kind === "removeexplod" ? controller.operation : undefined;
+}
+
+function modifyExplodOperation(controller: ControllerIr): ModifyExplodControllerOp | undefined {
+  return controller.operation?.kind === "modifyexplod" ? controller.operation : undefined;
 }
 
 function resolveHelperExplodPosition(

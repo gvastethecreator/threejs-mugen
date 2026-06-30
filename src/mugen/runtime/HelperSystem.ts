@@ -72,6 +72,7 @@ export type RuntimeHelperAdvanceOptions = {
   opponentState?: CharacterRuntimeState;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
+  onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
@@ -191,6 +192,7 @@ export function runRuntimeHelperStateControllers(
     | "opponentState"
     | "onSpawnExplod"
     | "onRemoveExplod"
+    | "onModifyExplod"
     | "onController"
     | "onUnsupportedController"
   > = {},
@@ -266,6 +268,14 @@ export function runRuntimeHelperStateControllers(
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "removeexplod") {
       if (options.onRemoveExplod?.(helper, controller)) {
+        options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && dispatch.effect === "modifyexplod") {
+      if (options.onModifyExplod?.(helper, controller)) {
         options.onController?.(helper, controller);
         continue;
       }
