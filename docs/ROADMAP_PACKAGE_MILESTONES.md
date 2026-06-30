@@ -86,8 +86,8 @@ Latest implementation checkpoint:
 
 ```txt
 R1 bounded Common1 down-recovery actor-frame gate
-  -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges
-  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range evidence before the existing 5110 -> 5120 get-up order
+  -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges plus first-to-last drop
+  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range and first-to-last-drop evidence before the existing 5110 -> 5120 get-up order
   -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the field and preset
   -> no exact down.recovertime tables, exact Common1 controller-loop timing, animation timing, velocity math, recovery-input branching, public bundled KFM support, full fall-recovery parity, or score claim
 R2 bounded helper-local Projectile gate
@@ -254,7 +254,7 @@ R1 required Common1 fall get-hit entry trace strengthening
   -> optional kfm-official-default-fall-gethit.json checksum 0b3ece0c applies bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation and actor-frame order when the private fixture exists
   -> no exact fall/bounce/liedown tick order, velocity math, recovery branching, guard-state parity, public bundled KFM, or full fall get-hit parity claim
 R1 required Common1 lie-down/get-up recovery trace strengthening
-  -> synthetic-imported-default-fall-recovery.json checksum d83797d9 gates ordered 5110 -> 5120 controller/frame evidence plus bounded hitFall.downRecoverTime countdown-range evidence in 5110
+  -> synthetic-imported-default-fall-recovery.json checksum d83797d9 gates ordered 5110 -> 5120 controller/frame evidence plus bounded hitFall.downRecoverTime countdown-range / first-to-last-drop evidence in 5110
   -> optional kfm-official-default-fall-recovery.json checksum b1c6456a applies bounded official KFM 5110/5120 controller/typed-operation and actor-frame order when the private fixture exists
   -> no exact controller-loop tick order, threshold/down-recovery table, velocity math, recovery-input branching, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening

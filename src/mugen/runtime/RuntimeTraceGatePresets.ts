@@ -5527,6 +5527,7 @@ export function createSyntheticImportedDefaultFallRecoveryTraceArtifact(
             moveType: "H",
             observedHitFallDownRecoverTimeAtLeast: 58,
             observedHitFallDownRecoverTimeAtMost: 54,
+            observedHitFallDownRecoverTimeDropAtLeast: 1,
             minFrames: 2,
           },
         ],

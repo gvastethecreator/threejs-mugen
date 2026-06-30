@@ -488,6 +488,7 @@ export type RuntimeTraceActorFrameRequirement = {
   observedHitFallRecoverTimeAtMost?: number;
   observedHitFallDownRecoverTimeAtLeast?: number;
   observedHitFallDownRecoverTimeAtMost?: number;
+  observedHitFallDownRecoverTimeDropAtLeast?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -553,6 +554,8 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxHitFallRecoverTime?: number;
   minHitFallDownRecoverTime?: number;
   maxHitFallDownRecoverTime?: number;
+  firstHitFallDownRecoverTime?: number;
+  lastHitFallDownRecoverTime?: number;
   bodyWidthFront?: number;
   bodyWidthBack?: number;
   playerPush?: boolean;
@@ -1474,6 +1477,10 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxHitFallRecoverTime: maxOptionalTraceNumber(existing.maxHitFallRecoverTime, actor.hitFall?.recoverTime),
               minHitFallDownRecoverTime: minOptionalTraceNumber(existing.minHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
               maxHitFallDownRecoverTime: maxOptionalTraceNumber(existing.maxHitFallDownRecoverTime, actor.hitFall?.downRecoverTime),
+              firstHitFallDownRecoverTime:
+                frame.tick < existing.firstTick ? actor.hitFall?.downRecoverTime : existing.firstHitFallDownRecoverTime,
+              lastHitFallDownRecoverTime:
+                frame.tick >= existing.lastTick ? actor.hitFall?.downRecoverTime : existing.lastHitFallDownRecoverTime,
             }
           : {
               actorId: actor.id,
@@ -1504,6 +1511,8 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxHitFallRecoverTime: actor.hitFall?.recoverTime,
               minHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
               maxHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
+              firstHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
+              lastHitFallDownRecoverTime: actor.hitFall?.downRecoverTime,
               bodyWidthFront: actor.bodyWidth?.front,
               bodyWidthBack: actor.bodyWidth?.back,
               playerPush: actor.playerPush,
@@ -2798,6 +2807,10 @@ function matchesActorFrameRequirement(
   actor: RuntimeTraceGateActorFrameEvidence,
   requirement: RuntimeTraceActorFrameRequirement,
 ): boolean {
+  const hitFallDownRecoverTimeDrop =
+    actor.firstHitFallDownRecoverTime === undefined || actor.lastHitFallDownRecoverTime === undefined
+      ? undefined
+      : actor.firstHitFallDownRecoverTime - actor.lastHitFallDownRecoverTime;
   return (
     (requirement.actorId === undefined || actor.actorId === requirement.actorId) &&
     (requirement.source === undefined || actor.source === requirement.source) &&
@@ -2837,6 +2850,9 @@ function matchesActorFrameRequirement(
       (actor.maxHitFallDownRecoverTime ?? Number.NEGATIVE_INFINITY) >= requirement.observedHitFallDownRecoverTimeAtLeast) &&
     (requirement.observedHitFallDownRecoverTimeAtMost === undefined ||
       (actor.minHitFallDownRecoverTime ?? Number.POSITIVE_INFINITY) <= requirement.observedHitFallDownRecoverTimeAtMost) &&
+    (requirement.observedHitFallDownRecoverTimeDropAtLeast === undefined ||
+      (hitFallDownRecoverTimeDrop ?? Number.NEGATIVE_INFINITY) >=
+        requirement.observedHitFallDownRecoverTimeDropAtLeast) &&
     (requirement.bodyWidthFront === undefined || sameTraceNumber(actor.bodyWidthFront ?? NaN, requirement.bodyWidthFront)) &&
     (requirement.bodyWidthBack === undefined || sameTraceNumber(actor.bodyWidthBack ?? NaN, requirement.bodyWidthBack)) &&
     (requirement.playerPush === undefined || actor.playerPush === requirement.playerPush) &&

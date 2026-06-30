@@ -79,8 +79,8 @@ Latest implementation truth:
 
 ```txt
 R1 bounded Common1 down-recovery actor-frame gate
-  -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges
-  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range evidence before the existing 5110 -> 5120 get-up order
+  -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges plus first-to-last drop
+  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range and first-to-last-drop evidence before the existing 5110 -> 5120 get-up order
   -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the field and preset
   -> no exact down.recovertime tables, exact Common1 controller-loop timing, animation timing, velocity math, recovery-input branching, public bundled KFM support, full fall-recovery parity, or score movement claim
 R2 bounded helper-local Projectile gate
@@ -249,7 +249,7 @@ R1 required Common1 fall get-hit entry trace strengthening
   -> no exact Common1 controller-loop tick order, fall/bounce/liedown velocity math, recovery branching, guard-state parity, public bundled KFM, or full fall get-hit parity claim
 R1 required Common1 lie-down/get-up recovery trace strengthening
   -> synthetic-imported-default-fall-recovery.json checksum d83797d9
-  -> required trace now gates ordered P2 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState plus actor-frame 5110 -> 5120 and bounded hitFall.downRecoverTime countdown-range evidence in 5110
+  -> required trace now gates ordered P2 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState plus actor-frame 5110 -> 5120 and bounded hitFall.downRecoverTime countdown-range / first-to-last-drop evidence in 5110
   -> optional kfm-official-default-fall-recovery.json checksum b1c6456a now requires bounded official KFM 5110/5120 controller/typed-operation order when the private fixture exists
   -> no exact Common1 controller-loop tick order, threshold/down-recovery table, velocity math, recovery-input branching, public bundled KFM, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening

@@ -247,6 +247,7 @@ describe("RuntimeTraceArtifact", () => {
               moveType: "H",
               observedHitFallDownRecoverTimeAtLeast: 2,
               observedHitFallDownRecoverTimeAtMost: 1,
+              observedHitFallDownRecoverTimeDropAtLeast: 1,
               minFrames: 2,
             },
             {
@@ -267,6 +268,8 @@ describe("RuntimeTraceArtifact", () => {
     const getUpEvidence = artifact.gates[0]?.evidence.actorFrames.find((frame) => frame.animNo === 5120);
     expect(lieDownEvidence?.maxHitFallDownRecoverTime).toBe(2);
     expect(lieDownEvidence?.minHitFallDownRecoverTime).toBe(1);
+    expect(lieDownEvidence?.firstHitFallDownRecoverTime).toBe(2);
+    expect(lieDownEvidence?.lastHitFallDownRecoverTime).toBe(1);
     expect(lieDownEvidence?.frames).toBeGreaterThanOrEqual(2);
     expect(getUpEvidence?.minHitFallDownRecoverTime).toBe(0);
     expect(artifact.gates[0]?.failures).toEqual([]);

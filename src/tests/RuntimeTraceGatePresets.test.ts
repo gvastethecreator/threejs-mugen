@@ -4849,6 +4849,8 @@ describe("RuntimeTraceGatePresets", () => {
     expect(lieDownFrame?.frames).toBeGreaterThanOrEqual(2);
     expect(lieDownFrame?.maxHitFallDownRecoverTime).toBeGreaterThanOrEqual(58);
     expect(lieDownFrame?.minHitFallDownRecoverTime).toBeLessThanOrEqual(54);
+    expect(lieDownFrame?.firstHitFallDownRecoverTime).toBeGreaterThanOrEqual(58);
+    expect(lieDownFrame?.lastHitFallDownRecoverTime).toBeLessThanOrEqual(54);
     expect(lieDownFrame?.lastTick ?? 0).toBeLessThan(getUpFrame?.firstTick ?? 0);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
       {
@@ -4859,6 +4861,7 @@ describe("RuntimeTraceGatePresets", () => {
         moveType: "H",
         observedHitFallDownRecoverTimeAtLeast: 58,
         observedHitFallDownRecoverTimeAtMost: 54,
+        observedHitFallDownRecoverTimeDropAtLeast: 1,
         minFrames: 2,
       },
     ]);
