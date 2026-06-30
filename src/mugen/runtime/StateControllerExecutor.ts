@@ -29,12 +29,14 @@ import { applyRuntimeStateMetadataTransition } from "./RuntimeStateMetadataSyste
 import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
 import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
+import { RuntimeStateTypeWorld } from "./StateTypeSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
 
 const hitDefenseWorld = new RuntimeHitDefenseWorld();
 const damageScaleWorld = new RuntimeDamageScaleWorld();
+const stateTypeWorld = new RuntimeStateTypeWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -145,7 +147,7 @@ export function executeControllerIr(
       value: operation?.value ?? (numberParam(controller, next, context, "value") ?? 0) !== 0,
     });
   } else if (type === "statetypeset") {
-    applyStateTypeSet(next, controller, metadataOperation(controller, "statetypeset"));
+    stateTypeWorld.applyController(next, controller, metadataOperation(controller, "statetypeset"));
   } else if (type === "lifeadd") {
     const operation = resourceOperation(controller, "lifeadd");
     const value = operation?.value ?? numberParam(controller, next, context, "value") ?? 0;
@@ -761,35 +763,6 @@ function runtimeHitVar(state: CharacterRuntimeState, name: string): number | und
   }
   if (key === "ctrltime") {
     return state.guardControlTime ?? 0;
-  }
-  return undefined;
-}
-
-function applyStateTypeSet(
-  state: CharacterRuntimeState,
-  controller: ControllerExecutionSource,
-  operation?: MetadataControllerOp,
-): void {
-  const stateType = operation?.stateType ?? enumParam(controller, "statetype", "stateType");
-  const moveType = operation?.moveType ?? enumParam(controller, "movetype", "moveType");
-  const physics = operation?.physics ?? enumParam(controller, "physics");
-  if (stateType === "S" || stateType === "C" || stateType === "A" || stateType === "L") {
-    state.stateType = stateType;
-  }
-  if (moveType === "I" || moveType === "A" || moveType === "H") {
-    state.moveType = moveType;
-  }
-  if (physics === "S" || physics === "C" || physics === "A" || physics === "N") {
-    state.physics = physics;
-  }
-}
-
-function enumParam(controller: ControllerExecutionSource, ...keys: string[]): string | undefined {
-  for (const key of keys) {
-    const raw = findParam(controller, key);
-    if (raw) {
-      return raw.trim().toUpperCase();
-    }
   }
   return undefined;
 }

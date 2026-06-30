@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeStateTypeWorld ownership extraction
+  -> RuntimeStateTypeWorld now owns bounded passive StateTypeSet stateType/moveType/physics setup
+  -> StateControllerExecutor delegates typed metadata operations and raw-param fallback mutations to the world
+  -> executor still owns controller routing and broad runtime-controller execution
+  -> focused StateTypeSystem coverage proves typed setup, raw case-normalized fallback, and invalid raw no-op behavior
+  -> no dynamic metadata expressions, helper/team/redirect ownership, exact physics/tick-order interactions, full StateTypeSet parity, or score claim
 R2 RuntimeDamageScaleWorld ownership extraction
   -> RuntimeDamageScaleWorld now owns bounded passive AttackMulSet/DefenceMulSet multiplier setup
   -> StateControllerExecutor delegates typed damage-scale operations and raw-param fallback mutations to the world
@@ -518,6 +524,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeStateTypeWorld` ownership extraction
 - `RuntimeDamageScaleWorld` ownership extraction
 - `RuntimeHitDefenseWorld` ownership extraction
 - `RuntimeOrientationWorld` ownership extraction
