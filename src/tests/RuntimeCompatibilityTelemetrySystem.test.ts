@@ -79,6 +79,7 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
       "pause:superpause",
     );
     expect(world.operationKey({ kind: "audio", controllerType: "playsnd", value: "S5,0", channel: 2 })).toBe("audio:playsnd");
+    expect(world.operationKey({ kind: "noop", controllerType: "forcefeedback" })).toBe("noop:forcefeedback");
     expect(world.operationKey({ kind: "envshake", time: 16, freq: 30, ampl: -7, phase: 0.5 })).toBe("envshake");
     expect(world.operationKey({ kind: "assertspecial", flags: ["nowalk"], globalFlags: [] })).toBe("assertspecial");
     expect(world.operationKey({ kind: "eligibility", controllerType: "hitby", mode: "allow", slots: [] })).toBe(

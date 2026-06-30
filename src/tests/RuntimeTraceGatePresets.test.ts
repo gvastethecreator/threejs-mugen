@@ -410,7 +410,16 @@ describe("RuntimeTraceGatePresets", () => {
       "DestroySelf",
       "HitDef",
     ]);
-    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "noop:null",
+      "noop:forcefeedback",
+      "noop:displaytoclipboard",
+      "noop:appendtoclipboard",
+      "noop:clearclipboard",
+      "noop:makedust",
+      "noop:destroyself",
+      "hitdef",
+    ]);
     expect(evidence?.executedControllers.Null).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.ForceFeedback).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.DisplayToClipboard).toBeGreaterThanOrEqual(1);
@@ -419,6 +428,13 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.MakeDust).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.DestroySelf).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:null"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:forcefeedback"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:displaytoclipboard"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:appendtoclipboard"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:clearclipboard"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:makedust"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["noop:destroyself"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");

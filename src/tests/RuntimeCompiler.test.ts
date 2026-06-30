@@ -159,6 +159,34 @@ time = 20
     expect(getControllerSupport("AngleDraw").runtimeLabel).toBe("sprite rotation");
   });
 
+  it("compiles accepted no-op controllers into typed operations", () => {
+    expect(compileControllerIr(controller(200, "Null", [])).operation).toEqual({ kind: "noop", controllerType: "null" });
+    expect(compileControllerIr(controller(200, "ForceFeedback", [], { time: "8" })).operation).toEqual({
+      kind: "noop",
+      controllerType: "forcefeedback",
+    });
+    expect(compileControllerIr(controller(200, "DisplayToClipboard", [], { text: '"debug"' })).operation).toEqual({
+      kind: "noop",
+      controllerType: "displaytoclipboard",
+    });
+    expect(compileControllerIr(controller(200, "AppendToClipboard", [], { text: '"debug"' })).operation).toEqual({
+      kind: "noop",
+      controllerType: "appendtoclipboard",
+    });
+    expect(compileControllerIr(controller(200, "ClearClipboard", [])).operation).toEqual({
+      kind: "noop",
+      controllerType: "clearclipboard",
+    });
+    expect(compileControllerIr(controller(200, "MakeDust", [], { pos: "0,0" })).operation).toEqual({
+      kind: "noop",
+      controllerType: "makedust",
+    });
+    expect(compileControllerIr(controller(200, "DestroySelf", [])).operation).toEqual({
+      kind: "noop",
+      controllerType: "destroyself",
+    });
+  });
+
   it("compiles static AssertSpecial flags into typed operations", () => {
     const compiled = compileControllerIr(
       controller(200, "AssertSpecial", [], {

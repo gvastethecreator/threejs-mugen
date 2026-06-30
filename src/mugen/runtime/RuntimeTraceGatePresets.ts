@@ -366,7 +366,16 @@ export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGa
         "DestroySelf",
         "HitDef",
       ],
-      requiredExecutedOperations: ["hitdef"],
+      requiredExecutedOperations: [
+        "noop:null",
+        "noop:forcefeedback",
+        "noop:displaytoclipboard",
+        "noop:appendtoclipboard",
+        "noop:clearclipboard",
+        "noop:makedust",
+        "noop:destroyself",
+        "hitdef",
+      ],
       requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 200, animNo: 200 }],
       notes: [
         "Synthetic imported no-op trace proves Null, ForceFeedback, DisplayToClipboard, AppendToClipboard, ClearClipboard, deprecated MakeDust, and helper-lifecycle DestroySelf controllers can execute without mutating runtime state or crashing imported CNS flow. ForceFeedback, debug clipboard controllers, MakeDust, and DestroySelf remain browser/runtime no-ops, and Null remains a true no-op; this does not claim device feedback, debug text rendering, clipboard output, dust rendering, helper removal/lifecycle side effects, or full CNS VM parity.",

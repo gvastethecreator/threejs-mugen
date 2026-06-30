@@ -1090,6 +1090,7 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.RemapPal).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["sprite-effect:remappal"]).toBe(1);
     expect(snapshot.compatibilitySession?.actors[0]?.executedControllers.ForceFeedback).toBe(1);
+    expect(snapshot.compatibilitySession?.actors[0]?.executedOperations["noop:forcefeedback"]).toBe(1);
   });
 
   it("executes simple imported target controllers against the latest hit target", () => {

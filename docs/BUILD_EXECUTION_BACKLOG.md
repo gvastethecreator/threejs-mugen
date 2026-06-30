@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Typed no-op controller operations
+
+Changed:
+
+- Added `NoopControllerOp` for accepted player-state no-op controllers: `Null`, `ForceFeedback`, debug clipboard controllers, `MakeDust`, and player-state `DestroySelf`.
+- Routed no-op operations through compatibility telemetry as stable `noop:*` operation keys while preserving current no-mutation runtime behavior.
+- Strengthened `synthetic-imported-noop.json` so it now requires typed `noop:*` operation evidence next to the existing controller-count and `HitDef` continuation evidence.
+- Updated support docs so player-state no-ops remain accepted/countable only; helper-local `DestroySelf` removal remains a separate bounded micro-VM behavior.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts src/tests/PlayableMatchRuntime.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "no-op|ForceFeedback|operation keys|controller support"` passes: 4 files, 5 matching tests.
+- `pnpm test` passes: 81 files / 700 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 165 / 165 artifacts, 0 failed; `synthetic-imported-noop.json` checksum is now `2877b222`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current imported player-state no-op controllers can be proven as typed `noop:*` operations in compatibility telemetry while leaving runtime state unchanged and continuing into combat flow.
+
+Claim blocked:
+
+- Device force feedback, debug text rendering, clipboard output, dust rendering, helper removal/lifecycle side effects from player active states, helper/redirect ownership, exact no-op timing/order, and full MUGEN/IKEMEN no-op/debug controller parity remain blocked.
+
 ## 2026-06-30 - Typed AssertSpecial controller operation
 
 Changed:

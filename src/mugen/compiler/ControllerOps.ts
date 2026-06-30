@@ -85,6 +85,18 @@ export type AudioControllerOp = {
   channel?: number;
 };
 
+export type NoopControllerOp = {
+  kind: "noop";
+  controllerType:
+    | "null"
+    | "forcefeedback"
+    | "displaytoclipboard"
+    | "appendtoclipboard"
+    | "clearclipboard"
+    | "makedust"
+    | "destroyself";
+};
+
 export type AssertSpecialControllerOp = {
   kind: "assertspecial";
   flags: string[];
@@ -436,6 +448,7 @@ export type ControllerOp =
   | BindToTargetControllerOp
   | PauseControllerOp
   | AudioControllerOp
+  | NoopControllerOp
   | AssertSpecialControllerOp
   | ProjectileControllerOp
   | ModifyProjectileControllerOp
@@ -546,6 +559,9 @@ export function compileControllerOp(controller: MugenStateController): Controlle
   }
   if (type === "playsnd" || type === "stopsnd") {
     return compileAudioControllerOp(controller, type);
+  }
+  if (isNoopController(type)) {
+    return { kind: "noop", controllerType: type };
   }
   if (type === "assertspecial") {
     return compileAssertSpecialControllerOp(controller);
@@ -1178,6 +1194,18 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
     value,
     channel,
   });
+}
+
+function isNoopController(type: string): type is NoopControllerOp["controllerType"] {
+  return (
+    type === "null" ||
+    type === "forcefeedback" ||
+    type === "displaytoclipboard" ||
+    type === "appendtoclipboard" ||
+    type === "clearclipboard" ||
+    type === "makedust" ||
+    type === "destroyself"
+  );
 }
 
 function compileAssertSpecialControllerOp(controller: MugenStateController): AssertSpecialControllerOp | undefined {

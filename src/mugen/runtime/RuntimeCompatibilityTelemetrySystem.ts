@@ -131,6 +131,9 @@ export class RuntimeCompatibilityTelemetryWorld {
     if (operation.kind === "audio") {
       return `audio:${operation.controllerType}`;
     }
+    if (operation.kind === "noop") {
+      return `noop:${operation.controllerType}`;
+    }
     if (operation.kind === "envshake") {
       return "envshake";
     }
