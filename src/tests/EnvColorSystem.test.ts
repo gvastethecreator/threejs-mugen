@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { EnvColorControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   calculateRuntimeStageFlash,
   createRuntimeEnvColorEvent,
   pushRuntimeEnvColorEvent,
+  RuntimeEnvColorControllerDispatchWorld,
   RuntimeEnvColorWorld,
 } from "../mugen/runtime/EnvColorSystem";
 import type { RuntimeEnvColorEvent } from "../mugen/runtime/types";
@@ -89,6 +91,36 @@ describe("EnvColorSystem", () => {
 
     world.reset();
     expect(world.snapshotStageFlash(13)).toBeUndefined();
+  });
+
+  it("dispatches active EnvColor controllers with telemetry hooks", () => {
+    const dispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
+    const envColorWorld = new RuntimeEnvColorWorld();
+    const actor = { id: "p1" };
+    const ir = compileControllerIr(controller("EnvColor", { value: "16,96,255", time: "12", under: "1" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor,
+      controller: ir,
+      runtimeTick: 24,
+      emitController: (source, runtimeTick, operation) => envColorWorld.emitController(source, runtimeTick, operation),
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.time}`),
+    });
+
+    expect(result.event).toMatchObject({
+      type: "EnvColor",
+      color: [16, 96, 255],
+      time: 12,
+      under: true,
+      runtimeTick: 24,
+    });
+    expect(envColorWorld.snapshotStageFlash(25)).toMatchObject({ color: [16, 96, 255], remaining: 11, under: true });
+    expect(recordedControllers).toEqual(["EnvColor"]);
+    expect(recordedOperations).toEqual(["envcolor:12"]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
   });
 });
 

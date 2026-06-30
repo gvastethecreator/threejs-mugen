@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeEnvColorControllerDispatchWorld ownership extraction
+  -> RuntimeEnvColorControllerDispatchWorld now owns bounded active-state EnvColor side-effect dispatch
+  -> PlayableMatchRuntime delegates controller telemetry, typed envcolor operation selection, operation telemetry, and EnvColor event handoff through RuntimeEnvColorWorld
+  -> match runtime still owns trigger filtering, active-state order, stage-world ownership, and pause/hitpause callback routing
+  -> focused EnvColorSystem coverage proves EnvColor telemetry/mutation through the dispatch boundary
+  -> no exact blend math, layer/window ordering, pause timing, renderer parity, full presentation parity, or score movement claim
 R2 RuntimeAudioControllerDispatchWorld ownership extraction
   -> RuntimeAudioControllerDispatchWorld now owns bounded active-state audio side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed audio operation selection, operation telemetry, and PlaySnd/StopSnd event handoff through RuntimeAudioWorld

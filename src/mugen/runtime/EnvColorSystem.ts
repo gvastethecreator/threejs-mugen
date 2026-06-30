@@ -1,7 +1,27 @@
 import type { EnvColorControllerOp } from "../compiler/ControllerOps";
+import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeEnvColorEvent, RuntimeStageFlash } from "./types";
+
+export type RuntimeEnvColorControllerDispatchOptions<TActor> = {
+  actor: TActor;
+  controller: ControllerIr;
+  runtimeTick: number;
+  emitController: (
+    controller: MugenStateController,
+    runtimeTick: number,
+    operation?: EnvColorControllerOp,
+  ) => RuntimeEnvColorEvent | undefined | void;
+  recordController?: (actor: TActor, controller: MugenStateController) => void;
+  recordOperation?: (actor: TActor, operation: EnvColorControllerOp) => void;
+};
+
+export type RuntimeEnvColorControllerDispatchResult = {
+  event?: RuntimeEnvColorEvent;
+  recordedController: boolean;
+  recordedOperation: boolean;
+};
 
 export function createRuntimeEnvColorEvent(
   controller: MugenStateController,
@@ -48,6 +68,22 @@ export class RuntimeEnvColorWorld {
 
   reset(): void {
     this.events.length = 0;
+  }
+}
+
+export class RuntimeEnvColorControllerDispatchWorld {
+  apply<TActor>(options: RuntimeEnvColorControllerDispatchOptions<TActor>): RuntimeEnvColorControllerDispatchResult {
+    const operation = options.controller.operation?.kind === "envcolor" ? options.controller.operation : undefined;
+    options.recordController?.(options.actor, options.controller.source);
+    if (operation) {
+      options.recordOperation?.(options.actor, operation);
+    }
+    const event = options.emitController(options.controller.source, options.runtimeTick, operation) ?? undefined;
+    return {
+      event,
+      recordedController: Boolean(options.recordController),
+      recordedOperation: Boolean(operation && options.recordOperation),
+    };
   }
 }
 

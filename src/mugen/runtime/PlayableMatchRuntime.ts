@@ -20,7 +20,7 @@ import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
-import { RuntimeEnvColorWorld } from "./EnvColorSystem";
+import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./EnvColorSystem";
 import {
   canRuntimeBeHitBy,
   collisionBoxesIntersect,
@@ -124,6 +124,7 @@ const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
+const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1119,12 +1120,14 @@ function runActiveStateControllers(
           recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
         });
       } else if (dispatch.effect === "envcolor") {
-        compatibilityTelemetryWorld.recordController(fighter, rawController);
-        const operation = controller.operation?.kind === "envcolor" ? controller.operation : undefined;
-        if (operation) {
-          compatibilityTelemetryWorld.recordOperation(fighter, operation);
-        }
-        onEnvColorController?.(rawController, operation);
+        envColorControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
+          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+        });
       } else if (dispatch.effect === "envshake") {
         compatibilityTelemetryWorld.recordController(fighter, rawController);
         const operation = controller.operation?.kind === "envshake" ? controller.operation : undefined;
