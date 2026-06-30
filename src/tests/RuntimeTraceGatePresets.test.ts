@@ -95,6 +95,7 @@ import {
   createSyntheticImportedHelperIsHelperTraceArtifact,
   createSyntheticImportedHelperEnemyNearTraceArtifact,
   createSyntheticImportedHelperExplodTraceArtifact,
+  createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperBindToParentTraceArtifact,
   createSyntheticImportedHelperBindToRootTraceArtifact,
   createSyntheticImportedHelperScaleTraceArtifact,
@@ -1403,6 +1404,51 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported Helper RemoveExplod artifact with helper-local cleanup evidence", () => {
+    const artifact = createSyntheticImportedHelperRemoveExplodTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-removeexplod-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-removeexplod-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "remove", kind: "explod", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1206, animNo: 926 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1207, animNo: 927 }),
+        expect.objectContaining({ source: "effect", actorKind: "explod", ownerId: "p1", animNo: 940 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredWorldLifecycleEvents).toEqual([
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "remove", kind: "explod", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1207, minAge: 2 },
+      { actorId: "p1-explod-0", kind: "explod", ownerId: "p1", effectId: 8810, minAge: 1, minRemoveTime: 80, minSpritePriority: 7 },
+    ]);
   });
 
   it("creates a synthetic imported Helper BindToParent artifact with helper-local owner bind evidence", () => {

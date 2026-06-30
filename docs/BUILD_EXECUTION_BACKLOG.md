@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded helper-local RemoveExplod trace gate
+
+Changed:
+
+- Extended the helper-local micro-VM side-effect bridge with `RemoveExplod`, so current visual Helper actors can request bounded owner-side Explod cleanup from local CNS state controllers.
+- Returned removal counts from `RuntimeEffectActorWorld.removeExplods(...)` / `removeRuntimeExplodActors(...)` and routed helper-local `RemoveExplod` through `RuntimeEffectActorWorld` without touching `PlayableMatchRuntime`.
+- Added focused `EffectActorSystem` coverage where a Helper spawns Explod id `8810`, changes state, then removes that Explod by id from the owner store; `RemoveExplod` with no matching actor is treated as a supported no-op instead of false unsupported telemetry.
+- Added required `synthetic-imported-helper-removeexplod.json` trace evidence and registered it in `pnpm qa:trace`.
+
+Evidence:
+
+- `pnpm test` passes: 81 files / 720 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 174 / 174 artifacts, 154 required, 20 optional, 0 failed; `synthetic-imported-helper-removeexplod.json` checksum is `ff8658a2`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+
+Claim allowed:
+
+- Current first-generation visual Helper actors running the bounded helper-local micro-VM can remove an owner-side visual `Explod` actor by static `id` after spawning it; required trace evidence proves helper route `1200 -> 1206 -> 1207` / anims `926` and `927`, Explod anim `940`, effect store serial progression, world spawn/active/remove lifecycle, and `parentId = p1-helper-0` payload/lifecycle metadata.
+
+Claim blocked:
+
+- This does not add helper-owned `HitDef`, helper-owned `Projectile`, helper combat/contact presentation, helper-owned effect namespaces, dynamic `RemoveExplod` params, helper-bound Explod timing beyond this static owner-side route, FightFX/common animation routing, exact spawn/remove tick order, nested helper ancestry, team/keyctrl ownership, or full MUGEN/IKEMEN helper/effect parity. No score movement.
+
 ## 2026-06-30 - Bounded helper-local Explod trace gate
 
 Changed:

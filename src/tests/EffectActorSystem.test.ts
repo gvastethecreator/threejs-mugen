@@ -747,6 +747,98 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("removes bounded helper-local Explod actors by id from the owner store", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Explod", { id: "8810", anim: "930", pos: "12,-6", removetime: "80" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("RemoveExplod", { id: "8810" }, ["Time = 1"]),
+              controller("ChangeState", { value: "6002" }, ["Time = 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6002, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(store.explods.map((explod) => explod.explodId)).toEqual([8810]);
+    expect(runtimeExplodActorsToSnapshots(store, 200)[0]).toMatchObject({
+      id: "p1-explod-0",
+      parentId: "p1-helper-0",
+      effect: { kind: "explod", id: 8810, removeTime: 80 },
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["Explod", "ChangeState", "RemoveExplod", "ChangeState"]);
+    expect(store.explods).toEqual([]);
+    expect(helper).toMatchObject({
+      stateNo: 6002,
+      animNo: 902,
+      stateTime: 1,
+      age: 2,
+    });
+  });
+
+  it("treats helper-local RemoveExplod without a matching actor as a supported no-op", () => {
+    const store = createRuntimeEffectActorStore();
+    spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("RemoveExplod", { id: "4040" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(state(6001, 901)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+      ]),
+    });
+    const executed: string[] = [];
+    const unsupported: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      onController: (_helper, item) => executed.push(item.type),
+      onUnsupportedController: (_helper, item) => unsupported.push(item.type),
+    });
+
+    expect(executed).toEqual(["RemoveExplod", "ChangeState"]);
+    expect(unsupported).toEqual([]);
+    expect(store.explods).toEqual([]);
+    expect(store.helpers[0]).toMatchObject({
+      stateNo: 6001,
+      animNo: 901,
+    });
+  });
+
   it("owns NumExplod, NumHelper, and NumProj trigger counts through one world query", () => {
     const world = new RuntimeEffectActorWorld();
 

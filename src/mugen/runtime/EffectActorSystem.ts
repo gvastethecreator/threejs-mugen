@@ -1,4 +1,4 @@
-import type { ExplodControllerOp } from "../compiler/ControllerOps";
+import type { ExplodControllerOp, RemoveExplodControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import {
@@ -114,8 +114,8 @@ export class RuntimeEffectActorWorld {
     return spawnRuntimeExplodActor(this.getStore(ownerId), ownerId, input);
   }
 
-  removeExplods(ownerId: string, explodId: number | undefined): void {
-    removeRuntimeExplodActors(this.getStore(ownerId), explodId);
+  removeExplods(ownerId: string, explodId: number | undefined): number {
+    return removeRuntimeExplodActors(this.getStore(ownerId), explodId);
   }
 
   modifyExplods(ownerId: string, input: RuntimeExplodModifyInput): number {
@@ -305,8 +305,10 @@ export function spawnRuntimeExplodActor(
   return explod;
 }
 
-export function removeRuntimeExplodActors(store: RuntimeEffectActorStore, explodId: number | undefined): void {
+export function removeRuntimeExplodActors(store: RuntimeEffectActorStore, explodId: number | undefined): number {
+  const before = store.explods.length;
   store.explods = removeRuntimeExplods(store.explods, explodId);
+  return before - store.explods.length;
 }
 
 export function modifyRuntimeExplodActors(store: RuntimeEffectActorStore, input: RuntimeExplodModifyInput): number {
@@ -356,6 +358,13 @@ export function advanceRuntimeHelperActors(
       }
       return spawnRuntimeHelperExplodActor(store, helper, controller, options) !== undefined;
     },
+    onRemoveExplod: (helper, controller) => {
+      if (options?.onRemoveExplod) {
+        return options.onRemoveExplod(helper, controller);
+      }
+      removeRuntimeHelperExplodActors(store, helper, controller);
+      return true;
+    },
   });
 }
 
@@ -394,6 +403,12 @@ export function spawnRuntimeHelperExplodActor(
     fallbackFacing: helper.facing,
     defaultRemoveTime: actionDuration(action),
   });
+}
+
+export function removeRuntimeHelperExplodActors(store: RuntimeEffectActorStore, _helper: RuntimeHelper, controller: ControllerIr): number {
+  const operation = removeExplodOperation(controller);
+  const explodId = operation?.explodId ?? firstNumber(findControllerParam(controller, "id"));
+  return removeRuntimeExplodActors(store, explodId);
 }
 
 export function removeRuntimeHelperActors(store: RuntimeEffectActorStore, filter: RuntimeHelperRemovalFilter = {}): number {
@@ -441,6 +456,10 @@ export function runtimeProjectileActorsToSnapshots(store: RuntimeEffectActorStor
 
 function explodOperation(controller: ControllerIr): ExplodControllerOp | undefined {
   return controller.operation?.kind === "explod" ? controller.operation : undefined;
+}
+
+function removeExplodOperation(controller: ControllerIr): RemoveExplodControllerOp | undefined {
+  return controller.operation?.kind === "removeexplod" ? controller.operation : undefined;
 }
 
 function resolveHelperExplodPosition(
