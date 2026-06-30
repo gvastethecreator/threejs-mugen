@@ -5378,6 +5378,9 @@ describe("RuntimeTraceGatePresets", () => {
       throw new Error("expected recovery-threshold actor-frame evidence");
     }
     expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(fallFrame.lastTick).toBeLessThan(recoveryFrame.firstTick);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
@@ -5388,7 +5391,9 @@ describe("RuntimeTraceGatePresets", () => {
         stateNo: 5050,
         moveType: "H",
         observedHitFallRecoverTimeAtLeast: 1,
-        minFrames: 1,
+        observedHitFallRecoverTimeAtMost: 0,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
       },
       {
         actorId: "p2",
@@ -5411,7 +5416,9 @@ describe("RuntimeTraceGatePresets", () => {
             stateNo: 5050,
             moveType: "H",
             observedHitFallRecoverTimeAtLeast: 1,
-            minFrames: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
           },
           {
             actorId: "p2",

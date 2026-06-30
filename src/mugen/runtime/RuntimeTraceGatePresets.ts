@@ -5059,7 +5059,7 @@ export function createImportedDefaultFallRecoveryThresholdTraceArtifact(
     targetId: options.targetId ?? `${imported.id}-default-fall-recovery-threshold-golden`,
     targetLabel: options.targetLabel ?? `${imported.displayName} Common1 recovery threshold route`,
     notes: options.notes ?? [
-      "Imported Common1 recovery-threshold trace verifies that a real imported defender reaches fall state 5050 while fall.recovertime is still positive, then routes into ground recovery state 5200 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" near the ground. It still does not claim exact recovery threshold tables, velocities, controller tick order, air-recovery selection, or full MUGEN/IKEMEN recovery parity.",
+      "Imported Common1 recovery-threshold trace verifies that a real imported defender reaches fall state 5050 while fall.recovertime is still positive, observes a first-to-last recoverTime drop in that summarized bucket, then routes into ground recovery state 5200 with recoverTime observed at 0 after CanRecover plus command = \"recovery\" near the ground. It still does not claim exact recovery threshold tables, velocities, controller tick order, air-recovery selection, or full MUGEN/IKEMEN recovery parity.",
     ],
     requiredActorFrames: [
       {
@@ -5069,7 +5069,9 @@ export function createImportedDefaultFallRecoveryThresholdTraceArtifact(
         stateNo: 5050,
         moveType: "H",
         observedHitFallRecoverTimeAtLeast: 1,
-        minFrames: 1,
+        observedHitFallRecoverTimeAtMost: 0,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
       },
       {
         actorId: "p2",
@@ -5092,7 +5094,9 @@ export function createImportedDefaultFallRecoveryThresholdTraceArtifact(
             stateNo: 5050,
             moveType: "H",
             observedHitFallRecoverTimeAtLeast: 1,
-            minFrames: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
           },
           {
             actorId: "p2",
