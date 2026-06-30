@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeKinematicControllerWorld ownership extraction
+  -> RuntimeKinematicControllerWorld now owns bounded passive VelSet/VelAdd/VelMul/HitVelSet/PosSet/PosAdd/Gravity setup
+  -> StateControllerExecutor delegates typed kinematic:* operations and raw-param fallback mutations to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> RuntimeKinematicsWorld still owns per-frame actor integration, sandbox gravity, ground snap, and landing hooks
+  -> focused KinematicControllerSystem coverage proves typed setup, raw expression fallback, default-axis behavior, hit-velocity flags, gravity defaults, and executor routing
+  -> no exact MUGEN/IKEMEN physics, velocity tick order, yaccel constants, helper/team/redirect ownership, full kinematic VM parity, or score claim
 R2 RuntimeBoundsControllerWorld ownership extraction
   -> RuntimeBoundsControllerWorld now owns bounded passive PlayerPush/PosFreeze/ScreenBound setup
   -> StateControllerExecutor delegates typed collision:playerpush/bounds:* operations and raw-param fallback mutations to the world
@@ -537,6 +544,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeKinematicControllerWorld` ownership extraction
 - `RuntimeBoundsControllerWorld` ownership extraction
 - `RuntimeHitFallControllerWorld` ownership extraction
 - `RuntimeStateTypeWorld` ownership extraction

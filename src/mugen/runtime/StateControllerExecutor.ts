@@ -31,6 +31,7 @@ import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
 import { RuntimeStateTypeWorld } from "./StateTypeSystem";
 import { RuntimeHitFallControllerWorld } from "./HitFallControllerSystem";
 import { RuntimeBoundsControllerWorld } from "./BoundsControllerSystem";
+import { RuntimeKinematicControllerWorld } from "./KinematicControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -40,6 +41,7 @@ const damageScaleWorld = new RuntimeDamageScaleWorld();
 const stateTypeWorld = new RuntimeStateTypeWorld();
 const hitFallControllerWorld = new RuntimeHitFallControllerWorld();
 const boundsControllerWorld = new RuntimeBoundsControllerWorld();
+const kinematicControllerWorld = new RuntimeKinematicControllerWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -84,33 +86,13 @@ export function executeControllerIr(
       changeAnim(next, value, type === "changeanim2" ? "state-owner" : "self");
     }
   } else if (type === "velset") {
-    const operation = kinematicOperation(controller, "velset");
-    const pair = pairParam(controller, next, context, "value");
-    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0];
-    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1];
-    next.vel = { x: x ?? next.vel.x, y: y ?? next.vel.y };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "velset"), context);
   } else if (type === "veladd") {
-    const operation = kinematicOperation(controller, "veladd");
-    const pair = pairParam(controller, next, context, "value");
-    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
-    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
-    next.vel = { x: next.vel.x + x, y: next.vel.y + y };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "veladd"), context);
   } else if (type === "velmul") {
-    const operation = kinematicOperation(controller, "velmul");
-    const pair = pairParam(controller, next, context, "value");
-    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 1;
-    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 1;
-    next.vel = { x: next.vel.x * x, y: next.vel.y * y };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "velmul"), context);
   } else if (type === "hitvelset") {
-    const operation = kinematicOperation(controller, "hitvelset");
-    const xFlag = operation?.x ?? numberParam(controller, next, context, "x") ?? 0;
-    const yFlag = operation?.y ?? numberParam(controller, next, context, "y") ?? 0;
-    if (next.hitVelocity && xFlag !== 0) {
-      next.vel.x = next.hitVelocity.x;
-    }
-    if (next.hitVelocity && yFlag !== 0) {
-      next.vel.y = next.hitVelocity.y;
-    }
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "hitvelset"), context);
   } else if (type === "hitfallvel") {
     hitFallControllerWorld.applyController(next, controller, hitFallOperation(controller, "hitfallvel"), context);
   } else if (type === "hitfalldamage") {
@@ -118,20 +100,11 @@ export function executeControllerIr(
   } else if (type === "hitfallset") {
     hitFallControllerWorld.applyController(next, controller, hitFallOperation(controller, "hitfallset"), context);
   } else if (type === "posset") {
-    const operation = kinematicOperation(controller, "posset");
-    const pair = pairParam(controller, next, context, "value");
-    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0];
-    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1];
-    next.pos = { x: x ?? next.pos.x, y: y ?? next.pos.y };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "posset"), context);
   } else if (type === "posadd") {
-    const operation = kinematicOperation(controller, "posadd");
-    const pair = pairParam(controller, next, context, "value");
-    const x = operation?.x ?? numberParam(controller, next, context, "x") ?? pair?.[0] ?? 0;
-    const y = operation?.y ?? numberParam(controller, next, context, "y") ?? pair?.[1] ?? 0;
-    next.pos = { x: next.pos.x + x, y: next.pos.y + y };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "posadd"), context);
   } else if (type === "gravity") {
-    const operation = kinematicOperation(controller, "gravity");
-    next.vel = { ...next.vel, y: next.vel.y + (operation?.y ?? 0.55) };
+    kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "gravity"), context);
   } else if (type === "ctrlset") {
     const operation = resourceOperation(controller, "ctrlset");
     applyRuntimeResourceController(next, {
