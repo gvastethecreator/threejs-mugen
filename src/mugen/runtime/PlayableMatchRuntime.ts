@@ -16,16 +16,7 @@ import {
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./EnvColorSystem";
-import {
-  canRuntimeBeHitBy,
-  collisionBoxesIntersect,
-  findRuntimeHitOverride,
-  hasRuntimeBoxContact,
-  hitAttributeMatches,
-  resolveRuntimeCombatHit,
-  runtimeWorldBox,
-  scaleRuntimeIncomingDamage,
-} from "./CombatResolver";
+import { scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
 import {
@@ -51,11 +42,11 @@ import {
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
-import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
+import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
 import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import {
@@ -116,7 +107,6 @@ import type {
   RuntimeControllerTraceEvent,
   RuntimeEnvShakeEvent,
   RuntimeHitEffectEvent,
-  RuntimeHitOverrideSlot,
   MugenSnapshot,
   RuntimeSoundEvent,
 } from "./types";
@@ -259,6 +249,7 @@ export class PlayableMatchRuntime {
   private readonly hitStateTransitionWorld = new RuntimeHitStateTransitionWorld();
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly contactPresentationWorld = new RuntimeContactPresentationWorld();
+  private readonly combatResolutionWorld = new RuntimeCombatResolutionWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
@@ -456,37 +447,41 @@ export class PlayableMatchRuntime {
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
       resolvePriorityClash: (left, right) =>
-        this.directCombatWorld.resolvePriorityClash(left, right, {
-          isMoveActive,
-          worldBox: runtimeWorldBox,
-          boxesIntersect: collisionBoxesIntersect,
-        })?.message,
+        this.combatResolutionWorld.resolvePriorityClash({
+          left,
+          right,
+          directCombatWorld: this.directCombatWorld,
+        }),
       resolveDirectCombat: (attacker, defender) =>
-        resolveCombat(
+        this.combatResolutionWorld.resolveDirect({
           attacker,
           defender,
-          this.directCombatWorld,
-          this.hitOverrideWorld,
-          this.reversalWorld,
-          this.guardWorld,
-          this.getHitStateWorld,
-          this.hitStateTransitionWorld,
-          this.contactPresentationWorld,
-          this.tick,
-          (line) => this.logs.unshift(line),
-        ),
+          directCombatWorld: this.directCombatWorld,
+          hitOverrideWorld: this.hitOverrideWorld,
+          reversalWorld: this.reversalWorld,
+          guardWorld: this.guardWorld,
+          getHitStateWorld: this.getHitStateWorld,
+          hitStateTransitionWorld: this.hitStateTransitionWorld,
+          contactPresentationWorld: this.contactPresentationWorld,
+          runtimeTick: this.tick,
+          getHurtBoxes: getRuntimeHurtBoxes,
+          stateHooks: runtimeCombatStateHooks,
+          log: (line) => this.logs.unshift(line),
+        }),
       resolveProjectileCombat: (attacker, defender) =>
-        resolveProjectileCombat(
+        this.combatResolutionWorld.resolveProjectile({
           attacker,
           defender,
-          this.hitOverrideWorld,
-          this.effectLifecycleWorld,
-          this.guardWorld,
-          this.getHitStateWorld,
-          this.contactPresentationWorld,
-          this.tick,
-          (line) => this.logs.unshift(line),
-        ),
+          hitOverrideWorld: this.hitOverrideWorld,
+          effectLifecycleWorld: this.effectLifecycleWorld,
+          guardWorld: this.guardWorld,
+          getHitStateWorld: this.getHitStateWorld,
+          contactPresentationWorld: this.contactPresentationWorld,
+          runtimeTick: this.tick,
+          getHurtBoxes: getRuntimeHurtBoxes,
+          stateHooks: runtimeCombatStateHooks,
+          log: (line) => this.logs.unshift(line),
+        }),
       log: (line) => this.logs.unshift(line),
     });
 
@@ -1195,220 +1190,26 @@ function canEnterState(target: FighterMatchState, stateId: number, owner: Fighte
   return stateEntryWorld.canEnterState(target, stateId, owner);
 }
 
-function rememberTarget(attacker: FighterMatchState, defender: FighterMatchState, targetId: number | undefined): void {
-  attacker.targetWorld.remember(attacker, defender.id, targetId);
-}
+const runtimeCombatStateHooks = {
+  canEnterState: (target: FighterMatchState, stateNo: number, stateOwner?: FighterMatchState) =>
+    canEnterState(target, stateNo, stateOwner),
+  enterState: (
+    target: FighterMatchState,
+    stateNo: number,
+    options?: { stateOwner?: FighterMatchState; clearStateOwner?: boolean },
+  ) => enterState(target, stateNo, undefined, options),
+};
 
 function resetContactState(fighter: FighterMatchState): void {
   fighter.contact = fighter.contactWorld.create();
-}
-
-function markReceivedDamage(fighter: FighterMatchState, damage: number): void {
-  fighter.contactWorld.markReceivedDamage(fighter.contact, fighter.runtime.stateNo, damage);
-}
-
-function markProjectileContact(fighter: FighterMatchState, projectileId: number | undefined, kind: "hit" | "guard"): void {
-  fighter.contactWorld.markProjectileContact(fighter.contact, fighter.runtime.stateNo, projectileId, kind);
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {
   fighter.contactWorld.advance(fighter.contact);
 }
 
-function resolveProjectileCombat(
-  attacker: FighterMatchState,
-  defender: FighterMatchState,
-  hitOverrideWorld: RuntimeHitOverrideWorld,
-  effectLifecycleWorld: RuntimeEffectLifecycleWorld,
-  guardWorld: RuntimeGuardWorld,
-  getHitStateWorld: RuntimeGetHitStateWorld,
-  contactPresentationWorld: RuntimeContactPresentationWorld,
-  runtimeTick: number,
-  log: (line: string) => void,
-): void {
-  const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
-  attacker.effectActorWorld.resolveProjectileCombat(attacker.id, {
-    attacker,
-    defender,
-    hurtBoxes,
-    holdingBack: isRuntimeHoldingBack(defender.currentInput),
-    log,
-    rememberTarget,
-    applyHitOverride: (source, target, override, hitPause, logger) =>
-      applyHitOverride(source, target, override, hitPause, hitOverrideWorld, logger),
-    applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
-    applyHitState: (target) => applyDefaultProjectileGetHitState(target, getHitStateWorld),
-    markDefenderGotHit: (target) => effectLifecycleWorld.markGetHit(target),
-    recordProjectileContact: (source, _target, projectile, kind) => markProjectileContact(source, projectile.projectileId, kind),
-    emitProjectileContactEffects: (source, _target, projectile, kind) => {
-      contactPresentationWorld.emitProjectileContact({ actor: source, projectile, kind, runtimeTick });
-    },
-    recordReceivedDamage: markReceivedDamage,
-  });
-}
-
-function resolveCombat(
-  attacker: FighterMatchState,
-  defender: FighterMatchState,
-  directCombatWorld: RuntimeDirectCombatWorld,
-  hitOverrideWorld: RuntimeHitOverrideWorld,
-  reversalWorld: RuntimeReversalWorld,
-  guardWorld: RuntimeGuardWorld,
-  getHitStateWorld: RuntimeGetHitStateWorld,
-  hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
-  contactPresentationWorld: RuntimeContactPresentationWorld,
-  runtimeTick: number,
-  log: (line: string) => void,
-): void {
-  if (!attacker.currentMove || attacker.hasHit) {
-    return;
-  }
-  const move = attacker.currentMove;
-  if (move.requiresHitDef) {
-    return;
-  }
-  if (move.isReversal) {
-    return;
-  }
-  if (!isMoveActive(move, attacker.moveTick)) {
-    return;
-  }
-  const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
-  const reversal = reversalWorld.findActive(defender, move, attackBox, {
-    isMoveActive,
-    worldBox: runtimeWorldBox,
-    boxesIntersect: collisionBoxesIntersect,
-    attrMatches: hitAttributeMatches,
-  });
-  if (reversal) {
-    const outcome = reversalWorld.apply(defender, attacker, reversal, {
-      rememberTarget,
-      canEnterState: (target, stateNo) => canEnterState(target, stateNo),
-      enterState: (target, stateNo) => enterState(target, stateNo),
-      enterTargetHitState: (target, owner, stateNo, getP1State) =>
-        hitStateTransitionWorld.enterTargetHitState(target, owner, stateNo, getP1State, hitStateTransitionHooks()),
-    });
-    log(outcome.message);
-    return;
-  }
-  const hurtBoxes = getCurrentFrame(defender)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
-  if (!hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes)) {
-    return;
-  }
-  if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")) {
-    log(`${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`);
-    return;
-  }
-
-  const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA");
-  if (override) {
-    attacker.hasHit = true;
-    rememberTarget(attacker, defender, move.targetId);
-    const result = hitOverrideWorld.applyRedirect(attacker, defender, override, move.hitPause, {
-      tryEnterState: (target, stateNo) => {
-        if (!canEnterState(target, stateNo)) {
-          return false;
-        }
-        enterState(target, stateNo);
-        return true;
-      },
-    });
-    log(result.message);
-    return;
-  }
-
-  attacker.hasHit = true;
-  rememberTarget(attacker, defender, move.targetId);
-  const result = resolveRuntimeCombatHit({
-    attacker: attacker.runtime,
-    defender: defender.runtime,
-    attack: move,
-    holdingBack: isRuntimeHoldingBack(defender.currentInput),
-  });
-  const outcome = directCombatWorld.applyResolvedHit(attacker, defender, move, result, {
-    applyGuardHit: (target) => applyDefaultGuardHitState(target, guardWorld),
-    applyHitStateTransitions: (source, target, moveArg) =>
-      applyHitStateTransitions(source, target, moveArg, hitStateTransitionWorld),
-    applyDefaultGetHit: (target, moveArg) => applyDefaultGetHitState(target, moveArg, getHitStateWorld),
-  });
-  contactPresentationWorld.emitHitDefContact({ attacker, defender, kind: outcome.kind, move, runtimeTick });
-  log(outcome.message);
-}
-
-function applyHitOverride(
-  attacker: FighterMatchState,
-  defender: FighterMatchState,
-  override: RuntimeHitOverrideSlot,
-  hitPause: number,
-  hitOverrideWorld: RuntimeHitOverrideWorld,
-  log: (line: string) => void,
-): void {
-  const result = hitOverrideWorld.applyRedirect(attacker, defender, override, hitPause, {
-    tryEnterState: (target, stateNo) => {
-      if (!canEnterState(target, stateNo)) {
-        return false;
-      }
-      enterState(target, stateNo);
-      return true;
-    },
-  });
-  log(result.message);
-}
-
-function applyHitStateTransitions(
-  attacker: FighterMatchState,
-  defender: FighterMatchState,
-  move: DemoMove,
-  hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
-): void {
-  hitStateTransitionWorld.applyHitStateTransitions(attacker, defender, move, hitStateTransitionHooks());
-}
-
-function hitStateTransitionHooks() {
-  return {
-    canEnterState: (target: FighterMatchState, stateNo: number, stateOwner?: FighterMatchState) =>
-      canEnterState(target, stateNo, stateOwner),
-    enterState: (
-      target: FighterMatchState,
-      stateNo: number,
-      options?: { stateOwner?: FighterMatchState; clearStateOwner?: boolean },
-    ) => enterState(target, stateNo, undefined, options),
-  };
-}
-
-function applyDefaultGetHitState(defender: FighterMatchState, move: DemoMove, getHitStateWorld: RuntimeGetHitStateWorld): void {
-  if (move.p2StateNo !== undefined || defender.definition.source !== "imported") {
-    return;
-  }
-  const stateNo =
-    move.defaultTargetStateNo ??
-    getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
-  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
-    return;
-  }
-  enterState(defender, stateNo, undefined, { clearStateOwner: true });
-}
-
-function applyDefaultGuardHitState(defender: FighterMatchState, guardWorld: RuntimeGuardWorld): void {
-  if (defender.definition.source !== "imported") {
-    return;
-  }
-  const stateNo = guardWorld.defaultGuardHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
-  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
-    return;
-  }
-  enterState(defender, stateNo, undefined, { clearStateOwner: true });
-}
-
-function applyDefaultProjectileGetHitState(defender: FighterMatchState, getHitStateWorld: RuntimeGetHitStateWorld): void {
-  if (defender.definition.source !== "imported") {
-    return;
-  }
-  const stateNo = getHitStateWorld.defaultGetHitStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
-  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
-    return;
-  }
-  enterState(defender, stateNo, undefined, { clearStateOwner: true });
+function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
+  return getCurrentFrame(fighter)?.clsn2;
 }
 
 function applyAutoGuardStart(
@@ -1449,10 +1250,6 @@ function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolea
     owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo)?.source ??
     owner.definition.states?.find((candidate) => candidate.id === fighter.runtime.stateNo);
   return state?.moveType?.toUpperCase() === "H";
-}
-
-function isMoveActive(move: DemoMove, tick: number): boolean {
-  return tick >= move.activeStart && tick <= move.activeEnd;
 }
 
 function evaluateRuntimeInGuardDist(

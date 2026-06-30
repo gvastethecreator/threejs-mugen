@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeCombatResolutionWorld ownership extraction
+  -> RuntimeCombatResolutionWorld now owns bounded active direct/projectile contact orchestration from PlayableMatchRuntime
+  -> direct eligibility, reversal checks, HitBy/NotHitBy rejection, HitOverride hooks, target-memory remembering, hit/guard result handoff, projectile callbacks, received-damage/contact memory, and contact-presentation emission route through that world
+  -> PlayableMatchRuntime still supplies runtime tick, frame hurtboxes, state-entry hooks, trigger/controller order, active effect stores, and the concrete actor roster
+  -> focused RuntimeCombatResolutionSystem coverage proves direct target/contact/presentation ordering and projectile callback routing through target/contact/presentation/damage hooks
+  -> no helper-owned combat, projectile target ownership, exact direct/projectile tick order, multi-target/team behavior, exact ReversalDef/HitOverride priority, visual parity, or score claim
 R2 RuntimeTargetWorld candidate-resolution ownership
   -> RuntimeTargetWorld.resolveCandidates now owns bounded target-candidate filtering from live target memory
   -> Target* / BindToTarget controller application and active TargetBind / BindToTarget position application pass through that filter before mutation
@@ -533,7 +539,7 @@ R1 Common1/FightFX precision
   -> prefer deeper VM loop order, broader fixture-backed confirmation, or exact visible package presentation evidence
 ```
 
-Alternate next slice: R2 `MatchWorld` ownership around deeper helper VM boundaries, target ownership, presentation effects, or combat/effect ordering if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
+Alternate next slice: R2 `MatchWorld` ownership around deeper helper VM boundaries, helper-owned combat/effect ordering, target ownership, or presentation effects if it can preserve trace behavior. See `docs/NEXT_BUILD_ROADMAP.md` for the next-10-slices queue.
 
 ## Slice Selection Guardrails
 

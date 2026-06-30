@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - RuntimeCombatResolutionWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeCombatResolutionWorld` as the named owner for bounded active direct/projectile contact orchestration that was still private helper logic inside `PlayableMatchRuntime`.
+- Moved direct move eligibility, reversal checks, HitBy/NotHitBy reject logging, HitOverride redirect hooks, target-memory remembering, direct hit/guard result handoff, projectile-combat callbacks, received-damage/contact memory routing, and contact presentation emission through the new world.
+- Updated `PlayableMatchRuntime` to delegate combat resolution while still supplying runtime tick, current-frame hurtboxes, concrete state-entry hooks, trigger/controller order, active effect stores, and actor roster.
+- Added focused `RuntimeCombatResolutionSystem` coverage for direct target/contact/presentation ordering and projectile callback routing through target/contact/presentation/damage hooks.
+- Updated roadmap and architecture docs with allowed/blocked claims for this R2 ownership cut.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCombatResolutionSystem.test.ts` passes: 1 file / 2 tests.
+- `pnpm test` passes: 95 files / 799 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; Vite reports the existing large chunk warning for `dist/assets/index-*.js`.
+- `pnpm qa:trace` passes: 178 / 178 artifacts, 158 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current player-owned direct/projectile contact orchestration has a named, testable world boundary before future helper/projectile/team expansion. Direct hit/guard target memory, contact memory, sound/spark package emission, and projectile callback side effects route through `RuntimeCombatResolutionWorld`.
+
+Claim blocked:
+
+- This does not add helper-owned combat, projectile target ownership, exact direct/projectile tick order, multi-target/team behavior, exact ReversalDef/HitOverride priority, visual parity, score movement, or full MUGEN/IKEMEN combat VM parity.
+
 ## 2026-06-30 - Bounded helper-local Projectile trace gate
 
 Changed:
