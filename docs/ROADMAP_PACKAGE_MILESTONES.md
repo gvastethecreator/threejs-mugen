@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeBoundsControllerWorld ownership extraction
+  -> RuntimeBoundsControllerWorld now owns bounded passive PlayerPush/PosFreeze/ScreenBound setup
+  -> StateControllerExecutor delegates typed collision:playerpush/bounds:* operations and raw-param fallback mutations to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> RuntimeActorConstraintWorld still owns one-frame reset/projection, stage clamp, and body-push separation
+  -> focused BoundsControllerSystem coverage proves typed setup, raw defaults, raw expression fallback, and executor routing
+  -> no exact player/edge collision, team/helper push behavior, screen-edge/camera parity, PosFreeze tick order, full constraint VM parity, or score claim
 R2 RuntimeHitFallControllerWorld ownership extraction
   -> RuntimeHitFallControllerWorld now owns bounded passive HitFallVel/HitFallDamage/HitFallSet mutation
   -> StateControllerExecutor delegates typed hitfall operations and raw-param fallback mutations to the world
@@ -530,6 +537,7 @@ Current closed gates that must not be reselected as "next":
 - `BindToTarget` target-system ownership extraction
 - active target-binding position ownership extraction
 - `RuntimeHitEligibilityWorld` ownership extraction
+- `RuntimeBoundsControllerWorld` ownership extraction
 - `RuntimeHitFallControllerWorld` ownership extraction
 - `RuntimeStateTypeWorld` ownership extraction
 - `RuntimeDamageScaleWorld` ownership extraction

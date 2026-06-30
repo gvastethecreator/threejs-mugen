@@ -30,6 +30,7 @@ import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
 import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
 import { RuntimeStateTypeWorld } from "./StateTypeSystem";
 import { RuntimeHitFallControllerWorld } from "./HitFallControllerSystem";
+import { RuntimeBoundsControllerWorld } from "./BoundsControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -38,6 +39,7 @@ const hitDefenseWorld = new RuntimeHitDefenseWorld();
 const damageScaleWorld = new RuntimeDamageScaleWorld();
 const stateTypeWorld = new RuntimeStateTypeWorld();
 const hitFallControllerWorld = new RuntimeHitFallControllerWorld();
+const boundsControllerWorld = new RuntimeBoundsControllerWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
@@ -170,8 +172,7 @@ export function executeControllerIr(
   } else if (type === "varrangeset") {
     applyVariableRangeSet(next, controller, context, variableOperation(controller, "varrangeset"));
   } else if (type === "playerpush") {
-    const operation = collisionOperation(controller, "playerpush");
-    next.playerPush = operation?.enabled ?? (numberParam(controller, next, context, "value") ?? 1) !== 0;
+    boundsControllerWorld.applyPlayerPushController(next, controller, collisionOperation(controller, "playerpush"), context);
   } else if (type === "turn") {
     const operation = orientationOperation(controller, "turn");
     if (controller.operation && !operation) {
@@ -207,23 +208,9 @@ export function executeControllerIr(
   } else if (type === "angleset" || type === "angleadd" || type === "angledraw") {
     applyRuntimeAngleController(next, controller, spriteEffectOperation(controller, type));
   } else if (type === "posfreeze") {
-    const operation = boundsOperation(controller, "posfreeze");
-    const value = operation ? undefined : numberParam(controller, next, context, "value");
-    const x = operation ? undefined : numberParam(controller, next, context, "x");
-    const y = operation ? undefined : numberParam(controller, next, context, "y");
-    const freeze = value !== undefined ? value !== 0 : x === undefined && y === undefined;
-    next.posFreeze = {
-      x: operation?.x ?? (value !== undefined ? freeze : x !== undefined ? x !== 0 : freeze),
-      y: operation?.y ?? (value !== undefined ? freeze : y !== undefined ? y !== 0 : freeze),
-    };
+    boundsControllerWorld.applyPosFreezeController(next, controller, boundsOperation(controller, "posfreeze"), context);
   } else if (type === "screenbound") {
-    const operation = boundsOperation(controller, "screenbound");
-    const camera = operation ? undefined : pairParam(controller, next, context, "movecamera");
-    next.screenBound = {
-      bound: operation?.bound ?? ((numberParam(controller, next, context, "value") ?? 0) !== 0),
-      moveCameraX: operation?.moveCameraX ?? ((camera?.[0] ?? 0) !== 0),
-      moveCameraY: operation?.moveCameraY ?? ((camera?.[1] ?? 0) !== 0),
-    };
+    boundsControllerWorld.applyScreenBoundController(next, controller, boundsOperation(controller, "screenbound"), context);
   } else if (type === "assertspecial") {
     applyAssertSpecialController(next, controller, assertSpecialOperation(controller));
   } else if (
