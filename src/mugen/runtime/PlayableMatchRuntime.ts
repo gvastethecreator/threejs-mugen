@@ -42,7 +42,7 @@ import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import { RuntimeReversalWorld } from "./ReversalSystem";
-import { evaluateExpression } from "./ExpressionEvaluator";
+import { evaluateExpression, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
 import {
   RuntimeEffectActorWorld,
   type RuntimeEffectActorStores,
@@ -1413,6 +1413,24 @@ function countRuntimeTargets(fighter: FighterMatchState, targetId?: number): num
   return fighter.targetWorld.count(fighter, targetId);
 }
 
+function resolveRuntimeTargetRedirect(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  targetId?: number,
+): ExpressionRedirectTarget | undefined {
+  if (!fighter.targetWorld.find(fighter, opponent.id, targetId)) {
+    return undefined;
+  }
+  return {
+    self: opponent.runtime,
+    opponent: fighter.runtime,
+    name: opponent.definition.displayName,
+    authorName: opponent.definition.authorName,
+    opponentName: fighter.definition.displayName,
+    opponentAuthorName: fighter.definition.authorName,
+  };
+}
+
 function countRuntimeEffectActors(
   fighter: FighterMatchState,
   kind: "explod" | "helper" | "projectile",
@@ -2017,6 +2035,7 @@ function resolveDispatchNumber(
     authorName: fighter.definition.authorName,
     opponentName: opponent.definition.displayName,
     opponentAuthorName: opponent.definition.authorName,
+    target: (targetId) => resolveRuntimeTargetRedirect(fighter, opponent, targetId),
     stageTime,
     stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),
@@ -2084,6 +2103,7 @@ function evaluateRuntimeTrigger(
     authorName: fighter.definition.authorName,
     opponentName: opponent.definition.displayName,
     opponentAuthorName: opponent.definition.authorName,
+    target: (targetId) => resolveRuntimeTargetRedirect(fighter, opponent, targetId),
     stageTime,
     stateTime: fighter.stateElapsed,
     random: () => nextRuntimeRandom(fighter),

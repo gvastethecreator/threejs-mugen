@@ -68,19 +68,70 @@ function stripRawFunctionArguments(expression: string): string {
   return expression.replace(/\b(const|const720p|gethitvar|hitdefattr)\s*\([^)]*\)/gi, (_match, name: string) => `${name}()`);
 }
 
-function expressionForSupportScan(expression: string): { expression: string; unsupportedFeatures: string[] } {
-  const unsupportedFeatures = new Set<string>();
-  const scanExpression = expression.replace(/\b(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*/gi, (_match, rawTarget: string, rawIndex: string | undefined) => {
-    const target = rawTarget.toLowerCase();
-    const index = rawIndex?.trim();
+function stripRedirectContextsForSupportScan(expression: string, unsupportedFeatures: Set<string>): string {
+  const redirectPattern = /\b(enemynear|parent|root|target)\b/gi;
+  let output = "";
+  let cursor = 0;
+  let match: RegExpExecArray | null;
+  while ((match = redirectPattern.exec(expression)) !== null) {
+    const redirectStart = match.index;
+    const target = match[1]!.toLowerCase();
+    let position = redirectPattern.lastIndex;
+    while (/\s/.test(expression[position] ?? "")) {
+      position += 1;
+    }
+
+    let index: string | undefined;
+    if (expression[position] === "(") {
+      let depth = 0;
+      const indexStart = position + 1;
+      while (position < expression.length) {
+        const char = expression[position]!;
+        if (char === "(") {
+          depth += 1;
+        } else if (char === ")") {
+          depth -= 1;
+          if (depth === 0) {
+            index = expression.slice(indexStart, position).trim();
+            position += 1;
+            break;
+          }
+        }
+        position += 1;
+      }
+    }
+
+    while (/\s/.test(expression[position] ?? "")) {
+      position += 1;
+    }
+    if (expression[position] !== ",") {
+      continue;
+    }
+
     if (target === "enemynear" && index && index !== "0") {
       unsupportedFeatures.add("enemynear(index)");
     }
     if ((target === "parent" || target === "root") && index) {
       unsupportedFeatures.add(`${target}(index)`);
     }
-    return "";
-  });
+    if (target === "target" && index) {
+      if (!/^-?\d+$/.test(index)) {
+        unsupportedFeatures.add("target(dynamic)");
+      } else if (Number(index) < 0) {
+        unsupportedFeatures.add("target(negative)");
+      }
+    }
+
+    output += expression.slice(cursor, redirectStart);
+    cursor = position + 1;
+    redirectPattern.lastIndex = cursor;
+  }
+  return output + expression.slice(cursor);
+}
+
+function expressionForSupportScan(expression: string): { expression: string; unsupportedFeatures: string[] } {
+  const unsupportedFeatures = new Set<string>();
+  const scanExpression = stripRedirectContextsForSupportScan(expression, unsupportedFeatures);
   return {
     expression: scanExpression,
     unsupportedFeatures: [...unsupportedFeatures].sort((a, b) => a.localeCompare(b)),

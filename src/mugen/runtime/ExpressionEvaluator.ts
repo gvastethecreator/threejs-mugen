@@ -8,6 +8,7 @@ export type ExpressionContext = {
   opponent?: CharacterRuntimeState;
   parent?: CharacterRuntimeState;
   root?: CharacterRuntimeState;
+  target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
   name?: string;
   authorName?: string;
   opponentName?: string;
@@ -52,6 +53,15 @@ export type ExpressionContext = {
   animTimeRemaining?: number;
 };
 
+export type ExpressionRedirectTarget = {
+  self: CharacterRuntimeState;
+  opponent?: CharacterRuntimeState;
+  name?: string;
+  authorName?: string;
+  opponentName?: string;
+  opponentAuthorName?: string;
+};
+
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
   const normalized = normalizeMugenExpression(expression);
   const redirected = evaluateActorRedirect(normalized, context);
@@ -78,7 +88,7 @@ type ExpressionValue = boolean | number | string;
 const commandIdentifierMarker = "__mugen_command_identifier__";
 
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
-  const redirect = /^(enemynear|parent|root)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
+  const redirect = /^(enemynear|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
   if (!redirect) {
     return undefined;
   }
@@ -102,6 +112,25 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
       authorName: context.opponentAuthorName,
       opponentName: context.name,
       opponentAuthorName: context.authorName,
+    });
+  }
+  if (target === "target") {
+    const targetId = parseStaticRedirectTargetId(index, context);
+    if (targetId === "unsupported") {
+      return 0;
+    }
+    const redirected = context.target?.(targetId);
+    if (!redirected) {
+      return 0;
+    }
+    return evaluateExpression(expressionBody, {
+      ...context,
+      self: redirected.self,
+      opponent: redirected.opponent ?? context.self,
+      name: redirected.name,
+      authorName: redirected.authorName,
+      opponentName: redirected.opponentName ?? context.name,
+      opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
     });
   }
   if (index) {
@@ -283,7 +312,7 @@ class ExpressionParser {
 
   private tryConsumeRedirectContext(identifier: string): ExpressionContext | "fail" | undefined {
     const target = identifier.toLowerCase();
-    if (target !== "enemynear" && target !== "parent" && target !== "root") {
+    if (target !== "enemynear" && target !== "parent" && target !== "root" && target !== "target") {
       return undefined;
     }
     const cursorBeforeRedirect = this.cursor;
@@ -309,6 +338,25 @@ class ExpressionParser {
         authorName: this.context.opponentAuthorName,
         opponentName: this.context.name,
         opponentAuthorName: this.context.authorName,
+      };
+    }
+    if (target === "target") {
+      const targetId = parseStaticRedirectTargetId(index, this.context);
+      if (targetId === "unsupported") {
+        return "fail";
+      }
+      const redirected = this.context.target?.(targetId);
+      if (!redirected) {
+        return "fail";
+      }
+      return {
+        ...this.context,
+        self: redirected.self,
+        opponent: redirected.opponent ?? this.context.self,
+        name: redirected.name,
+        authorName: redirected.authorName,
+        opponentName: redirected.opponentName ?? this.context.name,
+        opponentAuthorName: redirected.opponentAuthorName ?? this.context.authorName,
       };
     }
     if (index) {
@@ -938,6 +986,23 @@ function optionalPositiveInteger(value: ExpressionValue | undefined): number | u
   }
   const numberValue = numeric(value);
   return Number.isFinite(numberValue) ? Math.max(0, Math.trunc(numberValue)) : undefined;
+}
+
+function parseStaticRedirectTargetId(index: string | undefined, context: ExpressionContext): number | "unsupported" | undefined {
+  if (!index) {
+    return undefined;
+  }
+  const trimmed = index.trim();
+  if (/^-?\d+$/.test(trimmed)) {
+    const numericId = Number(trimmed);
+    if (numericId < 0) {
+      context.reportUnsupported?.("target(negative)");
+      return "unsupported";
+    }
+    return numericId;
+  }
+  context.reportUnsupported?.("target(dynamic)");
+  return "unsupported";
 }
 
 function numeric(value: ExpressionValue): number {

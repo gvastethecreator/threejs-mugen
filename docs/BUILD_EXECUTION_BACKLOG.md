@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Bounded Target redirect trigger gate
+
+Changed:
+
+- Added compiler/evaluator support for bounded `Target, ...` and static nonnegative `Target(id), ...` trigger redirect reads.
+- Wired `PlayableMatchRuntime` trigger contexts to resolve `Target(id)` through current two-player `RuntimeTargetWorld` target memory.
+- Added required `synthetic-imported-target-redirect.json` trace evidence for direct `HitDef` target id `77` routing P1 from state `200` to `286` through `Target(77), Life < 1000`.
+- Added focused evaluator/compiler/trace-preset coverage, including fail-closed dynamic and negative target ids.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` passes: 3 files / 222 tests.
+- `pnpm test` passes: 81 files / 704 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite large chunk warning remains.
+- `pnpm qa:trace` passes: 168 / 168 artifacts, 148 required, 20 optional, 0 failed; `synthetic-imported-target-redirect.json` checksum is `89580963`.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes.
+
+Claim allowed:
+
+- Current imported owner states can read a recent player target through bounded `Target, ...` / static nonnegative `Target(id), ...` trigger redirects in the two-player sandbox.
+
+Claim blocked:
+
+- Helper/projectile targets, dynamic or negative target ids, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, and full MUGEN/IKEMEN target redirect parity remain blocked.
+
 ## 2026-06-30 - Bounded helper-local IsHelper trace gate
 
 Changed:

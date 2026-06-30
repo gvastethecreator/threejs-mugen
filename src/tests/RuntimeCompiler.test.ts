@@ -47,12 +47,15 @@ time = 20
     const enemyNear = compileExpression("enemynear, stateno = 5000");
     const parentRedirect = compileExpression("Parent,Var(3) = 7");
     const rootRedirect = compileExpression("Root,Vel X = 4");
+    const targetRedirect = compileExpression("Target(77), Life < 1000 && Target, StateNo >= 5000");
     const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
       'NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
     const unsupported = compileExpression("enemynear(1), stateno = 5000");
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
+    const unsupportedTargetDynamic = compileExpression("Target(var(0)), Life > 0");
+    const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
 
     expect(clean.normalized).toBe(
       'p2bodydistx < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
@@ -96,6 +99,8 @@ time = 20
     expect(parentRedirect.functions).toEqual(["Var"]);
     expect(rootRedirect.supportLevel).toBe("executable");
     expect(rootRedirect.identifiers).toEqual(["velx"]);
+    expect(targetRedirect.supportLevel).toBe("executable");
+    expect(targetRedirect.identifiers).toEqual(["Life", "StateNo"]);
     expect(nestedRedirect.supportLevel).toBe("executable");
     expect(nestedRedirect.functions).toEqual(["Var"]);
     expect(nestedRedirect.identifiers).toEqual(["Time", "velx"]);
@@ -118,6 +123,10 @@ time = 20
     expect(unsupported.unsupportedFeatures).toEqual(["enemynear(index)"]);
     expect(unsupportedParentIndex.supportLevel).toBe("unsupported");
     expect(unsupportedParentIndex.unsupportedFeatures).toEqual(["parent(index)"]);
+    expect(unsupportedTargetDynamic.supportLevel).toBe("unsupported");
+    expect(unsupportedTargetDynamic.unsupportedFeatures).toEqual(["target(dynamic)"]);
+    expect(unsupportedTargetNegative.supportLevel).toBe("unsupported");
+    expect(unsupportedTargetNegative.unsupportedFeatures).toEqual(["target(negative)"]);
   });
 
   it("summarizes controller and State -1 routability as compiler output", () => {

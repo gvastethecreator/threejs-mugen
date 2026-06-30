@@ -6301,6 +6301,51 @@ export function createSyntheticImportedTargetTraceArtifact(options: RuntimeTrace
   });
 }
 
+export function createSyntheticImportedTargetRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-target-redirect-attacker",
+    displayName: "Synthetic Imported Target Redirect Attacker",
+    targetRedirectStateNo: 286,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-target-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-target-redirect-golden",
+      label: "Synthetic imported Target redirect trigger route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Target redirect trace proves a bounded two-player target memory can feed Target(77), Life trigger reads after direct HitDef contact. It does not claim helper/projectile targets, mutation through redirects, multi-target selection, teams, or full MUGEN/IKEMEN target redirect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-target-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 286],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 286, animNo: 286 },
+          { actorId: "p2", actorKind: "player", life: 963 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTargetNoKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedTargetScript();
@@ -9136,6 +9181,7 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
+  targetRedirectStateNo?: number;
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
   withTargetDrop?: boolean;
@@ -9524,6 +9570,7 @@ ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded"
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
+${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock("Target(77), Life < 1000", options.targetRedirectStateNo, "Target Redirect Branch")}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
   pauseMoveTime: options.helperPauseMoveTime,
   superMoveTime: options.helperSuperMoveTime,
@@ -9584,6 +9631,7 @@ ${options.passiveHitOverride ? simpleStateBlock(options.passiveHitOverride.state
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
+${options.targetRedirectStateNo === undefined ? "" : simpleStateBlock(options.targetRedirectStateNo, "I")}
 `);
   const move: DemoMove = {
     actionId: 200,
@@ -9680,6 +9728,9 @@ ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBloc
           >)),
       ...(options.hitDefAttrStateNo === undefined ? [] : ([[options.hitDefAttrStateNo, traceAction(options.hitDefAttrStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numTargetStateNo === undefined ? [] : ([[options.numTargetStateNo, traceAction(options.numTargetStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.targetRedirectStateNo === undefined
+        ? []
+        : ([[options.targetRedirectStateNo, traceAction(options.targetRedirectStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.numHelperStateNo === undefined ? [] : ([[options.numHelperStateNo, traceAction(options.numHelperStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.prevStateRoute === undefined
         ? []

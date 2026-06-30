@@ -136,6 +136,27 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("EnemyNear, StateNo = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear(0), MoveType = H", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);
+    expect(
+      evaluateExpression("Target(77), Life = 1000 && Target, StateNo = 0", {
+        self: state,
+        target: (id) => (id === undefined || id === 77 ? { self: opponent, opponent: state } : undefined),
+      }),
+    ).toBe(1);
+    expect(
+      evaluateExpression("Target(42), Life = 1000", {
+        self: state,
+        target: (id) => (id === 77 ? { self: opponent, opponent: state } : undefined),
+      }),
+    ).toBe(0);
+    const unsupported: string[] = [];
+    expect(
+      evaluateExpression("Target(-1), Life = 1000", {
+        self: state,
+        target: () => ({ self: opponent, opponent: state }),
+        reportUnsupported: (feature) => unsupported.push(feature),
+      }),
+    ).toBe(0);
+    expect(unsupported).toEqual(["target(negative)"]);
     expect(evaluateExpression("GetHitVar(animtype) = [3,5]", { self: state, getHitVar: () => 4 })).toBe(1);
     expect(evaluateExpression("SelfAnimExist(anim + 3)", { self: state, animExists: (id) => id === 45 })).toBe(1);
     expect(evaluateExpression("SelfStateNoExist(5000)", { self: state, stateExists: (id) => id === 5000 })).toBe(1);

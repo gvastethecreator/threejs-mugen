@@ -151,6 +151,7 @@ import {
   createSyntheticImportedBindToTargetMidTraceArtifact,
   createSyntheticImportedTargetStateCustomTraceArtifact,
   createSyntheticImportedTargetNoKoTraceArtifact,
+  createSyntheticImportedTargetRedirectTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
@@ -5161,6 +5162,42 @@ describe("RuntimeTraceGatePresets", () => {
       power: 40,
     });
     expect(artifact.trace.finalActors[0]?.actorKind).toBe("player");
+  });
+
+  it("creates a synthetic imported Target redirect artifact with target-memory trigger evidence", () => {
+    const artifact = createSyntheticImportedTargetRedirectTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-target-redirect-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-target-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 286]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      actorKind: "player",
+      source: "imported",
+      stateNo: 286,
+      animNo: 286,
+    });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      actorKind: "player",
+      life: 963,
+    });
   });
 
   it("creates a synthetic imported TargetLifeAdd NoKO artifact", () => {
