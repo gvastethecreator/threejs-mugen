@@ -88,10 +88,11 @@ import {
   type RuntimeStateEntryAnimationElementOptions,
   type RuntimeStateEntryOptions,
 } from "./RuntimeStateEntrySystem";
+import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import { RuntimePauseWorld, RuntimePausedMatchWorld } from "./PauseSystem";
-import { dispatchStateProgramController, findControllerParam, isStateEntrySetupDispatch } from "./StateProgramExecutor";
+import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import {
   RuntimeSpriteEffectWorld,
   type RuntimeAngleSpriteEffectOp,
@@ -119,6 +120,7 @@ const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
 const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
+const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -1904,29 +1906,23 @@ function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchSt
 }
 
 function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
-  const entries = fighter.runtimeProgram?.stateEntries ?? [];
-  if (entries.length === 0 || fighter.definition.source !== "imported") {
-    return;
-  }
-  for (const controller of entries) {
-    const dispatch = dispatchStateProgramController(controller);
-    if (dispatch.kind === "change-state") {
-      continue;
-    }
-    if (!triggersPass(controller, fighter, opponent, fighter, tick)) {
-      continue;
-    }
-    if (isStateEntrySetupDispatch(dispatch)) {
-      controllerDispatchWorld.apply(fighter, controller, {
+  stateEntrySetupWorld.apply({
+    actor: fighter,
+    opponent,
+    tick,
+    triggersPass,
+    executeController: (controller, actor, stageTime) => {
+      controllerDispatchWorld.apply(actor, controller, {
         context: {
-          hitPauseTime: () => fighter.hitPause,
-          random: () => nextRuntimeRandom(fighter),
-          stageTime: tick,
+          hitPauseTime: () => actor.hitPause,
+          random: () => nextRuntimeRandom(actor),
+          stageTime,
         },
-        recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+        recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
       });
-    }
-  }
+      return actor.runtime;
+    },
+  });
 }
 
 function triggersPass(

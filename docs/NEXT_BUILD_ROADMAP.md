@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeStateEntrySetupWorld ownership extraction
+  -> RuntimeStateEntrySetupWorld now owns bounded imported State -1 setup-controller selection before command routing
+  -> PlayableMatchRuntime delegates imported-only guard, ChangeState bypass, trigger gating, setup-controller classification, and execution handoff through the named world
+  -> concrete mutation still routes through RuntimeControllerDispatchWorld so context, telemetry, and unsupported reporting stay centralized
+  -> focused RuntimeStateEntrySetupSystem coverage proves imported setup execution, non-imported skip, trigger failure, and non-setup filtering
+  -> no exact State -1 ordering, persistent semantics, redirect/helper/team scopes, full CNS VM parity, or score movement claim
 R2 RuntimeControllerDispatchWorld ownership extraction
   -> RuntimeControllerDispatchWorld now owns bounded runtime-controller execution dispatch for active imported state controllers, State -1 setup controllers, and pre-facing AssertSpecial application
   -> PlayableMatchRuntime delegates runtime replacement, evaluation context handoff, controller telemetry, typed-operation telemetry, and unsupported reporting through the named world

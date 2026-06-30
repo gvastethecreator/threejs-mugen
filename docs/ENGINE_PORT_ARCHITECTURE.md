@@ -144,6 +144,8 @@ The compiler classifies each piece as:
 
 `RuntimeStateEntryWorld` owns the bounded state-entry mutation that used to live inline in `PlayableMatchRuntime`: state/action availability lookup, `stateNo` transition metadata, changed-state elapsed reset, owner-backed custom-state assignment/clearing, stale current-move cancellation, `firedHitDefs` reset, contact-memory reset callback, StateDef `type` / `movetype` / `physics` / `ctrl` / `velset` application, and `ChangeAnim` handoff for self or state-owner animations. `PlayableMatchRuntime` still supplies compatibility telemetry, contact reset, and concrete action-change callbacks, so this is ownership cleanup for current entry behavior, not exact CNS `ChangeState` / `SelfState` tick order, persistent controller timing, helper/team/root redirects, or full MUGEN/IKEMEN state-entry parity.
 
+`RuntimeStateEntrySetupWorld` owns the bounded imported State -1 setup-controller selection that used to live inline in `PlayableMatchRuntime`: imported-only guard, state-entry scanning, `ChangeState` bypass before command routing, trigger gating, setup-controller classification, and execution handoff. `PlayableMatchRuntime` still supplies trigger evaluation, random/stage-time context, and concrete controller dispatch through `RuntimeControllerDispatchWorld`, so this is ownership cleanup for current State -1 setup behavior, not exact State -1 ordering, persistent controller timing, redirect/helper/team scopes, or full CNS VM parity.
+
 `RuntimeResourceWorld` owns the bounded resource/control/variable mutation helpers that used to be free functions only: authored life/power max resolution, life and power clamping, `CtrlSet`, `LifeAdd`, `LifeSet`, `PowerAdd`, `PowerSet`, and variable/range assignment. The existing exported helper functions still delegate to this world, so current match, direct-combat, projectile-combat, target, reversal, and controller-executor call sites preserve behavior while the resource boundary becomes testable and replaceable. This is ownership cleanup only; exact CNS resource timing, helper/team/redirect scopes, round/KO flow, and full MUGEN/IKEMEN resource parity remain blocked.
 
 `RuntimeControllerDispatchWorld` owns the bounded runtime-controller execution bridge that active imported states, State -1 setup controllers, and pre-facing `AssertSpecial` now share before falling through to `StateControllerExecutor`. It centralizes runtime-state replacement, evaluation context handoff (`Const`, `HitPauseTime`, random, stage time), optional controller/operation telemetry hooks, and unsupported-controller reporting. `PlayableMatchRuntime` still owns trigger filtering, `ChangeState` / `ChangeAnim`, side-effect controller dispatch, and exact ordering, so this is a dispatch ownership seam rather than new CNS VM parity.
@@ -210,6 +212,7 @@ MatchWorld
   RuntimeStateClockWorld
   RuntimeStateMetadataWorld
   RuntimeStateEntryWorld
+  RuntimeStateEntrySetupWorld
   RuntimeResourceWorld
   RuntimeControllerDispatchWorld
   RuntimePausedMatchWorld
@@ -268,8 +271,9 @@ The current extraction order is:
 37. `RuntimeStateClockWorld`: own bounded `Time` / state elapsed clock advance and changed-state reset outside inline match-loop mutation.
 38. `RuntimeStateMetadataWorld`: own bounded previous-state transition metadata writes for `PrevStateNo`, `PrevAnim`, `PrevStateType`, and `PrevMoveType` outside inline state-entry mutation.
 39. `RuntimeStateEntryWorld`: own bounded state-entry availability, metadata/clock reset, custom-state owner assignment, StateDef metadata/control/velocity application, stale move/contact reset, and action handoff outside inline state-entry mutation.
-40. `RuntimeResourceWorld`: own bounded resource/control/variable writes, authored resource maxima, and power-delta clamping behind a named resource boundary while legacy helper functions delegate to it.
-41. `RuntimeControllerDispatchWorld`: own bounded runtime-controller execution dispatch, evaluation context handoff, optional telemetry hooks, and unsupported-controller reporting outside inline match-runtime branches.
+40. `RuntimeStateEntrySetupWorld`: own imported State -1 setup-controller selection, trigger gating, setup-controller classification, and execution handoff outside inline State -1 input-routing branches.
+41. `RuntimeResourceWorld`: own bounded resource/control/variable writes, authored resource maxima, and power-delta clamping behind a named resource boundary while legacy helper functions delegate to it.
+42. `RuntimeControllerDispatchWorld`: own bounded runtime-controller execution dispatch, evaluation context handoff, optional telemetry hooks, and unsupported-controller reporting outside inline match-runtime branches.
 42. `RuntimeRoundSystem`: own bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics outside the main match loop.
 43. `RuntimePausedMatchWorld`: own bounded regular pause mini-loop ordering for source `movetime`, paused command buffering, active/presentation effect advancement, target binding, stage clamp, frozen-actor presentation ticking, pause replacement interruption, and pause countdown ticking outside inline `PlayableMatchRuntime` branching.
 44. `RuntimeHitPauseWorld`: own bounded global hitpause mini-loop ordering for command buffering, `ignorehitpause` controller dispatch, paused presentation advancement, and actor hitpause countdown outside inline `PlayableMatchRuntime` branching.
