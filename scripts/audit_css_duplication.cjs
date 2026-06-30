@@ -15,6 +15,7 @@ const detailLimit = Math.max(1, Number.parseInt(detailLimitArg?.slice("--detail-
 const repeatedLimitArg = args.find((arg) => arg.startsWith("--detail-repeated-limit="));
 const repeatedLimit = Math.max(1, Number.parseInt(repeatedLimitArg?.slice("--detail-repeated-limit=".length) ?? "20", 10) || 20);
 const budgetArgs = {
+  bytes: parseOptionalNumberArg("--max-bytes="),
   rules: parseOptionalNumberArg("--max-rules="),
   duplicateSelectorKeys: parseOptionalNumberArg("--max-duplicate-selector-keys="),
   exactDuplicateRuleKeys: parseOptionalNumberArg("--max-exact-duplicate-rule-keys="),
@@ -389,6 +390,7 @@ function summarizeFromCss(css) {
     declarationGroups,
     exactRemovals,
     metrics: {
+      bytes: css.length,
       rules: rules.length,
       uniqueSelectors: selectors.size,
       duplicateSelectorKeys: [...selectors.values()].filter((group) => group.length > 1).length,
@@ -689,6 +691,7 @@ if (shouldFixCrossFileShadowed) {
 }
 
 let total = {
+  bytes: 0,
   rules: 0,
   uniqueSelectors: 0,
   duplicateSelectorKeys: 0,
@@ -793,6 +796,7 @@ function truncateText(input, maxLength) {
 for (const [file, summary] of currentSummaries) {
   const rel = path.relative(repoRoot, file);
   console.log(`${rel}`);
+  console.log(`  bytes ${summary.metrics.bytes}`);
   console.log(`  rules ${summary.metrics.rules}`);
   console.log(`  duplicate selectors ${summary.metrics.duplicateSelectorKeys} keys / ${summary.metrics.duplicateSelectorInstances} instances`);
   console.log(`  exact duplicate rules ${summary.metrics.exactDuplicateRuleKeys} keys / ${summary.metrics.exactDuplicateRuleInstances} instances`);
@@ -803,6 +807,7 @@ for (const [file, summary] of currentSummaries) {
 }
 
 console.log("total");
+console.log(`  bytes ${total.bytes}`);
 console.log(`  rules ${total.rules}`);
 console.log(`  duplicate selectors ${total.duplicateSelectorKeys} keys / ${total.duplicateSelectorInstances} instances`);
 console.log(`  exact duplicate rules ${total.exactDuplicateRuleKeys} keys / ${total.exactDuplicateRuleInstances} instances`);
@@ -834,6 +839,7 @@ function checkBudget(label, value, limit) {
   }
 }
 
+checkBudget("bytes", total.bytes, budgetArgs.bytes);
 checkBudget("rules", total.rules, budgetArgs.rules);
 checkBudget("duplicate selector keys", total.duplicateSelectorKeys, budgetArgs.duplicateSelectorKeys);
 checkBudget("exact duplicate rule keys", total.exactDuplicateRuleKeys, budgetArgs.exactDuplicateRuleKeys);

@@ -1,5 +1,58 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Studio CSS byte-budget and selector compaction
+
+Changed:
+
+- Compacted repeated Studio status-rail selector lists in desktop/editor/surface CSS with scoped `:is(...)` selectors while preserving the same status classes and row semantics.
+- Extended `scripts/audit_css_duplication.cjs` to report per-file and total active CSS bytes.
+- Tightened `pnpm qa:css:budget` with a new 557,419-byte ceiling alongside the existing 2,446-rule / 131 repeated-group / 111 overlap ceilings.
+- Updated Studio/UI roadmap docs and the S1 local issue with the current CSS truth: no exact duplicate rules, no same-file duplicate selector keys, and remaining debt is live cross-file cascade ownership.
+
+Evidence:
+
+- Manual HEAD comparison across the touched CSS files dropped 3,687 source bytes before the new byte budget was frozen.
+- `pnpm qa:css:budget` passes: 557,419 bytes, 2,446 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 131 repeated declaration groups, 111 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm test` passes: 73 files / 656 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-workbench-tablet.png`, `.scratch/qa/qa-smoke/studio-build.png`, `.scratch/qa/qa-smoke/studio-evidence.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/runtime-desktop.png`, and `.scratch/qa/qa-smoke/runtime-mobile.png`.
+
+Claim allowed:
+
+- CSS has no literal duplicate-rule problem, active byte size is now guarded, and status-rail selector repetition is lower without changing markup or runtime behavior.
+
+Claim blocked:
+
+- Full CSS architecture cleanup remains open: cross-file cascade ownership, shared ledger/status/action primitives, token cleanup, code splitting, and broader Studio UX review still need separate slices. No port/runtime score movement.
+
+## 2026-06-29 - Studio viewport toolbar dock polish
+
+Changed:
+
+- Converted the Studio playfield toolbar from a full-width bottom strip into a compact bottom-right instrument dock.
+- Kept existing runtime controls, labels, tooltips, and browser semantics intact; this is CSS-only.
+- Preserved shared toolbar ownership in `src/styles/command/stage-toolbar-controls.css` while leaving Match/Inspect toolbar behavior untouched.
+
+Evidence:
+
+- `pnpm qa:css` reports 2,446 scanned rules, 0 duplicate selector keys, 0 exact duplicate rules, 131 repeated declaration groups, 111 cross-file overlaps, 0 `src/style.css` overlaps, and 0 fully shadowed cross-file rules.
+- `pnpm qa:css:budget` passes against the 2,446-rule / 131-repeated-group / 111-overlap ceiling.
+- `pnpm typecheck` passes.
+- `pnpm test` passes: 73 files / 656 tests.
+- `pnpm build` passes; existing Vite chunk-size warning remains.
+- `pnpm qa:smoke` passes from started Vite server `http://127.0.0.1:5300`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `.scratch/qa/qa-smoke/studio-assets.png`, `.scratch/qa/qa-smoke/studio-stage.png`, and `.scratch/qa/qa-smoke/runtime-desktop.png`.
+
+Claim allowed:
+
+- Studio desktop viewport controls no longer occupy the full center width; the playfield keeps more clear space while runtime controls remain visible and operable.
+
+Claim blocked:
+
+- This is Studio UI/viewport chrome polish only. It does not add runtime behavior, Studio editing/export workflows, IKEMEN behavior, or score movement.
+
 ## 2026-06-29 - Studio CSS duplicate-budget trim
 
 Changed:

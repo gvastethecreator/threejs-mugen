@@ -353,38 +353,16 @@
     background: color-mix(in srgb, var(--danger) 7%, var(--editor-panel-pressed));
   }
 
-.app-shell.mode-studio .workbench-route-button.is-ok,
-  .app-shell.mode-studio .asset-row.is-ok,
-  .app-shell.mode-studio .build-readiness-record.is-ok,
-  .app-shell.mode-studio .engine-module-row.is-ok,
-  .app-shell.mode-studio .evidence-record.is-ok {
+  .app-shell.mode-studio :is(.workbench-route-button, .asset-row, .build-readiness-record, .engine-module-row, .evidence-record).is-ok {
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--ok) 84%, transparent);
   }
 
 .app-shell.mode-studio .workbench-route-button.is-warn,
-  .app-shell.mode-studio .asset-row.is-warn,
-  .app-shell.mode-studio .asset-row.is-planned,
-  .app-shell.mode-studio .asset-row.is-partial,
-  .app-shell.mode-studio .build-readiness-record.is-warn,
-  .app-shell.mode-studio .build-readiness-record.is-planned,
-  .app-shell.mode-studio .build-readiness-record.is-partial,
-  .app-shell.mode-studio .engine-module-row.is-warn,
-  .app-shell.mode-studio .engine-module-row.is-planned,
-  .app-shell.mode-studio .engine-module-row.is-partial,
-  .app-shell.mode-studio .evidence-record.is-warn,
-  .app-shell.mode-studio .evidence-record.is-planned,
-  .app-shell.mode-studio .evidence-record.is-partial {
+  .app-shell.mode-studio :is(.asset-row, .build-readiness-record, .engine-module-row, .evidence-record):is(.is-warn, .is-planned, .is-partial) {
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--warn) 82%, transparent);
   }
 
-.app-shell.mode-studio .asset-row.is-error,
-  .app-shell.mode-studio .asset-row.is-blocked,
-  .app-shell.mode-studio .build-readiness-record.is-error,
-  .app-shell.mode-studio .build-readiness-record.is-blocked,
-  .app-shell.mode-studio .engine-module-row.is-error,
-  .app-shell.mode-studio .engine-module-row.is-blocked,
-  .app-shell.mode-studio .evidence-record.is-error,
-  .app-shell.mode-studio .evidence-record.is-blocked {
+.app-shell.mode-studio :is(.asset-row, .build-readiness-record, .engine-module-row, .evidence-record):is(.is-error, .is-blocked) {
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--danger) 86%, transparent);
   }
 
