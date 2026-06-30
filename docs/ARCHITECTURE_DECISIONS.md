@@ -157,3 +157,13 @@ Why: ZSS/Lua/model stages and extended behavior would otherwise inflate support 
 Gate: reports separate MUGEN 1.0, MUGEN 1.1, and IKEMEN-only recognized/unsupported features.
 
 Blocker rule: IKEMEN execution needs code-level compatibility profiles first. Until then, IKEMEN work is scanner/reporting only, even if files can be parsed.
+
+## ADR-011: Passive Controllers Move Behind Named Worlds
+
+Status: accepted, incremental.
+
+Decision: passive CNS controller mutation should leave `StateControllerExecutor` when a bounded named world can own it without changing broad tick order. `RuntimeAnimationControllerWorld` is the current example for basic `ChangeAnim` / `ChangeAnim2` mutation, while `RuntimeKinematicControllerWorld`, `RuntimeBoundsControllerWorld`, `RuntimeHitFallControllerWorld`, `RuntimeStateTypeWorld`, `RuntimeDamageScaleWorld`, and `RuntimeHitDefenseWorld` cover earlier passive setup families.
+
+Why: the port needs smaller testable ownership seams before chasing full CNS VM parity.
+
+Gate: each extraction must preserve current trace behavior or document intentional checksum drift, add focused system coverage, and state blocked parity claims.

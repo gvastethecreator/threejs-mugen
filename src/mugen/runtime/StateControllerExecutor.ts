@@ -13,6 +13,7 @@ import type {
   VariableControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
+import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import {
@@ -32,6 +33,7 @@ import { RuntimeStateTypeWorld } from "./StateTypeSystem";
 import { RuntimeHitFallControllerWorld } from "./HitFallControllerSystem";
 import { RuntimeBoundsControllerWorld } from "./BoundsControllerSystem";
 import { RuntimeKinematicControllerWorld } from "./KinematicControllerSystem";
+import { RuntimeAnimationControllerWorld } from "./AnimationControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
@@ -42,9 +44,11 @@ const stateTypeWorld = new RuntimeStateTypeWorld();
 const hitFallControllerWorld = new RuntimeHitFallControllerWorld();
 const boundsControllerWorld = new RuntimeBoundsControllerWorld();
 const kinematicControllerWorld = new RuntimeKinematicControllerWorld();
+const animationControllerWorld = new RuntimeAnimationControllerWorld();
 
 export type RuntimeControllerEvaluationContext = {
   getConst?: (name: string) => number | undefined;
+  getAnimation?: (animNo: number, source: NonNullable<CharacterRuntimeState["animationSource"]>) => MugenAnimationAction | undefined;
   hitPauseTime?: () => number;
   random?: () => number;
   stageTime?: number;
@@ -81,10 +85,7 @@ export function executeControllerIr(
       next.ctrl = ctrl !== 0;
     }
   } else if (type === "changeanim" || type === "changeanim2") {
-    const value = numberParam(controller, next, context, "value", "anim");
-    if (value !== undefined) {
-      changeAnim(next, value, type === "changeanim2" ? "state-owner" : "self");
-    }
+    animationControllerWorld.applyController(next, controller, context);
   } else if (type === "velset") {
     kinematicControllerWorld.applyController(next, controller, kinematicOperation(controller, "velset"), context);
   } else if (type === "veladd") {
@@ -329,13 +330,6 @@ function applyRemapPalController(
     source: [Math.max(0, Math.round(source[0])), Math.max(0, Math.round(source[1]))],
     dest: [Math.max(0, Math.round(dest[0])), Math.max(0, Math.round(dest[1]))],
   };
-}
-
-function changeAnim(state: CharacterRuntimeState, anim: number, source: NonNullable<CharacterRuntimeState["animationSource"]>): void {
-  state.animNo = anim;
-  state.frameIndex = 0;
-  state.animTime = 0;
-  state.animationSource = source;
 }
 
 function numberParam(

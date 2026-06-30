@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeAnimationControllerWorld ownership extraction
+  -> RuntimeAnimationControllerWorld now owns bounded passive ChangeAnim/ChangeAnim2 setup in the basic StateControllerExecutor path
+  -> StateControllerExecutor delegates raw-param animation retargeting, self/state-owner source marking, reset, and bounded elem/elemtime seeding to the world
+  -> executor still owns controller routing, expression context creation, and broad runtime-controller execution
+  -> PlayableMatchRuntime still owns active-state action lookup, state-owner action selection, and controller tick order
+  -> focused AnimationControllerSystem coverage proves expression fallback, known-AIR elem/elemtime seeding, clamped/fallback element behavior, missing-value no-op, and executor routing
+  -> no missing-action fallback, full active-state elem/elemtime parity, redirects/helper/team ownership, full state-owner namespace behavior, exact animation-source parity, or score claim
 R2 RuntimeKinematicControllerWorld ownership extraction
   -> RuntimeKinematicControllerWorld now owns bounded passive VelSet/VelAdd/VelMul/HitVelSet/PosSet/PosAdd/Gravity setup
   -> StateControllerExecutor delegates typed kinematic:* operations and raw-param fallback mutations to the world

@@ -24,6 +24,12 @@ private playable MUGEN-like sandbox
 
 Near-term language must stay honest: this is **partial MUGEN compatibility with trace and fixture gates**, plus **IKEMEN scanner/reporting first**. It is not a full MUGEN or IKEMEN-GO port yet.
 
+Current implementation cursor:
+
+- Latest R2 ownership checkpoint: `RuntimeAnimationControllerWorld` owns bounded passive `ChangeAnim` / `ChangeAnim2` setup in the basic `StateControllerExecutor` path.
+- Previous R2 checkpoint: `RuntimeKinematicControllerWorld` owns bounded passive movement/position controller setup.
+- Useful next runtime work remains R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam; do not reselect the just-closed animation-controller or kinematic-controller ownership cuts.
+
 ## Authoritative Docs
 
 Read in this order for broad work:
