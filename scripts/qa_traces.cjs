@@ -782,6 +782,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTargetStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-default-targetstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDefaultTargetStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedProjectileReceivedDamageTraceArtifact(),
@@ -1724,6 +1729,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-target-redirect",
     "synthetic-imported-projectile-target-controllers",
     "synthetic-imported-projectile-targetstate",
+    "synthetic-imported-projectile-default-targetstate",
     "synthetic-imported-projectile-motion",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",

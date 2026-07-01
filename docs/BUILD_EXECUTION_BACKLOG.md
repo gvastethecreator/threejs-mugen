@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Player Projectile default TargetState gate
+
+Changed:
+
+- Added required runtime trace artifact `synthetic-imported-projectile-default-targetstate.json`.
+- Extended the synthetic imported Projectile fixture path with optional omitted `projid` / `id` output so player-owned Projectile default target id `0` routes can be tested without mixing in direct `HitDef`.
+- Registered the new artifact in `pnpm qa:trace` required coverage and added focused preset coverage for target id `0`, custom-owner actor frames, Projectile lifecycle/effect payload, and `SelfState` return.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording for player-owned Projectile default TargetState reads into owner-backed state data.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile default TargetState"` passed.
+- `pnpm qa:trace` passed 207/207 artifacts, 187 required and 20 optional; new checksum `8f35f1fa`.
+- Previous related required player Projectile artifacts remain active: explicit TargetState `synthetic-imported-projectile-targetstate.json` checksum `dd1c7962`, Target side effects `synthetic-imported-projectile-target-controllers.json` checksum `8c7bd6c2`, and target redirect `synthetic-imported-projectile-target-redirect.json` checksum `cd099094`.
+
+Claim allowed:
+
+- A player-owned Projectile-only route can omit `projid` / `id`, hit P2, record owner target link `p1 -> p2 / 0`, execute delayed owner-local `TargetState value = 888`, route P2 through attacker-owned custom-state data `888 -> 889`, and return P2 to state `0`/control through `SelfState`.
+
+Claim blocked:
+
+- Direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, and full Projectile default TargetState parity remain blocked.
+
 ## 2026-07-01 - Helper Projectile bare Target gate
 
 Changed:

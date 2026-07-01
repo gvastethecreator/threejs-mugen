@@ -7782,6 +7782,79 @@ export function createSyntheticImportedProjectileTargetStateTraceArtifact(option
   });
 }
 
+export function createSyntheticImportedProjectileDefaultTargetStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-default-targetstate-attacker",
+    displayName: "Synthetic Imported Projectile Default TargetState Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    omitHitDefId: true,
+    omitProjectileId: true,
+    projectileHitAnim: 914,
+    targetStateTriggerTime: 9,
+    targetStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-default-targetstate-defender",
+    displayName: "Synthetic Imported Projectile Default TargetState Defender",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-default-targetstate-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-default-targetstate-golden",
+      label: "Synthetic imported Projectile default TargetState route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile default TargetState trace proves a player-owned Projectile-only hit with omitted projid/id defaults target memory to id 0 and can later feed owner-local TargetState into attacker-owned custom state data before SelfState returns control. It does not claim direct HitDef mixing, helper-owned custom state tables, throws, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN Projectile TargetState parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-default-targetstate-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "Projectile", "TargetState", "SelfState"],
+        requiredExecutedOperations: ["projectile", "target:targetstate"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 0 }],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 914, moveType: "I", clsn1Count: 0 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, ctrl: true, moveType: "I", life: 969 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 0, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -12822,6 +12895,7 @@ export type SyntheticImportedTraceFighterOptions = {
   action200Duration?: number;
   withSuperPause?: boolean;
   withProjectile?: boolean;
+  omitProjectileId?: boolean;
   projectilePriority?: number;
   projectileOffset?: [number, number];
   projectileVelocity?: [number, number];
@@ -13328,7 +13402,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -15246,6 +15320,7 @@ function projectileControllerBlock(
   hitSpark?: string,
   guardSpark?: string,
   sparkXy?: [number, number],
+  omitProjectileId = false,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
@@ -15258,11 +15333,12 @@ function projectileControllerBlock(
   const hitSparkLine = hitSpark === undefined ? "" : `sparkno = ${hitSpark}`;
   const guardSparkLine = guardSpark === undefined ? "" : `guard.sparkno = ${guardSpark}`;
   const sparkXyLine = sparkXy === undefined ? "" : `sparkxy = ${sparkXy[0]},${sparkXy[1]}`;
+  const projectileIdLine = omitProjectileId ? "" : "projid = 77";
   return `
 [State 200, Fast Projectile]
 type = Projectile
 trigger1 = Time = 2
-projid = 77
+${projectileIdLine}
 projpriority = ${priority}
 projhits = ${hits}
 projmisstime = ${missTime}
