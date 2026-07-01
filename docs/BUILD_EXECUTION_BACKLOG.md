@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper Projectile default target id gate
+
+Changed:
+
+- `Projectile` actors now default missing `projid` / `id` to projectile id and target id `0`.
+- Added `helperProjHitRoute.omitProjectileId` to the synthetic trace fixture builder so gates can generate a real helper-local `Projectile` controller without an authored `projid`.
+- Added required `synthetic-imported-helper-projectile-default-target.json` trace evidence: helper state `1200` spawns a helper-parented owner-side Projectile without `projid`, the projectile hits P2 for 18 damage, owner target link `p1 -> p2 / 0` and helper target link `p1-helper-0 -> p2 / 0` are both exposed, and helper state `1226` branches to `1227/958` through `NumTarget(0)` plus `Target(0), Life`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/ProjectileSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "default Target|defaults missing Projectile"` passed.
+- `pnpm test` passed: 95 files, 819 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 191 / 191 artifacts, 171 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings for docs only.
+- New required checksum: `synthetic-imported-helper-projectile-default-target.json` `b1541afc`.
+- Previous helper Projectile explicit target checksum remains required: `synthetic-imported-helper-projectile-target.json` `1a44cc04`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local micro-VM can use helper-parented Projectile default target id `0` for owner/helper target memory and helper-local `NumTarget(0)` plus `Target(0), Life` reads after contact.
+
+Claim blocked:
+
+- This does not add helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
+
 ## 2026-06-30 - Helper Projectile target memory gate
 
 Changed:

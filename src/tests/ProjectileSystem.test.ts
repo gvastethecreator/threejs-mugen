@@ -160,6 +160,25 @@ describe("ProjectileSystem", () => {
     });
   });
 
+  it("defaults missing Projectile id to target id 0", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-0",
+      controller: controller({
+        projanim: "1005",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile.projectileId).toBe(0);
+    expect(projectile.targetId).toBe(0);
+  });
+
   it("prefers typed projectile operations over raw controller params", () => {
     const operation: ProjectileControllerOp = {
       kind: "projectile",

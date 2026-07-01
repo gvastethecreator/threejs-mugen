@@ -1461,7 +1461,7 @@ describe("EffectActorSystem", () => {
     expect(defender.hitStun).toBe(18);
     expect(defender.runtime.moveType).toBe("H");
     expect(attacker.runtime.power).toBe(35);
-    expect(targets).toEqual(["p2:none"]);
+    expect(targets).toEqual(["p2:0"]);
     expect(logs).toEqual(["Attacker projectile hit Defender for 40; hits remaining 0, miss 0; hit removal anim none"]);
     expect(world.projectiles("p1")).toEqual([]);
   });
