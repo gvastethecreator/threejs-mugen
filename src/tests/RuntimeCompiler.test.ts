@@ -785,6 +785,52 @@ time = 20
     });
   });
 
+  it("applies CNS Data spark defaults while compiling HitDef controller ops", () => {
+    const program = compileRuntimeProgram({
+      commands: [],
+      animations: new Map<number, MugenAnimationAction>([[200, action(200)]]),
+      states: [state(200, 200, [controller(200, "HitDef", [], { damage: "30" })])],
+      stateEntryControllers: [],
+      constants: {
+        "data.sparkno": 2,
+        "data.guard.sparkno": 40,
+      },
+    });
+
+    expect(program.states[0]?.controllers[0]?.operation).toMatchObject({
+      kind: "hitdef",
+      hitSpark: "2",
+      guardSpark: "40",
+    });
+  });
+
+  it("keeps explicit HitDef spark refs ahead of CNS Data defaults", () => {
+    const program = compileRuntimeProgram({
+      commands: [],
+      animations: new Map<number, MugenAnimationAction>([[200, action(200)]]),
+      states: [
+        state(200, 200, [
+          controller(200, "HitDef", [], {
+            damage: "30",
+            sparkno: "S7001",
+            "guard.sparkno": "F7004",
+          }),
+        ]),
+      ],
+      stateEntryControllers: [],
+      constants: {
+        "data.sparkno": 2,
+        "data.guard.sparkno": 40,
+      },
+    });
+
+    expect(program.states[0]?.controllers[0]?.operation).toMatchObject({
+      kind: "hitdef",
+      hitSpark: "S7001",
+      guardSpark: "F7004",
+    });
+  });
+
   it("compiles HitDef get-hit anim and type metadata into typed data", () => {
     const hitDef = compileControllerIr(
       controller(200, "HitDef", [], {

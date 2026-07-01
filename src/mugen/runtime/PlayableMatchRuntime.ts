@@ -922,6 +922,7 @@ function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr 
     states: definition.states ?? [],
     stateEntryControllers: definition.stateEntryControllers ?? [],
     animations: definition.animations,
+    constants: definition.constants,
   });
 }
 

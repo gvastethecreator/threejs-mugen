@@ -1,5 +1,9 @@
 import type { MugenStateController } from "../model/MugenState";
 
+export type ControllerCompileContext = {
+  constants?: Record<string, number>;
+};
+
 export type HitDefControllerOp = {
   kind: "hitdef";
   id?: number;
@@ -483,7 +487,7 @@ export type ControllerOp =
   | DamageScaleControllerOp
   | ContactControllerOp;
 
-export function compileControllerOp(controller: MugenStateController): ControllerOp | undefined {
+export function compileControllerOp(controller: MugenStateController, context: ControllerCompileContext = {}): ControllerOp | undefined {
   const type = controller.type.toLowerCase();
   if (isKinematicController(type)) {
     return compileKinematicControllerOp(controller, type);
@@ -555,7 +559,7 @@ export function compileControllerOp(controller: MugenStateController): Controlle
     return compileHitAddControllerOp(controller);
   }
   if (type === "hitdef") {
-    return compileHitDefControllerOp(controller);
+    return compileHitDefControllerOp(controller, context);
   }
   if (type.startsWith("target")) {
     return compileTargetControllerOp(controller);
@@ -1049,7 +1053,7 @@ function compileDamageScaleControllerOp(
   };
 }
 
-function compileHitDefControllerOp(controller: MugenStateController): HitDefControllerOp {
+function compileHitDefControllerOp(controller: MugenStateController, context: ControllerCompileContext): HitDefControllerOp {
   const damage = numberPair(findParam(controller, "damage"));
   const groundVelocity = numberPair(findParam(controller, "ground.velocity"));
   const guardVelocity = numberPair(findParam(controller, "guard.velocity"));
@@ -1082,11 +1086,24 @@ function compileHitDefControllerOp(controller: MugenStateController): HitDefCont
     fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
-    hitSpark: stripMugenString(findParam(controller, "sparkno")),
-    guardSpark: stripMugenString(findParam(controller, "guard.sparkno")),
+    hitSpark: hitDefSparkParam(controller, context, "sparkno"),
+    guardSpark: hitDefSparkParam(controller, context, "guard.sparkno"),
     sparkXy: numberPair(findParam(controller, "sparkxy")),
     fall: compileHitDefFallOp(controller),
   });
+}
+
+function hitDefSparkParam(
+  controller: MugenStateController,
+  context: ControllerCompileContext,
+  key: "sparkno" | "guard.sparkno",
+): string | undefined {
+  const explicit = stripMugenString(findParam(controller, key));
+  if (explicit !== undefined) {
+    return explicit;
+  }
+  const fallback = context.constants?.[`data.${key}`];
+  return Number.isFinite(fallback) ? String(fallback) : undefined;
 }
 
 function compileHitDefFallOp(controller: MugenStateController): HitDefFallOp {

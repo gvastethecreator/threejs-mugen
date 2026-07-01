@@ -2,7 +2,7 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import { compileCommandIr } from "./CommandCompiler";
-import { compileControllerOp } from "./ControllerOps";
+import { compileControllerOp, type ControllerCompileContext } from "./ControllerOps";
 import { compileExpression } from "./ExpressionCompiler";
 import type { CompileReport, CompileSupportLevel, ControllerIr, RuntimeProgramIr, StateProgramIr, TriggerIr } from "./RuntimeIr";
 
@@ -102,7 +102,7 @@ export function isRuntimeExecutableController(type: string): boolean {
   return level === "executable" || level === "partial" || level === "noop";
 }
 
-export function compileControllerIr(controller: MugenStateController): ControllerIr {
+export function compileControllerIr(controller: MugenStateController, context: ControllerCompileContext = {}): ControllerIr {
   const normalizedType = controller.type.toLowerCase();
   const support = getControllerSupport(controller.type);
   const triggers: TriggerIr[] = controller.triggers.map((trigger) => ({
@@ -121,7 +121,7 @@ export function compileControllerIr(controller: MugenStateController): Controlle
     }
   }
 
-  const operation = compileControllerOp(controller);
+  const operation = compileControllerOp(controller, context);
   return {
     source: controller,
     stateId: controller.stateId,
@@ -137,8 +137,8 @@ export function compileControllerIr(controller: MugenStateController): Controlle
   };
 }
 
-export function compileStateProgram(state: MugenStateDef): StateProgramIr {
-  const controllers = state.controllers.map(compileControllerIr);
+export function compileStateProgram(state: MugenStateDef, context: ControllerCompileContext = {}): StateProgramIr {
+  const controllers = state.controllers.map((controller) => compileControllerIr(controller, context));
   const compiledControllers = controllers.filter((controller) => isCompiledController(controller)).length;
   return {
     source: state,
@@ -154,10 +154,12 @@ export function compileRuntimeProgram(input: {
   states: MugenStateDef[];
   stateEntryControllers: MugenStateController[];
   animations: Map<number, MugenAnimationAction>;
+  constants?: Record<string, number>;
 }): RuntimeProgramIr {
   const commands = input.commands.map(compileCommandIr);
-  const states = input.states.map(compileStateProgram);
-  const stateEntries = input.stateEntryControllers.map(compileControllerIr);
+  const context: ControllerCompileContext = input.constants ? { constants: input.constants } : {};
+  const states = input.states.map((state) => compileStateProgram(state, context));
+  const stateEntries = input.stateEntryControllers.map((controller) => compileControllerIr(controller, context));
   const runtimeRoutableStateTargets = new Set<number>();
   let triggerSupportedStateEntries = 0;
 

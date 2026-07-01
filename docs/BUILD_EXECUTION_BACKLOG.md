@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-07-01 - HitDef compiler default spark fallback
+
+Changed:
+
+- Added optional compile-context constants for controller and runtime program compilation.
+- Passed parsed character constants from `MugenCharacterLoader` and recompilable fighter definitions into `compileRuntimeProgram`.
+- Made typed `HitDef` `ControllerOp` data inherit parsed CNS `[Data] sparkno` / `guard.sparkno` when explicit `sparkno` / `guard.sparkno` refs are omitted.
+- Added compiler coverage for default fallback and explicit `HitDef` spark-ref precedence.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeCompiler.test.ts -t "HitDef"` passed.
+- `pnpm test` passed 95 files / 843 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; optional `kfm-official-qcf-x.json` checksum remains `70a3e6b2`.
+- `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- Imported/runtime program compilation can preserve bounded `[Data] sparkno` / `guard.sparkno` defaults in typed `HitDef` operation data when character constants are available and the controller omits explicit refs.
+
+Claim blocked:
+
+- No new trace artifact, no renderer/audio playback parity, no exact FightFX/common visual parity, no broader HitDef semantics, no public bundled KFM asset, no score movement, and no full MUGEN/IKEMEN parity.
+
 ## 2026-07-01 - Optional KFM QCF default spark gate
 
 Changed:

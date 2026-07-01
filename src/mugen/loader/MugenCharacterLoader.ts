@@ -178,6 +178,7 @@ export class MugenCharacterLoader {
       states,
       stateEntryControllers,
       animations,
+      constants,
     });
 
     const compatibility = createCompatibilityReport({
