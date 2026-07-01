@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Helper Projectile TargetState gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-targetstate.json` trace evidence: helper-local `Projectile` spawns owner-side Projectile id `8862` with `parentId = p1-helper-0`, the Projectile hits P2, owner and helper target memory both record target id `8862`, the helper branches through `NumTarget(8862)` / `Target(8862), Life`, then executes helper-owned `TargetState value = 888`.
+- Extended the synthetic helper `ProjHit` route builder with a bounded `targetState` option so helper-parented Projectile target memory can drive the same owner-backed custom-state callback already used by helper direct-HitDef TargetState gates.
+- Registered the new required artifact in `pnpm qa:trace` and added focused trace-gate coverage for P2 custom-owner frames, `SelfState` return, owner/helper target links, projectile parent payload, and shared sound/FightFX package telemetry.
+- Kept this as runtime/trace evidence only: no CSS, renderer, Studio UI, sprites, or visible gameplay output changed.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile TargetState"` passed.
+- `pnpm qa:trace` passes: 201 / 201 artifacts, 181 required, 20 optional, 0 failed.
+- `pnpm test` passed: 95 files, 830 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- No CSS/UI diff: `git diff --name-only -- '*.css'` returned no files.
+- New required checksum: `synthetic-imported-helper-projectile-targetstate.json` `f5f26b21`.
+- Previous default helper Projectile Target-controller checksum remains required: `synthetic-imported-helper-projectile-default-target-controllers.json` `6d8c51dd`.
+- Previous explicit helper Projectile Target-controller checksum remains required: `synthetic-imported-helper-projectile-target-controllers.json` `ebf5099a`.
+- Previous helper direct-HitDef TargetState checksum remains required: `synthetic-imported-helper-targetstate.json` `011633b8`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-parented Projectile target memory can feed bounded helper-owned `TargetState` against remembered P2 target id `8862`, route P2 into the helper owner's known state data, keep owner-backed `888 -> 889` custom-state execution, and return through `SelfState` to P2 state `0`/control. Evidence includes owner/helper target links, P2 custom-owner actor frames, final P2 control restoration, projectile `parentId = p1-helper-0`, helper `targetCount = 1`, and shared `S5,9` / FightFX `F7015` contact-package telemetry.
+
+Claim blocked:
+
+- This does not add helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper `HitDef`/Projectile lifetime parity, visual parity, score movement, or full MUGEN/IKEMEN helper Projectile TargetState parity.
+
 ## 2026-07-01 - Helper Projectile default Target controller gate
 
 Changed:

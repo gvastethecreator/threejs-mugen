@@ -105,6 +105,7 @@ import {
   createSyntheticImportedHelperProjHitTraceArtifact,
   createSyntheticImportedHelperProjectileTargetTraceArtifact,
   createSyntheticImportedHelperProjectileTargetControllersTraceArtifact,
+  createSyntheticImportedHelperProjectileTargetStateTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultTargetControllersTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
@@ -1941,6 +1942,88 @@ describe("RuntimeTraceGatePresets", () => {
             assetFrameCount: 2,
             assetTotalDuration: 11,
             offset: { x: 17, y: -51 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile TargetState artifact with owner-backed custom-state evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileTargetStateTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-targetstate-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-targetstate-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1237, animNo: 971 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1238, animNo: 972 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 973 }),
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 888 }),
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 889 }),
+      ]),
+    );
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 888, 889]));
+    expect(evidence?.executedControllers.SelfState).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([
+      { ownerId: "p1", actorId: "p2", targetId: 8862 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8862, hasBinding: false, minFrames: 1 },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8862 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8862 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p2", source: "imported", actorKind: "player", customOwnerId: undefined, stateNo: 0, ctrl: true }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "helper", stateNo: 1238, targetCount: 1 }),
+        }),
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8862, hitsRemaining: 0, hasHit: true }),
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 9, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7015,
+            raw: "F7015",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7015,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 19, y: -49 },
           }),
         }),
       ]),
