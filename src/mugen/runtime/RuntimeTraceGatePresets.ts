@@ -2796,6 +2796,39 @@ export function createSyntheticImportedHitDefHitSparkTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHitDefDataSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-data-spark-attacker",
+    displayName: "Synthetic Imported HitDef Data Spark Attacker",
+    dataSparkNo: 2,
+    sparkXy: [-8, -54],
+    moveHitStateNo: 261,
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-data-spark-golden",
+    targetLabel: "Synthetic imported HitDef data spark route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200, 261],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "hit",
+        sparkNo: 2,
+        raw: "2",
+        offsetX: -8,
+        offsetY: -54,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef data-spark trace proves an omitted HitDef sparkno can inherit parsed CNS [Data] sparkno = 2 and emit bounded HitSpark telemetry with authored sparkxy metadata. It does not claim exact FightFX/common sprite lookup, spark binding, render timing, layering, scale, palette, or full MUGEN/IKEMEN HitDef effect parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefCommonSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-common-spark-attacker",
@@ -3008,6 +3041,40 @@ export function createSyntheticImportedHitDefGuardSparkTraceArtifact(options: Ru
     ],
     notes: [
       "Synthetic imported HitDef guard-spark trace proves a guarded direct HitDef can emit bounded HitSpark telemetry from guard.sparkno = S7000 plus sparkxy metadata on the attacker actor. It does not claim exact FightFX/common sprite lookup, spark binding, render timing, layering, scale, palette, or full MUGEN/IKEMEN guard-effect behavior.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHitDefDataGuardSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-data-guard-spark-attacker",
+    displayName: "Synthetic Imported HitDef Data Guard Spark Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    dataGuardSparkNo: 40,
+    sparkXy: [13, -57],
+    moveGuardStateNo: 260,
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-data-guard-spark-golden",
+    targetLabel: "Synthetic imported HitDef data guard spark route",
+    requiredExecutedStates: [200, 260],
+    requiredHitEffectEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        kind: "guard",
+        sparkNo: 40,
+        raw: "40",
+        offsetX: 13,
+        offsetY: -57,
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef data guard-spark trace proves an omitted HitDef guard.sparkno can inherit parsed CNS [Data] guard.sparkno = 40 and emit bounded guard HitSpark telemetry with authored sparkxy metadata. It does not claim exact FightFX/common sprite lookup, guard-spark binding, render timing, layering, scale, palette, or full MUGEN/IKEMEN guard-effect parity.",
     ],
   });
 }
@@ -13155,6 +13222,8 @@ export type SyntheticImportedTraceFighterOptions = {
   guardSpark?: string;
   sparkXy?: [number, number];
   hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
+  dataSparkNo?: number;
+  dataGuardSparkNo?: number;
   fall?: DemoMove["fall"];
   getHitState?: { stateNo: number; animNo?: number };
   fallDefenceUpBranchStateNo?: number;
@@ -14371,6 +14440,8 @@ function dataConstantsBlock(options: SyntheticImportedTraceFighterOptions): stri
     power: options.resourceMaxEntry?.powerMax ?? options.dataStats?.power,
     attack: options.dataStats?.attack,
     defence: options.dataStats?.defence,
+    sparkno: options.dataSparkNo,
+    "guard.sparkno": options.dataGuardSparkNo,
   };
   const lines = Object.entries(data)
     .filter(([, value]) => value !== undefined)

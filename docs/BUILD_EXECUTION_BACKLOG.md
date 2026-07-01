@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-01 - HitDef Data spark fallback trace gates
+
+Changed:
+
+- Added required synthetic trace gates for omitted direct `HitDef` `sparkno` and `guard.sparkno` inheriting parsed CNS `[Data]` constants.
+- Extended synthetic imported trace fixtures with `[Data] sparkno` / `guard.sparkno` constants.
+- Registered the new gates in `pnpm qa:trace` and added focused trace-preset coverage.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "data-spark|data guard-spark"` passed 2 tests.
+- `pnpm test` passed 95 files / 845 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with existing Vite large-chunk warning.
+- `pnpm qa:trace` passed 210/210 artifacts, 190 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with only pre-existing CRLF warnings in unrelated dirty UI/CSS files.
+- New checksums: `synthetic-imported-hitdef-data-spark.json` `d950796c`; `synthetic-imported-hitdef-data-guard-spark.json` `7bd9d162`.
+
+Claim allowed:
+
+- Portable synthetic imported routes now prove omitted direct `HitDef` `sparkno` / `guard.sparkno` can inherit parsed CNS `[Data] sparkno = 2` / `guard.sparkno = 40` through typed `HitDef` `ControllerOp` data and emit bounded hit/guard `HitSpark` telemetry.
+
+Claim blocked:
+
+- Exact FightFX/common lookup, renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation, broad HitDef parity, public KFM asset support, score movement, and full MUGEN/IKEMEN parity remain blocked.
+
 ## 2026-07-01 - HitDef compiler default spark fallback
 
 Changed:

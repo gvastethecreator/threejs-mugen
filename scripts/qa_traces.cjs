@@ -381,6 +381,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefHitSparkTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-data-spark",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDataSparkTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-common-spark",
       required: true,
       artifact: presets.createSyntheticImportedHitDefCommonSparkTraceArtifact(),
@@ -399,6 +404,11 @@ async function main() {
       name: "synthetic-imported-hitdef-guard-spark",
       required: true,
       artifact: presets.createSyntheticImportedHitDefGuardSparkTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitdef-data-guard-spark",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDataGuardSparkTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-hitdef-common-guard-spark",
@@ -1917,10 +1927,12 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-guard-sound",
     "synthetic-imported-hitdef-hit-sound",
     "synthetic-imported-hitdef-hit-spark",
+    "synthetic-imported-hitdef-data-spark",
     "synthetic-imported-hitdef-common-spark",
     "synthetic-imported-hitdef-fightfx-spark",
     "synthetic-imported-hitdef-hit-effect-package",
     "synthetic-imported-hitdef-guard-spark",
+    "synthetic-imported-hitdef-data-guard-spark",
     "synthetic-imported-hitdef-common-guard-spark",
     "synthetic-imported-hitdef-fightfx-guard-spark",
     "synthetic-imported-hitdef-guard-effect-package",

@@ -80,6 +80,8 @@ import {
   createSyntheticImportedGuardTraceArtifact,
   createSyntheticImportedHitDefCommonSparkTraceArtifact,
   createSyntheticImportedHitDefCommonGuardSparkTraceArtifact,
+  createSyntheticImportedHitDefDataGuardSparkTraceArtifact,
+  createSyntheticImportedHitDefDataSparkTraceArtifact,
   createSyntheticImportedHitDefFightFxGuardSparkTraceArtifact,
   createSyntheticImportedHitDefFightFxSparkTraceArtifact,
   createSyntheticImportedHitDefHitEffectPackageTraceArtifact,
@@ -4488,6 +4490,51 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
+  it("creates a synthetic imported HitDef data-spark fallback artifact", () => {
+    const artifact = createSyntheticImportedHitDefDataSparkTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-data-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "hit",
+          sparkNo: 2,
+          raw: "2",
+          rawPrefix: undefined,
+          offset: { x: -8, y: -54 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "hit",
+        raw: "2",
+        offsetX: -8,
+        offsetY: -54,
+      }),
+    ]);
+  });
+
   it("creates a synthetic imported HitDef common-spark artifact with asset-frame evidence", () => {
     const artifact = createSyntheticImportedHitDefCommonSparkTraceArtifact({ generatedAt: "2026-06-29T00:00:00.000Z" });
 
@@ -4765,6 +4812,51 @@ describe("RuntimeTraceGatePresets", () => {
         raw: "S7000",
         offsetX: 12,
         offsetY: -64,
+      }),
+    ]);
+  });
+
+  it("creates a synthetic imported HitDef data guard-spark fallback artifact", () => {
+    const artifact = createSyntheticImportedHitDefDataGuardSparkTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-data-guard-spark-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-guard-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.hitEffectEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          kind: "guard",
+          sparkNo: 40,
+          raw: "40",
+          rawPrefix: undefined,
+          offset: { x: 13, y: -57 },
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
+      expect.objectContaining({
+        kind: "guard",
+        raw: "40",
+        offsetX: 13,
+        offsetY: -57,
       }),
     ]);
   });
