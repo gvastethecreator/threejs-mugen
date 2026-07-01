@@ -104,6 +104,7 @@ import {
   createSyntheticImportedHelperModifyProjectileTraceArtifact,
   createSyntheticImportedHelperProjHitTraceArtifact,
   createSyntheticImportedHelperProjectileTargetTraceArtifact,
+  createSyntheticImportedHelperProjectileTargetControllersTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
@@ -1850,6 +1851,96 @@ describe("RuntimeTraceGatePresets", () => {
           actorId: "p1-projectile-0",
           parentId: "p1-helper-0",
           effect: expect.objectContaining({ kind: "projectile", id: 8860, hitsRemaining: 0, hasHit: true }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile Target controllers artifact with target side-effect evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileTargetControllersTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-target-controllers-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-target-controllers-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 965 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1234, animNo: 966 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 967 }),
+        expect.objectContaining({ actorId: "p2", actorKind: "player", facing: 1, minLife: 958, maxLife: 958 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredTargetLinks).toEqual([
+      { ownerId: "p1", actorId: "p2", targetId: 8861 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8861, hasBinding: false, minFrames: 1 },
+      {
+        ownerId: "p1-helper-0",
+        actorId: "p2",
+        targetId: 8861,
+        hasBinding: true,
+        minFrames: 1,
+        minAge: 1,
+        minBindingRemaining: 1,
+        maxBindingRemaining: 3,
+        bindingOffsetX: 36,
+        bindingOffsetY: -12,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8861 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8861, hasBinding: false }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8861, hasBinding: true }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 958, power: 40 })]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "helper", stateNo: 1234, targetCount: 0 }),
+        }),
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8861, hitsRemaining: 0, hasHit: true }),
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 7, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7013,
+            raw: "F7013",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7013,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 17, y: -51 },
+          }),
         }),
       ]),
     );

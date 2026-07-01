@@ -40,7 +40,7 @@ Required artifacts should prove engine plumbing without private assets:
 - Target*
 - Pause/SuperPause
 - Projectile
-- Helper
+- Helper, including bounded helper-local direct-HitDef and helper-parented Projectile target-memory/Target-controller routes
 - Explod
 - ModifyExplod live-mutation
 - HitDef hit/guard sound and spark routes, including combined hit sound + FightFX hit-spark and combined guard sound + FightFX guard-spark package routes with shared contact package metadata

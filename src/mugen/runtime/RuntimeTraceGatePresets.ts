@@ -9099,6 +9099,148 @@ export function createSyntheticImportedHelperProjectileTargetTraceArtifact(optio
   });
 }
 
+export function createSyntheticImportedHelperProjectileTargetControllersTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-target-controllers-attacker",
+    displayName: "Synthetic Imported Helper Projectile Target Controllers Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1233,
+      waitAnimNo: 965,
+      branchStateNo: 1234,
+      branchAnimNo: 966,
+      branchTrigger: "NumTarget(8861) > 0 && Target(8861), Life <= 982",
+      projectileAnimNo: 967,
+      projectileId: 8861,
+      pos: [360, -34],
+      hitSound: "S5,7",
+      hitSpark: "F7013",
+      sparkXy: [17, -51],
+      targetControllers: {
+        lifeAddValue: -24,
+        withDrop: true,
+        dropTriggerTime: 2,
+      },
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7013, 8113),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-target-controllers-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-target-controllers-golden",
+      label: "Synthetic imported Helper Projectile Target controllers route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile Target controllers trace proves a helper-parented owner-side Projectile target memory can execute helper-owned TargetLifeAdd, TargetPowerAdd, TargetVelSet, TargetVelAdd, TargetFacing, TargetBind, and TargetDrop against P2. It does not claim default projectile target controller parity, helper-owned custom state tables, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-target-controllers-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 7,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7013,
+              raw: "F7013",
+              rawPrefix: "F",
+              offsetX: 17,
+              offsetY: -51,
+              assetSource: "fightfx",
+              assetActionId: 7013,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8113,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8861 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8861, hasBinding: false, minFrames: 1 },
+          {
+            ownerId: "p1-helper-0",
+            actorId: "p2",
+            targetId: 8861,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 36,
+            bindingOffsetY: -12,
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 965, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1234, animNo: 966, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 967, moveType: "A", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", facing: 1, observedLifeAtMost: 958, observedVelXAtLeast: 0.8, observedVelYAtMost: -3 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 958, power: 40 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1234, targetCount: 0, minAge: 3 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8861,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -11774,6 +11916,12 @@ export function importedAssertSpecialControlScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+type SyntheticHelperTargetControllerOptions = {
+  lifeAddValue?: number;
+  withDrop?: boolean;
+  dropTriggerTime?: number;
+};
+
 export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
@@ -12019,6 +12167,7 @@ export type SyntheticImportedTraceFighterOptions = {
     hitSpark?: string;
     guardSpark?: string;
     sparkXy?: [number, number];
+    targetControllers?: SyntheticHelperTargetControllerOptions;
   };
   helperProjGuardRoute?: {
     waitStateNo: number;
@@ -12063,11 +12212,7 @@ export type SyntheticImportedTraceFighterOptions = {
       stateNo: number;
       triggerTime?: number;
     };
-    targetControllers?: {
-      lifeAddValue?: number;
-      withDrop?: boolean;
-      dropTriggerTime?: number;
-    };
+    targetControllers?: SyntheticHelperTargetControllerOptions;
   };
   helperNumExplodRoute?: {
     branchStateNo: number;
@@ -15295,6 +15440,7 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const projectileId = route.projectileId ?? 8853;
   const projectileIdLine = route.omitProjectileId ? "" : `projid = ${projectileId}`;
+  const targetId = route.omitProjectileId ? 0 : projectileId;
   const branchTrigger = route.branchTrigger ?? `ProjHit(${projectileId})`;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
@@ -15303,6 +15449,8 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
+  const targetControllerLines =
+    route.targetControllers === undefined ? "" : helperTargetControllerBlock(route.branchStateNo, targetId, route.targetControllers);
   return `
 [Statedef 1200]
 type = S
@@ -15364,6 +15512,7 @@ movetype = I
 physics = N
 anim = ${branchAnimNo}
 ctrl = 0
+${targetControllerLines}
 `;
 }
 
@@ -15587,7 +15736,7 @@ value = ${targetStateNo}
 function helperTargetControllerBlock(
   stateNo: number,
   targetId: number,
-  options: NonNullable<NonNullable<SyntheticImportedTraceFighterOptions["helperHitDefRoute"]>["targetControllers"]>,
+  options: SyntheticHelperTargetControllerOptions,
 ): string {
   const lifeAddValue = options.lifeAddValue ?? -20;
   const dropTriggerTime = options.dropTriggerTime ?? 2;
