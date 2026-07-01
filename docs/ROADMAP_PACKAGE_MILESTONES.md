@@ -85,12 +85,19 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 player Projectile default Target-controller gate
+  -> synthetic-imported-projectile-default-target-controllers.json checksum 1c1a3e77 is now required
+  -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture
+  -> Projectile hits P2, records owner target link p1 -> p2 / 0, then delayed owner-local TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop execute from target memory
+  -> target-link/effect evidence includes projectile anim 915, lifecycle spawn/remove, effectId 0, hasHit true, removalReason hit, terminalReason hit, TargetBind offset 36,-12, final P1 targetCount 0, and final P2 life 949 / power 40
+  -> pnpm qa:trace passes 208/208 artifacts, 188 required and 20 optional
+  -> no direct HitDef plus Projectile mixing, helper-owned custom state tables, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 player Projectile default TargetState gate
   -> synthetic-imported-projectile-default-targetstate.json checksum 8f35f1fa is now required
   -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture
   -> Projectile hits P2, records owner target link p1 -> p2 / 0, then delayed owner-local TargetState value 888 routes P2 through attacker-owned state data 888 -> 889 before SelfState returns P2 to state 0/control
   -> target-link/effect evidence includes projectile anim 914, lifecycle spawn/remove, effectId 0, hasHit true, removalReason hit, terminalReason hit, required ChangeState/TargetState/SelfState execution, custom-owner P2 frames, and final P2 life 969
-  -> pnpm qa:trace passes 207/207 artifacts, 187 required and 20 optional
+  -> that checkpoint passed pnpm qa:trace at 207/207 artifacts, 187 required and 20 optional
   -> no direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile default TargetState parity claim
 R2 player Projectile TargetState gate
   -> synthetic-imported-projectile-targetstate.json checksum dd1c7962 is now required
@@ -473,7 +480,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the player Projectile default TargetState gate is 207/207 artifacts, 187 required and 20 optional
+  -> current aggregate after the player Projectile default Target-controller gate is 208/208 artifacts, 188 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

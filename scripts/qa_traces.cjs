@@ -777,6 +777,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTargetControllersTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-default-target-controllers",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDefaultTargetControllersTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-targetstate",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTargetStateTraceArtifact(),
@@ -1728,6 +1733,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-projectile-target-redirect",
     "synthetic-imported-projectile-target-controllers",
+    "synthetic-imported-projectile-default-target-controllers",
     "synthetic-imported-projectile-targetstate",
     "synthetic-imported-projectile-default-targetstate",
     "synthetic-imported-projectile-motion",

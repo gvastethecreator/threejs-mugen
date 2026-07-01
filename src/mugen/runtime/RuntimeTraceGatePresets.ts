@@ -7711,6 +7711,114 @@ export function createSyntheticImportedProjectileTargetControllersTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileDefaultTargetControllersTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-default-target-controllers-attacker",
+    displayName: "Synthetic Imported Projectile Default Target Controllers Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    omitHitDefId: true,
+    omitProjectileId: true,
+    projectileHitAnim: 915,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 9,
+    withTargetDrop: true,
+    targetDropTriggerTime: 10,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-default-target-controllers-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-default-target-controllers-golden",
+      label: "Synthetic imported Projectile default Target controllers route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile default Target controllers trace proves a player-owned Projectile-only hit with omitted projid/id defaults target memory to id 0 and later feeds owner-local TargetLifeAdd, TargetPowerAdd, TargetVelSet, TargetVelAdd, TargetFacing, TargetBind, and TargetDrop against P2. It does not claim direct HitDef mixing, helper-owned projectile targets, custom states, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN Projectile target parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-default-target-controllers-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: [
+          "ChangeState",
+          "Projectile",
+          "TargetLifeAdd",
+          "TargetPowerAdd",
+          "TargetVelSet",
+          "TargetVelAdd",
+          "TargetFacing",
+          "TargetBind",
+          "TargetDrop",
+        ],
+        requiredExecutedOperations: [
+          "projectile",
+          "target:targetlifeadd",
+          "target:targetpoweradd",
+          "target:targetvelset",
+          "target:targetveladd",
+          "target:targetfacing",
+          "target:targetbind",
+          "target:targetdrop",
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 915, moveType: "I", clsn1Count: 0 },
+          {
+            actorId: "p2",
+            actorKind: "player",
+            facing: 1,
+            observedLifeAtMost: 949,
+            observedVelXAtLeast: 0.8,
+            observedVelYAtMost: -3,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
+          { actorId: "p2", actorKind: "player", life: 949, power: 40 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 0, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 0, hasBinding: false, minFrames: 1 },
+          {
+            ownerId: "p1",
+            actorId: "p2",
+            targetId: 0,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 36,
+            bindingOffsetY: -12,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileTargetStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();

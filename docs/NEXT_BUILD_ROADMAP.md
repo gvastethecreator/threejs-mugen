@@ -78,12 +78,19 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 player Projectile default Target-controller gate
+  -> synthetic-imported-projectile-default-target-controllers.json checksum 1c1a3e77 is now a required qa:trace artifact
+  -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture
+  -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 0, then delayed owner-local TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop execute from target memory
+  -> evidence includes projectile effect anim 915, lifecycle spawn/remove, effect payload ownerId p1 / effectId 0 / hasHit true / removalReason hit / terminalReason hit, TargetBind offset 36,-12, final P1 targetCount 0, and final P2 life 949 / power 40
+  -> current qa:trace aggregate is 208/208 artifacts, 188 required and 20 optional
+  -> this narrows player-owned Projectile default Target side effects only; no direct HitDef plus Projectile mixing, helper-owned custom state tables, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 player Projectile default TargetState gate
   -> synthetic-imported-projectile-default-targetstate.json checksum 8f35f1fa is now a required qa:trace artifact
   -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 0, then delayed owner-local TargetState value 888 routes P2 through attacker-owned state data 888 -> 889 before SelfState returns P2 to state 0/control
   -> evidence includes projectile effect anim 914, lifecycle spawn/remove, effect payload ownerId p1 / effectId 0 / hasHit true / removalReason hit / terminalReason hit, required ChangeState/TargetState/SelfState execution, custom-owner P2 frames, and final P2 life 969
-  -> current qa:trace aggregate is 207/207 artifacts, 187 required and 20 optional
+  -> that checkpoint passed qa:trace at 207/207 artifacts, 187 required and 20 optional
   -> this narrows player-owned Projectile default TargetState into owner-backed state data only; no direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile default TargetState parity claim
 R2 player Projectile TargetState gate
   -> synthetic-imported-projectile-targetstate.json checksum dd1c7962 is now a required qa:trace artifact
@@ -134,7 +141,7 @@ R1 presentation selected AIR-frame requirement gate
 R1 presentation spark-offset requirement gate
   -> RuntimeTraceGate.requiredHitEffectEvents now supports offsetX / offsetY
   -> direct HitDef hit/guard spark, common/FightFX multi-frame spark, direct hit/guard effect package, Projectile hit/guard package, and helper-parented Projectile package gates now require authored sparkxy offsets
-  -> affected behavior checksums remained stable at that checkpoint; current qa:trace aggregate after the player Projectile default TargetState gate is 207/207 artifacts, 187 required and 20 optional
+  -> affected behavior checksums remained stable at that checkpoint; current qa:trace aggregate after the player Projectile default Target-controller gate is 208/208 artifacts, 188 required and 20 optional
   -> this narrows trace precision only; no exact renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation ownership, score movement, or full presentation parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now a required qa:trace artifact
@@ -469,7 +476,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus selected-frame/multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require selected first-frame offset 3,-4, first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the player Projectile default TargetState gate is 207/207 artifacts, 187 required and 20 optional
+  -> current aggregate after the player Projectile default Target-controller gate is 208/208 artifacts, 188 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

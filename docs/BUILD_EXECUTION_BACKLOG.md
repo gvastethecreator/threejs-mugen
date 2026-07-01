@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Player Projectile default Target controller gate
+
+Changed:
+
+- Added required runtime trace artifact `synthetic-imported-projectile-default-target-controllers.json`.
+- Reused the player Projectile-only target-controller route with omitted `projid` / `id` so target memory defaults to id `0`.
+- Registered the new artifact in `pnpm qa:trace` required coverage and added focused preset coverage for target id `0`, TargetBind evidence, target side-effect ops, Projectile lifecycle/effect payload, and final P1/P2 state.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording for player-owned Projectile default Target side effects.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile default Target controllers"` passed.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; new checksum `1c1a3e77`.
+
+Claim allowed:
+
+- A player-owned Projectile-only route can omit `projid` / `id`, hit P2, record owner target link `p1 -> p2 / 0`, execute delayed owner-local `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop`, and finish with P1 `targetCount = 0` plus P2 `life = 949` / `power = 40`.
+
+Claim blocked:
+
+- Direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, and full Projectile target-controller parity remain blocked.
+
 ## 2026-07-01 - Player Projectile default TargetState gate
 
 Changed:
