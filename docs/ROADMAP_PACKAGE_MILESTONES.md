@@ -85,10 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 player direct default target memory gate
-  -> synthetic-imported-default-numtarget.json checksum 5869ebbd is now required
-  -> player state 200 activates direct HitDef with no id, mirrors target memory with target id 0, exposes target link p1 -> p2 / 0, and branches to state 268 through NumTarget(0)
-  -> pnpm qa:trace passes 193/193 artifacts, 173 required and 20 optional
+R2 player direct default target redirect gate
+  -> synthetic-imported-default-target-redirect.json checksum d43caabf is now required
+  -> player state 200 activates direct HitDef with no id, mirrors target memory with target id 0, exposes target link p1 -> p2 / 0, and branches to state 269 through Target(0), Life < 1000
+  -> pnpm qa:trace passes 194/194 artifacts, 174 required and 20 optional
+  -> previous default NumTarget(0) proof remains required: synthetic-imported-default-numtarget.json checksum 5869ebbd
   -> previous helper direct default-target proof remains required: synthetic-imported-helper-default-target.json checksum e1bcced0
   -> previous helper Projectile default-target proof remains required: synthetic-imported-helper-projectile-default-target.json checksum b1541afc
   -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 1a44cc04
@@ -341,7 +342,7 @@ R2 bounded helper-local EnemyNear gate
 R1 bounded dynamic Target redirect trigger gate
   -> ExpressionCompiler and ExpressionEvaluator classify bounded Target, ... and static Target(id), ... trigger redirects as executable in the current two-player target-memory context
   -> PlayableMatchRuntime resolves Target(id) from RuntimeTargetWorld target memory for active-state and State -1 trigger evaluation
-  -> required synthetic-imported-target-dynamic-redirect.json checksum 9985b62a proves direct HitDef target id 77 plus owner-local var(0) = 77 can feed Target(var(0)), Life and branch P1 state 200 -> 287; previous synthetic-imported-target-redirect.json checksum 89580963 keeps the static Target(77), Life route gated
+  -> required synthetic-imported-default-target-redirect.json checksum d43caabf proves direct HitDef default target id 0 can feed Target(0), Life and branch P1 state 200 -> 269; required synthetic-imported-target-dynamic-redirect.json checksum 9985b62a proves direct HitDef target id 77 plus owner-local var(0) = 77 can feed Target(var(0)), Life and branch P1 state 200 -> 287; previous synthetic-imported-target-redirect.json checksum 89580963 keeps the static Target(77), Life route gated
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> no helper/projectile targets, unsupported or negative target-id expressions, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, full target redirect parity, or score movement claim
 R1 bounded identity-trigger gate
@@ -434,7 +435,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the player default NumTarget(0) gate is 193/193 artifacts, 173 required and 20 optional
+  -> current aggregate after the player default Target(0), Life gate is 194/194 artifacts, 174 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

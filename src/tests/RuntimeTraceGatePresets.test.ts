@@ -175,6 +175,7 @@ import {
   createSyntheticImportedTargetNoKoTraceArtifact,
   createSyntheticImportedTargetDynamicRedirectTraceArtifact,
   createSyntheticImportedTargetRedirectTraceArtifact,
+  createSyntheticImportedDefaultTargetRedirectTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
@@ -6811,6 +6812,44 @@ describe("RuntimeTraceGatePresets", () => {
       source: "imported",
       stateNo: 286,
       animNo: 286,
+    });
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      actorKind: "player",
+      life: 963,
+    });
+  });
+
+  it("creates a synthetic imported default Target redirect artifact with target id 0 evidence", () => {
+    const artifact = createSyntheticImportedDefaultTargetRedirectTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-target-redirect-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-target-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 269]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 269]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 0 })]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      actorKind: "player",
+      source: "imported",
+      stateNo: 269,
+      animNo: 269,
     });
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       actorKind: "player",

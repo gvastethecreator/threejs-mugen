@@ -934,6 +934,55 @@ export function createSyntheticImportedDefaultNumTargetTraceArtifact(options: Ru
   );
 }
 
+export function createSyntheticImportedDefaultTargetRedirectTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTargetScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-target-redirect-attacker",
+    displayName: "Synthetic Imported Default Target Redirect Attacker",
+    omitHitDefId: true,
+    targetRedirectId: 0,
+    targetRedirectStateNo: 269,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-default-target-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-default-target-redirect-golden",
+      label: "Synthetic imported default Target redirect trigger route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported default Target redirect trace proves a direct HitDef without id can create target id 0, then feed Target(0), Life trigger reads after contact. It does not claim helper/projectile targets, mutation through redirects, multi-target selection, teams, or full MUGEN/IKEMEN target redirect parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-default-target-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 269],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 0 }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 269, animNo: 269 },
+          { actorId: "p2", actorKind: "player", life: 963 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedNumHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -11356,6 +11405,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
   targetRedirectStateNo?: number;
+  targetRedirectId?: number;
   targetDynamicRedirectStateNo?: number;
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
@@ -11686,6 +11736,7 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const targetMemoryId = options.omitHitDefId ? 0 : options.hitDefTargetId ?? 77;
   const hitDefIdLine = options.omitHitDefId ? "" : `id = ${targetMemoryId}`;
   const numTargetId = options.numTargetId ?? targetMemoryId;
+  const targetRedirectId = options.targetRedirectId ?? targetMemoryId;
   const hitVarLines = `
 ${options.hitAnimType === undefined ? "" : `animtype = ${options.hitAnimType}`}
 ${options.hitGroundType === undefined ? "" : `ground.type = ${options.hitGroundType}`}
@@ -11882,7 +11933,7 @@ ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded"
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
 ${options.numTargetStateNo === undefined ? "" : contactBranchBlock(`NumTarget(${numTargetId}) > 0`, options.numTargetStateNo, "NumTarget Branch")}
-${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock("Target(77), Life < 1000", options.targetRedirectStateNo, "Target Redirect Branch")}
+${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock(`Target(${targetRedirectId}), Life < 1000`, options.targetRedirectStateNo, "Target Redirect Branch")}
 ${options.targetDynamicRedirectStateNo === undefined ? "" : targetDynamicRedirectBlock(options.targetDynamicRedirectStateNo)}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
   pauseMoveTime: options.helperPauseMoveTime,
