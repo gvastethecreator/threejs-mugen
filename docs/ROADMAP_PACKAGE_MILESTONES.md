@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 RuntimeHelperCombatWorld ownership extraction
+  -> RuntimeHelperCombatWorld now owns bounded helper-owned direct HitDef contact resolution from PlayableMatchRuntime
+  -> helper iteration, direct-combat actor projection, active/contact checks, HitBy/NotHitBy reject logging, direct hit/guard handoff, imported default get-hit/guard-state hooks, helper target memory, contact presentation, and helper state sync route through that world
+  -> focused RuntimeHelperCombatSystem coverage proves hit, guard, target-memory, presentation telemetry, state hooks, and reject no-op behavior
+  -> this is R2 ownership cleanup only; no exact helper hitpause/tick order, helper-owned custom-state tables, multi-target/team helper combat, helper-owned Projectile combat/contact presentation, visual parity, score movement, or full Helper VM parity claim
 R2 player Projectile default Target-controller gate
   -> synthetic-imported-projectile-default-target-controllers.json checksum 1c1a3e77 is now required
   -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture

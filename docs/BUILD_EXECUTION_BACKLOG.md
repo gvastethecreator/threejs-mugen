@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-01 - RuntimeHelperCombatWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHelperCombatWorld` for bounded helper-owned direct `HitDef` contact resolution.
+- Moved helper direct-combat actor projection, active/contact checks, HitBy/NotHitBy reject logging, direct hit/guard handoff, helper target memory, contact presentation, and helper state sync out of `PlayableMatchRuntime`.
+- Kept `PlayableMatchRuntime` as integration owner for runtime tick, current hurtboxes, state-entry validation, effect stores, and broader helper/projectile/effect ordering.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeHelperCombatSystem.test.ts` passed 1 file / 3 tests.
+
+Claim allowed:
+
+- Current bounded helper-owned direct-HitDef path has a named, testable world boundary covering hit, guard, target memory, contact presentation, imported default get-hit/guard-state hooks, and reject no-op behavior.
+
+Claim blocked:
+
+- Exact helper hitpause/tick order, helper-owned custom-state tables, multi-target/team helper combat, helper-owned Projectile combat/contact presentation, visual parity, score movement, and full Helper VM parity remain blocked.
+
 ## 2026-07-01 - EnemyNear indexed 1v1 trace gate
 
 Changed:
