@@ -173,6 +173,7 @@ import {
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
   createSyntheticImportedProjectileTraceArtifact,
+  createSyntheticImportedProjectileTargetControllersTraceArtifact,
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
@@ -8286,6 +8287,71 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({
           actorId: "p1-projectile-0",
           effect: expect.objectContaining({ kind: "projectile", id: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile Target controllers artifact with owner target side-effect evidence", () => {
+    const artifact = createSyntheticImportedProjectileTargetControllersTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-target-controllers-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-target-controllers-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef ?? 0).toBe(0);
+    expect(evidence?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetDrop).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetpoweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetveladd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetfacing"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetbind"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetdrop"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 912 }),
+        expect.objectContaining({ actorId: "p2", actorKind: "player", facing: 1, minLife: 949, maxLife: 949 }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: false }),
+        expect.objectContaining({
+          ownerId: "p1",
+          actorId: "p2",
+          targetId: 77,
+          hasBinding: true,
+          bindingOffset: { x: 36, y: -12 },
+        }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: "p1", actorKind: "player", source: "imported", targetCount: 0 }),
+        expect.objectContaining({ id: "p2", actorKind: "player", life: 949, power: 40 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1",
+          effect: expect.objectContaining({ kind: "projectile", id: 77, hitsRemaining: 0, hasHit: true }),
         }),
       ]),
     );

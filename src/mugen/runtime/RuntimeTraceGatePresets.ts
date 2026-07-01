@@ -7605,6 +7605,112 @@ export function createSyntheticImportedProjectileTargetRedirectTraceArtifact(opt
   });
 }
 
+export function createSyntheticImportedProjectileTargetControllersTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-target-controllers-attacker",
+    displayName: "Synthetic Imported Projectile Target Controllers Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 912,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 9,
+    withTargetDrop: true,
+    targetDropTriggerTime: 10,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-target-controllers-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-target-controllers-golden",
+      label: "Synthetic imported Projectile Target controllers route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile Target controllers trace proves a player-owned Projectile-only hit can record target id 77 and later feed owner-local TargetLifeAdd, TargetPowerAdd, TargetVelSet, TargetVelAdd, TargetFacing, TargetBind, and TargetDrop against P2. It does not claim direct HitDef mixing, helper-owned projectile targets, custom states, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN Projectile target parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-target-controllers-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: [
+          "ChangeState",
+          "Projectile",
+          "TargetLifeAdd",
+          "TargetPowerAdd",
+          "TargetVelSet",
+          "TargetVelAdd",
+          "TargetFacing",
+          "TargetBind",
+          "TargetDrop",
+        ],
+        requiredExecutedOperations: [
+          "projectile",
+          "target:targetlifeadd",
+          "target:targetpoweradd",
+          "target:targetvelset",
+          "target:targetveladd",
+          "target:targetfacing",
+          "target:targetbind",
+          "target:targetdrop",
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 912, moveType: "I", clsn1Count: 0 },
+          {
+            actorId: "p2",
+            actorKind: "player",
+            facing: 1,
+            observedLifeAtMost: 949,
+            observedVelXAtLeast: 0.8,
+            observedVelYAtMost: -3,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", targetCount: 0 },
+          { actorId: "p2", actorKind: "player", life: 949, power: 40 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 77, hasBinding: false, minFrames: 1 },
+          {
+            ownerId: "p1",
+            actorId: "p2",
+            targetId: 77,
+            hasBinding: true,
+            minFrames: 1,
+            minAge: 1,
+            minBindingRemaining: 1,
+            maxBindingRemaining: 3,
+            bindingOffsetX: 36,
+            bindingOffsetY: -12,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -12628,6 +12734,7 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
+  targetControllerTriggerTime?: number;
   targetRedirectStateNo?: number;
   targetRedirectId?: number;
   targetRedirectExpression?: string;
@@ -12635,6 +12742,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withBindToTarget?: boolean;
   bindToTargetPostype?: "Foot" | "Mid" | "Head";
   withTargetDrop?: boolean;
+  targetDropTriggerTime?: number;
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
   withDelayedSuperPause?: boolean;
@@ -13139,10 +13247,10 @@ ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevSt
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
-${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue) : ""}
+${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime) : ""}
 ${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype) : ""}
-${options.withTargetDrop ? targetDropBlock() : ""}
+${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
@@ -14135,43 +14243,43 @@ time = ${time}
 `;
 }
 
-function targetControllerBlock(targetId: number, lifeAddValue = -20): string {
+function targetControllerBlock(targetId: number, lifeAddValue = -20, triggerTime = 2): string {
   return `
 [State 200, Target Damage]
 type = TargetLifeAdd
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = ${lifeAddValue}
 
 [State 200, Target Meter]
 type = TargetPowerAdd
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = 40
 
 [State 200, Target Velocity Set]
 type = TargetVelSet
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 x = 3
 y = -4
 
 [State 200, Target Velocity Add]
 type = TargetVelAdd
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 x = 2
 y = 1
 
 [State 200, Target Face]
 type = TargetFacing
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = 1
 
 [State 200, Target Bind]
 type = TargetBind
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 pos = 36,-12
 time = 4
@@ -14983,11 +15091,11 @@ ctrl = 1
 `;
 }
 
-function targetDropBlock(): string {
+function targetDropBlock(triggerTime = 3): string {
   return `
 [State 200, Target Drop]
 type = TargetDrop
-trigger1 = Time = 3
+trigger1 = Time = ${triggerTime}
 excludeID = -1
 keepone = 0
 `;
