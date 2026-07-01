@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 player Projectile TargetState gate
+  -> synthetic-imported-projectile-targetstate.json checksum dd1c7962 is now required
+  -> player state 200 spawns Projectile id 77 without direct HitDef controller evidence in this isolated fixture
+  -> Projectile hits P2, records owner target link p1 -> p2 / 77, then delayed owner-local TargetState value 888 routes P2 through attacker-owned state data 888 -> 889 before SelfState returns P2 to state 0/control
+  -> target-link/effect evidence includes projectile anim 913, lifecycle spawn/remove, effectId 77, hasHit true, removalReason hit, terminalReason hit, required ChangeState/TargetState/SelfState execution, custom-owner P2 frames, and final P2 life 969
+  -> pnpm qa:trace passes 206/206 artifacts, 186 required and 20 optional
+  -> no direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile TargetState parity claim
 R2 player Projectile Target-controller gate
   -> synthetic-imported-projectile-target-controllers.json checksum 8c7bd6c2 is now required
   -> player state 200 spawns Projectile id 77 without direct HitDef controller evidence in this isolated fixture
@@ -459,7 +466,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the player Projectile Target-controller gate is 205/205 artifacts, 185 required and 20 optional
+  -> current aggregate after the player Projectile TargetState gate is 206/206 artifacts, 186 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

@@ -7711,6 +7711,77 @@ export function createSyntheticImportedProjectileTargetControllersTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileTargetStateTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-targetstate-attacker",
+    displayName: "Synthetic Imported Projectile TargetState Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 913,
+    targetStateTriggerTime: 9,
+    targetStateRoute: {
+      startStateNo: 888,
+      chainStateNo: 889,
+      changeStateAfter: 1,
+      selfStateAfter: 2,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-targetstate-defender",
+    displayName: "Synthetic Imported Projectile TargetState Defender",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-targetstate-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-targetstate-golden",
+      label: "Synthetic imported Projectile TargetState route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile TargetState trace proves a player-owned Projectile-only hit can record target id 77 and later feed owner-local TargetState into attacker-owned custom state data before SelfState returns control. It does not claim direct HitDef mixing, helper-owned custom state tables, throws, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN Projectile TargetState parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-targetstate-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 888, 889],
+        requiredExecutedControllers: ["ChangeState", "Projectile", "TargetState", "SelfState"],
+        requiredExecutedOperations: ["projectile", "target:targetstate"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 913, moveType: "I", clsn1Count: 0 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 888, moveType: "H", minFrames: 1 },
+          { actorId: "p2", source: "imported", actorKind: "player", customOwnerId: "p1", animNo: 889, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, ctrl: true, moveType: "I", life: 969 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -12735,6 +12806,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withTargetControllers?: boolean;
   targetLifeAddValue?: number;
   targetControllerTriggerTime?: number;
+  targetStateTriggerTime?: number;
   targetRedirectStateNo?: number;
   targetRedirectId?: number;
   targetRedirectExpression?: string;
@@ -13248,7 +13320,7 @@ ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnim
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
 ${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue, options.targetControllerTriggerTime) : ""}
-${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo) : ""}
+${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo, options.targetStateTriggerTime) : ""}
 ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
@@ -14286,11 +14358,11 @@ time = 4
 `;
 }
 
-function targetStateControllerBlock(targetId: number, stateNo: number): string {
+function targetStateControllerBlock(targetId: number, stateNo: number, triggerTime = 2): string {
   return `
 [State 200, Target Custom State]
 type = TargetState
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 id = ${targetId}
 value = ${stateNo}
 `;
