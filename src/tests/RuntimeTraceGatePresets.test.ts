@@ -46,6 +46,8 @@ import {
   officialKfmFallGetHitControllerSequence,
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmFallLieDownGetUpControllerSequence,
+  officialKfmQcfXActorFrameSequence,
+  officialKfmQcfXControllerSequence,
   defaultAirRecoveryLandControllerSequence,
   officialKfmGroundRecoveryActorFrameSequence,
   officialKfmGroundRecoveryControllerSequence,
@@ -267,6 +269,7 @@ import {
   importedTargetScript,
   nativeHitScript,
   nativeWhiffScript,
+  qcfXContactScript,
   qcfXScript,
 } from "../mugen/runtime/RuntimeTraceGatePresets";
 
@@ -9870,5 +9873,50 @@ describe("RuntimeTraceGatePresets", () => {
       "projectile-guard-removeongethit-settle",
     ]);
     expect(qcfXScript().map((frame) => frame.label).filter(Boolean)).toEqual(["qcf-d", "qcf-df", "qcf-f", "qcf-x", "settle"]);
+    expect(qcfXContactScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "qcf-d",
+      "qcf-df",
+      "qcf-f",
+      "qcf-x",
+      "qcf-contact-settle",
+    ]);
+    expect(qcfXContactScript()).toHaveLength(31);
+  });
+
+  it("describes official KFM QCF x contact trace sequence requirements", () => {
+    expect(officialKfmQcfXControllerSequence().steps).toEqual([
+      { stateNo: 20, controller: "ChangeState" },
+      { stateNo: 1000, controller: "PosAdd" },
+      { stateNo: 1000, operation: "kinematic:posadd" },
+      { stateNo: 1000, controller: "HitDef" },
+      { stateNo: 1000, operation: "hitdef" },
+    ]);
+
+    expect(officialKfmQcfXActorFrameSequence().steps).toEqual([
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 11,
+        animNo: 11,
+        minFrames: 4,
+      }),
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
+        minFrames: 2,
+      }),
+      expect.objectContaining({
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 1000,
+        animNo: 1000,
+        minFrames: 8,
+      }),
+    ]);
   });
 });

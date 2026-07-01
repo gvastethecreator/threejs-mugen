@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Optional KFM QCF x contact gate
+
+Changed:
+
+- Added an extended QCF x contact script and reusable official KFM QCF x actor/controller sequence requirements.
+- Tightened optional `kfm-official-qcf-x.json` so the private official KFM fixture must prove `QCF_x` input into state `1000`, ordered `11 -> 20 -> 1000` actor-frame evidence, `ChangeState` / `PosAdd` / `HitDef`, typed `kinematic:posadd` / `hitdef`, authored `PlaySnd` telemetry for `S0,3` and `S5,4`, target link `p1 -> p2 / 0`, final P1 target/power state, and final P2 damage/hitfall state.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording for this private-fixture special-route proof.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "QCF"` passed.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; `kfm-official-qcf-x.json` checksum `70a3e6b2`.
+- `pnpm test` passed: 95 files / 839 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- The private official KFM fixture now proves one bounded Kung Fu Palm route from `QCF_x` command input to contact, including state/action order, controller/operation evidence, sound telemetry, target memory, and final damage/hitfall state.
+
+Claim blocked:
+
+- No public bundled KFM asset, exact special timing, pushback, spark rendering, broad special-move compatibility, score movement, or full MUGEN/IKEMEN parity is claimed.
+
 ## 2026-07-01 - Optional KFM ground recovery actor-frame gate
 
 Changed:

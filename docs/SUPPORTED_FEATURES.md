@@ -95,6 +95,7 @@
 - Hit-pause input samples can be buffered for commands that opt into `buffer.hitpause`; hit-pause samples are ignored for commands that opt out.
 - Derived diagonals (`DF`, `DB`, `UF`, `UB`) from simultaneous cardinal input.
 - Command matching collapses input into an 8-way direction so `DF` does not satisfy a plain `F` step unless the command uses `$F`.
+- Optional private-fixture `kfm-official-qcf-x.json` checksum `70a3e6b2` proves one real KFM `QCF_x` command route can buffer input, enter state `1000`, advance through ordered actor-frame `11 -> 20 -> 1000`, execute `ChangeState` / `PosAdd` / `HitDef`, emit move/hit `PlaySnd` telemetry `S0,3` and `S5,4`, seed target link `p1 -> p2 / 0`, and finish with bounded hitfall/damage evidence. This is a single Kung Fu Palm route gate, not broad special-move parity.
 - Repeated direction/button steps such as `F, F` require a fresh activation instead of matching a held input across adjacent frames.
 - Plain direction/button inputs now require a fresh press/change within the buffer window instead of staying active for the full duration of a hold.
 - Partial `/` hold matching for buttons and direction families, such as `/x` and `/$D`.

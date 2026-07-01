@@ -12488,10 +12488,26 @@ export function createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifac
 
 export function createImportedQcfXTraceArtifact(
   imported: DemoFighterDefinition,
-  options: RuntimeTraceGatePresetOptions & { targetId?: string; targetLabel?: string; notes?: string[] } = {},
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    requireHitEvent?: boolean;
+    requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
+    requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredSoundEvents?: RuntimeTraceGate["requiredSoundEvents"];
+    requiredHitEffectEvents?: RuntimeTraceGate["requiredHitEffectEvents"];
+    requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
+    requiredTargetLinks?: RuntimeTraceGate["requiredTargetLinks"];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
+    script?: RuntimeTraceInputFrame[];
+  } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = qcfXScript();
+  const script = options.script ?? qcfXScript();
   const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
     label: `${imported.id}-qcf-x-golden`,
   });
@@ -12514,11 +12530,77 @@ export function createImportedQcfXTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [1000],
         requiredExecutedStates: [1000],
-        requiredExecutedControllers: ["ChangeState", { type: "PosAdd", minCount: 1 }],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", { type: "PosAdd", minCount: 1 }],
+        requiredExecutedOperations: options.requiredExecutedOperations,
+        requiredSoundEvents: options.requiredSoundEvents,
+        requiredHitEffectEvents: options.requiredHitEffectEvents,
+        requiredContactEffectPackages: options.requiredContactEffectPackages,
+        requiredTargetLinks: options.requiredTargetLinks,
+        requiredActorFrames: options.requiredActorFrames,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActiveCommands: ["QCF_x", "x"],
+        ...(options.requireHitEvent ? { requiredEventCategories: ["hit" as const], requiredCombatReasons: ["hit" as const] } : {}),
+        requiredFinalActors: options.requiredFinalActors,
       },
     ],
   });
+}
+
+export function officialKfmQcfXControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM QCF_x command into state 1000 contact controller order",
+    actorId: "p1",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 20, controller: "ChangeState" },
+      { stateNo: 1000, controller: "PosAdd" },
+      { stateNo: 1000, operation: "kinematic:posadd" },
+      { stateNo: 1000, controller: "HitDef" },
+      { stateNo: 1000, operation: "hitdef" },
+    ],
+  };
+}
+
+export function officialKfmQcfXActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM QCF_x actor-frame order into state 1000",
+    steps: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 11,
+        animNo: 11,
+        stateType: "C",
+        moveType: "I",
+        physics: "C",
+        minFrames: 4,
+      },
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 2,
+      },
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 1000,
+        animNo: 1000,
+        stateType: "S",
+        moveType: "A",
+        physics: "S",
+        minFrames: 8,
+      },
+    ],
+  };
 }
 
 export function closeCombatStage(): MugenStageDefinition {
@@ -13001,6 +13083,16 @@ export function qcfXScript(): RuntimeTraceInputFrame[] {
     { label: "qcf-f", frames: 2, p1: ["F"], p2: [] },
     { label: "qcf-x", frames: 1, p1: ["x"], p2: [] },
     { label: "settle", frames: 2, p1: [], p2: [] },
+  ]);
+}
+
+export function qcfXContactScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "qcf-d", frames: 2, p1: ["D"], p2: [] },
+    { label: "qcf-df", frames: 2, p1: ["D", "F"], p2: [] },
+    { label: "qcf-f", frames: 2, p1: ["F"], p2: [] },
+    { label: "qcf-x", frames: 1, p1: ["x"], p2: [] },
+    { label: "qcf-contact-settle", frames: 24, p1: [], p2: [] },
   ]);
 }
 
