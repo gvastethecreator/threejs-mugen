@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper HitDef bare Target redirect gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-bare-target.json` trace evidence: helper-local `HitDef id = 8878` hits P2, records target link `p1-helper-0 -> p2 / 8878`, emits helper-side `S5,5` plus FightFX `F7011`, and branches to `1230/962` through `NumTarget(8878)` plus bare `Target, Life`.
+- Registered the preset in `qa:trace` required coverage and focused trace-gate tests.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper bare Target"` passed.
+- `pnpm test` passed: 95 files, 825 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 196 / 196 artifacts, 176 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- No CSS/UI diff: `NO_CSS_OR_UI_DIFF`.
+- New required checksum: `synthetic-imported-helper-bare-target.json` `15f3c1db`.
+- Previous player bare Target checksum remains required: `synthetic-imported-bare-target-redirect.json` `f9c90aa8`.
+- Previous helper default Target checksum remains required: `synthetic-imported-helper-default-target.json` `e1bcced0`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-local direct `HitDef` target memory can satisfy bare helper-owner `Target, Life` trigger reads against the current target after contact, with actor target-link evidence preserved in the required trace.
+
+Claim blocked:
+
+- This does not add helper `Target*` mutation controllers, helper custom-state targets, throws, teams/simul, multi-target selection, exact helper hitpause/tick parity, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
+
 ## 2026-06-30 - Player HitDef bare Target redirect gate
 
 Changed:
