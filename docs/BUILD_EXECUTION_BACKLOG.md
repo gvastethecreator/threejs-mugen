@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Helper Projectile bare Target gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-bare-target.json` trace evidence: helper-local `Projectile` id `8863` spawns as owner-side Projectile with `parentId = p1-helper-0`, hits P2, writes owner and helper target memory for target id `8863`, then branches helper-local state through `NumTarget(8863)` plus bare `Target, Life`.
+- Registered the new required artifact in `pnpm qa:trace` and added focused trace-gate coverage for helper wait/branch actor frames `1241/977 -> 1242/978`, projectile anim `979`, owner/helper target links, helper `targetCount = 1`, final P2 `life = 982`, and shared sound/FightFX package telemetry.
+- Kept this as runtime/trace evidence only: no CSS, renderer, Studio UI, sprites, or visible gameplay output changed.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "bare Target"` passed.
+- `pnpm qa:trace` passes: 203 / 203 artifacts, 183 required, 20 optional, 0 failed.
+- `pnpm test` passed: 95 files, 832 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain in docs plus unrelated CSS worktree files.
+- No CSS/UI files are part of this runtime checkpoint; the current worktree has unrelated `src/app/App.ts` and CSS changes outside this commit.
+- New required checksum: `synthetic-imported-helper-projectile-bare-target.json` `91bce1e6`.
+- Previous default helper Projectile TargetState checksum remains required: `synthetic-imported-helper-projectile-default-targetstate.json` `24bf7d1c`.
+- Previous explicit helper Projectile TargetState checksum remains required: `synthetic-imported-helper-projectile-targetstate.json` `f5f26b21`.
+- Previous default helper Projectile Target-controller checksum remains required: `synthetic-imported-helper-projectile-default-target-controllers.json` `6d8c51dd`.
+- Previous explicit helper Projectile Target-controller checksum remains required: `synthetic-imported-helper-projectile-target-controllers.json` `ebf5099a`.
+- Previous helper direct-HitDef bare Target checksum remains required: `synthetic-imported-helper-bare-target.json` `15f3c1db`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-parented Projectile target memory can feed bounded helper-local bare `Target, Life` against remembered P2 target id `8863` after `NumTarget(8863)` confirms the helper has a target. Evidence includes owner/helper target links, helper actor frames, final P2 life, projectile `parentId = p1-helper-0`, projectile `effectId = 8863`, helper `targetCount = 1`, and shared `S5,11` / FightFX `F7017` contact-package telemetry.
+
+Claim blocked:
+
+- This does not add helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper `HitDef`/Projectile lifetime parity, visual parity, score movement, or full MUGEN/IKEMEN helper Projectile bare Target parity.
+
 ## 2026-07-01 - Helper Projectile default TargetState gate
 
 Changed:
