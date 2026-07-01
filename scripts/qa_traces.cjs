@@ -877,6 +877,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileTargetControllersTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-default-target-controllers",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDefaultTargetControllersTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-default-target",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact(),
@@ -1696,6 +1701,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projectile-target",
     "synthetic-imported-helper-projectile-target-controllers",
+    "synthetic-imported-helper-projectile-default-target-controllers",
     "synthetic-imported-helper-projectile-default-target",
     "synthetic-imported-helper-projguard",
     "synthetic-imported-helper-projcontact",

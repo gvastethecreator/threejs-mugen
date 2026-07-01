@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Helper Projectile default Target controller gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-default-target-controllers.json` trace evidence: helper-local `Projectile` omits `projid` / `id`, spawns an owner-side Projectile with `parentId = p1-helper-0`, the Projectile hits P2, owner and helper target memory both default to target id `0`, the helper branches through `NumTarget(0)` / `Target(0), Life`, then applies bounded helper-owned `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop`.
+- Registered the new required artifact in `pnpm qa:trace` and added focused trace-gate coverage for helper-parented Projectile default target controller side effects.
+- Kept this as runtime/trace evidence only: no CSS, renderer, Studio UI, sprites, or visible gameplay output changed.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile default Target controllers"` passed.
+- `pnpm qa:trace` passes: 200 / 200 artifacts, 180 required, 20 optional, 0 failed.
+- `pnpm test` passed: 95 files, 829 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- No CSS/UI diff: `git diff --name-only -- '*.css'` returned no files.
+- New required checksum: `synthetic-imported-helper-projectile-default-target-controllers.json` `6d8c51dd`.
+- Previous explicit helper Projectile Target-controller checksum remains required: `synthetic-imported-helper-projectile-target-controllers.json` `ebf5099a`.
+- Previous helper Projectile default target-memory checksum remains required: `synthetic-imported-helper-projectile-default-target.json` `b1541afc`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-parented Projectile target memory can default omitted `projid` / `id` to target id `0` and feed bounded helper-owned `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop` against remembered P2, with owner/helper target-link evidence, binding offset `36,-12`, final P2 `life = 958` / `power = 40`, helper `targetCount = 0`, projectile payload `parentId = p1-helper-0`, and shared `S5,8` / FightFX `F7014` contact-package evidence.
+
+Claim blocked:
+
+- This does not add helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper `HitDef`/Projectile lifetime parity, visual parity, score movement, or full MUGEN/IKEMEN helper Projectile Target parity.
+
 ## 2026-07-01 - Helper Projectile Target controller gate
 
 Changed:

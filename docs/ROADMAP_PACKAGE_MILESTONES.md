@@ -85,11 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 helper Projectile Target controller gate
-  -> synthetic-imported-helper-projectile-target-controllers.json checksum ebf5099a is now required
-  -> helper state 1200 spawns owner-side Projectile id 8861 with parentId p1-helper-0, mirrors Projectile contact target memory into the Helper, applies bounded helper-owned TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop, and exposes helper payload targetCount = 0 after the drop
-  -> target-link/binding evidence includes p1 -> p2 / 8861, p1-helper-0 -> p2 / 8861, TargetBind offset 36,-12, final P2 life 958, final P2 power 40, projectile parentId p1-helper-0, S5,7, and FightFX F7013
-  -> pnpm qa:trace passes 199/199 artifacts, 179 required and 20 optional
+R2 helper Projectile default Target controller gate
+  -> synthetic-imported-helper-projectile-default-target-controllers.json checksum 6d8c51dd is now required
+  -> helper state 1200 spawns owner-side Projectile with omitted projid/id and parentId p1-helper-0, mirrors default target id 0 contact memory into the Helper, applies bounded helper-owned TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop, and exposes helper payload targetCount = 0 after the drop
+  -> target-link/binding evidence includes p1 -> p2 / 0, p1-helper-0 -> p2 / 0, TargetBind offset 36,-12, final P2 life 958, final P2 power 40, projectile parentId p1-helper-0, S5,8, and FightFX F7014
+  -> pnpm qa:trace passes 200/200 artifacts, 180 required and 20 optional
+  -> previous helper Projectile explicit Target-controller proof remains required: synthetic-imported-helper-projectile-target-controllers.json checksum ebf5099a
   -> previous helper TargetState proof remains required: synthetic-imported-helper-targetstate.json checksum 011633b8
   -> previous helper direct-HitDef Target-controller proof remains required: synthetic-imported-helper-target-controllers.json checksum 61f4c61e
   -> previous helper bare Target, Life proof remains required: synthetic-imported-helper-bare-target.json checksum 15f3c1db
@@ -101,7 +102,7 @@ R2 helper Projectile Target controller gate
   -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 1a44cc04
   -> previous helper direct-target proof remains required: synthetic-imported-helper-target.json checksum 68f95b67
   -> previous helper direct-combat proof remains required: synthetic-imported-helper-hitdef.json checksum 89f9e876
-  -> no default Projectile Target-controller parity, helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
+  -> no helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now required
   -> official-style synthetic Common1 air recovery routes 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne
@@ -441,7 +442,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper Projectile Target-controller gate is 199/199 artifacts, 179 required and 20 optional
+  -> current aggregate after the helper Projectile default Target-controller gate is 200/200 artifacts, 180 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
