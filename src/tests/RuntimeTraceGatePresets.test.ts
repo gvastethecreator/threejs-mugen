@@ -193,6 +193,7 @@ import {
   createSyntheticImportedNumHelperTraceArtifact,
   createSyntheticImportedNumProjTraceArtifact,
   createSyntheticImportedNumTargetTraceArtifact,
+  createSyntheticImportedDefaultNumTargetTraceArtifact,
   createSyntheticImportedP2MetricsTraceArtifact,
   createSyntheticImportedIdentityTraceArtifact,
   createSyntheticImportedPrevAnimTraceArtifact,
@@ -1296,6 +1297,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 263]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported default NumTarget artifact with target id 0 evidence", () => {
+    const artifact = createSyntheticImportedDefaultNumTargetTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-numtarget-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toContain(268);
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 268]);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 0 })]),
+    );
   });
 
   it("creates a synthetic imported NumHelper artifact with helper-count branch evidence", () => {

@@ -181,6 +181,11 @@ async function main() {
       artifact: presets.createSyntheticImportedNumTargetTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-numtarget",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultNumTargetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-numhelper",
       required: true,
       artifact: presets.createSyntheticImportedNumHelperTraceArtifact(),
@@ -1643,6 +1648,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-targetstate-custom",
     "synthetic-imported-target-redirect",
     "synthetic-imported-target-noko",
+    "synthetic-imported-default-numtarget",
     "synthetic-imported-bindtotarget-head",
     "synthetic-imported-bindtotarget-mid",
     "synthetic-imported-targetbind-pause",

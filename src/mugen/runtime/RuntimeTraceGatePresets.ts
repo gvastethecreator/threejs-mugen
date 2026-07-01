@@ -911,6 +911,29 @@ export function createSyntheticImportedNumTargetTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedDefaultNumTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-numtarget",
+      displayName: "Synthetic Imported Default NumTarget",
+      action200Duration: 30,
+      omitHitDefId: true,
+      numTargetId: 0,
+      numTargetStateNo: 268,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-default-numtarget-golden",
+      targetLabel: "Synthetic imported default NumTarget route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 268],
+      notes: [
+        "Synthetic imported default NumTarget trace proves a direct HitDef without id can create target id 0, then evaluate a bounded NumTarget(0) branch back in the owner state. Exact redirect, helper ownership, multi-target teams, and target persistence parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNumHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -11257,6 +11280,8 @@ export type SyntheticImportedTraceFighterOptions = {
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
   hitDefKill?: boolean;
+  hitDefTargetId?: number;
+  omitHitDefId?: boolean;
   hitDefPriority?: number;
   hitAnimType?: string;
   hitGroundType?: string;
@@ -11394,6 +11419,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitPauseTimeIgnoreHitPauseStateNo?: number;
   hitDefAttrStateNo?: number;
   numTargetStateNo?: number;
+  numTargetId?: number;
   numHelperStateNo?: number;
   prevStateRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevAnimRoute?: { previousAnimNo: number; intermediateStateNo: number; finalStateNo: number };
@@ -11657,6 +11683,9 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefDamage = options.hitDefDamage ?? 37;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
+  const targetMemoryId = options.omitHitDefId ? 0 : options.hitDefTargetId ?? 77;
+  const hitDefIdLine = options.omitHitDefId ? "" : `id = ${targetMemoryId}`;
+  const numTargetId = options.numTargetId ?? targetMemoryId;
   const hitVarLines = `
 ${options.hitAnimType === undefined ? "" : `animtype = ${options.hitAnimType}`}
 ${options.hitGroundType === undefined ? "" : `ground.type = ${options.hitGroundType}`}
@@ -11799,7 +11828,7 @@ ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
 ${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
 ${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}`}
 ${options.sparkXy === undefined ? "" : `sparkxy = ${options.sparkXy.join(",")}`}
-id = 77
+${hitDefIdLine}
 priority = ${options.hitDefPriority ?? 4}, Hit
 ${guardLine}
 ${guardDistanceLine}
@@ -11809,11 +11838,11 @@ ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevSt
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}
 ${options.prevMoveTypeRoute === undefined ? "" : prevMoveTypeEntryBlock(options.prevMoveTypeRoute.intermediateStateNo)}
-${options.withTargetControllers ? targetControllerBlock(77, options.targetLifeAddValue) : ""}
-${options.targetStateRoute ? targetStateControllerBlock(77, options.targetStateRoute.startStateNo) : ""}
-${options.withBindToTarget ? bindToTargetBlock(77, options.bindToTargetPostype) : ""}
+${options.withTargetControllers ? targetControllerBlock(targetMemoryId, options.targetLifeAddValue) : ""}
+${options.targetStateRoute ? targetStateControllerBlock(targetMemoryId, options.targetStateRoute.startStateNo) : ""}
+${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTargetPostype) : ""}
 ${options.withTargetDrop ? targetDropBlock() : ""}
-${options.withPrePauseTargetBind ? prePauseTargetBindBlock(77) : ""}
+${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
@@ -11852,7 +11881,7 @@ ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveRever
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : hitPauseTimeIgnoreHitPauseBranchBlock(options.hitPauseTimeIgnoreHitPauseStateNo)}
 ${options.hitDefAttrStateNo === undefined ? "" : hitDefAttrBranchBlock(options.hitDefAttrStateNo)}
-${options.numTargetStateNo === undefined ? "" : contactBranchBlock("NumTarget(77) > 0", options.numTargetStateNo, "NumTarget Branch")}
+${options.numTargetStateNo === undefined ? "" : contactBranchBlock(`NumTarget(${numTargetId}) > 0`, options.numTargetStateNo, "NumTarget Branch")}
 ${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock("Target(77), Life < 1000", options.targetRedirectStateNo, "Target Redirect Branch")}
 ${options.targetDynamicRedirectStateNo === undefined ? "" : targetDynamicRedirectBlock(options.targetDynamicRedirectStateNo)}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
@@ -11946,7 +11975,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     kill: options.hitDefKill,
     priority: options.hitDefPriority ?? 4,
     attr: hitDefAttr,
-    targetId: 77,
+    targetId: targetMemoryId,
     requiresHitDef: true,
     hitPause: 4,
     hitStun: 9,

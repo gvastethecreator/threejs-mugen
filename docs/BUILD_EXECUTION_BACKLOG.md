@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Player HitDef default NumTarget gate
+
+Changed:
+
+- Synthetic imported trace fighter fixtures can now omit authored `HitDef id` while keeping generated move target memory aligned to MUGEN default target id `0`.
+- Added required `synthetic-imported-default-numtarget.json` trace evidence: direct player `HitDef` without `id` creates target link `p1 -> p2 / 0` and branches owner state `268` through `NumTarget(0)`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/HitDefSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "default NumTarget|defaults missing HitDef"` passed.
+- `pnpm test` passed: 95 files, 822 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 193 / 193 artifacts, 173 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed after trimming doc EOF whitespace; CRLF normalization warnings remain docs-only.
+- New required checksum: `synthetic-imported-default-numtarget.json` `5869ebbd`.
+- Previous helper direct default target checksum remains required: `synthetic-imported-helper-default-target.json` `e1bcced0`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current direct player `HitDef` target memory can use omitted `id` as target id `0`, expose target-link evidence, and satisfy owner-local `NumTarget(0)`.
+
+Claim blocked:
+
+- This does not add `Target(0), ...` redirect mutation breadth, helper custom-state targets, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target parity.
+
 ## 2026-06-30 - Helper HitDef default target id gate
 
 Changed:

@@ -85,15 +85,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 helper direct default target memory gate
-  -> synthetic-imported-helper-default-target.json checksum e1bcced0 is now required
-  -> helper-local state 1200 activates direct HitDef with no id, hits P2 for 33 damage, mirrors target memory into the Helper with target id 0, exposes target link p1-helper-0 -> p2 / 0, and branches to 1229/961 through NumTarget(0) plus Target(0), Life
-  -> pnpm qa:trace passes 192/192 artifacts, 172 required and 20 optional
+R2 player direct default target memory gate
+  -> synthetic-imported-default-numtarget.json checksum 5869ebbd is now required
+  -> player state 200 activates direct HitDef with no id, mirrors target memory with target id 0, exposes target link p1 -> p2 / 0, and branches to state 268 through NumTarget(0)
+  -> pnpm qa:trace passes 193/193 artifacts, 173 required and 20 optional
+  -> previous helper direct default-target proof remains required: synthetic-imported-helper-default-target.json checksum e1bcced0
   -> previous helper Projectile default-target proof remains required: synthetic-imported-helper-projectile-default-target.json checksum b1541afc
   -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 1a44cc04
   -> previous helper direct-target proof remains required: synthetic-imported-helper-target.json checksum 68f95b67
   -> previous helper direct-combat proof remains required: synthetic-imported-helper-hitdef.json checksum 89f9e876
-  -> no helper Target* mutation controllers, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full helper target/combat/projectile parity claim
+  -> no Target* mutation breadth, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now required
   -> official-style synthetic Common1 air recovery routes 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne
@@ -433,7 +434,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper direct default-target gate is 192/192 artifacts, 172 required and 20 optional
+  -> current aggregate after the player default NumTarget(0) gate is 193/193 artifacts, 173 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
