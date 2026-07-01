@@ -107,6 +107,7 @@ import {
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
+  type RuntimeTargetWorldActor,
 } from "./TargetSystem";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import { trainingStage } from "./demoStage";
@@ -185,6 +186,7 @@ type FighterMatchState = {
   targets: RuntimeTarget[];
   targetBindings: RuntimeTargetBinding[];
   bindToTarget?: RuntimeTargetBinding;
+  enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   currentInput: Set<string>;
   aiCooldown: number;
   executedStateIds: Set<number>;
@@ -323,7 +325,39 @@ export class PlayableMatchRuntime {
       this.hitEffectWorld,
       this.contactWorld,
     );
+    this.attachHelperTargetStateHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
+  }
+
+  private attachHelperTargetStateHandlers(): void {
+    this.p1.enterHelperTargetState = (helper, target, stateId) => this.enterHelperOwnedTargetState(this.p1, helper, target, stateId);
+    this.p2.enterHelperTargetState = (helper, target, stateId) => this.enterHelperOwnedTargetState(this.p2, helper, target, stateId);
+  }
+
+  private enterHelperOwnedTargetState(
+    owner: FighterMatchState,
+    helper: RuntimeHelper,
+    targetActor: RuntimeTargetWorldActor,
+    stateId: number,
+  ): void {
+    if (helper.ownerId !== owner.id) {
+      return;
+    }
+    const target = this.fighterById(targetActor.id);
+    if (!target || !canEnterState(target, stateId, owner)) {
+      return;
+    }
+    enterState(target, stateId, undefined, { stateOwner: owner });
+  }
+
+  private fighterById(actorId: string): FighterMatchState | undefined {
+    if (actorId === this.p1.id) {
+      return this.p1;
+    }
+    if (actorId === this.p2.id) {
+      return this.p2;
+    }
+    return undefined;
   }
 
   dispatch(command: MatchRuntimeCommand): MugenSnapshot {
@@ -661,6 +695,7 @@ export class PlayableMatchRuntime {
         this.contactWorld,
       ),
     );
+    this.attachHelperTargetStateHandlers();
     this.logs.unshift("Round reset");
   }
 

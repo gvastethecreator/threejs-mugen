@@ -110,6 +110,7 @@ export type RuntimeHelperAdvanceOptions = {
   projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
   targetCandidates?: RuntimeTargetWorldActor[];
+  enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -248,6 +249,7 @@ export function runRuntimeHelperStateControllers(
     | "projectileContact"
     | "projectileContactTime"
     | "targetCandidates"
+    | "enterTargetState"
     | "onSpawnExplod"
     | "onSpawnProjectile"
     | "onRemoveExplod"
@@ -518,8 +520,11 @@ function applyRuntimeHelperTargetController(
   helper: RuntimeHelper,
   controller: ControllerIr,
   effect: "target" | "bindtotarget",
-  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "onOperation">,
+  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "enterTargetState" | "onOperation">,
 ): boolean {
+  if (controller.normalizedType === "targetstate" && !options.enterTargetState) {
+    return false;
+  }
   const actor = runtimeHelperTargetActor(helper);
   const result = helperTargetControllerDispatchWorld.apply({
     actor,
@@ -528,6 +533,7 @@ function applyRuntimeHelperTargetController(
     effect,
     targetWorld: helperTargetWorld,
     recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
+    enterTargetState: (target, stateId) => options.enterTargetState?.(helper, target, stateId),
   });
   applyRuntimeStateToHelper(helper, actor.runtime);
   syncRuntimeHelperTargetActor(helper, actor);

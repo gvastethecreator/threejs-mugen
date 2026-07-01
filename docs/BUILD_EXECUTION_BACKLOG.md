@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper TargetState custom-state gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-targetstate.json` trace evidence: helper-local `HitDef id = 8880` hits P2, records helper-owned target memory, executes helper-local `TargetState value = 888`, routes P2 into owner-backed custom state data, keeps `888 -> 889` custom-state execution, and returns through `SelfState` to P2 state `0`/control.
+- Threaded a bounded helper `TargetState` callback from `RuntimeEffectLifecycleWorld` into `HelperSystem`, with `PlayableMatchRuntime` resolving the concrete owner fighter and concrete target fighter before entering the target state.
+- Added owner-backed custom-state fixture generation without adding an accidental player-owned `TargetState` controller to the synthetic attacker.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper TargetState"` passed.
+- `pnpm test` passed: 95 files, 827 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 198 / 198 artifacts, 178 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- No CSS/UI diff: `NO_CSS_OR_UI_DIFF`.
+- New required checksum: `synthetic-imported-helper-targetstate.json` `011633b8`.
+- Previous helper Target-controller checksum remains required: `synthetic-imported-helper-target-controllers.json` `61f4c61e`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-owned direct `HitDef` target memory can execute a bounded helper-local `TargetState` into the helper owner's known state data, with target-link evidence, custom-owner actor-frame evidence, and `SelfState` return evidence.
+
+Claim blocked:
+
+- This does not add helper-owned custom state tables, helper throws, helper/projectile target redirects beyond the gated subset, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, visual parity, score movement, or full MUGEN/IKEMEN helper TargetState parity.
+
 ## 2026-06-30 - Helper Target controller mutation gate
 
 Changed:
@@ -28,7 +58,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add helper `TargetState`, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, helper/projectile target redirects beyond the gated subset, exact target lifetime/tick order, exact helper hitpause/tick order, visual parity, score movement, or full MUGEN/IKEMEN helper Target parity.
+- This does not add helper `TargetState`, helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, helper/projectile target redirects beyond the gated subset, exact target lifetime/tick order, exact helper hitpause/tick order, visual parity, score movement, or full MUGEN/IKEMEN helper Target parity.
 
 ## 2026-06-30 - Helper HitDef bare Target redirect gate
 
@@ -58,7 +88,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add helper `Target*` mutation controllers, helper custom-state targets, throws, teams/simul, multi-target selection, exact helper hitpause/tick parity, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
+- This does not add helper `Target*` mutation controllers, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact helper hitpause/tick parity, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
 
 ## 2026-06-30 - Player HitDef bare Target redirect gate
 
@@ -87,7 +117,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add `Target, ...` mutation controllers, helper/projectile target redirects, helper custom-state targets, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
+- This does not add `Target, ...` mutation controllers, helper/projectile target redirects, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
 
 ## 2026-06-30 - Player HitDef default Target redirect gate
 
@@ -115,7 +145,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add `Target(0), ...` mutation controllers, helper/projectile target redirects, helper custom-state targets, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
+- This does not add `Target(0), ...` mutation controllers, helper/projectile target redirects, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
 
 ## 2026-06-30 - Player HitDef default NumTarget gate
 
@@ -143,7 +173,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add `Target(0), ...` redirect mutation breadth, helper custom-state targets, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target parity.
+- This does not add `Target(0), ...` redirect mutation breadth, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target parity.
 
 ## 2026-06-30 - Helper HitDef default target id gate
 
@@ -171,7 +201,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add helper `Target*` mutation controllers, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
+- This does not add helper `Target*` mutation controllers, helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
 
 ## 2026-06-30 - Helper Projectile default target id gate
 
@@ -200,7 +230,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
+- This does not add helper `Target*` mutation controllers, helper-owned custom state tables, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
 
 ## 2026-06-30 - Helper Projectile target memory gate
 
@@ -231,7 +261,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
+- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper-owned custom state tables, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
 
 ## 2026-06-30 - Helper-owned target memory gate
 
@@ -261,7 +291,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned Projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
+- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper-owned custom state tables, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned Projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
 
 ## 2026-06-30 - Helper-owned HitDef direct combat gate
 
@@ -289,7 +319,7 @@ Claim allowed:
 
 Claim blocked:
 
-- This does not add helper-owned target memory, helper custom-state targets, helper throws, teams/simul, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper combat parity.
+- This does not add helper-owned target memory, helper-owned custom state tables, helper throws, teams/simul, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, helper-owned projectile target ownership, visual parity, score movement, or full MUGEN/IKEMEN helper combat parity.
 
 ## 2026-06-30 - HitSpark AIR frame trace requirements
 

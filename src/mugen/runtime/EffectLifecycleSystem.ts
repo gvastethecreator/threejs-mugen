@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
+import type { RuntimeHelper, RuntimeHelperAdvanceOptions } from "./HelperSystem";
 import type { RuntimeTargetWorldActor } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState } from "./types";
 
@@ -15,6 +16,7 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   targets?: RuntimeTargetWorldActor["targets"];
   targetBindings?: RuntimeTargetWorldActor["targetBindings"];
   bindToTarget?: RuntimeTargetWorldActor["bindToTarget"];
+  enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
     | "advanceActiveEffects"
@@ -97,6 +99,7 @@ function helperRedirectContext(
   opponentId?: string;
   opponentState?: CharacterRuntimeState;
   targetCandidates?: RuntimeTargetWorldActor[];
+  enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
 } {
   if (!isCompleteRuntimeState(actor.runtime)) {
     return {};
@@ -113,6 +116,7 @@ function helperRedirectContext(
     opponentId,
     opponentState,
     ...(opponent && isRuntimeTargetWorldActor(opponent) ? { targetCandidates: [opponent] } : {}),
+    ...(actor.enterHelperTargetState ? { enterTargetState: actor.enterHelperTargetState } : {}),
   };
 }
 
