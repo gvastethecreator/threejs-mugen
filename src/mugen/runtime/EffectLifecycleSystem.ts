@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
+import type { RuntimeTargetWorldActor } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState } from "./types";
 
 export type RuntimeEffectGetHitActor = {
@@ -11,6 +12,9 @@ export type RuntimeEffectGetHitActor = {
 
 export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "stateNo" | "moveType">;
+  targets?: RuntimeTargetWorldActor["targets"];
+  targetBindings?: RuntimeTargetWorldActor["targetBindings"];
+  bindToTarget?: RuntimeTargetWorldActor["bindToTarget"];
   effectActorWorld: Pick<
     RuntimeEffectActorWorld,
     | "advanceActiveEffects"
@@ -92,6 +96,7 @@ function helperRedirectContext(
   rootState?: CharacterRuntimeState;
   opponentId?: string;
   opponentState?: CharacterRuntimeState;
+  targetCandidates?: RuntimeTargetWorldActor[];
 } {
   if (!isCompleteRuntimeState(actor.runtime)) {
     return {};
@@ -107,7 +112,12 @@ function helperRedirectContext(
     rootState: actor.runtime,
     opponentId,
     opponentState,
+    ...(opponent && isRuntimeTargetWorldActor(opponent) ? { targetCandidates: [opponent] } : {}),
   };
+}
+
+function isRuntimeTargetWorldActor(actor: RuntimeEffectLifecycleActor): actor is RuntimeEffectLifecycleActor & RuntimeTargetWorldActor {
+  return isCompleteRuntimeState(actor.runtime) && Array.isArray(actor.targets) && Array.isArray(actor.targetBindings);
 }
 
 function isCompleteRuntimeState(

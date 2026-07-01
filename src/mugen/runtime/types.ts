@@ -292,6 +292,7 @@ export type ActorEffectSnapshot =
       stateTime: number;
       removeTime: number;
       spritePriority: number;
+      targetCount: number;
       scale: { x: number; y: number };
       ignoreHitPause: boolean;
       pauseMoveTime: number;

@@ -311,6 +311,7 @@ export type RuntimeTraceEffectPayloadRequirement = {
   minSpritePriority?: number;
   name?: string;
   helperStateNo?: number;
+  targetCount?: number;
   minPriority?: number;
   minHitsRemaining?: number;
   maxHitsRemaining?: number;
@@ -1801,6 +1802,7 @@ function matchesHelperPayloadRequirement(
   const hasHelperRequirement =
     requirement.name !== undefined ||
     requirement.helperStateNo !== undefined ||
+    requirement.targetCount !== undefined ||
     requirement.ownerBindTarget !== undefined ||
     requirement.ownerBindOffsetX !== undefined ||
     requirement.ownerBindOffsetY !== undefined ||
@@ -1813,6 +1815,7 @@ function matchesHelperPayloadRequirement(
     effect.kind === "helper" &&
     (requirement.name === undefined || effect.name === requirement.name) &&
     (requirement.helperStateNo === undefined || effect.stateNo === requirement.helperStateNo) &&
+    (requirement.targetCount === undefined || effect.targetCount === requirement.targetCount) &&
     matchesHelperOwnerBindPayloadRequirement(effect, requirement)
   );
 }

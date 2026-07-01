@@ -85,10 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 helper direct bare target redirect gate
-  -> synthetic-imported-helper-bare-target.json checksum 15f3c1db is now required
-  -> helper state 1200 activates direct HitDef with target id 8878, mirrors helper target memory, exposes target link p1-helper-0 -> p2 / 8878, and branches to state 1230/962 through bare Target, Life <= 965
-  -> pnpm qa:trace passes 196/196 artifacts, 176 required and 20 optional
+R2 helper Target controller mutation gate
+  -> synthetic-imported-helper-target-controllers.json checksum 61f4c61e is now required
+  -> helper state 1200 activates direct HitDef with target id 8879, mirrors helper target memory, applies bounded helper-owned TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop, and exposes helper payload targetCount = 0 after the drop
+  -> target-link/binding evidence includes p1-helper-0 -> p2 / 8879, TargetBind offset 36,-12, final P2 life 944, and final P2 power 40
+  -> pnpm qa:trace passes 197/197 artifacts, 177 required and 20 optional
+  -> previous helper bare Target, Life proof remains required: synthetic-imported-helper-bare-target.json checksum 15f3c1db
   -> previous player bare Target, Life proof remains required: synthetic-imported-bare-target-redirect.json checksum f9c90aa8
   -> previous default Target(0), Life proof remains required: synthetic-imported-default-target-redirect.json checksum d43caabf
   -> previous default NumTarget(0) proof remains required: synthetic-imported-default-numtarget.json checksum 5869ebbd
@@ -97,7 +99,7 @@ R2 helper direct bare target redirect gate
   -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 1a44cc04
   -> previous helper direct-target proof remains required: synthetic-imported-helper-target.json checksum 68f95b67
   -> previous helper direct-combat proof remains required: synthetic-imported-helper-hitdef.json checksum 89f9e876
-  -> no Target* mutation breadth, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
+  -> no helper TargetState, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now required
   -> official-style synthetic Common1 air recovery routes 5050 -> 5210 -> 52 -> 0 after command = "recovery" while airborne
@@ -115,7 +117,7 @@ R2 helper-local ProjContactTime trace gate
   -> focused EffectActorSystem coverage proves same-id player-owned Projectile contact stays ignored while helper-parented Projectile contact triggers the helper branch after contact age advances
   -> that checkpoint passed qa:trace at 185/185 artifacts, 165 required and 20 optional
   -> previous helper-local ProjGuarded checksum 3353eda7, ProjHit checksum 3892716e, ModifyProjectile checksum 77df008b, and NumProj checksum 4f8612b0 remain required helper-projectile proofs
-  -> no helper-owned Projectile combat/contact presentation, helper Target* mutation parity, exact ProjContact/ProjHit/ProjGuarded tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, visual parity, score movement, or full Helper/Projectile parity claim
+  -> no helper-owned Projectile combat/contact presentation, helper TargetState/multi-target parity beyond the direct-HitDef gated subset, exact ProjContact/ProjHit/ProjGuarded tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, visual parity, score movement, or full Helper/Projectile parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now required
   -> synthetic-imported-default-fall-official-recovery-too-early.json checksum ef945ff5 is now required
@@ -308,7 +310,7 @@ R2 bounded helper-local Projectile gate
   -> HelperSystem can dispatch bounded helper-local Projectile through RuntimeEffectActorWorld for current visual Helpers
   -> required synthetic-imported-helper-projectile.json checksum 893f9427 proves a visual Helper routes from 1200 to 1212 / anim 932 while spawning owner-side projectile anim 943 with parentId p1-helper-0
   -> pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
-  -> no helper-owned projectile combat/contact presentation, helper Target* mutation parity, helper custom-state targets, exact helper projectile namespace scopes, indexed/team/helper-owned redirects, exact helper HitDef/Projectile lifetime parity, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score claim
+  -> no helper-owned projectile combat/contact presentation, helper TargetState/multi-target parity beyond the direct-HitDef gated subset, helper custom-state targets, exact helper projectile namespace scopes, indexed/team/helper-owned redirects, exact helper HitDef/Projectile lifetime parity, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score claim
 R2 bounded helper-local NumHelper gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can evaluate bounded helper-local NumHelper(id) through RuntimeEffectActorWorld for current visual Helpers against owner-side visual Helper actors in the same effect store
@@ -424,20 +426,20 @@ R2 helper-local micro-VM ownership
   -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
   -> helper-local redirects now include bounded Parent/Root read-only trigger/value evaluation against owner runtime state plus bounded EnemyNear read-only trigger/value evaluation against current opponent state, with focused EffectActorSystem and trace coverage
   -> helper-local static owner binding now includes bounded BindToParent / BindToRoot unit coverage and required BindToParent plus BindToRoot trace coverage with ownerBind target/offset payload requirements
-  -> no indexed redirects, EnemyNear(index), player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper Target* mutation/multi-target parity, helper custom-state targets, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper-owned Projectile combat/contact beyond bounded target memory, helper-owned effect namespaces, exact helper HitDef lifetime/multi-hit parity, full helper combat parity, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
+  -> no indexed redirects, EnemyNear(index), player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper TargetState/multi-target parity beyond the direct-HitDef gated subset, helper custom-state targets, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper-owned Projectile combat/contact beyond bounded target memory, helper-owned effect namespaces, exact helper HitDef lifetime/multi-hit parity, full helper combat parity, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns p1/p2-isolated store mutation and removed-count reporting
   -> RuntimeEffectSpawnWorld exposes the same handoff for future controller dispatch
   -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
-  -> no redirects, parent/root/team ownership, helper Target* mutation/multi-target parity, helper custom-state targets, helper-owned Projectile combat/contact beyond bounded target memory, exact helper HitDef lifetime/multi-hit parity, exact lifecycle tick-order parity, or score claim
+  -> no redirects, parent/root/team ownership, helper TargetState/multi-target parity beyond the direct-HitDef gated subset, helper custom-state targets, helper-owned Projectile combat/contact beyond bounded target memory, exact helper HitDef lifetime/multi-hit parity, exact lifecycle tick-order parity, or score claim
 R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno F7004
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper bare Target, Life gate is 196/196 artifacts, 176 required and 20 optional
+  -> current aggregate after the helper Target-controller gate is 197/197 artifacts, 177 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

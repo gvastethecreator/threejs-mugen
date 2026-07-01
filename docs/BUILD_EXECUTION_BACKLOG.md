@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper Target controller mutation gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-target-controllers.json` trace evidence: helper-local `HitDef id = 8879` hits P2, records helper-owned target memory, applies bounded helper-owned `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop`, and exposes helper payload `targetCount = 0` after the drop.
+- Routed helper micro-VM target-controller dispatch through `RuntimeTargetControllerDispatchWorld` using live target candidates supplied by `RuntimeEffectLifecycleWorld`.
+- Added helper effect payload `targetCount` trace requirement support so helper `TargetDrop` can be gated without pretending Helpers are player compatibility actors in the global controller telemetry.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Target controllers"` passed.
+- `pnpm test` passed: 95 files, 826 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 197 / 197 artifacts, 177 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- No CSS/UI diff: `NO_CSS_OR_UI_DIFF`.
+- New required checksum: `synthetic-imported-helper-target-controllers.json` `61f4c61e`.
+- Previous helper bare Target checksum remains required: `synthetic-imported-helper-bare-target.json` `15f3c1db`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current helper-owned direct `HitDef` target memory can apply bounded helper-owned `TargetLifeAdd`, `TargetPowerAdd`, `TargetVelSet`, `TargetVelAdd`, `TargetFacing`, `TargetBind`, and `TargetDrop` to remembered P2 target id `8879`, with target-link/binding evidence, final P2 life/power evidence, and helper payload target-drop evidence.
+
+Claim blocked:
+
+- This does not add helper `TargetState`, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, helper/projectile target redirects beyond the gated subset, exact target lifetime/tick order, exact helper hitpause/tick order, visual parity, score movement, or full MUGEN/IKEMEN helper Target parity.
+
 ## 2026-06-30 - Helper HitDef bare Target redirect gate
 
 Changed:

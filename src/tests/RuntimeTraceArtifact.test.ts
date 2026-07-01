@@ -1089,6 +1089,7 @@ function helperEffect(
     stateTime: 1,
     removeTime: 30,
     spritePriority: 3,
+    targetCount: 0,
     scale: { x: 1, y: 1 },
     ignoreHitPause: false,
     pauseMoveTime: 0,

@@ -21,9 +21,12 @@ import {
   normalizeRuntimeStateType,
 } from "./RuntimeStateEntrySystem";
 import {
+  isRuntimeTargetControllerDispatchEffect,
+  RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
+  type RuntimeTargetControllerDispatchOperation,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
@@ -106,12 +109,14 @@ export type RuntimeHelperAdvanceOptions = {
   countProjectiles?: (helper: RuntimeHelper, projectileId?: number) => number;
   projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
+  targetCandidates?: RuntimeTargetWorldActor[];
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onSpawnProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onRemoveExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
+  onOperation?: (helper: RuntimeHelper, operation: RuntimeTargetControllerDispatchOperation) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
 
@@ -242,12 +247,14 @@ export function runRuntimeHelperStateControllers(
     | "countProjectiles"
     | "projectileContact"
     | "projectileContactTime"
+    | "targetCandidates"
     | "onSpawnExplod"
     | "onSpawnProjectile"
     | "onRemoveExplod"
     | "onModifyExplod"
     | "onModifyProjectile"
     | "onController"
+    | "onOperation"
     | "onUnsupportedController"
   > = {},
 ): RuntimeHelperControllerResult {
@@ -314,6 +321,14 @@ export function runRuntimeHelperStateControllers(
     }
     if (dispatch.kind === "side-effect" && dispatch.effect === "hitdef") {
       if (activateRuntimeHelperHitDef(helper, controller)) {
+        options.onController?.(helper, controller);
+        continue;
+      }
+      options.onUnsupportedController?.(helper, controller);
+      continue;
+    }
+    if (dispatch.kind === "side-effect" && isRuntimeTargetControllerDispatchEffect(dispatch.effect)) {
+      if (applyRuntimeHelperTargetController(helper, controller, dispatch.effect, options)) {
         options.onController?.(helper, controller);
         continue;
       }
@@ -400,6 +415,7 @@ export function runtimeHelpersToSnapshots(helpers: RuntimeHelper[], sourceStateN
           stateTime: helper.stateTime,
           removeTime: helper.removeTime,
           spritePriority: helper.spritePriority,
+          targetCount: helper.targets.length,
           scale: { ...helper.scale },
           ignoreHitPause: helper.ignoreHitPause,
           pauseMoveTime: helper.pauseMoveTime,
@@ -457,6 +473,7 @@ const helperRuntimeControllers = new Set([
 
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperTargetWorld = new RuntimeTargetWorld();
+const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 
 export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
@@ -495,6 +512,26 @@ export function rememberRuntimeHelperTarget(
   const actor = runtimeHelperTargetActor(helper);
   targetWorld.remember(actor, targetActorId, targetId);
   syncRuntimeHelperTargetActor(helper, actor);
+}
+
+function applyRuntimeHelperTargetController(
+  helper: RuntimeHelper,
+  controller: ControllerIr,
+  effect: "target" | "bindtotarget",
+  options: Pick<RuntimeHelperAdvanceOptions, "targetCandidates" | "onOperation">,
+): boolean {
+  const actor = runtimeHelperTargetActor(helper);
+  const result = helperTargetControllerDispatchWorld.apply({
+    actor,
+    candidateTargets: options.targetCandidates ?? [],
+    controller,
+    effect,
+    targetWorld: helperTargetWorld,
+    recordOperation: (_actor, operation) => options.onOperation?.(helper, operation),
+  });
+  applyRuntimeStateToHelper(helper, actor.runtime);
+  syncRuntimeHelperTargetActor(helper, actor);
+  return result.matchedTargets > 0 || result.operationExecuted;
 }
 
 function emitHelperSoundEvent(helper: RuntimeHelper, controller: ControllerIr, runtimeTick: number): void {

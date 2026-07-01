@@ -111,6 +111,7 @@ import {
   createSyntheticImportedHelperTargetTraceArtifact,
   createSyntheticImportedHelperDefaultTargetTraceArtifact,
   createSyntheticImportedHelperBareTargetTraceArtifact,
+  createSyntheticImportedHelperTargetControllersTraceArtifact,
   createSyntheticImportedHelperNumExplodTraceArtifact,
   createSyntheticImportedHelperNumHelperTraceArtifact,
   createSyntheticImportedHelperNumProjTraceArtifact,
@@ -2477,6 +2478,109 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1230, minAge: 2 },
     ]);
+  });
+
+  it("creates a synthetic imported Helper Target controllers artifact with helper-owned mutation evidence", () => {
+    const artifact = createSyntheticImportedHelperTargetControllersTraceArtifact({ generatedAt: "2026-06-30T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-target-controllers-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-target-controllers-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredTargetLinks).toEqual([
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8879, hasBinding: false, minFrames: 1 },
+      {
+        ownerId: "p1-helper-0",
+        actorId: "p2",
+        targetId: 8879,
+        hasBinding: true,
+        minFrames: 1,
+        minAge: 1,
+        minBindingRemaining: 1,
+        maxBindingRemaining: 3,
+        bindingOffsetX: 36,
+        bindingOffsetY: -12,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8879, hasBinding: false }),
+        expect.objectContaining({
+          ownerId: "p1-helper-0",
+          actorId: "p2",
+          targetId: 8879,
+          hasBinding: true,
+          bindingOffset: { x: 36, y: -12 },
+        }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1231, animNo: 963 }),
+        expect.objectContaining({ actorId: "p2", actorKind: "player", facing: 1 }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      actorKind: "player",
+      life: 944,
+      power: 40,
+    });
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        actorId: "p1-helper-0",
+        kind: "helper",
+        ownerId: "p1",
+        effectId: 42,
+        name: "Buddy",
+        helperStateNo: 1231,
+        targetCount: 0,
+        minAge: 3,
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          actorKind: "helper",
+          effect: expect.objectContaining({ kind: "helper", stateNo: 1231, targetCount: 0 }),
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 6, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7012,
+            raw: "F7012",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7012,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 16, y: -52 },
+          }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported Helper NumExplod artifact with helper-local count evidence", () => {
