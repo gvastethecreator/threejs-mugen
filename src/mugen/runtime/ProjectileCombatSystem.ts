@@ -35,7 +35,12 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   hurtBoxes: CollisionBox[];
   holdingBack: boolean;
   log: (line: string) => void;
-  rememberTarget: (attacker: TActor, defender: TActor, targetId: number | undefined) => void;
+  rememberTarget: (
+    attacker: TActor,
+    defender: TActor,
+    targetId: number | undefined,
+    projectile: RuntimeProjectile,
+  ) => void;
   applyHitOverride: (
     attacker: TActor,
     defender: TActor,
@@ -86,7 +91,7 @@ export class RuntimeProjectileCombatWorld {
       const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP");
       if (override) {
         recordRuntimeProjectileContact(projectile);
-        input.rememberTarget(attacker, defender, projectile.targetId);
+        input.rememberTarget(attacker, defender, projectile.targetId, projectile);
         input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
         continue;
       }
@@ -113,7 +118,7 @@ export class RuntimeProjectileCombatWorld {
         holdingBack: input.holdingBack,
       });
       recordRuntimeProjectileContact(projectile, result.kind);
-      input.rememberTarget(attacker, defender, projectile.targetId);
+      input.rememberTarget(attacker, defender, projectile.targetId, projectile);
       attacker.hitPause = result.pause;
       defender.hitPause = result.pause;
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));

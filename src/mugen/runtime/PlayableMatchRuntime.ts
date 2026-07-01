@@ -108,6 +108,7 @@ import {
   type RuntimeTarget,
   type RuntimeTargetBinding,
 } from "./TargetSystem";
+import type { RuntimeProjectile } from "./ProjectileSystem";
 import { trainingStage } from "./demoStage";
 import type {
   CharacterRuntimeState,
@@ -499,6 +500,8 @@ export class PlayableMatchRuntime {
           runtimeTick: this.tick,
           getHurtBoxes: getRuntimeHurtBoxes,
           stateHooks: runtimeCombatStateHooks,
+          rememberProjectileTarget: (source, target, projectile) =>
+            this.rememberHelperProjectileTarget(source, target, projectile),
           log: (line) => this.logs.unshift(line),
         }),
       resolveHelperCombat: (attacker, defender) => this.resolveHelperDirectCombat(attacker, defender),
@@ -704,6 +707,17 @@ export class PlayableMatchRuntime {
       syncHelperFromDirectCombatActor(helper, attacker);
       this.logs.unshift(outcome.message);
     }
+  }
+
+  private rememberHelperProjectileTarget(owner: FighterMatchState, defender: FighterMatchState, projectile: RuntimeProjectile): void {
+    if (projectile.parentId === owner.id) {
+      return;
+    }
+    const helper = this.effectActorWorld.helpers(owner.id).find((candidate) => candidate.serialId === projectile.parentId);
+    if (!helper) {
+      return;
+    }
+    rememberRuntimeHelperTarget(helper, defender.id, projectile.targetId, this.targetWorld);
   }
 
 }

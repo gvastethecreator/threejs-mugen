@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper Projectile target memory gate
+
+Changed:
+
+- Added bounded helper-owned target memory for helper-parented owner-side `Projectile` contacts.
+- `RuntimeProjectileCombatWorld` now passes the contacted projectile into the target-memory callback, and `RuntimeCombatResolutionWorld` exposes a projectile-target hook so `PlayableMatchRuntime` can mirror target memory from owner P1 into the visual Helper that spawned the projectile.
+- Added optional `helperProjHitRoute.branchTrigger` support in the synthetic trace fixture builder so helper Projectile routes can branch on `NumTarget(id)` / `Target(id), ...`, not only `ProjHit(id)`.
+- Added required `synthetic-imported-helper-projectile-target.json` trace evidence: helper state `1200` spawns Projectile id `8860`, the projectile hits P2 for 18 damage, owner target link `p1 -> p2 / 8860` and helper target link `p1-helper-0 -> p2 / 8860` are both exposed, and helper state `1224` branches to `1225/955` through `NumTarget(8860)` plus `Target(8860), Life`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile Target"` passed.
+- Focused `pnpm vitest run src/tests/RuntimeCombatResolutionSystem.test.ts src/tests/ProjectileCombatSystem.test.ts src/tests/EffectActorSystem.test.ts` passed.
+- `pnpm test` passed: 95 files / 817 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; Vite emitted the existing >500 kB chunk-size warning.
+- `pnpm qa:trace` passes: 190 / 190 artifacts, 170 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`.
+- New required checksum: `synthetic-imported-helper-projectile-target.json` `1a44cc04`.
+- Previous helper target checksum remains required: `synthetic-imported-helper-target.json` `68f95b67`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local micro-VM can mirror explicit-id helper-parented Projectile contact target memory into the spawning Helper, expose owner and helper target links through MatchWorld, and branch on helper-local `NumTarget(id)` plus `Target(id), Life` against current P2.
+
+Claim blocked:
+
+- This does not add default/undefined helper target-id parity, helper `Target*` mutation controllers, helper custom-state targets, helper throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` or Projectile lifetime/multi-hit parity, helper-owned Projectile presentation ownership, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat/projectile parity.
+
 ## 2026-06-30 - Helper-owned target memory gate
 
 Changed:

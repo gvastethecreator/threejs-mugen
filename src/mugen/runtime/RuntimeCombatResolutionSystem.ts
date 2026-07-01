@@ -25,6 +25,7 @@ import type { RuntimeContactPresentationActor, RuntimeContactPresentationWorld }
 import type { RuntimeReversalWorld } from "./ReversalSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 import type { CharacterRuntimeState } from "./types";
+import type { RuntimeProjectile } from "./ProjectileSystem";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -80,6 +81,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   runtimeTick: number;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
+  rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   log: (line: string) => void;
 };
 
@@ -229,7 +231,10 @@ export class RuntimeCombatResolutionWorld {
       hurtBoxes,
       holdingBack: isRuntimeHoldingBack(input.defender.currentInput),
       log: input.log,
-      rememberTarget: (source, target, targetId) => this.rememberTarget(source, target, targetId),
+      rememberTarget: (source, target, targetId, projectile) => {
+        this.rememberTarget(source, target, targetId);
+        input.rememberProjectileTarget?.(source, target, projectile);
+      },
       applyHitOverride: (source, target, override, hitPause, logger) => {
         const result = input.hitOverrideWorld.applyRedirect(source, target, override, hitPause, {
           tryEnterState: (candidate, stateNo) => {

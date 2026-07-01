@@ -8849,6 +8849,136 @@ export function createSyntheticImportedHelperProjHitTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedHelperProjectileTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-target-attacker",
+    displayName: "Synthetic Imported Helper Projectile Target Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1224,
+      waitAnimNo: 954,
+      branchStateNo: 1225,
+      branchAnimNo: 955,
+      branchTrigger: "NumTarget(8860) > 0 && Target(8860), Life <= 982",
+      projectileAnimNo: 956,
+      projectileId: 8860,
+      pos: [360, -34],
+      hitSound: "S5,2",
+      hitSpark: "F7008",
+      sparkXy: [13, -54],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7008, 8108),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-target-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-target-golden",
+      label: "Synthetic imported Helper Projectile target route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile target trace proves a helper-parented owner-side Projectile contact can remember P2 in both owner target memory and helper-owned target memory, then branch helper-local state through NumTarget(id) plus Target(id), Life. It does not claim default helper target ids, Target* mutation controllers, helper custom-state targets, teams, multi-target selection, exact projectile target lifetime, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-target-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 2,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7008,
+              raw: "F7008",
+              rawPrefix: "F",
+              offsetX: 13,
+              offsetY: -54,
+              assetSource: "fightfx",
+              assetActionId: 7008,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8108,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1224, animNo: 954, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1225, animNo: 955, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 956,
+            moveType: "A",
+            minFrames: 1,
+          },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 982, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 982 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1225, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8860,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8860 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8860, hasBinding: false, minFrames: 1 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjGuardTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperProjectileGuardScript();
@@ -11073,6 +11203,7 @@ export type SyntheticImportedTraceFighterOptions = {
     waitAnimNo?: number;
     branchStateNo: number;
     branchAnimNo?: number;
+    branchTrigger?: string;
     projectileAnimNo: number;
     projectileId?: number;
     pos?: [number, number];
@@ -14321,6 +14452,7 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const waitAnimNo = route.waitAnimNo ?? route.waitStateNo;
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const projectileId = route.projectileId ?? 8853;
+  const branchTrigger = route.branchTrigger ?? `ProjHit(${projectileId})`;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
   const hitSoundLine = route.hitSound === undefined ? "" : `hitsound = ${route.hitSound}`;
@@ -14379,7 +14511,7 @@ ctrl = 0
 
 [State ${route.waitStateNo}, Helper ProjHit Branch]
 type = ChangeState
-trigger1 = ProjHit(${projectileId})
+trigger1 = ${branchTrigger}
 value = ${route.branchStateNo}
 ctrl = 0
 

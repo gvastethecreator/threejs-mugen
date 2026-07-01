@@ -852,6 +852,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjHitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-target",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileTargetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projguard",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjGuardTraceArtifact(),
@@ -1641,6 +1646,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-explod-velocity",
     "synthetic-imported-helper-ishelper",
     "synthetic-imported-helper-projhit",
+    "synthetic-imported-helper-projectile-target",
     "synthetic-imported-helper-projguard",
     "synthetic-imported-helper-projcontact",
     "synthetic-imported-helper-hitdef",

@@ -88,7 +88,7 @@ describe("RuntimeCombatResolutionSystem", () => {
     const calls: string[] = [];
     const resolver: ProjectileResolver = (ownerId, input) => {
       calls.push(`owner:${ownerId}`);
-      input.rememberTarget(input.attacker, input.defender, projectile.targetId);
+      input.rememberTarget(input.attacker, input.defender, projectile.targetId, projectile);
       input.recordProjectileContact?.(input.attacker, input.defender, projectile, "hit");
       input.recordReceivedDamage?.(input.defender, 12);
       input.emitProjectileContactEffects?.(input.attacker, input.defender, projectile, "hit");
@@ -107,10 +107,11 @@ describe("RuntimeCombatResolutionSystem", () => {
       runtimeTick: 12,
       getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
       stateHooks: hooks(),
+      rememberProjectileTarget: (_source, _target, entry) => calls.push(`projectile-target:${entry.serialId}`),
       log: (line) => calls.push(`log:${line}`),
     });
 
-    expect(calls).toEqual(["owner:p1"]);
+    expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0"]);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 88, age: 0 }]);
     expect(contactWorld.hasProjectileContact(attacker.contact, 300, "hit", 88)).toBe(true);
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(12);
