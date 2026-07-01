@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-01 - EnemyNear indexed 1v1 trace gate
+
+Changed:
+
+- Added bounded runtime/compiler support for `EnemyNear(0)` indexed redirects and one-on-one fail-closed `EnemyNear(1+)` redirects.
+- Kept negative or dynamic-invalid EnemyNear indexes reported as unsupported.
+- Added required synthetic trace `synthetic-imported-enemynear-index` with route state `284` required and trap state `285` forbidden.
+- Serialized `forbiddenExecutedStates` in trace artifact requirements.
+
+Evidence:
+
+- Focused EnemyNear/compiler/report/trace-preset Vitest slice passed 8 tests.
+- `pnpm qa:trace` passed 211/211 artifacts, 191 required and 20 optional.
+- New checksum: `synthetic-imported-enemynear-index.json` `b97e2eda`.
+
+Claim allowed:
+
+- Bounded 1v1 State -1 / expression evaluation now supports `EnemyNear(0), ...` against the current opponent and treats `EnemyNear(1+), ...` as false/fail-closed when no second enemy exists.
+
+Claim blocked:
+
+- Team/simul nth-nearest enemy selection, helper-owned opponent lists, redirect mutation, dynamic-index parity, exact IKEMEN/MUGEN EnemyNear lifetime/ordering, score movement, and full parity remain blocked.
+
 ## 2026-07-01 - HitDef Data spark fallback trace gates
 
 Changed:

@@ -97,22 +97,12 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   const index = redirect[2]?.trim();
   const expressionBody = redirect[3] ?? "";
   if (target === "enemynear") {
-    if (index && index !== "0") {
-      context.reportUnsupported?.("enemynear(index)");
-      return 0;
-    }
-    if (!context.opponent) {
-      context.reportUnsupported?.("enemynear");
+    const redirected = enemyNearRedirectContext(index, context);
+    if (redirected === "fail") {
       return 0;
     }
     return evaluateExpression(expressionBody, {
-      ...context,
-      self: context.opponent,
-      opponent: context.self,
-      name: context.opponentName,
-      authorName: context.opponentAuthorName,
-      opponentName: context.name,
-      opponentAuthorName: context.authorName,
+      ...redirected,
     });
   }
   if (target === "target") {
@@ -337,23 +327,7 @@ class ExpressionParser {
       return undefined;
     }
     if (target === "enemynear") {
-      if (index && index !== "0") {
-        this.context.reportUnsupported?.("enemynear(index)");
-        return "fail";
-      }
-      if (!this.context.opponent) {
-        this.context.reportUnsupported?.("enemynear");
-        return "fail";
-      }
-      return {
-        ...this.context,
-        self: this.context.opponent,
-        opponent: this.context.self,
-        name: this.context.opponentName,
-        authorName: this.context.opponentAuthorName,
-        opponentName: this.context.name,
-        opponentAuthorName: this.context.authorName,
-      };
+      return enemyNearRedirectContext(index, this.context);
     }
     if (target === "target") {
       const targetId = resolveRedirectTargetId(index, this.context);
@@ -1018,6 +992,9 @@ function resolveRedirectTargetId(index: string | undefined, context: ExpressionC
   if (/^-?\d+$/.test(trimmed)) {
     return normalizeRedirectTargetId(Number(trimmed), context);
   }
+  if (containsUnavailableEnemyNearIndex(trimmed)) {
+    return "unsupported";
+  }
   let indexUnsupported = false;
   const value = evaluateExpression(trimmed, {
     ...context,
@@ -1029,7 +1006,75 @@ function resolveRedirectTargetId(index: string | undefined, context: ExpressionC
   if (indexUnsupported) {
     return "unsupported";
   }
+  if (isFailedRedirect(value)) {
+    return "unsupported";
+  }
   return normalizeRedirectTargetId(numeric(value), context);
+}
+
+function containsUnavailableEnemyNearIndex(expression: string): boolean {
+  return /\benemynear\s*\(\s*[1-9]\d*(?:\s*\)|\s*$)/i.test(expression);
+}
+
+function enemyNearRedirectContext(index: string | undefined, context: ExpressionContext): ExpressionContext | "fail" {
+  const enemyIndex = resolveEnemyNearIndex(index, context);
+  if (enemyIndex === "unsupported") {
+    return "fail";
+  }
+  if (enemyIndex > 0) {
+    return "fail";
+  }
+  if (!context.opponent) {
+    context.reportUnsupported?.("enemynear");
+    return "fail";
+  }
+  return {
+    ...context,
+    self: context.opponent,
+    opponent: context.self,
+    name: context.opponentName,
+    authorName: context.opponentAuthorName,
+    opponentName: context.name,
+    opponentAuthorName: context.authorName,
+  };
+}
+
+function resolveEnemyNearIndex(index: string | undefined, context: ExpressionContext): number | "unsupported" {
+  if (!index) {
+    return 0;
+  }
+  const trimmed = index.trim();
+  if (trimmed === "") {
+    return 0;
+  }
+  if (/^-?\d+$/.test(trimmed)) {
+    return normalizeEnemyNearIndex(Number(trimmed), context);
+  }
+  let indexUnsupported = false;
+  const value = evaluateExpression(trimmed, {
+    ...context,
+    reportUnsupported: (feature) => {
+      indexUnsupported = true;
+      context.reportUnsupported?.(feature);
+    },
+  });
+  if (indexUnsupported || isFailedRedirect(value)) {
+    return "unsupported";
+  }
+  return normalizeEnemyNearIndex(numeric(value), context);
+}
+
+function normalizeEnemyNearIndex(value: number, context: ExpressionContext): number | "unsupported" {
+  if (!Number.isFinite(value)) {
+    context.reportUnsupported?.("enemynear(dynamic-invalid)");
+    return "unsupported";
+  }
+  const enemyIndex = Math.trunc(value);
+  if (enemyIndex < 0) {
+    context.reportUnsupported?.("enemynear(negative)");
+    return "unsupported";
+  }
+  return enemyIndex;
 }
 
 function normalizeRedirectTargetId(value: number, context: ExpressionContext): number | "unsupported" {

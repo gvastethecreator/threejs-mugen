@@ -38,6 +38,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded round KO/time-over snapshot evidence
 - state exit
 - Target*
+- EnemyNear indexed one-on-one redirect/fail-closed route
 - Pause/SuperPause
 - Projectile
 - Helper, including bounded helper-local direct-HitDef and helper-parented Projectile target-memory/Target-controller routes

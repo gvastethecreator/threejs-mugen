@@ -617,6 +617,30 @@ export function createSyntheticImportedEnemyNearTraceArtifact(options: RuntimeTr
   );
 }
 
+export function createSyntheticImportedEnemyNearIndexTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-enemynear-index",
+      displayName: "Synthetic Imported EnemyNear Index",
+      enemyNearIndexedStateEntry: { opponentStateNo: 0, stateNo: 284, trapStateNo: 285 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-enemynear-index-golden",
+      targetLabel: "Synthetic imported EnemyNear indexed redirect route",
+      script: importedOneShotXScript(),
+      requiredRoutedStates: [284],
+      requiredExecutedStates: [284],
+      forbiddenExecutedStates: [285],
+      requiredExecutedControllers: ["ChangeState"],
+      requiredExecutedOperations: [],
+      notes: [
+        "Synthetic imported EnemyNear indexed trace proves bounded one-on-one EnemyNear(0), StateNo redirects can evaluate against the current opponent while EnemyNear(1), StateNo fails closed instead of routing to a missing second enemy. It does not claim team/simul nth-nearest selection, helper-owned opponents, redirects beyond the bounded two-player context, or full MUGEN/IKEMEN EnemyNear parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedP2MetricsTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -1221,6 +1245,7 @@ export function createImportedXTraceArtifact(
     requiredRoundFrames?: RuntimeTraceGate["requiredRoundFrames"];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
+    forbiddenExecutedStates?: number[];
     script?: RuntimeTraceInputFrame[];
   } = {},
 ): RuntimeTraceArtifact {
@@ -1248,6 +1273,7 @@ export function createImportedXTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: options.requiredRoutedStates ?? [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200],
+        forbiddenExecutedStates: options.forbiddenExecutedStates,
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredSoundEvents: options.requiredSoundEvents,
@@ -13350,6 +13376,7 @@ export type SyntheticImportedTraceFighterOptions = {
   prevStateTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   prevMoveTypeRoute?: { intermediateStateNo: number; finalStateNo: number };
   enemyNearStateEntry?: { opponentStateNo: number; stateNo: number };
+  enemyNearIndexedStateEntry?: { opponentStateNo: number; stateNo: number; trapStateNo: number };
   p2MetricsStateEntry?: { stateNo: number };
   identityEntry?: { name: string; p2Name: string; authorName: string; enemyAuthorName: string; stateNo: number };
   dataStats?: { attack?: number; defence?: number; life?: number; power?: number };
@@ -13724,6 +13751,7 @@ time = 5
 `).commands;
 const stateEntryControllers = parseCns(`
 ${options.enemyNearStateEntry === undefined ? "" : enemyNearStateEntryBlock(options.enemyNearStateEntry)}
+${options.enemyNearIndexedStateEntry === undefined ? "" : enemyNearIndexedStateEntryBlock(options.enemyNearIndexedStateEntry)}
 ${options.p2MetricsStateEntry === undefined ? "" : p2MetricsStateEntryBlock(options.p2MetricsStateEntry)}
 ${options.identityEntry === undefined ? "" : identityStateEntryBlock(options.identityEntry)}
 ${options.selfStateNoExistEntry === undefined ? "" : selfStateNoExistStateEntryBlock(options.selfStateNoExistEntry)}
@@ -13876,6 +13904,8 @@ ${options.prevAnimRoute ? prevAnimRouteBlock(options.prevAnimRoute) : ""}
 ${options.prevStateTypeRoute ? prevStateTypeRouteBlock(options.prevStateTypeRoute) : ""}
 ${options.prevMoveTypeRoute ? prevMoveTypeRouteBlock(options.prevMoveTypeRoute) : ""}
 ${options.enemyNearStateEntry ? simpleStateBlock(options.enemyNearStateEntry.stateNo, "I") : ""}
+${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.trapStateNo, "I") : ""}
+${options.enemyNearIndexedStateEntry ? simpleStateBlock(options.enemyNearIndexedStateEntry.stateNo, "I") : ""}
 ${options.p2MetricsStateEntry ? simpleStateBlock(options.p2MetricsStateEntry.stateNo, "I") : ""}
 ${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
@@ -14048,6 +14078,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.enemyNearStateEntry === undefined
         ? []
         : ([[options.enemyNearStateEntry.stateNo, traceAction(options.enemyNearStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.enemyNearIndexedStateEntry === undefined
+        ? []
+        : ([
+            [options.enemyNearIndexedStateEntry.trapStateNo, traceAction(options.enemyNearIndexedStateEntry.trapStateNo)],
+            [options.enemyNearIndexedStateEntry.stateNo, traceAction(options.enemyNearIndexedStateEntry.stateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
       ...(options.p2MetricsStateEntry === undefined
         ? []
         : ([[options.p2MetricsStateEntry.stateNo, traceAction(options.p2MetricsStateEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
@@ -16184,6 +16220,22 @@ type = ChangeState
 value = ${route.stateNo}
 triggerall = command = "x"
 trigger1 = EnemyNear, StateNo = ${route.opponentStateNo}
+`;
+}
+
+function enemyNearIndexedStateEntryBlock(route: { opponentStateNo: number; stateNo: number; trapStateNo: number }): string {
+  return `
+[State -1, EnemyNear Missing Indexed Trap]
+type = ChangeState
+value = ${route.trapStateNo}
+triggerall = command = "x"
+trigger1 = EnemyNear(1), StateNo = ${route.opponentStateNo}
+
+[State -1, EnemyNear Indexed Route]
+type = ChangeState
+value = ${route.stateNo}
+triggerall = command = "x"
+trigger1 = EnemyNear(0), StateNo = ${route.opponentStateNo}
 `;
 }
 

@@ -121,6 +121,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-enemynear-index",
+      required: true,
+      artifact: presets.createSyntheticImportedEnemyNearIndexTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-p2metrics",
       required: true,
       artifact: presets.createSyntheticImportedP2MetricsTraceArtifact(),
@@ -1914,6 +1919,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-animation",
     "synthetic-imported-sound",
     "synthetic-imported-noop",
+    "synthetic-imported-enemynear-index",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",

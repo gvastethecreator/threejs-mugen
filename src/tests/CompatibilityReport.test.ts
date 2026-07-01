@@ -23,7 +23,7 @@ describe("createCompatibilityReport", () => {
       ],
       stateEntryControllers: [
         controller(-1, "ChangeState", ['command = "qcf_x"', "power >= 0"], { value: "1000" }),
-        controller(-1, "ChangeState", ["enemynear(1), stateno = 5000"], { value: "2000" }),
+        controller(-1, "ChangeState", ["enemynear(-1), stateno = 5000"], { value: "2000" }),
       ],
       diagnostics: [],
       unsupported: [],
@@ -39,8 +39,8 @@ describe("createCompatibilityReport", () => {
     expect(report.triggers.total).toBe(5);
     expect(report.triggers.supported).toBe(4);
     expect(report.triggers.unsupported).toBe(1);
-    expect(report.triggers.unsupportedFeatures["enemynear(index)"]).toBe(1);
-    expect(report.controllers.UnsupportedTrigger).toEqual({ "enemynear(index)": 1 });
+    expect(report.triggers.unsupportedFeatures["enemynear(negative)"]).toBe(1);
+    expect(report.controllers.UnsupportedTrigger).toEqual({ "enemynear(negative)": 1 });
   });
 
   it("treats supported MUGEN trigger syntax as trigger-clean", () => {
@@ -158,9 +158,9 @@ describe("createCompatibilityReport", () => {
     );
 
     expect(analysis.total).toBe(3);
-    expect(analysis.supported).toBe(2);
-    expect(analysis.unsupported).toBe(1);
-    expect(analysis.unsupportedFeatures["enemynear(index)"]).toBe(1);
+    expect(analysis.supported).toBe(3);
+    expect(analysis.unsupported).toBe(0);
+    expect(analysis.unsupportedFeatures).toEqual({});
   });
 });
 

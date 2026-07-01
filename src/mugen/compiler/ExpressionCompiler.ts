@@ -108,8 +108,22 @@ function stripRedirectContextsForSupportScan(expression: string, unsupportedFeat
       continue;
     }
 
-    if (target === "enemynear" && index && index !== "0") {
-      unsupportedFeatures.add("enemynear(index)");
+    if (target === "enemynear" && index) {
+      if (/^-?\d+$/.test(index)) {
+        if (Number(index) < 0) {
+          unsupportedFeatures.add("enemynear(negative)");
+        }
+      } else {
+        const indexScan = expressionForSupportScan(index);
+        for (const feature of indexScan.unsupportedFeatures) {
+          unsupportedFeatures.add(feature);
+        }
+        output += expression.slice(cursor, redirectStart);
+        output += ` (${indexScan.expression}) `;
+        cursor = position + 1;
+        redirectPattern.lastIndex = cursor;
+        continue;
+      }
     }
     if ((target === "parent" || target === "root") && index) {
       unsupportedFeatures.add(`${target}(index)`);

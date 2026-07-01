@@ -538,6 +538,7 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     requiredEffectKinds: gate.requiredEffectKinds ? [...gate.requiredEffectKinds] : undefined,
     requiredRoutedStates: gate.requiredRoutedStates ? [...gate.requiredRoutedStates] : undefined,
     requiredExecutedStates: gate.requiredExecutedStates ? [...gate.requiredExecutedStates] : undefined,
+    forbiddenExecutedStates: gate.forbiddenExecutedStates ? [...gate.forbiddenExecutedStates] : undefined,
     requiredExecutedControllers: gate.requiredExecutedControllers?.map((requirement) =>
       typeof requirement === "string" ? requirement : { ...requirement },
     ),

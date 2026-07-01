@@ -53,7 +53,9 @@ time = 20
     const p2Metrics = compileExpression(
       'NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
-    const unsupported = compileExpression("enemynear(1), stateno = 5000");
+    const enemyNearIndexed = compileExpression("enemynear(1), stateno = 5000");
+    const enemyNearDynamicIndex = compileExpression("enemynear(var(0)), stateno = 5000");
+    const unsupportedEnemyNearNegative = compileExpression("enemynear(-1), stateno = 5000");
     const unsupportedParentIndex = compileExpression("Time = 0 && Parent(1),Var(3) = 7");
     const unsupportedTargetDynamic = compileExpression("Target(enemynear(1), stateno), Life > 0");
     const unsupportedTargetNegative = compileExpression("Target(-1), Life > 0");
@@ -123,12 +125,17 @@ time = 20
       "PrevMoveType",
       "PrevStateType",
     ]);
-    expect(unsupported.supportLevel).toBe("unsupported");
-    expect(unsupported.unsupportedFeatures).toEqual(["enemynear(index)"]);
+    expect(enemyNearIndexed.supportLevel).toBe("executable");
+    expect(enemyNearIndexed.identifiers).toEqual(["stateno"]);
+    expect(enemyNearDynamicIndex.supportLevel).toBe("executable");
+    expect(enemyNearDynamicIndex.functions).toEqual(["var"]);
+    expect(enemyNearDynamicIndex.identifiers).toEqual(["stateno"]);
+    expect(unsupportedEnemyNearNegative.supportLevel).toBe("unsupported");
+    expect(unsupportedEnemyNearNegative.unsupportedFeatures).toEqual(["enemynear(negative)"]);
     expect(unsupportedParentIndex.supportLevel).toBe("unsupported");
     expect(unsupportedParentIndex.unsupportedFeatures).toEqual(["parent(index)"]);
-    expect(unsupportedTargetDynamic.supportLevel).toBe("unsupported");
-    expect(unsupportedTargetDynamic.unsupportedFeatures).toEqual(["enemynear(index)"]);
+    expect(unsupportedTargetDynamic.supportLevel).toBe("executable");
+    expect(unsupportedTargetDynamic.identifiers).toEqual(["Life", "stateno"]);
     expect(unsupportedTargetNegative.supportLevel).toBe("unsupported");
     expect(unsupportedTargetNegative.unsupportedFeatures).toEqual(["target(negative)"]);
   });
@@ -140,7 +147,7 @@ time = 20
       states: [
         state(1000, 1000, [
           controller(1000, "VelSet", ["time = 0"], { x: "2" }),
-          controller(1000, "MysteryController", ["enemynear(1), stateno = 5000"]),
+          controller(1000, "MysteryController", ["enemynear(-1), stateno = 5000"]),
         ]),
       ],
       stateEntryControllers: [controller(-1, "ChangeState", ['command = "qcf_x"', "ctrl"], { value: "1000" })],
@@ -151,7 +158,7 @@ time = 20
     expect(program.report.controllers.compiled).toBe(2);
     expect(program.report.controllers.unsupported).toBe(1);
     expect(program.report.controllers.unsupportedByType).toEqual({ MysteryController: 1 });
-    expect(program.report.triggers.unsupportedFeatures).toEqual({ "enemynear(index)": 1 });
+    expect(program.report.triggers.unsupportedFeatures).toEqual({ "enemynear(negative)": 1 });
   });
 
   it("keeps controller support metadata in one registry", () => {

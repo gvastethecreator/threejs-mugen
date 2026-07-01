@@ -135,6 +135,24 @@ describe("ExpressionEvaluator", () => {
     ).toBe(1);
     expect(evaluateExpression("EnemyNear, StateNo = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear(0), MoveType = H", { self: state, opponent })).toBe(1);
+    const enemyNearIndexUnsupported: string[] = [];
+    expect(
+      evaluateExpression("EnemyNear(1), StateNo = 0", {
+        self: state,
+        opponent,
+        reportUnsupported: (feature) => enemyNearIndexUnsupported.push(feature),
+      }),
+    ).toBe(0);
+    expect(enemyNearIndexUnsupported).toEqual([]);
+    const enemyNearNegativeUnsupported: string[] = [];
+    expect(
+      evaluateExpression("EnemyNear(-1), StateNo = 0", {
+        self: state,
+        opponent,
+        reportUnsupported: (feature) => enemyNearNegativeUnsupported.push(feature),
+      }),
+    ).toBe(0);
+    expect(enemyNearNegativeUnsupported).toEqual(["enemynear(negative)"]);
     expect(evaluateExpression("EnemyNear, Pos X = 108", { self: state, opponent })).toBe(1);
     expect(
       evaluateExpression("Target(77), Life = 1000 && Target, StateNo = 0", {
@@ -172,7 +190,7 @@ describe("ExpressionEvaluator", () => {
         reportUnsupported: (feature) => unsupportedDynamic.push(feature),
       }),
     ).toBe(0);
-    expect(unsupportedDynamic).toContain("EnemyNear");
+    expect(unsupportedDynamic).toEqual([]);
     expect(evaluateExpression("GetHitVar(animtype) = [3,5]", { self: state, getHitVar: () => 4 })).toBe(1);
     expect(evaluateExpression("SelfAnimExist(anim + 3)", { self: state, animExists: (id) => id === 45 })).toBe(1);
     expect(evaluateExpression("SelfStateNoExist(5000)", { self: state, stateExists: (id) => id === 5000 })).toBe(1);
