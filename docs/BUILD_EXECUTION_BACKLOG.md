@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Player HitDef bare Target redirect gate
+
+Changed:
+
+- Synthetic imported trace fighter fixtures can now override the exact static Target redirect trigger expression instead of always generating `Target(id), Life < 1000`.
+- Added required `synthetic-imported-bare-target-redirect.json` trace evidence: direct player `HitDef` with target id `77` creates target link `p1 -> p2 / 77` and branches owner state `270` through bare `Target, Life < 1000`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "bare Target redirect"` passed.
+- `pnpm test` passed: 95 files, 824 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 195 / 195 artifacts, 175 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed; CRLF normalization warnings remain docs-only.
+- New required checksum: `synthetic-imported-bare-target-redirect.json` `f9c90aa8`.
+- Previous default Target redirect checksum remains required: `synthetic-imported-default-target-redirect.json` `d43caabf`.
+- Previous default NumTarget checksum remains required: `synthetic-imported-default-numtarget.json` `5869ebbd`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current direct player `HitDef` target memory can satisfy bare owner-local `Target, Life` trigger reads against the current target after contact.
+
+Claim blocked:
+
+- This does not add `Target, ...` mutation controllers, helper/projectile target redirects, helper custom-state targets, throws, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full MUGEN/IKEMEN target redirect parity.
+
 ## 2026-06-30 - Player HitDef default Target redirect gate
 
 Changed:

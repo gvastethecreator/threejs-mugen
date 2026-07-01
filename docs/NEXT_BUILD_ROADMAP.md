@@ -78,10 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R2 player direct default target redirect gate
-  -> synthetic-imported-default-target-redirect.json checksum d43caabf is now a required qa:trace artifact
-  -> player state 200 activates direct HitDef with no id, mirrors target memory with target id 0, exposes target link p1 -> p2 / 0, and branches to state 269 through Target(0), Life < 1000
-  -> current qa:trace aggregate is 194/194 artifacts, 174 required and 20 optional
+R2 player direct bare target redirect gate
+  -> synthetic-imported-bare-target-redirect.json checksum f9c90aa8 is now a required qa:trace artifact
+  -> player state 200 activates direct HitDef with target id 77, mirrors target memory, exposes target link p1 -> p2 / 77, and branches to state 270 through bare Target, Life < 1000
+  -> current qa:trace aggregate is 195/195 artifacts, 175 required and 20 optional
+  -> previous default Target(0), Life proof remains required: synthetic-imported-default-target-redirect.json checksum d43caabf
   -> previous default NumTarget(0) proof remains required: synthetic-imported-default-numtarget.json checksum 5869ebbd
   -> previous helper direct default-target proof remains required: synthetic-imported-helper-default-target.json checksum e1bcced0
   -> previous helper Projectile default-target proof remains required: synthetic-imported-helper-projectile-default-target.json checksum b1541afc
@@ -96,7 +97,7 @@ R1 presentation selected AIR-frame requirement gate
 R1 presentation spark-offset requirement gate
   -> RuntimeTraceGate.requiredHitEffectEvents now supports offsetX / offsetY
   -> direct HitDef hit/guard spark, common/FightFX multi-frame spark, direct hit/guard effect package, Projectile hit/guard package, and helper-parented Projectile package gates now require authored sparkxy offsets
-  -> affected behavior checksums remained stable at that checkpoint; current qa:trace aggregate after the player default Target(0), Life gate is 194/194 artifacts, 174 required and 20 optional
+  -> affected behavior checksums remained stable at that checkpoint; current qa:trace aggregate after the player bare Target, Life gate is 195/195 artifacts, 175 required and 20 optional
   -> this narrows trace precision only; no exact renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation ownership, score movement, or full presentation parity claim
 R1 official-style air recovery sequence gate
   -> synthetic-imported-default-fall-official-air-recovery.json checksum b0363be9 is now a required qa:trace artifact
@@ -324,7 +325,7 @@ R2 bounded helper-local EnemyNear gate
 R1 bounded dynamic Target redirect trigger gate
   -> ExpressionCompiler and ExpressionEvaluator classify bounded Target, ... and static Target(id), ... trigger redirects as executable in the current two-player target-memory context
   -> PlayableMatchRuntime resolves Target(id) from RuntimeTargetWorld target memory for active-state and State -1 trigger evaluation
-  -> required synthetic-imported-default-target-redirect.json checksum d43caabf proves direct HitDef default target id 0 can feed Target(0), Life and branch P1 state 200 -> 269; required synthetic-imported-target-dynamic-redirect.json checksum 9985b62a proves direct HitDef target id 77 plus owner-local var(0) = 77 can feed Target(var(0)), Life and branch P1 state 200 -> 287; previous synthetic-imported-target-redirect.json checksum 89580963 keeps the static Target(77), Life route gated
+  -> required synthetic-imported-bare-target-redirect.json checksum f9c90aa8 proves direct HitDef target id 77 can feed bare Target, Life and branch P1 state 200 -> 270; required synthetic-imported-default-target-redirect.json checksum d43caabf proves direct HitDef default target id 0 can feed Target(0), Life and branch P1 state 200 -> 269; required synthetic-imported-target-dynamic-redirect.json checksum 9985b62a proves direct HitDef target id 77 plus owner-local var(0) = 77 can feed Target(var(0)), Life and branch P1 state 200 -> 287; previous synthetic-imported-target-redirect.json checksum 89580963 keeps the static Target(77), Life route gated
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> no helper/projectile targets, unsupported or negative target-id expressions, mutation through redirects, teams, multi-target selection, exact target lifetime/tick order, full target redirect parity, or score movement claim
 R1 bounded identity-trigger gate
@@ -431,7 +432,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
   -> required traces prove bounded direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, source-frame plus selected-frame/multi-frame AIR metadata for unprefixed common/default and F-prefixed FightFX refs, plus combined hitsound S5,0 + FightFX sparkno F7002 and guardsound S6,0 + FightFX guard.sparkno F7004 package routes with shared non-empty contactId/contactTick/contactKind metadata
   -> gates require selected first-frame offset 3,-4, first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the player default Target(0), Life gate is 194/194 artifacts, 174 required and 20 optional
+  -> current aggregate after the player bare Target, Life gate is 195/195 artifacts, 175 required and 20 optional
   -> no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or score movement claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
