@@ -7545,6 +7545,66 @@ export function createSyntheticImportedProjectileTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedProjectileTargetRedirectTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-target-redirect-attacker",
+    displayName: "Synthetic Imported Projectile Target Redirect Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 911,
+    targetRedirectExpression: "NumTarget(77) > 0 && Target(77), Life <= 969",
+    targetRedirectStateNo: 277,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-target-redirect-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-target-redirect-golden",
+      label: "Synthetic imported Projectile target redirect route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile target redirect trace proves a player-owned Projectile-only hit can record target id 77 and feed owner-local NumTarget(77) plus Target(77), Life trigger reads. It does not claim direct HitDef mixing, helper-owned projectile targets, Target* mutation controllers, custom states, multi-target selection, teams, exact target lifetime, or full MUGEN/IKEMEN Projectile target parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-target-redirect-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 277],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 277, animNo: 277, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 969, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 969 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileScript();
@@ -12491,6 +12551,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
+  withHitDef?: boolean;
   hitDefKill?: boolean;
   hitDefTargetId?: number;
   omitHitDefId?: boolean;
@@ -12913,6 +12974,7 @@ export type SyntheticImportedTraceFighterOptions = {
 export function createSyntheticImportedTraceFighter(options: SyntheticImportedTraceFighterOptions = {}): DemoFighterDefinition {
   const hitDefAttr = options.hitDefAttr ?? "S,NA";
   const hitDefDamage = options.hitDefDamage ?? 37;
+  const withHitDef = options.withHitDef ?? true;
   const damageLine = options.guardDamage === undefined ? String(hitDefDamage) : `${hitDefDamage},${options.guardDamage}`;
   const hitDefKillLine = options.hitDefKill === undefined ? "" : `kill = ${options.hitDefKill ? 1 : 0}`;
   const targetMemoryId = options.omitHitDefId ? 0 : options.hitDefTargetId ?? 77;
@@ -12955,6 +13017,31 @@ p2getp1state = ${options.customStateRoute.p2GetP1State === false ? 0 : 1}
     ? `
 p2stateno = ${options.getHitState.stateNo}
 p2getp1state = 1
+`
+    : "";
+  const hitDefControllerBlock = withHitDef
+    ? `
+[State 200, HitDef]
+type = HitDef
+trigger1 = Time = 1
+attr = ${hitDefAttr}
+damage = ${damageLine}
+${hitDefKillLine}
+${hitVarLines}
+pausetime = 4,4
+ground.hittime = 9
+ground.velocity = ${groundVelocity.join(",")}
+${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
+${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
+${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
+${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}`}
+${options.sparkXy === undefined ? "" : `sparkxy = ${options.sparkXy.join(",")}`}
+${hitDefIdLine}
+priority = ${options.hitDefPriority ?? 4}, Hit
+${guardLine}
+${guardDistanceLine}
+${fallLine}
+${customStateLine || getHitStateLine}
 `
     : "";
   const assertSpecialLine = options.assertSpecialFlags?.length
@@ -13047,27 +13134,7 @@ ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.with
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
-[State 200, HitDef]
-type = HitDef
-trigger1 = Time = 1
-attr = ${hitDefAttr}
-damage = ${damageLine}
-${hitDefKillLine}
-${hitVarLines}
-pausetime = 4,4
-ground.hittime = 9
-ground.velocity = ${groundVelocity.join(",")}
-${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
-${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
-${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
-${options.guardSpark === undefined ? "" : `guard.sparkno = ${options.guardSpark}`}
-${options.sparkXy === undefined ? "" : `sparkxy = ${options.sparkXy.join(",")}`}
-${hitDefIdLine}
-priority = ${options.hitDefPriority ?? 4}, Hit
-${guardLine}
-${guardDistanceLine}
-${fallLine}
-${customStateLine || getHitStateLine}
+${hitDefControllerBlock}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
 ${options.prevStateTypeRoute === undefined ? "" : prevStateTypeEntryBlock(options.prevStateTypeRoute.intermediateStateNo)}

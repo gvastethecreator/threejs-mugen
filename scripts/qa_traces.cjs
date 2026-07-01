@@ -767,6 +767,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-target-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileTargetRedirectTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedProjectileReceivedDamageTraceArtifact(),
@@ -1706,6 +1711,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-targetbind-pause",
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
+    "synthetic-imported-projectile-target-redirect",
     "synthetic-imported-projectile-motion",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",

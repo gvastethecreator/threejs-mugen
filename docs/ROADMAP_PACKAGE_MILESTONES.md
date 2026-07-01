@@ -85,11 +85,18 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
+R2 player Projectile target redirect gate
+  -> synthetic-imported-projectile-target-redirect.json checksum cd099094 is now required
+  -> player state 200 spawns Projectile id 77 without direct HitDef controller evidence in this isolated fixture
+  -> Projectile hits P2, records owner target link p1 -> p2 / 77, branches P1 through NumTarget(77) plus Target(77), Life <= 969, and reaches state/action 277
+  -> target-link/effect evidence includes projectile anim 911, lifecycle spawn/remove, effectId 77, hasHit true, removalReason hit, terminalReason hit, and final P2 life 969
+  -> pnpm qa:trace passes 204/204 artifacts, 184 required and 20 optional
+  -> no direct HitDef plus Projectile mixing, target mutation through redirects, helper-owned projectile targets, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 helper Projectile bare Target gate
   -> synthetic-imported-helper-projectile-bare-target.json checksum 91bce1e6 is now required
   -> helper state 1200 spawns owner-side Projectile id 8863, mirrors target memory into the Helper, branches through NumTarget(8863) plus bare Target, Life, and reaches helper state 1242 / anim 978
   -> target-link evidence includes p1 -> p2 / 8863, p1-helper-0 -> p2 / 8863, projectile parentId p1-helper-0, projectile effectId 8863, helper targetCount 1, final P2 life 982, S5,11, and FightFX F7017
-  -> pnpm qa:trace passes 203/203 artifacts, 183 required and 20 optional
+  -> that checkpoint passed pnpm qa:trace at 203/203 artifacts, 183 required and 20 optional
   -> previous helper Projectile default TargetState proof remains required: synthetic-imported-helper-projectile-default-targetstate.json checksum 24bf7d1c
   -> previous helper Projectile explicit TargetState proof remains required: synthetic-imported-helper-projectile-targetstate.json checksum f5f26b21
   -> previous helper Projectile default Target-controller proof remains required: synthetic-imported-helper-projectile-default-target-controllers.json checksum 6d8c51dd
@@ -445,7 +452,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper Projectile bare Target gate is 203/203 artifacts, 183 required and 20 optional
+  -> current aggregate after the player Projectile target redirect gate is 204/204 artifacts, 184 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation

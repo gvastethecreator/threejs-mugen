@@ -173,6 +173,7 @@ import {
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
   createSyntheticImportedProjectileTraceArtifact,
+  createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseTraceArtifact,
@@ -8240,6 +8241,53 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile Target redirect artifact with owner target-memory branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileTargetRedirectTraceArtifact({ generatedAt: "2026-07-01T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-target-redirect-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-target-redirect-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 277]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 277, animNo: 277 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911 }),
+        expect.objectContaining({ actorId: "p2", actorKind: "player", minLife: 969, maxLife: 969 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredTargetLinks).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 77 }]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 969 })]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" }),
+        }),
+      ]),
     );
   });
 
