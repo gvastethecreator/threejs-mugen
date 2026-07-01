@@ -85,11 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation checkpoint:
 
 ```txt
-R2 helper Projectile TargetState gate
-  -> synthetic-imported-helper-projectile-targetstate.json checksum f5f26b21 is now required
-  -> helper state 1200 spawns owner-side Projectile id 8862 with parentId p1-helper-0, mirrors explicit target memory into the Helper, branches through NumTarget(8862) plus Target(8862), Life, executes helper-owned TargetState value 888, routes P2 through owner-backed states 888 -> 889, and returns through SelfState to P2 state 0/control
-  -> target-link/custom-state evidence includes p1 -> p2 / 8862, p1-helper-0 -> p2 / 8862, P2 customOwnerId p1 actor frames, final P2 state 0/control, projectile parentId p1-helper-0, helper targetCount 1, S5,9, and FightFX F7015
-  -> pnpm qa:trace passes 201/201 artifacts, 181 required and 20 optional
+R2 helper Projectile default TargetState gate
+  -> synthetic-imported-helper-projectile-default-targetstate.json checksum 24bf7d1c is now required
+  -> helper state 1200 spawns owner-side Projectile with omitted projid / id, mirrors default target memory into the Helper, branches through NumTarget(0) plus Target(0), Life, executes helper-owned TargetState value 888, routes P2 through owner-backed states 888 -> 889, and returns through SelfState to P2 state 0/control
+  -> target-link/custom-state evidence includes p1 -> p2 / 0, p1-helper-0 -> p2 / 0, P2 customOwnerId p1 actor frames, final P2 state 0/control, projectile parentId p1-helper-0, projectile effectId 0, helper targetCount 1, S5,10, and FightFX F7016
+  -> pnpm qa:trace passes 202/202 artifacts, 182 required and 20 optional
+  -> previous helper Projectile explicit TargetState proof remains required: synthetic-imported-helper-projectile-targetstate.json checksum f5f26b21
   -> previous helper Projectile default Target-controller proof remains required: synthetic-imported-helper-projectile-default-target-controllers.json checksum 6d8c51dd
   -> previous helper Projectile explicit Target-controller proof remains required: synthetic-imported-helper-projectile-target-controllers.json checksum ebf5099a
   -> previous helper TargetState proof remains required: synthetic-imported-helper-targetstate.json checksum 011633b8
@@ -443,7 +444,7 @@ R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
-  -> current aggregate after the helper Projectile TargetState gate is 201/201 artifacts, 181 required and 20 optional
+  -> current aggregate after the helper Projectile default TargetState gate is 202/202 artifacts, 182 required and 20 optional
   -> required trace evidence only; no exact intra-tick sound/spark ordering, SND playback, renderer lookup, visual frame timing, layering, scale, palette, motif/screenpack ownership, hit/guard-effect parity, or full spark parity claim
 R2 RuntimeHitPauseWorld runtime-system bridge
   -> advanceRuntime(...) now owns the concrete hitpause bridge for command buffering and paused presentation
