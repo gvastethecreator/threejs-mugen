@@ -1373,8 +1373,9 @@ async function main() {
           targetId: "kfm-official-default-fall-ground-recovery-golden",
           targetLabel: "Official KFM Common1 ground recovery input route",
           requiredControllerEventSequences: [presets.officialKfmGroundRecoveryControllerSequence()],
+          requiredActorFrameSequences: [presets.officialKfmGroundRecoveryActorFrameSequence()],
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can leave Common1 fall state 5050 through CanRecover plus command = "recovery" near the ground, enter 5200, self-return into 5201/land through 52, and return to state 0/control after a fall HitDef without p2stateno. The gate now also requires bounded official KFM controller/typed-operation order through 5050 VelAdd/ChangeState, 5200 VelAdd/SelfState, and 52 landing operations. It does not yet prove exact recovery thresholds/velocities, full tick-order parity, or guard-state parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can leave Common1 fall state 5050 through CanRecover plus command = "recovery" near the ground, enter 5200, self-return into 5201/land through 52, and return to state 0/control after a fall HitDef without p2stateno. The gate now also requires bounded official KFM actor-frame order for 5050 -> 5200 -> 52 plus controller/typed-operation order through 5050 VelAdd/ChangeState, 5200 VelAdd/SelfState, and 52 landing operations. It does not yet prove exact recovery thresholds/velocities, full tick-order parity, or guard-state parity.`,
           ],
         }),
       });

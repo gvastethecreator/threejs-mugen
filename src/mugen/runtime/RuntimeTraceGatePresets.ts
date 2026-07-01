@@ -5784,6 +5784,59 @@ export function officialKfmGroundRecoveryControllerSequence(): RuntimeTraceContr
   };
 }
 
+export function officialKfmGroundRecoveryActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM 5050/5200/52 ground-recovery actor-frame order",
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        animNo: 5035,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: -6,
+        observedVelXAtLeast: 1,
+        observedVelYAtLeast: 5,
+        minFrames: 6,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5200,
+        animNo: 5035,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: 0,
+        observedVelXAtLeast: 1,
+        observedVelYAtLeast: 7,
+        minFrames: 2,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 52,
+        animNo: 47,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        observedPosYAtLeast: 0,
+        observedPosYAtMost: 0,
+        observedVelXAtLeast: 0,
+        observedVelXAtMost: 0,
+        observedVelYAtLeast: 0,
+        observedVelYAtMost: 0,
+        minFrames: 1,
+      },
+    ],
+  };
+}
+
 export function officialKfmAirRecoveryControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 5050/5210/52 air-recovery controller and typed operation order",

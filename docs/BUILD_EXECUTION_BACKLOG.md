@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Optional KFM ground recovery actor-frame gate
+
+Changed:
+
+- Added official KFM ground-recovery actor-frame requirement helper.
+- Tightened optional `kfm-official-default-fall-ground-recovery.json` so real KFM/Common1 must prove observable `5050 -> 5200 -> 52` actor-frame order in addition to the existing controller/typed-operation order.
+- Updated runtime compatibility docs with private-fixture claim allowed / claim blocked wording.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "official KFM ground-recovery"` passed.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; optional KFM ground checksum remained `6d361534`.
+
+Claim allowed:
+
+- When `.scratch/fixtures/kfm-official.zip` exists, the optional official KFM ground recovery route now proves real Common1 execution through `5050 -> 5200 -> 5201 -> 52 -> 0`, observable actor-frame order for `5050 -> 5200 -> 52`, bounded controller/typed-operation order through KFM `5050`, `5200`, and `52`, and final idle/control.
+
+Claim blocked:
+
+- No bundled/public KFM asset, score movement, summarized `5201` actor-frame bucket, exact recovery thresholds, exact velocity math, exact controller-loop tick order, guard-state parity, or full MUGEN/IKEMEN recovery parity.
+
 ## 2026-07-01 - Optional KFM air recovery precision gate
 
 Changed:

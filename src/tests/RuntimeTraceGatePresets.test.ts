@@ -47,6 +47,7 @@ import {
   officialKfmCrouchGuardHitControllerSequence,
   officialKfmFallLieDownGetUpControllerSequence,
   defaultAirRecoveryLandControllerSequence,
+  officialKfmGroundRecoveryActorFrameSequence,
   officialKfmGroundRecoveryControllerSequence,
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
@@ -5497,7 +5498,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
-  it("exports official KFM ground-recovery controller-order requirements", () => {
+  it("exports official KFM ground-recovery controller and actor-frame requirements", () => {
     expect(officialKfmGroundRecoveryControllerSequence()).toEqual({
       label: "Official KFM 5050/5200/52 ground-recovery controller and typed operation order",
       actorId: "p2",
@@ -5512,6 +5513,50 @@ describe("RuntimeTraceGatePresets", () => {
         { stateNo: 52, controller: "PosSet" },
         { stateNo: 52, operation: "kinematic:posset" },
         { stateNo: 52, controller: "ChangeState" },
+      ],
+    });
+    expect(officialKfmGroundRecoveryActorFrameSequence()).toEqual({
+      label: "Official KFM 5050/5200/52 ground-recovery actor-frame order",
+      steps: [
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 5050,
+          animNo: 5035,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedPosYAtMost: -6,
+          observedVelXAtLeast: 1,
+          observedVelYAtLeast: 5,
+          minFrames: 6,
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 5200,
+          animNo: 5035,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          observedPosYAtMost: 0,
+          observedVelXAtLeast: 1,
+          observedVelYAtLeast: 7,
+          minFrames: 2,
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 52,
+          animNo: 47,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          observedPosYAtLeast: 0,
+          observedPosYAtMost: 0,
+          observedVelXAtLeast: 0,
+          observedVelXAtMost: 0,
+          observedVelYAtLeast: 0,
+          observedVelYAtMost: 0,
+          minFrames: 1,
+        }),
       ],
     });
   });
