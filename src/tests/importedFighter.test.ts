@@ -86,6 +86,57 @@ describe("createImportedFighterDefinition", () => {
       spriteIndex: 0,
     });
   });
+
+  it("uses CNS Data HitDef spark defaults when a state HitDef omits spark refs", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [1000, action(1000, [[1000, 0, 0], [1000, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const states = [
+      state(1000, 1000, [
+        controller(1000, "HitDef", {
+          damage: "90,4",
+          hitsound: "5,4",
+          sparkxy: "-10,-60",
+        }),
+      ]),
+    ];
+    const character = fakeCharacter(animations, true, states);
+    character.constants = { "data.sparkno": 2, "data.guard.sparkno": 40 };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(1000)).toMatchObject({
+      hitSpark: "2",
+      guardSpark: "40",
+      sparkXy: [-10, -60],
+    });
+  });
+
+  it("keeps explicit HitDef spark refs ahead of CNS Data defaults", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const states = [
+      state(200, 200, [
+        controller(200, "HitDef", {
+          damage: "30",
+          sparkno: "7",
+          "guard.sparkno": "41",
+        }),
+      ]),
+    ];
+    const character = fakeCharacter(animations, true, states);
+    character.constants = { "data.sparkno": 2, "data.guard.sparkno": 40 };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.stateMoves?.get(200)).toMatchObject({
+      hitSpark: "7",
+      guardSpark: "41",
+    });
+  });
 });
 
 function action(id: number, frames: Array<[number, number, number, { x1: number; y1: number; x2: number; y2: number }?]>): MugenAnimationAction {

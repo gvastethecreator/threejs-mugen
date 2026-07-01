@@ -59,7 +59,7 @@ Optional artifacts run only when the matching local fixture exists:
 Optional KFM artifacts may prove:
 
 - `x -> 200`
-- `QCF_x -> 1000`
+- `QCF_x -> 1000`, including bounded contact sound plus inherited `[Data] sparkno` hit-spark telemetry when the route's `HitDef` omits explicit `sparkno`
 - guard route
 - hitstun/get-hit entry
 - state exit

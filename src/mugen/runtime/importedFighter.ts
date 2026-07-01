@@ -33,7 +33,7 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
 
   const displayName =
     character.definition.info.displayName ?? character.definition.info.name ?? character.compatibility.character ?? "Imported Fighter";
-  const stateMoves = buildStateMoves(character.states, animations);
+  const stateMoves = buildStateMoves(character.states, animations, character.constants);
 
   return {
     id: `imported-${slugify(displayName)}`,
@@ -86,7 +86,11 @@ function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefin
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
-function buildStateMoves(states: MugenCharacter["states"], animations: Map<number, MugenAnimationAction>): Map<number, DemoMove> {
+function buildStateMoves(
+  states: MugenCharacter["states"],
+  animations: Map<number, MugenAnimationAction>,
+  constants: MugenCharacter["constants"],
+): Map<number, DemoMove> {
   const result = new Map<number, DemoMove>();
   for (const state of states) {
     const hitDef = state.controllers.find((controller) => controller.type.toLowerCase() === "hitdef");
@@ -117,8 +121,8 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
         guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
         hitSound: stripMugenString(hitDef.params.hitsound),
         guardSound: stripMugenString(hitDef.params.guardsound),
-        hitSpark: stripMugenString(hitDef.params.sparkno),
-        guardSpark: stripMugenString(hitDef.params["guard.sparkno"]),
+        hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
+        guardSpark: hitDefSparkParam(hitDef.params, constants, "guard.sparkno"),
         sparkXy: numberPair(hitDef.params.sparkxy),
         hitVars: buildHitVars(hitDef.params),
         fall: buildFallData(hitDef.params),
@@ -127,6 +131,19 @@ function buildStateMoves(states: MugenCharacter["states"], animations: Map<numbe
     );
   }
   return result;
+}
+
+function hitDefSparkParam(
+  params: Record<string, string>,
+  constants: MugenCharacter["constants"],
+  key: "sparkno" | "guard.sparkno",
+): string | undefined {
+  const explicit = stripMugenString(params[key]);
+  if (explicit !== undefined) {
+    return explicit;
+  }
+  const fallback = constants[`data.${key}`];
+  return Number.isFinite(fallback) ? String(fallback) : undefined;
 }
 
 function normalizeAnimations(source: Map<number, MugenAnimationAction>): Map<number, MugenAnimationAction> {

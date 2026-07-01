@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Optional KFM QCF default spark gate
+
+Changed:
+
+- Propagated parsed CNS `[Data] sparkno` / `guard.sparkno` constants into imported state moves when a state `HitDef` omits explicit spark refs.
+- Added imported-fighter coverage for default spark fallback and explicit `HitDef` override precedence.
+- Tightened optional `kfm-official-qcf-x.json` so real KFM Kung Fu Palm must emit inherited `[Data] sparkno = 2` hit-spark telemetry with authored `sparkxy = -10,-60`, plus a shared contact package with `S5,4`.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/importedFighter.test.ts` passed 1 file / 6 tests.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; optional `kfm-official-qcf-x.json` checksum remains `70a3e6b2`.
+- `pnpm test` passed: 95 files / 841 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- When `.scratch/fixtures/kfm-official.zip` exists, the optional KFM QCF_x route proves bounded command routing into state `1000`, ordered controller/operation evidence, target-link/final hitfall evidence, authored contact sound telemetry, and inherited `[Data] sparkno` hit-spark telemetry tied to the same contact package.
+
+Claim blocked:
+
+- No public bundled KFM asset, score movement, exact Kung Fu Palm timing, exact pushback, renderer/audio playback parity, broad special-move compatibility, or full MUGEN/IKEMEN special-route parity.
+
+
 ## 2026-07-01 - Optional KFM QCF x contact gate
 
 Changed:

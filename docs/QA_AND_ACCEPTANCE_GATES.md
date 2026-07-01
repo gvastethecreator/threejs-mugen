@@ -108,6 +108,10 @@ Use these labels consistently:
 
 Avoid saying "supported" without naming the level.
 
+## Current Runtime Fixture Gate Notes
+
+- Optional private-fixture `kfm-official-qcf-x.json` checksum `70a3e6b2` is the current KFM special-route oracle. It must require real `QCF_x` input into state `1000`, ordered actor-frame/controller/typed-operation evidence, contact `S5,4` sound telemetry, inherited `[Data] sparkno = 2` hit-spark telemetry with `sparkxy = -10,-60`, shared sound+spark contact package metadata, target-link evidence, and bounded final hitfall/damage state. This is fixture confidence only; it does not prove public bundled KFM support, exact playback/render timing, broad special parity, or full MUGEN/IKEMEN parity.
+
 ## Fixture Matrix
 
 Every major compatibility pass should consider:
