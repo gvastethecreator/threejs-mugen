@@ -94,6 +94,21 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("defaults missing HitDef id to target id 0", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(controller("HitDef", { damage: "30" }));
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove?.targetId).toBe(0);
+  });
+
   it("deduplicates repeated HitDef dispatches for the same state line and frame", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

@@ -9645,6 +9645,151 @@ export function createSyntheticImportedHelperTargetTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedHelperDefaultTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedOneShotXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-default-target-attacker",
+    displayName: "Synthetic Imported Helper Default Target Attacker",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 0,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1229,
+      branchAnimNo: 961,
+      damage: 33,
+      branchTrigger: "NumTarget(0) > 0 && Target(0), Life <= 967",
+      hitSound: "S5,4",
+      hitSpark: "F7010",
+      sparkXy: [13, -54],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7010, 8110),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-default-target-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-default-target-golden",
+      label: "Synthetic imported helper-owned default Target redirect route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported helper-owned default Target trace proves a bounded helper-local HitDef without id can remember P2 as target id 0, expose the link through MatchWorld effect snapshots, and branch on NumTarget(0) plus Target(0), Life. It does not claim helper Target* mutation controllers, helper custom-state targets, throws, teams, exact helper hitpause/tick order, or full MUGEN/IKEMEN helper target parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-default-target-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredSoundEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            type: "PlaySnd",
+            group: 5,
+            index: 4,
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredHitEffectEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            kind: "hit",
+            sparkNo: 7010,
+            raw: "F7010",
+            rawPrefix: "F",
+            offsetX: 13,
+            offsetY: -54,
+            assetSource: "fightfx",
+            assetActionId: 7010,
+            assetFrameIndex: 0,
+            ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+            assetSpriteGroup: 8110,
+            assetSpriteIndex: 0,
+            minAssetFrameCount: 2,
+            minAssetTotalDuration: 11,
+            requiredAssetFrameIndices: [0, 1],
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 4,
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7010,
+              raw: "F7010",
+              rawPrefix: "F",
+              offsetX: 13,
+              offsetY: -54,
+              assetSource: "fightfx",
+              assetActionId: 7010,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8110,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1200, animNo: 920, moveType: "A", clsn1Count: 1, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1229, animNo: 961, moveType: "I", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 967, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 967 }],
+        requiredTargetLinks: [{ ownerId: "p1-helper-0", actorId: "p2", targetId: 0, hasBinding: false, minFrames: 1 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1229, minAge: 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperNumExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();

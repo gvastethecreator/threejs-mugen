@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-06-30 - Helper HitDef default target id gate
+
+Changed:
+
+- `HitDef` activation now defaults missing `id` to target id `0`, while preserving an existing move target id when present.
+- Added required `synthetic-imported-helper-default-target.json` trace evidence: helper state `1200` activates `HitDef` without `id`, hits P2 for 33 damage, records helper target link `p1-helper-0 -> p2 / 0`, and branches helper state `1229/961` through `NumTarget(0)` plus `Target(0), Life`.
+
+Evidence:
+
+- Focused `pnpm vitest run src/tests/HitDefSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "default Target|defaults missing HitDef"` passed.
+- `pnpm test` passed: 95 files, 821 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed; existing Vite chunk-size warning remains.
+- `pnpm qa:trace` passes: 192 / 192 artifacts, 172 required, 20 optional, 0 failed.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings for docs only.
+- New required checksum: `synthetic-imported-helper-default-target.json` `e1bcced0`.
+- Previous helper Projectile default target checksum remains required: `synthetic-imported-helper-projectile-default-target.json` `b1541afc`.
+- No `pnpm qa:smoke` is required because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current bounded helper-local micro-VM can use direct helper `HitDef` default target id `0` for helper target memory and helper-local `NumTarget(0)` plus `Target(0), Life` reads after contact.
+
+Claim blocked:
+
+- This does not add helper `Target*` mutation controllers, helper custom-state targets, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper hitpause/tick order, exact helper `HitDef` lifetime/multi-hit parity, visual parity, score movement, or full MUGEN/IKEMEN helper target/combat parity.
+
 ## 2026-06-30 - Helper Projectile default target id gate
 
 Changed:

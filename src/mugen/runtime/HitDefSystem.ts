@@ -110,7 +110,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       priority,
       requiresHitDef: false,
       attr: operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA",
-      targetId: operation?.id ?? firstNumber(findParam(source, "id")) ?? existing?.targetId,
+      targetId: operation?.id ?? firstNumber(findParam(source, "id")) ?? existing?.targetId ?? 0,
       hitPause,
       hitStun,
       push,
