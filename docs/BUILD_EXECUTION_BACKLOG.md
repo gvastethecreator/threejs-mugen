@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-01 - Optional KFM air recovery precision gate
+
+Changed:
+
+- Added official KFM air-recovery controller and actor-frame requirement helpers.
+- Tightened optional `kfm-official-default-fall-recovery-input.json` so real KFM/Common1 must prove `5050 -> 5210 -> 52 -> 0` with ordered controller/typed-operation evidence.
+- Updated runtime compatibility docs with private-fixture claim allowed / claim blocked wording.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "official KFM air-recovery"` passed.
+- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; optional KFM checksum remained `151486e1`.
+
+Claim allowed:
+
+- When `.scratch/fixtures/kfm-official.zip` exists, the optional official KFM air-recovery route now proves actor-frame order `5050 -> 5210 -> 52`, bounded controller/typed-operation order through KFM `5050`, `5210`, `52`, and landing state `0`, and final idle/control.
+
+Claim blocked:
+
+- No bundled/public KFM asset, score movement, exact recovery thresholds, exact velocity math, exact controller-loop tick order, guard-state parity, or full MUGEN/IKEMEN recovery parity.
+
 ## 2026-07-01 - Player Projectile default Target controller gate
 
 Changed:

@@ -48,6 +48,7 @@ Every controller family should have:
 
 ## Current Common1 Recovery Notes
 
+- Optional private-fixture `kfm-official-default-fall-recovery-input.json` checksum `151486e1` now requires ordered real KFM air-recovery evidence for `5050 -> 5210 -> 52 -> 0`: actor-frame order for `5050 -> 5210 -> 52`, controller/typed-operation order through `5050` `VelAdd` / `ChangeState`, `5210` `PalFX` / `sprite-effect:palfx`, `PosFreeze` / `bounds:posfreeze`, `Turn` / `orientation:turn`, `NotHitBy` / `eligibility:nothitby`, `VelMul`, `VelAdd`, `ChangeState`, `52` `VarSet`, and state `0` `VelSet` / `kinematic:velset`. This strengthens fixture confidence only; public KFM support, exact thresholds/velocity math, exact tick-order parity, and full recovery parity remain blocked.
 - Required `synthetic-imported-default-fall-official-ground-recovery.json` checksum `74b72495` now gates a bounded official-style synthetic ground-recovery sequence through `5050 -> 5200 -> 5201 -> 52 -> 0`. It requires actor-frame order for positive-to-zero `fall.recovertime`, bounded `5201` recovery velocity/position telemetry, `52` landing y = 0 evidence, final idle/control, and controller/order evidence for `VelAdd`, `ChangeState`, `SelfState`, `VelSet`, `PosSet`, `NotHitBy`, `CtrlSet`, plus typed `kinematic:*`, `eligibility:nothitby`, and `resource:ctrlset` operations. This strengthens Common1 recovery evidence only; exact `fall.recovertime` tables, velocity math, controller-loop timing, public KFM support, and full recovery parity remain blocked.
 
 ## Current HitDef Presentation Notes

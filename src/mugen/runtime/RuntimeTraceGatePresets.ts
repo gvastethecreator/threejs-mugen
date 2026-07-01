@@ -5784,6 +5784,79 @@ export function officialKfmGroundRecoveryControllerSequence(): RuntimeTraceContr
   };
 }
 
+export function officialKfmAirRecoveryControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 5050/5210/52 air-recovery controller and typed operation order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5050, controller: "VelAdd" },
+      { stateNo: 5050, controller: "ChangeState" },
+      { stateNo: 5210, controller: "PalFX" },
+      { stateNo: 5210, operation: "sprite-effect:palfx" },
+      { stateNo: 5210, controller: "PosFreeze" },
+      { stateNo: 5210, operation: "bounds:posfreeze" },
+      { stateNo: 5210, controller: "Turn" },
+      { stateNo: 5210, operation: "orientation:turn" },
+      { stateNo: 5210, controller: "NotHitBy" },
+      { stateNo: 5210, operation: "eligibility:nothitby" },
+      { stateNo: 5210, controller: "VelMul" },
+      { stateNo: 5210, controller: "VelAdd" },
+      { stateNo: 5210, controller: "ChangeState" },
+      { stateNo: 52, controller: "VarSet" },
+      { stateNo: 0, controller: "VelSet" },
+      { stateNo: 0, operation: "kinematic:velset" },
+    ],
+  };
+}
+
+export function officialKfmAirRecoveryActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM 5050/5210/52 air-recovery actor-frame order",
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        animNo: 5035,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        observedPosYAtMost: -40,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5210,
+        animNo: 5210,
+        stateType: "A",
+        moveType: "I",
+        physics: "N",
+        observedPosYAtMost: -3,
+        observedVelXAtLeast: 0.6,
+        observedVelYAtMost: -3,
+        minFrames: 8,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 52,
+        animNo: 47,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        observedPosYAtLeast: 0,
+        observedPosYAtMost: 0,
+        minFrames: 1,
+      },
+    ],
+  };
+}
+
 export function defaultFallLieDownGetUpControllerSequence(
   liedownStateNo = 5110,
   recoverStateNo = 5120,

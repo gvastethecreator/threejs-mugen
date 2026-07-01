@@ -38,6 +38,8 @@ import {
   createSyntheticImportedHitstunTraceArtifact,
   officialKfmAirGuardHitControllerSequence,
   officialKfmAirGuardHitPhysicsFrames,
+  officialKfmAirRecoveryActorFrameSequence,
+  officialKfmAirRecoveryControllerSequence,
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
   officialKfmDefaultGetHitProgressionPhysicsFrames,
@@ -5510,6 +5512,66 @@ describe("RuntimeTraceGatePresets", () => {
         { stateNo: 52, controller: "PosSet" },
         { stateNo: 52, operation: "kinematic:posset" },
         { stateNo: 52, controller: "ChangeState" },
+      ],
+    });
+  });
+
+  it("exports official KFM air-recovery controller and actor-frame requirements", () => {
+    expect(officialKfmAirRecoveryControllerSequence()).toEqual({
+      label: "Official KFM 5050/5210/52 air-recovery controller and typed operation order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 5050, controller: "VelAdd" },
+        { stateNo: 5050, controller: "ChangeState" },
+        { stateNo: 5210, controller: "PalFX" },
+        { stateNo: 5210, operation: "sprite-effect:palfx" },
+        { stateNo: 5210, controller: "PosFreeze" },
+        { stateNo: 5210, operation: "bounds:posfreeze" },
+        { stateNo: 5210, controller: "Turn" },
+        { stateNo: 5210, operation: "orientation:turn" },
+        { stateNo: 5210, controller: "NotHitBy" },
+        { stateNo: 5210, operation: "eligibility:nothitby" },
+        { stateNo: 5210, controller: "VelMul" },
+        { stateNo: 5210, controller: "VelAdd" },
+        { stateNo: 5210, controller: "ChangeState" },
+        { stateNo: 52, controller: "VarSet" },
+        { stateNo: 0, controller: "VelSet" },
+        { stateNo: 0, operation: "kinematic:velset" },
+      ],
+    });
+    expect(officialKfmAirRecoveryActorFrameSequence()).toEqual({
+      label: "Official KFM 5050/5210/52 air-recovery actor-frame order",
+      steps: [
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 5050,
+          animNo: 5035,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 5210,
+          animNo: 5210,
+          stateType: "A",
+          moveType: "I",
+          physics: "N",
+          observedVelXAtLeast: 0.6,
+          observedVelYAtMost: -3,
+          minFrames: 8,
+        }),
+        expect.objectContaining({
+          actorId: "p2",
+          stateNo: 52,
+          animNo: 47,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 1,
+        }),
       ],
     });
   });
