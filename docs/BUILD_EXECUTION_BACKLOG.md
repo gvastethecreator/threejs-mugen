@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchHitPauseWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchHitPauseWorld` as the bounded normal active-match hitpause handoff boundary consumed by `PlayableMatchRuntime`.
+- Moved `RuntimeHitPauseWorld.advanceRuntime` delegation out of inline match-loop wiring while preserving P1/P2 inputs, stage/runtime ticks, paused presentation lifecycle, and ignorehitpause controller execution.
+- Added focused `RuntimeMatchHitPauseSystem` coverage for delegate payload forwarding and paused/not-paused result preservation.
+- No hitpause countdown semantics, pause semantics, controller execution semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchHitPauseSystem.test.ts src/tests/RuntimeHitPauseSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 3 files / 76 tests.
+- Full closeout gates passed: `pnpm test` -> 125 files / 1036 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 272/272 artifacts, 248 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active-match hitpause handoff has a named, testable ownership boundary while preserving existing `RuntimeHitPauseWorld` runtime semantics and early-return behavior.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN hitpause tick order, pause arbitration/layering, helper/team/redirect hitpause ownership, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 match-loop ownership slices or R1 KFM/Common1/FightFX precision. Do not reselect the just-closed hitpause handoff extraction as fresh work.
+
 ## 2026-07-02 - RuntimeMatchFrameStartWorld ownership extraction
 
 Changed:

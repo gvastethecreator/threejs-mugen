@@ -44,6 +44,7 @@ import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSyste
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
+import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
@@ -157,6 +158,7 @@ const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
+const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
@@ -389,7 +391,8 @@ export class PlayableMatchRuntime {
     });
 
     if (
-      this.hitPauseWorld.advanceRuntime({
+      matchHitPauseWorld.advanceRuntime<FighterMatchState>({
+        hitPauseWorld: this.hitPauseWorld,
         p1: this.p1,
         p2: this.p2,
         p1Input,
