@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 Common1 default crouch get-hit progression trace gate
+  -> synthetic-imported-default-crouch-gethit-progression.json checksum fd986a9e is required in qa:trace
+  -> held-crouch imported defender routes through defender-owned Common1-style states 5010 -> 5011 -> 0 after direct HitDef without p2stateno
+  -> evidence includes ordered 5010:ChangeState -> 5011:ChangeState controller events, ordered 5010 -> 5011 actor frames, crouch state/physics telemetry, collision telemetry, final checksum d6b64044, and final idle/control
+  -> pnpm qa:trace passes 267/267 artifacts, 245 required and 22 optional
+  -> crouch HitShakeOver/HitOver progression evidence only; no score movement, exact tick timing, exact crouch get-hit animation/slide tables, fall routing, custom-state/helper/team breadth, visual/audio parity, or full Common1 get-hit parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
   -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass when .scratch/fixtures/kfm-official.zip exists
   -> real KFM air-entry recovery route includes 5020 -> 5030 -> 5035 -> 5050; valid recovery enters 5210, lands through 52, and returns to 0/control, while the early route stays in 5050 and forbids recovery/landing/ground-impact branches
@@ -1070,6 +1076,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-hitdef-common-guard-spark.json`
 - `synthetic-imported-hitdef-fightfx-guard-spark.json`
 - `synthetic-imported-default-gethit-progression.json` controller/frame order
+- `synthetic-imported-default-crouch-gethit-progression.json` controller/frame order
 - `synthetic-imported-target.json` final Target* side-effect evidence
 - `synthetic-imported-target-noko.json` TargetLifeAdd defender-side NoKO evidence
 - `synthetic-imported-target-owned-custom-state.json`

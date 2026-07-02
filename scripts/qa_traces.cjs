@@ -694,6 +694,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultCrouchGetHitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-crouch-gethit-progression",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultCrouchGetHitProgressionTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-air-gethit",
       required: true,
       artifact: presets.createSyntheticImportedDefaultAirGetHitTraceArtifact(),
@@ -2215,6 +2220,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-default-crouch-gethit",
+    "synthetic-imported-default-crouch-gethit-progression",
     "synthetic-imported-default-air-gethit",
     "synthetic-imported-default-air-fall-gethit",
     "synthetic-imported-default-air-ground-impact",

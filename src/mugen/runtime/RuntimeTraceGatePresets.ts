@@ -6708,13 +6708,19 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
   options: RuntimeTraceGatePresetOptions & {
     targetId?: string;
     targetLabel?: string;
+    gateLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    script?: RuntimeTraceInputFrame[];
+    shakeStateNo?: number;
+    slideStateNo?: number;
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = importedDefaultGetHitProgressionScript();
+  const script = options.script ?? importedDefaultGetHitProgressionScript();
+  const shakeStateNo = options.shakeStateNo ?? 5000;
+  const slideStateNo = options.slideStateNo ?? 5001;
   const attacker =
     options.attacker ??
     createSyntheticImportedTraceFighter({
@@ -6738,16 +6744,16 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
     },
     gates: [
       {
-        label: "imported-default-gethit-progression-golden",
+        label: options.gateLabel ?? "imported-default-gethit-progression-golden",
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [0, 200, 5000, 5001],
+        requiredExecutedStates: [0, 200, shakeStateNo, slideStateNo],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
-        requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence()],
+        requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence(shakeStateNo, slideStateNo)],
         requiredActorFrames: options.requiredActorFrames ?? defaultGetHitProgressionPhysicsFrames(),
-        requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence()],
+        requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence(shakeStateNo, slideStateNo)],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
@@ -6808,9 +6814,22 @@ export function defaultGetHitProgressionActorFrameSequence(
   };
 }
 
+type DefaultGetHitProgressionPhysicsFrameOptions = {
+  shakeAnimNo?: number;
+  slideAnimNo?: number;
+  shakeStateType?: "S" | "C" | "A" | "L";
+  slideStateType?: "S" | "C" | "A" | "L";
+  shakePhysics?: "S" | "C" | "A" | "N";
+  slidePhysics?: "S" | "C" | "A" | "N";
+  shakeMinFrames?: number;
+  slideMinFrames?: number;
+  clsn2Count?: number;
+};
+
 export function defaultGetHitProgressionPhysicsFrames(
   shakeStateNo = 5000,
   slideStateNo = 5001,
+  options: DefaultGetHitProgressionPhysicsFrameOptions = {},
 ): RuntimeTraceActorFrameRequirement[] {
   return [
     {
@@ -6818,13 +6837,13 @@ export function defaultGetHitProgressionPhysicsFrames(
       source: "imported",
       actorKind: "player",
       stateNo: shakeStateNo,
-      animNo: shakeStateNo,
-      stateType: "S",
+      animNo: options.shakeAnimNo ?? shakeStateNo,
+      stateType: options.shakeStateType ?? "S",
       moveType: "H",
-      physics: "N",
+      physics: options.shakePhysics ?? "N",
       clsn1Count: 0,
-      clsn2Count: 1,
-      minFrames: 5,
+      clsn2Count: options.clsn2Count ?? 1,
+      minFrames: options.shakeMinFrames ?? 5,
       observedPosYAtLeast: 0,
       observedPosYAtMost: 0,
       observedVelXAtLeast: 3,
@@ -6837,13 +6856,13 @@ export function defaultGetHitProgressionPhysicsFrames(
       source: "imported",
       actorKind: "player",
       stateNo: slideStateNo,
-      animNo: slideStateNo,
-      stateType: "S",
+      animNo: options.slideAnimNo ?? slideStateNo,
+      stateType: options.slideStateType ?? "S",
       moveType: "H",
-      physics: "S",
+      physics: options.slidePhysics ?? "S",
       clsn1Count: 0,
-      clsn2Count: 1,
-      minFrames: 8,
+      clsn2Count: options.clsn2Count ?? 1,
+      minFrames: options.slideMinFrames ?? 8,
       observedPosYAtLeast: 0,
       observedPosYAtMost: 0,
       observedVelXAtLeast: 2,
@@ -6852,6 +6871,47 @@ export function defaultGetHitProgressionPhysicsFrames(
       observedVelYAtMost: 0,
     },
   ];
+}
+
+export function defaultCrouchGetHitProgressionPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return defaultGetHitProgressionPhysicsFrames(5010, 5011, {
+    shakeStateType: "C",
+    slideStateType: "C",
+    shakePhysics: "N",
+    slidePhysics: "C",
+  });
+}
+
+export function createSyntheticImportedDefaultCrouchGetHitProgressionTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultGetHitProgressionTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-crouch-gethit-progression",
+      displayName: "Synthetic Imported Default Crouch GetHit Progression",
+      defaultGetHitProgression: {
+        shakeStateNo: 5010,
+        slideStateNo: 5011,
+        shakeStateType: "C",
+        slideStateType: "C",
+        shakePhysics: "N",
+        slidePhysics: "C",
+      },
+    }),
+    {
+      ...options,
+      script: importedDefaultCrouchGetHitProgressionScript(),
+      targetId: "synthetic-imported-default-crouch-gethit-progression-golden",
+      targetLabel: "Synthetic imported crouch Common1 HitShakeOver/HitOver progression",
+      gateLabel: "imported-default-crouch-gethit-progression-golden",
+      shakeStateNo: 5010,
+      slideStateNo: 5011,
+      requiredActorFrames: defaultCrouchGetHitProgressionPhysicsFrames(),
+      notes: [
+        "Synthetic imported crouch progression trace proves a held-crouch defender can route a HitDef without p2stateno into defender-owned state 5010, advance through HitShakeOver into 5011, and return through HitOver to idle/control. It does not claim exact crouch get-hit timing, fall routing, custom-state breadth, or full Common1 parity.",
+      ],
+    },
+  );
 }
 
 export function officialKfmDefaultGetHitProgressionPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
@@ -16844,6 +16904,14 @@ export function importedDefaultGetHitProgressionScript(): RuntimeTraceInputFrame
   ]);
 }
 
+export function importedDefaultCrouchGetHitProgressionScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-crouch-gethit-progress-prep", frames: 2, p1: [], p2: ["D"] },
+    { label: "imported-default-crouch-gethit-progress-x", frames: 12, p1: ["x"], p2: ["D"] },
+    { label: "default-crouch-gethit-progress-settle", frames: 18, p1: [], p2: [] },
+  ]);
+}
+
 export function importedDefaultFallGetHitScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-default-fall-gethit-x", frames: 14, p1: ["x"], p2: [] },
@@ -17264,6 +17332,10 @@ export type SyntheticImportedTraceFighterOptions = {
     slideStateNo?: number;
     shakeAnimNo?: number;
     slideAnimNo?: number;
+    shakeStateType?: "S" | "C" | "A" | "L";
+    slideStateType?: "S" | "C" | "A" | "L";
+    shakePhysics?: "S" | "C" | "A" | "N";
+    slidePhysics?: "S" | "C" | "A" | "N";
     hitTimeBranchStateNo?: number;
     hitTimeBranchAnimNo?: number;
     hitTimeBranchExpression?: string;
@@ -19224,6 +19296,10 @@ function defaultGetHitProgressionBlock(state: {
   slideStateNo?: number;
   shakeAnimNo?: number;
   slideAnimNo?: number;
+  shakeStateType?: "S" | "C" | "A" | "L";
+  slideStateType?: "S" | "C" | "A" | "L";
+  shakePhysics?: "S" | "C" | "A" | "N";
+  slidePhysics?: "S" | "C" | "A" | "N";
   hitTimeBranchStateNo?: number;
   hitTimeBranchAnimNo?: number;
   hitTimeBranchExpression?: string;
@@ -19232,6 +19308,10 @@ function defaultGetHitProgressionBlock(state: {
   const slideStateNo = state.slideStateNo ?? 5001;
   const shakeAnimNo = state.shakeAnimNo ?? shakeStateNo;
   const slideAnimNo = state.slideAnimNo ?? slideStateNo;
+  const shakeStateType = state.shakeStateType ?? "S";
+  const slideStateType = state.slideStateType ?? "S";
+  const shakePhysics = state.shakePhysics ?? "N";
+  const slidePhysics = state.slidePhysics ?? "S";
   const hitTimeBranchStateNo = state.hitTimeBranchStateNo;
   const hitTimeBranchAnimNo = state.hitTimeBranchAnimNo ?? hitTimeBranchStateNo;
   const hitTimeBranchExpression = state.hitTimeBranchExpression ?? "GetHitVar(hittime) > 0";
@@ -19258,9 +19338,9 @@ ctrl = 0
 `;
   return `
 [Statedef ${shakeStateNo}]
-type = S
+type = ${shakeStateType}
 movetype = H
-physics = N
+physics = ${shakePhysics}
 anim = ${shakeAnimNo}
 ctrl = 0
 ${hitTimeBranchController}
@@ -19271,9 +19351,9 @@ trigger1 = HitShakeOver
 value = ${slideStateNo}
 
 [Statedef ${slideStateNo}]
-type = S
+type = ${slideStateType}
 movetype = H
-physics = S
+physics = ${slidePhysics}
 anim = ${slideAnimNo}
 ctrl = 0
 

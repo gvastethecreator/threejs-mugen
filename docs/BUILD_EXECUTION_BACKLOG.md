@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Default crouch get-hit progression trace gate
+
+Changed:
+- Added required `synthetic-imported-default-crouch-gethit-progression` trace evidence for the bounded crouch Common1-style `5010 -> 5011 -> 0` HitShakeOver/HitOver route.
+- Prefactored `createImportedDefaultGetHitProgressionTraceArtifact` so get-hit progression gates can supply the input script, gate label, shake/slide state numbers, and crouch-specific frame requirements instead of hardcoding `5000/5001`.
+- Extended synthetic imported progression fixture generation with `shakeStateType`, `slideStateType`, `shakePhysics`, and `slidePhysics`, enabling crouch `Statedef 5010/5011` data without duplicating the stand route.
+- Registered the new trace in `scripts/qa_traces.cjs` required artifacts without touching frontend, CSS, renderer, sprites, or bundled assets.
+
+Evidence:
+- Focused preset coverage passed: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "crouch Common1 progression"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 267/267 artifacts, 245 required and 22 optional.
+- New required artifact: `synthetic-imported-default-crouch-gethit-progression.json` checksum `fd986a9e`, final checksum `d6b64044`.
+- Gate label: `imported-default-crouch-gethit-progression-golden`; required executed states include `0`, `200`, `5010`, and `5011`.
+- Required evidence includes ordered P2 controller events `5010:ChangeState -> 5011:ChangeState`, ordered actor frames `5010 -> 5011`, crouch `stateType = C`, `physics = N/C`, `Clsn2 = 1`, and final P2 idle/control.
+
+Claim allowed:
+- Imported defender-owned crouch Common1-style get-hit progression can be proven through bounded `5010 -> 5011 -> 0` HitShakeOver/HitOver evidence when the defender holds crouch and a direct `HitDef` omits `p2stateno`.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN controller-loop tick timing, exact crouch get-hit animation/slide tables, fall routing, custom-state/helper/team breadth, visual/audio parity, score movement, and full Common1 get-hit parity remain blocked.
+
+Next:
+- Continue into KFM/Common1 precision for the same route, exact timing/table work, or another bounded R1/R2 runtime slice.
+
 ## 2026-07-02 - RuntimeFighterAdvanceWorld ownership extraction
 
 Changed:

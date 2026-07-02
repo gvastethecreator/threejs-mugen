@@ -41,9 +41,11 @@ import {
   createSyntheticImportedDefaultAirFallGetHitTraceArtifact,
   createSyntheticImportedDefaultAirGetHitTraceArtifact,
   createSyntheticImportedDefaultCrouchGetHitTraceArtifact,
+  createSyntheticImportedDefaultCrouchGetHitProgressionTraceArtifact,
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultCrouchGetHitProgressionPhysicsFrames,
   defaultAirFallRecoveryInputActorFrameSequence,
   defaultAirFallRecoveryInputControllerSequence,
   defaultAirFallRecoveryTooEarlyActorFrameSequence,
@@ -8142,6 +8144,64 @@ describe("RuntimeTraceGatePresets", () => {
       stateType: "S",
       moveType: "H",
       physics: "S",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      frames: 8,
+    });
+    expect(shakeFrame?.lastTick ?? 0).toBeLessThan(slideFrame?.firstTick ?? 0);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates an imported default crouch Common1 progression artifact with HitShakeOver and HitOver", () => {
+    const artifact = createSyntheticImportedDefaultCrouchGetHitProgressionTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-crouch-gethit-progression-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-crouch-gethit-progression-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([0, 200, 5010, 5011]));
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultGetHitProgressionControllerSequence(5010, 5011),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(defaultCrouchGetHitProgressionPhysicsFrames());
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultGetHitProgressionActorFrameSequence(5010, 5011),
+    ]);
+    const shakeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5010);
+    const slideFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5011);
+    expect(shakeFrame).toMatchObject({
+      animNo: 5010,
+      stateType: "C",
+      moveType: "H",
+      physics: "N",
+      clsn1Count: 0,
+      clsn2Count: 1,
+      frames: 5,
+    });
+    expect(slideFrame).toMatchObject({
+      animNo: 5011,
+      stateType: "C",
+      moveType: "H",
+      physics: "C",
       clsn1Count: 0,
       clsn2Count: 1,
       frames: 8,
