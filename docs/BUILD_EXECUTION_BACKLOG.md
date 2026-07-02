@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 AssertSpecial TimerFreeze trace gate
+
+Changed:
+- Added bounded `AssertSpecial TimerFreeze` runtime semantics to the active match round-timer path.
+- `StateControllerExecutor` now maps normalized `timerfreeze` flags onto `RuntimeAssertSpecial.timerFreeze`.
+- `RuntimeMatchRoundWorld.tickTimer(...)` now receives the current P1/P2 roster and returns `{ frozen }`, skipping `RuntimeRoundSystem.tickTimer()` while any actor asserts `timerFreeze` / `timerfreeze`.
+- `PlayableMatchRuntime` now hands the named match roster boundary into the round-timer world.
+- Added required `synthetic-imported-assertspecial-timerfreeze.json` to `pnpm qa:trace` and the required coverage contract.
+- Updated support, QA, scorecard, tracker, and roadmap docs with claim allowed / blocked scope.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchRoundSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 343 tests.
+- Test suite: `pnpm test` -> 142 files / 1097 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 283/283 artifacts, 258 required and 25 optional; `synthetic-imported-assertspecial-timerfreeze.json` checksum is `408528f1`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+
+Claim allowed:
+- Current P1/P2 active match timer can be frozen by bounded imported `AssertSpecial TimerFreeze`; the required trace keeps displayed timer `2` stable for 70 active frames on a 61-frame timer with `state = fight`, `message = Fight`, `AssertSpecial` controller evidence, and typed `assertspecial` operation evidence.
+
+Claim blocked:
+- Exact global/team/helper ownership, pause-layer interaction, lifebar behavior, intro/round transition semantics, timer speed/display parity, score movement, and full MUGEN/IKEMEN timer parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX precision or the next R2 MatchWorld/helper/effect/combat ownership seam. Do not reselect this TimerFreeze gate unless expanding into pause/lifebar/team/helper timer semantics with new evidence.
+
 ## 2026-07-02 - R1 ACT + indexed SFF RemapPal texture handoff
 
 Changed:
@@ -8864,3 +8892,5 @@ These are future horizons, not blockers for the private usable MVP.
 304. Done bounded stage BG window/maskwindow clipping handoff cut: Stage DEF `[BG ...]` parsing now preserves `maskwindow` and deprecated `window` as normalized rectangular clip metadata plus optional `windowdelta` metadata, `StageCompatibilityReport` exposes clipped layer coverage and keeps color-zero `mask` semantics visible as partial/blocked, Studio Stage rows include the bounded clip summary, and the Three.js stage renderer clips fallback/asset/SFF sprite placements with UV adjustment so textures crop instead of being squeezed. Focused `StageDefParser`, `StageCompatibilityReport`, and `stageProjection` coverage proves parser/report/projection behavior. Verification passed: focused Vitest 3 files / 14 tests; `pnpm typecheck`; `pnpm test` 141 files / 1092 tests; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 282/282 artifacts with 257 required and 25 optional; `pnpm qa:smoke`; manual screenshot inspection of `runtime-desktop.png`, `studio-stage.png`, and `studio-stage-bgctrl.png`; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. Claim allowed: imported/native stage BG layers have bounded rectangular clipping handoff for `window` and `maskwindow`. Claim blocked: exact MUGEN `windowdelta`, zoom, endpoint, render-mode, and color-zero `mask` semantics, BGCtrl timing/side effects, motif/screenpack ownership, score movement, and full stage parity.
 
 305. Done RuntimeMatchActorRosterWorld ownership extraction cut: `RuntimeMatchActorRosterWorld` now owns bounded one-on-one match actor roster projection previously repeated inline in `PlayableMatchRuntime`: stable P1/P2 actor order, explicit id lookup, fail-closed opponent projection for actors outside the roster, effect-store owner ids, helper-owned `TargetState` actor lookup, imported compatibility-session actor lists, and effect-store summaries route through one named boundary. Focused coverage proves roster order, id lookup, unknown-actor rejection including same-id external objects, and match-runtime snapshot/effect compatibility preservation. Verification passed: `pnpm exec vitest run src/tests/RuntimeMatchActorRosterSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` 2 files / 74 tests; `pnpm test` 142 files / 1095 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 282/282 artifacts with 257 required and 25 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: current P1/P2 match actor roster projection has a named, testable boundary without changing trace behavior. Claim blocked: real teams/simul roster ownership, helper-owned actor discovery, dynamic roster mutation, richer identity metadata, exact VM scheduling, visual/audio parity, score movement, and full actor-registry parity.
+
+306. Done bounded AssertSpecial TimerFreeze trace gate: `AssertSpecial TimerFreeze` now lowers into typed `assertspecial` operation evidence, `RuntimeAssertSpecial` exposes `timerFreeze`, and `RuntimeMatchRoundWorld` skips active round-timer ticks while any current P1/P2 actor asserts the flag through the match roster handoff. Required `synthetic-imported-assertspecial-timerfreeze.json` checksum `408528f1` proves an imported passive `TimerFreeze` route keeps a 61-frame fight timer at displayed timer `2` for 70 active frames with `state = fight`, `message = Fight`, `AssertSpecial` controller evidence, typed `assertspecial` operation evidence, and no `timeover` frame. Verification passed: focused Vitest 4 files / 343 tests; `pnpm test` 142 files / 1097 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 283/283 artifacts with 258 required and 25 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: current P1/P2 active match timer can be frozen by bounded imported `AssertSpecial TimerFreeze`. Claim blocked: exact global/team/helper ownership, pause-layer interaction, lifebar behavior, intro/round transition semantics, timer speed/display parity, score movement, and full MUGEN/IKEMEN timer parity.

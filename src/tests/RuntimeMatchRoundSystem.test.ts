@@ -7,9 +7,24 @@ describe("RuntimeMatchRoundWorld", () => {
     const round = new RuntimeRoundSystem(61);
     const world = new RuntimeMatchRoundWorld();
 
-    world.tickTimer(round);
+    const result = world.tickTimer(round);
 
+    expect(result).toEqual({ frozen: false });
     expect(round.snapshot()).toMatchObject({ state: "fight", timer: 1, message: "Fight" });
+    expect(round.isOver).toBe(false);
+  });
+
+  it("freezes the round timer while an actor asserts TimerFreeze", () => {
+    const round = new RuntimeRoundSystem(61);
+    const world = new RuntimeMatchRoundWorld();
+
+    const result = world.tickTimer(round, [
+      actor("P1", 700, { globalFlags: ["timerfreeze"], timerFreeze: true }),
+      actor("P2", 700),
+    ]);
+
+    expect(result).toEqual({ frozen: true });
+    expect(round.snapshot()).toMatchObject({ state: "fight", timer: 2, message: "Fight" });
     expect(round.isOver).toBe(false);
   });
 
@@ -60,6 +75,30 @@ describe("RuntimeMatchRoundWorld", () => {
   });
 });
 
-function actor(label: string, life: number): { label: string; runtime: { life: number } } {
-  return { label, runtime: { life } };
+type TestMatchRoundActor = {
+  label: string;
+  runtime: {
+    life: number;
+    assertSpecial?: { flags: string[]; globalFlags: string[]; timerFreeze?: boolean };
+  };
+};
+
+function actor(
+  label: string,
+  life: number,
+  assertSpecial?: { flags?: string[]; globalFlags?: string[]; timerFreeze?: boolean },
+): TestMatchRoundActor {
+  return {
+    label,
+    runtime: assertSpecial
+      ? {
+          life,
+          assertSpecial: {
+            flags: assertSpecial.flags ?? [],
+            globalFlags: assertSpecial.globalFlags ?? [],
+            timerFreeze: assertSpecial.timerFreeze,
+          },
+        }
+      : { life },
+  };
 }

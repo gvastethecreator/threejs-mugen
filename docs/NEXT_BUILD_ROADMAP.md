@@ -78,6 +78,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 AssertSpecial TimerFreeze trace gate
+  -> synthetic-imported-assertspecial-timerfreeze.json checksum 408528f1 is required
+  -> one imported actor asserts TimerFreeze before active round tick and keeps a 61-frame fight timer at displayed timer 2 for 70 active frames
+  -> RuntimeMatchRoundWorld skips active timer ticks when current P1/P2 roster exposes timerFreeze/global timerfreeze evidence
+  -> trace gate requires AssertSpecial controller, typed assertspecial operation, state = fight, message = Fight, and no timeover frame
+  -> pnpm qa:trace passes 283/283 artifacts, 258 required and 25 optional
+  -> bounded active-match timer freeze only; no score movement, no exact global/team/helper ownership, no pause/lifebar/intro/round-transition parity, no full timer parity claim
 R2 RuntimeMatchActorRosterWorld ownership
   -> RuntimeMatchActorRosterWorld owns current P1/P2 actor roster projection for PlayableMatchRuntime
   -> helper-owned TargetState actor lookup, imported compatibility session projection, and effect-store owner summaries consume one roster boundary
@@ -106,7 +113,7 @@ R1 PalFX + RemapPal combined trace gate
   -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required
   -> one imported actor executes PalFX and RemapPal in the same route
   -> trace gate requires typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
-  -> pnpm qa:trace passes 282/282 artifacts, 257 required and 25 optional
+  -> current pnpm qa:trace passes 283/283 artifacts, 258 required and 25 optional after the TimerFreeze oracle
   -> bounded palette telemetry only; no score movement, no exact palette math/blend-order/renderer parity claim
 R1 AssertSpecial unguardable coverage hardening
   -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required

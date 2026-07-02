@@ -171,6 +171,7 @@ export type RuntimeAssertSpecial = {
   noAirGuard?: boolean;
   unguardable?: boolean;
   noKo?: boolean;
+  timerFreeze?: boolean;
   intro?: boolean;
 };
 

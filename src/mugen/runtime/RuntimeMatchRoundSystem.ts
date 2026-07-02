@@ -4,7 +4,16 @@ export type RuntimeMatchRoundActor = {
   label: string;
   runtime: {
     life: number;
+    assertSpecial?: {
+      flags: string[];
+      globalFlags: string[];
+      timerFreeze?: boolean;
+    };
   };
+};
+
+export type RuntimeMatchRoundTimerResult = {
+  frozen: boolean;
 };
 
 export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor> = {
@@ -16,8 +25,12 @@ export type RuntimeMatchRoundFinishOptions<TActor extends RuntimeMatchRoundActor
 };
 
 export class RuntimeMatchRoundWorld {
-  tickTimer(round: RuntimeRoundSystem): void {
+  tickTimer(round: RuntimeRoundSystem, actors: readonly RuntimeMatchRoundActor[] = []): RuntimeMatchRoundTimerResult {
+    if (actors.some(hasTimerFreeze)) {
+      return { frozen: true };
+    }
     round.tickTimer();
+    return { frozen: false };
   }
 
   finishIfNeeded<TActor extends RuntimeMatchRoundActor>(
@@ -34,4 +47,13 @@ export class RuntimeMatchRoundWorld {
     options.log(finish.message);
     return finish;
   }
+}
+
+function hasTimerFreeze(actor: RuntimeMatchRoundActor): boolean {
+  const assertSpecial = actor.runtime.assertSpecial;
+  return Boolean(
+    assertSpecial?.timerFreeze ||
+      assertSpecial?.flags.includes("timerfreeze") ||
+      assertSpecial?.globalFlags.includes("timerfreeze"),
+  );
 }

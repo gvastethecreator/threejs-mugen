@@ -431,7 +431,7 @@ export class PlayableMatchRuntime {
 
   private advanceActiveMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
     matchActiveWorld.advance({
-      tickRoundTimer: () => matchRoundWorld.tickTimer(this.round),
+      tickRoundTimer: () => matchRoundWorld.tickTimer(this.round, this.matchRoster().actors),
       pushNormalCommandBuffers: () =>
         matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input }),
       applyInputControl: () =>

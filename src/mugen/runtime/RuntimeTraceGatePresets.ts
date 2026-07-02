@@ -1216,6 +1216,44 @@ export function createSyntheticImportedRoundTimeOverTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-timerfreeze",
+    displayName: "Synthetic Imported AssertSpecial TimerFreeze",
+    passiveAssertSpecialFlags: ["TimerFreeze"],
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedTimerFreezeScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage, roundTimerFrames: 61 }), script, {
+    label: "synthetic-imported-assertspecial-timerfreeze-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-timerfreeze-golden",
+      label: "Synthetic imported AssertSpecial TimerFreeze route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AssertSpecial TimerFreeze trace proves a bounded actor-local TimerFreeze flag can stop the current fight timer from counting down during the active match loop. It does not claim exact global/team/helper ownership, pause-layer interaction, lifebar behavior, intro/round transitions, or full MUGEN/IKEMEN timer parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-timerfreeze-golden",
+        requiredActorSources: ["imported", "demo"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["AssertSpecial"],
+        requiredExecutedOperations: ["assertspecial"],
+        requiredRoundFrames: [{ state: "fight", message: "Fight", minFrames: 60, observedTimerAtLeast: 2 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedMatchContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -18174,6 +18212,10 @@ export function importedP2AssertSpecialExpiredGuardScript(): RuntimeTraceInputFr
     { label: "assertspecial-expired-guard-x", frames: 14, p1: ["B"], p2: ["x"] },
     { label: "assertspecial-expired-guard-settle", frames: 4, p1: ["B"], p2: [] },
   ]);
+}
+
+export function importedTimerFreezeScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([{ label: "assertspecial-timerfreeze-hold", frames: 70, p1: [], p2: [] }]);
 }
 
 export function importedDefaultGuardStateScript(): RuntimeTraceInputFrame[] {

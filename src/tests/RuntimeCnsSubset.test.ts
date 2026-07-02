@@ -610,7 +610,9 @@ describe("StateControllerExecutor", () => {
     state = executeStateController(controller("VarRangeSet", { first: "2", last: "4", value: "9" }), state, (item) =>
       unsupported.push(item),
     );
-    const compiledAssertSpecial = compileControllerIr(controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible" }));
+    const compiledAssertSpecial = compileControllerIr(
+      controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible, TimerFreeze" }),
+    );
     state = executeControllerIr(compiledAssertSpecial, state, (item) => unsupported.push(item));
 
     expect(state.vel).toEqual({ x: -6, y: -9 });
@@ -642,14 +644,16 @@ describe("StateControllerExecutor", () => {
     expect(state.vars.slice(2, 5)).toEqual([9, 9, 9]);
     expect(state.assertSpecial).toMatchObject({
       flags: ["noautoturn", "nowalk", "invisible"],
+      globalFlags: ["timerfreeze"],
       noAutoTurn: true,
       noWalk: true,
       invisible: true,
+      timerFreeze: true,
     });
     expect(compiledAssertSpecial.operation).toEqual({
       kind: "assertspecial",
       flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: [],
+      globalFlags: ["timerfreeze"],
     });
     expect(state.renderOpacity).toBe(0);
     expect(unsupported).toEqual([]);
