@@ -7542,6 +7542,29 @@ export function defaultHitFallCanRecoverProbeControllerSequence(
   };
 }
 
+export function defaultHitFallRecoverFalseProbeControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  fallProbeStateNo = 5230,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${fallProbeStateNo} HitFall true and fall.recover false route`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "HitFall Recover Disabled Probe" },
+      { stateNo: fallProbeStateNo, controller: "ChangeState", name: "Bounded Return" },
+    ],
+  };
+}
+
 export function defaultFallGroundImpactControllerSequence(
   shakeStateNo = 5000,
   airStateNo = 5030,
@@ -9493,6 +9516,82 @@ export function createSyntheticImportedHitFallCanRecoverTraceArtifact(
       ],
       notes: [
         "Synthetic imported HitFall/CanRecover trace proves a defender-owned Common1-style fall route can execute a branch gated by HitFall while CanRecover is still false, with positive fall.recovertime evidence before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery thresholds, complete recovery-input behavior, or full Common1 parity.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedHitFallRecoverFalseTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitfall-recover-false",
+      displayName: "Synthetic Imported HitFall Recover False",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        fallProbeStateNo: 5230,
+        fallProbeName: "HitFall Recover Disabled Probe",
+        fallProbeExpression: "HitFall && !GetHitVar(fall.recover) && !CanRecover",
+        fallProbeTime: 2,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitfall-recover-false-golden",
+      targetLabel: "Synthetic imported HitFall recover false route",
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-hitfall-recover-false-attacker",
+        displayName: "Synthetic Imported HitFall Recover False Attacker",
+        groundVelocity: [-3, -6],
+        fall: {
+          ...commonGetHitFallData(),
+          recover: false,
+          recoverTime: 20,
+        },
+      }),
+      requiredExecutedStates: [0, 200, 5000, 5030, 5050, 5230],
+      forbiddenExecutedStates: [5210, 5200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
+      requiredControllerEventSequences: [defaultHitFallRecoverFalseProbeControllerSequence()],
+      requiredActorFrameSequences: [defaultFallGetHitActorFrameSequence([5000, 5030, 5050, 5230])],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5050,
+          moveType: "H",
+          observedHitFallRecoverTimeAtLeast: 1,
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5230,
+          moveType: "H",
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          moveType: "I",
+          ctrl: true,
+        },
+      ],
+      notes: [
+        "Synthetic imported HitFall recover-false trace proves a defender-owned Common1-style fall route can branch on HitFall while stored fall.recover is disabled and CanRecover remains false, with positive fall.recovertime metadata preserved before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery thresholds, full recovery-input arbitration, or full Common1 parity.",
       ],
     },
   );
@@ -18066,6 +18165,8 @@ export type SyntheticImportedTraceFighterOptions = {
     liedownStateNo?: number;
     recoverStateNo?: number;
     fallProbeStateNo?: number;
+    fallProbeName?: string;
+    fallProbeExpression?: string;
     recoveryInputStateNo?: number;
     groundRecoveryStateNo?: number;
     groundRecoveryLandStateNo?: number;
@@ -20471,6 +20572,8 @@ function defaultGetHitFallBlock(state: {
   liedownStateNo?: number;
   recoverStateNo?: number;
   fallProbeStateNo?: number;
+  fallProbeName?: string;
+  fallProbeExpression?: string;
   recoveryInputStateNo?: number;
   groundRecoveryStateNo?: number;
   groundRecoveryLandStateNo?: number;
@@ -20523,6 +20626,12 @@ function defaultGetHitFallBlock(state: {
   const groundRecoveryLandAnimNo = state.groundRecoveryLandAnimNo ?? groundRecoveryLandStateNo;
   const landAnimNo = state.landAnimNo ?? 0;
   const fallProbeTime = state.fallProbeTime ?? 2;
+  const fallProbeName = state.fallProbeName ?? "HitFall CanRecover Probe";
+  const fallProbeTriggerLines =
+    state.fallProbeExpression === undefined
+      ? `triggerall = HitFall
+triggerall = !CanRecover`
+      : `triggerall = ${state.fallProbeExpression}`;
   const settleTarget = state.includeRecoveryChain ? groundStateNo : 0;
   const settleCtrl = state.includeRecoveryChain ? 0 : 1;
   const settleTime = state.includeGroundRecovery ? 60 : 6;
@@ -20530,10 +20639,9 @@ function defaultGetHitFallBlock(state: {
     state.fallProbeStateNo === undefined
       ? ""
       : `
-[State ${fallStateNo}, HitFall CanRecover Probe]
+[State ${fallStateNo}, ${fallProbeName}]
 type = ChangeState
-triggerall = HitFall
-triggerall = !CanRecover
+${fallProbeTriggerLines}
 trigger1 = Time >= ${fallProbeTime}
 value = ${fallProbeStateNo}
 

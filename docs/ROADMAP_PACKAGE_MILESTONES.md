@@ -85,13 +85,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 Common1 HitFall false trace gate
-  -> synthetic-imported-hitfall-false.json checksum 1d538e43 is required in qa:trace
+R1 Common1 HitFall recover-disabled trace gate
+  -> synthetic-imported-hitfall-recover-false.json checksum 236df0a8 is required in qa:trace
+  -> defender takes a fall HitDef with fall.recover = 0 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5230 -> 0 through HitFall && !GetHitVar(fall.recover) && !CanRecover
+  -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall Recover Disabled Probe ChangeState
+  -> actor-frame evidence requires 5000 -> 5030 -> 5050 -> 5230 plus positive fall.recovertime metadata in 5050 and 5230
+  -> recovery states 5210 and 5200 are forbidden
+  -> pnpm qa:trace now passes 279/279 artifacts, 254 required and 25 optional
+  -> bounded recover-disabled trigger/order evidence only; no score movement, exact recovery threshold tables, controller-loop timing, recovery arbitration, fall/CanRecover precedence, visual/audio parity, or full fall/recovery parity claim
+Previous R1 Common1 HitFall false trace gate
+  -> synthetic-imported-hitfall-false.json checksum 1d538e43 remains required
   -> defender takes a direct HitDef without fall metadata or p2stateno, enters 5000, and routes into state/action 325 through !HitFall && !GetHitVar(fall) && !GetHitVar(guarded)
-  -> required order includes named Normal HitFall False Probe ChangeState in state 5000
-  -> actor-frame evidence requires 5000 before 325; final P2 state is 325 with moveType H
-  -> fall/recovery states 5001, 5030, 5050, 5210, and 5200 are forbidden
-  -> pnpm qa:trace now passes 278/278 artifacts, 253 required and 25 optional
   -> bounded HitFall false trigger evidence only; no score movement, exact normal get-hit timing, fall arbitration, custom-state/helper/team inheritance, visual/audio parity, or full Common1 get-hit parity claim
 Previous R1 Common1 HitFall / CanRecover trace gate
   -> synthetic-imported-hitfall-canrecover.json checksum 7cf7ab46 is required in qa:trace
@@ -112,7 +116,7 @@ R1 Common1 crouch guard slide-stop trace gate
   -> active-command evidence requires holddown and x
   -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame evidence proves crouch guard-slide velocity before stop/control
-  -> current pnpm qa:trace now passes 278/278 artifacts, 253 required and 25 optional after the required HitFall-false gate
+  -> current pnpm qa:trace now passes 279/279 artifacts, 254 required and 25 optional after the required HitFall recover-disabled gate
   -> crouch guard slide-stop/control evidence only; no score movement, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan lower into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority / volumeScale / freqMul / loop / pan
@@ -159,7 +163,7 @@ R1 EnvShake required trace restoration
   -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
   -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry
   -> event evidence pins actor p1 with time 16, freq 30, ampl -7, phase 0.5, and stateNo 200
-  -> current pnpm qa:trace passes 278/278 artifacts, 253 required and 25 optional after later Common1 gates
+  -> current pnpm qa:trace passes 279/279 artifacts, 254 required and 25 optional after later Common1 gates
   -> evidence-pipeline restoration only; no new camera waveform, pause/stage/layer, helper/redirect, visual/audio, score, or full presentation parity claim
 Previous R1 Common1 stand guard slide-stop trace gate
   -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is required in qa:trace
@@ -174,7 +178,7 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> the observed KFM route returns toward crouch/control; this does not claim a public 130 guard-hold return
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 278/278 artifacts, 253 required and 25 optional
+  -> pnpm qa:trace passes 279/279 artifacts, 254 required and 25 optional
   -> private-fixture confidence only; no public KFM support, no score movement, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 MatchWorld active ownership
   -> RuntimeMatchActiveWorld owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
