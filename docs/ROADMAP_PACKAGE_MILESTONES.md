@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 PlaySnd lowpriority channel arbitration
+  -> static PlaySnd lowpriority lowers into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority
+  -> RuntimeTrace requiredSoundEvents can require lowPriority
+  -> synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1
+  -> MugenAudioSystem routes explicit-channel actions through resolveRuntimeAudioEventAction: normal PlaySnd replaces, low-priority PlaySnd skips active channels, StopSnd channel -1 / omitted channel stops all tracked channels
+  -> bounded Web Audio channel arbitration only; no exact priority classes, volume/pan/freq/loop, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
   -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames and F sound refs before global data/fightfx.* fallback
@@ -92,7 +98,7 @@ R1 FightFX prefix package selection
   -> decoded prefixed SND archives register through the existing Web Audio route by soundPrefix
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and still gates fightFxPrefix = kfm metadata
   -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
-  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, score movement, or full hit-effect parity claim
+  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, global channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, score movement, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> RuntimeHelperTargetStateWorld still owns helper owner validation and no-op result semantics

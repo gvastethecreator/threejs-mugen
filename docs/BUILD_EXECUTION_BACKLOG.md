@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - PlaySnd lowpriority channel arbitration
+
+Changed:
+- `AudioControllerOp` now preserves static `PlaySnd lowpriority` as typed `audio:playsnd` metadata, and `AudioEventSystem` emits it as bounded `RuntimeSoundEvent.lowPriority` trace/debug/audio telemetry.
+- `RuntimeTrace.requiredSoundEvents` can require `lowPriority`, and required `synthetic-imported-sound.json` still passes with checksum `c9d880c0` while requiring `PlaySnd channel = 2` plus `lowpriority = 1`.
+- `MugenAudioSystem` now routes channel behavior through a pure `resolveRuntimeAudioEventAction` boundary: non-low-priority `PlaySnd` replaces an active non-negative channel, low-priority `PlaySnd` skips when that channel is already active, and `StopSnd channel = -1` / omitted channel stops all tracked channels.
+- This is bounded Web Audio channel arbitration only. It does not implement exact MUGEN/IKEMEN priority classes, volume/pan/freq/loop params, global channel fallback, timing/mixing, pause/superpause audio rules, motif/screenpack ownership, or full audio parity.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 322 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-sound.json` remains checksum `c9d880c0` with `lowPriority: true` evidence.
+- Full gates: `pnpm test` -> 130 files / 1055 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check` -> passed. Build keeps the known large chunk warning. `git diff --check` only reported existing CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Static imported `PlaySnd lowpriority = 1` survives compiler/runtime/trace handoff, and the browser audio adapter now has a bounded rule to avoid interrupting an already active explicit channel.
+
+Claim blocked:
+- Full MUGEN/IKEMEN audio parity, exact priority/mixing/timing, dynamic audio params, loops, pan, volume, helper/team/channel fallback ownership, screenpack/motif ownership, and score movement remain blocked.
+
+Next:
+- Continue R1 FightFX/common audio/presentation precision with volume/pan/loop/timing only if it can produce focused evidence, otherwise return to R1 Common1 or R2 MatchWorld ownership.
+
 ## 2026-07-02 - FightFX SND prefix package routing
 
 Changed:

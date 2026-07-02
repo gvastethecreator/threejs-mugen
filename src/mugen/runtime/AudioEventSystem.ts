@@ -41,11 +41,13 @@ export function createRuntimeSoundEvent(
 ): RuntimeSoundEvent {
   const rawValue = operation?.value ?? findControllerParam(controller, "value");
   const parsed = parseMugenSoundRef(rawValue);
+  const lowPriority = operation?.lowPriority ?? firstBoolean(findControllerParam(controller, "lowpriority"));
   return {
     type: operation ? operationSoundEventType(operation) : soundEventType(controller),
     group: parsed?.group,
     index: parsed?.index,
     channel: operation?.channel ?? firstNumber(findControllerParam(controller, "channel")),
+    ...(lowPriority !== undefined ? { lowPriority } : {}),
     raw: rawValue,
     ...soundPrefixMetadata(actor, parsed?.rawPrefix),
     stateNo: actor.runtime.stateNo,
@@ -157,4 +159,9 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function firstBoolean(value: string | undefined): boolean | undefined {
+  const numberValue = firstNumber(value);
+  return numberValue === undefined ? undefined : numberValue !== 0;
 }

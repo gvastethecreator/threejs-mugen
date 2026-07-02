@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MugenAudioSystem } from "../game/audio/MugenAudioSystem";
+import { MugenAudioSystem, resolveRuntimeAudioEventAction } from "../game/audio/MugenAudioSystem";
 import type { SndArchive } from "../mugen/model/MugenSound";
 
 describe("MugenAudioSystem", () => {
@@ -14,6 +14,21 @@ describe("MugenAudioSystem", () => {
       played: 0,
       missing: 0,
     });
+  });
+
+  it("resolves channel playback actions for StopSnd and low-priority PlaySnd", () => {
+    expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: 2 }, true)).toEqual({ type: "stop", channel: 2 });
+    expect(resolveRuntimeAudioEventAction({ type: "StopSnd", channel: -1 }, true)).toEqual({ type: "stop", channel: undefined });
+    expect(resolveRuntimeAudioEventAction({ type: "PlaySnd", channel: 2, lowPriority: true }, true)).toEqual({
+      type: "skip",
+      reason: "low-priority-channel",
+      channel: 2,
+    });
+    expect(resolveRuntimeAudioEventAction({ type: "PlaySnd", channel: 2, lowPriority: true }, false)).toEqual({
+      type: "play",
+      channel: 2,
+    });
+    expect(resolveRuntimeAudioEventAction({ type: "PlaySnd", channel: 2 }, true)).toEqual({ type: "play", channel: 2 });
   });
 });
 

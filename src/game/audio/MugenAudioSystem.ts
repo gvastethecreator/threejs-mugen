@@ -7,9 +7,15 @@ export type MugenAudioDiagnostics = {
   sounds: number;
   decoded: number;
   played: number;
+  skipped: number;
   missing: number;
   errors: string[];
 };
+
+export type RuntimeAudioEventAction =
+  | { type: "play"; channel?: number }
+  | { type: "skip"; reason: "low-priority-channel"; channel: number }
+  | { type: "stop"; channel?: number };
 
 export class MugenAudioSystem {
   private context?: AudioContext;
@@ -21,6 +27,7 @@ export class MugenAudioSystem {
   private readonly errors: string[] = [];
   private unlocked = false;
   private played = 0;
+  private skipped = 0;
   private missing = 0;
 
   setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
@@ -37,6 +44,7 @@ export class MugenAudioSystem {
     this.seenEvents.clear();
     this.errors.length = 0;
     this.played = 0;
+    this.skipped = 0;
     this.missing = 0;
   }
 
@@ -69,10 +77,13 @@ export class MugenAudioSystem {
             this.seenEvents.delete(oldest);
           }
         }
-        if (event.type === "PlaySnd") {
-          void this.play(event);
+        const action = resolveRuntimeAudioEventAction(event, this.hasActiveChannel(event.channel));
+        if (action.type === "play") {
+          void this.play(event, action);
+        } else if (action.type === "stop") {
+          this.stop(action.channel);
         } else {
-          this.stop(event.channel);
+          this.skipped += 1;
         }
       }
     }
@@ -86,6 +97,7 @@ export class MugenAudioSystem {
       sounds: archives.reduce((total, archive) => total + archive.sounds.length, 0),
       decoded: this.bufferPromises.size,
       played: this.played,
+      skipped: this.skipped,
       missing: this.missing,
       errors: this.errors.slice(0, 8),
     };
@@ -98,7 +110,7 @@ export class MugenAudioSystem {
     this.activeChannels.clear();
   }
 
-  private async play(event: RuntimeSoundEvent): Promise<void> {
+  private async play(event: RuntimeSoundEvent, action: Extract<RuntimeAudioEventAction, { type: "play" }>): Promise<void> {
     const archive = this.resolveArchive(event);
     if (event.group === undefined || event.index === undefined || !archive) {
       this.missing += 1;
@@ -123,12 +135,12 @@ export class MugenAudioSystem {
     gain.gain.value = 0.55;
     source.buffer = buffer;
     source.connect(gain).connect(context.destination);
-    if (event.channel !== undefined && event.channel >= 0) {
-      this.stop(event.channel);
-      this.activeChannels.set(event.channel, source);
+    if (action.channel !== undefined) {
+      this.stop(action.channel);
+      this.activeChannels.set(action.channel, source);
       source.addEventListener("ended", () => {
-        if (this.activeChannels.get(event.channel!) === source) {
-          this.activeChannels.delete(event.channel!);
+        if (this.activeChannels.get(action.channel!) === source) {
+          this.activeChannels.delete(action.channel!);
         }
       });
     }
@@ -147,6 +159,10 @@ export class MugenAudioSystem {
     }
     source.stop();
     this.activeChannels.delete(channel);
+  }
+
+  private hasActiveChannel(channel: number | undefined): boolean {
+    return channel !== undefined && channel >= 0 && this.activeChannels.has(channel);
   }
 
   private getAudioBuffer(prefix: string | undefined, sound: MugenSound): Promise<AudioBuffer | undefined> {
@@ -195,15 +211,28 @@ export class MugenAudioSystem {
   }
 }
 
+export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "type" | "channel" | "lowPriority">, activeChannel: boolean): RuntimeAudioEventAction {
+  const channel = event.channel !== undefined && event.channel >= 0 ? event.channel : undefined;
+  if (event.type === "StopSnd") {
+    return { type: "stop", channel };
+  }
+  if (event.lowPriority && channel !== undefined && activeChannel) {
+    return { type: "skip", reason: "low-priority-channel", channel };
+  }
+  return { type: "play", channel };
+}
+
 function eventKey(actorId: string, event: RuntimeSoundEvent): string {
   return [
     actorId,
     event.type,
+    event.soundPrefix ?? "-",
     event.runtimeTick ?? "-",
     event.stateNo,
     event.tick,
     event.group ?? "-",
     event.index ?? "-",
     event.channel ?? "-",
+    event.lowPriority ? "low" : "-",
   ].join(":");
 }

@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 PlaySnd lowpriority channel arbitration
+  -> static PlaySnd lowpriority now compiles into typed audio:playsnd metadata
+  -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority
+  -> required synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1
+  -> MugenAudioSystem resolves explicit-channel audio actions through a pure channel-action boundary: normal PlaySnd replaces, low-priority PlaySnd skips, StopSnd channel -1 / omitted channel stops all tracked channels
+  -> bounded channel arbitration only; no exact priority classes, volume/pan/freq/loop, global channel fallback, timing/mixing, pause/superpause audio, or full audio parity claim
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
@@ -89,7 +95,7 @@ R1 FightFX prefix package selection
   -> RuntimeTrace requiredHitEffectEvents can require soundPrefix on sound telemetry
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and now gates fightFxPrefix = kfm evidence
   -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
-  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, or full hit-effect parity claim
+  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, global channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> helper owner validation and fail-closed result semantics still route through RuntimeHelperTargetStateWorld

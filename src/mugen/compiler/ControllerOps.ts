@@ -87,6 +87,7 @@ export type AudioControllerOp = {
   controllerType: "playsnd" | "stopsnd";
   value?: string;
   channel?: number;
+  lowPriority?: boolean;
 };
 
 export type NoopControllerOp = {
@@ -1214,6 +1215,7 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
 function compileAudioControllerOp(controller: MugenStateController, type: AudioControllerOp["controllerType"]): AudioControllerOp | undefined {
   const value = staticSoundValueParam(controller, "value");
   const channel = firstNumber(findParam(controller, "channel"));
+  const lowPriority = type === "playsnd" ? booleanNumber(findParam(controller, "lowpriority")) : undefined;
   if (type === "playsnd" && value === undefined) {
     return undefined;
   }
@@ -1222,6 +1224,7 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
     controllerType: type,
     value,
     channel,
+    lowPriority,
   });
 }
 

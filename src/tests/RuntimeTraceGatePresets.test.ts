@@ -1061,7 +1061,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200]);
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "PlaySnd", "StopSnd"]);
     expect(artifact.gates[0]?.requirements.requiredSoundEvents).toEqual([
-      { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 },
+      { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, stateNo: 200 },
       { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
     ]);
     expect(evidence?.executedControllers.PlaySnd).toBeGreaterThanOrEqual(1);
@@ -1070,13 +1070,13 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["audio:stopsnd"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.soundEvents).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 }),
+        expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, stateNo: 200 }),
         expect.objectContaining({ actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 }),
       ]),
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.soundEvents).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, channel: 2, stateNo: 200 }),
+        expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, stateNo: 200 }),
         expect.objectContaining({ type: "StopSnd", channel: 2, stateNo: 200 }),
       ]),
     );
