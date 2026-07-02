@@ -47,6 +47,7 @@ import { RuntimeMatchActiveWorld } from "./RuntimeMatchActiveSystem";
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
+import { RuntimeMatchStepWorld } from "./RuntimeMatchStepSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
@@ -162,6 +163,7 @@ const matchActiveWorld = new RuntimeMatchActiveWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
+const matchStepWorld = new RuntimeMatchStepWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
@@ -354,28 +356,17 @@ export class PlayableMatchRuntime {
   }
 
   step(input: MatchInput, options: MatchStepOptions = {}): MugenSnapshot {
-    if (!this.playing && !options.force) {
-      return this.getSnapshot();
-    }
-
-    this.frameClock += 1;
-    const iterations = options.force ? 1 : this.consumeSpeedIterations();
-    for (let index = 0; index < iterations; index += 1) {
-      if (this.round.isOver) {
-        break;
-      }
-      this.advanceOneTick(input);
-    }
-
-    return this.getSnapshot();
-  }
-
-  private consumeSpeedIterations(): number {
-    if (this.speed < 1) {
-      const skipEvery = Math.round(1 / this.speed);
-      return this.frameClock % skipEvery === 0 ? 1 : 0;
-    }
-    return Math.max(1, Math.round(this.speed));
+    const result = matchStepWorld.step({
+      playing: this.playing,
+      frameClock: this.frameClock,
+      speed: this.speed,
+      force: options.force,
+      isRoundOver: () => this.round.isOver,
+      advanceOneTick: () => this.advanceOneTick(input),
+      snapshot: () => this.getSnapshot(),
+    });
+    this.frameClock = result.frameClock;
+    return result.snapshot;
   }
 
   private advanceOneTick(input: MatchInput): void {

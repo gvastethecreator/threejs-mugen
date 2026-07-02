@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchStepWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchStepWorld` as the bounded public match-step cadence boundary consumed by `PlayableMatchRuntime.step()`.
+- Moved stopped-playback snapshot return, frame-clock increment, forced single-step behavior, speed iteration sampling, and round-over loop cutoff out of inline match-loop code.
+- Added focused `RuntimeMatchStepSystem` coverage for stopped playback, forced stepping, speed sampling, and round-over cutoff.
+- No tick body order, pause/hitpause logic, controller semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchStepSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 2 files / 75 tests.
+- Full closeout gates passed: `pnpm test` -> 127 files / 1041 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay presentation.
+
+Claim allowed:
+- Current public match-step cadence has a named, testable ownership boundary while preserving existing `PlayableMatchRuntime.step()` behavior.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN pause/round arbitration, browser frame pacing, replay/rollback timing, helper/team actor scheduling, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 match-loop ownership slices or R1 KFM/Common1/FightFX precision. Do not count this extraction as new gameplay semantics.
+
 ## 2026-07-02 - Required EnvShake trace gate restoration
 
 Changed:

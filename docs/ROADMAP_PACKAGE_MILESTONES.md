@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchStepWorld ownership
+  -> RuntimeMatchStepWorld owns public match-step cadence outside PlayableMatchRuntime
+  -> stopped playback snapshots without ticking frame clock; force advances exactly one tick
+  -> sub-1x speed samples on frame-clock divisors; multi-step speed loops stop when round-over is observed
+  -> focused RuntimeMatchStepSystem coverage proves cadence edges
+  -> ownership cleanup only; no score movement, exact pause/round arbitration, frame pacing, replay/rollback timing, helper/team scheduling, visual/audio parity, or full match VM claim
 R1 EnvShake required trace restoration
   -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
   -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry
