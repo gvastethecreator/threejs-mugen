@@ -117,6 +117,80 @@ export function createSyntheticImportedXTraceArtifact(options: RuntimeTraceGateP
   });
 }
 
+export function createSyntheticImportedBasicMovementTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-basic-movement",
+    displayName: "Synthetic Imported Basic Movement",
+  });
+  const stage = options.stage ?? farCombatStage();
+  const script = importedBasicMovementScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-basic-movement-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-basic-movement-golden",
+      label: "Synthetic imported basic movement route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported basic movement trace proves the current imported player input route can enter bounded walk, crouch, jump, and idle states from scripted direction input with actor-frame telemetry. It does not claim exact MUGEN/IKEMEN Common1 movement states, command priority, AI behavior, landing timing, platform collision, or full movement parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-basic-movement-golden",
+        requiredActorSources: ["imported", "demo"],
+        requiredActorKinds: ["player"],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, stateType: "S", physics: "S", minFrames: 3 },
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 20,
+            animNo: 20,
+            stateType: "S",
+            physics: "S",
+            observedVelXAtLeast: 3,
+            minFrames: 4,
+          },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 10, animNo: 10, stateType: "C", physics: "C", minFrames: 4 },
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 40,
+            animNo: 40,
+            stateType: "A",
+            physics: "A",
+            observedPosYAtMost: -1,
+            observedVelYAtMost: -1,
+            minFrames: 5,
+          },
+        ],
+        requiredActorFrameSequences: [
+          {
+            label: "imported basic movement state order",
+            steps: [
+              { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, minFrames: 4 },
+              { actorId: "p1", source: "imported", actorKind: "player", stateNo: 10, animNo: 10, minFrames: 4 },
+              { actorId: "p1", source: "imported", actorKind: "player", stateNo: 40, animNo: 40, minFrames: 5 },
+            ],
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, stateType: "S", moveType: "I", physics: "S" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedMoveContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -18258,6 +18332,19 @@ export function importedTimerFreezeScript(): RuntimeTraceInputFrame[] {
 
 export function importedRoundNotOverScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([{ label: "assertspecial-roundnotover-hold", frames: 70, p1: [], p2: [] }]);
+}
+
+export function importedBasicMovementScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "basic-movement-idle-prime", frames: 3, p1: [], p2: [] },
+    { label: "basic-movement-walk-forward", frames: 8, p1: ["F"], p2: [] },
+    { label: "basic-movement-return-idle", frames: 5, p1: [], p2: [] },
+    { label: "basic-movement-crouch", frames: 8, p1: ["D"], p2: [] },
+    { label: "basic-movement-crouch-release", frames: 4, p1: [], p2: [] },
+    { label: "basic-movement-jump", frames: 2, p1: ["U"], p2: [] },
+    { label: "basic-movement-airborne-settle", frames: 64, p1: [], p2: [] },
+    { label: "basic-movement-grounded-idle", frames: 6, p1: [], p2: [] },
+  ]);
 }
 
 export function importedDefaultGuardStateScript(): RuntimeTraceInputFrame[] {

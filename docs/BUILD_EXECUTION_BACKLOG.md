@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 imported basic movement trace gate
+
+Changed:
+- Added required `synthetic-imported-basic-movement.json` to `pnpm qa:trace`.
+- Added a deterministic imported-player script for idle -> walk -> idle -> crouch -> idle -> jump -> landing -> idle.
+- The trace gate requires imported P1 actor-frame evidence for state/action `20` walk, `10` crouch, `40` airborne jump, and final state/action `0` idle/control.
+- Updated trace preset coverage, tests, support docs, scorecard, tracker, roadmap, and local issue docs with claim allowed / blocked scope.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "basic movement"` -> 1 file / 1 test, 278 skipped.
+- Trace gate: `pnpm qa:trace` -> 285/285 artifacts, 260 required and 25 optional; `synthetic-imported-basic-movement.json` checksum is `917ff3e5`.
+- Test suite: `pnpm test` -> 142 files / 1100 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+- No `pnpm qa:smoke` is required unless this round later touches frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current imported player input route can enter bounded walk, crouch, jump, and return-to-idle states from scripted direction input, with trace-gated actor-frame state/physics/velocity/airborne evidence and final idle/control.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN Common1 movement state semantics, CMD command-priority quirks, command-buffer raw direction evidence, landing timing parity, collision/platform physics, AI behavior, visual parity, score movement, and full movement parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX precision or the next R2 MatchWorld/helper/effect/combat ownership seam. Do not treat this movement gate as full Common1 movement parity without real fixture evidence and deeper tick-order checks.
+
 ## 2026-07-02 - R1 AssertSpecial RoundNotOver trace gate
 
 Changed:

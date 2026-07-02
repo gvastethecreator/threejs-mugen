@@ -31,6 +31,11 @@ async function main() {
       artifact: presets.createSyntheticImportedXTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-basic-movement",
+      required: true,
+      artifact: presets.createSyntheticImportedBasicMovementTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-movecontact",
       required: true,
       artifact: presets.createSyntheticImportedMoveContactTraceArtifact(),

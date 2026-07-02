@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 imported basic movement trace gate
+  -> synthetic-imported-basic-movement.json checksum 917ff3e5 is required in qa:trace
+  -> scripted p1 direction input drives the imported actor through bounded walk 20, crouch 10, jump 40, and final idle/control 0
+  -> required evidence includes imported actor-frame state/physics/velocity/airborne telemetry and state order 20 -> 10 -> 40
+  -> pnpm qa:trace passes 285/285 artifacts, 260 required and 25 optional
+  -> bounded sandbox input-control route only; no exact Common1 movement/CMD priority/landing/collision/AI/full movement parity claim
 R1 AssertSpecial TimerFreeze trace gate
   -> synthetic-imported-assertspecial-timerfreeze.json checksum 408528f1 is required in qa:trace
   -> passive imported TimerFreeze asserts before active round tick and keeps a 61-frame fight timer at displayed timer 2 for 70 active frames

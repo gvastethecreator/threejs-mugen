@@ -311,8 +311,10 @@ import {
   createSyntheticImportedGameTimeTraceArtifact,
   createSyntheticImportedStageTimeTraceArtifact,
   createSyntheticImportedStateContextTraceArtifact,
+  createSyntheticImportedBasicMovementTraceArtifact,
   createSyntheticImportedXTraceArtifact,
   createSyntheticImportedTraceFighter,
+  importedBasicMovementScript,
   importedDelayedXScript,
   importedGuardScript,
   importedCommonGetHitScript,
@@ -439,6 +441,55 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.activeCommands).toContain("x");
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("hit");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported basic movement artifact with walk, crouch, jump, and idle evidence", () => {
+    const artifact = createSyntheticImportedBasicMovementTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-basic-movement-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-basic-movement-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const scriptInputs = (artifact.script ?? []).map((frame) => (frame.p1 ?? []).join("+"));
+    expect(scriptInputs).toEqual(expect.arrayContaining(["F", "D", "U"]));
+    expect(gate?.evidence.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, stateType: "S", physics: "S" }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, stateType: "S", physics: "S" }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 10, animNo: 10, stateType: "C", physics: "C" }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 40, animNo: 40, stateType: "A", physics: "A" }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "imported basic movement state order",
+        steps: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, minFrames: 4 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 10, animNo: 10, minFrames: 4 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 40, animNo: 40, minFrames: 5 },
+        ],
+      },
+    ]);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      animNo: 0,
+      ctrl: true,
+      stateType: "S",
+      moveType: "I",
+      physics: "S",
+    });
   });
 
   it("creates a synthetic imported MoveContact artifact with contact branch evidence", () => {
@@ -13294,6 +13345,16 @@ describe("RuntimeTraceGatePresets", () => {
   it("keeps golden trace scripts explicit and labeled", () => {
     expect(nativeHitScript().at(0)?.label).toBe("native-hold-punch");
     expect(nativeWhiffScript().at(0)?.label).toBe("native-whiff-punch");
+    expect(importedBasicMovementScript().map((frame) => frame.label).filter(Boolean)).toEqual([
+      "basic-movement-idle-prime",
+      "basic-movement-walk-forward",
+      "basic-movement-return-idle",
+      "basic-movement-crouch",
+      "basic-movement-crouch-release",
+      "basic-movement-jump",
+      "basic-movement-airborne-settle",
+      "basic-movement-grounded-idle",
+    ]);
     expect(importedGuardScript().map((frame) => frame.label).filter(Boolean)).toEqual(["imported-guard-x", "guard-settle"]);
     expect(importedDefaultGuardStateScript().map((frame) => frame.label).filter(Boolean)).toEqual([
       "imported-default-guard-state-x",
