@@ -213,6 +213,7 @@ import {
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
+  createSyntheticImportedPalFxRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
@@ -5044,6 +5045,61 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.paletteRemap?.source[0] === 1 && actor.paletteRemap.dest[1] === 3,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported PalFX + RemapPal artifact with combined palette evidence", () => {
+    const artifact = createSyntheticImportedPalFxRemapPalTraceArtifact({ generatedAt: "2026-07-02T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-palfx-remappal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-palfx-remappal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.PalFX).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.RemapPal).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:palfx"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:remappal"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          paletteFxTime: 14,
+          paletteFxAddR: 40,
+          paletteFxAddG: 24,
+          paletteFxAddB: -30,
+          paletteFxMulR: 224,
+          paletteFxMulG: 192,
+          paletteFxMulB: 256,
+          paletteFxColor: 180,
+          paletteRemapSourceGroup: 1,
+          paletteRemapSourceIndex: 0,
+          paletteRemapDestGroup: 2,
+          paletteRemapDestIndex: 4,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) =>
+          actor.id === "p1" &&
+          actor.paletteFx?.time === 14 &&
+          actor.paletteFx.add[0] === 40 &&
+          actor.paletteRemap?.source[1] === 0 &&
+          actor.paletteRemap.dest[1] === 4,
       ),
     ).toBe(true);
   });

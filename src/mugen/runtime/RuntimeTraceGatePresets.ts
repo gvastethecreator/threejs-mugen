@@ -2735,6 +2735,74 @@ export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTra
   });
 }
 
+export function createSyntheticImportedPalFxRemapPalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-palfx-remappal",
+    displayName: "Synthetic Imported PalFX RemapPal",
+    withPalFx: {
+      time: 14,
+      add: [40, 24, -30],
+      mul: [224, 192, 256],
+      color: 180,
+    },
+    withRemapPal: {
+      source: [1, 0],
+      dest: [2, 4],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-palfx-remappal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-palfx-remappal-golden",
+      label: "Synthetic imported PalFX + RemapPal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported PalFX + RemapPal trace proves both controllers lower into typed sprite-effect operation evidence on the same imported actor and reach bounded combined palette telemetry. It does not claim ACT/SFF pixel remapping, exact MUGEN/IKEMEN palette math, sinadd, blend order, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-palfx-remappal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "PalFX", "RemapPal", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:palfx", "sprite-effect:remappal", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            paletteFxTime: 14,
+            paletteFxAddR: 40,
+            paletteFxAddG: 24,
+            paletteFxAddB: -30,
+            paletteFxMulR: 224,
+            paletteFxMulG: 192,
+            paletteFxMulB: 256,
+            paletteFxColor: 180,
+            paletteRemapSourceGroup: 1,
+            paletteRemapSourceIndex: 0,
+            paletteRemapDestGroup: 2,
+            paletteRemapDestIndex: 4,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAfterImageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();

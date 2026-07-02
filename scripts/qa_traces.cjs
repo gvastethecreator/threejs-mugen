@@ -516,6 +516,11 @@ async function main() {
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-palfx-remappal",
+      required: true,
+      artifact: presets.createSyntheticImportedPalFxRemapPalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-afterimage",
       required: true,
       artifact: presets.createSyntheticImportedAfterImageTraceArtifact(),
@@ -2385,6 +2390,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-envcolor",
     "synthetic-imported-envshake",
     "synthetic-imported-remappal",
+    "synthetic-imported-palfx-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-movehitreset",
     "synthetic-imported-hitadd",

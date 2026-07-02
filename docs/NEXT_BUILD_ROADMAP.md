@@ -78,10 +78,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 PalFX + RemapPal combined trace gate
+  -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required
+  -> one imported actor executes PalFX and RemapPal in the same route
+  -> trace gate requires typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
+  -> pnpm qa:trace passes 282/282 artifacts, 257 required and 25 optional
+  -> bounded palette telemetry only; no score movement, no ACT/SFF pixel palette application, no exact palette math/blend-order/renderer parity claim
 R1 AssertSpecial unguardable coverage hardening
   -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required
   -> scripts/qa_traces.cjs now also requires that oracle in the required artifact coverage-summary contract
-  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
+  -> that checkpoint passed 281/281 artifacts, 256 required and 25 optional
   -> QA hardening only; no score movement, no new guard semantics, no exact priority/lifetime/pause/helper/team/global parity claim
 R2 RuntimeMatchPresentationSnapshotWorld ownership
   -> RuntimeMatchPresentationSnapshotWorld owns bounded match presentation snapshot input construction outside PlayableMatchRuntime
@@ -113,7 +119,7 @@ R1 EnvColor under-layer trace gate
   -> imported EnvColor value/time/under lowers into typed envcolor operation evidence with under = 1
   -> stage-frame evidence requires envColorUnder = true and opacity evidence
   -> existing synthetic-imported-envcolor.json checksum 956b0f4b remains the under = 0 route
-  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
+  -> that checkpoint passed 281/281 artifacts, 256 required and 25 optional
   -> bounded stage-flash layer-flag evidence only; no score movement or exact presentation parity claim
 R1 Common1 HitFall recover-true trace gate
   -> synthetic-imported-hitfall-recover-true.json checksum f1e3424a is now required

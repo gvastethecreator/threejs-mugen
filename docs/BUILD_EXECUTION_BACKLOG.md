@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 PalFX + RemapPal combined trace gate
+
+Changed:
+- Added required `synthetic-imported-palfx-remappal.json` to the runtime trace suite.
+- The new synthetic imported route executes `PalFX` and `RemapPal` on the same imported actor/state, then requires both typed operations plus combined actor-frame palette telemetry.
+- Added focused `RuntimeTraceGatePresets` coverage and required artifact coverage-summary protection.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern PalFX` -> 1 file / 2 tests, 274 skipped.
+- Trace gate: `pnpm qa:trace` -> 282/282 artifacts, 257 required and 25 optional; `synthetic-imported-palfx-remappal.json` checksum is `ba5fc1e6`.
+
+Claim allowed:
+- Bounded imported `PalFX` and `RemapPal` can coexist on one actor and survive as typed sprite-effect operation evidence plus combined palette telemetry in trace gates.
+
+Claim blocked:
+- ACT/SFF pixel palette application, exact MUGEN/IKEMEN palette math, `sinadd`, palette/blend ordering, renderer visual parity, helper/redirect palette ownership, score movement, and full palette/presentation parity remain blocked.
+
+Next:
+- Continue into a real ACT/SFF palette application slice, R1 Common1/FightFX precision, or a deeper R2 helper/effect/combat ownership seam.
+
 ## 2026-07-02 - R1 AssertSpecial unguardable coverage hardening
 
 Changed:
