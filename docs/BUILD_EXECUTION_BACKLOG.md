@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Required synthetic HitFall false trace gate
+
+Changed:
+- `synthetic-imported-hitfall-false.json` is now a required trace artifact for a bounded Common1-style normal get-hit `!HitFall` / `!GetHitVar(fall)` branch.
+- `createImportedDefaultGetHitProgressionTraceArtifact` can receive forbidden states, custom actor-frame sequences, custom final-actor requirements, and custom controller-event sequences so precise Common1 sub-gates reuse the shared artifact builder.
+- `defaultGetHitProgressionBlock` can name its opt-in branch controller; the new fixture routes through named `Normal HitFall False Probe`.
+- `RuntimeTraceGatePresets` now exports `createSyntheticImportedHitFallFalseTraceArtifact()`.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "HitFall false"` -> 1 file / 1 test, 271 skipped.
+- Trace gate: `pnpm qa:trace` -> 278/278 artifacts, 253 required and 25 optional; `synthetic-imported-hitfall-false.json` checksum `1d538e43`.
+- Full gates: `pnpm test` -> 130 files / 1064 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 278/278 artifacts, 253 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Bounded synthetic Common1-style normal get-hit `!HitFall` / `!GetHitVar(fall)` routing is trace-gated: P2 takes a direct `HitDef` without fall metadata or `p2stateno`, enters defender-owned `5000`, branches through named `Normal HitFall False Probe` into state/action `325`, requires actor-frame order `5000 -> 325`, forbids fall/recovery states `5001`, `5030`, `5050`, `5210`, and `5200`, and ends P2 in state `325` with moveType `H`.
+
+Claim blocked:
+- Exact normal get-hit timing, fall arbitration, custom-state/helper/team inheritance, exact controller-loop timing, visual/audio parity, score movement, and full Common1/get-hit parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or R2 MatchWorld helper/effect/combat ownership.
+
 ## 2026-07-02 - Required synthetic HitFall / CanRecover trace gate
 
 Changed:

@@ -6969,8 +6969,11 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
     shakeStateNo?: number;
     slideStateNo?: number;
     requiredExecutedStates?: number[];
+    forbiddenExecutedStates?: number[];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -7005,16 +7008,19 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [0, 200, shakeStateNo, slideStateNo],
+        forbiddenExecutedStates: options.forbiddenExecutedStates,
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
         requiredControllerEventSequences:
           options.requiredControllerEventSequences ?? [defaultGetHitProgressionControllerSequence(shakeStateNo, slideStateNo)],
         requiredActorFrames: options.requiredActorFrames ?? defaultGetHitProgressionPhysicsFrames(),
-        requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence(shakeStateNo, slideStateNo)],
+        requiredActorFrameSequences: options.requiredActorFrameSequences ?? [
+          defaultGetHitProgressionActorFrameSequence(shakeStateNo, slideStateNo),
+        ],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
-        requiredFinalActors: [
+        requiredFinalActors: options.requiredFinalActors ?? [
           {
             actorId: "p2",
             source: "imported",
@@ -9978,6 +9984,91 @@ export function createSyntheticImportedGetHitVarVelocityTraceArtifact(options: R
           },
         ],
       },
+    ],
+  });
+}
+
+export function createSyntheticImportedHitFallFalseTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const branchStateNo = 325;
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitfall-false",
+    displayName: "Synthetic Imported HitFall False",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: branchStateNo,
+      hitTimeBranchAnimNo: branchStateNo,
+      hitTimeBranchExpression: "!HitFall && !GetHitVar(fall) && !GetHitVar(guarded)",
+      hitTimeBranchName: "Normal HitFall False Probe",
+    },
+  });
+  return createImportedDefaultGetHitProgressionTraceArtifact(defender, {
+    ...options,
+    targetId: "synthetic-imported-hitfall-false-golden",
+    targetLabel: "Synthetic imported HitFall false route",
+    gateLabel: "synthetic-imported-hitfall-false-golden",
+    attacker: createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitfall-false-attacker",
+      displayName: "Synthetic Imported HitFall False Attacker",
+    }),
+    requiredExecutedStates: [200, 5000, branchStateNo],
+    forbiddenExecutedStates: [5001, 5030, 5050, 5210, 5200],
+    requiredControllerEventSequences: [
+      {
+        label: "5000 HitFall false branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitFall False Probe" }],
+      },
+    ],
+    requiredActorFrames: [
+      defaultGetHitProgressionPhysicsFrames()[0]!,
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        animNo: branchStateNo,
+        stateType: "S",
+        moveType: "H",
+        physics: "S",
+        minFrames: 1,
+      },
+    ],
+    requiredActorFrameSequences: [
+      {
+        label: "5000 normal shake before HitFall false probe",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5000,
+            moveType: "H",
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: branchStateNo,
+            moveType: "H",
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+    requiredFinalActors: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: branchStateNo,
+        moveType: "H",
+      },
+    ],
+    notes: [
+      "Synthetic imported HitFall false trace proves a bounded defender-owned normal get-hit state can branch through !HitFall and !GetHitVar(fall) after a direct HitDef without fall metadata, while fall/recovery states remain forbidden. It does not claim exact MUGEN/IKEMEN normal get-hit timing, fall arbitration, custom-state inheritance, or full Common1 parity.",
     ],
   });
 }
@@ -17935,6 +18026,7 @@ export type SyntheticImportedTraceFighterOptions = {
     hitTimeBranchStateNo?: number;
     hitTimeBranchAnimNo?: number;
     hitTimeBranchExpression?: string;
+    hitTimeBranchName?: string;
   };
   defaultGuardHit?: {
     shakeStateNo?: number;
@@ -19912,6 +20004,7 @@ function defaultGetHitProgressionBlock(state: {
   hitTimeBranchStateNo?: number;
   hitTimeBranchAnimNo?: number;
   hitTimeBranchExpression?: string;
+  hitTimeBranchName?: string;
 }): string {
   const shakeStateNo = state.shakeStateNo ?? 5000;
   const slideStateNo = state.slideStateNo ?? 5001;
@@ -19924,11 +20017,12 @@ function defaultGetHitProgressionBlock(state: {
   const hitTimeBranchStateNo = state.hitTimeBranchStateNo;
   const hitTimeBranchAnimNo = state.hitTimeBranchAnimNo ?? hitTimeBranchStateNo;
   const hitTimeBranchExpression = state.hitTimeBranchExpression ?? "GetHitVar(hittime) > 0";
+  const hitTimeBranchName = state.hitTimeBranchName ?? "Normal HitTime Branch";
   const hitTimeBranchController =
     hitTimeBranchStateNo === undefined
       ? ""
       : `
-[State ${shakeStateNo}, Normal HitTime Branch]
+[State ${shakeStateNo}, ${hitTimeBranchName}]
 type = ChangeState
 trigger1 = Time >= 0
 trigger1 = ${hitTimeBranchExpression}

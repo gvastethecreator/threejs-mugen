@@ -17,6 +17,7 @@ import {
   createSyntheticImportedFallTraceArtifact,
   createSyntheticImportedFallDefenceUpTraceArtifact,
   createSyntheticImportedHitFallCanRecoverTraceArtifact,
+  createSyntheticImportedHitFallFalseTraceArtifact,
   createSyntheticImportedGetHitVarAnimTypeTraceArtifact,
   createSyntheticImportedGetHitVarDownRecoverTraceArtifact,
   createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact,
@@ -9410,6 +9411,76 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 0,
       moveType: "I",
       ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported HitFall false artifact", () => {
+    const artifact = createSyntheticImportedHitFallFalseTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitfall-false-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitfall-false-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 325]));
+    for (const forbiddenState of [5001, 5030, 5050, 5210, 5200]) {
+      expect(evidence?.executedStates).not.toContain(forbiddenState);
+    }
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x"]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5000 HitFall false branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitFall False Probe" }],
+      },
+    ]);
+    expect(gate?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5000 normal shake before HitFall false probe",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5000,
+            moveType: "H",
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 325,
+            moveType: "H",
+            minFrames: 1,
+          },
+        ],
+      },
+    ]);
+    const shakeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5000);
+    const probeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 325);
+    expect(shakeFrame?.lastTick ?? 0).toBeLessThan(probeFrame?.firstTick ?? 0);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 325,
+      moveType: "H",
     });
   });
 
