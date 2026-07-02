@@ -425,7 +425,7 @@ time = 20
   });
 
   it("compiles static PlaySnd and StopSnd controllers into typed audio operations", () => {
-    const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50" }));
+    const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50", freqmul: "0.5", loop: "1" }));
     const stop = compileControllerIr(controller(200, "StopSnd", [], { channel: "2" }));
     const dynamic = compileControllerIr(controller(200, "PlaySnd", [], { value: "var(0),1" }));
 
@@ -436,6 +436,8 @@ time = 20
       channel: 2,
       lowPriority: true,
       volumeScale: 50,
+      freqMul: 0.5,
+      loop: true,
     });
     expect(stop.operation).toEqual({
       kind: "audio",

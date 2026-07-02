@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - PlaySnd freqmul and loop handoff
+
+Changed:
+- `AudioControllerOp` now preserves static `PlaySnd freqmul` and `loop` as typed `audio:playsnd` metadata, and `AudioEventSystem` emits them as bounded `RuntimeSoundEvent.freqMul` / `loop` trace/debug/audio telemetry.
+- `RuntimeTrace.requiredSoundEvents` can require `freqMul` and `loop`; required `synthetic-imported-sound.json` still passes with checksum `c9d880c0` while requiring `PlaySnd channel = 2`, `lowpriority = 1`, `volumescale = 50`, `freqmul = 0.5`, and `loop = 1`.
+- `MugenAudioSystem` maps `RuntimeSoundEvent.freqMul` into bounded Web Audio `playbackRate`, maps `loop = 1` into `AudioBufferSourceNode.loop`, and now tracks unchannelled one-shot/looping sources so `StopSnd channel = -1` / omitted-channel stop-all can stop them too.
+- This follows Elecbyte's `PlaySnd` docs for `freqmul` and `loop`, but remains a bounded browser adapter approximation. It does not implement positional panning yet.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 324 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-sound.json` remains checksum `c9d880c0` with `lowPriority: true`, `volumeScale: 50`, `freqMul: 0.5`, and `loop: true` evidence.
+- Full gates: `pnpm test` -> 130 files / 1057 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed.
+
+Claim allowed:
+- Static imported `PlaySnd freqmul = 0.5` and `loop = 1` survive compiler/runtime/trace handoff, and the browser audio adapter applies bounded playback-rate and loop settings for decodable SND playback.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN audio parity, pan/abspan, legacy `volume`, exact channel priority classes, global channel fallback, timing/mixing, sample start/end behavior, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
+
+Next:
+- Continue R1 audio precision only if actor/camera-aware `pan` / `abspan` can land with focused trace/runtime evidence; otherwise return to R1 Common1 or R2 MatchWorld ownership.
+
 ## 2026-07-02 - PlaySnd volumescale gain handoff
 
 Changed:

@@ -14,7 +14,7 @@ describe("AudioEventSystem", () => {
   it("creates PlaySnd runtime events from MUGEN sound values", () => {
     const event = createRuntimeSoundEvent(
       actor(200, 4),
-      controller("PlaySnd", { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50" }),
+      controller("PlaySnd", { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50", freqmul: "0.5", loop: "1" }),
       120,
     );
 
@@ -25,6 +25,8 @@ describe("AudioEventSystem", () => {
       channel: 2,
       lowPriority: true,
       volumeScale: 50,
+      freqMul: 0.5,
+      loop: true,
       raw: "S5,0",
       stateNo: 200,
       tick: 4,
@@ -66,6 +68,8 @@ describe("AudioEventSystem", () => {
       channel: 2,
       lowPriority: false,
       volumeScale: 25,
+      freqMul: 1.25,
+      loop: true,
     });
 
     expect(event).toEqual({
@@ -75,6 +79,8 @@ describe("AudioEventSystem", () => {
       channel: 2,
       lowPriority: false,
       volumeScale: 25,
+      freqMul: 1.25,
+      loop: true,
       raw: "S5,0",
       stateNo: 200,
       tick: 4,

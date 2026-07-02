@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { MugenAudioSystem, resolveRuntimeAudioEventAction, resolveRuntimeSoundGain } from "../game/audio/MugenAudioSystem";
+import {
+  MugenAudioSystem,
+  resolveRuntimeAudioEventAction,
+  resolveRuntimeSoundGain,
+  resolveRuntimeSoundPlaybackRate,
+} from "../game/audio/MugenAudioSystem";
 import type { SndArchive } from "../mugen/model/MugenSound";
 
 describe("MugenAudioSystem", () => {
@@ -38,6 +43,16 @@ describe("MugenAudioSystem", () => {
     expect(resolveRuntimeSoundGain({ volumeScale: -25 })).toBe(0);
     expect(resolveRuntimeSoundGain({ volumeScale: 200 })).toBeCloseTo(0.55);
     expect(resolveRuntimeSoundGain({ volumeScale: 50 }, 2)).toBeCloseTo(0.5);
+  });
+
+  it("maps PlaySnd freqmul into bounded Web Audio playback rate", () => {
+    expect(resolveRuntimeSoundPlaybackRate({})).toBe(1);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: 0.5 })).toBe(0.5);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: 1.25 })).toBe(1.25);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: 0 })).toBe(1);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: -2 })).toBe(1);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: 99 })).toBe(4);
+    expect(resolveRuntimeSoundPlaybackRate({ freqMul: 0.5 }, 2)).toBe(1);
   });
 });
 

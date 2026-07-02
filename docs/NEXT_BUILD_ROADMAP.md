@@ -78,13 +78,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 PlaySnd lowpriority and volumescale handoff
-  -> static PlaySnd lowpriority and volumescale now compile into typed audio:playsnd metadata
-  -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority and volumeScale
-  -> required synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1 and volumescale = 50
+R1 PlaySnd lowpriority, volumescale, freqmul, and loop handoff
+  -> static PlaySnd lowpriority, volumescale, freqmul, and loop now compile into typed audio:playsnd metadata
+  -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority, volumeScale, freqMul, and loop
+  -> required synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, freqmul = 0.5, and loop = 1
   -> MugenAudioSystem resolves explicit-channel audio actions through a pure channel-action boundary: normal PlaySnd replaces, low-priority PlaySnd skips, StopSnd channel -1 / omitted channel stops all tracked channels
   -> MugenAudioSystem applies volumescale as bounded Web Audio gain scaling while preserving default gain when omitted
-  -> bounded channel arbitration and volumescale only; no exact priority classes, legacy volume, pan/abspan/freqmul/loop, global channel fallback, timing/mixing, pause/superpause audio, or full audio parity claim
+  -> MugenAudioSystem applies freqmul as bounded Web Audio playback-rate scaling, maps loop to source looping, and tracks unchannelled sources for stop-all cleanup
+  -> bounded channel arbitration, volumescale, freqmul, and loop only; no exact priority classes, legacy volume, pan/abspan, global channel fallback, timing/mixing, pause/superpause audio, or full audio parity claim
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets

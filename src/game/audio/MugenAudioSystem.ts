@@ -18,6 +18,8 @@ export type RuntimeAudioEventAction =
   | { type: "stop"; channel?: number };
 
 const DEFAULT_SOUND_GAIN = 0.55;
+const MIN_PLAYBACK_RATE = 0.01;
+const MAX_PLAYBACK_RATE = 4;
 
 export class MugenAudioSystem {
   private context?: AudioContext;
@@ -25,6 +27,7 @@ export class MugenAudioSystem {
   private readonly prefixedArchives = new Map<string, SndArchive>();
   private readonly bufferPromises = new Map<string, Promise<AudioBuffer | undefined>>();
   private readonly activeChannels = new Map<number, AudioBufferSourceNode>();
+  private readonly floatingSources = new Set<AudioBufferSourceNode>();
   private readonly seenEvents = new Set<string>();
   private readonly errors: string[] = [];
   private unlocked = false;
@@ -110,6 +113,10 @@ export class MugenAudioSystem {
       source.stop();
     }
     this.activeChannels.clear();
+    for (const source of this.floatingSources) {
+      source.stop();
+    }
+    this.floatingSources.clear();
   }
 
   private async play(event: RuntimeSoundEvent, action: Extract<RuntimeAudioEventAction, { type: "play" }>): Promise<void> {
@@ -136,6 +143,8 @@ export class MugenAudioSystem {
     const gain = context.createGain();
     gain.gain.value = resolveRuntimeSoundGain(event);
     source.buffer = buffer;
+    source.playbackRate.value = resolveRuntimeSoundPlaybackRate(event);
+    source.loop = event.loop === true;
     source.connect(gain).connect(context.destination);
     if (action.channel !== undefined) {
       this.stop(action.channel);
@@ -144,6 +153,11 @@ export class MugenAudioSystem {
         if (this.activeChannels.get(action.channel!) === source) {
           this.activeChannels.delete(action.channel!);
         }
+      });
+    } else {
+      this.floatingSources.add(source);
+      source.addEventListener("ended", () => {
+        this.floatingSources.delete(source);
       });
     }
     source.start();
@@ -235,6 +249,17 @@ export function resolveRuntimeSoundGain(
   return safeBaseGain * (clamp(event.volumeScale, 0, 100) / 100);
 }
 
+export function resolveRuntimeSoundPlaybackRate(
+  event: Pick<RuntimeSoundEvent, "freqMul">,
+  baseRate = 1,
+): number {
+  const safeBaseRate = clamp(baseRate, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE);
+  if (event.freqMul === undefined || event.freqMul <= 0) {
+    return safeBaseRate;
+  }
+  return clamp(safeBaseRate * event.freqMul, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE);
+}
+
 function eventKey(actorId: string, event: RuntimeSoundEvent): string {
   return [
     actorId,
@@ -248,6 +273,8 @@ function eventKey(actorId: string, event: RuntimeSoundEvent): string {
     event.channel ?? "-",
     event.lowPriority ? "low" : "-",
     event.volumeScale ?? "-",
+    event.freqMul ?? "-",
+    event.loop ? "loop" : "-",
   ].join(":");
 }
 
