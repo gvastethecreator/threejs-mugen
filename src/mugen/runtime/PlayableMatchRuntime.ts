@@ -48,6 +48,7 @@ import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
 import { RuntimeMatchStepWorld } from "./RuntimeMatchStepSystem";
+import { RuntimeMatchTickBranchWorld } from "./RuntimeMatchTickBranchSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
@@ -164,6 +165,7 @@ const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
 const matchStepWorld = new RuntimeMatchStepWorld();
+const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
@@ -383,41 +385,42 @@ export class PlayableMatchRuntime {
       updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
     });
 
-    if (
-      matchHitPauseWorld.advanceRuntime<FighterMatchState>({
-        hitPauseWorld: this.hitPauseWorld,
-        p1: this.p1,
-        p2: this.p2,
-        p1Input,
-        p2Input,
-        tick: this.tick,
-        stage: this.stage,
-        stageTime: this.tick,
-        runtimeTick: this.tick,
-        effectLifecycleWorld: this.effectLifecycleWorld,
-        runIgnoredControllers: (fighter, opponent) =>
-          runHitPauseIgnoredControllers(
-            fighter,
-            opponent,
-            this.actorConstraintWorld,
-            this.spriteEffectWorld,
-            this.reversalWorld,
-            this.effectSpawnWorld,
-            this.stage.bounds,
-            this.tick,
-            (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
-            (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-          ),
-      }).paused
-    ) {
-      return;
-    }
+    matchTickBranchWorld.advance({
+      advanceHitPause: () => {
+        const result = matchHitPauseWorld.advanceRuntime<FighterMatchState>({
+          hitPauseWorld: this.hitPauseWorld,
+          p1: this.p1,
+          p2: this.p2,
+          p1Input,
+          p2Input,
+          tick: this.tick,
+          stage: this.stage,
+          stageTime: this.tick,
+          runtimeTick: this.tick,
+          effectLifecycleWorld: this.effectLifecycleWorld,
+          runIgnoredControllers: (fighter, opponent) =>
+            runHitPauseIgnoredControllers(
+              fighter,
+              opponent,
+              this.actorConstraintWorld,
+              this.spriteEffectWorld,
+              this.reversalWorld,
+              this.effectSpawnWorld,
+              this.stage.bounds,
+              this.tick,
+              (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
+              (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+            ),
+        });
+        return { paused: result.paused, result };
+      },
+      isMatchPaused: () => this.pauseWorld.current() !== undefined,
+      advancePaused: () => this.advancePausedMatch(input, p1Input, p2Input),
+      advanceActive: () => this.advanceActiveMatch(input, p1Input, p2Input),
+    });
+  }
 
-    if (this.pauseWorld.current()) {
-      this.advancePausedMatch(input, p1Input, p2Input);
-      return;
-    }
-
+  private advanceActiveMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
     matchActiveWorld.advance({
       tickRoundTimer: () => matchRoundWorld.tickTimer(this.round),
       pushNormalCommandBuffers: () =>

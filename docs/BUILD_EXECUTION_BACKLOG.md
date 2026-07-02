@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchTickBranchWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchTickBranchWorld` as the bounded per-tick hitpause / pause / active branch arbitration boundary consumed by `PlayableMatchRuntime.advanceOneTick()`.
+- Moved hitpause-first, pause-second, and active-fallback branch selection out of inline match-loop code.
+- Added focused `RuntimeMatchTickBranchSystem` coverage for hitpause winning before pause/active, pause winning after hitpause clears, and active fallback when neither pause layer owns the tick.
+- No hitpause countdown semantics, pause semantics, active-match order, controller semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchTickBranchSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 2 files / 74 tests.
+- Full closeout gates passed: `pnpm test` -> 128 files / 1044 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay presentation.
+
+Claim allowed:
+- Current per-tick hitpause / pause / active branch order has a named, testable ownership boundary while preserving existing `PlayableMatchRuntime` branch behavior.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN pause layering/arbitration, hitpause/pause tick semantics, helper/team actor scheduling, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 match-loop ownership slices or R1 KFM/Common1/FightFX precision. Do not count this extraction as new gameplay semantics.
+
 ## 2026-07-02 - RuntimeMatchStepWorld ownership extraction
 
 Changed:

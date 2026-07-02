@@ -78,6 +78,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 RuntimeMatchTickBranchWorld ownership
+  -> RuntimeMatchTickBranchWorld owns per-tick hitpause / pause / active branch arbitration outside PlayableMatchRuntime
+  -> hitpause consumes the tick before pause or active
+  -> match pause consumes the tick before active when hitpause is clear
+  -> active match runs only when neither pause layer owns the tick
+  -> focused RuntimeMatchTickBranchSystem coverage proves branch order
+  -> ownership cleanup only; no exact pause layering/arbitration, hitpause/pause tick semantics, helper/team scheduling, visual/audio parity, score movement, or full match VM claim
 R2 RuntimeMatchStepWorld ownership
   -> RuntimeMatchStepWorld owns bounded public match-step cadence outside PlayableMatchRuntime
   -> stopped playback snapshots without ticking frame clock; force advances exactly one tick
