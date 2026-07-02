@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeMatchCombatStateHooksWorld ownership
+
+Changed:
+- Added `RuntimeMatchCombatStateHooksWorld` as the bounded combat/helper state-hook adapter boundary outside `PlayableMatchRuntime`.
+- `PlayableMatchRuntime` now builds `runtimeCombatStateHooks` and `runtimeHelperCombatStateHooks` through that seam before handing them to `RuntimeMatchCombatBridgeWorld`.
+- Direct/projectile combat hooks preserve state-owner availability checks and state-entry options; helper combat hooks keep self-owned availability checks while forwarding entry options.
+- Roadmap, progress, scorecard, architecture, support, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchCombatStateHooksSystem.test.ts` -> 1 file / 2 tests.
+- Full gates: `pnpm test` -> 135 files / 1077 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current combat/helper state-hook adapter construction has a named, testable ownership boundary: direct/projectile state-owner availability plus entry options are preserved, and helper combat keeps self-owned availability checks while forwarding entry options.
+
+Claim blocked:
+- Helper-owned custom-state table breadth, throws, teams/simul actor registries, multi-target helper ownership, exact combat/helper tick order, visual/audio parity, score movement, and full combat/helper VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose another deeper R2 helper/effect/combat ownership seam that is not combat state-hook adapter construction.
+
 ## 2026-07-02 - R2 RuntimeMatchOpponentContextWorld ownership
 
 Changed:

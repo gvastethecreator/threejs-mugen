@@ -54,6 +54,7 @@ import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
+import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
@@ -168,6 +169,7 @@ const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
+const matchCombatStateHooksWorld = new RuntimeMatchCombatStateHooksWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
@@ -1061,24 +1063,13 @@ function canEnterState(target: FighterMatchState, stateId: number, owner: Fighte
   return stateEntryWorld.canEnterState(target, stateId, owner);
 }
 
-const runtimeCombatStateHooks = {
-  canEnterState: (target: FighterMatchState, stateNo: number, stateOwner?: FighterMatchState) =>
-    canEnterState(target, stateNo, stateOwner),
-  enterState: (
-    target: FighterMatchState,
-    stateNo: number,
-    options?: { stateOwner?: FighterMatchState; clearStateOwner?: boolean },
-  ) => enterState(target, stateNo, undefined, options),
-};
-
-const runtimeHelperCombatStateHooks = {
-  canEnterState: (target: FighterMatchState, stateNo: number) => canEnterState(target, stateNo),
-  enterState: (
-    target: FighterMatchState,
-    stateNo: number,
-    options?: { stateOwner?: FighterMatchState; clearStateOwner?: boolean },
-  ) => enterState(target, stateNo, undefined, options),
-};
+const {
+  combatStateHooks: runtimeCombatStateHooks,
+  helperStateHooks: runtimeHelperCombatStateHooks,
+} = matchCombatStateHooksWorld.create<FighterMatchState>({
+  canEnterState: (target, stateNo, stateOwner) => canEnterState(target, stateNo, stateOwner),
+  enterState: (target, stateNo, options) => enterState(target, stateNo, undefined, options),
+});
 
 function resetContactState(fighter: FighterMatchState): void {
   fighter.contact = fighter.contactWorld.create();

@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchCombatStateHooksWorld ownership
+  -> RuntimeMatchCombatStateHooksWorld owns bounded combat state-hook adapter construction outside PlayableMatchRuntime
+  -> direct/projectile combat hooks preserve state-owner availability and entry options; helper combat hooks keep self-owned availability checks while forwarding entry options
+  -> focused RuntimeMatchCombatStateHooksSystem coverage proves both contracts; PlayableMatchRuntime now creates both hook sets through the seam before RuntimeMatchCombatBridgeWorld routes them into combat
+  -> ownership cleanup only; no score movement, helper-owned custom-state table breadth, throws, teams/simul actor registry, multi-target helper ownership, exact combat/helper tick order, visual/audio parity, or full combat/helper VM claim
 R2 RuntimeMatchOpponentContextWorld ownership
   -> RuntimeMatchOpponentContextWorld owns current 1v1 match-opponent context construction for lifecycle bridges outside RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, and RuntimeHitPauseWorld
   -> mirrored P1/P2 opponent selection, singleton lifecycle opponents list projection, and unknown-actor fail-closed behavior route through one seam

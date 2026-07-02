@@ -369,6 +369,13 @@
 - `synthetic-imported-helper-numexplod.json` checksum `4328278a` proves a visual Helper can spawn owner-side Explod anim `942`, then branch from state `1200` to `1210` / anim `930` through `NumExplod(8830) > 0`.
 - This is `executed-partial`: exact helper effect-count parity, helper-owned effect namespaces, parent/root/team selection, dynamic effect params, exact tick order, and full Helper trigger parity remain unsupported.
 
+## Current Runtime Combat State Hook Cut
+
+- `RuntimeMatchCombatStateHooksWorld` owns the bounded adapter that builds state-entry hooks for direct/projectile combat and helper combat before the match combat bridge runs.
+- Direct/projectile combat hooks preserve state-owner availability checks and entry options for owner-backed custom-state routes; helper combat hooks keep self-owned availability checks while still forwarding entry options into the shared state-entry path.
+- Focused `RuntimeMatchCombatStateHooksSystem` coverage proves both adapter contracts.
+- This is `executed-partial` ownership only: helper-owned custom-state table breadth, throws, teams/simul actor registries, multi-target helper ownership, exact combat/helper tick order, visual/audio parity, and full combat/helper VM parity remain unsupported.
+
 ## Current Helper NumHelper Cut
 
 - `HelperSystem` can evaluate bounded helper-local `NumHelper(id)` through a callback supplied by `RuntimeEffectActorWorld`.
