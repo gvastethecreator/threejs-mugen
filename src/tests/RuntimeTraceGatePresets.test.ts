@@ -99,6 +99,7 @@ import {
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardHoldReturnActorFrameSequence,
+  officialKfmStandGuardHoldWalkReturnActorFrameSequence,
   officialKfmStandGuardSlideStopControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
   defaultAirGuardLandingControllerSequence,
@@ -7001,6 +7002,24 @@ describe("RuntimeTraceGatePresets", () => {
           stateNo: 130,
           stateType: "S",
           minFrames: 1,
+        },
+      ],
+    });
+    expect(officialKfmStandGuardHoldWalkReturnActorFrameSequence()).toEqual({
+      label: "Official KFM stand guard hold returns to walking control",
+      allowSameTick: true,
+      steps: [
+        ...officialKfmStandGuardHoldReturnActorFrameSequence().steps,
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 20,
+          animNo: 20,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 20,
         },
       ],
     });

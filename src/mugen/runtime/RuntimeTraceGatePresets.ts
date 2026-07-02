@@ -5058,6 +5058,27 @@ export function officialKfmStandGuardHoldReturnActorFrameSequence(): RuntimeTrac
   };
 }
 
+export function officialKfmStandGuardHoldWalkReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM stand guard hold returns to walking control",
+    allowSameTick: true,
+    steps: [
+      ...officialKfmStandGuardHoldReturnActorFrameSequence().steps,
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 20,
+      },
+    ],
+  };
+}
+
 export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 152/153 crouch guard-hit controller and typed operation order",

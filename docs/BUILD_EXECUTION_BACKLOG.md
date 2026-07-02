@@ -1,5 +1,30 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Optional official KFM guard-hold walk-control trace gate
+
+Changed:
+- Added optional `kfm-official-default-guard-hold-walk-return.json` runtime trace generation when `.scratch/fixtures/kfm-official.zip` exists locally.
+- Reused the official KFM stand guard route and the configurable actor-frame sequence requirement instead of adding a second fixture-specific runner.
+- Added `officialKfmStandGuardHoldWalkReturnActorFrameSequence()` so the optional fixture now gates `150 -> 151 -> 130 -> 20`, not only `150 -> 151 -> 130`.
+- Added focused preset coverage for the stricter hold-back walk-return sequence.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, workplan, progress tracker, context, and local runtime issue wording with private-fixture claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "official KFM guard|guard.*actor-frame sequence"` -> 1 file / 3 tests, 283 skipped.
+- Trace gate: `pnpm qa:trace` -> 292/292 artifacts, 263 required and 29 optional; `kfm-official-default-guard-hold-walk-return.json` checksum `885bb1da`.
+- Test suite: `pnpm test` -> 146 files / 1113 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- With the private official KFM fixture present, the real KFM/Common1 stand guard-hit route enters `150 -> 151`, preserves the stricter `151` slide-stop controller/typed-operation order, returns through observable guard-hold state `130`, and then resumes held-back walking state/action `20` with control.
+
+Claim blocked:
+- Public bundled KFM support, exact guard-hold duration, exact guard timing, proximity guard, guard effects, crouch/air guard-hold parity, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity remain blocked.
+
 ## 2026-07-02 - Optional official KFM stand guard-hold return trace gate
 
 Changed:
