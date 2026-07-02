@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - PlaySnd volumescale gain handoff
+
+Changed:
+- `AudioControllerOp` now preserves static `PlaySnd volumescale` as typed `audio:playsnd` metadata, and `AudioEventSystem` emits it as bounded `RuntimeSoundEvent.volumeScale` trace/debug/audio telemetry.
+- `RuntimeTrace.requiredSoundEvents` can require `volumeScale`; required `synthetic-imported-sound.json` still passes with checksum `c9d880c0` while requiring `PlaySnd channel = 2`, `lowpriority = 1`, and `volumescale = 50`.
+- `MugenAudioSystem` now maps `RuntimeSoundEvent.volumeScale` into a bounded Web Audio gain multiplier through `resolveRuntimeSoundGain`, preserving the existing default gain when omitted and clamping invalid authored values into the documented 0-100 range.
+- This follows Elecbyte's MUGEN 1.0+ `PlaySnd` docs: `volumescale` is the supported volume scalar, while the older `volume` parameter is legacy/ignored in newer MUGEN. The prototype therefore does not claim `volume` parity.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 323 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-sound.json` remains checksum `c9d880c0` with `lowPriority: true` and `volumeScale: 50` evidence.
+- Full gates: `pnpm test` -> 130 files / 1056 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check` -> passed. Build keeps the known large chunk warning. `git diff --check` only reported existing CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Static imported `PlaySnd volumescale = 50` survives compiler/runtime/trace handoff, and the browser audio adapter applies it as bounded gain scaling for decodable SND playback.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN audio parity, legacy `volume`, pan/abspan, freqmul, loop, exact priority classes, global channel fallback, timing/mixing, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
+
+Next:
+- Continue R1 audio precision only if `pan`/`abspan`, `freqmul`, or `loop` can land with focused trace/runtime evidence; otherwise return to R1 Common1 or R2 MatchWorld ownership.
+
 ## 2026-07-02 - PlaySnd lowpriority channel arbitration
 
 Changed:

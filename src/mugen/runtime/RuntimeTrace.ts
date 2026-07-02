@@ -690,6 +690,7 @@ export type RuntimeTraceSoundEventRequirement = {
   index?: number;
   channel?: number;
   lowPriority?: boolean;
+  volumeScale?: number;
   raw?: string;
   soundPrefix?: string;
   stateNo?: number;
@@ -710,6 +711,7 @@ export type RuntimeTraceGateSoundEventEvidence = {
   index?: number;
   channel?: number;
   lowPriority?: boolean;
+  volumeScale?: number;
   raw?: string;
   soundPrefix?: string;
   stateNo: number;
@@ -2167,6 +2169,7 @@ function summarizeSoundEventEvidence(
     index: event.index,
     channel: event.channel,
     lowPriority: event.lowPriority,
+    volumeScale: event.volumeScale,
     raw: event.raw,
     soundPrefix: event.soundPrefix,
     stateNo: event.stateNo,
@@ -2189,6 +2192,7 @@ function soundEventEvidenceKey(event: RuntimeTraceGateSoundEventEvidence): strin
     event.index ?? "",
     event.channel ?? "",
     event.lowPriority ? "low" : "",
+    event.volumeScale ?? "",
     event.raw ?? "",
     event.soundPrefix ?? "",
     event.stateNo,
@@ -2214,6 +2218,7 @@ function matchesSoundEventRequirement(
     (requirement.channel === undefined || event.channel === requirement.channel) &&
     (requirement.lowPriority === undefined ||
       (requirement.lowPriority ? event.lowPriority === true : event.lowPriority !== true)) &&
+    (requirement.volumeScale === undefined || event.volumeScale === requirement.volumeScale) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
     (requirement.soundPrefix === undefined || event.soundPrefix === requirement.soundPrefix) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&

@@ -85,12 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 PlaySnd lowpriority channel arbitration
-  -> static PlaySnd lowpriority lowers into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority
-  -> RuntimeTrace requiredSoundEvents can require lowPriority
-  -> synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1
+R1 PlaySnd lowpriority and volumescale handoff
+  -> static PlaySnd lowpriority and volumescale lower into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority / volumeScale
+  -> RuntimeTrace requiredSoundEvents can require lowPriority and volumeScale
+  -> synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1 and volumescale = 50
   -> MugenAudioSystem routes explicit-channel actions through resolveRuntimeAudioEventAction: normal PlaySnd replaces, low-priority PlaySnd skips active channels, StopSnd channel -1 / omitted channel stops all tracked channels
-  -> bounded Web Audio channel arbitration only; no exact priority classes, volume/pan/freq/loop, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
+  -> MugenAudioSystem routes volumeScale through resolveRuntimeSoundGain as bounded Web Audio gain scaling
+  -> bounded Web Audio channel arbitration and volumescale only; no exact priority classes, legacy volume, pan/abspan/freqmul/loop, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
   -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames and F sound refs before global data/fightfx.* fallback

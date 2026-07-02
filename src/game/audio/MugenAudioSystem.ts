@@ -17,6 +17,8 @@ export type RuntimeAudioEventAction =
   | { type: "skip"; reason: "low-priority-channel"; channel: number }
   | { type: "stop"; channel?: number };
 
+const DEFAULT_SOUND_GAIN = 0.55;
+
 export class MugenAudioSystem {
   private context?: AudioContext;
   private archive?: SndArchive;
@@ -132,7 +134,7 @@ export class MugenAudioSystem {
     }
     const source = context.createBufferSource();
     const gain = context.createGain();
-    gain.gain.value = 0.55;
+    gain.gain.value = resolveRuntimeSoundGain(event);
     source.buffer = buffer;
     source.connect(gain).connect(context.destination);
     if (action.channel !== undefined) {
@@ -222,6 +224,17 @@ export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "t
   return { type: "play", channel };
 }
 
+export function resolveRuntimeSoundGain(
+  event: Pick<RuntimeSoundEvent, "volumeScale">,
+  baseGain = DEFAULT_SOUND_GAIN,
+): number {
+  const safeBaseGain = clamp(baseGain, 0, 1);
+  if (event.volumeScale === undefined) {
+    return safeBaseGain;
+  }
+  return safeBaseGain * (clamp(event.volumeScale, 0, 100) / 100);
+}
+
 function eventKey(actorId: string, event: RuntimeSoundEvent): string {
   return [
     actorId,
@@ -234,5 +247,13 @@ function eventKey(actorId: string, event: RuntimeSoundEvent): string {
     event.index ?? "-",
     event.channel ?? "-",
     event.lowPriority ? "low" : "-",
+    event.volumeScale ?? "-",
   ].join(":");
+}
+
+function clamp(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+  return Math.max(min, Math.min(max, value));
 }

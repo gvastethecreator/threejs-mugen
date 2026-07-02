@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MugenAudioSystem, resolveRuntimeAudioEventAction } from "../game/audio/MugenAudioSystem";
+import { MugenAudioSystem, resolveRuntimeAudioEventAction, resolveRuntimeSoundGain } from "../game/audio/MugenAudioSystem";
 import type { SndArchive } from "../mugen/model/MugenSound";
 
 describe("MugenAudioSystem", () => {
@@ -29,6 +29,15 @@ describe("MugenAudioSystem", () => {
       channel: 2,
     });
     expect(resolveRuntimeAudioEventAction({ type: "PlaySnd", channel: 2 }, true)).toEqual({ type: "play", channel: 2 });
+  });
+
+  it("maps PlaySnd volumescale into bounded Web Audio gain", () => {
+    expect(resolveRuntimeSoundGain({})).toBeCloseTo(0.55);
+    expect(resolveRuntimeSoundGain({ volumeScale: 50 })).toBeCloseTo(0.275);
+    expect(resolveRuntimeSoundGain({ volumeScale: 0 })).toBe(0);
+    expect(resolveRuntimeSoundGain({ volumeScale: -25 })).toBe(0);
+    expect(resolveRuntimeSoundGain({ volumeScale: 200 })).toBeCloseTo(0.55);
+    expect(resolveRuntimeSoundGain({ volumeScale: 50 }, 2)).toBeCloseTo(0.5);
   });
 });
 

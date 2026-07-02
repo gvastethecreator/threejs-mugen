@@ -12,7 +12,11 @@ import type { RuntimeSoundEvent } from "../mugen/runtime/types";
 
 describe("AudioEventSystem", () => {
   it("creates PlaySnd runtime events from MUGEN sound values", () => {
-    const event = createRuntimeSoundEvent(actor(200, 4), controller("PlaySnd", { value: "S5,0", channel: "2", lowpriority: "1" }), 120);
+    const event = createRuntimeSoundEvent(
+      actor(200, 4),
+      controller("PlaySnd", { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50" }),
+      120,
+    );
 
     expect(event).toEqual({
       type: "PlaySnd",
@@ -20,6 +24,7 @@ describe("AudioEventSystem", () => {
       index: 0,
       channel: 2,
       lowPriority: true,
+      volumeScale: 50,
       raw: "S5,0",
       stateNo: 200,
       tick: 4,
@@ -60,6 +65,7 @@ describe("AudioEventSystem", () => {
       value: "S5,0",
       channel: 2,
       lowPriority: false,
+      volumeScale: 25,
     });
 
     expect(event).toEqual({
@@ -68,6 +74,7 @@ describe("AudioEventSystem", () => {
       index: 0,
       channel: 2,
       lowPriority: false,
+      volumeScale: 25,
       raw: "S5,0",
       stateNo: 200,
       tick: 4,

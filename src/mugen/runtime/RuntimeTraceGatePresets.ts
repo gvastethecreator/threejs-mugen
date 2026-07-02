@@ -539,11 +539,11 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
       requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd", "StopSnd"],
       requiredExecutedOperations: ["hitdef", "audio:playsnd", "audio:stopsnd"],
       requiredSoundEvents: [
-        { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, stateNo: 200 },
+        { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, volumeScale: 50, stateNo: 200 },
         { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
       ],
       notes: [
-        "Synthetic imported sound trace proves PlaySnd and StopSnd controllers emit bounded runtime sound events with parsed Sgroup,index/channel telemetry plus static PlaySnd lowpriority metadata. It does not claim SND decode coverage, Web Audio timing/mixing, loops, pan, volume, broad priorities, or exact MUGEN/IKEMEN audio parity.",
+        "Synthetic imported sound trace proves PlaySnd and StopSnd controllers emit bounded runtime sound events with parsed Sgroup,index/channel telemetry plus static PlaySnd lowpriority and volumescale metadata. It does not claim SND decode coverage, Web Audio timing/mixing, loops, pan, legacy volume, broad priorities, or exact MUGEN/IKEMEN audio parity.",
       ],
     },
   );
@@ -20826,6 +20826,7 @@ trigger1 = Time = 1
 value = S5,0
 channel = 2
 lowpriority = 1
+volumescale = 50
 
 [State 200, Stop Sound Probe]
 type = StopSnd
