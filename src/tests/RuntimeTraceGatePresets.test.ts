@@ -121,6 +121,7 @@ import {
   createSyntheticImportedHitDefGuardSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSoundTraceArtifact,
   createSyntheticImportedDefaultGuardStateTraceArtifact,
+  createSyntheticImportedDefaultGuardSlideStopTraceArtifact,
   createSyntheticImportedExplodBindTraceArtifact,
   createSyntheticImportedExplodRemoveOnGetHitTraceArtifact,
   createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact,
@@ -6239,6 +6240,59 @@ describe("RuntimeTraceGatePresets", () => {
       },
     ]);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticStandGuardHitPhysicsFrames());
+  });
+
+  it("creates a synthetic imported default Common1 guard slide-stop artifact", () => {
+    const artifact = createSyntheticImportedDefaultGuardSlideStopTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-guard-slide-stop-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-guard-slide-stop-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([130, 150, 151, 200]));
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      syntheticStandGuardHitPhysicsFrames()[0],
+      {
+        ...syntheticStandGuardHitPhysicsFrames()[1],
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "150/151 guard slide-stop and control order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "VelSet", name: "Stop Guard Slide" },
+          { stateNo: 151, operation: "kinematic:velset" },
+          { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
+          { stateNo: 151, operation: "resource:ctrlset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
+        ],
+      },
+    ]);
   });
 
   it("creates a synthetic imported GetHitVar guard timing artifact with branch evidence", () => {

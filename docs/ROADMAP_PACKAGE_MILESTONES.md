@@ -85,10 +85,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 GetHitVar velocity trace gate
+R1 Common1 guard slide-stop trace gate
+  -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is required in qa:trace
+  -> defender-owned stand guard-hit route executes 150 -> 151 -> 130 after direct guarded contact
+  -> required order is 150 ChangeAnim -> 150 ChangeState -> 151 HitVelSet -> kinematic:hitvelset -> 151 VelSet -> kinematic:velset -> 151 CtrlSet -> resource:ctrlset -> 151 ChangeState
+  -> actor-frame evidence proves guard-slide velocity before stop/control
+  -> pnpm qa:trace passes 271/271 artifacts, 248 required and 23 optional
+  -> stand guard slide-stop/control evidence only; no score movement, exact guard timing, proximity guard, guard effects, crouch/air parity, controller-loop tick parity, visual/audio parity, or full guard parity claim
+Previous R1 GetHitVar velocity trace gate
   -> synthetic-imported-gethitvar-velocity.json checksum 878a03f7 is required in qa:trace
   -> defender-owned normal get-hit CNS branches from 5000 into state/action 324 through GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded) after direct HitDef contact
-  -> pnpm qa:trace passes 270/270 artifacts, 247 required and 23 optional
+  -> that checkpoint passed 270/270 artifacts, 247 required and 23 optional
   -> velocity metadata trigger evidence only; no score movement, exact velocity lifetime after later physics/controllers, helper/projectile/custom-state inheritance breadth, teams/simul, visual/audio parity, or full get-hit parity claim
 Previous R1 GetHitVar damage trace gate
   -> synthetic-imported-gethitvar-damage.json checksum 2c726114 is required in qa:trace

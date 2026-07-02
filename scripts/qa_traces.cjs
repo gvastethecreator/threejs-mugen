@@ -631,6 +631,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultGuardStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-default-guard-slide-stop",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultGuardSlideStopTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-crouch-guard-state",
       required: true,
       artifact: presets.createSyntheticImportedCrouchGuardStateTraceArtifact(),
@@ -2242,6 +2247,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-crouch-guard-hitshaketime",
     "synthetic-imported-gethitvar-air-guard-hitshaketime",
     "synthetic-imported-gethitvar-guarded",
+    "synthetic-imported-default-guard-slide-stop",
     "synthetic-imported-projectile-gethitvar-guarded",
     "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
     "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime",

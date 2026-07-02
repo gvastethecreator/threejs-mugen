@@ -78,10 +78,17 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 GetHitVar velocity trace gate
-  -> synthetic-imported-gethitvar-velocity.json checksum 878a03f7 is now required
+R1 Common1 guard slide-stop trace gate
+  -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is now required
+  -> defender-owned stand guard-hit route executes 150 -> 151 -> 130 after direct guarded contact
+  -> required order is 150 ChangeAnim -> 150 ChangeState -> 151 HitVelSet -> kinematic:hitvelset -> 151 VelSet -> kinematic:velset -> 151 CtrlSet -> resource:ctrlset -> 151 ChangeState
+  -> actor-frame evidence proves guard-slide velocity before stop/control
+  -> pnpm qa:trace passes 271/271 artifacts, 248 required and 23 optional
+  -> stand guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, crouch/air parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
+Previous R1 GetHitVar velocity trace gate
+  -> synthetic-imported-gethitvar-velocity.json checksum 878a03f7 is required
   -> defender-owned normal get-hit CNS branches from 5000 into state/action 324 through GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded) after direct HitDef contact
-  -> pnpm qa:trace passes 270/270 artifacts, 247 required and 23 optional
+  -> that checkpoint passed 270/270 artifacts, 247 required and 23 optional
   -> velocity metadata trigger evidence only; no exact velocity lifetime after later physics/controllers, helper/projectile/custom-state inheritance breadth, visual/audio parity, score movement, or full get-hit parity claim
 Previous R1 GetHitVar damage trace gate
   -> synthetic-imported-gethitvar-damage.json checksum 2c726114 is now required
@@ -1118,6 +1125,8 @@ I1 ZSS state-block scanner expansion
 Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
+
+Do not reselect `synthetic-imported-default-guard-slide-stop` or the bounded direct stand guard-hit `150 -> 151 -> 130` slide-stop/control route as fresh next work; it is now closed and required.
 
 Do not reselect `synthetic-imported-gethitvar-velocity`, `synthetic-imported-gethitvar-damage`, or the bounded direct-contact `GetHitVar(xvel/yvel)` / `GetHitVar(damage) = 37` normal get-hit branches as fresh next work; they are now closed and required.
 

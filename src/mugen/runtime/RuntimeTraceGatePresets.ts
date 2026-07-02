@@ -3965,6 +3965,44 @@ export function createSyntheticImportedDefaultGuardStateTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedDefaultGuardSlideStopTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-guard-slide-stop",
+    displayName: "Synthetic Imported Default Guard Slide Stop",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-guard-slide-stop-attacker",
+    displayName: "Synthetic Imported Default Guard Slide Stop Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  const guardSlideFrames = syntheticStandGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    targetId: "synthetic-imported-default-guard-slide-stop-golden",
+    targetLabel: "Synthetic imported Common1 guard slide-stop route",
+    requiredExecutedStates: [200, 150, 151, 130],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet", "CtrlSet"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "resource:ctrlset"],
+    requiredControllerEventSequences: [defaultStandGuardSlideStopControllerSequence()],
+    requiredActorFrames: [
+      guardSlideFrames[0]!,
+      {
+        ...guardSlideFrames[1]!,
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ],
+    notes: [
+      "Synthetic imported guard slide-stop trace proves bounded Common1-style stand guard-hit state 151 executes HitVelSet, then VelSet from Time = GetHitVar(slidetime), then CtrlSet from Time = GetHitVar(ctrltime), before returning to guard state 130. It does not claim exact guard timing, proximity guard, guard effects, crouch/air guard parity, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedGetHitVarGuardTimingTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-gethitvar-guard-timing",
@@ -4343,6 +4381,25 @@ export function defaultStandGuardHitControllerSequence(): RuntimeTraceController
       { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
       { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
       { stateNo: 151, operation: "kinematic:hitvelset" },
+      { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
+      { stateNo: 151, operation: "resource:ctrlset" },
+      { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
+    ],
+  };
+}
+
+export function defaultStandGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "150/151 guard slide-stop and control order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+      { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+      { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+      { stateNo: 151, operation: "kinematic:hitvelset" },
+      { stateNo: 151, controller: "VelSet", name: "Stop Guard Slide" },
+      { stateNo: 151, operation: "kinematic:velset" },
       { stateNo: 151, controller: "CtrlSet", name: "Regain Guard Control" },
       { stateNo: 151, operation: "resource:ctrlset" },
       { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
