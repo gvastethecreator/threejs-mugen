@@ -86,7 +86,9 @@ import {
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardSlideStopControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
+  defaultAirGuardLandingControllerSequence,
   defaultCrouchGuardSlideStopControllerSequence,
+  syntheticAirGuardLandingPhysicsFrames,
   syntheticAirGuardHitPhysicsFrames,
   syntheticAutoGuardEndControllerSequence,
   syntheticAutoGuardEndActorFrameSequence,
@@ -103,6 +105,7 @@ import {
   createSyntheticImportedAssertSpecialLifetimeTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
+  createSyntheticImportedAirGuardLandingTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
   createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
@@ -7051,6 +7054,40 @@ describe("RuntimeTraceGatePresets", () => {
       },
     ]);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardHitPhysicsFrames());
+  });
+
+  it("creates a synthetic imported air guard landing artifact", () => {
+    const artifact = createSyntheticImportedAirGuardLandingTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-air-guard-landing-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-air-guard-landing-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([52, 154, 155, 200]));
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultAirGuardLandingControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardLandingPhysicsFrames());
   });
 
   it("creates a synthetic imported InGuardDist artifact without contact", () => {

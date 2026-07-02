@@ -4509,6 +4509,28 @@ export function defaultAirGuardHitControllerSequence(): RuntimeTraceControllerEv
   };
 }
 
+export function defaultAirGuardLandingControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "154/155/52 air guard landing and control order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 154, controller: "ChangeAnim", name: "Air Guard Shake Anim" },
+      { stateNo: 154, controller: "ChangeState", name: "Air Guard Shake Over" },
+      { stateNo: 155, controller: "HitVelSet", name: "Apply Air Guard Velocity" },
+      { stateNo: 155, operation: "kinematic:hitvelset" },
+      { stateNo: 155, controller: "VelAdd", name: "Apply Air Guard Gravity" },
+      { stateNo: 155, controller: "CtrlSet", name: "Regain Air Guard Control" },
+      { stateNo: 155, operation: "resource:ctrlset" },
+      { stateNo: 155, controller: "VelSet", name: "Air Guard Land Velocity" },
+      { stateNo: 155, operation: "kinematic:velset" },
+      { stateNo: 155, controller: "PosSet", name: "Air Guard Land Position" },
+      { stateNo: 155, operation: "kinematic:posset" },
+      { stateNo: 155, controller: "ChangeState", name: "Air Guard Land" },
+    ],
+  };
+}
+
 export function syntheticStandGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
   return [
     {
@@ -4617,6 +4639,21 @@ export function syntheticAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequi
       bodyWidthFront: 39,
       bodyWidthBack: 39,
       playerPush: true,
+    },
+  ];
+}
+
+export function syntheticAirGuardLandingPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    ...syntheticAirGuardHitPhysicsFrames(),
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 52,
+      minFrames: 1,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
     },
   ];
 }
@@ -5029,6 +5066,61 @@ export function createSyntheticImportedAirGuardStateTraceArtifact(options: Runti
     targetLabel: "Synthetic imported Common1 air guard-hit route",
     notes: [
       "Synthetic imported air guard-state trace proves an airborne held-back defender can block an A-guardable HitDef and route through Common1-style air guard states 154 and 155. It does not claim exact MUGEN/IKEMEN air guard physics, landing, sparks, sounds, or guard-end parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedAirGuardLandingTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-landing",
+    displayName: "Synthetic Imported Air Guard Landing",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      airLandStateNo: 52,
+      airLandAnimNo: 52,
+      guardStateNo: 130,
+      includeAirGuardLanding: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-landing-attacker",
+    displayName: "Synthetic Imported Air Guard Landing Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155, 52],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "PosSet", "VelAdd", "VelSet"],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:posset", "kinematic:velset"],
+    requiredControllerEventSequences: [defaultAirGuardLandingControllerSequence()],
+    requiredActorFrames: syntheticAirGuardLandingPhysicsFrames(),
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        life: 995,
+        ctrl: true,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+      },
+    ],
+    targetId: "synthetic-imported-air-guard-landing-golden",
+    targetLabel: "Synthetic imported Common1 air guard landing route",
+    notes: [
+      "Synthetic imported air guard landing trace proves bounded Common1-style air guard-hit state 155 can keep airborne guard-slide gravity, regain control, execute landing VelSet/PosSet, and hand off into state 52 at y = 0 before returning to grounded control. It does not claim exact MUGEN/IKEMEN air guard physics, landing timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity.",
     ],
   });
 }
@@ -17750,6 +17842,9 @@ export type SyntheticImportedTraceFighterOptions = {
     crouchSlideStateNo?: number;
     airShakeStateNo?: number;
     airSlideStateNo?: number;
+    airLandStateNo?: number;
+    airLandAnimNo?: number;
+    includeAirGuardLanding?: boolean;
     guardStateNo?: number;
     shakeAnimNo?: number;
     guardAnimNo?: number;
@@ -19844,9 +19939,12 @@ function defaultGuardHitBlock(state: {
   crouchSlideStateNo?: number;
   airShakeStateNo?: number;
   airSlideStateNo?: number;
+  airLandStateNo?: number;
   guardStateNo?: number;
   shakeAnimNo?: number;
+  airLandAnimNo?: number;
   guardAnimNo?: number;
+  includeAirGuardLanding?: boolean;
   guardedBranchStateNo?: number;
   guardedBranchAnimNo?: number;
   guardedBranchTrigger?: string;
@@ -19866,9 +19964,12 @@ function defaultGuardHitBlock(state: {
   const crouchSlideStateNo = state.crouchSlideStateNo ?? 153;
   const airShakeStateNo = state.airShakeStateNo ?? 154;
   const airSlideStateNo = state.airSlideStateNo ?? 155;
+  const airLandStateNo = state.airLandStateNo ?? 52;
   const guardStateNo = state.guardStateNo ?? 130;
   const shakeAnimNo = state.shakeAnimNo ?? shakeStateNo;
+  const airLandAnimNo = state.airLandAnimNo ?? airLandStateNo;
   const guardAnimNo = state.guardAnimNo ?? guardStateNo;
+  const includeAirGuardLanding = state.includeAirGuardLanding === true;
   const guardedBranchStateNo = state.guardedBranchStateNo;
   const guardedBranchAnimNo = state.guardedBranchAnimNo ?? guardedBranchStateNo;
   const guardedBranchTrigger = state.guardedBranchTrigger ?? "Time >= GetHitVar(ctrltime)";
@@ -19965,6 +20066,36 @@ trigger1 = Time >= 2
 value = 0
 ctrl = 1
 `;
+  const airGuardHitOverController = includeAirGuardLanding
+    ? `
+[State ${airSlideStateNo}, Air Guard Land Velocity]
+type = VelSet
+trigger1 = Vel Y > 0 && Pos Y >= 0
+trigger2 = Time >= 18
+x = 0
+y = 0
+
+[State ${airSlideStateNo}, Air Guard Land Position]
+type = PosSet
+trigger1 = Vel Y > 0 && Pos Y >= 0
+trigger2 = Time >= 18
+y = 0
+
+[State ${airSlideStateNo}, Air Guard Land]
+type = ChangeState
+trigger1 = Vel Y > 0 && Pos Y >= 0
+trigger2 = Time >= 18
+value = ${airLandStateNo}
+ctrl = 1
+`
+    : `
+[State ${airSlideStateNo}, Air Guard Hit Over]
+type = ChangeState
+trigger1 = HitOver
+value = ${guardStateNo}
+ctrl = 1
+`;
+  const airGuardLandingBlock = includeAirGuardLanding ? defaultLandStateBlock({ landStateNo: airLandStateNo, landAnimNo: airLandAnimNo }) : "";
   const crouchBranchExpression = `${slideStateNo} + ${crouchSlideStateNo - slideStateNo}*(command = "holddown")`;
   return `
 [Statedef ${shakeStateNo}]
@@ -20102,11 +20233,7 @@ trigger1 = Time = GetHitVar(ctrltime)
 value = 1
 
 ${airGuardedBranchController}
-[State ${airSlideStateNo}, Air Guard Hit Over]
-type = ChangeState
-trigger1 = HitOver
-value = ${guardStateNo}
-ctrl = 1
+${airGuardHitOverController}
 
 [Statedef ${guardStateNo}]
 type = S
@@ -20124,6 +20251,7 @@ ctrl = 1
 ${guardedBranchStateBlock}
 ${crouchGuardedBranchStateBlock}
 ${airGuardedBranchStateBlock}
+${airGuardLandingBlock}
 `;
 }
 

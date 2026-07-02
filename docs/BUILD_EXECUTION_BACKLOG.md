@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Required synthetic air guard landing trace gate
+
+Changed:
+- `synthetic-imported-air-guard-landing.json` is now a required trace artifact for bounded Common1-style air guard landing handoff.
+- `defaultGuardHitBlock` has an opt-in synthetic air guard landing route: state `155` keeps guard-slide gravity, regains control, then executes landing `VelSet` / `PosSet` and `ChangeState` into `52`.
+- `RuntimeTraceGatePresets` now exports `defaultAirGuardLandingControllerSequence()` and `syntheticAirGuardLandingPhysicsFrames()` so the gate can require ordered controller/typed-operation evidence plus a state-`52` y = 0 actor-frame bucket.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air guard landing"` -> 1 file / 1 test, 269 skipped.
+- Trace gate: `pnpm qa:trace` -> 276/276 artifacts, 251 required and 25 optional; `synthetic-imported-air-guard-landing.json` checksum `d6986d7f`.
+- Full gates: `pnpm test` -> 130 files / 1062 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 276/276 artifacts, 251 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Bounded synthetic Common1-style air guard landing handoff is trace-gated: held-back airborne defender blocks an A-guardable direct `HitDef`, routes `154 -> 155 -> 52`, executes `155` `HitVelSet`, `VelAdd`, `CtrlSet`, landing `VelSet`, landing `PosSet`, and final `ChangeState`, and records a state-`52` y = 0 actor frame.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN air guard physics, landing timing, state-`52` internal controller parity, proximity guard, guard effects, visual/audio parity, score movement, and full guard parity remain blocked.
+
+Next:
+- Continue R1 guard/recovery precision or R2 MatchWorld helper/effect/combat ownership.
+
 ## 2026-07-02 - Optional official KFM crouch guard slide-stop fixture gate
 
 Changed:

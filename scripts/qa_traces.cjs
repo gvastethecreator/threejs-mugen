@@ -661,6 +661,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAirGuardStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-air-guard-landing",
+      required: true,
+      artifact: presets.createSyntheticImportedAirGuardLandingTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-inguarddist",
       required: true,
       artifact: presets.createSyntheticImportedInGuardDistTraceArtifact(),
