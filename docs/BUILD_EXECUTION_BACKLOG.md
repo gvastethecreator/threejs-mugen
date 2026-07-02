@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - IKEMEN character FightFX prefix scanner expansion
+
+Changed:
+- Added scanner-only recognition for IKEMEN character `fightfx.prefix` metadata as `IKEMEN character FightFX prefix`.
+- Backed the signal with the existing source-mapped Ikemen-GO local snapshot path where character data reads `fightfx.prefix`.
+- Extended `IkemenFeatureScanner.test.ts` so character-level FightFX prefix metadata is reported as recognized/unsupported beside the existing `F` action-prefix route.
+- Updated IKEMEN scanner docs and roadmap issue wording. No runtime, renderer, CSS, sprites, assets, trace schema, or scorecard values changed.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/IkemenFeatureScanner.test.ts` -> 1 file / 7 tests.
+- Full closeout gates passed: `pnpm test` -> 129 files / 1048 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer, CSS, sprites, visible gameplay presentation, or Studio layout.
+
+Claim allowed:
+- IKEMEN character-specific FightFX prefix metadata is recognized in package scans and compatibility reports as unsupported scanner evidence.
+
+Claim blocked:
+- Character-specific FightFX prefix runtime routing, exact IKEMEN FightFX lookup semantics, ZSS/Lua execution, screenpack/lifebar parity, rollback/netplay, and IKEMEN runtime compatibility remain blocked.
+
+Next:
+- Return to R1 Common1/FightFX runtime precision or R2 helper/effect/combat ownership for port movement; use I1 only when adding source-mapped IKEMEN scanner signals.
+
 ## 2026-07-02 - RuntimeMatchHelperTargetStateWorld actor-resolution extraction
 
 Changed:

@@ -12,6 +12,7 @@ Use Ikemen-GO as a reference source for compatibility planning while keeping nea
 - Current queue label in `docs/ROADMAP_EXECUTION_BOARD.md`: I1 IKEMEN reference expansion.
 - Keep full IKEMEN-GO-class port score separate from MUGEN MVP score in `docs/PORT_COMPLETION_SCORECARD.md`.
 - Expand scanner signals for ZSS, Lua hooks, screenpacks, select/system files, model stages, and IKEMEN-only controllers/triggers.
+- Current completed cut: scanner-only recognition now includes character `fightfx.prefix` metadata, source-mapped to the local Ikemen-GO `char.go` parser path and backed by `IkemenFeatureScanner.test.ts`. It remains recognized/unsupported and is not executed.
 - Latest completed cut: scanner-only recognition now includes ZSS `[Statedef ...]` / `[State ...]` code blocks plus the IKEMEN text lifecycle controller `ModifyText`, backed by `IkemenFeatureScanner.test.ts`. These remain recognized/unsupported and are not executed.
 - Current completed cut: scanner-only recognition now includes the IKEMEN text lifecycle controller `RemoveText` and text-count trigger `NumText`, sourced from the local Ikemen-GO compiler/bytecode snapshot and backed by `IkemenFeatureScanner.test.ts`. These remain recognized/unsupported and are not executed.
 - Previous completed cut: scanner-only recognition now includes IKEMEN-GO data ZSS presentation/system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, and `RedLifeSet`, backed by `IkemenFeatureScanner.test.ts`. These remain recognized/unsupported and are not executed.

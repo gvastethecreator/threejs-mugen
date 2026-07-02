@@ -162,6 +162,15 @@ function scanText(path: string, text: string, findings: FindingAccumulator, zssF
     if (assignment && FIGHTFX_ACTION_PARAM_NAMES.has(assignment.key) && /^f\s+[-+]?\d+/i.test(unquote(assignment.value))) {
       findings.add("controller", "IKEMEN fightfx action prefix", location, raw, "fightfx.air animation routing is recognized but not executed.");
     }
+    if (assignment?.key === "fightfx.prefix") {
+      findings.add(
+        "reference",
+        "IKEMEN character FightFX prefix",
+        location,
+        raw,
+        "Character-specific FightFX prefixes are reported; runtime still uses the bounded common/FightFX package path.",
+      );
+    }
     if (assignment?.key === "unlock") {
       findings.add("screenpack", "IKEMEN Lua unlock expression", location, raw, "Select/stage/story unlock Lua is reported but not executed.");
     }

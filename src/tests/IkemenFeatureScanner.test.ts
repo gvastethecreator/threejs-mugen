@@ -149,7 +149,7 @@ describe("scanIkemenFeatures", () => {
       ],
       [
         "chars/neo/neo.cns",
-        "[Statedef 900]\nanim = F 300\n[State 900, Redirected]\ntype = LifeAdd\nRedirectID = PlayerID(4)\nvalue = -1\n",
+        "[Statedef 900]\nfightfx.prefix = neo_fx\nanim = F 300\n[State 900, Redirected]\ntype = LifeAdd\nRedirectID = PlayerID(4)\nvalue = -1\n",
       ],
       [
         "chars/neo/neo.cns.zss",
@@ -177,6 +177,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN movelist reference"]).toBe(1);
     expect(report.features["IKEMEN RedirectID controller parameter"]).toBe(1);
     expect(report.features["IKEMEN fightfx action prefix"]).toBe(1);
+    expect(report.features["IKEMEN character FightFX prefix"]).toBe(1);
     expect(report.features["ZSS function definition"]).toBe(1);
     expect(report.features["ZSS statedef block"]).toBe(1);
     expect(report.features["ZSS state controller block"]).toBe(1);

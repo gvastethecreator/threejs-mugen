@@ -551,7 +551,7 @@ Issue: `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
 
 Build next:
 
-- Current proof: `IkemenFeatureScanner` recognizes ZSS `[Statedef ...]` / `[State ...]` code blocks and IKEMEN-GO data ZSS presentation/text-system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as scanner-only unsupported findings, with focused scanner coverage.
+- Current proof: `IkemenFeatureScanner` recognizes source-mapped character `fightfx.prefix` metadata, ZSS `[Statedef ...]` / `[State ...]` code blocks, and IKEMEN-GO data ZSS presentation/text-system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as scanner-only unsupported findings, with focused scanner coverage.
 - Map more Ikemen-GO source/docs signals into scanner-only findings.
 - Keep every finding classified as recognized, unsupported, or unknown unless runtime execution is gated.
 

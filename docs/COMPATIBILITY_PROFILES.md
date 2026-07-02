@@ -109,6 +109,7 @@ The scanner should recognize and report:
 - Lua/script hooks, including `hook.*` registration/execution calls
 - IKEMEN-only config files
 - screenpack/select signals such as `unlock` and `commandlist`
+- character-specific `fightfx.prefix` metadata
 - extended triggers/controllers and selected `AssertSpecial` flags
 - extended stage/system/motif features, including named 3D/Z stage params and model-stage assets
 - profile-specific constants and params
