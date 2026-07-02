@@ -6,6 +6,7 @@ import {
   createSyntheticImportedCustomStateTraceArtifact,
   createSyntheticImportedTargetOwnedCustomStateTraceArtifact,
   createSyntheticImportedDefaultFallAirRecoveryVelocityTraceArtifact,
+  createSyntheticImportedDefaultFallGroundRecoveryPriorityTraceArtifact,
   createSyntheticImportedDefaultFallGroundRecoveryTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultFallRecoveryThresholdTraceArtifact,
@@ -62,6 +63,7 @@ import {
   defaultFallGetHitActorFrameSequence,
   defaultFallGetHitControllerSequence,
   defaultFallGroundImpactControllerSequence,
+  defaultGroundRecoveryControllerSequence,
   defaultHitFallCanRecoverReadyProbeControllerSequence,
   defaultHitFallCanRecoverProbeControllerSequence,
   defaultHitFallRecoveryInputPriorityActorFrameSequence,
@@ -10256,6 +10258,101 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+  });
+
+  it("creates a synthetic imported default Common1 ground-recovery priority over air recovery artifact", () => {
+    const artifact = createSyntheticImportedDefaultFallGroundRecoveryPriorityTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-fall-ground-recovery-priority-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-ground-recovery-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([5210, 5100, 5101, 5110, 5120]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    const groundFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5200);
+    const airFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5210);
+    expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(groundFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.lastTick ?? 0).toBeLessThan(groundFrame?.firstTick ?? 0);
+    expect(airFrame).toBeUndefined();
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([5210, 5100, 5101, 5110, 5120]);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([defaultGroundRecoveryControllerSequence()]);
+    expect(gate?.requirements.requiredActorFrameSequences).toEqual([
+      {
+        label: "5050 positive-to-zero recoverTime before prioritized 5200 ground recovery",
+        steps: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5050,
+            moveType: "H",
+            observedHitFallRecoverTimeAtLeast: 1,
+            observedHitFallRecoverTimeAtMost: 0,
+            observedHitFallRecoverTimeDropAtLeast: 1,
+            minFrames: 2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5200,
+            moveType: "H",
+            observedHitFallRecoverTimeAtMost: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 5201,
+            moveType: "H",
+            observedVelXAtMost: -0.15,
+            observedVelYAtMost: -3.5,
+            observedPosYAtMost: 0,
+            minFrames: 1,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 52,
+            moveType: "I",
+            observedPosYAtLeast: 0,
+            observedPosYAtMost: 0,
+            minFrames: 1,
+          },
+        ],
+      },
+    ]);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
   });
 
   it("creates a synthetic imported default Common1 recovery-input too-early reject artifact", () => {

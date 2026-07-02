@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 ground recovery priority trace gate
+
+Changed:
+- Added required `synthetic-imported-default-fall-ground-recovery-priority.json` runtime trace gate for bounded near-ground recovery arbitration.
+- Extended `createImportedDefaultFallGroundRecoveryTraceArtifact` so specialized gates can require forbidden states and typed operations without duplicating the shared ground-recovery runner.
+- Registered the artifact in `scripts/qa_traces.cjs` required trace generation and required artifact coverage.
+- Added focused trace preset coverage proving `5200/5201/52` wins while generic air recovery state `5210` stays forbidden.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, workplan, progress tracker, context, and local runtime issue wording with claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ground-recovery priority"` -> 1 file / 1 test, 283 skipped.
+- Trace gate: `pnpm qa:trace` -> 289/289 artifacts, 263 required and 26 optional; `synthetic-imported-default-fall-ground-recovery-priority.json` checksum `e83b2db7`.
+- Test suite: `pnpm test` -> 146 files / 1111 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded Common1-style near-ground recovery input now prefers `5200 -> 5201 -> 52 -> 0` over generic air-recovery `5210` when `CanRecover`, `command = "recovery"`, downward velocity, and near-ground position are all true; the gate requires active `x`/`recovery`, positive-to-zero `fall.recovertime`, typed kinematic/control operations, and forbids `5210` plus lie-down chain states.
+
+Claim blocked:
+- Exact ground/air recovery arbitration thresholds, exact recovery tables, velocity math, controller-loop timing, public KFM support, visual/audio parity, score movement, and full MUGEN/IKEMEN fall/recovery parity remain blocked.
+
 ## 2026-07-02 - R1 HitFall recovery-input priority trace gate
 
 Changed:

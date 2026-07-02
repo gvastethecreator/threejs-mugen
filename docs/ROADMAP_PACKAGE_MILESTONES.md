@@ -94,13 +94,16 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 Common1 HitFall recovery-input priority trace gate
-  -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is required in qa:trace
+R1 Common1 ground-recovery priority trace gate
+  -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
+  -> defender routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through active command = "recovery" near ground
+  -> required order includes 5050 recovery countdown, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
+  -> generic air-recovery state 5210 and lie-down chain states remain forbidden
+  -> pnpm qa:trace passes 289/289 artifacts, 263 required and 26 optional
+  -> bounded ground-over-air recovery selection evidence only; no score movement or full recovery parity claim
+Previous R1 Common1 HitFall recovery-input priority trace gate
+  -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde remains required in qa:trace
   -> defender routes 5000 -> 5030 -> 5050 -> 5210 -> 0 through active command = "recovery" while a competing HitFall && CanRecover probe exists
-  -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> Recovery Input ChangeState -> VelSet -> kinematic:velset -> HitFallSet -> hitfall:hitfallset
-  -> competing probe state 5250 and ground-recovery state 5200 remain forbidden
-  -> pnpm qa:trace passes 288/288 artifacts, 262 required and 26 optional
-  -> bounded input-priority evidence only; no score movement or full recovery parity claim
 Previous R1 Common1 HitFall CanRecover-ready trace gate
   -> synthetic-imported-hitfall-canrecover-ready.json checksum c0097d7f remains required in qa:trace
   -> defender routes 5000 -> 5030 -> 5050 -> 5250 -> 0 through HitFall && CanRecover after fall.recovertime drops positive-to-zero without active recovery command
@@ -214,6 +217,12 @@ R1 Common1 HitFall CanRecover-ready trace gate
   -> active-command evidence excludes recovery while recovery states 5210 and 5200 are forbidden
   -> pnpm qa:trace passes 287/287 artifacts, 261 required and 26 optional
   -> bounded CanRecover-ready trigger/order evidence only; no score movement, exact recovery threshold tables, controller-loop timing, recovery-input arbitration, velocity math, visual/audio parity, or full fall/recovery parity claim
+R1 Common1 ground-recovery priority trace gate
+  -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
+  -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery" while generic air recovery state 5210 is forbidden
+  -> required evidence includes positive-to-zero fall.recovertime, named ground-recovery controller/typed-operation order, final idle/control, and forbidden lie-down chain states
+  -> pnpm qa:trace passes 289/289 artifacts, 263 required and 26 optional
+  -> bounded ground-over-air recovery selection evidence only; no score movement, exact recovery threshold tables, ground/air arbitration constants, velocity math, visual/audio parity, or full recovery parity claim
 R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5210 -> 0 through command = "recovery" while HitFall && CanRecover probe state 5250 is forbidden
