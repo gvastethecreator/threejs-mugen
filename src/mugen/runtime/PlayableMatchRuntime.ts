@@ -589,21 +589,20 @@ export class PlayableMatchRuntime {
     const envColor = this.envColorWorld.snapshotStageFlash(this.tick);
     const p1Effects = this.effectLifecycleWorld.snapshotGroups(this.p1);
     const p2Effects = this.effectLifecycleWorld.snapshotGroups(this.p2);
-    return {
+    return this.snapshotWorld.match({
       tick: this.tick,
-      selectedActionId: this.p1.runtime.animNo,
-      selectedAction: this.p1.currentAction,
       playing: this.playing,
       speed: this.speed,
-      ...this.toggles,
+      toggles: this.toggles,
       matchPause: this.pauseWorld.snapshot(),
-      stage: this.snapshotWorld.stage({ stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor }),
+      stage: { stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor },
       round: this.round.snapshot(),
-      actors: [this.snapshotWorld.actor(this.p1), this.snapshotWorld.actor(this.p2)],
-      effects: this.snapshotWorld.effects({ p1: p1Effects, p2: p2Effects }),
+      p1: this.p1,
+      p2: this.p2,
+      effects: { p1: p1Effects, p2: p2Effects },
       compatibilitySession: compatibilityTelemetryWorld.buildSession([this.p1, this.p2]),
-      logs: this.logs.slice(0, 80),
-    };
+      logs: this.logs,
+    });
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {

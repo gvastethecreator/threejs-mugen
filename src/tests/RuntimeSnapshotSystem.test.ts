@@ -275,6 +275,79 @@ describe("RuntimeSnapshotWorld", () => {
     expect(snapshots[0]?.runtime.pos.x).toBe(1);
     expect(snapshots[0]?.clsn1).toEqual([{ x1: 0, y1: -10, x2: 8, y2: 0 }]);
   });
+
+  it("owns full match snapshot envelope assembly", () => {
+    const world = new RuntimeSnapshotWorld();
+    const p1 = playerActor("p1", "P1", 200);
+    const p2 = playerActor("p2", "P2", 0);
+    const p1Explod = effectSnapshot("p1-explod-1", "explod", "p1", { x: 8, y: 0 });
+    const logs = Array.from({ length: 82 }, (_, index) => `log-${index}`);
+    const matchPause = {
+      type: "Pause" as const,
+      remaining: 3,
+      moveTime: 1,
+      actorId: "p1",
+      darken: true,
+      sourceStateNo: 200,
+    };
+    const round = {
+      state: "fight" as const,
+      timer: 88,
+      message: "Fight",
+    };
+    const compatibilitySession = {
+      actors: [],
+    };
+
+    const snapshot = world.match({
+      tick: 42,
+      playing: false,
+      speed: 2,
+      toggles: {
+        showClsn1: true,
+        showClsn2: false,
+        showAxis: true,
+        showGrid: false,
+      },
+      matchPause,
+      stage: { stage: trainingStage, actors: [p1, p2] },
+      round,
+      p1,
+      p2,
+      effects: {
+        p1: { explods: [p1Explod], helpers: [], projectiles: [] },
+        p2: { explods: [], helpers: [], projectiles: [] },
+      },
+      compatibilitySession,
+      logs,
+    });
+    p1.runtime.pos.x = 999;
+    p1Explod.runtime.pos.x = 999;
+    logs[0] = "mutated";
+
+    expect(snapshot).toMatchObject({
+      tick: 42,
+      selectedActionId: 200,
+      selectedAction: { id: 200 },
+      playing: false,
+      speed: 2,
+      showClsn1: true,
+      showClsn2: false,
+      showAxis: true,
+      showGrid: false,
+      matchPause,
+      round,
+      compatibilitySession,
+    });
+    expect(snapshot.actors.map((actor) => actor.id)).toEqual(["p1", "p2"]);
+    expect(snapshot.actors[0]?.runtime.pos.x).toBe(30);
+    expect(snapshot.effects?.map((effect) => effect.id)).toEqual(["p1-explod-1"]);
+    expect(snapshot.effects?.[0]?.runtime.pos.x).toBe(8);
+    expect(snapshot.stage.id).toBe(trainingStage.id);
+    expect(snapshot.logs).toHaveLength(80);
+    expect(snapshot.logs[0]).toBe("log-0");
+    expect(snapshot.logs[79]).toBe("log-79");
+  });
 });
 
 function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"]): RuntimeSnapshotActor {
@@ -303,6 +376,33 @@ function runtimeState(): CharacterRuntimeState {
     physics: "S",
     vars: [],
     fvars: [],
+  };
+}
+
+function playerActor(id: string, label: string, animNo: number): RuntimePlayerSnapshotActor {
+  const runtime = runtimeState();
+  runtime.animNo = animNo;
+  return {
+    id,
+    label,
+    definition: { id },
+    runtime,
+    currentAction: {
+      id: animNo,
+      frames: [frame()],
+      rawLines: [],
+    },
+    moveTick: 0,
+    hitPause: 0,
+    targets: [],
+    targetBindings: [],
+    targetWorld: {
+      snapshot: () => ({ targets: [], bindings: [] }),
+      count: () => 0,
+    },
+    soundEvents: [],
+    hitEffectEvents: [],
+    envShakeEvents: [],
   };
 }
 

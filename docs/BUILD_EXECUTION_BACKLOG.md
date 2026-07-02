@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeSnapshotWorld match envelope ownership extraction
+
+Changed:
+- Added `RuntimeSnapshotWorld.match()` as the bounded full match snapshot envelope boundary consumed by `PlayableMatchRuntime.getSnapshot()`.
+- Moved selected P1 action, playback/speed/toggles, match pause handoff, stage/camera snapshot, round snapshot, player actor snapshots, effect snapshots, compatibility-session handoff, and 80-line log trimming out of inline `PlayableMatchRuntime` snapshot assembly.
+- Added focused `RuntimeSnapshotSystem` coverage for envelope fields, actor/effect clone isolation, ordered effect aggregation, and log cap behavior.
+- No gameplay order, controller semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeSnapshotSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 2 files / 79 tests.
+- Full closeout gates passed: `pnpm test` -> 128 files / 1045 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay presentation.
+
+Claim allowed:
+- Current full match snapshot envelope assembly has a named, testable ownership boundary while preserving existing `PlayableMatchRuntime.getSnapshot()` shape and consumers.
+
+Claim blocked:
+- Snapshot schema changes, compatibility telemetry semantics, exact camera/effect/renderer parity, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership slices or R1 KFM/Common1/FightFX precision. Do not count this extraction as new gameplay semantics.
+
 ## 2026-07-02 - RuntimeMatchTickBranchWorld ownership extraction
 
 Changed:

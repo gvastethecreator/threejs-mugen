@@ -5,6 +5,7 @@ import { RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import type {
   ActorSnapshot,
   CharacterRuntimeState,
+  MugenSnapshot,
   RuntimeEnvShakeEvent,
   RuntimeHitEffectEvent,
   RuntimeSoundEvent,
@@ -67,7 +68,40 @@ export type RuntimeEffectSnapshotInput = {
   p2: RuntimeEffectSnapshotGroups;
 };
 
+export type RuntimeMatchSnapshotInput = {
+  tick: number;
+  playing: boolean;
+  speed: number;
+  toggles: Pick<MugenSnapshot, "showClsn1" | "showClsn2" | "showAxis" | "showGrid">;
+  matchPause: MugenSnapshot["matchPause"];
+  stage: RuntimeStageSnapshotInput;
+  round: MugenSnapshot["round"];
+  p1: RuntimePlayerSnapshotActor;
+  p2: RuntimePlayerSnapshotActor;
+  effects: RuntimeEffectSnapshotInput;
+  compatibilitySession: MugenSnapshot["compatibilitySession"];
+  logs: string[];
+};
+
 export class RuntimeSnapshotWorld {
+  match(input: RuntimeMatchSnapshotInput): MugenSnapshot {
+    return {
+      tick: input.tick,
+      selectedActionId: input.p1.runtime.animNo,
+      selectedAction: input.p1.currentAction,
+      playing: input.playing,
+      speed: input.speed,
+      ...input.toggles,
+      matchPause: input.matchPause,
+      stage: this.stage(input.stage),
+      round: input.round,
+      actors: [this.actor(input.p1), this.actor(input.p2)],
+      effects: this.effects(input.effects),
+      compatibilitySession: input.compatibilitySession,
+      logs: input.logs.slice(0, 80),
+    };
+  }
+
   stage(input: RuntimeStageSnapshotInput): StageSnapshot {
     const center = cameraCenterX(input.actors);
     return {

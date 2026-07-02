@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeSnapshotWorld match envelope ownership
+  -> RuntimeSnapshotWorld.match() owns the full match snapshot envelope outside PlayableMatchRuntime
+  -> selected P1 action, playback/speed/toggles, match pause handoff, stage/camera, round, player actors, effects, compatibility-session handoff, and log cap route through one boundary
+  -> focused RuntimeSnapshotSystem coverage proves envelope fields, actor/effect clone isolation, and 80-line log trimming
+  -> ownership cleanup only; no score movement, snapshot schema change, compatibility telemetry semantics, exact camera/effect/renderer parity, visual/audio parity, or full match VM claim
 R2 RuntimeMatchTickBranchWorld ownership
   -> RuntimeMatchTickBranchWorld owns per-tick hitpause / pause / active branch arbitration outside PlayableMatchRuntime
   -> hitpause consumes the tick before pause or active
