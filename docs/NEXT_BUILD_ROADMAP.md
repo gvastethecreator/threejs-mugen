@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 move start ownership
+  -> RuntimeMoveStartWorld now owns bounded native/imported state-move startup from PlayableMatchRuntime
+  -> selected currentMove/currentMoveLabel, moveTick reset, hasHit reset, reversal cleanup, attack moveType, control handoff, and authored state-entry handoff route through one boundary
+  -> focused RuntimeMoveStartSystem coverage proves selected move metadata/reset behavior and control-before-state-entry hook order
+  -> ownership cleanup only; no exact command timing, cancel windows, combo/input priority, helper/team/redirect move startup, persistent-controller timing, visual parity, score movement, or full move VM claim
 R2 match tick input ownership
   -> RuntimeMatchTickInputWorld now owns bounded normal-match input/tick stamping from PlayableMatchRuntime
   -> actor compatibilityTick, cloned currentInput, and normal non-hitpause command-buffer writes route through one boundary

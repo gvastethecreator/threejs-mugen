@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMoveStartWorld ownership extraction
+
+Changed:
+- Added `RuntimeMoveStartWorld` as the bounded attack/state-move startup boundary consumed by `PlayableMatchRuntime`.
+- Moved current move assignment, move label stamping, move tick reset, hit/reversal reset, attack `moveType` write, control handoff, and authored action state entry handoff out of `PlayableMatchRuntime.startMoveWithSpec`.
+- Added focused `RuntimeMoveStartSystem` coverage for selected move metadata/reset behavior and hook ordering for control before state entry.
+- No runtime move semantics, State -1 routing semantics, hit/contact semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Full closeout gates passed: `pnpm test` -> 118 files / 1019 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, and `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional.
+- `pnpm qa:smoke` was intentionally not run because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current native/imported state-move startup has a named, testable ownership boundary while `PlayableMatchRuntime` still supplies concrete control mutation and state-entry hooks.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN command timing, cancel windows, combo/input priority, helper/team/redirect move startup, persistent-controller timing, visual parity, score movement, and full move VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard precision.
+
 ## 2026-07-02 - RuntimeMatchTickInputWorld ownership extraction
 
 Changed:

@@ -74,6 +74,7 @@ import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFight
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
+import { RuntimeMoveStartWorld } from "./RuntimeMoveStartSystem";
 import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
 import {
   RuntimeAnimationWorld,
@@ -151,6 +152,7 @@ const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
+const moveStartWorld = new RuntimeMoveStartWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -824,14 +826,10 @@ function startMove(fighter: FighterMatchState, moveName: "punch" | "kick"): void
 }
 
 function startMoveWithSpec(fighter: FighterMatchState, move: DemoMove, label: string): void {
-  fighter.currentMove = move;
-  fighter.currentMoveLabel = label;
-  fighter.moveTick = 0;
-  fighter.hasHit = false;
-  fighter.runtime.reversal = undefined;
-  fighter.runtime.moveType = "A";
-  applyRuntimeControl(fighter.runtime, false);
-  enterState(fighter, move.actionId, move);
+  moveStartWorld.start(fighter, move, label, {
+    applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
+    enterState: (actor, stateId, stateMove) => enterState(actor, stateId, stateMove),
+  });
 }
 
 function changeAction(

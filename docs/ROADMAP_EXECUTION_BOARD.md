@@ -399,6 +399,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 
 Build next:
 
+- Current proof: `RuntimeMoveStartWorld` owns bounded native/imported state-move startup consumed by `PlayableMatchRuntime`, with focused coverage for selected move metadata/reset behavior and control-before-state-entry hook order while trace behavior is expected to remain stable.
 - Current proof: `RuntimeMatchTickInputWorld` owns bounded normal-match input/tick stamping consumed by `PlayableMatchRuntime`, with focused coverage for `compatibilityTick`, cloned `currentInput`, normal non-hitpause command-buffer writes, and separation from pause/hitpause buffering while trace behavior is expected to remain stable.
 - Current proof: `RuntimeHelperTelemetryWorld` owns bounded helper-local Projectile controller/op telemetry binding consumed by `PlayableMatchRuntime`, with focused coverage for projectile controller/operation recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement while trace behavior is expected to remain stable.
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
