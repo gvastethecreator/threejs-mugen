@@ -917,6 +917,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitFallCanRecoverReadyTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitfall-recovery-input-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitfall-recover-true",
       required: true,
       artifact: presets.createSyntheticImportedHitFallRecoverTrueTraceArtifact(),
@@ -2426,6 +2431,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-fall-official-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
     "synthetic-imported-hitfall-canrecover-ready",
+    "synthetic-imported-hitfall-recovery-input-priority",
     "synthetic-imported-hitfall-recover-true",
     "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",

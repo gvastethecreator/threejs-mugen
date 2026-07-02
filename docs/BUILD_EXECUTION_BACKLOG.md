@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 HitFall recovery-input priority trace gate
+
+Changed:
+- Added required `synthetic-imported-hitfall-recovery-input-priority.json` runtime trace gate for bounded `command = "recovery"` priority over a competing `HitFall && CanRecover` probe in default get-hit fall state `5050`.
+- Moved synthetic default get-hit fall `Ground Recovery Input` / `Recovery Input` controllers before the optional fall probe in `defaultGetHitFallBlock`, matching the intended arbitration order without weakening the existing CanRecover-ready oracle.
+- Added configurable `requiredActiveCommands` support to `createImportedDefaultFallGetHitTraceArtifact`, plus a long recovery-priority input script that keeps `recovery` active when `CanRecover` becomes true.
+- Registered the artifact in `scripts/qa_traces.cjs` required trace generation and required artifact coverage.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, continuity guide, workplan, progress tracker, context, and local runtime issue wording with claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "recovery input priority"` -> 1 file / 1 test, 282 skipped.
+- Trace gate: `pnpm qa:trace` -> 288/288 artifacts, 262 required and 26 optional; `synthetic-imported-hitfall-recovery-input-priority.json` checksum `bae07bde`.
+- Test suite: `pnpm test` -> 146 files / 1110 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded Common1-style fall recovery input now wins over a same-state `HitFall && CanRecover` probe when `fall.recovertime` reaches zero, routing `5000 -> 5030 -> 5050 -> 5210 -> 0`, requiring active `x` and `recovery` command evidence, and forbidding probe/landing states `5250` and `5200`.
+
+Claim blocked:
+- Exact recovery threshold tables, ground/air recovery-input arbitration, velocity math, exact Common1 controller-loop timing, public KFM support, visual/audio parity, score movement, and full MUGEN/IKEMEN fall/recovery parity remain blocked.
+
 ## 2026-07-02 - R1 HitFall CanRecover-ready trace gate
 
 Changed:

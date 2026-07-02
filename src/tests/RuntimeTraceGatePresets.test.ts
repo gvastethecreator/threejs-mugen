@@ -19,6 +19,7 @@ import {
   createSyntheticImportedHitFallCanRecoverReadyTraceArtifact,
   createSyntheticImportedHitFallCanRecoverTraceArtifact,
   createSyntheticImportedHitFallFalseTraceArtifact,
+  createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact,
   createSyntheticImportedHitFallRecoverFalseTraceArtifact,
   createSyntheticImportedHitFallRecoverTrueTraceArtifact,
   createSyntheticImportedGetHitVarAnimTypeTraceArtifact,
@@ -63,6 +64,8 @@ import {
   defaultFallGroundImpactControllerSequence,
   defaultHitFallCanRecoverReadyProbeControllerSequence,
   defaultHitFallCanRecoverProbeControllerSequence,
+  defaultHitFallRecoveryInputPriorityActorFrameSequence,
+  defaultHitFallRecoveryInputPriorityControllerSequence,
   defaultHitFallRecoverFalseProbeControllerSequence,
   defaultHitFallRecoverTrueProbeControllerSequence,
   defaultFallLieDownGetUpActorFrameSequence,
@@ -9759,6 +9762,59 @@ describe("RuntimeTraceGatePresets", () => {
     expect(fallFrame?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(probeFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
     expect(fallFrame?.lastTick ?? 0).toBeLessThan(probeFrame?.firstTick ?? 0);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported recovery input priority over CanRecover probe artifact", () => {
+    const artifact = createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitfall-recovery-input-priority-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-gethit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([0, 200, 5000, 5030, 5050, 5210]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([5250, 5200]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      defaultHitFallRecoveryInputPriorityControllerSequence(),
+    ]);
+    expect(gate?.requirements.requiredActorFrameSequences).toEqual([
+      defaultHitFallRecoveryInputPriorityActorFrameSequence(),
+    ]);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    const recoveryFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5210);
+    const probeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5250);
+    expect(fallFrame?.maxHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(recoveryFrame?.minHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(fallFrame?.lastTick ?? 0).toBeLessThan(recoveryFrame?.firstTick ?? 0);
+    expect(probeFrame).toBeUndefined();
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,

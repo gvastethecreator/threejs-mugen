@@ -7610,6 +7610,7 @@ export function createImportedDefaultFallGetHitTraceArtifact(
     forbiddenExecutedStates?: number[];
     requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
     requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
+    requiredActiveCommands?: RuntimeTraceGate["requiredActiveCommands"];
     requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
     requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
@@ -7654,7 +7655,7 @@ export function createImportedDefaultFallGetHitTraceArtifact(
         requiredActorFrames: options.requiredActorFrames,
         requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredControllerEventSequences: options.requiredControllerEventSequences,
-        requiredActiveCommands: ["x"],
+        requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
         requiredFinalActors: options.requiredFinalActors ?? [
@@ -7868,6 +7869,80 @@ export function defaultHitFallCanRecoverReadyProbeControllerSequence(
       { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
       { stateNo: fallStateNo, controller: "ChangeState", name: "HitFall CanRecover Ready Probe" },
       { stateNo: fallProbeStateNo, controller: "ChangeState", name: "Bounded Return" },
+    ],
+  };
+}
+
+export function defaultHitFallRecoveryInputPriorityControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  recoveryInputStateNo = 5210,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${recoveryInputStateNo} recovery input priority over CanRecover probe`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "Recovery Input" },
+      { stateNo: recoveryInputStateNo, controller: "VelSet", name: "Air Recovery Velocity" },
+      { stateNo: recoveryInputStateNo, operation: "kinematic:velset" },
+      { stateNo: recoveryInputStateNo, controller: "HitFallSet", name: "Fall Recovery Settled" },
+      { stateNo: recoveryInputStateNo, operation: "hitfall:hitfallset" },
+      { stateNo: recoveryInputStateNo, controller: "ChangeState", name: "Stand" },
+    ],
+  };
+}
+
+export function defaultHitFallRecoveryInputPriorityActorFrameSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  recoveryInputStateNo = 5210,
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${recoveryInputStateNo} recovery input priority actor-frame order`,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: shakeStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: airStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: fallStateNo,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: recoveryInputStateNo,
+        moveType: "I",
+        observedHitFallRecoverTimeAtMost: 0,
+        minFrames: 1,
+      },
     ],
   };
 }
@@ -9947,6 +10022,86 @@ export function createSyntheticImportedHitFallCanRecoverReadyTraceArtifact(
       ],
       notes: [
         "Synthetic imported HitFall CanRecover-ready trace proves a defender-owned Common1-style fall route can branch on HitFall && CanRecover after fall.recovertime reaches zero, without recovery input and without entering recovery states. It does not claim exact MUGEN/IKEMEN recovery thresholds, controller-loop timing, recovery-input arbitration, or full Common1 parity.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitfall-recovery-input-priority",
+      displayName: "Synthetic Imported HitFall Recovery Input Priority",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        recoveryInputStateNo: 5210,
+        fallProbeStateNo: 5250,
+        fallProbeName: "HitFall CanRecover Ready Probe",
+        fallProbeExpression: "HitFall && CanRecover",
+        fallSettleTime: 60,
+        fallProbeTime: 2,
+        includeRecoveryInput: true,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitfall-recovery-input-priority-golden",
+      targetLabel: "Synthetic imported recovery input priority over CanRecover probe route",
+      script: importedDefaultFallRecoveryInputPriorityScript(),
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-hitfall-recovery-input-priority-attacker",
+        displayName: "Synthetic Imported HitFall Recovery Input Priority Attacker",
+        groundVelocity: [-3, -6],
+        fall: {
+          ...commonGetHitFallData(),
+          recover: true,
+          recoverTime: 10,
+        },
+      }),
+      requiredExecutedStates: [0, 200, 5000, 5030, 5050, 5210],
+      forbiddenExecutedStates: [5250, 5200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd", "HitFallSet", "VelSet"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "hitfall:hitfallset"],
+      requiredActiveCommands: ["x", "recovery"],
+      requiredControllerEventSequences: [defaultHitFallRecoveryInputPriorityControllerSequence()],
+      requiredActorFrameSequences: [defaultHitFallRecoveryInputPriorityActorFrameSequence()],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5050,
+          moveType: "H",
+          observedHitFallRecoverTimeAtLeast: 1,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5210,
+          moveType: "I",
+          observedHitFallRecoverTimeAtMost: 0,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          moveType: "I",
+          ctrl: true,
+        },
+      ],
+      notes: [
+        "Synthetic imported recovery-input priority trace proves command = \"recovery\" wins over a same-state HitFall && CanRecover probe once fall.recovertime reaches zero. It does not claim exact MUGEN/IKEMEN recovery thresholds, ground/air arbitration, velocity math, or full recovery-input parity.",
       ],
     },
   );
@@ -18255,6 +18410,15 @@ export function importedDefaultFallRecoveryInputScript(): RuntimeTraceInputFrame
   ]);
 }
 
+export function importedDefaultFallRecoveryInputPriorityScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-fall-recovery-priority-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "default-fall-recovery-priority-window", frames: 1, p1: [], p2: [] },
+    { label: "default-fall-recovery-priority-input", frames: 40, p1: [], p2: ["x", "y"] },
+    { label: "default-fall-recovery-priority-settle", frames: 12, p1: [], p2: [] },
+  ]);
+}
+
 export function importedDefaultFallRecoveryTooEarlyScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-default-fall-recovery-too-early-x", frames: 14, p1: ["x"], p2: [] },
@@ -21244,7 +21408,6 @@ type = VelAdd
 trigger1 = 1
 y = GetHitVar(yaccel)
 
-${fallProbeBlock}
 ${state.includeGroundRecovery ? `[State ${fallStateNo}, Ground Recovery Input]
 type = ChangeState
 triggerall = Vel Y > 0
@@ -21260,6 +21423,7 @@ triggerall = CanRecover
 trigger1 = Command = "recovery"
 value = ${recoveryInputStateNo}
 
+${fallProbeBlock}
 [State ${fallStateNo}, Bounded Settle]
 type = ChangeState
 trigger1 = Time = ${fallSettleTime}
