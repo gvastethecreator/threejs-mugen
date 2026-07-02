@@ -120,6 +120,7 @@
 ## Runtime Input / Movement
 
 - Required `synthetic-imported-basic-movement.json` checksum `917ff3e5` proves the current imported player input-control route can enter bounded walk state/action `20`, crouch `10`, airborne jump `40`, and final idle/control `0` from scripted `F`, `D`, and `U` direction input. The gate requires imported actor-frame state/physics/velocity/airborne evidence and order `20 -> 10 -> 40`. This is sandbox input-control evidence only; exact MUGEN/IKEMEN Common1 movement states, CMD command priority quirks, command-buffer raw direction evidence, landing timing, collision/platform physics, AI behavior, and full movement parity remain unsupported.
+- Optional private-fixture `kfm-official-basic-movement.json` checksum `ef30066c` confirms the local official KFM fixture can enter authored walk state/action `20`, crouch prep `11`, jump `41`, and final idle/control `0` from the same scripted direction input. The gate requires ordered actor-frame evidence `20 -> 11 -> 41` plus final state/action `0` with control. This is private fixture confidence only; public bundled KFM support, exact Common1 movement tables, CMD priority/raw-buffer parity, landing/collision/platform parity, visual parity, and full movement parity remain unsupported.
 
 ## CNS/ST
 

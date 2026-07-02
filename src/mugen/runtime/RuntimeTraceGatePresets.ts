@@ -191,6 +191,65 @@ export function createSyntheticImportedBasicMovementTraceArtifact(
   });
 }
 
+export function createImportedBasicMovementTraceArtifact(
+  imported: DemoFighterDefinition,
+  options: RuntimeTraceGatePresetOptions & {
+    targetId?: string;
+    targetLabel?: string;
+    notes?: string[];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
+  } = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedBasicMovementScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage }), script, {
+    label: `${imported.id}-basic-movement-golden`,
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: options.targetId ?? `${imported.id}-basic-movement-golden`,
+      label: options.targetLabel ?? `${imported.displayName} basic movement route`,
+      source: "mixed",
+      notes: options.notes ?? [
+        "Imported basic movement trace verifies the current input-control route can enter fixture-authored walk, crouch, jump, and idle states. It does not claim exact Common1 movement parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "imported-basic-movement-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredActorFrames: options.requiredActorFrames ?? [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, stateType: "S", physics: "S", minFrames: 3 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, stateType: "S", physics: "S", minFrames: 4 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateType: "C", physics: "C", minFrames: 4 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateType: "A", physics: "A", observedPosYAtMost: -1, minFrames: 5 },
+        ],
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredFinalActors: options.requiredFinalActors ?? [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, stateType: "S", moveType: "I", physics: "S" },
+        ],
+      },
+    ],
+  });
+}
+
+export function officialKfmBasicMovementActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM basic movement actor-frame order",
+    steps: [
+      { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, stateType: "S", physics: "S", minFrames: 4 },
+      { actorId: "p1", source: "imported", actorKind: "player", stateNo: 11, animNo: 11, stateType: "C", physics: "C", minFrames: 4 },
+      { actorId: "p1", source: "imported", actorKind: "player", stateNo: 41, animNo: 41, stateType: "A", physics: "A", minFrames: 5 },
+    ],
+  };
+}
+
 export function createSyntheticImportedMoveContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({

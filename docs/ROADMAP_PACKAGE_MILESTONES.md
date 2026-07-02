@@ -85,11 +85,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 optional official KFM basic movement trace gate
+  -> kfm-official-basic-movement.json checksum ef30066c is optional in qa:trace when .scratch/fixtures/kfm-official.zip exists
+  -> scripted p1 direction input drives real KFM through bounded walk 20, crouch prep 11, jump 41, and final idle/control 0
+  -> required evidence includes ordered imported actor-frame telemetry 20 -> 11 -> 41 plus final state/action 0 with control
+  -> pnpm qa:trace passes 286/286 artifacts, 260 required and 26 optional with the private fixture present
+  -> private fixture confidence only; no public KFM support, no exact Common1 movement/CMD priority/raw-buffer/landing/collision/AI/full movement parity claim
 R1 imported basic movement trace gate
   -> synthetic-imported-basic-movement.json checksum 917ff3e5 is required in qa:trace
   -> scripted p1 direction input drives the imported actor through bounded walk 20, crouch 10, jump 40, and final idle/control 0
   -> required evidence includes imported actor-frame state/physics/velocity/airborne telemetry and state order 20 -> 10 -> 40
-  -> pnpm qa:trace passes 285/285 artifacts, 260 required and 25 optional
+  -> pnpm qa:trace passes 286/286 artifacts, 260 required and 26 optional
   -> bounded sandbox input-control route only; no exact Common1 movement/CMD priority/landing/collision/AI/full movement parity claim
 R1 AssertSpecial TimerFreeze trace gate
   -> synthetic-imported-assertspecial-timerfreeze.json checksum 408528f1 is required in qa:trace

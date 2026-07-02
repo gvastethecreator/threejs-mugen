@@ -1427,6 +1427,38 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-basic-movement",
+        required: false,
+        artifact: presets.createImportedBasicMovementTraceArtifact(imported, {
+          targetId: "kfm-official-basic-movement-golden",
+          targetLabel: "Official KFM basic movement route",
+          requiredActorFrames: [
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, stateType: "S", physics: "S", minFrames: 3 },
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, stateType: "S", physics: "S", observedPosXAtLeast: -150, minFrames: 4 },
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 11, animNo: 11, stateType: "C", physics: "C", minFrames: 4 },
+            {
+              actorId: "p1",
+              source: "imported",
+              actorKind: "player",
+              stateNo: 41,
+              animNo: 41,
+              stateType: "A",
+              physics: "A",
+              observedPosYAtMost: -1,
+              observedVelYAtMost: -1,
+              minFrames: 5,
+            },
+          ],
+          requiredActorFrameSequences: [presets.officialKfmBasicMovementActorFrameSequence()],
+          requiredFinalActors: [
+            { actorId: "p1", source: "imported", actorKind: "player", stateNo: 0, animNo: 0, ctrl: true, stateType: "S", moveType: "I", physics: "S" },
+          ],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM can enter walk state 20, crouch prep state 11, jump state 41, and return to state 0/control from the same scripted F/D/U input used by the synthetic movement oracle. This does not prove public KFM support, exact Common1 movement tables, CMD priority, landing/collision parity, AI behavior, renderer parity, or full MUGEN/IKEMEN movement parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-x-hit-sound",
         required: false,
         artifact: presets.createImportedXTraceArtifact(imported, {

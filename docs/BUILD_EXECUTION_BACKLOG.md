@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 optional official KFM basic movement trace gate
+
+Changed:
+- Added optional `kfm-official-basic-movement.json` to `pnpm qa:trace` when `.scratch/fixtures/kfm-official.zip` exists locally.
+- Added reusable `createImportedBasicMovementTraceArtifact(...)` for real imported fighters, keeping synthetic movement and private-fixture KFM movement as separate claims.
+- Added `officialKfmBasicMovementActorFrameSequence()` for KFM's observed authored state order: walk `20`, crouch prep `11`, jump `41`; final idle/control `0` stays a final-actor requirement, not a sequence step.
+- Updated the focused trace preset tests and runtime support docs with private-fixture claim allowed / blocked scope.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "basic movement|Official KFM basic movement"` -> 1 file / 3 tests, 278 skipped.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; `kfm-official-basic-movement.json` checksum is `ef30066c`.
+- Test suite: `pnpm test` -> 142 files / 1102 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+- No `pnpm qa:smoke` is required for this slice because it changes trace/docs only, not frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- With the private official KFM fixture present, the same scripted `F`, `D`, and `U` input route used by the synthetic movement oracle can drive real KFM through walk state/action `20`, crouch prep `11`, jump `41`, and final state/action `0` with control, with ordered actor-frame and final-actor evidence.
+
+Claim blocked:
+- Public bundled KFM support, exact Common1 movement tables, CMD priority and raw direction-buffer parity, landing/collision/platform parity, AI behavior, renderer/visual parity, score movement, and full MUGEN/IKEMEN movement parity remain blocked.
+
+Next:
+- Keep required `synthetic-imported-basic-movement.json` as the portable movement oracle, and use this optional KFM route as private fixture confidence while continuing R1 Common1/FightFX precision or R2 MatchWorld ownership.
+
 ## 2026-07-02 - R1 imported basic movement trace gate
 
 Changed:
@@ -10,7 +37,7 @@ Changed:
 
 Evidence:
 - Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "basic movement"` -> 1 file / 1 test, 278 skipped.
-- Trace gate: `pnpm qa:trace` -> 285/285 artifacts, 260 required and 25 optional; `synthetic-imported-basic-movement.json` checksum is `917ff3e5`.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; `synthetic-imported-basic-movement.json` checksum is `917ff3e5`.
 - Test suite: `pnpm test` -> 142 files / 1100 tests.
 - Typecheck: `pnpm typecheck` -> passed.
 - Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.

@@ -311,6 +311,7 @@ import {
   createSyntheticImportedGameTimeTraceArtifact,
   createSyntheticImportedStageTimeTraceArtifact,
   createSyntheticImportedStateContextTraceArtifact,
+  createImportedBasicMovementTraceArtifact,
   createSyntheticImportedBasicMovementTraceArtifact,
   createSyntheticImportedXTraceArtifact,
   createSyntheticImportedTraceFighter,
@@ -361,6 +362,7 @@ import {
   importedTargetScript,
   nativeHitScript,
   nativeWhiffScript,
+  officialKfmBasicMovementActorFrameSequence,
   qcfXContactScript,
   qcfXScript,
 } from "../mugen/runtime/RuntimeTraceGatePresets";
@@ -489,6 +491,51 @@ describe("RuntimeTraceGatePresets", () => {
       stateType: "S",
       moveType: "I",
       physics: "S",
+    });
+  });
+
+  it("creates a reusable imported basic movement artifact for fixture-backed QA", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "imported-basic-movement-fixture",
+      displayName: "Imported Basic Movement Fixture",
+    });
+    const artifact = createImportedBasicMovementTraceArtifact(imported, {
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      targetId: "imported-basic-movement-fixture-golden",
+      targetLabel: "Imported basic movement fixture route",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "imported-basic-movement-fixture-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-basic-movement-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20 }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateType: "C", physics: "C" }),
+        expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", stateType: "A", physics: "A", observedPosYAtMost: -1 }),
+      ]),
+    );
+  });
+
+  it("describes official KFM basic movement actor-frame order separately from synthetic movement", () => {
+    expect(officialKfmBasicMovementActorFrameSequence()).toEqual({
+      label: "Official KFM basic movement actor-frame order",
+      steps: [
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 20, animNo: 20, stateType: "S", physics: "S", minFrames: 4 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 11, animNo: 11, stateType: "C", physics: "C", minFrames: 4 },
+        { actorId: "p1", source: "imported", actorKind: "player", stateNo: 41, animNo: 41, stateType: "A", physics: "A", minFrames: 5 },
+      ],
     });
   });
 

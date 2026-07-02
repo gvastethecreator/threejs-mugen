@@ -78,11 +78,17 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 optional official KFM basic movement trace gate
+  -> kfm-official-basic-movement.json checksum ef30066c is optional and runs only when .scratch/fixtures/kfm-official.zip exists
+  -> scripted p1 direction input drives real KFM through bounded walk 20, crouch prep 11, jump 41, and final idle/control 0
+  -> trace gate requires ordered imported actor-frame evidence 20 -> 11 -> 41 plus final state/action 0 with control
+  -> pnpm qa:trace passes 286/286 artifacts, 260 required and 26 optional with the local fixture present
+  -> private fixture confidence only; no public KFM support, no score movement, no exact Common1 movement/CMD priority/raw-buffer/landing/collision/AI/full movement parity claim
 R1 imported basic movement trace gate
   -> synthetic-imported-basic-movement.json checksum 917ff3e5 is required
   -> scripted p1 direction input drives the imported actor through bounded walk 20, crouch 10, jump 40, and final idle/control 0
   -> trace gate requires imported actor-frame state/physics/velocity/airborne evidence plus movement order 20 -> 10 -> 40
-  -> pnpm qa:trace passes 285/285 artifacts, 260 required and 25 optional
+  -> pnpm qa:trace passes 286/286 artifacts, 260 required and 26 optional
   -> bounded sandbox input-control route only; no score movement, no exact Common1 movement/CMD priority/landing/collision/AI/full movement parity claim
 R1 AssertSpecial RoundNotOver trace gate
   -> synthetic-imported-assertspecial-roundnotover.json checksum 342d49f0 is required
@@ -126,7 +132,7 @@ R1 PalFX + RemapPal combined trace gate
   -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required
   -> one imported actor executes PalFX and RemapPal in the same route
   -> trace gate requires typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
-  -> current pnpm qa:trace passes 285/285 artifacts, 260 required and 25 optional after the imported basic movement oracle
+  -> current pnpm qa:trace passes 286/286 artifacts, 260 required and 26 optional after the imported basic movement oracle
   -> bounded palette telemetry only; no score movement, no exact palette math/blend-order/renderer parity claim
 R1 AssertSpecial unguardable coverage hardening
   -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required
