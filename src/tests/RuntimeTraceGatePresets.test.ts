@@ -98,6 +98,7 @@ import {
   officialKfmGroundRecoveryControllerSequence,
   officialKfmCrouchGuardHitPhysicsFrames,
   officialKfmStandGuardHitControllerSequence,
+  officialKfmStandGuardHoldReturnActorFrameSequence,
   officialKfmStandGuardSlideStopControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
   defaultAirGuardLandingControllerSequence,
@@ -6888,6 +6889,56 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
   });
 
+  it("keeps guard-hit actor-frame sequence requirements configurable for fixture mirrors", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-guard-hold-return-options",
+      displayName: "Synthetic Imported Default Guard Hold Return Options",
+      defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, guardStateNo: 130 },
+    });
+    const sequence = {
+      label: "Synthetic stand guard returns to hold",
+      allowSameTick: true,
+      steps: [
+        {
+          actorId: "p2",
+          source: "imported" as const,
+          actorKind: "player" as const,
+          stateNo: 150,
+          moveType: "H" as const,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported" as const,
+          actorKind: "player" as const,
+          stateNo: 151,
+          moveType: "H" as const,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported" as const,
+          actorKind: "player" as const,
+          stateNo: 130,
+          stateType: "S" as const,
+          minFrames: 1,
+        },
+      ],
+    };
+    const artifact = createImportedDefaultGuardStateTraceArtifact(imported, {
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      targetId: "synthetic-imported-default-guard-hold-return-options-golden",
+      targetLabel: "Synthetic imported default guard hold return options",
+      requiredExecutedStates: [200, 150, 151, 130],
+      requiredActorFrameSequences: [sequence],
+    });
+
+    expect(artifact.gates[0]?.failures).toEqual([]);
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([sequence]);
+    expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([130, 150, 151, 200]));
+  });
+
   it("exports official KFM guard controller-order requirements for optional fixture QA", () => {
     expect(officialKfmStandGuardHitControllerSequence()).toMatchObject({
       label: "Official KFM 150/151 guard-hit controller and typed operation order",
@@ -6917,6 +6968,40 @@ describe("RuntimeTraceGatePresets", () => {
         { stateNo: 151, controller: "CtrlSet" },
         { stateNo: 151, operation: "resource:ctrlset" },
         { stateNo: 151, controller: "ChangeState" },
+      ],
+    });
+    expect(officialKfmStandGuardHoldReturnActorFrameSequence()).toEqual({
+      label: "Official KFM stand guard hit returns to guard hold",
+      allowSameTick: true,
+      steps: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 150,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 151,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 130,
+          stateType: "S",
+          minFrames: 1,
+        },
       ],
     });
     expect(officialKfmCrouchGuardHitControllerSequence().steps).toEqual([

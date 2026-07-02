@@ -201,12 +201,17 @@ R1 optional official KFM ground-recovery priority trace gate
   -> real KFM mirrors the required near-ground recovery route 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0
   -> generic air-recovery state 5210 plus lie-down chain states stay forbidden
   -> private-fixture confidence only; no public KFM support, exact thresholds, velocity math, controller-loop tick order, visual/audio parity, or score movement
+R1 optional official KFM stand guard-hold return trace gate
+  -> kfm-official-default-guard-hold-return.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM/Common1 stand guard-hit route 150 -> 151 returns through observable guard-hold state 130
+  -> preserves the stricter stand slide-stop controller/typed-operation order from kfm-official-default-guard-slide-stop.json
+  -> private-fixture confidence only; no public KFM support, exact guard-hold duration, guard timing/proximity/effects, crouch/air guard-hold parity, visual/audio parity, or score movement
 R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is now required
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery"
   -> required order includes positive-to-zero fall.recovertime, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> active-command evidence includes x and recovery; generic air-recovery state 5210 plus lie-down chain states are forbidden
-  -> pnpm qa:trace passes 290/290 artifacts, 263 required and 27 optional after the optional KFM mirror
+  -> pnpm qa:trace passes 291/291 artifacts, 263 required and 28 optional after the optional KFM guard-hold mirror
   -> bounded ground-over-air recovery selection evidence only; no exact recovery threshold tables, controller-loop timing, ground/air arbitration constants, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is now required
@@ -323,13 +328,17 @@ Previous R1 Common1 stand guard slide-stop trace gate
   -> actor-frame evidence proves guard-slide velocity before stop/control
   -> that required checkpoint passed pnpm qa:trace at 271/271 artifacts, 248 required and 23 optional
   -> stand guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, crouch/air parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
+Optional R1 KFM/Common1 guard hold-return fixture gate
+  -> kfm-official-default-guard-hold-return.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM/Common1 stand guard-hit state 150 -> 151 returns through observable guard-hold state 130 while preserving stand slide-stop order
+  -> this is private fixture evidence, not bundled public KFM support or exact guard-hold duration/timing/effects parity
 Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> kfm-official-default-crouch-guard-slide-stop.json checksum d11153d0 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 crouch guard-hit state 153 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact while holding down-back
-  -> the observed KFM route returns toward crouch/control; this does not claim a public 130 guard-hold return
+  -> the observed KFM crouch route returns toward crouch/control; this does not claim crouch guard-hold timing parity
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
+  -> pnpm qa:trace passes 291/291 artifacts, 263 required and 28 optional
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 match active ownership
   -> RuntimeMatchActiveWorld now owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates

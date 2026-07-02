@@ -3021,7 +3021,9 @@ function matchesActorFrameSequenceRequirement(
       return { passed: false, reason: `step ${index + 1} missing ${describeActorFrameRequirement(step)}` };
     }
     const candidate = candidates.find((actor) =>
-      requirement.allowSameTick ? actor.firstTick >= previousBoundaryTick : actor.firstTick > previousBoundaryTick,
+      requirement.allowSameTick
+        ? actor.firstTick >= previousBoundaryTick || actor.lastTick >= previousBoundaryTick
+        : actor.firstTick > previousBoundaryTick,
     );
     if (!candidate) {
       return {
@@ -3029,7 +3031,11 @@ function matchesActorFrameSequenceRequirement(
         reason: `step ${index + 1} not after tick ${previousBoundaryTick}: ${describeActorFrameRequirement(step)}`,
       };
     }
-    previousBoundaryTick = requirement.allowSameTick ? candidate.firstTick : candidate.lastTick;
+    previousBoundaryTick = requirement.allowSameTick
+      ? candidate.firstTick < previousBoundaryTick
+        ? candidate.lastTick
+        : candidate.firstTick
+      : candidate.lastTick;
   }
   return { passed: true };
 }

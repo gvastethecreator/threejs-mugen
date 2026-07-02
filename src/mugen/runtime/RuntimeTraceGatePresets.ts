@@ -5021,6 +5021,43 @@ export function officialKfmStandGuardSlideStopControllerSequence(): RuntimeTrace
   };
 }
 
+export function officialKfmStandGuardHoldReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM stand guard hit returns to guard hold",
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 150,
+        animNo: 150,
+        stateType: "S",
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 151,
+        animNo: 150,
+        stateType: "S",
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 130,
+        stateType: "S",
+        minFrames: 1,
+      },
+    ],
+  };
+}
+
 export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 152/153 crouch guard-hit controller and typed operation order",
@@ -10940,6 +10977,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
     requiredExecutedOperations?: string[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
     requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
+    requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredActiveCommands?: string[];
     requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
     requiredWorldLifecycleEvents?: RuntimeTraceWorldLifecycleEventRequirement[];
@@ -10984,6 +11022,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "resource:ctrlset"],
         requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActorFrames: options.requiredActorFrames,
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredActiveCommands: options.requiredActiveCommands ?? ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],
