@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchRoundWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchRoundWorld` as the bounded active-match round timer/finish side-effect boundary consumed by `PlayableMatchRuntime`.
+- Moved normal active-match round timer ticking and KO/time-over finish side effects for match stop plus log emission out of inline match-loop branching.
+- Added focused `RuntimeMatchRoundSystem` coverage for timer delegation, finish stop/log mutation, and no-finish no-op behavior.
+- No round timer semantics, KO/time-over winner wording, `RuntimeRoundSystem` snapshot/reset behavior, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchRoundSystem.test.ts` -> 1 file / 3 tests.
+- Full closeout gates passed: `pnpm test` -> 121 files / 1027 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current active-match round timer ticking and round-finish match stop/log side effects have a named, testable ownership boundary while preserving the existing `RuntimeRoundSystem` timer and finish contract.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN round-flow timing, intros/winposes, KO slowdown, continue flow, teams/simul/turns, lifebar/screenpack behavior, visual/audio parity, score movement, and full round VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard/FightFX precision.
+
 ## 2026-07-02 - RuntimeMatchFighterAdvanceWorld ownership extraction
 
 Changed:
@@ -7960,3 +7982,5 @@ These are future horizons, not blockers for the private usable MVP.
 297. Done RuntimeActiveControllerDispatchWorld ownership extraction cut: `RuntimeActiveControllerDispatchWorld` now owns bounded active-controller route orchestration after scan/trigger pass. The new boundary tries `RuntimeActiveStateDispatchWorld` first for `ChangeState` / `SelfState` and `ChangeAnim` / `ChangeAnim2`, routes shared runtime-controller execution second, routes `RuntimeActiveSideEffectDispatchWorld` third, and keeps unsupported dispatches fail-soft/reportable last. `PlayableMatchRuntime` now delegates route selection while still supplying concrete hooks, world instances, frame lookup, target-entry callbacks, telemetry callbacks, stage/tick context, and active-loop order. Verification passed: `pnpm exec vitest run src/tests/RuntimeActiveControllerDispatchSystem.test.ts` 1 file / 4 tests, `pnpm test` 114 files / 992 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current imported active-controller dispatch route selection has a named, testable boundary that preserves existing route order. Claim blocked: exact CNS VM tick order, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, missing-action fallback parity, target/combat/presentation semantic parity, unsupported-feature reporting breadth, visual parity, score movement, and full MUGEN/IKEMEN active-controller parity.
 
 298. Done IKEMEN ZSS state-block scanner expansion: `IkemenFeatureScanner` now recognizes ZSS `[Statedef ...]` / `[State ...]` code blocks and the IKEMEN text lifecycle controller `ModifyText` as scanner-only unsupported findings. Focused scanner coverage proves ZSS state/controller blocks and `modifyText{}` syntax are counted without creating runtime execution claims. Claim allowed: compatibility reports can classify these IKEMEN ZSS/text-system features as recognized/unsupported. Claim blocked: no ZSS execution, Lua execution, text rendering/removal/count semantics, screenpack/lifebar text parity, rollback/netplay, or IKEMEN runtime parity.
+
+299. Done RuntimeMatchRoundWorld ownership extraction cut: `RuntimeMatchRoundWorld` now owns bounded active-match round timer delegation plus finish side effects previously inline in `PlayableMatchRuntime`. Timer ticking and KO/time-over finish stop/log mutation route through one named boundary while `RuntimeRoundSystem` keeps the timer/winner/message contract. Focused coverage proves timer delegation, finish stop/log mutation, and no-finish no-op behavior. Verification passed: `pnpm exec vitest run src/tests/RuntimeMatchRoundSystem.test.ts` 1 file / 3 tests, `pnpm test` 121 files / 1027 tests, `pnpm typecheck`, `pnpm build` with existing Vite large-chunk warning, `pnpm qa:trace` 268/268 artifacts with 245 required and 23 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF warnings only. Claim allowed: current active-match round timer/finish side effects have a named, testable boundary without changing round semantics. Claim blocked: exact round-flow timing, intros/winposes, KO slowdown, continue flow, teams/simul/turns, lifebar/screenpack behavior, visual/audio parity, score movement, and full MUGEN/IKEMEN round VM parity.

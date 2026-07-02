@@ -50,6 +50,7 @@ import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatBridgeWorld } from "./RuntimeMatchCombatBridgeSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
+import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
 import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
@@ -158,6 +159,7 @@ const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchCombatBridgeWorld = new RuntimeMatchCombatBridgeWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
+const matchRoundWorld = new RuntimeMatchRoundWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -417,7 +419,7 @@ export class PlayableMatchRuntime {
       return;
     }
 
-    this.round.tickTimer();
+    matchRoundWorld.tickTimer(this.round);
     matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
     handlePlayerInput(this.p1, p1Input, this.p2, this.stage.bounds, this.tick, this.inputControlWorld);
     if (input.p2) {
@@ -489,14 +491,15 @@ export class PlayableMatchRuntime {
       log: (line) => this.logs.unshift(line),
     });
 
-    const roundFinish = this.round.finishIfNeeded(
-      { label: this.p1.label, life: this.p1.runtime.life },
-      { label: this.p2.label, life: this.p2.runtime.life },
-    );
-    if (roundFinish) {
-      this.playing = false;
-      this.logs.unshift(roundFinish.message);
-    }
+    matchRoundWorld.finishIfNeeded({
+      round: this.round,
+      p1: this.p1,
+      p2: this.p2,
+      stopPlaying: () => {
+        this.playing = false;
+      },
+      log: (message) => this.logs.unshift(message),
+    });
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
