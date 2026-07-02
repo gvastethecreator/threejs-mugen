@@ -31,6 +31,7 @@ Required artifacts should prove engine plumbing without private assets:
 - default Common1 get-hit and progression
 - synthetic bounded fall recovery
 - synthetic bounded recovery input
+- synthetic bounded air-entry recovery input and too-early rejection
 - synthetic bounded recovery threshold
 - synthetic bounded recovery actor-frame tick order
 - synthetic bounded air recovery velocity

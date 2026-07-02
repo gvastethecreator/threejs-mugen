@@ -85,11 +85,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 Common1 default air recovery-input trace gate
+R1 Common1 default air recovery too-early trace gate
+  -> synthetic-imported-default-air-fall-recovery-too-early.json checksum 48a2e708 is required in qa:trace
+  -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050, keeps command = "recovery" active too early, and stays in 5050 after fall HitDef without p2stateno
+  -> 5050 exposes positive fall.recovertime evidence from 11 to 6; recovery/landing states 5210, 5200, 5201, 52, 5100, 5101, 5110, and 5120 are forbidden; final checksum cdd20fed; gate label imported-default-fall-recovery-too-early-golden
+  -> pnpm qa:trace passes 264/264 artifacts, 244 required and 20 optional
+  -> air-entry early recovery-input rejection evidence only; no score movement, exact recovery threshold tables, exact air get-hit animation, exact velocity math, exact controller-loop timing, recovery arbitration between air/ground branches, visual/audio parity, or full Common1 recovery parity claim
+Previous R1 Common1 default air recovery-input trace gate
   -> synthetic-imported-default-air-fall-recovery-input.json checksum 334a419e is required in qa:trace
   -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050, accepts command = "recovery", enters 5210, lands through 52, and returns to idle/control after fall HitDef without p2stateno
   -> 5050 exposes positive-to-zero fall.recovertime evidence; 5210 has air-recovery velocity; 52 has y = 0 landing; final checksum c5038a9d; gate label imported-default-fall-recovery-input-golden
-  -> pnpm qa:trace passes 263/263 artifacts, 243 required and 20 optional
+  -> that checkpoint passed 263/263 artifacts, 243 required and 20 optional
   -> air-entry recovery-input evidence only; no score movement, exact recovery threshold tables, exact air get-hit animation, exact velocity math, exact controller-loop timing, recovery arbitration between air/ground branches, visual/audio parity, or full Common1 recovery parity claim
 Previous R1 Common1 default air lie-down recovery trace gate
   -> synthetic-imported-default-air-liedown-recovery.json checksum 56a8f236 is required in qa:trace

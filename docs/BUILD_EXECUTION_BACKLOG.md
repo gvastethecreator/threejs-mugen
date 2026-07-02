@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Default air recovery too-early trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-fall-recovery-too-early` trace evidence for airborne defender-owned Common1-style recovery-input rejection before `fall.recovertime` reaches zero.
+- Prefactored `createImportedDefaultFallRecoveryTooEarlyTraceArtifact` with script, state, actor-frame, controller-sequence, forbidden-state, and final-actor overrides so stand-entry and air-entry negative gates share one fixture runner.
+- Added reusable air-entry too-early controller and actor-frame sequence helpers for `5020 -> 5030 -> 5050` with no recovery/landing branch.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air-entry Common1 recovery-input too-early"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 264/264 artifacts, 244 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-fall-recovery-too-early.json` checksum `48a2e708`, initial checksum `29c75f4b`, final checksum `cdd20fed`.
+- Gate label: `imported-default-fall-recovery-too-early-golden`; required executed states include `200`, `5020`, `5030`, and `5050`.
+- Required evidence includes active commands `x` and `recovery`, forbidden states `5210`, `5200`, `5201`, `52`, `5100`, `5101`, `5110`, and `5120`, ordered actor frames `5020 -> 5030 -> 5050`, `5050` positive `hitFall.recoverTime` from `11` to `6`, and final P2 still in `5050` with no control.
+- `pnpm test` passed -> 114 files / 1006 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings only.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style air-entry fall route rejects early `command = "recovery"` while `fall.recovertime` remains positive, keeping P2 in `5050` after `5020 -> 5030 -> 5050`.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN recovery threshold tables, exact air get-hit animation choice, exact velocity math, exact controller-loop timing, exact KFM/public fixture parity, recovery arbitration between air/ground branches, visual/audio parity, score movement, and full Common1 recovery parity remain blocked.
+
+Next:
+- Continue into exact threshold tables, KFM/private-fixture comparison for the air-entry route, or another R1 Common1/FightFX precision gate.
+
 ## 2026-07-02 - Default air recovery-input trace gate
 
 Changed:

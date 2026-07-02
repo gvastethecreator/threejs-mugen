@@ -7612,10 +7612,17 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    script?: RuntimeTraceInputFrame[];
+    requiredExecutedStates?: number[];
+    forbiddenExecutedStates?: number[];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
+    requiredControllerEventSequences?: RuntimeTraceGate["requiredControllerEventSequences"];
+    requiredFinalActors?: RuntimeTraceGate["requiredFinalActors"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = importedDefaultFallOfficialRecoveryTooEarlyScript();
+  const script = options.script ?? importedDefaultFallOfficialRecoveryTooEarlyScript();
   const attacker =
     options.attacker ??
     createSyntheticImportedTraceFighter({
@@ -7650,14 +7657,14 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, 5000, 5030, 5050],
-        forbiddenExecutedStates: [5210, 5200, 5201],
+        requiredExecutedStates: options.requiredExecutedStates ?? [200, 5000, 5030, 5050],
+        forbiddenExecutedStates: options.forbiddenExecutedStates ?? [5210, 5200, 5201],
         requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
         requiredExecutedOperations: ["hitdef"],
         requiredActiveCommands: ["x", "recovery"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
-        requiredActorFrames: [
+        requiredActorFrames: options.requiredActorFrames ?? [
           {
             actorId: "p2",
             source: "imported",
@@ -7670,7 +7677,9 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
             minFrames: 2,
           },
         ],
-        requiredFinalActors: [
+        requiredActorFrameSequences: options.requiredActorFrameSequences,
+        requiredControllerEventSequences: options.requiredControllerEventSequences,
+        requiredFinalActors: options.requiredFinalActors ?? [
           {
             actorId: "p2",
             source: "imported",
@@ -7682,6 +7691,51 @@ export function createImportedDefaultFallRecoveryTooEarlyTraceArtifact(
         ],
       },
     ],
+  });
+}
+
+export function createSyntheticImportedDefaultAirFallRecoveryTooEarlyTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-air-fall-recovery-too-early",
+    displayName: "Synthetic Imported Default Air Fall Recovery Too Early",
+    defaultGetHitFall: {
+      shakeStateNo: 5020,
+      shakeStateType: "A",
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      landStateNo: 52,
+      includeRecoveryInput: true,
+      includeRecoveryInputLanding: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-air-fall-recovery-too-early-attacker",
+    displayName: "Synthetic Imported Default Air Fall Recovery Too Early Attacker",
+    groundVelocity: [-3, -6],
+    fall: {
+      ...commonGetHitFallData(),
+      velocity: { x: 3, y: -6 },
+      recover: true,
+      recoverTime: 20,
+    },
+  });
+  return createImportedDefaultFallRecoveryTooEarlyTraceArtifact(imported, {
+    ...options,
+    attacker,
+    script: importedDefaultAirFallRecoveryTooEarlyScript(),
+    targetId: "synthetic-imported-default-air-fall-recovery-too-early-golden",
+    targetLabel: "Synthetic imported air-entry Common1 recovery input too-early reject route",
+    notes: [
+      "Synthetic imported air-entry recovery-input negative trace proves an airborne defender can start in 5020 after a fall HitDef without p2stateno, route 5020 -> 5030 -> 5050, keep command = \"recovery\" active too early, and remain in 5050 while fall.recovertime stays positive. It does not claim exact MUGEN/IKEMEN recovery thresholds, air get-hit animation choice, velocity math, controller-loop timing, recovery arbitration, or full Common1 recovery parity.",
+    ],
+    requiredExecutedStates: [200, 5020, 5030, 5050],
+    forbiddenExecutedStates: [5210, 5200, 5201, 52, 5100, 5101, 5110, 5120],
+    requiredActorFrameSequences: [defaultAirFallRecoveryTooEarlyActorFrameSequence()],
+    requiredControllerEventSequences: [defaultAirFallRecoveryTooEarlyControllerSequence()],
   });
 }
 
@@ -8052,6 +8106,67 @@ export function defaultAirFallRecoveryInputActorFrameSequence(
         observedPosYAtLeast: 0,
         observedPosYAtMost: 0,
         minFrames: 1,
+      },
+    ],
+  };
+}
+
+export function defaultAirFallRecoveryTooEarlyControllerSequence(
+  shakeStateNo = 5020,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo} air-entry recovery-input too-early controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+    ],
+  };
+}
+
+export function defaultAirFallRecoveryTooEarlyActorFrameSequence(
+  shakeStateNo = 5020,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo} air-entry recovery-input too-early actor-frame order`,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: shakeStateNo,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: airStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: fallStateNo,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        observedHitFallRecoverTimeMinAtLeast: 1,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
       },
     ],
   };
@@ -16550,6 +16665,16 @@ export function importedDefaultAirFallRecoveryInputScript(): RuntimeTraceInputFr
     { label: "default-air-fall-recovery-input-window", frames: 4, p1: [], p2: [] },
     { label: "default-air-fall-recovery-input", frames: 6, p1: [], p2: ["x", "y"] },
     { label: "default-air-fall-recovery-input-settle", frames: 48, p1: [], p2: [] },
+  ]);
+}
+
+export function importedDefaultAirFallRecoveryTooEarlyScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-air-fall-recovery-too-early-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "imported-default-air-fall-recovery-too-early-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "default-air-fall-recovery-too-early-window", frames: 1, p1: [], p2: [] },
+    { label: "default-air-fall-recovery-too-early-input", frames: 3, p1: [], p2: ["x", "y"] },
+    { label: "default-air-fall-recovery-too-early-settle", frames: 2, p1: [], p2: [] },
   ]);
 }
 

@@ -35,6 +35,7 @@ import {
   createImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
   createSyntheticImportedDefaultAirFallRecoveryInputTraceArtifact,
+  createSyntheticImportedDefaultAirFallRecoveryTooEarlyTraceArtifact,
   createSyntheticImportedDefaultAirGroundImpactTraceArtifact,
   createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact,
   createSyntheticImportedDefaultAirFallGetHitTraceArtifact,
@@ -45,6 +46,8 @@ import {
   createImportedDefaultGetHitProgressionTraceArtifact,
   defaultAirFallRecoveryInputActorFrameSequence,
   defaultAirFallRecoveryInputControllerSequence,
+  defaultAirFallRecoveryTooEarlyActorFrameSequence,
+  defaultAirFallRecoveryTooEarlyControllerSequence,
   defaultFallBounceLieDownControllerSequence,
   defaultFallGetHitActorFrameSequence,
   defaultFallGetHitControllerSequence,
@@ -8868,6 +8871,65 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 0,
       moveType: "I",
       ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported air-entry Common1 recovery-input too-early reject artifact from 5020", () => {
+    const artifact = createSyntheticImportedDefaultAirFallRecoveryTooEarlyTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-air-fall-recovery-too-early-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-recovery-too-early-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5020, 5030, 5050]));
+    for (const stateNo of [5210, 5200, 5201, 52, 5100]) {
+      expect(evidence?.executedStates).not.toContain(stateNo);
+    }
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultAirFallRecoveryTooEarlyActorFrameSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultAirFallRecoveryTooEarlyControllerSequence(),
+    ]);
+    const frames = new Map(
+      [5020, 5030, 5050].map((stateNo) => [
+        stateNo,
+        evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === stateNo),
+      ]),
+    );
+    expect(frames.get(5020)).toMatchObject({ moveType: "H", stateType: "A", physics: "N" });
+    expect(frames.get(5030)).toMatchObject({ moveType: "H" });
+    expect(frames.get(5050)).toMatchObject({ moveType: "H" });
+    expect(frames.get(5020)?.lastTick ?? 0).toBeLessThan(frames.get(5030)?.firstTick ?? 0);
+    expect(frames.get(5030)?.lastTick ?? 0).toBeLessThan(frames.get(5050)?.firstTick ?? 0);
+    expect(frames.get(5050)?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(frames.get(5050)?.firstHitFallRecoverTime).toBeGreaterThan(
+      frames.get(5050)?.lastHitFallRecoverTime ?? Number.POSITIVE_INFINITY,
+    );
+    expect(frames.get(5050)?.frames).toBeGreaterThanOrEqual(2);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 5050,
+      moveType: "H",
+      ctrl: false,
     });
   });
 
