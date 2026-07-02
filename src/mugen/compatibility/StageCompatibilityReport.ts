@@ -14,6 +14,13 @@ export type StageBackgroundLayerReport = {
   start: { x: number; y: number };
   delta: { x: number; y: number };
   tiled: boolean;
+  trans?: {
+    mode: string;
+    alpha?: {
+      source: number;
+      destination: number;
+    };
+  };
   unsupported: string[];
   section?: string;
   sprite?: {
@@ -202,7 +209,7 @@ function describeBackgroundLayer(
 ): StageBackgroundLayerReport {
   const rawSection = getLayerRawSection(stagePackage, layer);
   const type = (layer.type ?? (layer.actionNo !== undefined ? "anim" : "normal")).toLowerCase();
-  const unsupported = collectUnsupportedLayerFeatures(rawSection, type);
+  const unsupported = collectUnsupportedLayerFeatures(rawSection, type, layer);
   const base = {
     id: layer.id,
     order,
@@ -218,6 +225,7 @@ function describeBackgroundLayer(
       y: layer.deltaY ?? 1,
     },
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
+    ...(layer.trans ? { trans: layer.trans } : {}),
     unsupported,
     ...(layer.sectionName ? { section: layer.sectionName } : {}),
   };
@@ -345,7 +353,7 @@ function getLayerRawSection(stagePackage: MugenStagePackage, layer: MugenStageLa
   return match?.[1] ?? {};
 }
 
-function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, type: string): string[] {
+function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, type: string, layer: MugenStageLayer): string[] {
   const unsupported: string[] = [];
   if (type && type !== "normal" && type !== "anim") {
     unsupported.push(`type:${type}`);
@@ -359,8 +367,11 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   if (hasKey(rawSection, "positionlink")) {
     unsupported.push("positionlink");
   }
-  if (hasKey(rawSection, "trans")) {
+  if (hasKey(rawSection, "trans") && !layer.trans) {
     unsupported.push("transparency mode");
+  }
+  if (hasKey(rawSection, "alpha") && !layer.trans) {
+    unsupported.push("alpha transparency");
   }
   return unsupported;
 }

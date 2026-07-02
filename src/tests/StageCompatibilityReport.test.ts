@@ -18,6 +18,8 @@ spriteno = 1,0
 start = 0,0
 delta = .8,.75
 tile = 1,0
+trans = addalpha
+alpha = 128,256
 window = 0,0,320,240
 
 [BG Animated]
@@ -111,6 +113,7 @@ describe("createStageCompatibilityReport", () => {
         controlId: 10,
         sprite: { group: 1, index: 0, decoded: true },
         tiled: true,
+        trans: { mode: "addalpha", alpha: { source: 128, destination: 256 } },
         unsupported: ["window/mask clipping"],
       }),
       expect.objectContaining({
@@ -170,6 +173,7 @@ describe("createStageCompatibilityReport", () => {
       "unsupported BG layer type",
       "unsupported BGCtrl type",
     ]));
+    expect(report.unsupported.map((item) => item.feature)).not.toContain("transparency mode");
   });
 
   it("summarizes native stage BGCtrl rows without a DEF/SFF package", () => {

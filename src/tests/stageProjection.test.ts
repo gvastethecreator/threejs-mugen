@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import * as THREE from "three";
 import type { MugenSprite } from "../mugen/model/MugenSprite";
 import type { MugenStageLayer } from "../mugen/model/MugenStage";
 import type { StageSnapshot } from "../mugen/runtime/types";
+import { stageLayerMaterialParameters } from "../game/render/AxisRenderer";
 import { projectStageSpriteLayer, resolveStageLayerForTick } from "../game/render/stageProjection";
 import { bgCtrlLabStage } from "../mugen/runtime/demoStage";
 
@@ -197,5 +199,21 @@ describe("resolveStageLayerForTick", () => {
     expect(Math.round(resolvedRibbon?.startX ?? 0)).toBe(54);
     expect(Math.round(resolvedRibbon?.startY ?? 0)).toBe(0);
     expect(Math.round(resolvedCloud?.startX ?? 0)).toBe(7);
+  });
+});
+
+describe("stage layer material params", () => {
+  it("maps bounded stage trans modes into Three.js blending and opacity", () => {
+    const addAlpha = stageLayerMaterialParameters("#fff", 0.8, { mode: "addalpha", alpha: { source: 128, destination: 256 } });
+    const subtractive = stageLayerMaterialParameters("#fff", 1, { mode: "sub" });
+    const normal = stageLayerMaterialParameters("#fff", 1, { mode: "none" });
+
+    expect(addAlpha.blending).toBe(THREE.AdditiveBlending);
+    expect(addAlpha.opacity).toBeCloseTo(0.4);
+    expect(addAlpha.transparent).toBe(true);
+    expect(addAlpha.depthWrite).toBe(false);
+    expect(subtractive.blending).toBe(THREE.SubtractiveBlending);
+    expect(normal.blending).toBe(THREE.NormalBlending);
+    expect(normal.transparent).toBe(false);
   });
 });

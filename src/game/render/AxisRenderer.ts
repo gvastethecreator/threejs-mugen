@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../../mugen/model/MugenAnimation";
 import type { MugenSprite, SffArchive } from "../../mugen/model/MugenSprite";
+import type { MugenStageLayerTrans } from "../../mugen/model/MugenStage";
 import type { StageSnapshot } from "../../mugen/runtime/types";
 import { TextureStore } from "./TextureStore";
 import { projectStageSpriteLayer, resolveStageLayerForTick } from "./stageProjection";
@@ -65,7 +66,7 @@ export class AxisRenderer {
             renderLayer.y,
             Math.max(stageWidth, renderLayer.width),
             renderLayer.height,
-            layerMaterial(renderLayer.color, renderLayer.opacity),
+            layerMaterial(renderLayer.color, renderLayer.opacity, renderLayer.trans),
             layerZ(renderLayer.layerNo, index),
           ),
         );
@@ -186,8 +187,24 @@ function stageFrameDuration(frame: MugenAnimationFrame): number {
   return Number.isFinite(frame.duration) && frame.duration > 0 ? Math.min(600, Math.round(frame.duration)) : 1;
 }
 
-function layerMaterial(color: string, opacity: number): THREE.MeshBasicMaterial {
-  return new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity });
+function layerMaterial(color: string, opacity: number, trans?: MugenStageLayerTrans): THREE.MeshBasicMaterial {
+  return new THREE.MeshBasicMaterial(stageLayerMaterialParameters(color, opacity, trans));
+}
+
+export function stageLayerMaterialParameters(
+  color: THREE.ColorRepresentation,
+  opacity: number,
+  trans?: MugenStageLayerTrans,
+): THREE.MeshBasicMaterialParameters {
+  const blending = stageLayerBlending(trans);
+  const materialOpacity = stageLayerOpacity(opacity, trans);
+  return {
+    color,
+    transparent: materialOpacity < 1 || blending !== THREE.NormalBlending,
+    opacity: materialOpacity,
+    blending,
+    depthWrite: blending === THREE.NormalBlending,
+  };
 }
 
 function createStageSprites(
@@ -206,9 +223,8 @@ function createStageSprites(
       placement.width,
       placement.height,
       new THREE.MeshBasicMaterial({
+        ...stageLayerMaterialParameters(0xffffff, layer.opacity, layer.trans),
         transparent: true,
-        depthWrite: true,
-        opacity: layer.opacity,
         map: texture,
       }),
       layerZ(layer.layerNo, index),
@@ -226,10 +242,8 @@ function createAssetLayer(
   const image = texture.image as { width?: number } | undefined;
   const textureLoaded = texture.userData.loaded === true || Boolean(image?.width);
   const materialOptions: THREE.MeshBasicMaterialParameters = {
-    color: textureLoaded ? 0xffffff : "#111821",
-    transparent: layer.opacity < 1 || !textureLoaded,
-    depthWrite: true,
-    opacity: textureLoaded ? layer.opacity : Math.min(layer.opacity, 0.96),
+    ...stageLayerMaterialParameters(textureLoaded ? 0xffffff : "#111821", textureLoaded ? layer.opacity : Math.min(layer.opacity, 0.96), layer.trans),
+    transparent: true,
   };
   if (textureLoaded) {
     materialOptions.map = texture;
@@ -247,6 +261,35 @@ function createAssetLayer(
 function layerZ(layerNo: number | undefined, index: number): number {
   const base = layerNo && layerNo > 0 ? -0.5 : -10;
   return base + index * 0.01;
+}
+
+function stageLayerOpacity(opacity: number, trans: MugenStageLayerTrans | undefined): number {
+  const base = clamp01(opacity);
+  if (trans?.mode === "addalpha") {
+    const source = trans.alpha?.source;
+    return base * (Number.isFinite(source) ? clamp01((source ?? 256) / 256) : 1);
+  }
+  if (trans?.mode === "none") {
+    return base;
+  }
+  return base;
+}
+
+function stageLayerBlending(trans: MugenStageLayerTrans | undefined): THREE.Blending {
+  if (!trans || trans.mode === "none") {
+    return THREE.NormalBlending;
+  }
+  if (trans.mode === "sub") {
+    return THREE.SubtractiveBlending;
+  }
+  return THREE.AdditiveBlending;
+}
+
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(0, Math.min(1, value));
 }
 
 function spriteKey(group: number, index: number): string {

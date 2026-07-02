@@ -1,4 +1,4 @@
-import type { MugenStageBgCtrl, MugenStageBgCtrlDef, MugenStageDefinition, MugenStageLayer } from "../model/MugenStage";
+import type { MugenStageBgCtrl, MugenStageBgCtrlDef, MugenStageDefinition, MugenStageLayer, MugenStageLayerTrans } from "../model/MugenStage";
 import type { MugenStageDef } from "../model/MugenStagePackage";
 import { parseAir } from "./AirParser";
 import { createDiagnostic, parseKeyValue, parseNumber, parseTextLines, unquote } from "./text";
@@ -133,6 +133,7 @@ function buildPlaceholderLayers(
     const tile = pairValue(values, "tile");
     const tilespacing = pairValue(values, "tilespacing");
     const controlId = numberValue(values, "id");
+    const trans = stageLayerTrans(values);
     return {
       id: `${section} ${spriteLabel}`.trim(),
       sectionName: section,
@@ -152,6 +153,7 @@ function buildPlaceholderLayers(
       spriteGroup: sprite?.[0],
       spriteIndex: sprite?.[1],
       actionNo,
+      trans,
       tile: tile
         ? {
             x: tile[0],
@@ -287,6 +289,18 @@ function pairValue(section: Record<string, string>, key: string): [number, numbe
     return undefined;
   }
   return [left, right];
+}
+
+function stageLayerTrans(values: Record<string, string>): MugenStageLayerTrans | undefined {
+  const mode = getValue(values, "trans")?.trim().toLowerCase();
+  if (!mode || !["none", "add", "add1", "addalpha", "sub"].includes(mode)) {
+    return undefined;
+  }
+  const alpha = pairValue(values, "alpha");
+  return {
+    mode: mode as MugenStageLayerTrans["mode"],
+    ...(alpha ? { alpha: { source: alpha[0], destination: alpha[1] } } : {}),
+  };
 }
 
 function numberListValue(section: Record<string, string>, key: string): number[] | undefined {

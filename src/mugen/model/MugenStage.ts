@@ -20,11 +20,20 @@ export type MugenStageLayer = {
   spriteGroup?: number;
   spriteIndex?: number;
   actionNo?: number;
+  trans?: MugenStageLayerTrans;
   tile?: {
     x: number;
     y: number;
     spacingX?: number;
     spacingY?: number;
+  };
+};
+
+export type MugenStageLayerTrans = {
+  mode: "none" | "add" | "add1" | "addalpha" | "sub";
+  alpha?: {
+    source: number;
+    destination: number;
   };
 };
 

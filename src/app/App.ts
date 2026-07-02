@@ -4768,6 +4768,7 @@ export class App {
           layer.action ? `act ${layer.action.id} ${layer.action.decodedFrames}/${layer.action.frames}` : undefined,
           `start ${formatStageNumber(layer.start.x)},${formatStageNumber(layer.start.y)}`,
           `delta ${formatStageNumber(layer.delta.x)},${formatStageNumber(layer.delta.y)}`,
+          layer.trans ? formatStageTrans(layer.trans) : undefined,
         ]
           .filter(Boolean)
           .join(" / "),
@@ -4788,6 +4789,7 @@ export class App {
         layer.actionNo !== undefined ? `act ${layer.actionNo}` : undefined,
         `layer ${index}`,
         `delta ${formatStageNumber(layer.deltaX)},${formatStageNumber(layer.deltaY ?? 1)}`,
+        layer.trans ? formatStageTrans(layer.trans) : undefined,
       ]
         .filter(Boolean)
         .join(" / "),
@@ -10822,6 +10824,11 @@ function formatDateTime(value: string): string {
 
 function formatStageNumber(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/g, "").replace(/\.$/g, "");
+}
+
+function formatStageTrans(trans: { mode: string; alpha?: { source: number; destination: number } }): string {
+  const alpha = trans.alpha ? ` ${formatStageNumber(trans.alpha.source)},${formatStageNumber(trans.alpha.destination)}` : "";
+  return `trans ${trans.mode}${alpha}`;
 }
 
 function formatCommandSequence(command: MugenCharacter["commands"][number]): string {

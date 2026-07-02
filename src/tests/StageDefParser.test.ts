@@ -52,6 +52,8 @@ type = anim
 actionno = 10
 start = 20,40
 delta = .75,.75
+trans = addalpha
+alpha = 128,256
 
 [Begin Action 10]
 2,0,0,0,4
@@ -93,7 +95,15 @@ describe("parseStageDef", () => {
     expect(runtime.layers[0]?.id).toContain("BG 0");
     expect(runtime.layers[0]).toMatchObject({ sectionName: "BG 0", type: "normal", spriteGroup: 0, spriteIndex: 0, startX: 0, startY: 0, deltaX: 0.5 });
     expect(runtime.layers[1]).toMatchObject({ sectionName: "BG Floor", type: "normal", spriteGroup: 1, spriteIndex: 0, layerNo: 1 });
-    expect(runtime.layers[2]).toMatchObject({ sectionName: "BG Animated", type: "anim", actionNo: 10, startX: 20, startY: 40, deltaX: 0.75 });
+    expect(runtime.layers[2]).toMatchObject({
+      sectionName: "BG Animated",
+      type: "anim",
+      actionNo: 10,
+      startX: 20,
+      startY: 40,
+      deltaX: 0.75,
+      trans: { mode: "addalpha", alpha: { source: 128, destination: 256 } },
+    });
     expect(runtime.layers[1]?.controlId).toBe(4);
     expect(parsed.bgControllers).toHaveLength(1);
     expect(parsed.bgControllers[0]).toMatchObject({

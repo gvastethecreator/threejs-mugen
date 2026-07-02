@@ -76,14 +76,14 @@
 - Stage sprite/music path resolution from the stage folder, package root, and `data/` style fallbacks.
 - Parsed `[BG ...]` sections preserve `id`, `spriteno`, `actionno`, `start`, `delta`, `layerno`, `tile`, and `tilespacing` metadata.
 - `[BGCtrlDef ...]` and `[BGCtrl ...]` sections are parsed into Stage BG controller IR with group name, inherited `looptime`, inherited/per-controller `ctrlID`, controller type, timing window, params, and target layer ids.
-- Recognized BGCtrl types are `Null`, `Visible`, `Enabled`, `VelSet`, `VelAdd`, `PosSet`, `PosAdd`, `Anim`, `SinX`, and `SinY`. They execute through a bounded renderer path for visibility/enabled skips, position/velocity offsets, action swaps, and simple sine offsets. Exact MUGEN timing, side effects, window/mask/trans behavior, and full parity remain unsupported.
+- Recognized BGCtrl types are `Null`, `Visible`, `Enabled`, `VelSet`, `VelAdd`, `PosSet`, `PosAdd`, `Anim`, `SinX`, and `SinY`. They execute through a bounded renderer path for visibility/enabled skips, position/velocity offsets, action swaps, and simple sine offsets. Stage BG layers also preserve bounded `trans = none/add/add1/addalpha/sub` plus `alpha = src,dst` metadata, expose it in Stage reports/Studio layer rows, and map it into Three.js normal/additive/subtractive material params with bounded opacity for `addalpha`. Exact MUGEN timing, side effects, window/mask clipping, exact blend math, palette interaction, and full parity remain unsupported.
 - Static normal BG sprites can render from the stage SFF when the referenced `spriteno` is decoded by the existing SFF reader.
 - Embedded stage `[Begin Action N]` blocks are parsed for action-backed BG layers.
 - Action-backed BG layers can render when their referenced AIR frames resolve to decoded stage SFF sprites.
 - Basic horizontal camera parallax is applied from layer `delta`.
 - Basic bounded sprite tiling is applied from `tile`/`tilespacing` so repeated floor/wall layers can fill the viewport.
 - Stage compatibility summaries report DEF/SFF/music presence, decoded stage sprites, BG sprite coverage, animated BG coverage, tiled layers, bounded BGCtrl coverage, placeholder fallbacks, warnings, and known unsupported stage features.
-- Stage compatibility reports now include a first per-layer BG IR: each imported `[BG ...]` layer records its source section, type, layer number, control id, start, delta, tiling, sprite/action reference, decoded-frame coverage, unsupported layer features, fallback reason, and status as `rendered`, `animated`, `fallback`, `missing`, or `unsupported`.
+- Stage compatibility reports now include a first per-layer BG IR: each imported `[BG ...]` layer records its source section, type, layer number, control id, start, delta, tiling, bounded transparency metadata, sprite/action reference, decoded-frame coverage, unsupported layer features, fallback reason, and status as `rendered`, `animated`, `fallback`, `missing`, or `unsupported`.
 - Stage compatibility reports include BG controller rows with bounded/unsupported status, timing, ctrl ids, resolved target layer labels, raw params, unsupported type notes, and fallback notes for exact parity gaps.
 - Placeholder runtime background bands remain as a fallback when a stage BG sprite is missing or not decodable.
 
@@ -253,7 +253,7 @@
 - All active local runtime fighters are atlas-backed through `public/characters/<fighter>/sprite-sheet-alpha.png` and `manifest.json.frame_layout`.
 - Original Rooftop Dojo native PNG stage with floor, camera, side bounds, parallax asset layer, grid, and axis overlay.
 - Training Grid fallback stage with floor, camera, side bounds, background layers, grid, and axis overlay.
-- Imported stage `.def` packages can be selected in Runtime Mode and drive simple match bounds, camera, starts, static SFF-backed normal BG sprites, action-backed BG animations, basic BG tiling/parallax, bounded BGCtrl execution for recognized controller types, and fallback placeholder layers.
+- Imported stage `.def` packages can be selected in Runtime Mode and drive simple match bounds, camera, starts, static SFF-backed normal BG sprites, action-backed BG animations, basic BG tiling/parallax, bounded BG layer transparency, bounded BGCtrl execution for recognized controller types, and fallback placeholder layers.
 - Native `BGCtrl Lab` is included as a smoke-test stage to prove bounded BGCtrl rows and visible nonblank renderer output without relying on external assets; it is QA evidence for the renderer path, not imported-stage parity by itself.
 - Keyboard control for P1: arrows, A/S/D, Z/X/C, Enter mapped to distinct MUGEN-style input tokens.
 - Touch control overlay on narrow/mobile layouts using the same runtime input tokens.
@@ -540,4 +540,4 @@
 - Throws, helper edge cases, full super-pause effects, custom states, advanced projectile guard edge cases, and exact hit priority beyond the current bounded direct-attack priority clash.
 - Full replay file format, rollback sync, or netplay. `RuntimeTrace` is currently an in-process deterministic evidence harness with Studio frame diff/scrubber evidence, not a full replay VM.
 - Full MUGEN sound semantics: dynamic panning, exact frequency scaling, priority/lowpriority classes, loop points, start offsets, stop-on-get-hit/change-state, shared/system sound fallbacks, and robust channel arbitration.
-- Exact MUGEN stage parallax/tiling/window/mask/trans behavior, exact BGCtrl parity beyond the bounded recognized-type executor, advanced animated stage scripting beyond action-backed BG playback, full zoom rules, shadows/reflections, 3D IKEMEN stage models, and stage interactions.
+- Exact MUGEN stage parallax/tiling/window/mask behavior, exact stage transparency blend math/palette interaction beyond bounded `trans` material handoff, exact BGCtrl parity beyond the bounded recognized-type executor, advanced animated stage scripting beyond action-backed BG playback, full zoom rules, shadows/reflections, 3D IKEMEN stage models, and stage interactions.
