@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeMatchHelperProjectileTargetWorld ownership
+
+Changed:
+- Added `RuntimeMatchHelperProjectileTargetWorld` as the bounded match-level helper-parented Projectile target-memory bridge outside `PlayableMatchRuntime`.
+- `PlayableMatchRuntime` now forwards normal post-fighter helper Projectile target-memory callbacks through that named seam with owner, defender, projectile, and `RuntimeTargetWorld`.
+- The lower `RuntimeHelperProjectileTargetWorld` still owns target-memory semantics; this cut only owns match-level wiring.
+- Roadmap, progress, scorecard, architecture, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchHelperProjectileTargetSystem.test.ts` -> 1 file / 2 tests.
+- Full gates: `pnpm test` -> 132 files / 1069 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current helper-parented Projectile target-memory bridge has a named, testable match boundary: normal post-fighter combat forwards owner, defender, projectile, and `RuntimeTargetWorld` through `RuntimeMatchHelperProjectileTargetWorld`, and owner-projectile fail-closed behavior is preserved.
+
+Claim blocked:
+- Helper-owned Projectile contact timing, helper-owned custom-state tables, teams/simul actor registries, multi-target helper ownership, exact target lifetime, visual/audio parity, score movement, and full Helper/Projectile VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose a deeper R2 helper/effect/combat ownership seam that is not helper Projectile target-memory bridge wiring.
+
 ## 2026-07-02 - R2 RuntimeMatchHelperBindingWorld ownership
 
 Changed:

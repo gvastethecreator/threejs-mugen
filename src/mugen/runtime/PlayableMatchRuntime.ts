@@ -58,7 +58,7 @@ import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSys
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
-import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
+import { RuntimeMatchHelperProjectileTargetWorld } from "./RuntimeMatchHelperProjectileTargetSystem";
 import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
@@ -119,7 +119,6 @@ import { RuntimeTargetStateEntryWorld } from "./RuntimeTargetStateEntrySystem";
 import { RuntimeTriggerEvaluationWorld } from "./RuntimeTriggerEvaluationSystem";
 import { RuntimeTriggerGateWorld } from "./RuntimeTriggerGateSystem";
 import { RuntimeAfterImageSampleWorld } from "./RuntimeAfterImageSampleSystem";
-import type { RuntimeProjectile } from "./ProjectileSystem";
 import { trainingStage } from "./demoStage";
 import type {
   CharacterRuntimeState,
@@ -170,6 +169,7 @@ const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
+const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
 
@@ -246,7 +246,6 @@ export class PlayableMatchRuntime {
   private readonly combatResolutionWorld = new RuntimeCombatResolutionWorld();
   private readonly matchPauseControllerWorld = new RuntimeMatchPauseControllerWorld();
   private readonly helperCombatWorld = new RuntimeHelperCombatWorld();
-  private readonly helperProjectileTargetWorld = new RuntimeHelperProjectileTargetWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
@@ -480,7 +479,12 @@ export class PlayableMatchRuntime {
           helperStateHooks: runtimeHelperCombatStateHooks,
           defaultHurtBoxes: defaultRuntimeHurtBoxes,
           rememberProjectileTarget: (source, target, projectile) =>
-            this.rememberHelperProjectileTarget(source, target, projectile),
+            matchHelperProjectileTargetWorld.remember({
+              owner: source,
+              defender: target,
+              projectile,
+              targetWorld: this.targetWorld,
+            }),
           log: (line) => this.logs.unshift(line),
         }),
       finishRoundIfNeeded: () =>
@@ -638,15 +642,6 @@ export class PlayableMatchRuntime {
 
   private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
     this.envColorWorld.emitController(controller, runtimeTick, operation);
-  }
-
-  private rememberHelperProjectileTarget(owner: FighterMatchState, defender: FighterMatchState, projectile: RuntimeProjectile): void {
-    this.helperProjectileTargetWorld.remember({
-      owner,
-      defender,
-      projectile,
-      targetWorld: this.targetWorld,
-    });
   }
 
 }

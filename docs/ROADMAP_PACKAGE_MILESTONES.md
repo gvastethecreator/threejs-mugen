@@ -85,7 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R2 RuntimeMatchHelperBindingWorld ownership
+R2 RuntimeMatchHelperProjectileTargetWorld ownership
+  -> RuntimeMatchHelperProjectileTargetWorld owns the match-level helper-parented Projectile target-memory bridge outside PlayableMatchRuntime
+  -> normal post-fighter combat now forwards owner, defender, projectile, and RuntimeTargetWorld through one named seam before lower RuntimeHelperProjectileTargetWorld logic runs
+  -> focused RuntimeMatchHelperProjectileTargetSystem coverage proves forwarding and owner-projectile fail-closed behavior
+  -> ownership cleanup only; no score movement, helper-owned Projectile contact timing, helper-owned custom-state tables, teams/simul actor registry, multi-target helper ownership, exact target lifetime, visual/audio parity, or full Helper/Projectile VM claim
+Previous R2 RuntimeMatchHelperBindingWorld ownership
   -> RuntimeMatchHelperBindingWorld owns match-level helper callback wiring outside PlayableMatchRuntime
   -> helper-owned TargetState owner handlers and helper-local Projectile telemetry handlers attach through one named seam
   -> RuntimeMatchHelperTargetStateWorld still owns actor-resolution entry; RuntimeHelperTelemetryWorld still owns Projectile-only filtering and helper/owner state attribution
