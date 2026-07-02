@@ -4,6 +4,7 @@ import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   canActorMoveDuringPause,
   createMatchPauseFromController,
+  RuntimeMatchPauseControllerWorld,
   RuntimePausedMatchWorld,
   RuntimePauseControllerDispatchWorld,
   RuntimePauseWorld,
@@ -148,6 +149,65 @@ describe("PauseSystem", () => {
     world.reset();
     expect(world.current()).toBeUndefined();
     expect(world.snapshot()).toBeUndefined();
+  });
+
+  it("owns match Pause/SuperPause result side effects", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const calls: string[] = [];
+    const fighter = { ...actor("p1", 300), label: "P1" };
+    const source = controller("SuperPause", { time: "1", movetime: "1", darken: "1", poweradd: "10" });
+    const operation = {
+      kind: "pause" as const,
+      controllerType: "superpause" as const,
+      time: 12,
+      moveTime: 4,
+      darken: true,
+      powerAdd: 25,
+    };
+
+    const result = world.apply({
+      actor: fighter,
+      controller: source,
+      operation,
+      runtimeTick: 99,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, activeOperation) => {
+          calls.push(`apply:${activeActor.id}:${activeController.type}:${tick}:${activeOperation?.controllerType}`);
+          return createMatchPauseFromController(activeActor, activeController, tick, activeOperation);
+        },
+      },
+      applyPowerDelta: (activeActor, powerDelta) => calls.push(`power:${activeActor.id}:${powerDelta}`),
+      log: (message) => calls.push(`log:${message}`),
+    });
+
+    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 12, moveTime: 4, startedAt: 99 });
+    expect(result.powerDelta).toBe(25);
+    expect(calls).toEqual([
+      "apply:p1:SuperPause:99:superpause",
+      "power:p1:25",
+      "log:P1 triggered SuperPause for 12f (4f movetime)",
+    ]);
+  });
+
+  it("does not run match pause side effects when a controller creates no pause", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const calls: string[] = [];
+    const result = world.apply({
+      actor: { ...actor("p1", 200), label: "P1" },
+      controller: controller("Pause", { time: "0", movetime: "2" }),
+      runtimeTick: 4,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation) => {
+          calls.push(`apply:${activeActor.id}:${activeController.type}:${tick}:${operation?.controllerType ?? "raw"}`);
+          return createMatchPauseFromController(activeActor, activeController, tick, operation);
+        },
+      },
+      applyPowerDelta: () => calls.push("power"),
+      log: () => calls.push("log"),
+    });
+
+    expect(result).toEqual({ powerDelta: 0 });
+    expect(calls).toEqual(["apply:p1:Pause:4:raw"]);
   });
 
   it("dispatches active Pause controllers with telemetry hooks", () => {

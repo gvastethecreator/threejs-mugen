@@ -92,6 +92,7 @@ import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
 import {
+  RuntimeMatchPauseControllerWorld,
   RuntimePauseControllerDispatchWorld,
   RuntimePauseWorld,
   RuntimePausedMatchWorld,
@@ -228,6 +229,7 @@ export class PlayableMatchRuntime {
   private readonly hitPauseWorld = new RuntimeHitPauseWorld();
   private readonly contactPresentationWorld = new RuntimeContactPresentationWorld();
   private readonly combatResolutionWorld = new RuntimeCombatResolutionWorld();
+  private readonly matchPauseControllerWorld = new RuntimeMatchPauseControllerWorld();
   private readonly helperCombatWorld = new RuntimeHelperCombatWorld();
   private readonly helperProjectileTargetWorld = new RuntimeHelperProjectileTargetWorld();
   private readonly helperTargetStateWorld = new RuntimeHelperTargetStateWorld();
@@ -557,17 +559,15 @@ export class PlayableMatchRuntime {
     controller: MugenStateController,
     operation?: PauseControllerOp,
   ): MatchPauseControllerResult {
-    const result = this.pauseWorld.applyController(fighter, controller, this.tick, operation);
-    if (!result.pause) {
-      return result;
-    }
-    if (result.powerDelta !== 0) {
-      applyRuntimePowerDelta(fighter.runtime, result.powerDelta, fighter.definition.constants);
-    }
-    this.logs.unshift(
-      `${fighter.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
-    );
-    return result;
+    return this.matchPauseControllerWorld.apply({
+      actor: fighter,
+      controller,
+      operation,
+      runtimeTick: this.tick,
+      pauseWorld: this.pauseWorld,
+      applyPowerDelta: (actor, powerDelta) => applyRuntimePowerDelta(actor.runtime, powerDelta, actor.definition.constants),
+      log: (message) => this.logs.unshift(message),
+    });
   }
 
   private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {

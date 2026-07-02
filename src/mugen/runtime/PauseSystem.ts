@@ -104,6 +104,16 @@ export type RuntimePauseControllerDispatchResult = {
   recordedOperation: boolean;
 };
 
+export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor & { label: string }> = {
+  actor: TActor;
+  controller: MugenStateController;
+  operation?: PauseControllerOp;
+  runtimeTick: number;
+  pauseWorld: Pick<RuntimePauseWorld, "applyController">;
+  applyPowerDelta: (actor: TActor, powerDelta: number) => void;
+  log: (message: string) => void;
+};
+
 export class RuntimePauseWorld {
   private pause?: RuntimeMatchPause;
 
@@ -138,6 +148,24 @@ export class RuntimePauseWorld {
     if (result.pause) {
       this.pause = result.pause;
     }
+    return result;
+  }
+}
+
+export class RuntimeMatchPauseControllerWorld {
+  apply<TActor extends MatchPauseActor & { label: string }>(
+    input: RuntimeMatchPauseControllerWorldInput<TActor>,
+  ): MatchPauseControllerResult {
+    const result = input.pauseWorld.applyController(input.actor, input.controller, input.runtimeTick, input.operation);
+    if (!result.pause) {
+      return result;
+    }
+    if (result.powerDelta !== 0) {
+      input.applyPowerDelta(input.actor, result.powerDelta);
+    }
+    input.log(
+      `${input.actor.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
+    );
     return result;
   }
 }

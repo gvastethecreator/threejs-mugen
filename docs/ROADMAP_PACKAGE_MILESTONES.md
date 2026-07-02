@@ -175,6 +175,11 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 pause-controller result ownership
+  -> RuntimeMatchPauseControllerWorld now owns bounded Pause/SuperPause controller result side effects from PlayableMatchRuntime
+  -> RuntimePauseWorld still owns pause-state mutation/snapshot/tick, while the new boundary applies SuperPause power deltas through an injected resource hook and emits the existing pause log line
+  -> focused PauseSystem coverage proves tick/controller/op forwarding, power-delta handoff, log emission, and zero-length no-side-effect behavior
+  -> ownership cleanup only; no exact pause layering, SuperPause background/effects/sound timing, helper/team/redirect pause ownership, pause/hitpause command parity, visual/audio parity, score movement, or full pause VM claim
 R2 combat bridge ownership
   -> RuntimeMatchCombatBridgeWorld now owns bounded priority/direct/projectile/helper combat resolver construction from PlayableMatchRuntime
   -> RuntimeMatchInteractionWorld receives callback routes from one named bridge instead of inline match-loop closures
@@ -731,7 +736,7 @@ R2 RuntimeActorConstraintControllerDispatchWorld ownership extraction
 R2 RuntimePauseControllerDispatchWorld ownership extraction
   -> RuntimePauseControllerDispatchWorld now owns bounded active-state Pause/SuperPause side-effect dispatch
   -> PlayableMatchRuntime delegates controller telemetry, typed pause operation selection, apply-controller callback handoff, and operation telemetry through the dispatch boundary
-  -> match runtime still owns trigger filtering, active-state order, RuntimePauseWorld mutation, power/log application, paused-match progression, and hitpause ignored routing
+  -> RuntimeMatchPauseControllerWorld now owns result side effects after the dispatch boundary; match runtime still owns trigger filtering, active-state order, paused-match progression, and hitpause ignored routing
   -> focused PauseSystem coverage proves SuperPause telemetry/application through the dispatch boundary
   -> no exact pause layering, super background/sound/spark timing, helper/redirect ownership, full pause VM parity, or score claim
 R2 RuntimeEnvShakeControllerDispatchWorld ownership extraction
