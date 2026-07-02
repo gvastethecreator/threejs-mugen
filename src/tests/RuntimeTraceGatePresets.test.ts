@@ -34,14 +34,18 @@ import {
   createImportedDefaultFallRecoveryThresholdTraceArtifact,
   createImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
+  createSyntheticImportedDefaultAirGroundImpactTraceArtifact,
+  createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact,
   createSyntheticImportedDefaultAirFallGetHitTraceArtifact,
   createSyntheticImportedDefaultAirGetHitTraceArtifact,
   createSyntheticImportedDefaultCrouchGetHitTraceArtifact,
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultFallBounceLieDownControllerSequence,
   defaultFallGetHitActorFrameSequence,
   defaultFallGetHitControllerSequence,
+  defaultFallGroundImpactControllerSequence,
   defaultFallLieDownGetUpActorFrameSequence,
   defaultFallLieDownGetUpControllerSequence,
   defaultGetHitProgressionActorFrameSequence,
@@ -8380,6 +8384,154 @@ describe("RuntimeTraceGatePresets", () => {
         velocity: { y: -6 },
         recover: false,
       },
+    });
+  });
+
+  it("creates an imported default air Common1 ground-impact artifact through 5020, 5030, 5050, and 5100", () => {
+    const artifact = createSyntheticImportedDefaultAirGroundImpactTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-air-ground-impact-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-gethit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5020, 5030, 5050, 5100]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallDamage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfalldamage"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultFallGroundImpactControllerSequence(5020),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultFallGetHitActorFrameSequence([5020, 5030, 5050, 5100]),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5100,
+        stateType: "L",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+    ]);
+    const shakeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5020);
+    const airFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5030);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    const groundFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5100);
+    expect(shakeFrame).toMatchObject({ moveType: "H", stateType: "A", physics: "N" });
+    expect(airFrame?.moveType).toBe("H");
+    expect(fallFrame?.moveType).toBe("H");
+    expect(groundFrame).toMatchObject({ moveType: "H", stateType: "L", physics: "N" });
+    expect(shakeFrame?.lastTick ?? 0).toBeLessThan(airFrame?.firstTick ?? 0);
+    expect(airFrame?.lastTick ?? 0).toBeLessThan(fallFrame?.firstTick ?? 0);
+    expect(fallFrame?.lastTick ?? 0).toBeLessThan(groundFrame?.firstTick ?? 0);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates an imported default air Common1 lie-down recovery artifact through 5020, 5030, 5050, 5100, 5101, 5110, and 5120", () => {
+    const artifact = createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-air-liedown-recovery-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-gethit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(
+      expect.arrayContaining([0, 200, 5020, 5030, 5050, 5100, 5101, 5110, 5120]),
+    );
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallDamage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallVel).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfallvel"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfalldamage"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultFallGroundImpactControllerSequence(5020),
+      defaultFallBounceLieDownControllerSequence(),
+      defaultFallLieDownGetUpControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultFallGetHitActorFrameSequence([5020, 5030, 5050, 5100, 5101, 5110]),
+      defaultFallLieDownGetUpActorFrameSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        animNo: 5110,
+        moveType: "H",
+        observedHitFallDownRecoverTimeAtLeast: 58,
+        observedHitFallDownRecoverTimeAtMost: 54,
+        observedHitFallDownRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
+      },
+    ]);
+    const frames = new Map(
+      [5020, 5030, 5050, 5100, 5101, 5110, 5120].map((stateNo) => [
+        stateNo,
+        evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === stateNo),
+      ]),
+    );
+    expect(frames.get(5020)).toMatchObject({ moveType: "H", stateType: "A", physics: "N" });
+    expect(frames.get(5100)).toMatchObject({ moveType: "H", stateType: "L", physics: "N" });
+    expect(frames.get(5101)).toMatchObject({ moveType: "H", stateType: "L", physics: "N" });
+    expect(frames.get(5110)).toMatchObject({ moveType: "H", stateType: "L", physics: "N" });
+    expect(frames.get(5120)).toMatchObject({ moveType: "I", stateType: "L", physics: "N" });
+    expect(frames.get(5020)?.lastTick ?? 0).toBeLessThan(frames.get(5030)?.firstTick ?? 0);
+    expect(frames.get(5030)?.lastTick ?? 0).toBeLessThan(frames.get(5050)?.firstTick ?? 0);
+    expect(frames.get(5050)?.lastTick ?? 0).toBeLessThan(frames.get(5100)?.firstTick ?? 0);
+    expect(frames.get(5100)?.lastTick ?? 0).toBeLessThan(frames.get(5101)?.firstTick ?? 0);
+    expect(frames.get(5101)?.lastTick ?? 0).toBeLessThan(frames.get(5110)?.firstTick ?? 0);
+    expect(frames.get(5110)?.lastTick ?? 0).toBeLessThan(frames.get(5120)?.firstTick ?? 0);
+    const lieDownFrame = frames.get(5110);
+    expect(lieDownFrame?.frames).toBeGreaterThanOrEqual(2);
+    expect(lieDownFrame?.maxHitFallDownRecoverTime).toBeGreaterThanOrEqual(58);
+    expect(lieDownFrame?.minHitFallDownRecoverTime).toBeLessThanOrEqual(54);
+    expect(lieDownFrame?.firstHitFallDownRecoverTime).toBeGreaterThanOrEqual(58);
+    expect(lieDownFrame?.lastHitFallDownRecoverTime).toBeLessThanOrEqual(54);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
     });
   });
 

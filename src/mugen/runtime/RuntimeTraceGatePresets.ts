@@ -6909,8 +6909,10 @@ export function createImportedDefaultFallGetHitTraceArtifact(
     attacker?: DemoFighterDefinition;
     script?: RuntimeTraceInputFrame[];
     requiredExecutedStates?: number[];
+    requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
     requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
+    requiredFinalActors?: RuntimeTraceFinalActorRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -6947,12 +6949,13 @@ export function createImportedDefaultFallGetHitTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 5000, 5030, 5050],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
+        requiredActorFrames: options.requiredActorFrames,
         requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
-        requiredFinalActors: [
+        requiredFinalActors: options.requiredFinalActors ?? [
           {
             actorId: "p2",
             source: "imported",
@@ -6967,6 +6970,107 @@ export function createImportedDefaultFallGetHitTraceArtifact(
       },
     ],
   });
+}
+
+export function createSyntheticImportedDefaultAirGroundImpactTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-air-ground-impact",
+      displayName: "Synthetic Imported Default Air Ground Impact",
+      defaultGetHitFall: {
+        shakeStateNo: 5020,
+        shakeStateType: "A",
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        groundStateNo: 5100,
+        includeRecoveryChain: true,
+      },
+    }),
+    {
+      ...options,
+      script: importedDefaultAirFallGetHitScript(),
+      targetId: "synthetic-imported-default-air-ground-impact-golden",
+      targetLabel: "Synthetic imported air Common1 ground-impact route",
+      requiredExecutedStates: [200, 5020, 5030, 5050, 5100],
+      requiredControllerEventSequences: [defaultFallGroundImpactControllerSequence(5020)],
+      requiredActorFrameSequences: [defaultFallGetHitActorFrameSequence([5020, 5030, 5050, 5100])],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5100,
+          stateType: "L",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, ctrl: true }],
+      notes: [
+        "Synthetic imported air ground-impact trace proves an airborne defender can route a fall HitDef without p2stateno through defender-owned Common1-style states 5020, 5030, 5050, and 5100 when the fixture supplies the recovery chain. It does not claim exact ground impact timing, bounce physics, lie-down timing, recovery input, landing, or full Common1 parity.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-air-liedown-recovery",
+      displayName: "Synthetic Imported Default Air Lie-Down Recovery",
+      defaultGetHitFall: {
+        shakeStateNo: 5020,
+        shakeStateType: "A",
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        groundStateNo: 5100,
+        bounceStateNo: 5101,
+        liedownStateNo: 5110,
+        recoverStateNo: 5120,
+        includeRecoveryChain: true,
+      },
+    }),
+    {
+      ...options,
+      script: importedDefaultAirFallGetHitScript(),
+      targetId: "synthetic-imported-default-air-liedown-recovery-golden",
+      targetLabel: "Synthetic imported air Common1 lie-down/get-up route",
+      requiredExecutedStates: [0, 200, 5020, 5030, 5050, 5100, 5101, 5110, 5120],
+      requiredControllerEventSequences: [
+        defaultFallGroundImpactControllerSequence(5020),
+        defaultFallBounceLieDownControllerSequence(),
+        defaultFallLieDownGetUpControllerSequence(),
+      ],
+      requiredActorFrameSequences: [
+        defaultFallGetHitActorFrameSequence([5020, 5030, 5050, 5100, 5101, 5110]),
+        defaultFallLieDownGetUpActorFrameSequence(),
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          animNo: 5110,
+          moveType: "H",
+          observedHitFallDownRecoverTimeAtLeast: 58,
+          observedHitFallDownRecoverTimeAtMost: 54,
+          observedHitFallDownRecoverTimeDropAtLeast: 1,
+          minFrames: 2,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 0, ctrl: true }],
+      notes: [
+        "Synthetic imported air lie-down recovery trace proves an airborne defender can route a fall HitDef without p2stateno through defender-owned Common1-style states 5020, 5030, 5050, 5100, 5101, 5110, 5120, and back to idle when the fixture supplies the recovery chain. It requires bounded lie-down downRecoverTime countdown evidence, but does not claim exact bounce physics, recovery tables, recovery input, landing, or full Common1 parity.",
+      ],
+    },
+  );
 }
 
 export function createSyntheticImportedDefaultAirFallGetHitTraceArtifact(
@@ -7016,6 +7120,51 @@ export function defaultFallGetHitControllerSequence(
       { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
       { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
       { stateNo: fallStateNo, controller: "ChangeState", name: "Bounded Settle" },
+    ],
+  };
+}
+
+export function defaultFallGroundImpactControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  groundStateNo = 5100,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${groundStateNo} airborne fall ground-impact controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "Bounded Settle" },
+      { stateNo: groundStateNo, controller: "HitFallDamage", name: "Ground Impact Damage" },
+      { stateNo: groundStateNo, operation: "hitfall:hitfalldamage" },
+    ],
+  };
+}
+
+export function defaultFallBounceLieDownControllerSequence(
+  groundStateNo = 5100,
+  bounceStateNo = 5101,
+  liedownStateNo = 5110,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${groundStateNo}/${bounceStateNo}/${liedownStateNo} bounce lie-down controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: groundStateNo, controller: "ChangeState", name: "Bounce" },
+      { stateNo: bounceStateNo, controller: "HitFallVel", name: "Bounce Velocity" },
+      { stateNo: bounceStateNo, operation: "hitfall:hitfallvel" },
+      { stateNo: bounceStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: bounceStateNo, controller: "ChangeState", name: "Lie Down" },
+      { stateNo: liedownStateNo, controller: "HitFallDamage", name: "Fall Damage Settled" },
+      { stateNo: liedownStateNo, operation: "hitfall:hitfalldamage" },
     ],
   };
 }

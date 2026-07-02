@@ -143,11 +143,23 @@ Previous R2 RuntimeEffectLifecycleWorld helper advance-context ownership
   -> RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, RuntimeHitPauseWorld, and PlayableMatchRuntime pass current tick context through that boundary
   -> focused EffectLifecycleSystem tests prove helper-local GameTime rejection/pass behavior, FrontEdgeDist param evaluation from stage bounds, PlaySnd runtimeTick telemetry, and ChangeState handoff
   -> ownership/context cleanup only; no exact helper clock parity, pause/combat ordering parity, broader indexed/team redirects, teams/simul, visual parity, score movement, or full helper VM claim
-Current R1 Common1 default air fall get-hit required trace gate
+Current R1 Common1 default air lie-down recovery required trace gate
+  -> synthetic-imported-default-air-liedown-recovery.json checksum 56a8f236 is required in qa:trace
+  -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 -> 0 after fall HitDef without p2stateno
+  -> 5101 has HitFallVel / hitfall:hitfallvel evidence; 5110 has HitFallDamage / hitfall:hitfalldamage plus bounded downRecoverTime countdown evidence; final checksum 20c045a3; gate label imported-default-fall-gethit-golden
+  -> pnpm qa:trace passes 262/262 artifacts, 242 required and 20 optional
+  -> state/order, bounce, lie-down countdown, get-up, and idle-return evidence only; no exact air get-hit animation, exact HitShakeOver/HitOver timing, exact ground-impact timing/position, exact bounce physics, exact lie-down duration tables, recovery input, landing nuance, controller-loop timing, visual/audio parity, score movement, or full Common1 fall/get-hit parity claim
+Previous R1 Common1 default air ground-impact required trace gate
+  -> synthetic-imported-default-air-ground-impact.json checksum 0ba3c80f is required in qa:trace
+  -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050 -> 5100 after fall HitDef without p2stateno
+  -> 5100 has HitFallDamage / hitfall:hitfalldamage evidence; final checksum cb7f1043; gate label imported-default-fall-gethit-golden
+  -> that checkpoint passed 261/261 artifacts, 241 required and 20 optional
+  -> state/order plus ground-impact controller evidence only; no exact air get-hit animation, exact HitShakeOver/HitOver timing, exact ground-impact timing/position, bounce physics, lie-down timing, landing, recovery input, controller-loop timing, visual/audio parity, score movement, or full Common1 fall/get-hit parity claim
+Previous R1 Common1 default air fall get-hit required trace gate
   -> synthetic-imported-default-air-fall-gethit.json checksum 1230a2f3 is required in qa:trace
   -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050 after fall HitDef without p2stateno
   -> final checksum 2ad2abf9; gate label imported-default-fall-gethit-golden
-  -> pnpm qa:trace passes 260/260 artifacts, 240 required and 20 optional
+  -> that checkpoint passed 260/260 artifacts, 240 required and 20 optional
   -> state/order evidence only; no exact air get-hit animation, exact HitShakeOver/HitOver timing, ground impact, bounce, lie-down, landing, recovery input, controller-loop timing, visual/audio parity, score movement, or full Common1 fall/get-hit parity claim
 Previous R1 Common1 default air get-hit required trace gate
   -> synthetic-imported-default-air-gethit.json checksum dc4fb7c9 is required in qa:trace

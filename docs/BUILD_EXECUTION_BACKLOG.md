@@ -1,5 +1,61 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Default air lie-down recovery trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-liedown-recovery` trace evidence for airborne defender-owned Common1-style bounce, lie-down, get-up, and idle return after a fall `HitDef` omits `p2stateno`.
+- Reused the existing `defaultGetHitFall` fixture path with `shakeStateNo: 5020` and `includeRecoveryChain: true`; no global hit/fall runtime behavior changed.
+- Added reusable bounce/lie-down controller sequence evidence around `5100 -> 5101 -> 5110`, including `HitFallVel`, `HitFallDamage`, and matching typed hitfall operations.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "lie-down recovery artifact"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 262/262 artifacts, 242 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-liedown-recovery.json` checksum `56a8f236`, initial checksum `6b7422cb`, final checksum `20c045a3`.
+- Gate label: `imported-default-fall-gethit-golden`; required executed states include `200`, `5020`, `5030`, `5050`, `5100`, `5101`, `5110`, and `5120`.
+- Required controller/operation evidence includes `5100` `HitFallDamage`, `5101` `HitFallVel`, `5110` `HitFallDamage`, `hitfall:hitfallvel`, and `hitfall:hitfalldamage`.
+- Required actor-frame evidence includes `5110` bounded `hitFall.downRecoverTime` countdown from `59` to `53` before `5120`, and final P2 returns to state `0` with `ctrl = true`.
+- `pnpm test` passed -> 114 files / 1004 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with existing CRLF normalization warnings only.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style fall chain can route an airborne defender through `5020 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 -> 0` after a fall `HitDef` without `p2stateno`, with bounded bounce, lie-down countdown, get-up, and idle-return evidence.
+
+Claim blocked:
+- Exact air get-hit animation choice, exact `HitShakeOver` / `HitOver` timing, exact ground-impact timing/position, exact bounce physics, exact lie-down duration tables, recovery input, landing nuance, controller-loop tick order, visual/audio parity, score movement, and full Common1 fall/get-hit parity remain blocked.
+
+Next:
+- Continue into exact recovery thresholds/input timing, KFM/private-fixture comparison for the same air entry route, or another R1 Common1/FightFX precision gate.
+
+## 2026-07-02 - Default air ground-impact trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-ground-impact` trace evidence for airborne defender-owned Common1-style ground-impact routing when a fall `HitDef` omits `p2stateno`.
+- Reused the existing `defaultGetHitFall` fixture path with `shakeStateNo: 5020` and `includeRecoveryChain: true` instead of changing global hit/fall runtime behavior.
+- Added a small `createImportedDefaultFallGetHitTraceArtifact` option seam for custom final actor and actor-frame requirements, so the older fall-state gate can still assert "falling" while this new chain gate can assert return-to-idle.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ground-impact artifact"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 261/261 artifacts, 241 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-ground-impact.json` checksum `0ba3c80f`, initial checksum `312995af`, final checksum `cb7f1043`.
+- Gate label: `imported-default-fall-gethit-golden`; required executed states include `200`, `5020`, `5030`, `5050`, and `5100`.
+- Required controller/operation evidence includes `5100` `HitFallDamage` and `hitfall:hitfalldamage`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style fall state order can route an airborne defender through `5020 -> 5030 -> 5050 -> 5100` after a fall `HitDef` without `p2stateno`, with bounded ground-impact `HitFallDamage` evidence.
+
+Claim blocked:
+- Exact air get-hit animation choice, exact `HitShakeOver` / `HitOver` timing, exact ground-impact timing/position, bounce physics, lie-down timing, landing, recovery input, controller-loop tick order, visual/audio parity, score movement, and full Common1 fall/get-hit parity remain blocked.
+
+Next:
+- Continue into bounce/lie-down precision from this air entry route, landing/recovery breadth, or another R1 Common1/FightFX precision gate.
+
 ## 2026-07-02 - Default air fall get-hit trace gate
 
 Changed:
