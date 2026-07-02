@@ -30,6 +30,7 @@ import {
   createSyntheticImportedGetHitVarDamageTraceArtifact,
   createSyntheticImportedGetHitVarHitShakeTimeTraceArtifact,
   createSyntheticImportedGetHitVarHitTimeTraceArtifact,
+  createSyntheticImportedGetHitVarVelocityTraceArtifact,
   createImportedDefaultFallGroundRecoveryTraceArtifact,
   createImportedDefaultFallRecoveryInputTraceArtifact,
   createImportedDefaultFallRecoveryThresholdTraceArtifact,
@@ -8377,6 +8378,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       {
         label: "5000 normal hit GetHitVar(damage) branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported GetHitVar velocity artifact for normal get-hit CNS", () => {
+    const artifact = createSyntheticImportedGetHitVarVelocityTraceArtifact({ generatedAt: "2026-07-02T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-gethitvar-velocity-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-gethitvar-velocity-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 324]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 324, animNo: 324 }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 324,
+      moveType: "H",
+    });
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5000 normal hit GetHitVar(xvel/yvel) branch order",
         actorId: "p2",
         allowSameTick: true,
         steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],

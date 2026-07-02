@@ -366,6 +366,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarDamageTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-gethitvar-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarVelocityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-gethitvar-guard-timing",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarGuardTimingTraceArtifact(),
@@ -2231,6 +2236,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-hittime",
     "synthetic-imported-gethitvar-hitshaketime",
     "synthetic-imported-gethitvar-damage",
+    "synthetic-imported-gethitvar-velocity",
     "synthetic-imported-gethitvar-guard-timing",
     "synthetic-imported-gethitvar-guard-hitshaketime",
     "synthetic-imported-gethitvar-crouch-guard-hitshaketime",

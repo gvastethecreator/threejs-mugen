@@ -194,6 +194,7 @@ describe("RuntimeExpressionContextWorld", () => {
 
   it("exposes shared const, state, and HitVar helpers", () => {
     const actor = runtimeActor("p1", "Author", {
+      hitVelocity: { x: -4, y: -2 },
       hitVars: { damage: 23, animType: 2, isBound: true, guarded: true },
       guardStun: 9,
       guardSlideTime: 5,
@@ -215,6 +216,8 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(runtimeHitVar(actor.runtime, "animtype")).toBe(2);
     expect(runtimeHitVar(actor.runtime, "isbound")).toBe(1);
     expect(runtimeHitVar(actor.runtime, "guarded")).toBe(1);
+    expect(runtimeHitVar(actor.runtime, "xvel")).toBe(-4);
+    expect(runtimeHitVar(actor.runtime, "yvel")).toBe(-2);
     expect(runtimeHitVar(actor.runtime, "fall.damage")).toBe(31);
     expect(runtimeHitVar(actor.runtime, "fall.defence_up")).toBe(80);
     expect(runtimeHitVar(actor.runtime, "fall.xvel")).toBe(-2);

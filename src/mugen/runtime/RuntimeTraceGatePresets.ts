@@ -9539,6 +9539,94 @@ export function createSyntheticImportedGetHitVarDamageTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedGetHitVarVelocityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-gethitvar-velocity",
+    displayName: "Synthetic Imported GetHitVar Velocity",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 324,
+      hitTimeBranchAnimNo: 324,
+      hitTimeBranchExpression: "GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-gethitvar-velocity-attacker",
+    displayName: "Synthetic Imported GetHitVar Velocity Attacker",
+    groundVelocity: [4, -2],
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultGetHitProgressionScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-gethitvar-velocity-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-gethitvar-velocity-golden",
+      label: "Synthetic imported GetHitVar velocity route",
+      source: "imported",
+      notes: [
+        "Synthetic imported GetHitVar velocity trace proves bounded defender-owned Common1-style get-hit CNS can branch through runtime-backed normal hit xvel/yvel metadata after direct HitDef contact. It does not claim exact velocity lifetime after later physics/controllers, helper/projectile inheritance, custom-state inheritance, or full MUGEN/IKEMEN get-hit parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-gethitvar-velocity-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 324],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredControllerEventSequences: [
+          {
+            label: "5000 normal hit GetHitVar(xvel/yvel) branch order",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+          },
+        ],
+        requiredActorFrames: [
+          {
+            ...defaultGetHitProgressionPhysicsFrames()[0],
+            observedVelXAtLeast: 4,
+            observedVelXAtMost: 4,
+            observedVelYAtLeast: -2,
+            observedVelYAtMost: -2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 324,
+            animNo: 324,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            minFrames: 1,
+          },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 324,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createImportedDefaultGuardStateTraceArtifact(
   imported: DemoFighterDefinition,
   options: RuntimeTraceGatePresetOptions & {
