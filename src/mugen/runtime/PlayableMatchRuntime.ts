@@ -57,6 +57,7 @@ import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatStateHooksWorld } from "./RuntimeMatchCombatStateHooksSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
+import { RuntimeMatchPresentationSnapshotWorld } from "./RuntimeMatchPresentationSnapshotSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeMatchHelperProjectileTargetWorld } from "./RuntimeMatchHelperProjectileTargetSystem";
@@ -175,6 +176,7 @@ const matchCombatStateHooksWorld = new RuntimeMatchCombatStateHooksWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
+const matchPresentationSnapshotWorld = new RuntimeMatchPresentationSnapshotWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
 const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.create<FighterMatchState>({
   recordController: (actor, controller) => compatibilityTelemetryWorld.recordController(actor, controller),
@@ -589,21 +591,26 @@ export class PlayableMatchRuntime {
   }
 
   getSnapshot(): MugenSnapshot {
-    const shake = this.envShakeWorld.snapshotCameraShake(this.tick, [this.p1, this.p2]);
-    const envColor = this.envColorWorld.snapshotStageFlash(this.tick);
-    const p1Effects = this.effectLifecycleWorld.snapshotGroups(this.p1);
-    const p2Effects = this.effectLifecycleWorld.snapshotGroups(this.p2);
+    const presentationSnapshot = matchPresentationSnapshotWorld.create({
+      tick: this.tick,
+      stage: this.stage,
+      p1: this.p1,
+      p2: this.p2,
+      envShakeWorld: this.envShakeWorld,
+      envColorWorld: this.envColorWorld,
+      effectLifecycleWorld: this.effectLifecycleWorld,
+    });
     return this.snapshotWorld.match({
       tick: this.tick,
       playing: this.playing,
       speed: this.speed,
       toggles: this.toggles,
       matchPause: this.pauseWorld.snapshot(),
-      stage: { stage: this.stage, actors: [this.p1, this.p2], cameraShake: shake, envColor },
+      stage: presentationSnapshot.stage,
       round: this.round.snapshot(),
       p1: this.p1,
       p2: this.p2,
-      effects: { p1: p1Effects, p2: p2Effects },
+      effects: presentationSnapshot.effects,
       compatibilitySession: compatibilityTelemetryWorld.buildSession([this.p1, this.p2]),
       logs: this.logs,
     });

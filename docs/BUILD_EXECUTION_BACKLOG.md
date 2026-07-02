@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeMatchPresentationSnapshotWorld ownership
+
+Changed:
+- Added `RuntimeMatchPresentationSnapshotWorld` as the bounded match presentation snapshot input boundary outside `PlayableMatchRuntime`.
+- `PlayableMatchRuntime.getSnapshot()` now collects camera shake, stage flash, and P1/P2 effect snapshot groups through that seam before handing data to `RuntimeSnapshotWorld.match()`.
+- `RuntimeSnapshotWorld` still owns final renderer-independent stage/player/effect/envelope projection.
+- Roadmap, progress, scorecard, architecture, support, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchPresentationSnapshotSystem.test.ts` -> 1 file / 1 test.
+- Full gates: `pnpm test` -> 137 files / 1079 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current match presentation snapshot input construction has a named, testable ownership boundary: camera shake, stage flash, and P1/P2 effect groups are gathered before final snapshot assembly.
+
+Claim blocked:
+- Exact stage/motif camera logic, effect lifecycle semantics, renderer/audio parity, visual/debug UI parity, score movement, and full match snapshot parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose another deeper R2 helper/effect/combat ownership seam that is not presentation snapshot input construction, active-controller telemetry hook construction, or combat state-hook adapter construction.
+
 ## 2026-07-02 - R2 RuntimeActiveControllerTelemetryWorld ownership
 
 Changed:

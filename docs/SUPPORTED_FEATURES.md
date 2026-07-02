@@ -369,6 +369,13 @@
 - `synthetic-imported-helper-numexplod.json` checksum `4328278a` proves a visual Helper can spawn owner-side Explod anim `942`, then branch from state `1200` to `1210` / anim `930` through `NumExplod(8830) > 0`.
 - This is `executed-partial`: exact helper effect-count parity, helper-owned effect namespaces, parent/root/team selection, dynamic effect params, exact tick order, and full Helper trigger parity remain unsupported.
 
+## Current Runtime Presentation Snapshot Cut
+
+- `RuntimeMatchPresentationSnapshotWorld` owns the bounded adapter that builds match presentation snapshot inputs before `RuntimeSnapshotWorld.match()` assembles the final renderer-independent snapshot.
+- Camera shake, stage flash, and P1/P2 effect snapshot groups route through this seam instead of being collected inline in `PlayableMatchRuntime.getSnapshot()`.
+- Focused `RuntimeMatchPresentationSnapshotSystem` coverage proves shake/flash/effect-group forwarding and P1/P2 ordering.
+- This is `executed-partial` ownership only: exact stage/motif camera logic, effect lifecycle semantics, renderer/audio parity, visual/debug UI parity, and full match snapshot parity remain unsupported.
+
 ## Current Runtime Active Controller Telemetry Cut
 
 - `RuntimeActiveControllerTelemetryWorld` owns the bounded adapter that builds active-controller telemetry hooks before active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch run.

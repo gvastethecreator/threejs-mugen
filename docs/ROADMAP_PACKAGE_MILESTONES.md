@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchPresentationSnapshotWorld ownership
+  -> RuntimeMatchPresentationSnapshotWorld owns bounded match presentation snapshot input construction outside PlayableMatchRuntime
+  -> camera shake, stage flash, and P1/P2 effect snapshot groups route through one seam before RuntimeSnapshotWorld.match builds the renderer-independent snapshot
+  -> focused RuntimeMatchPresentationSnapshotSystem coverage proves shake/flash/effect-group forwarding and P1/P2 ordering
+  -> ownership cleanup only; no score movement, exact stage/motif camera logic, effect lifecycle semantics, renderer/audio parity, visual/debug UI parity, or full match snapshot parity claim
 R2 RuntimeActiveControllerTelemetryWorld ownership
   -> RuntimeActiveControllerTelemetryWorld owns bounded active-controller telemetry hook construction outside PlayableMatchRuntime
   -> active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch share one controller/operation hook set before RuntimeCompatibilityTelemetryWorld
