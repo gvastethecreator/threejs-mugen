@@ -6714,6 +6714,7 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
     script?: RuntimeTraceInputFrame[];
     shakeStateNo?: number;
     slideStateNo?: number;
+    requiredExecutedStates?: number[];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
   } = {},
 ): RuntimeTraceArtifact {
@@ -6748,7 +6749,7 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [0, 200, shakeStateNo, slideStateNo],
+        requiredExecutedStates: options.requiredExecutedStates ?? [0, 200, shakeStateNo, slideStateNo],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
         requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence(shakeStateNo, slideStateNo)],
@@ -6948,6 +6949,53 @@ export function officialKfmDefaultGetHitProgressionPhysicsFrames(): RuntimeTrace
       clsn1Count: 0,
       clsn2Count: 2,
       minFrames: 6,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 1,
+      observedVelXAtMost: 0,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+    },
+  ];
+}
+
+export function officialKfmDefaultCrouchGetHitProgressionPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 5010,
+      animNo: 5010,
+      stateType: "C",
+      moveType: "H",
+      physics: "N",
+      clsn1Count: 0,
+      clsn2Count: 2,
+      minFrames: 5,
+      observedPosYAtLeast: 0,
+      observedPosYAtMost: 0,
+      observedVelXAtLeast: 0,
+      observedVelXAtMost: 0,
+      observedVelYAtLeast: 0,
+      observedVelYAtMost: 0,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+    },
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 5011,
+      animNo: 5020,
+      stateType: "C",
+      moveType: "H",
+      physics: "C",
+      clsn1Count: 0,
+      clsn2Count: 3,
+      minFrames: 8,
       observedPosYAtLeast: 0,
       observedPosYAtMost: 0,
       observedVelXAtLeast: 1,

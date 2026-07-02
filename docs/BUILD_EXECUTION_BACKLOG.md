@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-02 - KFM crouch get-hit progression fixture gate
+
+Changed:
+- Added optional private-fixture `kfm-official-default-crouch-gethit-progression` trace evidence for real KFM/Common1 crouch `5010 -> 5011 -> 0` HitShakeOver/HitOver progression.
+- Prefactored `createImportedDefaultGetHitProgressionTraceArtifact` with a `requiredExecutedStates` override so fixture routes can require KFM's executed crouch prep state `11` without pretending state `0` executed a controller on return.
+- Added `officialKfmDefaultCrouchGetHitProgressionPhysicsFrames()` for KFM-specific crouch frame evidence: `5010` anim `5010`, `5011` anim `5020`, `Clsn2 = 2/3`, body width `39/39`, and bounded slide velocity.
+- Registered the optional KFM crouch artifact in `scripts/qa_traces.cjs` without touching frontend, CSS, renderer, sprites, or bundled assets.
+
+Evidence:
+- Probe artifact passed before docs: `kfm-official-default-crouch-gethit-progression` checksum `3d197fae`, final checksum `f469a942`.
+- `pnpm qa:trace` passed -> 268/268 artifacts, 245 required and 23 optional.
+- Gate label: `imported-default-crouch-gethit-progression-golden`; required executed states include `11`, `200`, `5010`, and `5011`.
+- Required evidence includes final P2 state `0`/control, actor-frame `5010 -> 5011`, `5010` `stateType = C` / `physics = N` / `Clsn2 = 2`, and `5011` `stateType = C` / `physics = C` / `Clsn2 = 3`.
+
+Claim allowed:
+- Private official KFM fixture can prove bounded crouch Common1-style `5010 -> 5011 -> 0` progression after a direct `HitDef` without `p2stateno` while P2 holds crouch.
+
+Claim blocked:
+- Public bundled KFM support, exact MUGEN/IKEMEN controller-loop timing, exact crouch get-hit animation/slide tables beyond this frame profile, fall routing, custom-state/helper/team breadth, visual/audio parity, score movement, and full Common1 get-hit parity remain blocked.
+
+Next:
+- Continue into exact KFM/Common1 timing/table work, broader recovery/guard precision, or another bounded R1/R2 runtime slice.
+
 ## 2026-07-02 - Default crouch get-hit progression trace gate
 
 Changed:

@@ -1680,6 +1680,23 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-crouch-gethit-progression",
+        required: false,
+        artifact: presets.createImportedDefaultGetHitProgressionTraceArtifact(imported, {
+          targetId: "kfm-official-default-crouch-gethit-progression-golden",
+          targetLabel: "Official KFM crouch Common1 HitShakeOver/HitOver progression",
+          gateLabel: "imported-default-crouch-gethit-progression-golden",
+          script: presets.importedDefaultCrouchGetHitProgressionScript(),
+          shakeStateNo: 5010,
+          slideStateNo: 5011,
+          requiredExecutedStates: [11, 200, 5010, 5011],
+          requiredActorFrames: presets.officialKfmDefaultCrouchGetHitProgressionPhysicsFrames(),
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can hold crouch, enter Common1 state 5010, progress to 5011 through HitShakeOver, and return to state 0/control through HitOver after a HitDef without p2stateno. KFM's crouch route executes state 11 before contact, so the gate requires the executed crouch prep state plus final actor state 0 instead of requiring state 0 as an executed controller state; exact crouch get-hit timing, slide tables, fall routing, custom-state/helper/team breadth, and visual/audio parity remain future work.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-fall-gethit",
         required: false,
         artifact: presets.createImportedDefaultFallGetHitTraceArtifact(imported, {

@@ -154,6 +154,11 @@ Previous R2 RuntimeEffectLifecycleWorld helper advance-context ownership
   -> RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, RuntimeHitPauseWorld, and PlayableMatchRuntime pass current tick context through that boundary
   -> focused EffectLifecycleSystem tests prove helper-local GameTime rejection/pass behavior, FrontEdgeDist param evaluation from stage bounds, PlaySnd runtimeTick telemetry, and ChangeState handoff
   -> ownership/context cleanup only; no exact helper clock parity, pause/combat ordering parity, broader indexed/team redirects, teams/simul, visual parity, score movement, or full helper VM claim
+Optional R1 KFM/Common1 crouch get-hit progression fixture gate
+  -> kfm-official-default-crouch-gethit-progression.json checksum 3d197fae passes with private .scratch/fixtures/kfm-official.zip
+  -> confirms real KFM held-crouch prep 11 plus Common1 5010 -> 5011 -> 0 through HitShakeOver / HitOver, with KFM-specific frame evidence and final control
+  -> pnpm qa:trace passes 268/268 artifacts, 245 required and 23 optional
+  -> optional private fixture confidence only; no public KFM, score movement, exact tick timing/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
   -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass with private .scratch/fixtures/kfm-official.zip
   -> confirms real KFM air-entry recovery data includes 5020 -> 5030 -> 5035 -> 5050, valid recovery through 5210 -> 52 -> 0, and too-early rejection in 5050

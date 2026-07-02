@@ -89,8 +89,14 @@ R1 Common1 default crouch get-hit progression trace gate
   -> synthetic-imported-default-crouch-gethit-progression.json checksum fd986a9e is required in qa:trace
   -> held-crouch imported defender routes through defender-owned Common1-style states 5010 -> 5011 -> 0 after direct HitDef without p2stateno
   -> evidence includes ordered 5010:ChangeState -> 5011:ChangeState controller events, ordered 5010 -> 5011 actor frames, crouch state/physics telemetry, collision telemetry, final checksum d6b64044, and final idle/control
-  -> pnpm qa:trace passes 267/267 artifacts, 245 required and 22 optional
+  -> that required checkpoint passed 267/267 artifacts, 245 required and 22 optional before the latest optional KFM addendum
   -> crouch HitShakeOver/HitOver progression evidence only; no score movement, exact tick timing, exact crouch get-hit animation/slide tables, fall routing, custom-state/helper/team breadth, visual/audio parity, or full Common1 get-hit parity claim
+Optional R1 KFM/Common1 crouch get-hit progression fixture gate
+  -> kfm-official-default-crouch-gethit-progression.json checksum 3d197fae passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM held-crouch route executes prep state 11, then Common1 5010 -> 5011 -> 0 through HitShakeOver / HitOver
+  -> KFM-specific evidence pins 5010 anim 5010, 5011 anim 5020, Clsn2 = 2/3, body width 39/39, final checksum f469a942, and final idle/control
+  -> pnpm qa:trace passes 268/268 artifacts, 245 required and 23 optional
+  -> private-fixture confidence only; no public KFM support, no score movement, no exact tick/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
   -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass when .scratch/fixtures/kfm-official.zip exists
   -> real KFM air-entry recovery route includes 5020 -> 5030 -> 5035 -> 5050; valid recovery enters 5210, lands through 52, and returns to 0/control, while the early route stays in 5050 and forbids recovery/landing/ground-impact branches

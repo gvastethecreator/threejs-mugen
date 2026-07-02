@@ -67,6 +67,7 @@ Optional KFM artifacts may prove:
 - state exit
 - Common1 state `5000`
 - stand progression `5000 -> 5001 -> 0`
+- crouch progression `11 -> 5010 -> 5011 -> 0`
 - fall/ground-impact/bounce/lie-down entry `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110`
 - lie-down/get-up recovery completion `5110 -> 5120 -> 0`
 - air recovery-input completion `5050 -> 5210 -> 52 -> 0`
