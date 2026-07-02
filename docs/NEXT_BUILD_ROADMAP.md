@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 EnvShake required trace restoration
+  -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
+  -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry for p1
+  -> event evidence pins time 16, freq 30, ampl -7, phase 0.5, and stateNo 200
+  -> pnpm qa:trace now passes 273/273 artifacts, 249 required and 24 optional
+  -> evidence-pipeline restoration only; no exact camera waveform, pause/stage/layer interaction, helper/redirect ownership, visual/audio parity, score movement, or full presentation parity claim
 R1 Common1 guard slide-stop trace gate
   -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is now required
   -> defender-owned stand guard-hit route executes 150 -> 151 -> 130 after direct guarded contact

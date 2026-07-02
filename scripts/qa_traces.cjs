@@ -116,6 +116,11 @@ async function main() {
       artifact: presets.createSyntheticImportedNoOpTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-receiveddamage",
       required: true,
       artifact: presets.createSyntheticImportedReceivedDamageTraceArtifact(),

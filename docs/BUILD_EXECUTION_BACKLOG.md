@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Required EnvShake trace gate restoration
+
+Changed:
+- Reconnected `createSyntheticImportedEnvShakeTraceArtifact()` in `scripts/qa_traces.cjs` so `synthetic-imported-envshake.json` is emitted as a required trace artifact again.
+- Kept the existing preset, unit coverage, controller support registry wording, and checksum semantics unchanged.
+- No runtime `EnvShake` semantics, camera waveform, pause behavior, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "EnvShake"` -> 1 file / 1 matching test.
+- Trace gate passed: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-envshake.json` checksum remains `061f17d5`.
+
+Claim allowed:
+- The existing bounded imported `EnvShake` route is again covered by the required trace pipeline: `ChangeState`, `EnvShake`, `HitDef`, typed `envshake` operation evidence, and `RuntimeEnvShakeEvent` telemetry for P1 state `200`.
+
+Claim blocked:
+- Exact camera waveform, pause/stage/layer interaction, helper/redirect ownership, visual/audio parity, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+Next:
+- Continue R1 KFM/Common1/FightFX precision or R2 MatchWorld ownership. Do not count this restoration as new EnvShake semantic breadth.
+
 ## 2026-07-02 - RuntimeMatchActiveWorld ownership extraction
 
 Changed:
