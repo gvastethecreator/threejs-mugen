@@ -70,6 +70,8 @@ Optional KFM artifacts may prove:
 - fall/ground-impact/bounce/lie-down entry `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110`
 - lie-down/get-up recovery completion `5110 -> 5120 -> 0`
 - air recovery-input completion `5050 -> 5210 -> 52 -> 0`
+- air-entry recovery-input completion `5020 -> 5030 -> 5035 -> 5050 -> 5210 -> 52 -> 0`
+- air-entry early recovery-input rejection `5020 -> 5030 -> 5035 -> 5050`
 - early recovery-input rejection while still in `5050`
 - ground recovery-input completion `5050 -> 5200 -> 5201 -> 52 -> 0`
 

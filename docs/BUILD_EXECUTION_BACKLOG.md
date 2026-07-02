@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - KFM air-entry recovery fixture gates
+
+Changed:
+- Added optional private-fixture KFM gates for airborne Common1 recovery routes using `.scratch/fixtures/kfm-official.zip` when present.
+- Added reusable official KFM air-entry recovery controller and actor-frame sequence helpers for `5020 -> 5030 -> 5035 -> 5050 -> 5210 -> 52 -> 0` and the too-early rejection route `5020 -> 5030 -> 5035 -> 5050`.
+- Registered `kfm-official-default-air-fall-recovery-input` and `kfm-official-default-air-fall-recovery-too-early` in `scripts/qa_traces.cjs` without changing runtime behavior, frontend, CSS, or bundled assets.
+- Kept the evidence private/optional: no public KFM asset is committed and no score moves from these gates.
+
+Evidence:
+- `pnpm qa:trace` passed -> 266/266 artifacts, 244 required and 22 optional.
+- New optional artifact: `kfm-official-default-air-fall-recovery-input.json` checksum `3bce8aba`, initial checksum `47d0d864`, final checksum `66456063`.
+- New optional artifact: `kfm-official-default-air-fall-recovery-too-early.json` checksum `b199382a`, initial checksum `27df190a`, final checksum `304d01c4`.
+- The input route requires executed states `200`, `5020`, `5030`, `5035`, `5050`, `5210`, and `52`; ordered actor-frame evidence shows KFM's `5030` countdown reaches `0` before intermediate `5035`, then `5050`, `5210`, `52`, and idle/control.
+- The too-early route requires executed states `200`, `5020`, `5030`, `5035`, and `5050`; recovery, landing, ground-impact, bounce, and lie-down states `5210`, `5200`, `5201`, `52`, `5100`, `5101`, `5110`, and `5120` stay forbidden while `5050` still has positive `fall.recovertime`.
+
+Claim allowed:
+- The private official KFM fixture confirms the bounded air-entry Common1 recovery-input and too-early reject routes through KFM's real intermediate `5035` state.
+
+Claim blocked:
+- Public bundled KFM support, exact MUGEN/IKEMEN recovery threshold tables, exact velocity math, exact controller-loop tick order, recovery arbitration breadth, visual/audio parity, score movement, and full Common1 recovery parity remain blocked.
+
+Next:
+- Continue into exact threshold tables, broader official fixture comparison, guard/recovery precision, or the next R2 MatchWorld ownership slice.
+
 ## 2026-07-02 - Default air recovery too-early trace gate
 
 Changed:

@@ -1715,6 +1715,21 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-air-fall-recovery-input",
+        required: false,
+        artifact: presets.createImportedDefaultFallRecoveryInputTraceArtifact(imported, {
+          targetId: "kfm-official-default-air-fall-recovery-input-golden",
+          targetLabel: "Official KFM air-entry Common1 recovery input route",
+          script: presets.importedDefaultAirFallRecoveryInputScript(),
+          requiredExecutedStates: [200, 5020, 5030, 5035, 5050, 5210, 52],
+          requiredControllerEventSequences: [presets.officialKfmAirEntryRecoveryInputControllerSequence()],
+          requiredActorFrameSequences: [presets.officialKfmAirEntryRecoveryInputActorFrameSequence()],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can start in airborne Common1 state 5020 after a fall HitDef without p2stateno, route through 5030, KFM's intermediate 5035, and 5050, accept command = "recovery" after the bounded 5030 fall.recovertime countdown reaches 0, enter 5210, land through state 52, and return to state 0/control. The gate also requires bounded official KFM 5020/5030/5035/5050/5210/52 controller/typed-operation order. This is private-fixture confidence only; it does not prove exact recovery threshold tables, velocity math, controller-loop tick order, public bundled KFM support, or full MUGEN/IKEMEN recovery parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-fall-recovery-threshold",
         required: false,
         artifact: presets.createImportedDefaultFallRecoveryThresholdTraceArtifact(imported, {
@@ -1733,6 +1748,22 @@ async function main() {
           targetLabel: "Official KFM Common1 recovery input too-early reject route",
           notes: [
             `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender does not leave Common1 fall state 5050 through command = "recovery" before the bounded recovery timer permits it. Exact recovery thresholds/velocities, tick-order parity, and official oracle breadth remain future work.`,
+          ],
+        }),
+      });
+      artifacts.push({
+        name: "kfm-official-default-air-fall-recovery-too-early",
+        required: false,
+        artifact: presets.createImportedDefaultFallRecoveryTooEarlyTraceArtifact(imported, {
+          targetId: "kfm-official-default-air-fall-recovery-too-early-golden",
+          targetLabel: "Official KFM air-entry Common1 recovery input too-early reject route",
+          script: presets.importedDefaultAirFallRecoveryTooEarlyScript(),
+          requiredExecutedStates: [200, 5020, 5030, 5035, 5050],
+          forbiddenExecutedStates: [5210, 5200, 5201, 52, 5100, 5101, 5110, 5120],
+          requiredControllerEventSequences: [presets.officialKfmAirEntryRecoveryTooEarlyControllerSequence()],
+          requiredActorFrameSequences: [presets.officialKfmAirEntryRecoveryTooEarlyActorFrameSequence()],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can start in airborne Common1 state 5020 after a fall HitDef without p2stateno, route through 5030 and KFM's intermediate 5035 into 5050, keep command = "recovery" active too early, and remain in 5050 while the bounded fall.recovertime window is still positive. Recovery, landing, ground-impact, bounce, and lie-down states stay forbidden for this negative route. This is private-fixture confidence only; it does not prove exact recovery threshold tables, velocity math, controller-loop tick order, public bundled KFM support, or full MUGEN/IKEMEN recovery parity.`,
           ],
         }),
       });

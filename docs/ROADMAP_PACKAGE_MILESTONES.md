@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+Optional R1 KFM/Common1 air-entry recovery fixture gates
+  -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM air-entry recovery route includes 5020 -> 5030 -> 5035 -> 5050; valid recovery enters 5210, lands through 52, and returns to 0/control, while the early route stays in 5050 and forbids recovery/landing/ground-impact branches
+  -> pnpm qa:trace passes 266/266 artifacts, 244 required and 22 optional
+  -> private-fixture confidence only; no public KFM support, no score movement, no exact threshold/velocity/tick-order/full parity claim
 R1 Common1 default air recovery too-early trace gate
   -> synthetic-imported-default-air-fall-recovery-too-early.json checksum 48a2e708 is required in qa:trace
   -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050, keeps command = "recovery" active too early, and stays in 5050 after fall HitDef without p2stateno

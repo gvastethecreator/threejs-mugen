@@ -143,6 +143,11 @@ Previous R2 RuntimeEffectLifecycleWorld helper advance-context ownership
   -> RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, RuntimeHitPauseWorld, and PlayableMatchRuntime pass current tick context through that boundary
   -> focused EffectLifecycleSystem tests prove helper-local GameTime rejection/pass behavior, FrontEdgeDist param evaluation from stage bounds, PlaySnd runtimeTick telemetry, and ChangeState handoff
   -> ownership/context cleanup only; no exact helper clock parity, pause/combat ordering parity, broader indexed/team redirects, teams/simul, visual parity, score movement, or full helper VM claim
+Optional R1 KFM/Common1 air-entry recovery fixture gates
+  -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass with private .scratch/fixtures/kfm-official.zip
+  -> confirms real KFM air-entry recovery data includes 5020 -> 5030 -> 5035 -> 5050, valid recovery through 5210 -> 52 -> 0, and too-early rejection in 5050
+  -> pnpm qa:trace passes 266/266 artifacts, 244 required and 22 optional
+  -> optional private fixture confidence only; no public KFM, score movement, exact thresholds, velocity math, VM tick-order, visual/audio, or full Common1 parity claim
 Current R1 Common1 default air recovery too-early required trace gate
   -> synthetic-imported-default-air-fall-recovery-too-early.json checksum 48a2e708 is required in qa:trace
   -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050, keeps command = "recovery" active too early, and stays in 5050 after fall HitDef without p2stateno
