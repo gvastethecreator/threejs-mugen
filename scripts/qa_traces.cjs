@@ -641,6 +641,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultGuardSlideStopTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-crouch-guard-slide-stop",
+      required: true,
+      artifact: presets.createSyntheticImportedCrouchGuardSlideStopTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-crouch-guard-state",
       required: true,
       artifact: presets.createSyntheticImportedCrouchGuardStateTraceArtifact(),

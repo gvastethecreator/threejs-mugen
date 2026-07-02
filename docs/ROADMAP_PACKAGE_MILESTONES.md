@@ -85,6 +85,14 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 Common1 crouch guard slide-stop trace gate
+  -> synthetic-imported-crouch-guard-slide-stop.json checksum 2bea7311 is required in qa:trace
+  -> defender-owned crouch guard-hit route executes 152 -> 153 -> 130 after direct guarded contact
+  -> active-command evidence requires holddown and x
+  -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
+  -> actor-frame evidence proves crouch guard-slide velocity before stop/control
+  -> pnpm qa:trace now passes 274/274 artifacts, 250 required and 24 optional
+  -> crouch guard slide-stop/control evidence only; no score movement, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan lower into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority / volumeScale / freqMul / loop / pan
   -> static SndPan channel plus pan/abspan lower into typed audio:sndpan metadata and RuntimeSoundEvent pan / absPan telemetry
@@ -130,9 +138,9 @@ R1 EnvShake required trace restoration
   -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
   -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry
   -> event evidence pins actor p1 with time 16, freq 30, ampl -7, phase 0.5, and stateNo 200
-  -> pnpm qa:trace now passes 273/273 artifacts, 249 required and 24 optional
+  -> current pnpm qa:trace passes 274/274 artifacts, 250 required and 24 optional after later guard gates
   -> evidence-pipeline restoration only; no new camera waveform, pause/stage/layer, helper/redirect, visual/audio, score, or full presentation parity claim
-R1 Common1 guard slide-stop trace gate
+Previous R1 Common1 stand guard slide-stop trace gate
   -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is required in qa:trace
   -> defender-owned stand guard-hit route executes 150 -> 151 -> 130 after direct guarded contact
   -> required order is 150 ChangeAnim -> 150 ChangeState -> 151 HitVelSet -> kinematic:hitvelset -> 151 VelSet -> kinematic:velset -> 151 CtrlSet -> resource:ctrlset -> 151 ChangeState
@@ -1214,6 +1222,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-crouch-guard-state.json` actor-frame telemetry
 - `synthetic-imported-diagonal-crouch-guard-state.json` actor-frame telemetry
 - `synthetic-imported-air-guard-state.json` actor-frame telemetry
+- `synthetic-imported-crouch-guard-slide-stop.json` crouch slide-stop/control order
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence
 - `RuntimeControllerEvaluationContextWorld` ownership extraction

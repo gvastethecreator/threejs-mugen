@@ -85,6 +85,7 @@ import {
   officialKfmStandGuardHitControllerSequence,
   officialKfmStandGuardSlideStopControllerSequence,
   officialKfmStandGuardHitPhysicsFrames,
+  defaultCrouchGuardSlideStopControllerSequence,
   syntheticAirGuardHitPhysicsFrames,
   syntheticAutoGuardEndControllerSequence,
   syntheticAutoGuardEndActorFrameSequence,
@@ -123,6 +124,7 @@ import {
   createSyntheticImportedHitDefGuardSoundTraceArtifact,
   createSyntheticImportedDefaultGuardStateTraceArtifact,
   createSyntheticImportedDefaultGuardSlideStopTraceArtifact,
+  createSyntheticImportedCrouchGuardSlideStopTraceArtifact,
   createSyntheticImportedExplodBindTraceArtifact,
   createSyntheticImportedExplodRemoveOnGetHitTraceArtifact,
   createSyntheticImportedExplodRemoveOnProjectileGuardTraceArtifact,
@@ -6305,6 +6307,45 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 151, controller: "ChangeState", name: "Guard Hit Over" },
         ],
       },
+    ]);
+  });
+
+  it("creates a synthetic imported crouch Common1 guard slide-stop artifact", () => {
+    const artifact = createSyntheticImportedCrouchGuardSlideStopTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-crouch-guard-slide-stop-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-crouch-guard-slide-stop-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holddown", "x"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([130, 152, 153, 200]));
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      syntheticCrouchGuardHitPhysicsFrames()[0],
+      {
+        ...syntheticCrouchGuardHitPhysicsFrames()[1],
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultCrouchGuardSlideStopControllerSequence(),
     ]);
   });
 

@@ -4011,6 +4011,46 @@ export function createSyntheticImportedDefaultGuardSlideStopTraceArtifact(option
   });
 }
 
+export function createSyntheticImportedCrouchGuardSlideStopTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-slide-stop",
+    displayName: "Synthetic Imported Crouch Guard Slide Stop",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, crouchShakeStateNo: 152, crouchSlideStateNo: 153, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-slide-stop-attacker",
+    displayName: "Synthetic Imported Crouch Guard Slide Stop Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  const guardSlideFrames = syntheticCrouchGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultCrouchGuardStateScript(),
+    targetId: "synthetic-imported-crouch-guard-slide-stop-golden",
+    targetLabel: "Synthetic imported Common1 crouch guard slide-stop route",
+    requiredExecutedStates: [200, 152, 153, 130],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet", "CtrlSet"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "resource:ctrlset"],
+    requiredControllerEventSequences: [defaultCrouchGuardSlideStopControllerSequence()],
+    requiredActorFrames: [
+      guardSlideFrames[0]!,
+      {
+        ...guardSlideFrames[1]!,
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ],
+    requiredActiveCommands: ["holddown", "x"],
+    notes: [
+      "Synthetic imported crouch guard slide-stop trace proves bounded Common1-style crouch guard-hit state 153 executes HitVelSet, then VelSet from Time = GetHitVar(slidetime), then CtrlSet from Time = GetHitVar(ctrltime), before returning to guard state 130. It does not claim exact guard timing, proximity guard, guard effects, air guard parity, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedGetHitVarGuardTimingTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-gethitvar-guard-timing",
@@ -4425,6 +4465,25 @@ export function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControlle
       { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
       { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
       { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
+      { stateNo: 153, operation: "resource:ctrlset" },
+      { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
+    ],
+  };
+}
+
+export function defaultCrouchGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "152/153 crouch guard slide-stop and control order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 152, controller: "ChangeAnim", name: "Guard Shake Anim" },
+      { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
+      { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
+      { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "VelSet", name: "Stop Crouch Guard Slide" },
+      { stateNo: 153, operation: "kinematic:velset" },
       { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
       { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },

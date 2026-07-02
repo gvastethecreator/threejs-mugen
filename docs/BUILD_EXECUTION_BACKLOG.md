@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Crouch guard slide-stop trace gate
+
+Changed:
+- `synthetic-imported-crouch-guard-slide-stop.json` is now a required trace artifact for bounded Common1-style crouch guard slide-stop/control.
+- `RuntimeTraceGatePresets` now has a synthetic imported crouch guard route proving defender-owned `152 -> 153 -> 130` after direct guarded contact.
+- The gate requires active `holddown` / `x`, ordered `153` `HitVelSet`, `VelSet`, `CtrlSet`, and final `ChangeState`, typed `kinematic:hitvelset`, `kinematic:velset`, and `resource:ctrlset`, plus actor-frame velocity-before-stop/control telemetry.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file / 269 tests.
+- Trace gate: `pnpm qa:trace` -> 274/274 artifacts, 250 required and 24 optional; `synthetic-imported-crouch-guard-slide-stop.json` checksum `2bea7311`.
+- Full gates: `pnpm test` -> 130 files / 1061 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 274/274 artifacts, 250 required and 24 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Bounded direct crouch guard `152 -> 153 -> 130` slide-stop/control order is trace-gated with controller, typed-operation, command, and actor-frame evidence.
+
+Claim blocked:
+- Exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity remain blocked.
+
+Next:
+- Continue R1 guard/recovery loop precision or R2 MatchWorld helper/effect ownership.
+
 ## 2026-07-02 - SndPan channel panning handoff
 
 Changed:
