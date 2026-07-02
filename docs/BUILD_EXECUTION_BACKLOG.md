@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeHelperTelemetryWorld ownership extraction
+
+Changed:
+- Added `RuntimeHelperTelemetryWorld` as the helper-local Projectile telemetry binding boundary consumed by `PlayableMatchRuntime`.
+- Moved owner `onHelperController` / `onHelperOperation` projectile filtering and helper-state fallback telemetry out of `PlayableMatchRuntime.attachHelperTargetStateHandlers`.
+- Added focused `RuntimeHelperTelemetrySystem` coverage for projectile controller/typed-operation recording, owner-state fallback when helper state is absent, non-projectile ignore behavior, and stale handler replacement.
+- No runtime semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed: `pnpm exec vitest run src/tests/RuntimeHelperTelemetrySystem.test.ts` -> 1 file / 3 tests.
+- Full closeout gates passed: `pnpm test` -> 116 files / 1014 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was intentionally not run because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current helper-local Projectile controller/op telemetry has a named, testable ownership boundary while preserving existing helper state-number attribution.
+
+Claim blocked:
+- Exact helper Projectile tick timing, helper-owned Projectile combat/contact presentation, teams/simul helper telemetry, broader helper controller telemetry semantics, visual/audio parity, score movement, and full Helper VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard precision.
+
 ## 2026-07-02 - KFM crouch get-hit progression controller-order fixture gate
 
 Changed:

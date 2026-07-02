@@ -42,6 +42,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
+import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
@@ -147,6 +148,7 @@ const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWor
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
+const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -285,18 +287,10 @@ export class PlayableMatchRuntime {
     this.helperTargetStateWorld.attachOwnerHandlers([this.p1, this.p2], (owner, helper, target, stateId) =>
       this.enterHelperOwnedTargetState(owner, helper, target, stateId),
     );
-    for (const owner of [this.p1, this.p2]) {
-      owner.onHelperController = (helper, controller) => {
-        if (controller.operation?.kind === "projectile") {
-          compatibilityTelemetryWorld.recordController(owner, controller.source, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
-        }
-      };
-      owner.onHelperOperation = (helper, operation) => {
-        if (operation.kind === "projectile") {
-          compatibilityTelemetryWorld.recordOperation(owner, operation, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
-        }
-      };
-    }
+    helperTelemetryWorld.attachProjectileTelemetry([this.p1, this.p2], {
+      recordController: (owner, controller, context) => compatibilityTelemetryWorld.recordController(owner, controller, context),
+      recordOperation: (owner, operation, context) => compatibilityTelemetryWorld.recordOperation(owner, operation, context),
+    });
   }
 
   private enterHelperOwnedTargetState(

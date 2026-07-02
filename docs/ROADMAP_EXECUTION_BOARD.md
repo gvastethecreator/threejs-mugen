@@ -399,6 +399,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 
 Build next:
 
+- Current proof: `RuntimeHelperTelemetryWorld` owns bounded helper-local Projectile controller/op telemetry binding consumed by `PlayableMatchRuntime`, with focused coverage for projectile controller/operation recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement while trace behavior is expected to remain stable.
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
 - Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence.
 - Current proof: required `synthetic-imported-target-dynamic-redirect.json` checksum `9985b62a` gates bounded `Target(var(0)), Life` trigger redirect reads through current target memory, proving P1 can branch from state `200` to `287` after direct `HitDef` target creation and owner-local `var(0) = 77`; previous `synthetic-imported-target-redirect.json` checksum `89580963` keeps static `Target(77), Life` routing gated.
