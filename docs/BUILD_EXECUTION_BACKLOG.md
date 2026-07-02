@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeActiveControllerRunWorld ownership bridge
+
+Changed:
+- Added `RuntimeActiveControllerRunWorld` as the named scan-to-dispatch bridge for imported active-state controllers.
+- `PlayableMatchRuntime` now delegates active-controller state lookup, trigger pass handoff, `ignorehitpause` filtering, compiled controller dispatch creation, route execution, and stop-on-state-change through that bridge.
+- Added focused coverage for owner-backed state data and hitpause-only active-controller filtering.
+- Updated runtime support and roadmap docs with ownership-only claim wording.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeActiveControllerRunSystem.test.ts` -> 1 file / 2 tests.
+- Regression subset after hook fix: `pnpm exec vitest run src/tests/RuntimeActiveControllerRunSystem.test.ts src/tests/PlayableMatchRuntime.test.ts --testNamePattern "AssertSpecial NoKO|NotHitBy|HitBy|AttackMulSet|RemapPal|RuntimeActiveControllerRunWorld"` -> 2 files / 7 tests, 66 skipped.
+- Test suite: `pnpm test` -> 143 files / 1104 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; no checksum drift.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current imported active-controller scan-to-dispatch orchestration has a named, focused-tested bridge that preserves owner-backed state routing, hitpause-only filtering, and existing dispatch order.
+
+Claim blocked:
+- New controller semantics, exact CNS VM timing, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, unsupported-feature breadth, visual/audio parity, score movement, and full MUGEN/IKEMEN active-controller parity remain blocked.
+
+Next:
+- Continue shrinking `PlayableMatchRuntime` with R2 ownership seams or move back to R1 Common1/FightFX gates that produce required trace evidence.
+
 ## 2026-07-02 - R1 optional official KFM basic movement trace gate
 
 Changed:

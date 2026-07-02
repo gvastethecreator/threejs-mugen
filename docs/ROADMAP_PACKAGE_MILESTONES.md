@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeActiveControllerRunWorld ownership
+  -> RuntimeActiveControllerRunWorld owns bounded active-controller scan-to-dispatch orchestration for imported state programs
+  -> owner-backed state lookup, trigger pass handoff, ignorehitpause filtering, compiled controller dispatch creation, route execution, and stop-on-state-change run through one bridge
+  -> focused RuntimeActiveControllerRunSystem coverage proves owner-backed active-controller routing plus hitpause-only filtering
+  -> ownership cleanup only; no score movement, no exact CNS VM timing, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, visual/audio parity, or full active-controller parity claim
 R1 optional official KFM basic movement trace gate
   -> kfm-official-basic-movement.json checksum ef30066c is optional in qa:trace when .scratch/fixtures/kfm-official.zip exists
   -> scripted p1 direction input drives real KFM through bounded walk 20, crouch prep 11, jump 41, and final idle/control 0

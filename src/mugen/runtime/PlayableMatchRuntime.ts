@@ -64,8 +64,7 @@ import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEval
 import { RuntimeMatchHelperProjectileTargetWorld } from "./RuntimeMatchHelperProjectileTargetSystem";
 import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
-import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
-import { RuntimeActiveControllerDispatchWorld } from "./RuntimeActiveControllerDispatchSystem";
+import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
@@ -136,8 +135,7 @@ const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
 const stateEntryRouteWorld = new RuntimeStateEntryRouteWorld();
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
-const activeControllerScanWorld = new RuntimeActiveControllerScanWorld();
-const activeControllerDispatchWorld = new RuntimeActiveControllerDispatchWorld();
+const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
 const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
@@ -878,7 +876,7 @@ function runActiveStateControllers(
   onEnvColorController?: EnvColorControllerHandler,
   options: ActiveControllerRunOptions = {},
 ): void {
-  activeControllerScanWorld.run({
+  activeControllerRunWorld.run({
     actor: fighter,
     opponent,
     tick,
@@ -886,159 +884,149 @@ function runActiveStateControllers(
     controllerIgnoresHitPause,
     triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
       triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
-    executeController: ({ controller, owner }) => {
-      const dispatch = dispatchStateProgramController(controller);
-      const activeDispatch = activeControllerDispatchWorld.apply({
-        dispatch,
-        actor: fighter,
-        opponent,
-        owner,
-        tick,
-        stateHooks: {
-          resolveNumber: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
-            resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-          resolveBoolean: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
-            resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-          recordController: runtimeActiveControllerTelemetryHooks.recordController,
-          enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
-          applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
-          changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
-            changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
-        },
-        sideEffectHooks: {
-          hitDef: () => {
-            hitDefControllerDispatchWorld.apply({
+    dispatchController: dispatchStateProgramController,
+    stateHooks: {
+      resolveNumber: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
+        resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+      resolveBoolean: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
+        resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+      recordController: runtimeActiveControllerTelemetryHooks.recordController,
+      enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
+      applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
+      changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
+        changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+    },
+    sideEffectHooks: {
+      hitDef: ({ controller }) => {
+        hitDefControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          frame: getCurrentFrame(fighter),
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      reversalDef: ({ controller }) => {
+        reversalControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          hitbox: frameWorld.currentFrame(fighter)?.clsn1[0],
+          reversalWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      width: ({ controller }) => {
+        actorConstraintControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          actorConstraintWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      fallEnvShake: ({ controller }) => {
+        fallEnvShakeControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          envShakeWorld: fighter.envShakeWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      spriteEffect: ({ controller, effect }) => {
+        spriteEffectControllerWorld.apply({
+          actor: fighter,
+          controller,
+          effect,
+          spriteEffectWorld,
+          sampleFactory: () => createAfterImageSample(fighter),
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      effectSpawn: ({ controller, effect }) => {
+        effectSpawnControllerDispatchWorld.apply({
+          actor: fighter,
+          opponent,
+          controller,
+          effect,
+          effectSpawnWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      target: ({ controller, effect }) => {
+        targetControllerDispatchWorld.apply({
+          actor: fighter,
+          candidateTargets: [opponent],
+          controller,
+          effect,
+          targetWorld: fighter.targetWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+          scaleIncomingDamage: scaleRuntimeIncomingDamage,
+          enterTargetState: (target, stateId) => {
+            targetStateEntryWorld.enter({
               actor: fighter,
-              controller,
-              frame: getCurrentFrame(fighter),
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          reversalDef: () => {
-            reversalControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              hitbox: frameWorld.currentFrame(fighter)?.clsn1[0],
-              reversalWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          width: () => {
-            actorConstraintControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              actorConstraintWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          fallEnvShake: () => {
-            fallEnvShakeControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              runtimeTick: tick,
-              envShakeWorld: fighter.envShakeWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          spriteEffect: ({ effect }) => {
-            spriteEffectControllerWorld.apply({
-              actor: fighter,
-              controller,
-              effect,
-              spriteEffectWorld,
-              sampleFactory: () => createAfterImageSample(fighter),
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          effectSpawn: ({ effect }) => {
-            effectSpawnControllerDispatchWorld.apply({
-              actor: fighter,
-              opponent,
-              controller,
-              effect,
-              effectSpawnWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          target: ({ effect }) => {
-            targetControllerDispatchWorld.apply({
-              actor: fighter,
-              candidateTargets: [opponent],
-              controller,
-              effect,
-              targetWorld: fighter.targetWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-              scaleIncomingDamage: scaleRuntimeIncomingDamage,
-              enterTargetState: (target, stateId) => {
-                targetStateEntryWorld.enter({
-                  actor: fighter,
-                  target,
-                  stateId,
-                  hooks: {
-                    canEnterState: (targetActor, targetStateId, stateOwner) =>
-                      canEnterState(targetActor, targetStateId, stateOwner),
-                    enterState: (targetActor, targetStateId, options) =>
-                      enterState(targetActor, targetStateId, undefined, options),
-                  },
-                });
+              target,
+              stateId,
+              hooks: {
+                canEnterState: (targetActor, targetStateId, stateOwner) =>
+                  canEnterState(targetActor, targetStateId, stateOwner),
+                enterState: (targetActor, targetStateId, options) =>
+                  enterState(targetActor, targetStateId, undefined, options),
               },
-              getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
             });
           },
-          pause: () => {
-            pauseControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          sound: () => {
-            audioControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              runtimeTick: tick,
-              audioWorld: fighter.audioWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          envColor: () => {
-            envColorControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              runtimeTick: tick,
-              emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          envShake: () => {
-            envShakeControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              runtimeTick: tick,
-              envShakeWorld: fighter.envShakeWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-          contact: () => {
-            contactControllerDispatchWorld.apply({
-              actor: fighter,
-              controller,
-              contactWorld: fighter.contactWorld,
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-        },
-        hooks: {
-          runtimeController: () => {
-            controllerDispatchWorld.apply(fighter, controller, {
-              context: runtimeControllerContext(fighter, owner, tick, stageBounds),
-              ...runtimeActiveControllerTelemetryHooks,
-            });
-          },
-        },
-      });
-      return activeDispatch.stop ? "stop" : "continue";
+          getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
+        });
+      },
+      pause: ({ controller }) => {
+        pauseControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      sound: ({ controller }) => {
+        audioControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          audioWorld: fighter.audioWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      envColor: ({ controller }) => {
+        envColorControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      envShake: ({ controller }) => {
+        envShakeControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          runtimeTick: tick,
+          envShakeWorld: fighter.envShakeWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+      contact: ({ controller }) => {
+        contactControllerDispatchWorld.apply({
+          actor: fighter,
+          controller,
+          contactWorld: fighter.contactWorld,
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
+    },
+    hooks: {
+      runtimeController: ({ dispatch, owner }) => {
+        controllerDispatchWorld.apply(fighter, dispatch.controller, {
+          context: runtimeControllerContext(fighter, owner, tick, stageBounds),
+          ...runtimeActiveControllerTelemetryHooks,
+        });
+      },
     },
   });
 }
