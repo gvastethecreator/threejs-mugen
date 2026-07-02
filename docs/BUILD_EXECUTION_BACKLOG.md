@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeActiveControllerTelemetryWorld ownership
+
+Changed:
+- Added `RuntimeActiveControllerTelemetryWorld` as the bounded active-controller telemetry hook boundary outside `PlayableMatchRuntime`.
+- `PlayableMatchRuntime` now creates one shared controller/operation telemetry hook set and reuses it across active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch.
+- `RuntimeCompatibilityTelemetryWorld` still owns imported filtering, event keys/counts, event retention, and report projection.
+- Roadmap, progress, scorecard, architecture, support, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeActiveControllerTelemetrySystem.test.ts` -> 1 file / 1 test.
+- Full gates: `pnpm test` -> 136 files / 1078 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current active-controller telemetry hook construction has a named, testable ownership boundary shared by active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch.
+
+Claim blocked:
+- Exact telemetry event semantics, imported-only filtering changes, event retention limits, helper/team/redirect telemetry breadth, visual/debug UI parity, score movement, and full CNS VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose another deeper R2 helper/effect/combat ownership seam that is not active-controller telemetry hook construction or combat state-hook adapter construction.
+
 ## 2026-07-02 - R2 RuntimeMatchCombatStateHooksWorld ownership
 
 Changed:

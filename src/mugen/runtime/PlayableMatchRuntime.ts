@@ -64,6 +64,7 @@ import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetSt
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
 import { RuntimeActiveControllerDispatchWorld } from "./RuntimeActiveControllerDispatchSystem";
+import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
@@ -135,6 +136,7 @@ const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
 const activeControllerScanWorld = new RuntimeActiveControllerScanWorld();
 const activeControllerDispatchWorld = new RuntimeActiveControllerDispatchWorld();
+const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
 const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
 const autoGuardStartWorld = new RuntimeAutoGuardStartWorld();
@@ -174,6 +176,10 @@ const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
+const runtimeActiveControllerTelemetryHooks = activeControllerTelemetryWorld.create<FighterMatchState>({
+  recordController: (actor, controller) => compatibilityTelemetryWorld.recordController(actor, controller),
+  recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+});
 
 export type MatchInput = {
   p1: Set<string>;
@@ -878,7 +884,7 @@ function runActiveStateControllers(
             resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
           resolveBoolean: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
             resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+          recordController: runtimeActiveControllerTelemetryHooks.recordController,
           enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
           applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
           changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
@@ -890,8 +896,7 @@ function runActiveStateControllers(
               actor: fighter,
               controller,
               frame: getCurrentFrame(fighter),
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           reversalDef: () => {
@@ -900,8 +905,7 @@ function runActiveStateControllers(
               controller,
               hitbox: frameWorld.currentFrame(fighter)?.clsn1[0],
               reversalWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           width: () => {
@@ -909,8 +913,7 @@ function runActiveStateControllers(
               actor: fighter,
               controller,
               actorConstraintWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           fallEnvShake: () => {
@@ -919,8 +922,7 @@ function runActiveStateControllers(
               controller,
               runtimeTick: tick,
               envShakeWorld: fighter.envShakeWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           spriteEffect: ({ effect }) => {
@@ -930,8 +932,7 @@ function runActiveStateControllers(
               effect,
               spriteEffectWorld,
               sampleFactory: () => createAfterImageSample(fighter),
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           effectSpawn: ({ effect }) => {
@@ -941,8 +942,7 @@ function runActiveStateControllers(
               controller,
               effect,
               effectSpawnWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           target: ({ effect }) => {
@@ -952,8 +952,7 @@ function runActiveStateControllers(
               controller,
               effect,
               targetWorld: fighter.targetWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
               scaleIncomingDamage: scaleRuntimeIncomingDamage,
               enterTargetState: (target, stateId) => {
                 targetStateEntryWorld.enter({
@@ -976,8 +975,7 @@ function runActiveStateControllers(
               actor: fighter,
               controller,
               applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           sound: () => {
@@ -986,8 +984,7 @@ function runActiveStateControllers(
               controller,
               runtimeTick: tick,
               audioWorld: fighter.audioWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           envColor: () => {
@@ -996,8 +993,7 @@ function runActiveStateControllers(
               controller,
               runtimeTick: tick,
               emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           envShake: () => {
@@ -1006,8 +1002,7 @@ function runActiveStateControllers(
               controller,
               runtimeTick: tick,
               envShakeWorld: fighter.envShakeWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
           contact: () => {
@@ -1015,8 +1010,7 @@ function runActiveStateControllers(
               actor: fighter,
               controller,
               contactWorld: fighter.contactWorld,
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
         },
@@ -1024,8 +1018,7 @@ function runActiveStateControllers(
           runtimeController: () => {
             controllerDispatchWorld.apply(fighter, controller, {
               context: runtimeControllerContext(fighter, owner, tick, stageBounds),
-              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              ...runtimeActiveControllerTelemetryHooks,
             });
           },
         },

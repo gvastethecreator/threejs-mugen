@@ -369,6 +369,13 @@
 - `synthetic-imported-helper-numexplod.json` checksum `4328278a` proves a visual Helper can spawn owner-side Explod anim `942`, then branch from state `1200` to `1210` / anim `930` through `NumExplod(8830) > 0`.
 - This is `executed-partial`: exact helper effect-count parity, helper-owned effect namespaces, parent/root/team selection, dynamic effect params, exact tick order, and full Helper trigger parity remain unsupported.
 
+## Current Runtime Active Controller Telemetry Cut
+
+- `RuntimeActiveControllerTelemetryWorld` owns the bounded adapter that builds active-controller telemetry hooks before active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch run.
+- The shared hook set forwards controller and typed-operation records into `RuntimeCompatibilityTelemetryWorld`, leaving imported filtering, event keys, retention, and report projection in the telemetry world.
+- Focused `RuntimeActiveControllerTelemetrySystem` coverage proves controller and operation forwarding through the seam.
+- This is `executed-partial` ownership only: exact telemetry event semantics, imported-only filtering, event retention limits, helper/team/redirect telemetry breadth, visual/debug UI parity, and full CNS VM parity remain unsupported.
+
 ## Current Runtime Combat State Hook Cut
 
 - `RuntimeMatchCombatStateHooksWorld` owns the bounded adapter that builds state-entry hooks for direct/projectile combat and helper combat before the match combat bridge runs.

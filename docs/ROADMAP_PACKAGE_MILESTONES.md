@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeActiveControllerTelemetryWorld ownership
+  -> RuntimeActiveControllerTelemetryWorld owns bounded active-controller telemetry hook construction outside PlayableMatchRuntime
+  -> active state hooks, side-effect dispatchers, and fallback runtime-controller dispatch share one controller/operation hook set before RuntimeCompatibilityTelemetryWorld
+  -> focused RuntimeActiveControllerTelemetrySystem coverage proves controller and operation forwarding through the seam
+  -> ownership cleanup only; no score movement, exact telemetry event semantics, imported-only filtering, event retention limits, helper/team/redirect telemetry breadth, visual/debug UI parity, or full CNS VM claim
 R2 RuntimeMatchCombatStateHooksWorld ownership
   -> RuntimeMatchCombatStateHooksWorld owns bounded combat state-hook adapter construction outside PlayableMatchRuntime
   -> direct/projectile combat hooks preserve state-owner availability and entry options; helper combat hooks keep self-owned availability checks while forwarding entry options
