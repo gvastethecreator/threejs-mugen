@@ -44,6 +44,7 @@ import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSyste
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeMatchHelperBindingWorld } from "./RuntimeMatchHelperBindingSystem";
 import { RuntimeMatchActiveWorld } from "./RuntimeMatchActiveSystem";
+import { RuntimeMatchActorRosterWorld, type RuntimeMatchActorRoster } from "./RuntimeMatchActorRosterSystem";
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
@@ -164,6 +165,7 @@ const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
+const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
@@ -315,8 +317,9 @@ export class PlayableMatchRuntime {
   }
 
   private attachHelperTargetStateHandlers(): void {
+    const roster = this.matchRoster();
     matchHelperBindingWorld.attach({
-      owners: [this.p1, this.p2],
+      owners: roster.actors,
       enterTargetState: (owner, helper, target, stateId) =>
         this.enterHelperOwnedTargetState(owner, helper, target, stateId),
       telemetryRecorder: {
@@ -334,15 +337,20 @@ export class PlayableMatchRuntime {
     targetActor: RuntimeTargetWorldActor,
     stateId: number,
   ): void {
+    const roster = this.matchRoster();
     matchHelperTargetStateWorld.enter({
       owner,
       helper,
       targetActor,
       stateId,
-      actors: [this.p1, this.p2],
+      actors: roster.actors,
       canEnterState: (target, targetStateId, stateOwner) => canEnterState(target, targetStateId, stateOwner),
       enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
     });
+  }
+
+  private matchRoster(): RuntimeMatchActorRoster<FighterMatchState> {
+    return matchActorRosterWorld.create({ p1: this.p1, p2: this.p2 });
   }
 
   dispatch(command: MatchRuntimeCommand): MugenSnapshot {
@@ -611,13 +619,13 @@ export class PlayableMatchRuntime {
       p1: this.p1,
       p2: this.p2,
       effects: presentationSnapshot.effects,
-      compatibilitySession: compatibilityTelemetryWorld.buildSession([this.p1, this.p2]),
+      compatibilitySession: compatibilityTelemetryWorld.buildSession([...this.matchRoster().actors]),
       logs: this.logs,
     });
   }
 
   getEffectActorStores(): RuntimeEffectActorStoreSummary[] {
-    return this.effectActorWorld.summarize({ p1: this.p1.id, p2: this.p2.id });
+    return this.effectActorWorld.summarize(this.matchRoster().effectStoreOwners);
   }
 
   reset(): void {

@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchActorRosterWorld ownership
+  -> RuntimeMatchActorRosterWorld owns current P1/P2 actor roster projection for PlayableMatchRuntime
+  -> helper-owned TargetState actor lookup, compatibility session projection, and effect-store owner summaries consume one roster boundary
+  -> focused RuntimeMatchActorRosterSystem coverage proves stable order, live refs, id lookup, mirrored one-on-one opponent projection, and fail-closed unknown actors
+  -> ownership cleanup only; no score movement, real teams/simul roster ownership, helper-owned actor discovery, dynamic roster mutation, richer identity metadata, exact VM scheduling, or full actor registry parity claim
 R1 stage BG window/maskwindow clipping handoff
   -> Stage DEF [BG ...] window and maskwindow parse into bounded rectangular clip metadata
   -> StageCompatibilityReport reports clipped layer coverage and unsupported mask color-key gaps
@@ -1414,6 +1419,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeMatchFighterAdvanceWorld` ownership extraction
 - `RuntimeMatchRoundWorld` ownership extraction
 - `RuntimeMatchInputControlWorld` ownership extraction
+- `RuntimeMatchActorRosterWorld` ownership extraction
 - `RuntimeMatchPostFighterWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
