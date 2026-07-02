@@ -43,6 +43,7 @@ import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
+import { RuntimeMatchActiveWorld } from "./RuntimeMatchActiveSystem";
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
@@ -157,6 +158,7 @@ const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld()
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
+const matchActiveWorld = new RuntimeMatchActiveWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
@@ -425,80 +427,86 @@ export class PlayableMatchRuntime {
       return;
     }
 
-    matchRoundWorld.tickTimer(this.round);
-    matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
-    matchInputControlWorld.apply({
-      p1: this.p1,
-      p2: this.p2,
-      p1Input,
-      p2Input,
-      p2Controlled: input.p2 !== undefined,
-      handlePlayerInput: (fighter, fighterInput, opponent) =>
-        handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
-      handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
-    });
-    matchFighterAdvanceWorld.advancePair({
-      p1: this.p1,
-      p2: this.p2,
-      advanceFighter: (fighter, opponent) =>
-        advanceFighter(
-          fighter,
-          opponent,
-          this.actorConstraintWorld,
-          this.spriteEffectWorld,
-          this.hitOverrideWorld,
-          this.reversalWorld,
-          this.effectSpawnWorld,
-          this.recoveryWorld,
-          this.hitEligibilityWorld,
-          this.moveLifecycleWorld,
-          this.kinematicsWorld,
-          this.animationWorld,
-          this.stunWorld,
-          this.stage.bounds,
-          this.tick,
-          (pauseActor, controller, operation) => this.applyMatchPauseController(pauseActor, controller, operation),
-          (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-        ),
-      applyAutoGuardStart: (defender, attacker) =>
-        applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
-      isPaused: () => this.pauseWorld.current() !== undefined,
-    });
-    matchPostFighterWorld.advanceRuntime({
-      p1: this.p1,
-      p2: this.p2,
-      stage: this.stage,
-      stageTime: this.tick,
-      actorConstraintWorld: this.actorConstraintWorld,
-      effectLifecycleWorld: this.effectLifecycleWorld,
-      combatResolutionWorld: this.combatResolutionWorld,
-      helperCombatWorld: this.helperCombatWorld,
-      directCombatWorld: this.directCombatWorld,
-      hitOverrideWorld: this.hitOverrideWorld,
-      reversalWorld: this.reversalWorld,
-      guardWorld: this.guardWorld,
-      getHitStateWorld: this.getHitStateWorld,
-      hitStateTransitionWorld: this.hitStateTransitionWorld,
-      contactPresentationWorld: this.contactPresentationWorld,
-      targetWorld: this.targetWorld,
-      runtimeTick: this.tick,
-      getHurtBoxes: getRuntimeHurtBoxes,
-      combatStateHooks: runtimeCombatStateHooks,
-      helperStateHooks: runtimeHelperCombatStateHooks,
-      defaultHurtBoxes: defaultRuntimeHurtBoxes,
-      rememberProjectileTarget: (source, target, projectile) =>
-        this.rememberHelperProjectileTarget(source, target, projectile),
-      log: (line) => this.logs.unshift(line),
-    });
-
-    matchRoundWorld.finishIfNeeded({
-      round: this.round,
-      p1: this.p1,
-      p2: this.p2,
-      stopPlaying: () => {
-        this.playing = false;
-      },
-      log: (message) => this.logs.unshift(message),
+    matchActiveWorld.advance({
+      tickRoundTimer: () => matchRoundWorld.tickTimer(this.round),
+      pushNormalCommandBuffers: () =>
+        matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input }),
+      applyInputControl: () =>
+        matchInputControlWorld.apply({
+          p1: this.p1,
+          p2: this.p2,
+          p1Input,
+          p2Input,
+          p2Controlled: input.p2 !== undefined,
+          handlePlayerInput: (fighter, fighterInput, opponent) =>
+            handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
+          handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
+        }),
+      advanceFighters: () =>
+        matchFighterAdvanceWorld.advancePair({
+          p1: this.p1,
+          p2: this.p2,
+          advanceFighter: (fighter, opponent) =>
+            advanceFighter(
+              fighter,
+              opponent,
+              this.actorConstraintWorld,
+              this.spriteEffectWorld,
+              this.hitOverrideWorld,
+              this.reversalWorld,
+              this.effectSpawnWorld,
+              this.recoveryWorld,
+              this.hitEligibilityWorld,
+              this.moveLifecycleWorld,
+              this.kinematicsWorld,
+              this.animationWorld,
+              this.stunWorld,
+              this.stage.bounds,
+              this.tick,
+              (pauseActor, controller, operation) => this.applyMatchPauseController(pauseActor, controller, operation),
+              (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+            ),
+          applyAutoGuardStart: (defender, attacker) =>
+            applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
+          isPaused: () => this.pauseWorld.current() !== undefined,
+        }),
+      advancePostFighter: () =>
+        matchPostFighterWorld.advanceRuntime({
+          p1: this.p1,
+          p2: this.p2,
+          stage: this.stage,
+          stageTime: this.tick,
+          actorConstraintWorld: this.actorConstraintWorld,
+          effectLifecycleWorld: this.effectLifecycleWorld,
+          combatResolutionWorld: this.combatResolutionWorld,
+          helperCombatWorld: this.helperCombatWorld,
+          directCombatWorld: this.directCombatWorld,
+          hitOverrideWorld: this.hitOverrideWorld,
+          reversalWorld: this.reversalWorld,
+          guardWorld: this.guardWorld,
+          getHitStateWorld: this.getHitStateWorld,
+          hitStateTransitionWorld: this.hitStateTransitionWorld,
+          contactPresentationWorld: this.contactPresentationWorld,
+          targetWorld: this.targetWorld,
+          runtimeTick: this.tick,
+          getHurtBoxes: getRuntimeHurtBoxes,
+          combatStateHooks: runtimeCombatStateHooks,
+          helperStateHooks: runtimeHelperCombatStateHooks,
+          defaultHurtBoxes: defaultRuntimeHurtBoxes,
+          rememberProjectileTarget: (source, target, projectile) =>
+            this.rememberHelperProjectileTarget(source, target, projectile),
+          log: (line) => this.logs.unshift(line),
+        }),
+      finishRoundIfNeeded: () =>
+        matchRoundWorld.finishIfNeeded({
+          round: this.round,
+          p1: this.p1,
+          p2: this.p2,
+          stopPlaying: () => {
+            this.playing = false;
+          },
+          log: (message) => this.logs.unshift(message),
+        }),
     });
   }
 

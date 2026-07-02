@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchActiveWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchActiveWorld` as the bounded normal active-match orchestration boundary consumed by `PlayableMatchRuntime` after hitpause/pause gates.
+- Moved round timer tick, normal command-buffer writes, input control, fighter advance, post-fighter interaction/combat, and round-finish handling order out of inline match-loop wiring.
+- Added focused `RuntimeMatchActiveSystem` coverage for orchestration order and sub-world result preservation.
+- No timer, input, fighter advance, combat, finish, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchActiveSystem.test.ts src/tests/RuntimeMatchHitPauseSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 3 files / 74 tests.
+- Full closeout gates passed: `pnpm test` -> 126 files / 1037 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 272/272 artifacts, 248 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active-match timer/input/fighter/post-fighter/finish order has a named, testable ownership boundary while preserving existing sub-world semantics.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN active tick order, pause-start arbitration, helper/team/redirect actor ownership, combat priority parity, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 match-loop ownership slices or R1 KFM/Common1/FightFX precision. Do not reselect the just-closed normal-active orchestration extraction as fresh work.
+
 ## 2026-07-02 - RuntimeMatchHitPauseWorld ownership extraction
 
 Changed:

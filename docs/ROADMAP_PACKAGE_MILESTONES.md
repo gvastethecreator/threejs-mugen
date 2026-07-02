@@ -97,7 +97,11 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
   -> pnpm qa:trace passes 272/272 artifacts, 248 required and 24 optional
   -> private-fixture confidence only; no public KFM support, no score movement, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
-R2 MatchWorld hitpause ownership
+R2 MatchWorld active ownership
+  -> RuntimeMatchActiveWorld owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
+  -> focused RuntimeMatchActiveSystem coverage proves timer/input/fighter/post-fighter/finish order and sub-world result preservation
+  -> ownership cleanup only; no score movement, exact active tick order, pause-start arbitration, helper/team/redirect actor ownership, combat priority parity, visual/audio parity, or full match VM claim
+Previous R2 MatchWorld hitpause ownership
   -> RuntimeMatchHitPauseWorld owns normal active-match hitpause handoff outside PlayableMatchRuntime
   -> focused RuntimeMatchHitPauseSystem coverage proves delegate payload forwarding and paused/not-paused result preservation
   -> ownership cleanup only; no score movement, exact hitpause tick order, pause arbitration/layering, helper/team/redirect hitpause ownership, visual/audio parity, or full match VM claim
