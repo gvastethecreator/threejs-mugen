@@ -21,6 +21,8 @@ export type MugenStageLayer = {
   spriteIndex?: number;
   actionNo?: number;
   trans?: MugenStageLayerTrans;
+  clip?: MugenStageLayerClip;
+  mask?: boolean;
   tile?: {
     x: number;
     y: number;
@@ -34,6 +36,18 @@ export type MugenStageLayerTrans = {
   alpha?: {
     source: number;
     destination: number;
+  };
+};
+
+export type MugenStageLayerClip = {
+  source: "maskwindow" | "window";
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  delta?: {
+    x: number;
+    y: number;
   };
 };
 

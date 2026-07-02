@@ -21,6 +21,7 @@ tile = 1,0
 trans = addalpha
 alpha = 128,256
 window = 0,0,320,240
+mask = 1
 
 [BG Animated]
 type = anim
@@ -101,6 +102,7 @@ describe("createStageCompatibilityReport", () => {
       withSpriteRefs: 4,
       renderedSprites: 3,
       tiled: 1,
+      clipped: 1,
       animated: 1,
       renderedAnimated: 1,
       placeholderFallback: 1,
@@ -114,7 +116,9 @@ describe("createStageCompatibilityReport", () => {
         sprite: { group: 1, index: 0, decoded: true },
         tiled: true,
         trans: { mode: "addalpha", alpha: { source: 128, destination: 256 } },
-        unsupported: ["window/mask clipping"],
+        clip: { source: "window", x1: -160, y1: 0, x2: 160, y2: 240 },
+        mask: true,
+        unsupported: ["mask color-key semantics"],
       }),
       expect.objectContaining({
         section: "BG Animated",
@@ -168,7 +172,8 @@ describe("createStageCompatibilityReport", () => {
     expect(report.sff).toMatchObject({ version: "2.0.1.0", decodedSprites: 3, totalSprites: 4 });
     expect(report.unsupported.map((item) => item.feature)).toEqual(expect.arrayContaining([
       "exact BGCtrl parity",
-      "exact window/mask clipping",
+      "exact window/maskwindow clipping",
+      "mask color-key semantics",
       "stage SFF PNG",
       "unsupported BG layer type",
       "unsupported BGCtrl type",

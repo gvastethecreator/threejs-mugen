@@ -4,7 +4,7 @@ import type { MugenSprite } from "../mugen/model/MugenSprite";
 import type { MugenStageLayer } from "../mugen/model/MugenStage";
 import type { StageSnapshot } from "../mugen/runtime/types";
 import { stageLayerMaterialParameters } from "../game/render/AxisRenderer";
-import { projectStageSpriteLayer, resolveStageLayerForTick } from "../game/render/stageProjection";
+import { clipStagePlacement, projectStageLayerClip, projectStageSpriteLayer, resolveStageLayerForTick } from "../game/render/stageProjection";
 import { bgCtrlLabStage } from "../mugen/runtime/demoStage";
 
 const sprite: MugenSprite = {
@@ -64,6 +64,50 @@ describe("projectStageSpriteLayer", () => {
     expect(new Set(placements.map((placement) => placement.y)).size).toBe(1);
     expect(placements.some((placement) => placement.x < stage.camera.x)).toBe(true);
     expect(placements.some((placement) => placement.x > stage.camera.x)).toBe(true);
+  });
+
+  it("clips sprite placements to bounded stage BG windows without scaling texture UVs", () => {
+    const layer: MugenStageLayer = {
+      id: "BG clipped",
+      color: "#000",
+      y: 0,
+      width: 320,
+      height: 200,
+      deltaX: 1,
+      opacity: 1,
+      startX: 20,
+      startY: 30,
+      clip: { source: "maskwindow", x1: 30, y1: 50, x2: 90, y2: 90 },
+    };
+
+    const [placement] = projectStageSpriteLayer(layer, sprite, stage, 640);
+
+    expect(placement).toMatchObject({
+      x: 60,
+      y: 142.5,
+      width: 60,
+      height: 15,
+      uv: { u1: 0.2, v1: 0, u2: 0.8, v2: 0.375 },
+    });
+  });
+});
+
+describe("stage layer clipping", () => {
+  it("projects static BG clip rectangles and rejects non-overlapping placements", () => {
+    const layer: MugenStageLayer = {
+      id: "BG clip rect",
+      color: "#000",
+      y: 0,
+      width: 100,
+      height: 40,
+      deltaX: 1,
+      opacity: 1,
+      clip: { source: "window", x1: -40, y1: 20, x2: 40, y2: 80 },
+    };
+    const clip = projectStageLayerClip(layer, stage);
+
+    expect(clip).toEqual({ left: -40, right: 40, top: 180, bottom: 120 });
+    expect(clipStagePlacement({ x: 200, y: 0, width: 20, height: 20 }, clip!)).toBeUndefined();
   });
 });
 

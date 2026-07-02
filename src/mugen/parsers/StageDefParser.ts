@@ -1,4 +1,11 @@
-import type { MugenStageBgCtrl, MugenStageBgCtrlDef, MugenStageDefinition, MugenStageLayer, MugenStageLayerTrans } from "../model/MugenStage";
+import type {
+  MugenStageBgCtrl,
+  MugenStageBgCtrlDef,
+  MugenStageDefinition,
+  MugenStageLayer,
+  MugenStageLayerClip,
+  MugenStageLayerTrans,
+} from "../model/MugenStage";
 import type { MugenStageDef } from "../model/MugenStagePackage";
 import { parseAir } from "./AirParser";
 import { createDiagnostic, parseKeyValue, parseNumber, parseTextLines, unquote } from "./text";
@@ -134,6 +141,8 @@ function buildPlaceholderLayers(
     const tilespacing = pairValue(values, "tilespacing");
     const controlId = numberValue(values, "id");
     const trans = stageLayerTrans(values);
+    const clip = stageLayerClip(values, localcoord);
+    const mask = booleanValue(values, "mask");
     return {
       id: `${section} ${spriteLabel}`.trim(),
       sectionName: section,
@@ -154,6 +163,8 @@ function buildPlaceholderLayers(
       spriteIndex: sprite?.[1],
       actionNo,
       trans,
+      clip,
+      mask,
       tile: tile
         ? {
             x: tile[0],
@@ -301,6 +312,41 @@ function stageLayerTrans(values: Record<string, string>): MugenStageLayerTrans |
     mode: mode as MugenStageLayerTrans["mode"],
     ...(alpha ? { alpha: { source: alpha[0], destination: alpha[1] } } : {}),
   };
+}
+
+function stageLayerClip(values: Record<string, string>, localcoord: [number, number]): MugenStageLayerClip | undefined {
+  const maskWindow = numberListValue(values, "maskwindow");
+  const deprecatedWindow = numberListValue(values, "window");
+  const source = maskWindow ? "maskwindow" : deprecatedWindow ? "window" : undefined;
+  const rect = maskWindow ?? deprecatedWindow;
+  if (!source || !rect || rect.length < 4) {
+    return undefined;
+  }
+  const windowDelta = pairValue(values, "windowdelta");
+  const xOffset = source === "window" ? localcoord[0] / 2 : 0;
+  return {
+    source,
+    x1: rect[0]! - xOffset,
+    y1: rect[1]!,
+    x2: rect[2]! - xOffset,
+    y2: rect[3]!,
+    ...(windowDelta ? { delta: { x: windowDelta[0], y: windowDelta[1] } } : {}),
+  };
+}
+
+function booleanValue(section: Record<string, string>, key: string): boolean | undefined {
+  const value = getValue(section, key);
+  if (value === undefined) {
+    return undefined;
+  }
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return true;
+  }
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return false;
+  }
+  return undefined;
 }
 
 function numberListValue(section: Record<string, string>, key: string): number[] | undefined {

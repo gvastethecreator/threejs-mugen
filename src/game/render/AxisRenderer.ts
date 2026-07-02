@@ -4,7 +4,14 @@ import type { MugenSprite, SffArchive } from "../../mugen/model/MugenSprite";
 import type { MugenStageLayerTrans } from "../../mugen/model/MugenStage";
 import type { StageSnapshot } from "../../mugen/runtime/types";
 import { TextureStore } from "./TextureStore";
-import { projectStageSpriteLayer, resolveStageLayerForTick } from "./stageProjection";
+import {
+  clipStagePlacement,
+  projectStageLayerClip,
+  projectStageSpriteLayer,
+  resolveStageLayerForTick,
+  type StageSpritePlacement,
+  type StageSpritePlacementUv,
+} from "./stageProjection";
 
 export class AxisRenderer {
   readonly group = new THREE.Group();
@@ -57,17 +64,34 @@ export class AxisRenderer {
           return;
         }
         if (renderLayer.assetUrl) {
-          this.group.add(createAssetLayer(renderLayer, this.getAssetTexture(renderLayer.assetUrl), options.stage, index));
+          const assetLayer = createAssetLayer(renderLayer, this.getAssetTexture(renderLayer.assetUrl), options.stage, index);
+          if (assetLayer) {
+            this.group.add(assetLayer);
+          }
+          return;
+        }
+        const placement = clipPlacement(
+          {
+            x: renderLayer.x ?? 0,
+            y: renderLayer.y,
+            width: Math.max(stageWidth, renderLayer.width),
+            height: renderLayer.height,
+          },
+          renderLayer,
+          options.stage,
+        );
+        if (!placement) {
           return;
         }
         this.group.add(
           createRect(
-            renderLayer.x ?? 0,
-            renderLayer.y,
-            Math.max(stageWidth, renderLayer.width),
-            renderLayer.height,
+            placement.x,
+            placement.y,
+            placement.width,
+            placement.height,
             layerMaterial(renderLayer.color, renderLayer.opacity, renderLayer.trans),
             layerZ(renderLayer.layerNo, index),
+            placement.uv,
           ),
         );
       });
@@ -228,6 +252,7 @@ function createStageSprites(
         map: texture,
       }),
       layerZ(layer.layerNo, index),
+      placement.uv,
     ),
   );
 }
@@ -237,7 +262,7 @@ function createAssetLayer(
   texture: THREE.Texture,
   stage: StageSnapshot,
   index: number,
-): THREE.Mesh {
+): THREE.Mesh | undefined {
   const deltaX = layer.deltaX ?? 1;
   const image = texture.image as { width?: number } | undefined;
   const textureLoaded = texture.userData.loaded === true || Boolean(image?.width);
@@ -248,14 +273,37 @@ function createAssetLayer(
   if (textureLoaded) {
     materialOptions.map = texture;
   }
+  const placement = clipPlacement(
+    {
+      x: (layer.x ?? 0) + stage.camera.x * (1 - deltaX),
+      y: layer.y,
+      width: layer.width,
+      height: layer.height,
+    },
+    layer,
+    stage,
+  );
+  if (!placement) {
+    return undefined;
+  }
   return createRect(
-    (layer.x ?? 0) + stage.camera.x * (1 - deltaX),
-    layer.y,
-    layer.width,
-    layer.height,
+    placement.x,
+    placement.y,
+    placement.width,
+    placement.height,
     new THREE.MeshBasicMaterial(materialOptions),
     layerZ(layer.layerNo, index),
+    placement.uv,
   );
+}
+
+function clipPlacement(
+  placement: StageSpritePlacement,
+  layer: NonNullable<StageSnapshot["layers"]>[number],
+  stage: StageSnapshot,
+): StageSpritePlacement | undefined {
+  const clip = projectStageLayerClip(layer, stage);
+  return clip ? clipStagePlacement(placement, clip) : placement;
 }
 
 function layerZ(layerNo: number | undefined, index: number): number {
@@ -313,9 +361,23 @@ export function createRect(
   height: number,
   material: THREE.Material,
   z = 0,
+  uv?: StageSpritePlacementUv,
 ): THREE.Mesh {
-  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), material);
+  const geometry = new THREE.PlaneGeometry(1, 1);
+  if (uv) {
+    applyUv(geometry, uv);
+  }
+  const mesh = new THREE.Mesh(geometry, material);
   mesh.position.set(x, y, z);
   mesh.scale.set(width, height, 1);
   return mesh;
+}
+
+function applyUv(geometry: THREE.PlaneGeometry, uv: StageSpritePlacementUv): void {
+  const attribute = geometry.getAttribute("uv") as THREE.BufferAttribute;
+  attribute.setXY(0, uv.u1, uv.v2);
+  attribute.setXY(1, uv.u2, uv.v2);
+  attribute.setXY(2, uv.u1, uv.v1);
+  attribute.setXY(3, uv.u2, uv.v1);
+  attribute.needsUpdate = true;
 }

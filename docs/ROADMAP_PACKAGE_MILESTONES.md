@@ -85,6 +85,13 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 stage BG window/maskwindow clipping handoff
+  -> Stage DEF [BG ...] window and maskwindow parse into bounded rectangular clip metadata
+  -> StageCompatibilityReport reports clipped layer coverage and unsupported mask color-key gaps
+  -> Studio Stage diagnostics display clip metadata
+  -> Three.js stage renderer clips fallback, asset, and decoded SFF sprite placements while preserving texture UV crop semantics
+  -> focused StageDefParser, StageCompatibilityReport, and stageProjection tests prove the handoff
+  -> bounded rectangular stage presentation only; no score movement, exact windowdelta/zoom/endpoint/render-mode behavior, color-zero mask semantics, or full stage parity claim
 R1 ACT + indexed SFF RemapPal texture handoff
   -> DEF pal1..pal12 ACT refs load into character palettes through the character loader
   -> SFF v1/v2 indexed sprite decoders preserve palette-index pixels plus palette bytes

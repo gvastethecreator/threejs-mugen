@@ -75,7 +75,7 @@ Until the profile layer exists in code, reports should avoid claiming generic "f
 - Done in partial form: parse stage `.def` into `MugenStageDefinition`.
 - Done in partial form: support camera bounds, player start positions/facing, zoffset/localcoord, music/sprite path resolution, placeholder BG fallback layers, static normal BG sprites from decoded stage SFF `spriteno` refs, action-backed BG animations from embedded `[Begin Action]` blocks, bounded tiling, and simple horizontal parallax.
 - Done in partial form: report stage DEF/SFF/music presence, decoded sprites, BG sprite coverage, animated BG coverage, tiled layer count, placeholder fallbacks, and unsupported stage features.
-- Next: exact parallax/tiling rules, velocity/transparency, windows/masking, and broader stage-specific animation behavior.
+- Next: exact parallax/tiling rules, velocity/transparency, exact `windowdelta`/zoom clipping, color-zero mask behavior, and broader stage-specific animation behavior.
 - Later: BGCtrl, animated stage scripting, shadows/reflections, IKEMEN 3D model stages, and exact zoom/camera rules.
 
 ## Layer 7: Advanced Compatibility

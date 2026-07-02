@@ -29,7 +29,7 @@ This document defines how imported stage support is planned and reported. Stage 
 | Delta/parallax | MUGEN 1.0/1.1 | Rendered partial. | Camera pan screenshot/trace. |
 | Tiling | MUGEN 1.0/1.1 | Rendered partial. | Screenshot and report. |
 | Velocity | MUGEN 1.0/1.1 | Bounded partial through recognized BGCtrl types. | Time-based visual QA. |
-| Window/mask | MUGEN 1.0/1.1 | Unsupported/planned. | Unsupported report until implemented. |
+| Window/mask | MUGEN 1.0/1.1 | Bounded rectangular `window` / `maskwindow` clipping metadata plus Three.js geometry/UV clipping; color-zero `mask` remains partial/blocked. | Parser/report/projection tests plus smoke visual QA. |
 | BGCtrl | MUGEN 1.0/1.1 | Bounded partial for `Visible`, `Enabled`, `VelSet`, `VelAdd`, `PosSet`, `PosAdd`, `Anim`, `SinX`, and `SinY`; exact parity unsupported. | Report classifies bounded/unsupported and `BGCtrl Lab` smoke proves native visible rows/canvas. |
 | Stage SND/music | MUGEN 1.0/1.1 | Diagnostics first. | Audio event/decode report. |
 | IKEMEN stage extensions | IKEMEN scan | Recognized/unsupported. | Profile scanner report. |
@@ -69,7 +69,7 @@ Stage Studio should show:
 ## Reporting Rules
 
 - Do not say `stage supported` when some layers are fallback or missing.
-- Do not hide exact BGCtrl/window/mask/parallax gaps.
+- Do not hide exact BGCtrl/windowdelta/zoom/mask color-key/parallax gaps.
 - Do not let a native stage prove imported stage compatibility.
 - Every visible stage change requires browser visual QA.
 

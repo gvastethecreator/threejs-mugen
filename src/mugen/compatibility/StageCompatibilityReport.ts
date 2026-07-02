@@ -21,6 +21,18 @@ export type StageBackgroundLayerReport = {
       destination: number;
     };
   };
+  clip?: {
+    source: "maskwindow" | "window";
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    delta?: {
+      x: number;
+      y: number;
+    };
+  };
+  mask?: boolean;
   unsupported: string[];
   section?: string;
   sprite?: {
@@ -69,6 +81,7 @@ export type StageCompatibilityReport = {
     withSpriteRefs: number;
     renderedSprites: number;
     tiled: number;
+    clipped: number;
     animated: number;
     renderedAnimated: number;
     placeholderFallback: number;
@@ -109,6 +122,7 @@ export function createStageCompatibilityReport(stagePackage: MugenStagePackage):
   const withSpriteRefs = [...staticSpriteRefs, ...animatedFrameRefs];
   const renderedSprites = withSpriteRefs.filter((ref) => spriteKeys.has(`${ref.spriteGroup}:${ref.spriteIndex}`));
   const tiled = stagePackage.stage.layers.filter((layer) => layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0));
+  const clipped = stagePackage.stage.layers.filter((layer) => layer.clip);
   const layers = stagePackage.stage.layers.map((layer, index) => describeBackgroundLayer(stagePackage, layer, index, spriteKeys));
   const controllers = summarizeStageBackgroundControllers(stagePackage.stage);
   const unsupported = collectUnsupportedStageFeatures(stagePackage);
@@ -132,6 +146,7 @@ export function createStageCompatibilityReport(stagePackage: MugenStagePackage):
       withSpriteRefs: withSpriteRefs.length,
       renderedSprites: renderedSprites.length,
       tiled: tiled.length,
+      clipped: clipped.length,
       animated: animated.length,
       renderedAnimated: renderedAnimated.length,
       placeholderFallback: withSpriteRefs.length - renderedSprites.length,
@@ -226,6 +241,8 @@ function describeBackgroundLayer(
     },
     tiled: Boolean(layer.tile && (layer.tile.x !== 0 || layer.tile.y !== 0)),
     ...(layer.trans ? { trans: layer.trans } : {}),
+    ...(layer.clip ? { clip: layer.clip } : {}),
+    ...(layer.mask === undefined ? {} : { mask: layer.mask }),
     unsupported,
     ...(layer.sectionName ? { section: layer.sectionName } : {}),
   };
@@ -332,9 +349,14 @@ function collectUnsupportedStageFeatures(stagePackage: MugenStagePackage): Unsup
     "Renderer uses placeholder BG bands for BG layer types without a bounded render path",
   );
   push(
-    "exact window/mask clipping",
-    rawSections.filter(([, values]) => hasKey(values, "window") || hasKey(values, "maskwindow")).length,
-    "Renderer uses unmasked sprite planes for now",
+    "exact window/maskwindow clipping",
+    stagePackage.stage.layers.filter((layer) => layer.clip).length,
+    "Renderer has bounded rectangular clipping for window/maskwindow, but exact zoom/windowdelta/render-mode parity remains partial",
+  );
+  push(
+    "mask color-key semantics",
+    rawSections.filter(([, values]) => hasKey(values, "mask")).length,
+    "Stage SFF sprites currently keep transparent palette-index handoff; exact mask=0/1 color-zero behavior remains partial",
   );
 
   const unsupportedFormats = stagePackage.spriteArchive?.metadata?.unsupportedFormats ?? {};
@@ -358,8 +380,11 @@ function collectUnsupportedLayerFeatures(rawSection: Record<string, string>, typ
   if (type && type !== "normal" && type !== "anim") {
     unsupported.push(`type:${type}`);
   }
-  if (hasKey(rawSection, "window") || hasKey(rawSection, "maskwindow") || hasKey(rawSection, "mask")) {
-    unsupported.push("window/mask clipping");
+  if ((hasKey(rawSection, "window") || hasKey(rawSection, "maskwindow")) && !layer.clip) {
+    unsupported.push("window clipping");
+  }
+  if (hasKey(rawSection, "mask")) {
+    unsupported.push("mask color-key semantics");
   }
   if (hasKey(rawSection, "velocity")) {
     unsupported.push("velocity");

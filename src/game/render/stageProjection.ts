@@ -7,6 +7,21 @@ export type StageSpritePlacement = {
   y: number;
   width: number;
   height: number;
+  uv?: StageSpritePlacementUv;
+};
+
+export type StageSpritePlacementUv = {
+  u1: number;
+  v1: number;
+  u2: number;
+  v2: number;
+};
+
+export type StageLayerClipRect = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
 };
 
 export function projectStageSpriteLayer(
@@ -25,7 +40,7 @@ export function projectStageSpriteLayer(
   };
 
   if (!layer.tile || (layer.tile.x === 0 && layer.tile.y === 0)) {
-    return [base];
+    return clipStagePlacements([base], layer, stage);
   }
 
   const xStep = Math.max(1, sprite.width + (layer.tile.spacingX ?? 0));
@@ -36,12 +51,16 @@ export function projectStageSpriteLayer(
   const xOffsets = layer.tile.x === 0 ? [0] : boundedTileOffsets(centerX, xStep, left, right);
   const yOffsets = layer.tile.y === 0 ? [0] : boundedTileOffsets(centerY, yStep, -sprite.height * 2, sprite.height * 3);
 
-  return xOffsets.flatMap((xOffset) =>
-    yOffsets.map((yOffset) => ({
-      ...base,
-      x: centerX + xOffset,
-      y: centerY + yOffset,
-    })),
+  return clipStagePlacements(
+    xOffsets.flatMap((xOffset) =>
+      yOffsets.map((yOffset) => ({
+        ...base,
+        x: centerX + xOffset,
+        y: centerY + yOffset,
+      })),
+    ),
+    layer,
+    stage,
   );
 }
 
@@ -201,6 +220,56 @@ function projectStageSpriteX(layer: MugenStageLayer, sprite: MugenSprite, stage:
 
 function projectStageSpriteY(layer: MugenStageLayer, sprite: MugenSprite, stage: StageSnapshot): number {
   return (stage.zOffset ?? 200) - (layer.startY ?? 0) + sprite.axisY - sprite.height / 2;
+}
+
+export function projectStageLayerClip(layer: Pick<MugenStageLayer, "clip">, stage: StageSnapshot): StageLayerClipRect | undefined {
+  const clip = layer.clip;
+  if (!clip) {
+    return undefined;
+  }
+  const xOffset = (stage.camera.x ?? 0) * (clip.delta?.x ?? 0);
+  const yOffset = (stage.camera.y ?? 0) * (clip.delta?.y ?? 0);
+  const left = Math.min(clip.x1, clip.x2) + xOffset;
+  const right = Math.max(clip.x1, clip.x2) + xOffset;
+  const top = (stage.zOffset ?? 200) - Math.min(clip.y1, clip.y2) - yOffset;
+  const bottom = (stage.zOffset ?? 200) - Math.max(clip.y1, clip.y2) - yOffset;
+  if (right <= left || top <= bottom) {
+    return undefined;
+  }
+  return { left, right, top, bottom };
+}
+
+export function clipStagePlacement(placement: StageSpritePlacement, clip: StageLayerClipRect): StageSpritePlacement | undefined {
+  const left = placement.x - placement.width / 2;
+  const right = placement.x + placement.width / 2;
+  const bottom = placement.y - placement.height / 2;
+  const top = placement.y + placement.height / 2;
+  const clippedLeft = Math.max(left, clip.left);
+  const clippedRight = Math.min(right, clip.right);
+  const clippedBottom = Math.max(bottom, clip.bottom);
+  const clippedTop = Math.min(top, clip.top);
+  if (clippedRight <= clippedLeft || clippedTop <= clippedBottom) {
+    return undefined;
+  }
+  const u1 = (clippedLeft - left) / placement.width;
+  const u2 = (clippedRight - left) / placement.width;
+  const v1 = (clippedBottom - bottom) / placement.height;
+  const v2 = (clippedTop - bottom) / placement.height;
+  return {
+    x: (clippedLeft + clippedRight) / 2,
+    y: (clippedBottom + clippedTop) / 2,
+    width: clippedRight - clippedLeft,
+    height: clippedTop - clippedBottom,
+    uv: { u1, v1, u2, v2 },
+  };
+}
+
+function clipStagePlacements(placements: StageSpritePlacement[], layer: MugenStageLayer, stage: StageSnapshot): StageSpritePlacement[] {
+  const clip = projectStageLayerClip(layer, stage);
+  if (!clip) {
+    return placements;
+  }
+  return placements.map((placement) => clipStagePlacement(placement, clip)).filter((placement): placement is StageSpritePlacement => Boolean(placement));
 }
 
 function boundedTileOffsets(center: number, step: number, left: number, right: number): number[] {

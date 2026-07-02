@@ -54,6 +54,9 @@ start = 20,40
 delta = .75,.75
 trans = addalpha
 alpha = 128,256
+maskwindow = -80,10,80,120
+windowdelta = .25,0
+mask = 1
 
 [Begin Action 10]
 2,0,0,0,4
@@ -103,6 +106,8 @@ describe("parseStageDef", () => {
       startY: 40,
       deltaX: 0.75,
       trans: { mode: "addalpha", alpha: { source: 128, destination: 256 } },
+      clip: { source: "maskwindow", x1: -80, y1: 10, x2: 80, y2: 120, delta: { x: 0.25, y: 0 } },
+      mask: true,
     });
     expect(runtime.layers[1]?.controlId).toBe(4);
     expect(parsed.bgControllers).toHaveLength(1);

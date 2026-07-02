@@ -74,6 +74,7 @@ describe("StudioModel", () => {
             withSpriteRefs: 2,
             renderedSprites: 1,
             tiled: 1,
+            clipped: 0,
             animated: 0,
             renderedAnimated: 0,
             placeholderFallback: 1,

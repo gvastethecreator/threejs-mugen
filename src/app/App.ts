@@ -4769,6 +4769,8 @@ export class App {
           `start ${formatStageNumber(layer.start.x)},${formatStageNumber(layer.start.y)}`,
           `delta ${formatStageNumber(layer.delta.x)},${formatStageNumber(layer.delta.y)}`,
           layer.trans ? formatStageTrans(layer.trans) : undefined,
+          layer.clip ? formatStageClip(layer.clip) : undefined,
+          layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
         ]
           .filter(Boolean)
           .join(" / "),
@@ -4790,6 +4792,8 @@ export class App {
         `layer ${index}`,
         `delta ${formatStageNumber(layer.deltaX)},${formatStageNumber(layer.deltaY ?? 1)}`,
         layer.trans ? formatStageTrans(layer.trans) : undefined,
+        layer.clip ? formatStageClip(layer.clip) : undefined,
+        layer.mask === undefined ? undefined : `mask ${layer.mask ? 1 : 0}`,
       ]
         .filter(Boolean)
         .join(" / "),
@@ -10829,6 +10833,19 @@ function formatStageNumber(value: number): string {
 function formatStageTrans(trans: { mode: string; alpha?: { source: number; destination: number } }): string {
   const alpha = trans.alpha ? ` ${formatStageNumber(trans.alpha.source)},${formatStageNumber(trans.alpha.destination)}` : "";
   return `trans ${trans.mode}${alpha}`;
+}
+
+function formatStageClip(clip: {
+  source: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  delta?: { x: number; y: number };
+}): string {
+  const rect = `${formatStageNumber(clip.x1)},${formatStageNumber(clip.y1)},${formatStageNumber(clip.x2)},${formatStageNumber(clip.y2)}`;
+  const delta = clip.delta ? ` d${formatStageNumber(clip.delta.x)},${formatStageNumber(clip.delta.y)}` : "";
+  return `${clip.source} ${rect}${delta}`;
 }
 
 function formatCommandSequence(command: MugenCharacter["commands"][number]): string {

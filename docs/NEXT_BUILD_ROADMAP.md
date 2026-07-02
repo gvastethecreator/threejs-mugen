@@ -78,6 +78,17 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 stage BG window/maskwindow clipping handoff
+  -> Stage DEF [BG ...] window and maskwindow parse into bounded rectangular clip metadata
+  -> StageCompatibilityReport reports clipped layers and Studio Stage diagnostics show the clip
+  -> Three.js stage renderer clips fallback/asset/SFF sprite placements and adjusts UVs so textures crop instead of squeeze
+  -> focused StageDefParser, StageCompatibilityReport, and stageProjection tests prove the handoff
+  -> bounded rectangular clipping only; no score movement, no exact windowdelta/zoom/endpoint/render-mode parity, no color-zero mask semantics, no full stage parity claim
+R1 stage BG transparency handoff
+  -> Stage DEF [BG ...] trans/alpha parse into bounded material metadata
+  -> Three.js stage renderer maps none/add/add1/addalpha/sub into normal/additive/subtractive material params with bounded addalpha opacity
+  -> focused parser/report/material tests plus smoke visual QA prove the handoff
+  -> bounded material handoff only; no score movement, no exact blend math/palette interaction claim
 R1 ACT + indexed SFF RemapPal texture handoff
   -> DEF pal1..pal12 ACT refs load into character palettes
   -> SFF indexed decoders preserve source pixels/palettes for later remap

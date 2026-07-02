@@ -145,7 +145,7 @@ Every major compatibility pass should consider:
 | KFM720 | Upload and localcoord/scale sanity check. |
 | CodeFuMan | SFF v1 PCX path and at least one routed attack. |
 | SF3 Ryu demo | Parser/report stress test; runtime playability is not required yet. |
-| Imported stage | Stage report, rendered background/floor if decoded, bounded BG `trans` metadata/material handoff when declared, fallback if not. |
+| Imported stage | Stage report, rendered background/floor if decoded, bounded BG `trans` metadata/material handoff and bounded rectangular `window`/`maskwindow` clipping when declared, fallback if not. |
 
 ## Report Honesty Rules
 
