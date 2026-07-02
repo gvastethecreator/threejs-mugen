@@ -611,7 +611,7 @@ describe("StateControllerExecutor", () => {
       unsupported.push(item),
     );
     const compiledAssertSpecial = compileControllerIr(
-      controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible, TimerFreeze" }),
+      controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible, TimerFreeze, RoundNotOver" }),
     );
     state = executeControllerIr(compiledAssertSpecial, state, (item) => unsupported.push(item));
 
@@ -644,16 +644,17 @@ describe("StateControllerExecutor", () => {
     expect(state.vars.slice(2, 5)).toEqual([9, 9, 9]);
     expect(state.assertSpecial).toMatchObject({
       flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["timerfreeze"],
+      globalFlags: ["timerfreeze", "roundnotover"],
       noAutoTurn: true,
       noWalk: true,
       invisible: true,
       timerFreeze: true,
+      roundNotOver: true,
     });
     expect(compiledAssertSpecial.operation).toEqual({
       kind: "assertspecial",
       flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["timerfreeze"],
+      globalFlags: ["timerfreeze", "roundnotover"],
     });
     expect(state.renderOpacity).toBe(0);
     expect(unsupported).toEqual([]);

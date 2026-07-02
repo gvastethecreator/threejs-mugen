@@ -641,6 +641,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-roundnotover",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-noko",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialNoKoTraceArtifact(),
@@ -2446,6 +2451,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-assertspecial-lifetime",
     "synthetic-imported-assertspecial-guarddeny",
     "synthetic-imported-assertspecial-timerfreeze",
+    "synthetic-imported-assertspecial-roundnotover",
     "synthetic-imported-assertspecial-noko",
     "synthetic-imported-air-guard-state",
     "synthetic-imported-inguarddist-far",

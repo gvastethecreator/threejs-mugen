@@ -172,6 +172,7 @@ export type RuntimeAssertSpecial = {
   unguardable?: boolean;
   noKo?: boolean;
   timerFreeze?: boolean;
+  roundNotOver?: boolean;
   intro?: boolean;
 };
 

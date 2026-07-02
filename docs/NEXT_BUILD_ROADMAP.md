@@ -78,6 +78,13 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 AssertSpecial RoundNotOver trace gate
+  -> synthetic-imported-assertspecial-roundnotover.json checksum 342d49f0 is required
+  -> one imported actor asserts RoundNotOver while a 61-frame active timer reaches displayed timer 0
+  -> RuntimeMatchRoundWorld skips active round-finish side effects when current P1/P2 roster exposes roundNotOver/global roundnotover evidence
+  -> trace gate requires AssertSpecial controller, typed assertspecial operation, state = fight, message = Fight, and observed timer 0 evidence
+  -> pnpm qa:trace passes 284/284 artifacts, 259 required and 25 optional
+  -> bounded active-match round-finish hold only; no score movement, no exact winpose/KO/lifebar/team/helper/pause ownership, no full round-flow parity claim
 R1 AssertSpecial TimerFreeze trace gate
   -> synthetic-imported-assertspecial-timerfreeze.json checksum 408528f1 is required
   -> one imported actor asserts TimerFreeze before active round tick and keeps a 61-frame fight timer at displayed timer 2 for 70 active frames
@@ -113,7 +120,7 @@ R1 PalFX + RemapPal combined trace gate
   -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required
   -> one imported actor executes PalFX and RemapPal in the same route
   -> trace gate requires typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
-  -> current pnpm qa:trace passes 283/283 artifacts, 258 required and 25 optional after the TimerFreeze oracle
+  -> current pnpm qa:trace passes 284/284 artifacts, 259 required and 25 optional after the RoundNotOver oracle
   -> bounded palette telemetry only; no score movement, no exact palette math/blend-order/renderer parity claim
 R1 AssertSpecial unguardable coverage hardening
   -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required

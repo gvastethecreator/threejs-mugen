@@ -8,6 +8,7 @@ export type RuntimeMatchRoundActor = {
       flags: string[];
       globalFlags: string[];
       timerFreeze?: boolean;
+      roundNotOver?: boolean;
     };
   };
 };
@@ -36,6 +37,9 @@ export class RuntimeMatchRoundWorld {
   finishIfNeeded<TActor extends RuntimeMatchRoundActor>(
     options: RuntimeMatchRoundFinishOptions<TActor>,
   ): RuntimeRoundFinishResult | undefined {
+    if (hasRoundNotOver(options.p1) || hasRoundNotOver(options.p2)) {
+      return undefined;
+    }
     const finish = options.round.finishIfNeeded(
       { label: options.p1.label, life: options.p1.runtime.life },
       { label: options.p2.label, life: options.p2.runtime.life },
@@ -55,5 +59,14 @@ function hasTimerFreeze(actor: RuntimeMatchRoundActor): boolean {
     assertSpecial?.timerFreeze ||
       assertSpecial?.flags.includes("timerfreeze") ||
       assertSpecial?.globalFlags.includes("timerfreeze"),
+  );
+}
+
+function hasRoundNotOver(actor: RuntimeMatchRoundActor): boolean {
+  const assertSpecial = actor.runtime.assertSpecial;
+  return Boolean(
+    assertSpecial?.roundNotOver ||
+      assertSpecial?.flags.includes("roundnotover") ||
+      assertSpecial?.globalFlags.includes("roundnotover"),
   );
 }

@@ -512,6 +512,7 @@ function applyAssertSpecialController(
     if (flag.name === "unguardable") current.unguardable = true;
     if (flag.name === "noko" || flag.name === "globalnoko") current.noKo = true;
     if (flag.name === "timerfreeze") current.timerFreeze = true;
+    if (flag.name === "roundnotover") current.roundNotOver = true;
     if (flag.name === "intro") current.intro = true;
   }
   state.assertSpecial = current.flags.length > 0 || current.globalFlags.length > 0 ? current : undefined;

@@ -53,6 +53,28 @@ describe("RuntimeMatchRoundWorld", () => {
     expect(round.isOver).toBe(true);
   });
 
+  it("keeps the round fighting while an actor asserts RoundNotOver", () => {
+    const round = new RuntimeRoundSystem(0);
+    const logs: string[] = [];
+    let playing = true;
+
+    const finish = new RuntimeMatchRoundWorld().finishIfNeeded({
+      round,
+      p1: actor("P1", 700, { globalFlags: ["roundnotover"], roundNotOver: true }),
+      p2: actor("P2", 650),
+      stopPlaying: () => {
+        playing = false;
+      },
+      log: (message) => logs.unshift(message),
+    });
+
+    expect(finish).toBeUndefined();
+    expect(playing).toBe(true);
+    expect(logs).toEqual([]);
+    expect(round.snapshot()).toMatchObject({ state: "fight", timer: 0, message: "Fight" });
+    expect(round.isOver).toBe(false);
+  });
+
   it("does not mutate match state when the round keeps fighting", () => {
     const round = new RuntimeRoundSystem();
     const logs: string[] = [];
@@ -79,14 +101,14 @@ type TestMatchRoundActor = {
   label: string;
   runtime: {
     life: number;
-    assertSpecial?: { flags: string[]; globalFlags: string[]; timerFreeze?: boolean };
+    assertSpecial?: { flags: string[]; globalFlags: string[]; timerFreeze?: boolean; roundNotOver?: boolean };
   };
 };
 
 function actor(
   label: string,
   life: number,
-  assertSpecial?: { flags?: string[]; globalFlags?: string[]; timerFreeze?: boolean },
+  assertSpecial?: { flags?: string[]; globalFlags?: string[]; timerFreeze?: boolean; roundNotOver?: boolean },
 ): TestMatchRoundActor {
   return {
     label,
@@ -97,6 +119,7 @@ function actor(
             flags: assertSpecial.flags ?? [],
             globalFlags: assertSpecial.globalFlags ?? [],
             timerFreeze: assertSpecial.timerFreeze,
+            roundNotOver: assertSpecial.roundNotOver,
           },
         }
       : { life },

@@ -1254,6 +1254,44 @@ export function createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact(
   });
 }
 
+export function createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-roundnotover",
+    displayName: "Synthetic Imported AssertSpecial RoundNotOver",
+    passiveAssertSpecialFlags: ["RoundNotOver"],
+  });
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedRoundNotOverScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: imported, p2: demoFighters[1]!, stage, roundTimerFrames: 61 }), script, {
+    label: "synthetic-imported-assertspecial-roundnotover-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-roundnotover-golden",
+      label: "Synthetic imported AssertSpecial RoundNotOver route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AssertSpecial RoundNotOver trace proves a bounded actor-local RoundNotOver flag can keep the current active round in fight state after the timer reaches zero. It does not claim exact winpose ownership, KO slow/sound behavior, lifebar behavior, helper/team/global ownership, intro/round transitions, or full MUGEN/IKEMEN round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-roundnotover-golden",
+        requiredActorSources: ["imported", "demo"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["AssertSpecial"],
+        requiredExecutedOperations: ["assertspecial"],
+        requiredRoundFrames: [{ state: "fight", message: "Fight", minFrames: 60, observedTimerAtMost: 0 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedMatchContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -18216,6 +18254,10 @@ export function importedP2AssertSpecialExpiredGuardScript(): RuntimeTraceInputFr
 
 export function importedTimerFreezeScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([{ label: "assertspecial-timerfreeze-hold", frames: 70, p1: [], p2: [] }]);
+}
+
+export function importedRoundNotOverScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([{ label: "assertspecial-roundnotover-hold", frames: 70, p1: [], p2: [] }]);
 }
 
 export function importedDefaultGuardStateScript(): RuntimeTraceInputFrame[] {

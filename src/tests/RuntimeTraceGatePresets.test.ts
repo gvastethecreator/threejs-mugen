@@ -112,6 +112,7 @@ import {
   createSyntheticImportedAssertSpecialLifetimeTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
   createSyntheticImportedAssertSpecialNoKoTraceArtifact,
+  createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact,
   createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact,
   createSyntheticImportedAirGuardLandingTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
@@ -6305,6 +6306,41 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(artifact.trace.frames.some((frame) => frame.round?.state === "timeover")).toBe(false);
+  });
+
+  it("creates a synthetic imported AssertSpecial RoundNotOver artifact with fight-state timer-zero evidence", () => {
+    const artifact = createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact({
+      generatedAt: "2026-06-25T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-roundnotover-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-roundnotover-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.assertspecial).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredRoundFrames).toEqual([
+      { state: "fight", message: "Fight", minFrames: 60, observedTimerAtMost: 0 },
+    ]);
+    expect(evidence?.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ state: "fight", message: "Fight", minTimer: 0 }),
+      ]),
+    );
+    expect(artifact.trace.frames.some((frame) => frame.round?.state === "timeover")).toBe(false);
+    expect(artifact.trace.frames.some((frame) => frame.round?.state === "fight" && frame.round.timer === 0)).toBe(true);
   });
 
   it("creates a synthetic imported AssertSpecial NoKO artifact with nonlethal hit evidence", () => {

@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 AssertSpecial RoundNotOver trace gate
+
+Changed:
+- Added bounded `AssertSpecial RoundNotOver` runtime semantics to the active match round-finish path.
+- `StateControllerExecutor` now maps normalized `roundnotover` flags onto `RuntimeAssertSpecial.roundNotOver`.
+- `RuntimeMatchRoundWorld.finishIfNeeded(...)` now skips KO/time-over finish side effects while either current P1/P2 actor asserts `roundNotOver` / `roundnotover`.
+- Added required `synthetic-imported-assertspecial-roundnotover.json` to `pnpm qa:trace` and the required coverage contract.
+- Updated support, QA, scorecard, tracker, roadmap, and local issue docs with claim allowed / blocked scope.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchRoundSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 345 tests.
+- Trace gate: `pnpm qa:trace` -> 284/284 artifacts, 259 required and 25 optional; `synthetic-imported-assertspecial-roundnotover.json` checksum is `342d49f0`.
+- Test suite: `pnpm test` -> 142 files / 1099 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current P1/P2 active match round finish can be held by bounded imported `AssertSpecial RoundNotOver`; the required trace lets a 61-frame timer count down to displayed timer `0` while the round remains in `state = fight` / `message = Fight`, with `AssertSpecial` controller evidence and typed `assertspecial` operation evidence.
+
+Claim blocked:
+- Exact winpose ownership, KO slow/sound behavior, lifebar behavior, helper/team/global ownership, pause-layer interaction, intro/round transition semantics, score movement, and full MUGEN/IKEMEN round-flow parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX precision or the next R2 MatchWorld/helper/effect/combat ownership seam. Do not reselect this RoundNotOver gate unless expanding into winpose/KO/lifebar/team/helper round-flow semantics with new evidence.
+
 ## 2026-07-02 - R1 AssertSpecial TimerFreeze trace gate
 
 Changed:

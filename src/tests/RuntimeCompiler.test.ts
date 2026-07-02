@@ -228,7 +228,7 @@ time = 20
     const compiled = compileControllerIr(
       controller(200, "AssertSpecial", [], {
         flag: "NoAutoTurn, NoWalk",
-        flag2: '"Invisible", GlobalNoKO, TimerFreeze, NoWalk',
+        flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoWalk',
       }),
     );
     const disabled = compileControllerIr(controller(200, "AssertSpecial", [], { flag: "NoWalk", value: "0" }));
@@ -237,7 +237,7 @@ time = 20
     expect(compiled.operation).toEqual({
       kind: "assertspecial",
       flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["globalnoko", "timerfreeze"],
+      globalFlags: ["globalnoko", "timerfreeze", "roundnotover"],
     });
     expect(disabled.operation).toBeUndefined();
     expect(dynamic.operation).toBeUndefined();
