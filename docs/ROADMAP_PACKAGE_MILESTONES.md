@@ -163,6 +163,11 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 fighter advance ownership
+  -> RuntimeFighterAdvanceWorld now owns bounded per-fighter advance order from PlayableMatchRuntime
+  -> sprite-effect tick, hit eligibility slots, HitOverride slots, contact timers, render-angle reset, state clock, frame constraints, recovery-window tick, preserve-moveType read, stun, move lifecycle, kinematics, animation, active controllers, ground-recovery landing, lie-down recovery, and frozen-position preservation route through one boundary
+  -> focused RuntimeFighterAdvanceSystem coverage proves order, render-angle cleanup, preserve flag forwarding, and tick-start position capture after recovery-window tick but before kinematics
+  -> ownership cleanup only; no exact MUGEN/IKEMEN player tick order, persistent-controller timing, helper/team/redirect actor advance semantics, recovery/stun/physics arbitration, visual parity, score movement, or full VM parity claim
 R2 active controller dispatch ownership
   -> RuntimeActiveControllerDispatchWorld now owns active-controller route orchestration after scan/trigger pass
   -> state/animation mutation routes first, shared runtime controllers route second, active side effects route third, unsupported dispatches stay fail-soft/reportable
@@ -1157,6 +1162,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeSnapshotWorld` ownership extraction
 - `RuntimeSnapshotWorld` player actor projection
 - `RuntimeCompatibilityTelemetryWorld` ownership extraction
+- `RuntimeFighterAdvanceWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

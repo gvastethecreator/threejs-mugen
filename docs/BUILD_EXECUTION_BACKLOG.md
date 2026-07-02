@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeFighterAdvanceWorld ownership extraction
+
+Changed:
+- Added `RuntimeFighterAdvanceWorld` as the per-fighter advance-order boundary used by `PlayableMatchRuntime`.
+- Moved the current fighter tick sequence behind one named world: sprite effects, hit eligibility slots, HitOverride slots, contact timers, render-angle reset, state clock, frame constraints, recovery-window tick, preserve-moveType read, stun, move lifecycle, kinematics, animation, active controllers, ground-recovery landing, lie-down recovery, and frozen-position preservation.
+- Added focused `RuntimeFighterAdvanceSystem` coverage proving order, `renderAngle` cleanup before state-clock handoff, preserve-moveType forwarding, and tick-start position capture after the recovery-window tick but before kinematics.
+- No runtime semantics, frontend, renderer, CSS, fixture assets, or compatibility scores changed.
+
+Evidence:
+- Focused test passed: `pnpm exec vitest run src/tests/RuntimeFighterAdvanceSystem.test.ts` -> 1 file / 1 test.
+- `pnpm test` passed -> 115 files / 1007 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+- `pnpm qa:trace` passed -> 266/266 artifacts, 244 required and 22 optional.
+- `git diff --check` passed with CRLF normalization warnings only.
+
+Claim allowed:
+- Current per-fighter match advance ordering has a named, testable boundary while `PlayableMatchRuntime` still supplies concrete worlds, state/action callbacks, active-controller execution, and stage/tick context.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN player tick order, persistent-controller timing, helper/team/redirect actor advance semantics, exact recovery/stun/physics arbitration, visual parity, score movement, and full runtime VM parity remain blocked.
+
+Next:
+- Continue into R1 Common1/FightFX precision or another R2 helper/effect/combat ownership seam with stable trace behavior.
+
 ## 2026-07-02 - KFM air-entry recovery fixture gates
 
 Changed:

@@ -67,6 +67,7 @@ import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
+import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
@@ -145,6 +146,7 @@ const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispa
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
+const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -761,56 +763,68 @@ function advanceFighter(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
-  spriteEffectWorld.tick(fighter.runtime, () => createAfterImageSample(fighter));
-  hitEligibilityWorld.tickHitBySlots(fighter.runtime);
-  hitOverrideWorld.tickSlots(fighter.runtime);
-  advanceContactTimers(fighter);
-  fighter.runtime.renderAngle = undefined;
-  stateClockWorld.advance(fighter);
-  actorConstraintWorld.resetFrameConstraints(fighter.runtime);
-  recoveryWorld.tickHitFallRecoveryWindow(fighter);
-  const tickStartPos = { ...fighter.runtime.pos };
-  const preserveImportedStateMoveType = shouldPreserveImportedStateMoveType(fighter);
-  stunWorld.advance(fighter, {
-    hasCurrentMove: Boolean(fighter.currentMove),
-    preserveImportedStateMoveType,
-    suppressHitStunAction: Boolean(fighter.stateOwner),
-    showHitStunAction: () => changeAction(fighter, fighter.definition.hitstunAction),
+  fighterAdvanceWorld.advance({
+    actor: fighter,
+    hooks: {
+      tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
+      tickHitBySlots: (actor) => hitEligibilityWorld.tickHitBySlots(actor.runtime),
+      tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
+      advanceContactTimers,
+      advanceStateClock: (actor) => stateClockWorld.advance(actor),
+      resetFrameConstraints: (actor) => actorConstraintWorld.resetFrameConstraints(actor.runtime),
+      tickHitFallRecoveryWindow: (actor) => recoveryWorld.tickHitFallRecoveryWindow(actor),
+      shouldPreserveImportedStateMoveType,
+      advanceStun: (actor, preserveImportedStateMoveType) => {
+        stunWorld.advance(actor, {
+          hasCurrentMove: Boolean(actor.currentMove),
+          preserveImportedStateMoveType,
+          suppressHitStunAction: Boolean(actor.stateOwner),
+          showHitStunAction: () => changeAction(actor, actor.definition.hitstunAction),
+        });
+      },
+      advanceMoveLifecycle: (actor) => {
+        moveLifecycleWorld.advance(actor, {
+          restoreControl: () => applyRuntimeControl(actor.runtime, true),
+          enterIdleState: () => setRuntimeStateNo(actor, actor.definition.idleAction),
+          changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+        });
+      },
+      advanceKinematics: (actor, preserveImportedStateMoveType) => {
+        kinematicsWorld.advance(actor, {
+          preserveImportedStateMoveType,
+          changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+        });
+      },
+      advanceAnimation: (actor) => animationWorld.advance(actor),
+      runActiveStateControllers: (actor) =>
+        runActiveStateControllers(
+          actor,
+          opponent,
+          actorConstraintWorld,
+          spriteEffectWorld,
+          reversalWorld,
+          effectSpawnWorld,
+          stageBounds,
+          tick,
+          onPauseController,
+          onEnvColorController,
+        ),
+      advanceImportedGroundRecoveryLanding: (actor) => {
+        recoveryWorld.advanceImportedGroundRecoveryLanding(actor, {
+          canEnterState: (stateId) => canEnterState(actor, stateId),
+          enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
+        });
+      },
+      advanceCommon1LieDownRecovery: (actor) => {
+        recoveryWorld.advanceCommon1LieDownRecovery(actor, {
+          canEnterState: (stateId) => canEnterState(actor, stateId),
+          enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
+        });
+      },
+      preserveFrozenPosition: (actor, tickStartPos) =>
+        actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
+    },
   });
-
-  moveLifecycleWorld.advance(fighter, {
-    restoreControl: () => applyRuntimeControl(fighter.runtime, true),
-    enterIdleState: () => setRuntimeStateNo(fighter, fighter.definition.idleAction),
-    changeIdleAction: () => changeAction(fighter, fighter.definition.idleAction),
-  });
-
-  kinematicsWorld.advance(fighter, {
-    preserveImportedStateMoveType,
-    changeIdleAction: () => changeAction(fighter, fighter.definition.idleAction),
-  });
-
-  animationWorld.advance(fighter);
-  runActiveStateControllers(
-    fighter,
-    opponent,
-    actorConstraintWorld,
-    spriteEffectWorld,
-    reversalWorld,
-    effectSpawnWorld,
-    stageBounds,
-    tick,
-    onPauseController,
-    onEnvColorController,
-  );
-  recoveryWorld.advanceImportedGroundRecoveryLanding(fighter, {
-    canEnterState: (stateId) => canEnterState(fighter, stateId),
-    enterState: (stateId) => enterState(fighter, stateId, undefined, { clearStateOwner: true }),
-  });
-  recoveryWorld.advanceCommon1LieDownRecovery(fighter, {
-    canEnterState: (stateId) => canEnterState(fighter, stateId),
-    enterState: (stateId) => enterState(fighter, stateId, undefined, { clearStateOwner: true }),
-  });
-  actorConstraintWorld.preserveFrozenPosition(fighter.runtime, tickStartPos);
 }
 
 function startMove(fighter: FighterMatchState, moveName: "punch" | "kick"): void {
