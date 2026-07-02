@@ -175,6 +175,11 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 match fighter-advance ownership
+  -> RuntimeMatchFighterAdvanceWorld now owns bounded active 1v1 fighter-advance orchestration from PlayableMatchRuntime
+  -> P1 advance, P2 auto-guard start, pause-gated P2 advance, and P1 auto-guard start route through one named boundary
+  -> focused RuntimeMatchFighterAdvanceSystem coverage proves normal P1/P2 ordering and pause-after-P1 skip behavior
+  -> ownership cleanup only; no exact player tick order, pause-start arbitration, teams/simul roster advance, helper/team/redirect actor advance semantics, guard-start parity, visual/audio parity, score movement, or full match VM claim
 R2 pause-controller result ownership
   -> RuntimeMatchPauseControllerWorld now owns bounded Pause/SuperPause controller result side effects from PlayableMatchRuntime
   -> RuntimePauseWorld still owns pause-state mutation/snapshot/tick, while the new boundary applies SuperPause power deltas through an injected resource hook and emits the existing pause log line

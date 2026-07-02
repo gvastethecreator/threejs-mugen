@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchFighterAdvanceWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchFighterAdvanceWorld` as the bounded active 1v1 fighter-advance orchestration boundary consumed by `PlayableMatchRuntime`.
+- Moved normal active-match order for P1 advance, P2 auto-guard start, pause-gated P2 advance, and P1 auto-guard start out of inline match-loop branching.
+- Added focused `RuntimeMatchFighterAdvanceSystem` coverage for normal P1/P2 ordering and the case where P1 starts match pause before P2 can advance.
+- No per-fighter advance semantics, `RuntimeFighterAdvanceWorld` internals, auto-guard semantics, pause semantics, combat resolution, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchFighterAdvanceSystem.test.ts` -> 1 file / 2 tests.
+- Full closeout gates passed: `pnpm test` -> 120 files / 1024 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active 1v1 fighter-advance ordering has a named, testable ownership boundary while preserving the existing per-fighter advance and auto-guard callbacks.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN player tick order, pause-start arbitration, teams/simul roster advance, helper/team/redirect actor advance semantics, guard-start parity, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard/FightFX precision.
+
 ## 2026-07-02 - RuntimeMatchPauseControllerWorld ownership extraction
 
 Changed:

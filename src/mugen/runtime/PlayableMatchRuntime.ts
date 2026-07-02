@@ -49,6 +49,7 @@ import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSys
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
 import { RuntimeMatchCombatBridgeWorld } from "./RuntimeMatchCombatBridgeSystem";
+import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
 import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
@@ -156,6 +157,7 @@ const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchCombatBridgeWorld = new RuntimeMatchCombatBridgeWorld();
+const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -423,48 +425,33 @@ export class PlayableMatchRuntime {
     } else {
       handleSimpleAi(this.p2, this.p1, this.tick, this.inputControlWorld);
     }
-    advanceFighter(
-      this.p1,
-      this.p2,
-      this.actorConstraintWorld,
-      this.spriteEffectWorld,
-      this.hitOverrideWorld,
-      this.reversalWorld,
-      this.effectSpawnWorld,
-      this.recoveryWorld,
-      this.hitEligibilityWorld,
-      this.moveLifecycleWorld,
-      this.kinematicsWorld,
-      this.animationWorld,
-      this.stunWorld,
-      this.stage.bounds,
-      this.tick,
-      (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-      (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-    );
-    applyAutoGuardStart(this.p2, this.p1, this.guardWorld, this.guardDistanceWorld);
-    if (!this.pauseWorld.current()) {
-      advanceFighter(
-        this.p2,
-        this.p1,
-        this.actorConstraintWorld,
-        this.spriteEffectWorld,
-        this.hitOverrideWorld,
-        this.reversalWorld,
-        this.effectSpawnWorld,
-        this.recoveryWorld,
-        this.hitEligibilityWorld,
-        this.moveLifecycleWorld,
-        this.kinematicsWorld,
-        this.animationWorld,
-        this.stunWorld,
-        this.stage.bounds,
-        this.tick,
-        (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-        (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
-      );
-      applyAutoGuardStart(this.p1, this.p2, this.guardWorld, this.guardDistanceWorld);
-    }
+    matchFighterAdvanceWorld.advancePair({
+      p1: this.p1,
+      p2: this.p2,
+      advanceFighter: (fighter, opponent) =>
+        advanceFighter(
+          fighter,
+          opponent,
+          this.actorConstraintWorld,
+          this.spriteEffectWorld,
+          this.hitOverrideWorld,
+          this.reversalWorld,
+          this.effectSpawnWorld,
+          this.recoveryWorld,
+          this.hitEligibilityWorld,
+          this.moveLifecycleWorld,
+          this.kinematicsWorld,
+          this.animationWorld,
+          this.stunWorld,
+          this.stage.bounds,
+          this.tick,
+          (pauseActor, controller, operation) => this.applyMatchPauseController(pauseActor, controller, operation),
+          (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+        ),
+      applyAutoGuardStart: (defender, attacker) =>
+        applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
+      isPaused: () => this.pauseWorld.current() !== undefined,
+    });
     const combatResolvers = matchCombatBridgeWorld.createResolvers({
       combatResolutionWorld: this.combatResolutionWorld,
       helperCombatWorld: this.helperCombatWorld,

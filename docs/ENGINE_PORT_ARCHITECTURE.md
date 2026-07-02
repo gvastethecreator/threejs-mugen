@@ -157,6 +157,8 @@ Current typed operation coverage includes bounded static `hitfall:*`, `kinematic
 
 `RuntimeHitPauseWorld` owns the bounded global hitpause mini-loop that used to live inline in `PlayableMatchRuntime`: hitpause command buffering, `ignorehitpause` active-state controller dispatch for both actors, paused presentation advancement with an explicit one-opponent lifecycle list, and per-actor hitpause countdown. `PlayableMatchRuntime` still supplies controller execution callbacks and presentation hooks, so this is current-order ownership cleanup, not exact persistent controller execution, helper-owned hitpause, broad side-effect ordering, teams/simul roster ownership, or MUGEN/IKEMEN hitpause tick parity.
 
+`RuntimeMatchFighterAdvanceWorld` owns the bounded active 1v1 fighter-advance orchestration that used to live inline in `PlayableMatchRuntime`: P1 advance, P2 auto-guard start, pause-gated P2 advance, and P1 auto-guard start now route through one named boundary. `RuntimeFighterAdvanceWorld` still owns per-fighter internals, and `PlayableMatchRuntime` still supplies concrete worlds, callbacks, pause state, and match-loop context, so this is ownership cleanup rather than exact player tick order, pause-start arbitration, teams/simul roster advance, helper/team/redirect actor advance semantics, guard-start parity, or full match VM parity.
+
 `RuntimeMatchPauseControllerWorld` owns the bounded Pause/SuperPause controller result side effects that used to live inline in `PlayableMatchRuntime.applyMatchPauseController`: `RuntimePauseWorld.applyController` still creates and stores current pause state, while the match-level boundary applies SuperPause power deltas through an injected resource hook and emits the existing pause log line. `PlayableMatchRuntime` still supplies concrete resource/log hooks, active controller order, paused-match progression, and hitpause ignored routing, so this is ownership cleanup rather than exact pause layering, SuperPause background/effects/sound timing, helper/team/redirect pause ownership, pause/hitpause command parity, or full pause VM parity.
 
 `RuntimeMoveLifecycleWorld` owns the bounded active-move lifecycle mutation that used to live inline in `PlayableMatchRuntime`: current move tick increment, non-reversal attack `moveType` and horizontal velocity lock, completed move cleanup, reversal cleanup, and non-reversal idle/control restoration through injected callbacks. `PlayableMatchRuntime` still owns concrete state/action entry and input dispatch, so this is current-behavior ownership cleanup, not new cancel semantics, exact input timing, or MUGEN/IKEMEN active-move lifecycle parity.
@@ -310,6 +312,7 @@ MatchWorld
   RuntimeStunWorld
   RuntimeInputControlWorld
   RuntimeMoveStartWorld
+  RuntimeMatchFighterAdvanceWorld
   RuntimeMatchPauseControllerWorld
   RuntimeMatchCombatBridgeWorld
   RuntimeMoveLifecycleWorld
@@ -407,9 +410,10 @@ The current extraction order is:
 66. `RuntimeHelperCombatWorld`: own bounded helper-owned direct `HitDef` contact resolution, helper target-memory updates, contact presentation, and helper state sync outside inline `PlayableMatchRuntime` branching.
 67. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
 68. `RuntimeMoveStartWorld`: own bounded native/imported state-move startup for selected move metadata, attack-state reset, control handoff, and authored state-entry handoff outside inline match-loop branching.
-69. `RuntimeMatchPauseControllerWorld`: own bounded Pause/SuperPause controller result side effects for pause-state application, SuperPause power-delta handoff, and match log emission outside inline match-loop branching.
-70. `RuntimeMatchCombatBridgeWorld`: own bounded priority/direct/projectile/helper combat resolver construction outside inline match-loop branching.
-71. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned projectile/contact presentation, and exact projectile parity behind similarly small contracts.
+69. `RuntimeMatchFighterAdvanceWorld`: own bounded active 1v1 fighter-advance orchestration for P1 advance, P2 auto-guard start, pause-gated P2 advance, and P1 auto-guard start outside inline match-loop branching.
+70. `RuntimeMatchPauseControllerWorld`: own bounded Pause/SuperPause controller result side effects for pause-state application, SuperPause power-delta handoff, and match log emission outside inline match-loop branching.
+71. `RuntimeMatchCombatBridgeWorld`: own bounded priority/direct/projectile/helper combat resolver construction outside inline match-loop branching.
+72. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned projectile/contact presentation, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
