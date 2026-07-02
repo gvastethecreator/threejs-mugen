@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Character FightFX prefix package selection
+
+Changed:
+- `MugenCharacterLoader` now reads IKEMEN-style character `[Files] fx = ...` entries, parses the referenced FightFX DEF `[Info] prefix`, loads its AIR/SFF pair, and stores it as `systemAssets.fightFxLibraries[prefix]`.
+- `createImportedFighterDefinition` now uses `[Info] fightfx.prefix` to prefer a matching character FightFX library for runtime `F` spark frames before falling back to the global `data/fightfx.*` package route.
+- `App` registers decoded prefixed FightFX SFF archives in the existing global hit-spark provider route, deduping shared archives.
+- This is bounded character FightFX package selection only. It does not implement full IKEMEN `sys.ffx` lifetime/refcount behavior, SND/channel fallback, exact motif/screenpack ownership, scale, palette, timing, layering, or full FightFX parity.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/MugenSystemAssetsLoader.test.ts src/tests/importedFighter.test.ts src/tests/HitSparkAssetSystem.test.ts` -> 3 files / 14 tests.
+- Full gates: `pnpm test` -> 129 files / 1052 tests, `pnpm typecheck`, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm build`, `pnpm qa:smoke`, `pnpm check:boundaries`, and `git diff --check`.
+- Visual smoke reviewed `runtime-desktop.png`, `runtime-mobile.png`, and `studio-debug.png`: runtime/studio render, hit effects, HUD, and debug panels remain usable. Existing `sound/kfm.mid` missing-stage-audio warning remains non-blocking.
+
+Claim allowed:
+- Imported IKEMEN-style character packages can load a declared `fx` FightFX DEF, select it through matching `fightfx.prefix`, and hand the selected prefixed AIR/SFF frames to the runtime/render hit-spark path.
+
+Claim blocked:
+- Full IKEMEN/MUGEN FightFX system parity, exact `sys.ffx` cache/refcount semantics, SND playback/channel fallback, screenpack/motif ownership, visual timing/layering/scale/palette parity, helper/team/custom-state presentation ownership, and score movement remain blocked.
+
+Next:
+- Continue R1 FightFX/common presentation precision or R1/R2 Common1/helper ownership, with exact IKEMEN `sys.ffx` cache/SND/screenpack semantics still explicitly out of scope for this checkpoint.
+
 ## 2026-07-02 - FightFX prefix runtime metadata handoff
 
 Changed:

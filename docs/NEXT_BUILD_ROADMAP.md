@@ -78,12 +78,14 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 FightFX prefix runtime metadata handoff
+R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
+  -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF assets
+  -> matching fightfx.prefix selects that package for runtime F spark frames before global data/fightfx.* fallback
   -> F-prefixed FightFX spark asset frames and HitSpark events preserve fightFxPrefix for trace/debug/renderer consumers
   -> RuntimeTrace requiredHitEffectEvents can require fightFxPrefix
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and now gates fightFxPrefix = kfm evidence
-  -> metadata handoff only; no alternate FightFX package lookup, exact motif/screenpack ownership, renderer timing/layer/scale/palette parity, or full hit-effect parity claim
+  -> bounded package-selection support only; no exact sys.ffx lifetime/refcount, SND fallback, motif/screenpack ownership, renderer timing/layer/scale/palette parity, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> helper owner validation and fail-closed result semantics still route through RuntimeHelperTargetStateWorld
@@ -1171,11 +1173,12 @@ R2 RuntimeGuardWorld ownership extraction
 Latest IKEMEN scanner/runtime truth:
 
 ```txt
-I1/R1 character FightFX prefix metadata expansion
+I1/R1 character FightFX prefix package expansion
   -> IkemenFeatureScanner recognizes character fightfx.prefix metadata
   -> runtime carries fightfx.prefix into bounded F-prefixed FightFX hit-spark trace metadata
+  -> loader/runtime can select matching character [Files] fx FightFX AIR/SFF packages for F spark frames
   -> ZSS [Statedef]/[State] blocks and ModifyText remain report-only IKEMEN scanner signals
-  -> no alternate FightFX package lookup, ZSS/Lua/text rendering/removal/runtime execution claim
+  -> no full sys.ffx lifetime/refcount, SND fallback, ZSS/Lua/text rendering/removal/runtime execution claim
 ```
 
 Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.

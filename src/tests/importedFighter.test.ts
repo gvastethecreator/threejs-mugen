@@ -104,6 +104,50 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.fightFxPrefix).toBe("kfm");
   });
 
+  it("uses a matching character FightFX library ahead of default system FightFX", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations);
+    character.definition.rawSections = {
+      Info: {
+        "fightfx.prefix": "KFM",
+      },
+    };
+    character.systemAssets = {
+      fightDefPath: "data/fight.def",
+      diagnostics: [],
+      hitSparkLibraries: {
+        fightfx: {
+          source: "fightfx",
+          airPath: "data/fightfx.air",
+          sffPath: "data/fightfx.sff",
+          diagnostics: [],
+          animations: new Map([[7002, action(7002, [[8102, 0, 0]])]]),
+        },
+      },
+      fightFxLibraries: {
+        kfm: {
+          source: "fightfx",
+          prefix: "kfm",
+          defPath: "chars/kfm/kfmfx.def",
+          airPath: "chars/kfm/kfmfx.air",
+          sffPath: "chars/kfm/kfmfx.sff",
+          diagnostics: [],
+          animations: new Map([[7002, action(7002, [[9902, 0, 0]])]]),
+        },
+      },
+    };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.hitSparkLibraries?.fightfx?.animations.get(7002)?.frames[0]).toMatchObject({
+      spriteGroup: 9902,
+      spriteIndex: 0,
+    });
+  });
+
   it("uses CNS Data HitDef spark defaults when a state HitDef omits spark refs", () => {
     const animations = new Map<number, MugenAnimationAction>([
       [0, action(0, [[0, 0, 0]])],

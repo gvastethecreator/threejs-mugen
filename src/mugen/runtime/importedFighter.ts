@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenCharacter } from "../model/MugenCharacter";
+import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 
 type FrameWindow = {
@@ -84,20 +85,34 @@ function rawSectionValue(sections: MugenCharacter["definition"]["rawSections"], 
 
 function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefinition["hitSparkLibraries"] | undefined {
   const libraries = character.systemAssets?.hitSparkLibraries;
-  if (!libraries) {
+  const prefixedFightFx = prefixedFightFxLibrary(character);
+  if (!libraries && !prefixedFightFx) {
     return undefined;
   }
   const result: NonNullable<DemoFighterDefinition["hitSparkLibraries"]> = {};
-  for (const source of ["common", "fightfx"] as const) {
-    const library = libraries[source];
-    if (library && library.animations.size > 0) {
-      result[source] = {
-        source,
-        animations: normalizeAnimations(library.animations),
-      };
-    }
+  const common = libraries?.common;
+  if (common && common.animations.size > 0) {
+    result.common = {
+      source: "common",
+      animations: normalizeAnimations(common.animations),
+    };
+  }
+  const fightfx = prefixedFightFx ?? libraries?.fightfx;
+  if (fightfx && fightfx.animations.size > 0) {
+    result.fightfx = {
+      source: "fightfx",
+      animations: normalizeAnimations(fightfx.animations),
+    };
   }
   return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function prefixedFightFxLibrary(character: MugenCharacter): MugenSystemHitSparkLibrary | undefined {
+  const prefix = fightFxPrefix(character);
+  if (!prefix) {
+    return undefined;
+  }
+  return character.systemAssets?.fightFxLibraries?.[prefix];
 }
 
 function buildStateMoves(

@@ -65,6 +65,79 @@ fightfx.sff = fightfx.sff
       index: 0,
     });
   });
+
+  it("loads character-declared FX packages by IKEMEN FightFX prefix", async () => {
+    const vfs = new VirtualFileSystem();
+    vfs.addFile(
+      "chars/kfm/kfm.def",
+      text(`[Info]
+name = "KFM"
+fightfx.prefix = kfm_fx
+
+[Files]
+sprite = kfm.sff
+anim = kfm.air
+cmd = kfm.cmd
+cns = kfm.cns
+fx = kfmfx.def
+`),
+    );
+    vfs.addFile(
+      "chars/kfm/kfm.air",
+      text(`[Begin Action 0]
+0,0,0,0,4
+`),
+    );
+    vfs.addFile("chars/kfm/kfm.cmd", text(""));
+    vfs.addFile("chars/kfm/kfm.cns", text(""));
+    vfs.addFile("chars/kfm/kfm.sff", createSffV1([{ group: 0, index: 0, axisX: 0, axisY: 0 }]));
+    vfs.addFile(
+      "chars/kfm/kfmfx.def",
+      text(`[Info]
+prefix = KFM_FX
+
+[Files]
+air = kfmfx.air
+sff = kfmfx.sff
+`),
+    );
+    vfs.addFile(
+      "chars/kfm/kfmfx.air",
+      text(`[Begin Action 7002]
+9800,0,3,-4,5
+9800,1,3,-4,6
+`),
+    );
+    vfs.addFile(
+      "chars/kfm/kfmfx.sff",
+      createSffV1([
+        { group: 9800, index: 0, axisX: 6, axisY: 7 },
+        { group: 9800, index: 1, axisX: 6, axisY: 7 },
+      ]),
+    );
+
+    const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
+
+    const prefixed = character.systemAssets?.fightFxLibraries?.kfm_fx;
+    expect(prefixed?.defPath).toBe("chars/kfm/kfmfx.def");
+    expect(prefixed?.prefix).toBe("kfm_fx");
+    expect(prefixed?.airPath).toBe("chars/kfm/kfmfx.air");
+    expect(prefixed?.sffPath).toBe("chars/kfm/kfmfx.sff");
+    expect(prefixed?.animations.get(7002)?.frames).toHaveLength(2);
+    expect(prefixed?.animations.get(7002)?.frames[0]).toMatchObject({
+      spriteGroup: 9800,
+      spriteIndex: 0,
+      offsetX: 3,
+      offsetY: -4,
+      duration: 5,
+    });
+    expect(prefixed?.spriteArchive?.sprites[0]).toMatchObject({
+      group: 9800,
+      index: 0,
+      axisX: 6,
+      axisY: 7,
+    });
+  });
 });
 
 type SffSpriteSpec = {

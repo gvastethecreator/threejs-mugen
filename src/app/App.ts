@@ -1577,13 +1577,18 @@ export class App {
   }
 
   private installSystemHitSparkProviders(character: MugenCharacter): void {
-    const libraries = character.systemAssets?.hitSparkLibraries;
-    if (!libraries) {
+    const assets = character.systemAssets;
+    if (!assets) {
       return;
     }
     const seenArchives = new Set<unknown>();
-    for (const source of ["common", "fightfx"] as const) {
-      const archive = libraries[source]?.spriteArchive;
+    const libraries = [
+      assets.hitSparkLibraries.common,
+      assets.hitSparkLibraries.fightfx,
+      ...Object.values(assets.fightFxLibraries ?? {}),
+    ];
+    for (const library of libraries) {
+      const archive = library?.spriteArchive;
       if (!archive || archive.sprites.length === 0 || seenArchives.has(archive)) {
         continue;
       }
@@ -1594,7 +1599,8 @@ export class App {
       }
       this.spriteProvider.registerGroupRange(provider.minGroup, provider.maxGroup, provider, "system-hit-sparks");
       const total = archive.metadata?.spriteTotal ?? archive.sprites.length;
-      this.log(`System ${source} SFF ${archive.version} decoded ${archive.sprites.length}/${total} sprites (${provider.minGroup}-${provider.maxGroup})`);
+      const label = library?.prefix ? `FightFX ${library.prefix}` : `System ${library?.source ?? "hit-spark"}`;
+      this.log(`${label} SFF ${archive.version} decoded ${archive.sprites.length}/${total} sprites (${provider.minGroup}-${provider.maxGroup})`);
     }
   }
 

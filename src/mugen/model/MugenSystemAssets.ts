@@ -5,6 +5,8 @@ export type MugenSystemHitSparkLibrarySource = "common" | "fightfx";
 
 export type MugenSystemHitSparkLibrary = {
   source: MugenSystemHitSparkLibrarySource;
+  prefix?: string;
+  defPath?: string;
   airPath?: string;
   sffPath?: string;
   animations: Map<number, MugenAnimationAction>;
@@ -15,5 +17,6 @@ export type MugenSystemHitSparkLibrary = {
 export type MugenSystemAssets = {
   fightDefPath?: string;
   hitSparkLibraries: Partial<Record<MugenSystemHitSparkLibrarySource, MugenSystemHitSparkLibrary>>;
+  fightFxLibraries?: Record<string, MugenSystemHitSparkLibrary>;
   diagnostics: MugenDiagnostic[];
 };

@@ -75,7 +75,10 @@ export class MugenCharacterLoader {
     const definition = parseDef(defText, defPath);
     diagnostics.push(...definition.diagnostics);
     const files = this.resolveFiles(defPath, definition.files, resolver, diagnostics);
-    const systemAssets = await loadMugenSystemAssets(vfs, resolver);
+    const systemAssets = await loadMugenSystemAssets(vfs, resolver, {
+      characterDefPath: defPath,
+      characterDefinition: definition,
+    });
     if (systemAssets) {
       diagnostics.push(...systemAssets.diagnostics);
     }
