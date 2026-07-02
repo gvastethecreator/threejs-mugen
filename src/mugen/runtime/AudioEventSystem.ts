@@ -155,11 +155,24 @@ function soundPrefixMetadata(
 }
 
 function soundEventType(controller: MugenStateController): RuntimeSoundEvent["type"] {
-  return controller.type.toLowerCase() === "stopsnd" ? "StopSnd" : "PlaySnd";
+  const type = controller.type.toLowerCase();
+  if (type === "stopsnd") {
+    return "StopSnd";
+  }
+  if (type === "sndpan") {
+    return "SndPan";
+  }
+  return "PlaySnd";
 }
 
 function operationSoundEventType(operation: AudioControllerOp): RuntimeSoundEvent["type"] {
-  return operation.controllerType === "stopsnd" ? "StopSnd" : "PlaySnd";
+  if (operation.controllerType === "stopsnd") {
+    return "StopSnd";
+  }
+  if (operation.controllerType === "sndpan") {
+    return "SndPan";
+  }
+  return "PlaySnd";
 }
 
 function firstNumber(value: string | undefined): number | undefined {

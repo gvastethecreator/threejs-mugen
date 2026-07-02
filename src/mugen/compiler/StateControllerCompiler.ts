@@ -37,6 +37,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   assertspecial: partial("runtime flags"),
   playsnd: partial("audio events"),
   stopsnd: partial("audio events"),
+  sndpan: partial("audio panning"),
   envshake: partial("camera shake"),
   envcolor: partial("stage color flash"),
   palfx: partial("material tint"),

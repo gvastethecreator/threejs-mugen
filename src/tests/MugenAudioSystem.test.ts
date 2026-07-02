@@ -35,6 +35,16 @@ describe("MugenAudioSystem", () => {
       channel: 2,
     });
     expect(resolveRuntimeAudioEventAction({ type: "PlaySnd", channel: 2 }, true)).toEqual({ type: "play", channel: 2 });
+    expect(resolveRuntimeAudioEventAction({ type: "SndPan", channel: 2 }, true)).toEqual({ type: "pan", channel: 2 });
+    expect(resolveRuntimeAudioEventAction({ type: "SndPan", channel: 2 }, false)).toEqual({
+      type: "skip",
+      reason: "inactive-channel",
+      channel: 2,
+    });
+    expect(resolveRuntimeAudioEventAction({ type: "SndPan", channel: -1 }, true)).toEqual({
+      type: "skip",
+      reason: "missing-channel",
+    });
   });
 
   it("maps PlaySnd volumescale into bounded Web Audio gain", () => {

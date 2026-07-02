@@ -84,7 +84,7 @@ export type PauseControllerOp = {
 
 export type AudioControllerOp = {
   kind: "audio";
-  controllerType: "playsnd" | "stopsnd";
+  controllerType: "playsnd" | "stopsnd" | "sndpan";
   value?: string;
   channel?: number;
   lowPriority?: boolean;
@@ -576,7 +576,7 @@ export function compileControllerOp(controller: MugenStateController, context: C
   if (type === "pause" || type === "superpause") {
     return compilePauseControllerOp(controller, type);
   }
-  if (type === "playsnd" || type === "stopsnd") {
+  if (type === "playsnd" || type === "stopsnd" || type === "sndpan") {
     return compileAudioControllerOp(controller, type);
   }
   if (isNoopController(type)) {
@@ -1224,9 +1224,12 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
   const volumeScale = type === "playsnd" ? firstNumber(findParam(controller, "volumescale")) : undefined;
   const freqMul = type === "playsnd" ? firstNumber(findParam(controller, "freqmul")) : undefined;
   const loop = type === "playsnd" ? booleanNumber(findParam(controller, "loop")) : undefined;
-  const pan = type === "playsnd" ? firstNumber(findParam(controller, "pan")) : undefined;
-  const absPan = type === "playsnd" ? firstNumber(findParam(controller, "abspan")) : undefined;
+  const pan = type === "playsnd" || type === "sndpan" ? firstNumber(findParam(controller, "pan")) : undefined;
+  const absPan = type === "playsnd" || type === "sndpan" ? firstNumber(findParam(controller, "abspan")) : undefined;
   if (type === "playsnd" && value === undefined) {
+    return undefined;
+  }
+  if (type === "sndpan" && (channel === undefined || (pan === undefined && absPan === undefined))) {
     return undefined;
   }
   return definedObject({

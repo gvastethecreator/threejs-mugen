@@ -84,6 +84,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   superpause: "pause",
   playsnd: "sound",
   stopsnd: "sound",
+  sndpan: "sound",
   envcolor: "envcolor",
   envshake: "envshake",
   movehitreset: "contact",

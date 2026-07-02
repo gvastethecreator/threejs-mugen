@@ -78,14 +78,15 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R1 PlaySnd lowpriority, volumescale, freqmul, loop, pan, and abspan handoff
+R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan now compile into typed audio:playsnd metadata
-  -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority, volumeScale, freqMul, loop, pan, and absPan
-  -> required synthetic-imported-sound.json remains checksum c9d880c0 and now gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, freqmul = 0.5, loop = 1, and pan = 32
+  -> static SndPan channel plus pan/abspan now compile into typed audio:sndpan metadata
+  -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority, volumeScale, freqMul, loop, pan, absPan, and SndPan event type
+  -> required synthetic-imported-sound.json now has checksum 91574367 and gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, freqmul = 0.5, loop = 1, pan = 32, SndPan channel 2 / pan = -48, and StopSnd channel 2
   -> MugenAudioSystem resolves explicit-channel audio actions through a pure channel-action boundary: normal PlaySnd replaces, low-priority PlaySnd skips, StopSnd channel -1 / omitted channel stops all tracked channels
   -> MugenAudioSystem applies volumescale as bounded Web Audio gain scaling while preserving default gain when omitted
-  -> MugenAudioSystem applies freqmul as bounded Web Audio playback-rate scaling, maps loop to source looping, tracks unchannelled sources for stop-all cleanup, and resolves pan/abspan through a bounded stereo-pan boundary
-  -> bounded channel arbitration, volumescale, freqmul, loop, pan, and abspan only; no exact priority classes, legacy volume, SndPan, dynamic pan params, global channel fallback, timing/mixing, pause/superpause audio, or full audio parity claim
+  -> MugenAudioSystem applies freqmul as bounded Web Audio playback-rate scaling, maps loop to source looping, tracks unchannelled sources for stop-all cleanup, resolves pan/abspan through a bounded stereo-pan boundary, and lets SndPan update active explicit channel panners
+  -> bounded channel arbitration, volumescale, freqmul, loop, pan, abspan, and SndPan only; no exact priority classes, legacy volume, dynamic pan params, global channel fallback, timing/mixing, pause/superpause audio, or full audio parity claim
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets

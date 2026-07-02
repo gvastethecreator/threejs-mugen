@@ -196,7 +196,7 @@ export type RuntimeHitDefContactMetadata = {
 };
 
 export type RuntimeSoundEvent = {
-  type: "PlaySnd" | "StopSnd";
+  type: "PlaySnd" | "StopSnd" | "SndPan";
   group?: number;
   index?: number;
   channel?: number;

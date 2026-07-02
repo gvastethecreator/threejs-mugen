@@ -427,8 +427,11 @@ time = 20
   it("compiles static PlaySnd and StopSnd controllers into typed audio operations", () => {
     const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50", freqmul: "0.5", loop: "1", pan: "32" }));
     const absolutePan = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,1", abspan: "-64" }));
+    const pan = compileControllerIr(controller(200, "SndPan", [], { channel: "2", pan: "-48" }));
+    const absoluteChannelPan = compileControllerIr(controller(200, "SndPan", [], { channel: "3", abspan: "96" }));
     const stop = compileControllerIr(controller(200, "StopSnd", [], { channel: "2" }));
     const dynamic = compileControllerIr(controller(200, "PlaySnd", [], { value: "var(0),1" }));
+    const invalidPan = compileControllerIr(controller(200, "SndPan", [], { pan: "-48" }));
 
     expect(play.operation).toEqual({
       kind: "audio",
@@ -447,12 +450,25 @@ time = 20
       value: "S5,1",
       absPan: -64,
     });
+    expect(pan.operation).toEqual({
+      kind: "audio",
+      controllerType: "sndpan",
+      channel: 2,
+      pan: -48,
+    });
+    expect(absoluteChannelPan.operation).toEqual({
+      kind: "audio",
+      controllerType: "sndpan",
+      channel: 3,
+      absPan: 96,
+    });
     expect(stop.operation).toEqual({
       kind: "audio",
       controllerType: "stopsnd",
       channel: 2,
     });
     expect(dynamic.operation).toBeUndefined();
+    expect(invalidPan.operation).toBeUndefined();
   });
 
   it("compiles static EnvShake controllers into typed camera-shake operations", () => {

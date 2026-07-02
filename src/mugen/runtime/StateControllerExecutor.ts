@@ -195,6 +195,7 @@ export function executeControllerIr(
     type === "destroyself" ||
     type === "playsnd" ||
     type === "stopsnd" ||
+    type === "sndpan" ||
     type === "envshake" ||
     type === "palfx" ||
     type === "afterimage" ||

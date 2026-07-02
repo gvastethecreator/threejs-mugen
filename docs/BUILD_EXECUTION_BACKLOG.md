@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - SndPan channel panning handoff
+
+Changed:
+- `SndPan` is now a recognized partial audio controller: static `channel` plus static `pan` / `abspan` lower into typed `audio:sndpan` operation evidence.
+- `AudioEventSystem` emits bounded `RuntimeSoundEvent` telemetry with type `SndPan`, channel, `pan` / `absPan`, state, tick, and runtime tick data.
+- `RuntimeTrace.requiredSoundEvents` can require `SndPan`; required `synthetic-imported-sound.json` now gates `PlaySnd`, `SndPan`, and `StopSnd` in one imported owner-state route.
+- `MugenAudioSystem` now tracks active channel handles with optional `StereoPannerNode`, so `SndPan` can update an active explicit channel through the existing `resolveRuntimeSoundStereoPan(...)` boundary.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 327 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-sound.json` checksum is now `91574367` and carries `SndPan channel = 2` plus `pan = -48` evidence.
+- Full gates: `pnpm test` -> 130 files / 1060 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Static imported `SndPan channel = 2, pan = -48` survives compiler/runtime/trace handoff and can update the browser audio adapter's active explicit channel panner when decodable SND playback is running.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN audio parity, dynamic `SndPan` params, inactive-channel `SndPan` fallback behavior, panning over non-640 localcoord/view widths, exact channel priority classes, legacy `volume`, global channel fallback, timing/mixing, sample start/end behavior, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
+
+Next:
+- Return to R1 Common1 guard/recovery precision or R2 MatchWorld ownership. Further audio work should target dynamic audio params or exact channel priority only if it can land with focused trace/runtime evidence.
+
 ## 2026-07-02 - PlaySnd pan and abspan handoff
 
 Changed:

@@ -536,14 +536,15 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
       targetLabel: "Synthetic imported PlaySnd/StopSnd event route",
       requireHitEvent: true,
       requiredExecutedStates: [200],
-      requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd", "StopSnd"],
-      requiredExecutedOperations: ["hitdef", "audio:playsnd", "audio:stopsnd"],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "PlaySnd", "SndPan", "StopSnd"],
+      requiredExecutedOperations: ["hitdef", "audio:playsnd", "audio:sndpan", "audio:stopsnd"],
       requiredSoundEvents: [
         { actorId: "p1", type: "PlaySnd", group: 5, index: 0, channel: 2, lowPriority: true, volumeScale: 50, freqMul: 0.5, loop: true, pan: 32, stateNo: 200 },
+        { actorId: "p1", type: "SndPan", channel: 2, pan: -48, stateNo: 200 },
         { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
       ],
       notes: [
-        "Synthetic imported sound trace proves PlaySnd and StopSnd controllers emit bounded runtime sound events with parsed Sgroup,index/channel telemetry plus static PlaySnd lowpriority, volumescale, freqmul, loop, and pan metadata. It does not claim SND decode coverage, Web Audio timing/mixing, abspan, SndPan, legacy volume, broad priorities, or exact MUGEN/IKEMEN audio parity.",
+        "Synthetic imported sound trace proves PlaySnd, SndPan, and StopSnd controllers emit bounded runtime sound events with parsed Sgroup,index/channel telemetry plus static PlaySnd lowpriority, volumescale, freqmul, loop, and pan metadata plus static SndPan pan metadata. It does not claim SND decode coverage, Web Audio timing/mixing, abspan trace coverage, legacy volume, broad priorities, or exact MUGEN/IKEMEN audio parity.",
       ],
     },
   );
@@ -20830,6 +20831,12 @@ volumescale = 50
 freqmul = 0.5
 loop = 1
 pan = 32
+
+[State 200, Pan Sound Probe]
+type = SndPan
+trigger1 = Time = 2
+channel = 2
+pan = -48
 
 [State 200, Stop Sound Probe]
 type = StopSnd

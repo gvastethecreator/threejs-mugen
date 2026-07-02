@@ -49,6 +49,21 @@ describe("AudioEventSystem", () => {
     expect(event.index).toBeUndefined();
   });
 
+  it("creates SndPan events with channel panning telemetry", () => {
+    const event = createRuntimeSoundEvent(actor(200, 5), controller("SndPan", { channel: "2", pan: "-48" }), 122);
+
+    expect(event).toMatchObject({
+      type: "SndPan",
+      channel: 2,
+      pan: -48,
+      stateNo: 200,
+      tick: 5,
+      runtimeTick: 122,
+    });
+    expect(event.group).toBeUndefined();
+    expect(event.index).toBeUndefined();
+  });
+
   it("preserves invalid raw values as debug telemetry instead of dropping the event", () => {
     const event = createRuntimeSoundEvent(actor(1000, 1), controller("PlaySnd", { value: "fightfx.fail" }), 2);
 
@@ -102,6 +117,21 @@ describe("AudioEventSystem", () => {
     });
 
     expect(event).toMatchObject({ type: "StopSnd", channel: 4, stateNo: 300, tick: 8, runtimeTick: 140 });
+    expect(fighter.soundEvents).toEqual([event]);
+  });
+
+  it("uses typed SndPan data in RuntimeAudioWorld", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 5), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitController(fighter, controller("SndPan", { channel: "2", pan: "16" }), 122, {
+      kind: "audio",
+      controllerType: "sndpan",
+      channel: 2,
+      absPan: -64,
+    });
+
+    expect(event).toMatchObject({ type: "SndPan", channel: 2, absPan: -64, stateNo: 200, tick: 5, runtimeTick: 122 });
     expect(fighter.soundEvents).toEqual([event]);
   });
 

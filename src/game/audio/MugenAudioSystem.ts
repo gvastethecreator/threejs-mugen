@@ -15,7 +15,14 @@ export type MugenAudioDiagnostics = {
 export type RuntimeAudioEventAction =
   | { type: "play"; channel?: number }
   | { type: "skip"; reason: "low-priority-channel"; channel: number }
-  | { type: "stop"; channel?: number };
+  | { type: "skip"; reason: "missing-channel" | "inactive-channel"; channel?: number }
+  | { type: "stop"; channel?: number }
+  | { type: "pan"; channel: number };
+
+type RuntimeAudioSourceHandle = {
+  source: AudioBufferSourceNode;
+  panner?: StereoPannerNode;
+};
 
 const DEFAULT_SOUND_GAIN = 0.55;
 const MIN_PLAYBACK_RATE = 0.01;
@@ -34,8 +41,8 @@ export class MugenAudioSystem {
   private archive?: SndArchive;
   private readonly prefixedArchives = new Map<string, SndArchive>();
   private readonly bufferPromises = new Map<string, Promise<AudioBuffer | undefined>>();
-  private readonly activeChannels = new Map<number, AudioBufferSourceNode>();
-  private readonly floatingSources = new Set<AudioBufferSourceNode>();
+  private readonly activeChannels = new Map<number, RuntimeAudioSourceHandle>();
+  private readonly floatingSources = new Set<RuntimeAudioSourceHandle>();
   private readonly seenEvents = new Set<string>();
   private readonly errors: string[] = [];
   private unlocked = false;
@@ -95,6 +102,8 @@ export class MugenAudioSystem {
           void this.play(event, action, actor, snapshot);
         } else if (action.type === "stop") {
           this.stop(action.channel);
+        } else if (action.type === "pan") {
+          this.pan(action.channel, event, actor, snapshot);
         } else {
           this.skipped += 1;
         }
@@ -117,12 +126,12 @@ export class MugenAudioSystem {
   }
 
   stopAll(): void {
-    for (const source of this.activeChannels.values()) {
-      source.stop();
+    for (const handle of this.activeChannels.values()) {
+      handle.source.stop();
     }
     this.activeChannels.clear();
-    for (const source of this.floatingSources) {
-      source.stop();
+    for (const handle of this.floatingSources) {
+      handle.source.stop();
     }
     this.floatingSources.clear();
   }
@@ -163,25 +172,27 @@ export class MugenAudioSystem {
       actorFacing: actor.runtime.facing,
       cameraX: snapshot.stage.camera.x,
     });
-    if (stereoPan !== 0 && typeof context.createStereoPanner === "function") {
-      const panner = context.createStereoPanner();
+    let panner: StereoPannerNode | undefined;
+    if (typeof context.createStereoPanner === "function") {
+      panner = context.createStereoPanner();
       panner.pan.value = stereoPan;
       source.connect(gain).connect(panner).connect(context.destination);
     } else {
       source.connect(gain).connect(context.destination);
     }
+    const handle: RuntimeAudioSourceHandle = { source, ...(panner ? { panner } : {}) };
     if (action.channel !== undefined) {
       this.stop(action.channel);
-      this.activeChannels.set(action.channel, source);
+      this.activeChannels.set(action.channel, handle);
       source.addEventListener("ended", () => {
-        if (this.activeChannels.get(action.channel!) === source) {
+        if (this.activeChannels.get(action.channel!) === handle) {
           this.activeChannels.delete(action.channel!);
         }
       });
     } else {
-      this.floatingSources.add(source);
+      this.floatingSources.add(handle);
       source.addEventListener("ended", () => {
-        this.floatingSources.delete(source);
+        this.floatingSources.delete(handle);
       });
     }
     source.start();
@@ -193,12 +204,25 @@ export class MugenAudioSystem {
       this.stopAll();
       return;
     }
-    const source = this.activeChannels.get(channel);
-    if (!source) {
+    const handle = this.activeChannels.get(channel);
+    if (!handle) {
       return;
     }
-    source.stop();
+    handle.source.stop();
     this.activeChannels.delete(channel);
+  }
+
+  private pan(channel: number, event: RuntimeSoundEvent, actor: ActorSnapshot, snapshot: MugenSnapshot): void {
+    const handle = this.activeChannels.get(channel);
+    if (!handle?.panner) {
+      this.skipped += 1;
+      return;
+    }
+    handle.panner.pan.value = resolveRuntimeSoundStereoPan(event, {
+      actorX: actor.runtime.pos.x,
+      actorFacing: actor.runtime.facing,
+      cameraX: snapshot.stage.camera.x,
+    });
   }
 
   private hasActiveChannel(channel: number | undefined): boolean {
@@ -255,6 +279,15 @@ export function resolveRuntimeAudioEventAction(event: Pick<RuntimeSoundEvent, "t
   const channel = event.channel !== undefined && event.channel >= 0 ? event.channel : undefined;
   if (event.type === "StopSnd") {
     return { type: "stop", channel };
+  }
+  if (event.type === "SndPan") {
+    if (channel === undefined) {
+      return { type: "skip", reason: "missing-channel" };
+    }
+    if (!activeChannel) {
+      return { type: "skip", reason: "inactive-channel", channel };
+    }
+    return { type: "pan", channel };
   }
   if (event.lowPriority && channel !== undefined && activeChannel) {
     return { type: "skip", reason: "low-priority-channel", channel };
