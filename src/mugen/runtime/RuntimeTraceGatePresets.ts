@@ -7285,13 +7285,15 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     attacker?: DemoFighterDefinition;
+    script?: RuntimeTraceInputFrame[];
+    requiredExecutedStates?: number[];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
     requiredActorFrameSequences?: RuntimeTraceGate["requiredActorFrameSequences"];
     requiredControllerEventSequences?: RuntimeTraceGate["requiredControllerEventSequences"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
-  const script = importedDefaultFallOfficialRecoveryInputScript();
+  const script = options.script ?? importedDefaultFallOfficialRecoveryInputScript();
   const attacker =
     options.attacker ??
     createSyntheticImportedTraceFighter({
@@ -7326,7 +7328,7 @@ export function createImportedDefaultFallRecoveryInputTraceArtifact(
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, 5000, 5030, 5050, 5210],
+        requiredExecutedStates: options.requiredExecutedStates ?? [200, 5000, 5030, 5050, 5210],
         requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
         requiredExecutedOperations: ["hitdef"],
         requiredActiveCommands: ["x", "recovery"],
@@ -7556,6 +7558,50 @@ export function createSyntheticImportedDefaultFallOfficialAirRecoveryTraceArtifa
       },
     ],
     requiredControllerEventSequences: [defaultAirRecoveryLandControllerSequence()],
+  });
+}
+
+export function createSyntheticImportedDefaultAirFallRecoveryInputTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const imported = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-air-fall-recovery-input",
+    displayName: "Synthetic Imported Default Air Fall Recovery Input",
+    defaultGetHitFall: {
+      shakeStateNo: 5020,
+      shakeStateType: "A",
+      slideStateNo: 5001,
+      airStateNo: 5030,
+      fallStateNo: 5050,
+      recoveryInputStateNo: 5210,
+      landStateNo: 52,
+      includeRecoveryInput: true,
+      includeRecoveryInputLanding: true,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-default-air-fall-recovery-input-attacker",
+    displayName: "Synthetic Imported Default Air Fall Recovery Input Attacker",
+    groundVelocity: [-3, -6],
+    fall: {
+      ...commonGetHitFallData(),
+      velocity: { x: 3, y: -6 },
+      recover: true,
+      recoverTime: 10,
+    },
+  });
+  return createImportedDefaultFallRecoveryInputTraceArtifact(imported, {
+    ...options,
+    attacker,
+    script: importedDefaultAirFallRecoveryInputScript(),
+    targetId: "synthetic-imported-default-air-fall-recovery-input-golden",
+    targetLabel: "Synthetic imported air-entry Common1 recovery input route",
+    notes: [
+      "Synthetic imported air-entry recovery-input trace proves an airborne defender can start in defender-owned state 5020 after a fall HitDef without p2stateno, route 5020 -> 5030 -> 5050, wait through a positive fall.recovertime window, accept command = \"recovery\" in air, enter 5210, land through 52, and return to idle/control. It does not claim exact MUGEN/IKEMEN threshold tables, air get-hit animation choice, velocity math, controller-loop timing, public KFM support, or full Common1 recovery parity.",
+    ],
+    requiredExecutedStates: [200, 5020, 5030, 5050, 5210, 52],
+    requiredActorFrameSequences: [defaultAirFallRecoveryInputActorFrameSequence()],
+    requiredControllerEventSequences: [defaultAirFallRecoveryInputControllerSequence()],
   });
 }
 
@@ -7907,6 +7953,106 @@ export function defaultAirRecoveryLandControllerSequence(): RuntimeTraceControll
       { stateNo: 52, operation: "kinematic:posset" },
       { stateNo: 52, controller: "CtrlSet", name: "Land Ctrl" },
       { stateNo: 52, operation: "resource:ctrlset" },
+    ],
+  };
+}
+
+export function defaultAirFallRecoveryInputControllerSequence(
+  shakeStateNo = 5020,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  recoveryStateNo = 5210,
+  landStateNo = 52,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${recoveryStateNo}/${landStateNo} air-entry recovery-input controller and typed operation order`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "Recovery Input" },
+      { stateNo: recoveryStateNo, controller: "VelSet", name: "Air Recovery Velocity" },
+      { stateNo: recoveryStateNo, operation: "kinematic:velset" },
+      { stateNo: recoveryStateNo, controller: "HitFallSet", name: "Fall Recovery Settled" },
+      { stateNo: recoveryStateNo, operation: "hitfall:hitfallset" },
+      { stateNo: recoveryStateNo, controller: "VelAdd", name: "Air Recovery Gravity" },
+      { stateNo: recoveryStateNo, controller: "ChangeState", name: "Land" },
+      { stateNo: landStateNo, controller: "VelSet", name: "Land Velocity" },
+      { stateNo: landStateNo, operation: "kinematic:velset" },
+      { stateNo: landStateNo, controller: "PosSet", name: "Land Position" },
+      { stateNo: landStateNo, operation: "kinematic:posset" },
+      { stateNo: landStateNo, controller: "CtrlSet", name: "Land Ctrl" },
+      { stateNo: landStateNo, operation: "resource:ctrlset" },
+    ],
+  };
+}
+
+export function defaultAirFallRecoveryInputActorFrameSequence(
+  shakeStateNo = 5020,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  recoveryStateNo = 5210,
+  landStateNo = 52,
+): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${recoveryStateNo}/${landStateNo} air-entry recovery-input actor-frame order`,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: shakeStateNo,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: airStateNo,
+        moveType: "H",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: fallStateNo,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        observedHitFallRecoverTimeAtMost: 0,
+        observedHitFallRecoverTimeDropAtLeast: 1,
+        minFrames: 2,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: recoveryStateNo,
+        moveType: "I",
+        observedHitFallRecoverTimeAtMost: 0,
+        observedVelXAtLeast: 0,
+        observedVelXAtMost: 0,
+        observedVelYAtMost: -2,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: landStateNo,
+        moveType: "I",
+        observedPosYAtLeast: 0,
+        observedPosYAtMost: 0,
+        minFrames: 1,
+      },
     ],
   };
 }
@@ -16394,6 +16540,16 @@ export function importedDefaultAirFallGetHitScript(): RuntimeTraceInputFrame[] {
     { label: "imported-default-air-fall-gethit-jump", frames: 2, p1: [], p2: ["U"] },
     { label: "imported-default-air-fall-gethit-x", frames: 14, p1: ["x"], p2: [] },
     { label: "default-air-fall-gethit-settle", frames: 70, p1: [], p2: [] },
+  ]);
+}
+
+export function importedDefaultAirFallRecoveryInputScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-default-air-fall-recovery-input-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "imported-default-air-fall-recovery-input-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "default-air-fall-recovery-input-window", frames: 4, p1: [], p2: [] },
+    { label: "default-air-fall-recovery-input", frames: 6, p1: [], p2: ["x", "y"] },
+    { label: "default-air-fall-recovery-input-settle", frames: 48, p1: [], p2: [] },
   ]);
 }
 

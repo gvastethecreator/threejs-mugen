@@ -34,6 +34,7 @@ import {
   createImportedDefaultFallRecoveryThresholdTraceArtifact,
   createImportedDefaultFallRecoveryTooEarlyTraceArtifact,
   createImportedDefaultFallRecoveryTraceArtifact,
+  createSyntheticImportedDefaultAirFallRecoveryInputTraceArtifact,
   createSyntheticImportedDefaultAirGroundImpactTraceArtifact,
   createSyntheticImportedDefaultAirLieDownRecoveryTraceArtifact,
   createSyntheticImportedDefaultAirFallGetHitTraceArtifact,
@@ -42,6 +43,8 @@ import {
   createImportedDefaultGetHitTraceArtifact,
   createImportedDefaultFallGetHitTraceArtifact,
   createImportedDefaultGetHitProgressionTraceArtifact,
+  defaultAirFallRecoveryInputActorFrameSequence,
+  defaultAirFallRecoveryInputControllerSequence,
   defaultFallBounceLieDownControllerSequence,
   defaultFallGetHitActorFrameSequence,
   defaultFallGetHitControllerSequence,
@@ -8798,6 +8801,68 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       defaultAirRecoveryLandControllerSequence(),
     ]);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported air-entry Common1 recovery-input artifact from 5020", () => {
+    const artifact = createSyntheticImportedDefaultAirFallRecoveryInputTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-air-fall-recovery-input-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-recovery-input-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5020, 5030, 5050, 5210, 52]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "recovery"]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitFallSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["hitfall:hitfallset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      defaultAirFallRecoveryInputActorFrameSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultAirFallRecoveryInputControllerSequence(),
+    ]);
+    const frames = new Map(
+      [5020, 5030, 5050, 5210, 52].map((stateNo) => [
+        stateNo,
+        evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === stateNo),
+      ]),
+    );
+    expect(frames.get(5020)).toMatchObject({ moveType: "H", stateType: "A", physics: "N" });
+    expect(frames.get(5030)).toMatchObject({ moveType: "H" });
+    expect(frames.get(5050)).toMatchObject({ moveType: "H" });
+    expect(frames.get(5210)).toMatchObject({ moveType: "I" });
+    expect(frames.get(52)).toMatchObject({ moveType: "I" });
+    expect(frames.get(5020)?.lastTick ?? 0).toBeLessThan(frames.get(5030)?.firstTick ?? 0);
+    expect(frames.get(5030)?.lastTick ?? 0).toBeLessThan(frames.get(5050)?.firstTick ?? 0);
+    expect(frames.get(5050)?.lastTick ?? 0).toBeLessThan(frames.get(5210)?.firstTick ?? 0);
+    expect(frames.get(5210)?.lastTick ?? 0).toBeLessThan(frames.get(52)?.firstTick ?? 0);
+    expect(frames.get(5050)?.firstHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(frames.get(5050)?.lastHitFallRecoverTime).toBeLessThanOrEqual(0);
+    expect(frames.get(5210)?.minVel.y).toBeLessThanOrEqual(-2);
+    expect(frames.get(52)?.maxPos.y).toBe(0);
     expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
       source: "imported",
       stateNo: 0,

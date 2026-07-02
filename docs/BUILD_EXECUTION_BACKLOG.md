@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Default air recovery-input trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-fall-recovery-input` trace evidence for airborne defender-owned Common1-style recovery input after a fall `HitDef` omits `p2stateno`.
+- Prefactored `createImportedDefaultFallRecoveryInputTraceArtifact` with script and executed-state overrides so stand-entry and air-entry recovery gates share the same fixture runner.
+- Added reusable air-entry recovery controller and actor-frame sequence helpers for `5020 -> 5030 -> 5050 -> 5210 -> 52 -> 0`.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air-entry Common1 recovery-input"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 263/263 artifacts, 243 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-fall-recovery-input.json` checksum `334a419e`, initial checksum `d3d91357`, final checksum `c5038a9d`.
+- Gate label: `imported-default-fall-recovery-input-golden`; required executed states include `200`, `5020`, `5030`, `5050`, `5210`, and `52`.
+- Required evidence includes active commands `x` and `recovery`, ordered actor frames `5020 -> 5030 -> 5050 -> 5210 -> 52`, `5050` positive-to-zero `hitFall.recoverTime`, `5210` air-recovery velocity, `52` y = 0 landing, and final P2 state `0` with control.
+- `pnpm test` passed -> 114 files / 1005 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF normalization warnings only.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style air-entry fall route can accept recovery input after `5020 -> 5030 -> 5050`, enter `5210`, land through `52`, and return to idle/control when `fall.recover` and `fall.recovertime` permit it.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN recovery threshold tables, exact air get-hit animation choice, exact velocity math, exact controller-loop timing, exact KFM/public fixture parity, recovery arbitration between air/ground branches, visual/audio parity, score movement, and full Common1 recovery parity remain blocked.
+
+Next:
+- Continue into exact threshold/too-early air-entry rejection, KFM/private-fixture comparison for this air-entry route, or another R1 Common1/FightFX precision gate.
+
 ## 2026-07-02 - Default air lie-down recovery trace gate
 
 Changed:

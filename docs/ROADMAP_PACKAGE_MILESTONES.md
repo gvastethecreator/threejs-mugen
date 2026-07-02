@@ -85,11 +85,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 Common1 default air lie-down recovery trace gate
+R1 Common1 default air recovery-input trace gate
+  -> synthetic-imported-default-air-fall-recovery-input.json checksum 334a419e is required in qa:trace
+  -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050, accepts command = "recovery", enters 5210, lands through 52, and returns to idle/control after fall HitDef without p2stateno
+  -> 5050 exposes positive-to-zero fall.recovertime evidence; 5210 has air-recovery velocity; 52 has y = 0 landing; final checksum c5038a9d; gate label imported-default-fall-recovery-input-golden
+  -> pnpm qa:trace passes 263/263 artifacts, 243 required and 20 optional
+  -> air-entry recovery-input evidence only; no score movement, exact recovery threshold tables, exact air get-hit animation, exact velocity math, exact controller-loop timing, recovery arbitration between air/ground branches, visual/audio parity, or full Common1 recovery parity claim
+Previous R1 Common1 default air lie-down recovery trace gate
   -> synthetic-imported-default-air-liedown-recovery.json checksum 56a8f236 is required in qa:trace
   -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 -> 0 after fall HitDef without p2stateno
   -> 5101 has HitFallVel / hitfall:hitfallvel evidence; 5110 has HitFallDamage / hitfall:hitfalldamage plus bounded downRecoverTime countdown evidence; final checksum 20c045a3; gate label imported-default-fall-gethit-golden
-  -> pnpm qa:trace passes 262/262 artifacts, 242 required and 20 optional
+  -> that checkpoint passed 262/262 artifacts, 242 required and 20 optional
   -> state/order, bounce, lie-down countdown, get-up, and idle-return evidence only; no score movement, exact air get-hit animation, exact HitShakeOver/HitOver timing, exact ground-impact timing/position, exact bounce physics, exact lie-down duration tables, recovery input, landing nuance, controller-loop timing, visual/audio parity, or full Common1 fall/get-hit parity claim
 Previous R1 Common1 default air ground-impact trace gate
   -> synthetic-imported-default-air-ground-impact.json checksum 0ba3c80f is required in qa:trace
