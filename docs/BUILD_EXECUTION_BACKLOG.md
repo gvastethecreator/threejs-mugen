@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - KFM crouch get-hit progression controller-order fixture gate
+
+Changed:
+- Tightened optional private-fixture `kfm-official-default-crouch-gethit-progression` so it now requires KFM-specific `5010/5011` controller and typed-operation order, not only state/frame progression.
+- Prefactored `createImportedDefaultGetHitProgressionTraceArtifact` with a `requiredControllerEventSequences` override so fixture-specific Common1 routes can keep the shared progression factory while requiring stricter real-character evidence.
+- Added `officialKfmDefaultCrouchGetHitProgressionControllerSequence()` to require real KFM order through `5010` `ChangeAnim` / `ChangeState`, then `5011` `HitVelSet`, `VelMul`, `VelSet`, `DefenceMulSet`, their typed operations, and final `ChangeState`.
+- Updated optional KFM crouch QA trace registration and docs without touching runtime semantics, frontend, CSS, renderer, sprites, or bundled assets.
+
+Evidence:
+- `pnpm qa:trace` passed -> 268/268 artifacts, 245 required and 23 optional.
+- Artifact checksum remains `kfm-official-default-crouch-gethit-progression` checksum `3d197fae`; final checksum remains `f469a942`.
+- Gate still requires real KFM held-crouch prep state `11`, states `200`, `5010`, and `5011`, final P2 state `0`/control, KFM-specific `5010`/`5011` actor-frame evidence, and now ordered `HitVelSet` / `VelMul` / `VelSet` / `DefenceMulSet` typed-operation evidence.
+
+Claim allowed:
+- Private official KFM fixture can prove bounded crouch Common1-style `5010 -> 5011 -> 0` progression plus the current bounded KFM crouch slide controller/typed-operation order after a direct `HitDef` without `p2stateno` while P2 holds crouch.
+
+Claim blocked:
+- Public bundled KFM support, exact MUGEN/IKEMEN controller-loop timing, exact crouch get-hit animation/slide tables beyond this bounded order/frame profile, fall routing, custom-state/helper/team breadth, visual/audio parity, score movement, and full Common1 get-hit parity remain blocked.
+
+Next:
+- Continue into exact KFM/Common1 timing/table work, broader recovery/guard precision, or another bounded R1/R2 runtime slice.
+
 ## 2026-07-02 - KFM crouch get-hit progression fixture gate
 
 Changed:

@@ -6716,6 +6716,7 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
     slideStateNo?: number;
     requiredExecutedStates?: number[];
     requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -6752,7 +6753,8 @@ export function createImportedDefaultGetHitProgressionTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [0, 200, shakeStateNo, slideStateNo],
         requiredExecutedControllers: ["ChangeState", "HitDef"],
         requiredExecutedOperations: ["hitdef"],
-        requiredControllerEventSequences: [defaultGetHitProgressionControllerSequence(shakeStateNo, slideStateNo)],
+        requiredControllerEventSequences:
+          options.requiredControllerEventSequences ?? [defaultGetHitProgressionControllerSequence(shakeStateNo, slideStateNo)],
         requiredActorFrames: options.requiredActorFrames ?? defaultGetHitProgressionPhysicsFrames(),
         requiredActorFrameSequences: [defaultGetHitProgressionActorFrameSequence(shakeStateNo, slideStateNo)],
         requiredActiveCommands: ["x"],
@@ -6784,6 +6786,27 @@ export function defaultGetHitProgressionControllerSequence(
     steps: [
       { stateNo: shakeStateNo, controller: "ChangeState" },
       { stateNo: slideStateNo, controller: "ChangeState" },
+    ],
+  };
+}
+
+export function officialKfmDefaultCrouchGetHitProgressionControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "5010/5011 crouch HitShakeOver, slide damping, and HitOver controller order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 5010, controller: "ChangeAnim" },
+      { stateNo: 5010, controller: "ChangeState" },
+      { stateNo: 5011, controller: "HitVelSet" },
+      { stateNo: 5011, controller: "kinematic:hitvelset", operation: "kinematic:hitvelset" },
+      { stateNo: 5011, controller: "VelMul" },
+      { stateNo: 5011, controller: "kinematic:velmul", operation: "kinematic:velmul" },
+      { stateNo: 5011, controller: "VelSet" },
+      { stateNo: 5011, controller: "kinematic:velset", operation: "kinematic:velset" },
+      { stateNo: 5011, controller: "DefenceMulSet" },
+      { stateNo: 5011, controller: "damage-scale:defencemulset", operation: "damage-scale:defencemulset" },
+      { stateNo: 5011, controller: "ChangeState" },
     ],
   };
 }

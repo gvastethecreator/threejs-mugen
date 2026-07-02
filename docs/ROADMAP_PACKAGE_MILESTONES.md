@@ -94,7 +94,7 @@ R1 Common1 default crouch get-hit progression trace gate
 Optional R1 KFM/Common1 crouch get-hit progression fixture gate
   -> kfm-official-default-crouch-gethit-progression.json checksum 3d197fae passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM held-crouch route executes prep state 11, then Common1 5010 -> 5011 -> 0 through HitShakeOver / HitOver
-  -> KFM-specific evidence pins 5010 anim 5010, 5011 anim 5020, Clsn2 = 2/3, body width 39/39, final checksum f469a942, and final idle/control
+  -> KFM-specific evidence pins 5010 anim 5010, 5011 anim 5020, Clsn2 = 2/3, body width 39/39, crouch slide HitVelSet / VelMul / VelSet / DefenceMulSet typed-operation order, final checksum f469a942, and final idle/control
   -> pnpm qa:trace passes 268/268 artifacts, 245 required and 23 optional
   -> private-fixture confidence only; no public KFM support, no score movement, no exact tick/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates

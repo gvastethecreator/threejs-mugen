@@ -68,6 +68,7 @@ import {
   officialKfmAirRecoveryControllerSequence,
   officialKfmAutoGuardEndControllerSequence,
   officialKfmAutoGuardStartControllerSequence,
+  officialKfmDefaultCrouchGetHitProgressionControllerSequence,
   officialKfmDefaultCrouchGetHitProgressionPhysicsFrames,
   officialKfmDefaultGetHitProgressionPhysicsFrames,
   officialKfmFallGetHitControllerSequence,
@@ -8158,6 +8159,28 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("allows imported default Common1 progression gates to require fixture-specific controller sequences", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-gethit-progression-custom-sequence",
+      displayName: "Synthetic Imported Default GetHit Progression Custom Sequence",
+      defaultGetHitProgression: { shakeStateNo: 5000, slideStateNo: 5001 },
+    });
+    const requiredControllerEventSequences = [
+      {
+        ...defaultGetHitProgressionControllerSequence(),
+        label: "custom fixture-specific get-hit order",
+      },
+    ];
+    const artifact = createImportedDefaultGetHitProgressionTraceArtifact(imported, {
+      generatedAt: "2026-07-02T00:00:00.000Z",
+      targetId: "synthetic-imported-default-gethit-progression-custom-sequence-golden",
+      requiredControllerEventSequences,
+    });
+
+    expect(artifact.status).toBe("passed");
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual(requiredControllerEventSequences);
+  });
+
   it("creates an imported default crouch Common1 progression artifact with HitShakeOver and HitOver", () => {
     const artifact = createSyntheticImportedDefaultCrouchGetHitProgressionTraceArtifact({
       generatedAt: "2026-07-02T00:00:00.000Z",
@@ -8213,6 +8236,27 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 0,
       moveType: "I",
       ctrl: true,
+    });
+  });
+
+  it("describes official KFM crouch Common1 progression controller and typed-operation order", () => {
+    expect(officialKfmDefaultCrouchGetHitProgressionControllerSequence()).toEqual({
+      label: "5010/5011 crouch HitShakeOver, slide damping, and HitOver controller order",
+      actorId: "p2",
+      allowSameTick: true,
+      steps: [
+        { stateNo: 5010, controller: "ChangeAnim" },
+        { stateNo: 5010, controller: "ChangeState" },
+        { stateNo: 5011, controller: "HitVelSet" },
+        { stateNo: 5011, controller: "kinematic:hitvelset", operation: "kinematic:hitvelset" },
+        { stateNo: 5011, controller: "VelMul" },
+        { stateNo: 5011, controller: "kinematic:velmul", operation: "kinematic:velmul" },
+        { stateNo: 5011, controller: "VelSet" },
+        { stateNo: 5011, controller: "kinematic:velset", operation: "kinematic:velset" },
+        { stateNo: 5011, controller: "DefenceMulSet" },
+        { stateNo: 5011, controller: "damage-scale:defencemulset", operation: "damage-scale:defencemulset" },
+        { stateNo: 5011, controller: "ChangeState" },
+      ],
     });
   });
 
