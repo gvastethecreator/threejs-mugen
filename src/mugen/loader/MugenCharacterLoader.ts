@@ -4,7 +4,9 @@ import { UnsupportedFeatureTracker } from "../compatibility/UnsupportedFeatureTr
 import { compileRuntimeProgram, isRuntimeExecutableController } from "../compiler/StateControllerCompiler";
 import type { MugenCharacter, ResolvedCharacterFiles } from "../model/MugenCharacter";
 import type { MugenDiagnostic } from "../model/MugenAnimation";
+import type { MugenPalette } from "../model/MugenPalette";
 import { parseAir } from "../parsers/AirParser";
+import { parseAct } from "../parsers/ActParser";
 import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { parseDef } from "../parsers/DefParser";
@@ -166,6 +168,29 @@ export class MugenCharacterLoader {
       }
     }
 
+    const palettes: MugenPalette[] = [];
+    for (let index = 0; index < files.palettes.length; index += 1) {
+      const palettePath = files.palettes[index]!;
+      const buffer = vfs.readArrayBuffer(palettePath);
+      if (!buffer) {
+        continue;
+      }
+      const parsedAct = parseAct(buffer, palettePath);
+      diagnostics.push(...parsedAct.diagnostics);
+      if (parsedAct.data) {
+        palettes.push({
+          group: 1,
+          index: index + 1,
+          path: palettePath,
+          colors: parsedAct.colors,
+          data: parsedAct.data,
+          colorCount: parsedAct.colorCount,
+          transparentIndex: parsedAct.transparentIndex,
+          raw: parsedAct.raw,
+        });
+      }
+    }
+
     for (const controller of [...states.flatMap((state) => state.controllers), ...stateEntryControllers]) {
       if (!isRuntimeExecutableController(controller.type)) {
         unsupported.report("controller", controller.type || "Unknown", {
@@ -195,6 +220,7 @@ export class MugenCharacterLoader {
       runtimeProgram,
       mugenVersion: definition.info.mugenVersion,
       soundArchive,
+      palettes,
       ikemen,
       diagnostics,
       unsupported: unsupported.list(),
@@ -215,6 +241,7 @@ export class MugenCharacterLoader {
       runtimeProgram,
       spriteArchive,
       soundArchive,
+      palettes,
       systemAssets,
       diagnostics,
       compatibility,

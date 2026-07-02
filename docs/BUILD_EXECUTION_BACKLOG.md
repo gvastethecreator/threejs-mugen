@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 ACT + indexed SFF RemapPal texture handoff
+
+Changed:
+- Added real Adobe ACT palette parsing, including 768-byte RGB files and optional 772-byte color-count/transparent-index footer handling.
+- The character loader now reads DEF `pal1..pal12` palette refs into `MugenCharacter.palettes` and reports palette coverage through `CompatibilityReport.palettes`.
+- SFF v1/v2 indexed sprite decoders now preserve palette-index pixels plus palette bytes on `MugenSprite.indexed`.
+- `SffSpriteProvider` can rebuild a decoded indexed sprite canvas using a loaded ACT destination palette when runtime `RemapPal` state is present.
+- `CharacterRenderer` forwards actor `paletteRemap` into sprite lookup, and `TextureStore` keys remapped textures by palette remap data.
+- Default runtime/native compatibility-report literals now include an empty palette summary.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/ActParser.test.ts src/tests/SffParser.test.ts src/tests/SffSpriteProvider.test.ts src/tests/CharacterRenderer.test.ts src/tests/MugenCharacterLoader.test.ts src/tests/CompatibilityReport.test.ts` -> 6 files / 19 tests.
+- Test suite: `pnpm test` -> 141 files / 1089 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 282/282 artifacts, 257 required and 25 optional.
+- Smoke gate: `pnpm qa:smoke` -> passed; runtime desktop/mobile rendered 2 actors with resolved player hit sparks, and screenshots `runtime-desktop.png`, `runtime-mobile.png`, and `studio-build.png` were visually inspected.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+
+Claim allowed:
+- Bounded imported palette pipeline can parse DEF palette refs, load Adobe ACT palettes, preserve indexed SFF pixel data, and apply a loaded ACT destination palette to decoded indexed SFF sprite textures when `RemapPal` telemetry is active.
+
+Claim blocked:
+- Exact source-palette semantics, group/bank ownership, SFF v2 palette-bank parity, truecolor/PNG remap, helper/team/redirect palette ownership, exact PalFX/RemapPal math/blend order/`sinadd`, browser fixture parity, score movement, and full MUGEN/IKEMEN palette parity remain blocked.
+
+Next:
+- Add imported fixture/browser evidence for ACT remap if a suitable local fixture exists, or continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam.
+
 ## 2026-07-02 - R1 PalFX + RemapPal combined trace gate
 
 Changed:

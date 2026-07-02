@@ -89,7 +89,10 @@ export class CharacterRenderer {
     for (let index = 0; index < samples.length; index += 1) {
       const sample = samples[index]!;
       const sampleOwnerId = sample.spriteOwnerId ?? actor.spriteOwnerId ?? actor.id;
-      const sprite = await this.spriteProvider.getSprite(sample.spriteGroup, sample.spriteIndex, { ownerId: sampleOwnerId });
+      const sprite = await this.spriteProvider.getSprite(sample.spriteGroup, sample.spriteIndex, {
+        ownerId: sampleOwnerId,
+        paletteRemap: actor.runtime.paletteRemap,
+      });
       if (!sprite || !effect) {
         continue;
       }
@@ -141,8 +144,8 @@ function createAfterImageActor(
   };
 }
 
-function spriteLookupContext(actor: ActorSnapshot): { ownerId: string } {
-  return { ownerId: actor.spriteOwnerId ?? actor.id };
+function spriteLookupContext(actor: ActorSnapshot): { ownerId: string; paletteRemap: ActorSnapshot["runtime"]["paletteRemap"] } {
+  return { ownerId: actor.spriteOwnerId ?? actor.id, paletteRemap: actor.runtime.paletteRemap };
 }
 
 function applyAfterImageMaterial(

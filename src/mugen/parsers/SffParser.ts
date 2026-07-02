@@ -1,3 +1,4 @@
+import { createIndexedCanvas } from "../model/IndexedImage";
 import type { ISffReader, MugenSprite, SffArchive } from "../model/MugenSprite";
 
 type DecodedPcx = {
@@ -155,6 +156,17 @@ function parseSffV1(bytes: Uint8Array): SffArchive {
       if (palette) {
         palettes.push(palette);
       }
+      const indexed = palette
+        ? {
+            pixels: decoded.pixels,
+            palette: {
+              bytes: palette,
+              stride: 3 as const,
+              transparentIndex: 0,
+              key: `sff-v1:${palettes.length - 1}`,
+            },
+          }
+        : undefined;
       sprites.push({
         group: subfile.group,
         index: subfile.index,
@@ -162,7 +174,8 @@ function parseSffV1(bytes: Uint8Array): SffArchive {
         height: decoded.height,
         axisX: subfile.axisX,
         axisY: subfile.axisY,
-        canvas: palette ? createCanvas(decoded, palette) : undefined,
+        canvas: indexed ? createIndexedCanvas(decoded.width, decoded.height, decoded.pixels, indexed.palette) : undefined,
+        indexed,
         raw: {
           sff: subfile,
           pcx: {
@@ -266,6 +279,18 @@ function parseSffV2(bytes: Uint8Array): SffArchive {
 
     try {
       const decoded = decodeSffV2Sprite(record, data, palette);
+      const indexed =
+        decoded.pixels && palette
+          ? {
+              pixels: decoded.pixels,
+              palette: {
+                bytes: palette,
+                stride: 4 as const,
+                transparentIndex: 0,
+                key: `sff-v2:${record.paletteIndex}`,
+              },
+            }
+          : undefined;
       const sprite: MugenSprite = {
         group: record.group,
         index: record.index,
@@ -274,6 +299,7 @@ function parseSffV2(bytes: Uint8Array): SffArchive {
         axisX: record.axisX,
         axisY: record.axisY,
         canvas: decoded.canvas,
+        indexed,
         raw: {
           sff: record,
           pixels: decoded.pixels,
@@ -495,7 +521,7 @@ function decodeSffV2Raw(
       throw new Error(`RAW${record.colorDepth} data ended early: ${data.length}/${pixelCount}`);
     }
     const pixels = data.slice(0, pixelCount);
-    return { pixels, canvas: createIndexedCanvas(record.width, record.height, pixels, palette, 4) };
+    return { pixels, canvas: createIndexedCanvas(record.width, record.height, pixels, { bytes: palette, stride: 4, transparentIndex: 0 }) };
   }
   if (record.colorDepth === 24) {
     const expected = pixelCount * 3;
@@ -555,7 +581,7 @@ function decodeSffV2Rle8(
 
   return {
     pixels,
-    canvas: createIndexedCanvas(record.width, record.height, pixels, palette, 4),
+    canvas: createIndexedCanvas(record.width, record.height, pixels, { bytes: palette, stride: 4, transparentIndex: 0 }),
   };
 }
 
@@ -610,7 +636,7 @@ function decodeSffV2Rle5(
 
   return {
     pixels,
-    canvas: createIndexedCanvas(record.width, record.height, pixels, payload.palette, 4),
+    canvas: createIndexedCanvas(record.width, record.height, pixels, { bytes: payload.palette, stride: 4, transparentIndex: 0 }),
   };
 }
 
@@ -700,7 +726,7 @@ function decodeSffV2Lz5(
 
   return {
     pixels,
-    canvas: createIndexedCanvas(record.width, record.height, pixels, payload.palette, 4),
+    canvas: createIndexedCanvas(record.width, record.height, pixels, { bytes: payload.palette, stride: 4, transparentIndex: 0 }),
   };
 }
 
@@ -846,41 +872,6 @@ function selectPalette(
   }
   warnings.push(`SFF v1 sprite ${subfile.group},${subfile.index} has no palette; sprite will use mock fallback`);
   return undefined;
-}
-
-function createCanvas(decoded: DecodedPcx, palette: Uint8Array): HTMLCanvasElement | undefined {
-  return createIndexedCanvas(decoded.width, decoded.height, decoded.pixels, palette, 3);
-}
-
-function createIndexedCanvas(
-  width: number,
-  height: number,
-  pixels: Uint8Array,
-  palette: Uint8Array,
-  paletteStride: 3 | 4,
-): HTMLCanvasElement | undefined {
-  if (typeof document === "undefined") {
-    return undefined;
-  }
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext("2d");
-  if (!context) {
-    return undefined;
-  }
-  const imageData = context.createImageData(width, height);
-  for (let index = 0; index < pixels.length; index += 1) {
-    const colorIndex = pixels[index] ?? 0;
-    const paletteOffset = colorIndex * paletteStride;
-    const outputOffset = index * 4;
-    imageData.data[outputOffset] = palette[paletteOffset] ?? 0;
-    imageData.data[outputOffset + 1] = palette[paletteOffset + 1] ?? 0;
-    imageData.data[outputOffset + 2] = palette[paletteOffset + 2] ?? 0;
-    imageData.data[outputOffset + 3] = paletteStride === 4 ? palette[paletteOffset + 3] ?? 255 : colorIndex === 0 ? 0 : 255;
-  }
-  context.putImageData(imageData, 0, 0);
-  return canvas;
 }
 
 function createTrueColorCanvas(width: number, height: number, data: Uint8Array, stride: 3 | 4): HTMLCanvasElement | undefined {

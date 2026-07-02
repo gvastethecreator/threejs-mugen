@@ -1,3 +1,5 @@
+import type { IndexedSpriteData } from "./IndexedImage";
+
 export type MugenSprite = {
   group: number;
   index: number;
@@ -7,6 +9,7 @@ export type MugenSprite = {
   axisY: number;
   imageBitmap?: ImageBitmap;
   canvas?: HTMLCanvasElement;
+  indexed?: IndexedSpriteData;
   raw?: unknown;
 };
 
@@ -41,6 +44,10 @@ export interface ISffReader {
 
 export type SpriteLookupContext = {
   ownerId?: string;
+  paletteRemap?: {
+    source: [number, number];
+    dest: [number, number];
+  };
 };
 
 export interface SpriteProvider {

@@ -78,12 +78,20 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 ACT + indexed SFF RemapPal texture handoff
+  -> DEF pal1..pal12 ACT refs load into character palettes
+  -> SFF indexed decoders preserve source pixels/palettes for later remap
+  -> SffSpriteProvider rebuilds remapped canvases from loaded ACT destination palettes for decoded indexed sprites
+  -> CharacterRenderer forwards runtime paletteRemap to sprite lookup
+  -> CompatibilityReport.palettes reports refs/parsed/colors/transparency
+  -> focused parser/provider/renderer/loader/report tests prove the handoff
+  -> bounded indexed palette handoff only; no score movement, no exact source-bank semantics, no truecolor/PNG remap, no exact palette math/blend-order/renderer parity claim
 R1 PalFX + RemapPal combined trace gate
   -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required
   -> one imported actor executes PalFX and RemapPal in the same route
   -> trace gate requires typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
   -> pnpm qa:trace passes 282/282 artifacts, 257 required and 25 optional
-  -> bounded palette telemetry only; no score movement, no ACT/SFF pixel palette application, no exact palette math/blend-order/renderer parity claim
+  -> bounded palette telemetry only; no score movement, no exact palette math/blend-order/renderer parity claim
 R1 AssertSpecial unguardable coverage hardening
   -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required
   -> scripts/qa_traces.cjs now also requires that oracle in the required artifact coverage-summary contract

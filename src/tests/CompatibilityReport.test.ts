@@ -128,6 +128,37 @@ describe("createCompatibilityReport", () => {
     });
   });
 
+  it("summarizes parsed ACT palette compatibility", () => {
+    const report = createCompatibilityReport({
+      name: "Palette Karate",
+      loaded: true,
+      files: { states: [], commonStates: [], palettes: ["pal1.act", "pal2.act"], missing: [], def: "k.def" },
+      animations: new Map<number, MugenAnimationAction>(),
+      states: [],
+      diagnostics: [],
+      unsupported: [],
+      palettes: [
+        { group: 1, index: 1, path: "pal1.act", colors: ["#000000", "#ffffff"], data: new Uint8Array(768), colorCount: 256 },
+        {
+          group: 1,
+          index: 2,
+          path: "pal2.act",
+          colors: ["#000000"],
+          data: new Uint8Array(768),
+          colorCount: 128,
+          transparentIndex: 0,
+        },
+      ],
+    });
+
+    expect(report.palettes).toEqual({
+      total: 2,
+      parsed: 2,
+      colors: 384,
+      withTransparency: 1,
+    });
+  });
+
   it("exposes the same controller and trigger classifiers used by the State Browser", () => {
     expect(isRuntimeSupportedController("HitDef")).toBe(true);
     expect(isRuntimeSupportedController("EnvShake")).toBe(true);

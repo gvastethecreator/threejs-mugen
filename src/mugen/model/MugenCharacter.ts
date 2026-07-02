@@ -2,6 +2,7 @@ import type { CompatibilityReport } from "../compatibility/CompatibilityReport";
 import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction, MugenDiagnostic } from "./MugenAnimation";
 import type { MugenCommand, MugenCommandFile } from "./MugenCommand";
+import type { MugenPalette } from "./MugenPalette";
 import type { SndArchive } from "./MugenSound";
 import type { SffArchive } from "./MugenSprite";
 import type { MugenStateController, MugenStateDef } from "./MugenState";
@@ -58,6 +59,7 @@ export type MugenCharacter = {
   runtimeProgram?: RuntimeProgramIr;
   spriteArchive?: SffArchive;
   soundArchive?: SndArchive;
+  palettes?: MugenPalette[];
   systemAssets?: MugenSystemAssets;
   diagnostics: MugenDiagnostic[];
   compatibility: CompatibilityReport;

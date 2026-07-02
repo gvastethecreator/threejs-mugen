@@ -2,6 +2,7 @@ import { compileControllerIr, compileRuntimeProgram, hasUnsupportedTriggers, isR
 import type { CompileReport, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenCharacter, ResolvedCharacterFiles } from "../model/MugenCharacter";
 import type { MugenDiagnostic } from "../model/MugenAnimation";
+import type { MugenPalette } from "../model/MugenPalette";
 import type { SndArchive } from "../model/MugenSound";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import type { CompatibilityProfileId, IkemenScanReport } from "./IkemenFeatureScanner";
@@ -29,6 +30,12 @@ export type CompatibilityReport = {
     formats: Record<string, number>;
     sampleRates: Record<string, number>;
     channels: Record<string, number>;
+  };
+  palettes: {
+    total: number;
+    parsed: number;
+    colors: number;
+    withTransparency: number;
   };
   animations: {
     total: number;
@@ -87,6 +94,7 @@ export function createCompatibilityReport(input: {
   runtimeProgram?: RuntimeProgramIr;
   mugenVersion?: string;
   soundArchive?: SndArchive;
+  palettes?: MugenPalette[];
   ikemen?: IkemenScanReport;
   diagnostics: MugenDiagnostic[];
   unsupported: UnsupportedFeature[];
@@ -125,6 +133,7 @@ export function createCompatibilityReport(input: {
       snd: Boolean(input.files.sound),
     },
     sounds: summarizeSounds(input.soundArchive),
+    palettes: summarizePalettes(input.files, input.palettes),
     animations: {
       total: actions.length,
       loaded: actions.length,
@@ -162,6 +171,16 @@ export function createCompatibilityReport(input: {
     unsupported: input.unsupported,
     warnings,
     errors,
+  };
+}
+
+function summarizePalettes(files: ResolvedCharacterFiles, palettes: MugenPalette[] | undefined): CompatibilityReport["palettes"] {
+  const parsed = palettes ?? [];
+  return {
+    total: files.palettes.length,
+    parsed: parsed.length,
+    colors: parsed.reduce((total, palette) => total + (palette.colorCount ?? palette.colors?.length ?? 0), 0),
+    withTransparency: parsed.filter((palette) => palette.transparentIndex !== undefined).length,
   };
 }
 

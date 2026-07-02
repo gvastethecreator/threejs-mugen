@@ -1583,7 +1583,7 @@ export class App {
       this.log("Character SFF did not provide decoded sprites; using mock sprite fallback");
       return;
     }
-    const provider = new SffSpriteProvider(archive);
+    const provider = new SffSpriteProvider(archive, character.palettes ?? []);
     if (!provider.hasSprites) {
       this.log("Character SFF provider has no sprites; using mock sprite fallback");
       return;
@@ -9898,6 +9898,7 @@ export class App {
         loaded: true,
         files: { def: false, sff: false, air: false, cmd: false, cns: false, snd: false },
         sounds: { total: 0, decoded: 0, wav: 0, unsupported: 0, formats: {}, sampleRates: {}, channels: {} },
+        palettes: { total: 0, parsed: 0, colors: 0, withTransparency: 0 },
         animations: {
           total: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
           loaded: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
@@ -10251,6 +10252,7 @@ export class App {
         loaded: true,
         files: { def: false, sff: false, air: false, cmd: false, cns: false, snd: false },
         sounds: { total: 0, decoded: 0, wav: 0, unsupported: 0, formats: {}, sampleRates: {}, channels: {} },
+        palettes: { total: 0, parsed: 0, colors: 0, withTransparency: 0 },
         animations: {
           total: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),
           loaded: demoFighters.reduce((total, fighter) => total + fighter.animations.size, 0),

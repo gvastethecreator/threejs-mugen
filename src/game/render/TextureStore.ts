@@ -42,6 +42,13 @@ function textureSourceKey(sprite: MugenSprite): string {
     if (record.nativeHitSpark) {
       return `native-hit-spark:${String(record.variant ?? "")}:${String(record.frame ?? "")}:${sprite.width}x${sprite.height}`;
     }
+    if (record.paletteRemap && typeof record.paletteRemap === "object") {
+      const remap = record.paletteRemap as { source?: unknown; dest?: unknown; palettePath?: unknown };
+      return `palette-remap:${String(remap.source)}:${String(remap.dest)}:${String(remap.palettePath)}:${sprite.width}x${sprite.height}`;
+    }
+  }
+  if (sprite.indexed?.palette.key) {
+    return `indexed:${sprite.indexed.palette.key}:${sprite.width}x${sprite.height}`;
   }
   return `canvas:${sprite.width}x${sprite.height}`;
 }

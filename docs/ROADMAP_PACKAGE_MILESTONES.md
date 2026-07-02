@@ -85,12 +85,20 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 ACT + indexed SFF RemapPal texture handoff
+  -> DEF pal1..pal12 ACT refs load into character palettes through the character loader
+  -> SFF v1/v2 indexed sprite decoders preserve palette-index pixels plus palette bytes
+  -> SffSpriteProvider can rebuild decoded indexed sprite canvases with a loaded ACT destination palette when runtime RemapPal is active
+  -> CharacterRenderer forwards actor paletteRemap into sprite lookup context
+  -> CompatibilityReport.palettes summarizes total/parsed/color/transparency coverage
+  -> focused ActParser, SffParser, SffSpriteProvider, CharacterRenderer, MugenCharacterLoader, and CompatibilityReport tests prove the handoff
+  -> bounded indexed palette handoff only; no score movement, exact source-bank semantics, truecolor/PNG remap, exact PalFX/RemapPal math/blend order, renderer visual parity, helper/team/redirect ownership, or full palette parity claim
 R1 PalFX + RemapPal combined trace gate
   -> synthetic-imported-palfx-remappal.json checksum ba5fc1e6 is required in qa:trace
   -> one imported actor executes static PalFX and RemapPal together in state 200
   -> required evidence includes typed sprite-effect:palfx and sprite-effect:remappal operations plus combined actor-frame palette telemetry
   -> pnpm qa:trace passes 282/282 artifacts, 257 required and 25 optional
-  -> bounded palette telemetry only; no score movement, ACT/SFF pixel palette application, exact palette math, blend order, renderer parity, or full presentation parity claim
+  -> bounded palette telemetry only; no score movement, exact palette math, blend order, renderer parity, or full presentation parity claim
 R2 RuntimeMatchPresentationSnapshotWorld ownership
   -> RuntimeMatchPresentationSnapshotWorld owns bounded match presentation snapshot input construction outside PlayableMatchRuntime
   -> camera shake, stage flash, and P1/P2 effect snapshot groups route through one seam before RuntimeSnapshotWorld.match builds the renderer-independent snapshot

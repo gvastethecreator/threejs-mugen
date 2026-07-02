@@ -20,6 +20,12 @@ describe("SffParser", () => {
       new Uint8Array([0, 1, 2, 3]),
     );
     expect((archive.sprites[0]?.raw as { pcx: { hasPalette: boolean } }).pcx.hasPalette).toBe(true);
+    expect(archive.sprites[0]?.indexed?.pixels).toEqual(new Uint8Array([0, 1, 2, 3]));
+    expect(archive.sprites[0]?.indexed?.palette).toMatchObject({
+      stride: 3,
+      transparentIndex: 0,
+      key: "sff-v1:0",
+    });
   });
 
   it("supports SFF v1 linked sprites", async () => {
@@ -99,6 +105,8 @@ describe("SffParser", () => {
       axisY: 9,
     });
     expect((archive.sprites[0]?.raw as { pixels: Uint8Array }).pixels).toEqual(new Uint8Array([0, 1, 1, 2]));
+    expect(archive.sprites[0]?.indexed?.pixels).toEqual(new Uint8Array([0, 1, 1, 2]));
+    expect(archive.sprites[0]?.indexed?.palette).toMatchObject({ stride: 4, transparentIndex: 0, key: "sff-v2:0" });
   });
 
   it("decodes SFF v2 RLE5 sprites with reduced palettes", async () => {
