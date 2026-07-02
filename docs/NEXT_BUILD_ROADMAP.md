@@ -103,13 +103,20 @@ R2 RuntimeEffectHelperContextWorld ownership
   -> complete-owner validation, parent/root projection, current opponent fallback, explicit lifecycle opponents-to-nearest-roster projection, explicit roster override, target candidates, and helper TargetState/telemetry hooks route through one seam
   -> focused RuntimeEffectHelperContextSystem coverage proves nearest roster ordering, explicit roster preservation, target/hook forwarding, and incomplete-owner fail-closed behavior
   -> ownership cleanup only; no score movement, real teams/simul lifecycle roster ownership, automatic multi-opponent match discovery, helper-owned opponent roster discovery, richer identity beyond ids/runtime state, exact helper lifecycle/pause/combat ordering, visual/audio parity, or full Helper VM claim
+R1 EnvColor under-layer trace gate
+  -> synthetic-imported-envcolor-under.json checksum 0a7b5c96 is required
+  -> imported EnvColor value/time/under lowers into typed envcolor operation evidence with under = 1
+  -> stage-frame evidence requires envColorUnder = true and opacity evidence
+  -> existing synthetic-imported-envcolor.json checksum 956b0f4b remains the under = 0 route
+  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
+  -> bounded stage-flash layer-flag evidence only; no score movement or exact presentation parity claim
 R1 Common1 HitFall recover-true trace gate
   -> synthetic-imported-hitfall-recover-true.json checksum f1e3424a is now required
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5240 -> 0 through HitFall && GetHitVar(fall.recover) && !CanRecover
   -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall Recover Enabled Probe ChangeState
   -> actor-frame evidence requires 5000 -> 5030 -> 5050 -> 5240 plus positive fall.recovertime metadata in 5050 and 5240
   -> recovery states 5210 and 5200 are forbidden
-  -> pnpm qa:trace now passes 280/280 artifacts, 255 required and 25 optional
+  -> that checkpoint passed 280/280 artifacts, 255 required and 25 optional
   -> bounded recover-enabled trigger/order evidence only; no exact recovery threshold tables, controller-loop timing, recovery arbitration, fall/CanRecover precedence, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recover-disabled trace gate
   -> synthetic-imported-hitfall-recover-false.json checksum 236df0a8 remains required
@@ -137,7 +144,7 @@ R1 Common1 crouch guard slide-stop trace gate
   -> active-command evidence requires holddown and x
   -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame evidence proves crouch guard-slide velocity before stop/control
-  -> current pnpm qa:trace now passes 280/280 artifacts, 255 required and 25 optional after the required HitFall recover-true gate
+  -> current pnpm qa:trace now passes 281/281 artifacts, 256 required and 25 optional after the required EnvColor under-layer gate
   -> crouch guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan now compile into typed audio:playsnd metadata
@@ -198,7 +205,7 @@ R1 EnvShake required trace restoration
   -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
   -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry for p1
   -> event evidence pins time 16, freq 30, ampl -7, phase 0.5, and stateNo 200
-  -> current pnpm qa:trace passes 280/280 artifacts, 255 required and 25 optional after later Common1 gates
+  -> current pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional after later presentation/Common1 gates
   -> evidence-pipeline restoration only; no exact camera waveform, pause/stage/layer interaction, helper/redirect ownership, visual/audio parity, score movement, or full presentation parity claim
 Previous R1 Common1 stand guard slide-stop trace gate
   -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is now required
@@ -213,7 +220,7 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> the observed KFM route returns toward crouch/control; this does not claim a public 130 guard-hold return
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 280/280 artifacts, 255 required and 25 optional
+  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 match active ownership
   -> RuntimeMatchActiveWorld now owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates

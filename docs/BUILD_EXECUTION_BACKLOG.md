@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 EnvColor under-layer trace gate
+
+Changed:
+- Refactored the synthetic imported EnvColor trace preset behind a small layer-aware helper.
+- Added required `synthetic-imported-envcolor-under.json` to `pnpm qa:trace`.
+- The new gate proves static `EnvColor value = 16,96,255`, `time = 12`, and `under = 1` lower into typed `envcolor` operation evidence and reach bounded stage-frame flash telemetry.
+- Existing `synthetic-imported-envcolor.json` remains the upper-layer `under = 0` route.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern EnvColor` -> 1 file / 2 tests.
+- Trace gate: `pnpm qa:trace` -> 281/281 artifacts, 256 required and 25 optional; new checksum `synthetic-imported-envcolor-under.json` = `0a7b5c96`.
+
+Claim allowed:
+- Imported `EnvColor` now has required trace evidence for both bounded stage-flash layer flags: `under = 0` and `under = 1`.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN blend math, layer/window ordering, pause timing, renderer parity, visual parity, score movement, and full presentation parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX/recovery precision or choose another deeper R2 helper/effect/combat ownership seam.
+
 ## 2026-07-02 - R2 RuntimeMatchPresentationSnapshotWorld ownership
 
 Changed:

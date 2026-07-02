@@ -501,6 +501,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnvColorTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envcolor-under",
+      required: true,
+      artifact: presets.createSyntheticImportedEnvColorUnderTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-envshake",
       required: true,
       artifact: presets.createSyntheticImportedEnvShakeTraceArtifact(),

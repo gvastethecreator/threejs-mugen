@@ -2599,27 +2599,56 @@ export function createSyntheticImportedAngleTraceArtifact(options: RuntimeTraceG
 }
 
 export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createSyntheticImportedEnvColorLayerTraceArtifact(options, {
+    id: "synthetic-imported-envcolor",
+    displayName: "Synthetic Imported EnvColor",
+    targetId: "synthetic-imported-envcolor-golden",
+    targetLabel: "Synthetic imported EnvColor route",
+    under: false,
+  });
+}
+
+export function createSyntheticImportedEnvColorUnderTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createSyntheticImportedEnvColorLayerTraceArtifact(options, {
+    id: "synthetic-imported-envcolor-under",
+    displayName: "Synthetic Imported EnvColor Under",
+    targetId: "synthetic-imported-envcolor-under-golden",
+    targetLabel: "Synthetic imported EnvColor under-layer route",
+    under: true,
+  });
+}
+
+function createSyntheticImportedEnvColorLayerTraceArtifact(
+  options: RuntimeTraceGatePresetOptions,
+  layer: {
+    id: string;
+    displayName: string;
+    targetId: string;
+    targetLabel: string;
+    under: boolean;
+  },
+): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
   const attacker = createSyntheticImportedTraceFighter({
-    id: "synthetic-imported-envcolor",
-    displayName: "Synthetic Imported EnvColor",
+    id: layer.id,
+    displayName: layer.displayName,
     withEnvColor: {
       value: [16, 96, 255],
       time: 12,
-      under: false,
+      under: layer.under,
     },
   });
   const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
-    label: "synthetic-imported-envcolor-golden",
+    label: layer.targetId,
   });
   return createRuntimeTraceArtifact({
     trace,
     script,
     generatedAt: options.generatedAt,
     target: {
-      id: "synthetic-imported-envcolor-golden",
-      label: "Synthetic imported EnvColor route",
+      id: layer.targetId,
+      label: layer.targetLabel,
       source: "mixed",
       notes: [
         "Synthetic imported EnvColor trace proves static value/time/under lowers into typed envcolor operation evidence and reaches bounded stage-flash telemetry consumed by Three.js. It does not claim exact MUGEN/IKEMEN blend, layer, window, palette, or pause-timing parity.",
@@ -2627,7 +2656,7 @@ export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTra
     },
     gates: [
       {
-        label: "synthetic-imported-envcolor-golden",
+        label: layer.targetId,
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
@@ -2641,7 +2670,7 @@ export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTra
             envColorR: 16,
             envColorG: 96,
             envColorB: 255,
-            envColorUnder: false,
+            envColorUnder: layer.under,
             observedEnvColorOpacityAtLeast: 0.2,
             minFrames: 1,
           },

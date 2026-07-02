@@ -210,6 +210,7 @@ import {
   createSyntheticImportedTransTraceArtifact,
   createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
+  createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
@@ -4911,6 +4912,50 @@ describe("RuntimeTraceGatePresets", () => {
           envColor: expect.objectContaining({
             color: [16, 96, 255],
             under: false,
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported EnvColor under-layer artifact with typed stage-flash evidence", () => {
+    const artifact = createSyntheticImportedEnvColorUnderTraceArtifact({ generatedAt: "2026-07-02T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-envcolor-under-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-envcolor-under-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.EnvColor).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.envcolor).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredStageFrames).toEqual([
+      {
+        stageId: "trace-close-training-grid",
+        envColorR: 16,
+        envColorG: 96,
+        envColorB: 255,
+        envColorUnder: true,
+        observedEnvColorOpacityAtLeast: 0.2,
+        minFrames: 1,
+      },
+    ]);
+    expect(evidence?.stageFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          stageId: "trace-close-training-grid",
+          envColor: expect.objectContaining({
+            color: [16, 96, 255],
+            under: true,
           }),
         }),
       ]),
