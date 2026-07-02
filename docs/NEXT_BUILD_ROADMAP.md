@@ -88,11 +88,16 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
-R2 RuntimeActiveControllerRunWorld ownership
-  -> RuntimeActiveControllerRunWorld owns bounded active-controller scan-to-dispatch orchestration outside PlayableMatchRuntime
-  -> imported-state scans, owner-backed state data, trigger pass handoff, ignorehitpause filtering, compiled controller dispatch creation, route execution, and stop-on-state-change run through one bridge
-  -> focused coverage proves owner-backed active-controller routing and hitpause-only filtering
-  -> ownership cleanup only; no score movement, no exact CNS VM timing, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, unsupported-feature breadth, or full active-controller parity claim
+R2 RuntimeMatchPausedBridgeWorld ownership
+  -> RuntimeMatchPausedBridgeWorld owns bounded match-level bridge construction into RuntimePausedMatchWorld.advanceRuntime outside PlayableMatchRuntime
+  -> pause snapshot lookup, source-movetime eligibility, pause tick mutation, hitpause-style command buffering, stage/time metadata, actor-constraint/effect-lifecycle forwarding, and paused player/AI/fighter callbacks pass through one named boundary
+  -> focused RuntimeMatchPausedBridgeSystem coverage proves bridge payload and callback hooks
+  -> ownership cleanup only; no score movement, no new Pause/SuperPause semantics, exact pause layering, helper/team/redirect pause ownership, pause/hitpause command parity, visual/audio parity, or full paused-match VM parity claim
+R2 RuntimeMatchPreFacingAssertSpecialWorld ownership
+  -> RuntimeMatchPreFacingAssertSpecialWorld owns bounded pre-facing imported AssertSpecial trigger/dispatch context bridge outside PlayableMatchRuntime
+  -> trigger gating receives stage bounds and controller execution context forwards owner constants, actor hitpause, actor random, stage bounds, and stage time before auto-facing
+  -> focused RuntimeMatchPreFacingAssertSpecialSystem coverage proves bridge payload and dispatch context
+  -> ownership cleanup only; no score movement, no new AssertSpecial flags, no exact lifetime/global/team/helper ownership, no full match-frame VM parity claim
 R1 optional official KFM basic movement trace gate
   -> kfm-official-basic-movement.json checksum ef30066c is optional and runs only when .scratch/fixtures/kfm-official.zip exists
   -> scripted p1 direction input drives real KFM through bounded walk 20, crouch prep 11, jump 41, and final idle/control 0

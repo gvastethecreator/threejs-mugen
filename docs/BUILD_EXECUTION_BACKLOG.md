@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 paused-match bridge ownership
+
+Changed:
+- Added `RuntimeMatchPausedBridgeWorld` as the named match-level bridge into `RuntimePausedMatchWorld.advanceRuntime(...)`.
+- `PlayableMatchRuntime` now delegates pause snapshot lookup, source-movetime eligibility, pause tick mutation, hitpause-style command buffering, stage/time metadata, actor-constraint/effect-lifecycle forwarding, and paused player/AI/fighter callbacks through that bridge.
+- Added focused coverage for bridge payload, command-buffer hitpause flag, pause-world hooks, stage/time metadata, and callback forwarding.
+- Updated runtime support, roadmap board, package ladder, next-build roadmap, continuity guide, workplan, progress tracker, and local runtime issue wording with ownership-only claim language.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/RuntimeMatchPausedBridgeSystem.test.ts` -> 1 file / 1 test.
+- Test suite: `pnpm test` -> 145 files / 1106 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; no failed artifacts or skipped optional fixtures.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current paused-match runtime bridge has a named, focused-tested ownership boundary before paused-match ordering.
+
+Claim blocked:
+- New Pause/SuperPause semantics, exact pause layering, helper/team/redirect pause ownership, pause/hitpause command parity, visual/audio parity, score movement, and full MUGEN/IKEMEN paused-match VM parity remain blocked.
+
 ## 2026-07-02 - R2 pre-facing AssertSpecial bridge ownership
 
 Changed:

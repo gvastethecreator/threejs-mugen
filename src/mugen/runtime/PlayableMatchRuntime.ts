@@ -48,6 +48,7 @@ import { RuntimeMatchActorRosterWorld, type RuntimeMatchActorRoster } from "./Ru
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
+import { RuntimeMatchPausedBridgeWorld } from "./RuntimeMatchPausedBridgeSystem";
 import { RuntimeMatchPreFacingAssertSpecialWorld } from "./RuntimeMatchPreFacingAssertSpecialSystem";
 import { RuntimeMatchStepWorld } from "./RuntimeMatchStepSystem";
 import { RuntimeMatchTickBranchWorld } from "./RuntimeMatchTickBranchSystem";
@@ -169,6 +170,7 @@ const matchActorRosterWorld = new RuntimeMatchActorRosterWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
+const matchPausedBridgeWorld = new RuntimeMatchPausedBridgeWorld();
 const matchStepWorld = new RuntimeMatchStepWorld();
 const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
@@ -519,20 +521,18 @@ export class PlayableMatchRuntime {
   }
 
   private advancePausedMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
-    this.pausedMatchWorld.advanceRuntime({
+    matchPausedBridgeWorld.advanceRuntime({
+      pausedMatchWorld: this.pausedMatchWorld,
+      pauseWorld: this.pauseWorld,
       p1: this.p1,
       p2: this.p2,
       p1Input,
       p2Input,
       p2Controlled: input.p2 !== undefined,
       stage: this.stage,
-      stageTime: this.tick,
-      runtimeTick: this.tick,
+      tick: this.tick,
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
-      currentPause: () => this.pauseWorld.current(),
-      canActorMove: (actorId) => this.pauseWorld.canActorMove(actorId),
-      pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(this.tick, actorInput, { hitPause: true }),
       handlePlayerInput: (actor, actorInput, opponent) =>
         handlePlayerInput(actor, actorInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
@@ -556,7 +556,6 @@ export class PlayableMatchRuntime {
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
           (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
         ),
-      tickPause: () => this.pauseWorld.tick(),
     });
   }
 
