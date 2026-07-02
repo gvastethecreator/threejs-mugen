@@ -2,7 +2,11 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeExplodPauseKind } from "./ExplodSystem";
 import type { RuntimeHelper, RuntimeHelperAdvanceOptions } from "./HelperSystem";
-import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
+import {
+  RuntimeEffectHelperContextWorld,
+  type RuntimeEffectHelperContextOptions,
+  type RuntimeEffectHelperContextOpponent,
+} from "./RuntimeEffectHelperContextSystem";
 import type { RuntimeTargetWorldActor } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState } from "./types";
 
@@ -31,17 +35,9 @@ export type RuntimeEffectLifecycleActor = RuntimeEffectGetHitActor & {
   >;
 };
 
-export type RuntimeEffectLifecycleOpponent = {
-  id?: string;
-  runtime: RuntimeEffectLifecycleActor["runtime"];
-};
+export type RuntimeEffectLifecycleOpponent = RuntimeEffectHelperContextOpponent;
 
-export type RuntimeEffectLifecycleAdvanceOptions = Pick<
-  RuntimeHelperAdvanceOptions,
-  "stageTime" | "runtimeTick" | "opponentRoster"
-> & {
-  opponents?: readonly RuntimeEffectLifecycleOpponent[];
-};
+export type RuntimeEffectLifecycleAdvanceOptions = RuntimeEffectHelperContextOptions;
 
 export type RuntimeEffectSnapshotGroups = {
   explods: ActorSnapshot[];
@@ -50,7 +46,7 @@ export type RuntimeEffectSnapshotGroups = {
 };
 
 export class RuntimeEffectLifecycleWorld {
-  constructor(private readonly opponentSelectionWorld = new RuntimeOpponentSelectionWorld()) {}
+  constructor(private readonly helperContextWorld = new RuntimeEffectHelperContextWorld()) {}
 
   advanceActive(
     actor: RuntimeEffectLifecycleActor,
@@ -60,7 +56,7 @@ export class RuntimeEffectLifecycleWorld {
   ): void {
     actor.effectActorWorld.advanceActiveEffects(actor.id, stage, {
       stageBounds: stage.bounds,
-      ...helperRedirectContext(actor, this.opponentSelectionWorld, opponent, options),
+      ...this.helperContextWorld.create({ actor, opponent, options }),
     });
   }
 
@@ -79,7 +75,7 @@ export class RuntimeEffectLifecycleWorld {
       pauseKind,
       stage,
       stageBounds: stage.bounds,
-      ...helperRedirectContext(actor, this.opponentSelectionWorld, opponent, options),
+      ...this.helperContextWorld.create({ actor, opponent, options }),
     });
   }
 
@@ -111,80 +107,4 @@ function effectBindAnchor(actor: RuntimeEffectLifecycleActor): { pos: { x: numbe
     pos: actor.runtime.pos,
     facing: actor.runtime.facing,
   };
-}
-
-function helperRedirectContext(
-  actor: RuntimeEffectLifecycleActor,
-  opponentSelectionWorld: RuntimeOpponentSelectionWorld,
-  opponent?: RuntimeEffectLifecycleActor,
-  options: RuntimeEffectLifecycleAdvanceOptions = {},
-): {
-  parentState?: CharacterRuntimeState;
-  rootState?: CharacterRuntimeState;
-  opponentId?: string;
-  opponentState?: CharacterRuntimeState;
-  opponentRoster?: RuntimeHelperAdvanceOptions["opponentRoster"];
-  stageTime?: number;
-  runtimeTick?: number;
-  targetCandidates?: RuntimeTargetWorldActor[];
-  enterTargetState?: RuntimeHelperAdvanceOptions["enterTargetState"];
-  onController?: RuntimeHelperAdvanceOptions["onController"];
-  onOperation?: RuntimeHelperAdvanceOptions["onOperation"];
-} {
-  if (!isCompleteRuntimeState(actor.runtime)) {
-    return {};
-  }
-  const { opponents, ...helperOptions } = options;
-  let opponentId: string | undefined;
-  let opponentState: CharacterRuntimeState | undefined;
-  let opponentRoster: RuntimeHelperAdvanceOptions["opponentRoster"];
-  const completeOpponents = opponents?.filter(isCompleteLifecycleOpponent);
-  if (completeOpponents && completeOpponents.length > 0) {
-    opponentRoster = opponentSelectionWorld.buildOpponentRoster({ runtime: actor.runtime }, completeOpponents);
-  }
-  if (opponent && isCompleteRuntimeState(opponent.runtime)) {
-    opponentId = opponent.id;
-    opponentState = opponent.runtime;
-    opponentRoster ??= opponentSelectionWorld.buildOpponentRoster({ runtime: actor.runtime }, [
-      { id: opponent.id, runtime: opponent.runtime },
-    ]);
-  }
-  return {
-    parentState: actor.runtime,
-    rootState: actor.runtime,
-    opponentId,
-    opponentState,
-    ...helperOptions,
-    opponentRoster: helperOptions.opponentRoster ?? opponentRoster,
-    ...(opponent && isRuntimeTargetWorldActor(opponent) ? { targetCandidates: [opponent] } : {}),
-    ...(actor.enterHelperTargetState ? { enterTargetState: actor.enterHelperTargetState } : {}),
-    ...(actor.onHelperController ? { onController: actor.onHelperController } : {}),
-    ...(actor.onHelperOperation ? { onOperation: actor.onHelperOperation } : {}),
-  };
-}
-
-function isCompleteLifecycleOpponent(opponent: RuntimeEffectLifecycleOpponent): opponent is RuntimeEffectLifecycleOpponent & { runtime: CharacterRuntimeState } {
-  return isCompleteRuntimeState(opponent.runtime);
-}
-
-function isRuntimeTargetWorldActor(actor: RuntimeEffectLifecycleActor): actor is RuntimeEffectLifecycleActor & RuntimeTargetWorldActor {
-  return isCompleteRuntimeState(actor.runtime) && Array.isArray(actor.targets) && Array.isArray(actor.targetBindings);
-}
-
-function isCompleteRuntimeState(
-  runtime: RuntimeEffectLifecycleActor["runtime"],
-): runtime is CharacterRuntimeState {
-  return (
-    "vel" in runtime &&
-    "animNo" in runtime &&
-    "animTime" in runtime &&
-    "frameIndex" in runtime &&
-    "life" in runtime &&
-    "power" in runtime &&
-    "ctrl" in runtime &&
-    "stateType" in runtime &&
-    "physics" in runtime &&
-    "vars" in runtime &&
-    "fvars" in runtime
-  );
 }

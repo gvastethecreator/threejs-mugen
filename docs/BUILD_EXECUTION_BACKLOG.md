@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeEffectHelperContextWorld ownership
+
+Changed:
+- Added `RuntimeEffectHelperContextWorld` as the bounded helper/effect lifecycle context boundary outside `RuntimeEffectLifecycleWorld`.
+- `RuntimeEffectLifecycleWorld` now delegates visual Helper context construction through that named seam while keeping active/presentation lifecycle orchestration.
+- The new world owns complete-owner validation, parent/root runtime-state projection, current opponent id/state fallback, explicit lifecycle opponent-list to nearest-order helper `opponentRoster` projection, explicit roster override, target-candidate forwarding, and helper `TargetState` / telemetry hook forwarding.
+- Roadmap, progress, scorecard, architecture, support, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeEffectHelperContextSystem.test.ts src/tests/EffectLifecycleSystem.test.ts` -> 2 files / 8 tests.
+- Full gates: `pnpm test` -> 133 files / 1073 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed.
+
+Claim allowed:
+- Current visual Helper lifecycle context construction has a named, testable ownership boundary: complete-owner fail-closed behavior, nearest-order explicit opponent roster construction, explicit roster preservation, target-candidate forwarding, and helper `TargetState` / telemetry hook forwarding are covered.
+
+Claim blocked:
+- Real teams/simul lifecycle roster ownership, automatic multi-opponent match discovery, helper-owned opponent roster discovery, richer identity beyond ids/runtime state, exact helper lifecycle/pause/combat ordering, visual/audio parity, score movement, and full Helper VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose a deeper R2 helper/effect/combat ownership seam that is not helper lifecycle context construction.
+
 ## 2026-07-02 - R2 RuntimeMatchHelperProjectileTargetWorld ownership
 
 Changed:

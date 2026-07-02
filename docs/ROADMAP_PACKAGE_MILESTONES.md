@@ -85,7 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R2 RuntimeMatchHelperProjectileTargetWorld ownership
+R2 RuntimeEffectHelperContextWorld ownership
+  -> RuntimeEffectHelperContextWorld owns visual Helper lifecycle context construction outside RuntimeEffectLifecycleWorld
+  -> complete-owner validation, parent/root projection, current opponent fallback, explicit lifecycle opponents-to-nearest-roster projection, explicit roster override, target candidates, and helper TargetState/telemetry hooks route through one seam
+  -> focused RuntimeEffectHelperContextSystem coverage proves nearest roster ordering, explicit roster preservation, target/hook forwarding, and incomplete-owner fail-closed behavior
+  -> ownership cleanup only; no score movement, real teams/simul lifecycle roster ownership, automatic multi-opponent match discovery, helper-owned opponent roster discovery, richer identity beyond ids/runtime state, exact helper lifecycle/pause/combat ordering, visual/audio parity, or full Helper VM claim
+Previous R2 RuntimeMatchHelperProjectileTargetWorld ownership
   -> RuntimeMatchHelperProjectileTargetWorld owns the match-level helper-parented Projectile target-memory bridge outside PlayableMatchRuntime
   -> normal post-fighter combat now forwards owner, defender, projectile, and RuntimeTargetWorld through one named seam before lower RuntimeHelperProjectileTargetWorld logic runs
   -> focused RuntimeMatchHelperProjectileTargetSystem coverage proves forwarding and owner-projectile fail-closed behavior
