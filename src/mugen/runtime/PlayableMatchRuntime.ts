@@ -48,6 +48,7 @@ import { RuntimeMatchActorRosterWorld, type RuntimeMatchActorRoster } from "./Ru
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
+import { RuntimeMatchPreFacingAssertSpecialWorld } from "./RuntimeMatchPreFacingAssertSpecialSystem";
 import { RuntimeMatchStepWorld } from "./RuntimeMatchStepSystem";
 import { RuntimeMatchTickBranchWorld } from "./RuntimeMatchTickBranchSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
@@ -139,6 +140,7 @@ const activeControllerRunWorld = new RuntimeActiveControllerRunWorld();
 const activeControllerTelemetryWorld = new RuntimeActiveControllerTelemetryWorld();
 const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
 const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
+const matchPreFacingAssertSpecialWorld = new RuntimeMatchPreFacingAssertSpecialWorld(controllerEvaluationContextWorld);
 const autoGuardStartWorld = new RuntimeAutoGuardStartWorld();
 const triggerGateWorld = new RuntimeTriggerGateWorld();
 const triggerEvaluationWorld = new RuntimeTriggerEvaluationWorld();
@@ -575,24 +577,16 @@ export class PlayableMatchRuntime {
   }
 
   private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {
-    this.assertSpecialWorld.applyPreFacing({
+    matchPreFacingAssertSpecialWorld.apply({
       actor: fighter,
       opponent,
       tick: this.tick,
-      triggersPass: (controller, actor, targetOpponent, owner, tick) =>
-        triggersPass(controller, actor, targetOpponent, owner, tick, this.stage.bounds),
-      executeController: (controller, actor, owner, tick) => {
-        controllerDispatchWorld.apply(actor, controller, {
-          context: {
-            getConst: (name) => runtimeDefinitionConst(owner.definition, name),
-            hitPauseTime: () => actor.hitPause,
-            random: () => nextRuntimeRandom(actor),
-            stageBounds: this.stage.bounds,
-            stageTime: tick,
-          },
-        });
-        return actor.runtime;
-      },
+      stageBounds: this.stage.bounds,
+      assertSpecialWorld: this.assertSpecialWorld,
+      controllerDispatchWorld,
+      triggersPass,
+      getConst: (owner, name) => runtimeDefinitionConst(owner.definition, name),
+      nextRandom: nextRuntimeRandom,
     });
   }
 

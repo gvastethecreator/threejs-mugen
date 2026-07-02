@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 pre-facing AssertSpecial bridge ownership
+
+Changed:
+- Added `RuntimeMatchPreFacingAssertSpecialWorld` as the named match-level bridge for imported pre-facing `AssertSpecial` application before auto-facing.
+- `PlayableMatchRuntime` now delegates pre-facing `AssertSpecial` trigger gating and controller-dispatch context creation through that bridge while still owning concrete worlds, tick order, stage bounds, and frame-start scheduling.
+- Added focused coverage proving stage-bound trigger forwarding plus owner `Const(...)`, actor hitpause, actor random, stage bounds, and stage-time dispatch context forwarding.
+- Updated runtime support, roadmap board, continuity guide, workplan, and local runtime issue wording with ownership-only claim language.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/RuntimeMatchPreFacingAssertSpecialSystem.test.ts` -> 1 file / 1 test.
+- Test suite: `pnpm test` -> 144 files / 1105 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; no checksum drift.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current pre-facing imported `AssertSpecial` bridge has a named, focused-tested runtime ownership boundary before auto-facing.
+
+Claim blocked:
+- New `AssertSpecial` flags, exact lifetime/global/team/helper ownership, pause/hitpause parity, visual/audio parity, score movement, and full MUGEN/IKEMEN match-frame VM parity remain blocked.
+
 ## 2026-07-02 - I1 IKEMEN stage/BGDef presentation scanner expansion
 
 Changed:
