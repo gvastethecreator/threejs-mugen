@@ -4591,6 +4591,25 @@ export function officialKfmStandGuardHitControllerSequence(): RuntimeTraceContro
   };
 }
 
+export function officialKfmStandGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 150/151 guard slide-stop and control order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 150, controller: "ChangeAnim" },
+      { stateNo: 150, controller: "ChangeState" },
+      { stateNo: 151, controller: "HitVelSet" },
+      { stateNo: 151, operation: "kinematic:hitvelset" },
+      { stateNo: 151, controller: "VelSet" },
+      { stateNo: 151, operation: "kinematic:velset" },
+      { stateNo: 151, controller: "CtrlSet" },
+      { stateNo: 151, operation: "resource:ctrlset" },
+      { stateNo: 151, controller: "ChangeState" },
+    ],
+  };
+}
+
 export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 152/153 crouch guard-hit controller and typed operation order",

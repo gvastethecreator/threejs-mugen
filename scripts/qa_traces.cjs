@@ -1552,6 +1552,34 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-guard-slide-stop",
+        required: false,
+        artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
+          requiredExecutedStates: [200, 150, 151, 130],
+          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredControllerEventSequences: [presets.officialKfmStandGuardSlideStopControllerSequence()],
+          requiredActorFrames: presets.officialKfmStandGuardHitPhysicsFrames(),
+          requiredFinalActors: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              life: 995,
+              ctrl: true,
+              stateType: "S",
+              moveType: "I",
+              physics: "S",
+            },
+          ],
+          targetId: "kfm-official-default-guard-slide-stop-golden",
+          targetLabel: "Official KFM Common1 guard slide-stop route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 executes HitVelSet, VelSet, CtrlSet, and final ChangeState in order after direct guarded contact, with bounded actor-frame state/physics/body telemetry. This does not prove public KFM support, exact guard timing, proximity guard, guard effects, crouch/air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-crouch-guard-state",
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
