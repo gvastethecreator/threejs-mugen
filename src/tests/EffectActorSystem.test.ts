@@ -14,6 +14,7 @@ import {
   removeRuntimeExplodActorsOnGetHit,
   removeRuntimeProjectilesMarkedForRemoval,
   RuntimeEffectActorWorld,
+  runtimeHelperProjectileCancelTime,
   runtimeHelperProjectileContactTime,
   runtimeExplodActorsToSnapshots,
   runtimeHelperActorsToSnapshots,
@@ -219,6 +220,35 @@ describe("EffectActorSystem", () => {
       pos: { x: 3, y: -1 },
       stateTime: 1,
       age: 1,
+    });
+  });
+
+  it("passes stage bounds into helper-local triggers and controller expressions", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      pos: { x: 20, y: 0 },
+      bodyWidth: { front: 18, back: 44 },
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("VelSet", { x: "FrontEdgeBodyDist", y: "BackEdgeDist" }, ["FrontEdgeDist = 140"]),
+              controller("ChangeState", { value: "6100 + BackEdgeBodyDist" }, ["BackEdgeBodyDist = 76"]),
+            ]),
+          ),
+          compileStateProgram(state(6176, 900, [])),
+        ],
+      },
+      animations: new Map([[900, action(900, 4)]]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -100, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6176,
+      vel: { x: 122, y: 120 },
+      pos: { x: 142, y: 120 },
     });
   });
 
@@ -540,6 +570,177 @@ describe("EffectActorSystem", () => {
     expect(opponentState.vars[3]).toBe(4);
     expect(helper).toMatchObject({
       stateNo: 6004,
+      animNo: 902,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("evaluates bounded helper EnemyNear indexed redirects from explicit opponent states", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["Time = 0 && EnemyNear(0),StateNo = 3000"]),
+              controller(
+                "ChangeState",
+                { value: "6000 + EnemyNear(1),Var(3)" },
+                ["NumEnemy = 2", "EnemyNear(1),Life = 444", "EnemyNear(var(7)),Pos X = 128"],
+              ),
+            ]),
+          ),
+          compileStateProgram(state(6005, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    helper.vars[7] = 1;
+    const firstOpponent = actor("p2", "Near", {
+      stateNo: 3000,
+      life: 777,
+    }).runtime;
+    const secondOpponent = actor("p3", "Indexed", {
+      stateNo: 5000,
+      life: 444,
+      pos: { x: 128, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 5 : 0)),
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      opponentState: firstOpponent,
+      opponentStates: [firstOpponent, secondOpponent],
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["ChangeAnim", "ChangeState"]);
+    expect(firstOpponent.stateNo).toBe(3000);
+    expect(secondOpponent.vars[3]).toBe(5);
+    expect(helper).toMatchObject({
+      stateNo: 6005,
+      animNo: 902,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("orders helper-local EnemyNear indexed redirects by nearest opponent distance", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["Time = 0 && EnemyNear(0),StateNo = 3000"]),
+              controller(
+                "ChangeState",
+                { value: "6000 + EnemyNear(1),Var(3)" },
+                ["NumEnemy = 3", "EnemyNear(1),Life = 444", "EnemyNear(var(7)),Pos X = -80"],
+              ),
+            ]),
+          ),
+          compileStateProgram(state(6005, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    helper.vars[7] = 1;
+    const far = actor("p3", "Far", {
+      stateNo: 7000,
+      life: 333,
+      pos: { x: 160, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 9 : 0)),
+    }).runtime;
+    const near = actor("p2", "Near", {
+      stateNo: 3000,
+      life: 875,
+      pos: { x: 80, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 4 : 0)),
+    }).runtime;
+    const tiedSecond = actor("p4", "Tie", {
+      stateNo: 5000,
+      life: 444,
+      pos: { x: -80, y: 0 },
+      vars: Array.from({ length: 60 }, (_value, index) => (index === 3 ? 5 : 0)),
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      opponentStates: [far, near, tiedSecond],
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["ChangeAnim", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6005,
+      animNo: 902,
+      stateTime: 1,
+      age: 1,
+    });
+  });
+
+  it("preserves helper-local opponent roster ids after nearest ordering", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("ChangeAnim", { value: "901" }, ["EnemyNear(0),TeamSide = 2"]),
+              controller("ChangeState", { value: "6005" }, ["EnemyNear(1),TeamSide = 2", "EnemyNear(2),Life = 333"]),
+            ]),
+          ),
+          compileStateProgram(state(6005, 902)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+      ]),
+    });
+    const far = actor("p2-far", "Far", {
+      stateNo: 7000,
+      life: 333,
+      pos: { x: 160, y: 0 },
+    }).runtime;
+    const near = actor("p2-near", "Near", {
+      stateNo: 3000,
+      life: 875,
+      pos: { x: 80, y: 0 },
+    }).runtime;
+    const tiedSecond = actor("p2-tie", "Tie", {
+      stateNo: 5000,
+      life: 444,
+      pos: { x: -80, y: 0 },
+    }).runtime;
+    const executed: string[] = [];
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } }, {
+      opponentRoster: [
+        { id: "p2-far", state: far },
+        { id: "p2-near", state: near },
+        { id: "p2-tie", state: tiedSecond },
+      ],
+      onController: (_helper, item) => executed.push(item.type),
+    });
+
+    expect(executed).toEqual(["ChangeAnim", "ChangeState"]);
+    expect(helper).toMatchObject({
+      stateNo: 6005,
       animNo: 902,
       stateTime: 1,
       age: 1,
@@ -1193,6 +1394,285 @@ describe("EffectActorSystem", () => {
     expect(executed).toEqual(["Projectile", "ChangeState", "ChangeState"]);
     expect(helper).toMatchObject({
       stateNo: 6101,
+      animNo: 902,
+    });
+  });
+
+  it("evaluates helper-local ProjHitTime(0) against any helper-parented Projectile hit only", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8890", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8891", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6199" }, ["ProjHitTime(8890) >= 0"]),
+              controller("ChangeState", { value: "6101" }, ["ProjHitTime(0) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6101, 902)),
+          compileStateProgram(state(6199, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    recordRuntimeProjectileContact(playerProjectile, "hit");
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit")).toBe(false);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit")).toBe(-1);
+
+    recordRuntimeProjectileContact(helperProjectile, "hit");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "hit")).toBe(true);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit")).toBe(0);
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit")).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6101,
+      animNo: 902,
+    });
+  });
+
+  it("evaluates helper-local ProjGuardedTime(0) against any helper-parented Projectile guard only", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8892", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8893", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6299" }, ["ProjGuardedTime(8892) >= 0"]),
+              controller("ChangeState", { value: "6201" }, ["ProjGuardedTime(0) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6201, 902)),
+          compileStateProgram(state(6299, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    recordRuntimeProjectileContact(playerProjectile, "guard");
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(hasRuntimeHelperProjectileContact(store, helper, "guard")).toBe(false);
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard")).toBe(-1);
+
+    recordRuntimeProjectileContact(helperProjectile, "guard");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "guard")).toBe(true);
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard")).toBe(0);
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard")).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6201,
+      animNo: 902,
+    });
+  });
+
+  it("evaluates helper-local ProjContactTime(0) against any helper-parented Projectile contact only", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8894", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8895", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6399" }, ["ProjContactTime(8894) >= 0"]),
+              controller("ChangeState", { value: "6301" }, ["ProjContactTime(0) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6301, 902)),
+          compileStateProgram(state(6399, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    recordRuntimeProjectileContact(playerProjectile, "guard");
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(hasRuntimeHelperProjectileContact(store, helper, "contact")).toBe(false);
+    expect(runtimeHelperProjectileContactTime(store, helper, "contact")).toBe(-1);
+
+    recordRuntimeProjectileContact(helperProjectile, "guard");
+    expect(hasRuntimeHelperProjectileContact(store, helper, "contact")).toBe(true);
+    expect(runtimeHelperProjectileContactTime(store, helper, "contact")).toBe(0);
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileContactTime(store, helper, "contact")).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6301,
+      animNo: 902,
+    });
+  });
+
+  it("evaluates helper-local ProjCancelTime(0) against any helper-parented Projectile cancel only", () => {
+    const store = createRuntimeEffectActorStore();
+    const playerProjectile = spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8896", projanim: "930", projremove: "0" }));
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8897", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6499" }, ["ProjCancelTime(8896) >= 0"]),
+              controller("ChangeState", { value: "6401" }, ["ProjCancelTime(0) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6401, 902)),
+          compileStateProgram(state(6499, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    markRuntimeProjectileForRemoval(playerProjectile, "cancel");
+
+    advanceRuntimeProjectiles([playerProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({ stateNo: 6001, animNo: 901 });
+    expect(runtimeHelperProjectileCancelTime(store, helper)).toBe(-1);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8896)).toBe(-1);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8897)).toBe(-1);
+
+    markRuntimeProjectileForRemoval(helperProjectile, "cancel");
+    expect(runtimeHelperProjectileCancelTime(store, helper)).toBe(0);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8896)).toBe(-1);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8897)).toBe(0);
+
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+    expect(runtimeHelperProjectileCancelTime(store, helper)).toBe(1);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8896)).toBe(-1);
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8897)).toBe(1);
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6401,
+      animNo: 902,
+    });
+  });
+
+  it("evaluates helper-local ProjCancelTime(var(n)) against a helper-parented Projectile cancel", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", {
+      ...helperInput({ id: "42", anim: "900" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("Projectile", { projid: "8898", projanim: "930", projremove: "0" }, ["Time = 0"]),
+              controller("ChangeState", { value: "6001" }, ["Time = 0"]),
+            ]),
+          ),
+          compileStateProgram(
+            state(6001, 901, [
+              controller("ChangeState", { value: "6498" }, ["ProjCancelTime(var(0) + 1) >= 0"]),
+              controller("ChangeState", { value: "6402" }, ["ProjCancelTime(var(0)) >= 1"]),
+            ]),
+          ),
+          compileStateProgram(state(6402, 902)),
+          compileStateProgram(state(6498, 999)),
+        ],
+      },
+      animations: new Map([
+        [900, action(900, 4)],
+        [901, action(901, 4)],
+        [902, action(902, 4)],
+        [930, action(930, 4)],
+        [999, action(999, 4)],
+      ]),
+    });
+    helper.vars[0] = 8898;
+
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+    const helperProjectile = store.projectiles.find((projectile) => projectile.parentId === helper.serialId)!;
+    markRuntimeProjectileForRemoval(helperProjectile, "cancel");
+    advanceRuntimeProjectiles([helperProjectile], { bounds: { left: -160, right: 160 } });
+
+    expect(runtimeHelperProjectileCancelTime(store, helper, 8898)).toBe(1);
+    advanceRuntimeHelperActors(store, { bounds: { left: -160, right: 160 } });
+
+    expect(helper).toMatchObject({
+      stateNo: 6402,
       animNo: 902,
     });
   });

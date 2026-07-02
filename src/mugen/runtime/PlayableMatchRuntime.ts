@@ -1,19 +1,16 @@
-import { compileRuntimeProgram } from "../compiler/StateControllerCompiler";
 import type {
   EnvColorControllerOp,
   PauseControllerOp,
 } from "../compiler/ControllerOps";
-import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
-import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
+import type { ControllerIr } from "../compiler/RuntimeIr";
+import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { RuntimeActorConstraintControllerDispatchWorld, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
-import { CommandBuffer } from "./CommandBuffer";
 import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
-  type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./EnvColorSystem";
 import { scaleRuntimeIncomingDamage } from "./CombatResolver";
@@ -35,27 +32,33 @@ import {
 } from "./EffectActorSystem";
 import { RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import {
-  isRuntimeEffectSpawnControllerDispatchEffect,
   RuntimeEffectSpawnControllerDispatchWorld,
   RuntimeEffectSpawnWorld,
 } from "./EffectSpawnSystem";
 import { RuntimeGetHitStateWorld } from "./GetHitStateSystem";
 import { RuntimeGuardWorld } from "./GuardSystem";
-import { rememberRuntimeHelperTarget, type RuntimeHelper } from "./HelperSystem";
+import type { RuntimeHelper } from "./HelperSystem";
 import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
+import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
+import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
+import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
+import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
+import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
+import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
+import { RuntimeActiveControllerDispatchWorld } from "./RuntimeActiveControllerDispatchSystem";
+import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
+import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
-import { createRuntimeRandomSeed, nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
+import { nextRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import {
   applyRuntimeControl,
   applyRuntimePowerDelta,
-  runtimeLifeMaxFromConstants,
-  runtimePowerMaxFromConstants,
 } from "./RuntimeResourceSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
@@ -64,15 +67,14 @@ import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
+import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
 import { RuntimeHitPauseWorld } from "./RuntimeHitPauseSystem";
 import { RuntimeMoveLifecycleWorld } from "./RuntimeMoveLifecycleSystem";
 import { RuntimeKinematicsWorld } from "./RuntimeKinematicsSystem";
 import {
   RuntimeAnimationWorld,
-  runtimeAnimationElapsedBeforeFrame,
   runtimeAnimationElementTime,
-  runtimeAnimationFrameDuration,
   runtimeAnimationTimeRemaining,
 } from "./RuntimeAnimationSystem";
 import {
@@ -80,6 +82,7 @@ import {
   type RuntimeStateEntryAnimationElementOptions,
   type RuntimeStateEntryOptions,
 } from "./RuntimeStateEntrySystem";
+import { RuntimeStateEntryRouteWorld } from "./RuntimeStateEntryRouteSystem";
 import { RuntimeStateEntrySetupWorld } from "./RuntimeStateEntrySetupSystem";
 import { RuntimeStateClockWorld } from "./RuntimeStateClockSystem";
 import { hasRuntimeStun, RuntimeStunWorld } from "./RuntimeStunSystem";
@@ -91,37 +94,45 @@ import {
 } from "./PauseSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import {
-  isRuntimeSpriteEffectControllerEffect,
   RuntimeSpriteEffectControllerWorld,
   RuntimeSpriteEffectWorld,
 } from "./SpriteEffectSystem";
 import {
-  isRuntimeTargetControllerDispatchEffect,
   RuntimeTargetControllerDispatchWorld,
   RuntimeTargetWorld,
-  type RuntimeTarget,
-  type RuntimeTargetBinding,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
+import { RuntimeTargetStateEntryWorld } from "./RuntimeTargetStateEntrySystem";
+import { RuntimeTriggerEvaluationWorld } from "./RuntimeTriggerEvaluationSystem";
+import { RuntimeTriggerGateWorld } from "./RuntimeTriggerGateSystem";
+import { RuntimeAfterImageSampleWorld } from "./RuntimeAfterImageSampleSystem";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import { trainingStage } from "./demoStage";
 import type {
   CharacterRuntimeState,
-  RuntimeAfterImageSample,
-  RuntimeControllerTraceEvent,
-  RuntimeEnvShakeEvent,
-  RuntimeHitEffectEvent,
   MugenSnapshot,
-  RuntimeSoundEvent,
 } from "./types";
 
 const compatibilityTelemetryWorld = new RuntimeCompatibilityTelemetryWorld();
 const defaultGuardDistanceWorld = new RuntimeGuardDistanceWorld();
 const stateClockWorld = new RuntimeStateClockWorld();
 const stateEntryWorld = new RuntimeStateEntryWorld({ stateClockWorld });
+const stateEntryRouteWorld = new RuntimeStateEntryRouteWorld();
 const controllerDispatchWorld = new RuntimeControllerDispatchWorld();
 const stateEntrySetupWorld = new RuntimeStateEntrySetupWorld();
+const activeControllerScanWorld = new RuntimeActiveControllerScanWorld();
+const activeControllerDispatchWorld = new RuntimeActiveControllerDispatchWorld();
+const dispatchEvaluationWorld = new RuntimeDispatchEvaluationWorld();
+const controllerEvaluationContextWorld = new RuntimeControllerEvaluationContextWorld();
+const autoGuardStartWorld = new RuntimeAutoGuardStartWorld();
+const triggerGateWorld = new RuntimeTriggerGateWorld();
+const triggerEvaluationWorld = new RuntimeTriggerEvaluationWorld();
+const afterImageSampleWorld = new RuntimeAfterImageSampleWorld();
+const frameWorld = new RuntimeFrameWorld();
+const animationChangeWorld = new RuntimeAnimationWorld();
+const fighterStateWorld = new RuntimeFighterStateWorld();
 const spriteEffectControllerWorld = new RuntimeSpriteEffectControllerWorld();
+const targetStateEntryWorld = new RuntimeTargetStateEntryWorld();
 const actorConstraintControllerDispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
 const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
@@ -159,54 +170,6 @@ export type PlayableMatchRuntimeOptions = {
   roundTimerFrames?: number;
 };
 
-type FighterMatchState = {
-  id: string;
-  label: string;
-  definition: DemoFighterDefinition;
-  runtimeProgram?: RuntimeProgramIr;
-  runtime: CharacterRuntimeState;
-  currentAction: MugenAnimationAction;
-  stateOwner?: FighterMatchState;
-  commandBuffer: CommandBuffer;
-  frameElapsed: number;
-  animationComplete: boolean;
-  stateElapsed: number;
-  currentMove?: DemoMove;
-  currentMoveLabel?: string;
-  moveTick: number;
-  hitStun: number;
-  hitPause: number;
-  hasHit: boolean;
-  targets: RuntimeTarget[];
-  targetBindings: RuntimeTargetBinding[];
-  bindToTarget?: RuntimeTargetBinding;
-  enterHelperTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
-  currentInput: Set<string>;
-  aiCooldown: number;
-  executedStateIds: Set<number>;
-  routedStateEntries: number;
-  routedStateIds: number[];
-  lastRoutedState?: { stateId: number; name?: string };
-  executedControllerCounts: Record<string, number>;
-  executedOperationCounts: Record<string, number>;
-  controllerEvents: RuntimeControllerTraceEvent[];
-  nextControllerEventSequence: number;
-  compatibilityTick: number;
-  rngSeed: number;
-  firedHitDefs: Set<string>;
-  soundEvents: RuntimeSoundEvent[];
-  audioWorld: RuntimeAudioWorld;
-  envShakeEvents: RuntimeEnvShakeEvent[];
-  envShakeWorld: RuntimeEnvShakeWorld;
-  hitEffectEvents: RuntimeHitEffectEvent[];
-  hitEffectWorld: RuntimeHitEffectWorld;
-  effectActorWorld: RuntimeEffectActorWorld;
-  targetWorld: RuntimeTargetWorld;
-  contactWorld: RuntimeContactMemoryWorld;
-  lastExecutedState?: number;
-  contact: RuntimeContactMemory;
-};
-
 type PauseControllerHandler = (
   fighter: FighterMatchState,
   controller: MugenStateController,
@@ -216,8 +179,6 @@ type EnvColorControllerHandler = (controller: MugenStateController, operation?: 
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
-
-const defaultRuntimeHurtBoxes: MugenAnimationFrame["clsn2"] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
 export class PlayableMatchRuntime {
   private tick = 0;
@@ -258,6 +219,8 @@ export class PlayableMatchRuntime {
   private readonly contactPresentationWorld = new RuntimeContactPresentationWorld();
   private readonly combatResolutionWorld = new RuntimeCombatResolutionWorld();
   private readonly helperCombatWorld = new RuntimeHelperCombatWorld();
+  private readonly helperProjectileTargetWorld = new RuntimeHelperProjectileTargetWorld();
+  private readonly helperTargetStateWorld = new RuntimeHelperTargetStateWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
@@ -265,6 +228,7 @@ export class PlayableMatchRuntime {
   private readonly stunWorld = new RuntimeStunWorld();
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
+  private readonly matchResetWorld = new RuntimeMatchResetWorld();
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -285,39 +249,52 @@ export class PlayableMatchRuntime {
     this.effectLifecycleWorld = options.effectLifecycleWorld ?? new RuntimeEffectLifecycleWorld();
     this.effectSpawnWorld = options.effectSpawnWorld ?? new RuntimeEffectSpawnWorld();
     this.targetWorld = options.targetWorld ?? new RuntimeTargetWorld();
-    this.p1 = createFighterState(
-      "p1",
-      p1Definition,
-      stage.playerStart.p1.x,
-      stage.playerStart.p1.y,
-      stage.playerStart.p1.facing,
-      this.effectActorWorld,
-      this.targetWorld,
-      this.audioWorld,
-      this.envShakeWorld,
-      this.hitEffectWorld,
-      this.contactWorld,
-    );
-    this.p2 = createFighterState(
-      "p2",
-      p2Definition,
-      stage.playerStart.p2.x,
-      stage.playerStart.p2.y,
-      stage.playerStart.p2.facing,
-      this.effectActorWorld,
-      this.targetWorld,
-      this.audioWorld,
-      this.envShakeWorld,
-      this.hitEffectWorld,
-      this.contactWorld,
-    );
+    this.p1 = fighterStateWorld.create({
+      id: "p1",
+      definition: p1Definition,
+      x: stage.playerStart.p1.x,
+      y: stage.playerStart.p1.y,
+      facing: stage.playerStart.p1.facing,
+      effectActorWorld: this.effectActorWorld,
+      targetWorld: this.targetWorld,
+      audioWorld: this.audioWorld,
+      envShakeWorld: this.envShakeWorld,
+      hitEffectWorld: this.hitEffectWorld,
+      contactWorld: this.contactWorld,
+    });
+    this.p2 = fighterStateWorld.create({
+      id: "p2",
+      definition: p2Definition,
+      x: stage.playerStart.p2.x,
+      y: stage.playerStart.p2.y,
+      facing: stage.playerStart.p2.facing,
+      effectActorWorld: this.effectActorWorld,
+      targetWorld: this.targetWorld,
+      audioWorld: this.audioWorld,
+      envShakeWorld: this.envShakeWorld,
+      hitEffectWorld: this.hitEffectWorld,
+      contactWorld: this.contactWorld,
+    });
     this.attachHelperTargetStateHandlers();
     this.logs.unshift(`Playable demo match started on ${stage.displayName}`);
   }
 
   private attachHelperTargetStateHandlers(): void {
-    this.p1.enterHelperTargetState = (helper, target, stateId) => this.enterHelperOwnedTargetState(this.p1, helper, target, stateId);
-    this.p2.enterHelperTargetState = (helper, target, stateId) => this.enterHelperOwnedTargetState(this.p2, helper, target, stateId);
+    this.helperTargetStateWorld.attachOwnerHandlers([this.p1, this.p2], (owner, helper, target, stateId) =>
+      this.enterHelperOwnedTargetState(owner, helper, target, stateId),
+    );
+    for (const owner of [this.p1, this.p2]) {
+      owner.onHelperController = (helper, controller) => {
+        if (controller.operation?.kind === "projectile") {
+          compatibilityTelemetryWorld.recordController(owner, controller.source, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
+        }
+      };
+      owner.onHelperOperation = (helper, operation) => {
+        if (operation.kind === "projectile") {
+          compatibilityTelemetryWorld.recordOperation(owner, operation, { stateNo: helper.stateNo ?? owner.runtime.stateNo });
+        }
+      };
+    }
   }
 
   private enterHelperOwnedTargetState(
@@ -326,14 +303,17 @@ export class PlayableMatchRuntime {
     targetActor: RuntimeTargetWorldActor,
     stateId: number,
   ): void {
-    if (helper.ownerId !== owner.id) {
-      return;
-    }
-    const target = this.fighterById(targetActor.id);
-    if (!target || !canEnterState(target, stateId, owner)) {
-      return;
-    }
-    enterState(target, stateId, undefined, { stateOwner: owner });
+    this.helperTargetStateWorld.enter({
+      owner,
+      helper,
+      targetActor,
+      stateId,
+      hooks: {
+        resolveTarget: (candidate) => this.fighterById(candidate.id),
+        canEnterState: (target, targetStateId, stateOwner) => canEnterState(target, targetStateId, stateOwner),
+        enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
+      },
+    });
   }
 
   private fighterById(actorId: string): FighterMatchState | undefined {
@@ -408,6 +388,8 @@ export class PlayableMatchRuntime {
         p2Input,
         tick: this.tick,
         stage: this.stage,
+        stageTime: this.tick,
+        runtimeTick: this.tick,
         effectLifecycleWorld: this.effectLifecycleWorld,
         runIgnoredControllers: (fighter, opponent) =>
           runHitPauseIgnoredControllers(
@@ -417,6 +399,7 @@ export class PlayableMatchRuntime {
             this.spriteEffectWorld,
             this.reversalWorld,
             this.effectSpawnWorld,
+            this.stage.bounds,
             this.tick,
             (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
             (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -434,9 +417,9 @@ export class PlayableMatchRuntime {
     this.round.tickTimer();
     this.p1.commandBuffer.push(this.tick, p1Input);
     this.p2.commandBuffer.push(this.tick, p2Input);
-    handlePlayerInput(this.p1, p1Input, this.p2, this.tick, this.inputControlWorld);
+    handlePlayerInput(this.p1, p1Input, this.p2, this.stage.bounds, this.tick, this.inputControlWorld);
     if (input.p2) {
-      handlePlayerInput(this.p2, p2Input, this.p1, this.tick, this.inputControlWorld);
+      handlePlayerInput(this.p2, p2Input, this.p1, this.stage.bounds, this.tick, this.inputControlWorld);
     } else {
       handleSimpleAi(this.p2, this.p1, this.tick, this.inputControlWorld);
     }
@@ -454,6 +437,7 @@ export class PlayableMatchRuntime {
       this.kinematicsWorld,
       this.animationWorld,
       this.stunWorld,
+      this.stage.bounds,
       this.tick,
       (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
       (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -474,6 +458,7 @@ export class PlayableMatchRuntime {
         this.kinematicsWorld,
         this.animationWorld,
         this.stunWorld,
+        this.stage.bounds,
         this.tick,
         (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
         (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -484,6 +469,8 @@ export class PlayableMatchRuntime {
       p1: this.p1,
       p2: this.p2,
       stage: this.stage,
+      stageTime: this.tick,
+      runtimeTick: this.tick,
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
       resolvePriorityClash: (left, right) =>
@@ -560,13 +547,15 @@ export class PlayableMatchRuntime {
       p2Input,
       p2Controlled: input.p2 !== undefined,
       stage: this.stage,
+      stageTime: this.tick,
+      runtimeTick: this.tick,
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
       currentPause: () => this.pauseWorld.current(),
       canActorMove: (actorId) => this.pauseWorld.canActorMove(actorId),
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(this.tick, actorInput, { hitPause: true }),
       handlePlayerInput: (actor, actorInput, opponent) =>
-        handlePlayerInput(actor, actorInput, opponent, this.tick, this.inputControlWorld),
+        handlePlayerInput(actor, actorInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
       handleAi: (actor, opponent) => handleSimpleAi(actor, opponent, this.tick, this.inputControlWorld),
       advanceFighter: (actor, opponent) =>
         advanceFighter(
@@ -583,6 +572,7 @@ export class PlayableMatchRuntime {
           this.kinematicsWorld,
           this.animationWorld,
           this.stunWorld,
+          this.stage.bounds,
           this.tick,
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
           (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
@@ -614,13 +604,15 @@ export class PlayableMatchRuntime {
       actor: fighter,
       opponent,
       tick: this.tick,
-      triggersPass,
+      triggersPass: (controller, actor, targetOpponent, owner, tick) =>
+        triggersPass(controller, actor, targetOpponent, owner, tick, this.stage.bounds),
       executeController: (controller, actor, owner, tick) => {
         controllerDispatchWorld.apply(actor, controller, {
           context: {
             getConst: (name) => runtimeDefinitionConst(owner.definition, name),
             hitPauseTime: () => actor.hitPause,
             random: () => nextRuntimeRandom(actor),
+            stageBounds: this.stage.bounds,
             stageTime: tick,
           },
         });
@@ -656,47 +648,38 @@ export class PlayableMatchRuntime {
   }
 
   reset(): void {
-    this.tick = 0;
-    this.frameClock = 0;
-    this.round.reset(this.roundTimerFrames);
-    this.playing = true;
-    this.pauseWorld.reset();
-    this.envColorWorld.reset();
-    this.effectActorWorld.reset();
-    Object.assign(
-      this.p1,
-      createFighterState(
-        "p1",
-        this.p1.definition,
-        this.stage.playerStart.p1.x,
-        this.stage.playerStart.p1.y,
-        this.stage.playerStart.p1.facing,
-        this.effectActorWorld,
-        this.targetWorld,
-        this.audioWorld,
-        this.envShakeWorld,
-        this.hitEffectWorld,
-        this.contactWorld,
-      ),
-    );
-    Object.assign(
-      this.p2,
-      createFighterState(
-        "p2",
-        this.p2.definition,
-        this.stage.playerStart.p2.x,
-        this.stage.playerStart.p2.y,
-        this.stage.playerStart.p2.facing,
-        this.effectActorWorld,
-        this.targetWorld,
-        this.audioWorld,
-        this.envShakeWorld,
-        this.hitEffectWorld,
-        this.contactWorld,
-      ),
-    );
-    this.attachHelperTargetStateHandlers();
-    this.logs.unshift("Round reset");
+    const resetState = this.matchResetWorld.reset({
+      p1: this.p1,
+      p2: this.p2,
+      p1Definition: this.p1.definition,
+      p2Definition: this.p2.definition,
+      p1Start: this.stage.playerStart.p1,
+      p2Start: this.stage.playerStart.p2,
+      round: this.round,
+      roundTimerFrames: this.roundTimerFrames,
+      pauseWorld: this.pauseWorld,
+      envColorWorld: this.envColorWorld,
+      effectActorWorld: this.effectActorWorld,
+      createFighter: (id, definition, start) =>
+        fighterStateWorld.create({
+          id,
+          definition,
+          x: start.x,
+          y: start.y,
+          facing: start.facing,
+          effectActorWorld: this.effectActorWorld,
+          targetWorld: this.targetWorld,
+          audioWorld: this.audioWorld,
+          envShakeWorld: this.envShakeWorld,
+          hitEffectWorld: this.hitEffectWorld,
+          contactWorld: this.contactWorld,
+        }),
+      attachHelperTargetStateHandlers: () => this.attachHelperTargetStateHandlers(),
+      log: (message) => this.logs.unshift(message),
+    });
+    this.tick = resetState.tick;
+    this.frameClock = resetState.frameClock;
+    this.playing = resetState.playing;
   }
 
   private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
@@ -704,128 +687,20 @@ export class PlayableMatchRuntime {
   }
 
   private rememberHelperProjectileTarget(owner: FighterMatchState, defender: FighterMatchState, projectile: RuntimeProjectile): void {
-    if (projectile.parentId === owner.id) {
-      return;
-    }
-    const helper = this.effectActorWorld.helpers(owner.id).find((candidate) => candidate.serialId === projectile.parentId);
-    if (!helper) {
-      return;
-    }
-    rememberRuntimeHelperTarget(helper, defender.id, projectile.targetId, this.targetWorld);
+    this.helperProjectileTargetWorld.remember({
+      owner,
+      defender,
+      projectile,
+      targetWorld: this.targetWorld,
+    });
   }
 
-}
-
-function createFighterState(
-  id: string,
-  definition: DemoFighterDefinition,
-  x: number,
-  y: number,
-  facing: 1 | -1,
-  effectActorWorld = new RuntimeEffectActorWorld(),
-  targetWorld = new RuntimeTargetWorld(),
-  audioWorld = new RuntimeAudioWorld(),
-  envShakeWorld = new RuntimeEnvShakeWorld(),
-  hitEffectWorld = new RuntimeHitEffectWorld(),
-  contactWorld = new RuntimeContactMemoryWorld(),
-): FighterMatchState {
-  const action = definition.animations.get(definition.idleAction)!;
-  const runtimeProgram = getRuntimeProgram(definition);
-  const lifeMax = runtimeLifeMaxFromConstants(definition.constants);
-  const powerMax = runtimePowerMaxFromConstants(definition.constants);
-  const attackMultiplier = runtimeAttackMultiplier(definition);
-  const defenseMultiplier = runtimeDefenseMultiplier(definition);
-  return {
-    id,
-    label: definition.displayName,
-    definition,
-    runtimeProgram,
-    stateOwner: undefined,
-    runtime: {
-      pos: { x, y },
-      vel: { x: 0, y: 0 },
-      facing,
-      bodyWidth: { front: 39, back: 39 },
-      playerPush: true,
-      targetCount: 0,
-      ...(attackMultiplier === undefined ? {} : { attackMultiplier }),
-      ...(defenseMultiplier === undefined ? {} : { defenseMultiplier }),
-      spritePriority: id === "p2" ? 1 : 2,
-      stateNo: 0,
-      animNo: definition.idleAction,
-      animTime: 0,
-      frameIndex: 0,
-      lifeMax,
-      life: lifeMax,
-      powerMax,
-      power: 0,
-      ctrl: true,
-      guardStun: 0,
-      guardSlideTime: 0,
-      guardControlTime: 0,
-      guarding: false,
-      stateType: "S",
-      moveType: "I",
-      physics: "S",
-      vars: [],
-      fvars: [],
-    },
-    currentAction: action,
-    commandBuffer: new CommandBuffer(90),
-    frameElapsed: 0,
-    animationComplete: false,
-    stateElapsed: -1,
-    moveTick: 0,
-    hitStun: 0,
-    hitPause: 0,
-    hasHit: false,
-    targets: [],
-    targetBindings: [],
-    currentInput: new Set(),
-    aiCooldown: 80,
-    executedStateIds: new Set(),
-    routedStateEntries: 0,
-    routedStateIds: [],
-    executedControllerCounts: {},
-    executedOperationCounts: {},
-    controllerEvents: [],
-    nextControllerEventSequence: 0,
-    compatibilityTick: 0,
-    rngSeed: createRuntimeRandomSeed(id, definition.id),
-    firedHitDefs: new Set(),
-    soundEvents: [],
-    audioWorld,
-    envShakeEvents: [],
-    envShakeWorld,
-    hitEffectEvents: [],
-    hitEffectWorld,
-    effectActorWorld,
-    targetWorld,
-    contactWorld,
-    contact: contactWorld.create(),
-  };
 }
 
 function nextRuntimeRandom(fighter: FighterMatchState): number {
   const next = nextRuntimeRandomUnit(fighter.rngSeed);
   fighter.rngSeed = next.seed;
   return next.value;
-}
-
-function getRuntimeProgram(definition: DemoFighterDefinition): RuntimeProgramIr | undefined {
-  if (definition.runtimeProgram) {
-    return definition.runtimeProgram;
-  }
-  if (!definition.states?.length && !definition.stateEntryControllers?.length && !definition.commands?.length) {
-    return undefined;
-  }
-  return compileRuntimeProgram({
-    commands: definition.commands ?? [],
-    states: definition.states ?? [],
-    stateEntryControllers: definition.stateEntryControllers ?? [],
-    animations: definition.animations,
-    constants: definition.constants,
-  });
 }
 
 function setRuntimeStateNo(fighter: FighterMatchState, stateNo: number, options: { resetElapsed?: boolean } = {}): void {
@@ -836,14 +711,15 @@ function handlePlayerInput(
   fighter: FighterMatchState,
   input: Set<string>,
   opponent: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
   tick: number,
   inputControlWorld: RuntimeInputControlWorld,
 ): void {
   inputControlWorld.handlePlayerInput(fighter, input, {
     hasStun: hasRuntimeStun(fighter),
     preserveImportedStateMoveType: shouldPreserveImportedStateMoveType(fighter),
-    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, tick),
-    tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, tick),
+    runStateEntrySetup: () => runStateEntrySetupControllers(fighter, opponent, stageBounds, tick),
+    tryApplyStateEntry: () => tryApplyStateEntry(fighter, opponent, stageBounds, tick),
     startMove: (move) => startMove(fighter, move),
     changeAction: (actionId) => changeAction(fighter, actionId),
     setStateNo: (stateNo) => setRuntimeStateNo(fighter, stateNo),
@@ -880,6 +756,7 @@ function advanceFighter(
   kinematicsWorld: RuntimeKinematicsWorld,
   animationWorld: RuntimeAnimationWorld,
   stunWorld: RuntimeStunWorld,
+  stageBounds: MugenStageDefinition["bounds"],
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -920,6 +797,7 @@ function advanceFighter(
     spriteEffectWorld,
     reversalWorld,
     effectSpawnWorld,
+    stageBounds,
     tick,
     onPauseController,
     onEnvColorController,
@@ -957,40 +835,13 @@ function changeAction(
   actionOwner: DemoFighterDefinition = fighter.definition,
   elementOptions: AnimationElementOptions = {},
 ): boolean {
-  const action = actionOwner.animations.get(actionId);
-  if (!action) {
-    return false;
-  }
-  if (fighter.runtime.animNo === actionId && fighter.runtime.animationSource === source && fighter.currentAction === action) {
-    applyAnimationElement(fighter, elementOptions);
-    return true;
-  }
-  fighter.currentAction = action;
-  fighter.runtime.animNo = actionId;
-  fighter.runtime.animationSource = source;
-  fighter.runtime.frameIndex = 0;
-  fighter.runtime.animTime = 0;
-  fighter.frameElapsed = 0;
-  fighter.animationComplete = false;
-  applyAnimationElement(fighter, elementOptions);
-  return true;
-}
-
-function applyAnimationElement(fighter: FighterMatchState, options: AnimationElementOptions): void {
-  if (options.elem === undefined) {
-    return;
-  }
-  const frames = fighter.currentAction.frames;
-  if (frames.length === 0) {
-    return;
-  }
-  const frameIndex = Math.max(0, Math.min(frames.length - 1, Math.round(options.elem) - 1));
-  const frameDuration = runtimeAnimationFrameDuration(frames[frameIndex]);
-  const elemTime = Math.max(0, Math.min(frameDuration - 1, Math.round(options.elemTime ?? 0)));
-  fighter.runtime.frameIndex = frameIndex;
-  fighter.frameElapsed = elemTime;
-  fighter.runtime.animTime = runtimeAnimationElapsedBeforeFrame(fighter.currentAction, frameIndex) + elemTime;
-  fighter.animationComplete = false;
+  const result = animationChangeWorld.changeAction(fighter, {
+    actionId,
+    source,
+    actionOwner,
+    ...elementOptions,
+  });
+  return result.actionFound;
 }
 
 function enterState(fighter: FighterMatchState, stateId: number, move?: DemoMove, options: EnterStateOptions = {}): void {
@@ -1010,6 +861,7 @@ function runHitPauseIgnoredControllers(
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
+  stageBounds: MugenStageDefinition["bounds"],
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
@@ -1021,6 +873,7 @@ function runHitPauseIgnoredControllers(
     spriteEffectWorld,
     reversalWorld,
     effectSpawnWorld,
+    stageBounds,
     tick,
     onPauseController,
     onEnvColorController,
@@ -1039,221 +892,212 @@ function runActiveStateControllers(
   spriteEffectWorld: RuntimeSpriteEffectWorld,
   reversalWorld: RuntimeReversalWorld,
   effectSpawnWorld: RuntimeEffectSpawnWorld,
+  stageBounds: MugenStageDefinition["bounds"],
   tick: number,
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
   options: ActiveControllerRunOptions = {},
 ): void {
-  const owner = fighter.stateOwner ?? fighter;
-  const stateProgram = owner.runtimeProgram?.states.find((candidate) => candidate.id === fighter.runtime.stateNo);
-  const state = stateProgram?.source;
-  if (!state || (fighter.definition.source !== "imported" && owner.definition.source !== "imported")) {
-    return;
-  }
-
-  for (const controller of stateProgram.controllers) {
-    if (options.onlyIgnoreHitPause && !controllerIgnoresHitPause(controller)) {
-      continue;
-    }
-    if (!triggersPass(controller, fighter, opponent, owner, tick)) {
-      continue;
-    }
-    const dispatch = dispatchStateProgramController(controller);
-    const rawController = controller.source;
-
-    if (dispatch.kind === "change-state") {
-      const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent, owner, tick);
-      if (stateId === undefined) {
-        continue;
-      }
-      const animOverride = resolveDispatchNumber(dispatch.animOverride, dispatch.animExpression, fighter, opponent, owner, tick);
-      const ctrl = resolveDispatchBoolean(dispatch.ctrl, dispatch.ctrlExpression, fighter, opponent, owner, tick);
-      compatibilityTelemetryWorld.recordController(fighter, rawController);
-      enterState(fighter, stateId, undefined, {
-        clearStateOwner: dispatch.clearStateOwner,
-        animOverride,
-        preserveAnimationWhenMissing: true,
-      });
-      if (ctrl !== undefined) {
-        applyRuntimeControl(fighter.runtime, ctrl);
-      }
-      return;
-    }
-
-    if (dispatch.kind === "change-anim") {
-      const actionId = resolveDispatchNumber(dispatch.actionId, dispatch.actionExpression, fighter, opponent, owner, tick);
-      if (actionId === undefined) {
-        continue;
-      }
-      const elem = resolveDispatchNumber(dispatch.elem, dispatch.elemExpression, fighter, opponent, owner, tick);
-      const elemTime = resolveDispatchNumber(dispatch.elemTime, dispatch.elemTimeExpression, fighter, opponent, owner, tick);
-      compatibilityTelemetryWorld.recordController(fighter, rawController);
-      const animationOwner = dispatch.animationSource === "state-owner" ? owner : fighter;
-      changeAction(fighter, actionId, dispatch.animationSource, animationOwner.definition, {
-        elem,
-        elemTime,
-      });
-      continue;
-    }
-
-    if (dispatch.kind === "runtime-controller") {
-      controllerDispatchWorld.apply(fighter, controller, {
-        context: runtimeControllerContext(fighter, owner, tick),
-        recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-        recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-      });
-      continue;
-    }
-
-    if (dispatch.kind === "side-effect") {
-      if (dispatch.effect === "hitdef") {
-        hitDefControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          frame: getCurrentFrame(fighter),
+  activeControllerScanWorld.run({
+    actor: fighter,
+    opponent,
+    tick,
+    onlyIgnoreHitPause: options.onlyIgnoreHitPause,
+    controllerIgnoresHitPause,
+    triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
+    executeController: ({ controller, owner }) => {
+      const dispatch = dispatchStateProgramController(controller);
+      const activeDispatch = activeControllerDispatchWorld.apply({
+        dispatch,
+        actor: fighter,
+        opponent,
+        owner,
+        tick,
+        stateHooks: {
+          resolveNumber: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
+            resolveDispatchNumber(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          resolveBoolean: ({ value, expression, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) =>
+            resolveDispatchBoolean(value, expression, actor, targetOpponent, stateOwner, stageBounds, activeTick),
           recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "reversaldef") {
-        reversalControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          hitbox: getCurrentFrame(fighter)?.clsn1[0],
-          reversalWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "width") {
-        actorConstraintControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          actorConstraintWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "fallenvshake") {
-        fallEnvShakeControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          runtimeTick: tick,
-          envShakeWorld: fighter.envShakeWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (isRuntimeSpriteEffectControllerEffect(dispatch.effect)) {
-        spriteEffectControllerWorld.apply({
-          actor: fighter,
-          controller,
-          effect: dispatch.effect,
-          spriteEffectWorld,
-          sampleFactory: () => createAfterImageSample(fighter),
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (isRuntimeEffectSpawnControllerDispatchEffect(dispatch.effect)) {
-        effectSpawnControllerDispatchWorld.apply({
-          actor: fighter,
-          opponent,
-          controller,
-          effect: dispatch.effect,
-          effectSpawnWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (isRuntimeTargetControllerDispatchEffect(dispatch.effect)) {
-        targetControllerDispatchWorld.apply({
-          actor: fighter,
-          candidateTargets: [opponent],
-          controller,
-          effect: dispatch.effect,
-          targetWorld: fighter.targetWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-          scaleIncomingDamage: scaleRuntimeIncomingDamage,
-          enterTargetState: (target, stateId) => {
-            const controllerOwner = fighter.stateOwner ?? fighter;
-            if (canEnterState(target, stateId, controllerOwner)) {
-              enterState(target, stateId, undefined, { stateOwner: controllerOwner });
-            }
+          enterState: (actor, stateId, stateOptions) => enterState(actor, stateId, undefined, stateOptions),
+          applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
+          changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
+            changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
+        },
+        sideEffectHooks: {
+          hitDef: () => {
+            hitDefControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              frame: getCurrentFrame(fighter),
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
           },
-          getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
-        });
-      } else if (dispatch.effect === "pause") {
-        pauseControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "sound") {
-        audioControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          runtimeTick: tick,
-          audioWorld: fighter.audioWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "envcolor") {
-        envColorControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          runtimeTick: tick,
-          emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "envshake") {
-        envShakeControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          runtimeTick: tick,
-          envShakeWorld: fighter.envShakeWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      } else if (dispatch.effect === "contact") {
-        contactControllerDispatchWorld.apply({
-          actor: fighter,
-          controller,
-          contactWorld: fighter.contactWorld,
-          recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
-          recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
-        });
-      }
-    }
-  }
+          reversalDef: () => {
+            reversalControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              hitbox: frameWorld.currentFrame(fighter)?.clsn1[0],
+              reversalWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          width: () => {
+            actorConstraintControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              actorConstraintWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          fallEnvShake: () => {
+            fallEnvShakeControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              runtimeTick: tick,
+              envShakeWorld: fighter.envShakeWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          spriteEffect: ({ effect }) => {
+            spriteEffectControllerWorld.apply({
+              actor: fighter,
+              controller,
+              effect,
+              spriteEffectWorld,
+              sampleFactory: () => createAfterImageSample(fighter),
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          effectSpawn: ({ effect }) => {
+            effectSpawnControllerDispatchWorld.apply({
+              actor: fighter,
+              opponent,
+              controller,
+              effect,
+              effectSpawnWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          target: ({ effect }) => {
+            targetControllerDispatchWorld.apply({
+              actor: fighter,
+              candidateTargets: [opponent],
+              controller,
+              effect,
+              targetWorld: fighter.targetWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+              scaleIncomingDamage: scaleRuntimeIncomingDamage,
+              enterTargetState: (target, stateId) => {
+                targetStateEntryWorld.enter({
+                  actor: fighter,
+                  target,
+                  stateId,
+                  hooks: {
+                    canEnterState: (targetActor, targetStateId, stateOwner) =>
+                      canEnterState(targetActor, targetStateId, stateOwner),
+                    enterState: (targetActor, targetStateId, options) =>
+                      enterState(targetActor, targetStateId, undefined, options),
+                  },
+                });
+              },
+              getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
+            });
+          },
+          pause: () => {
+            pauseControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          sound: () => {
+            audioControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              runtimeTick: tick,
+              audioWorld: fighter.audioWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          envColor: () => {
+            envColorControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              runtimeTick: tick,
+              emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          envShake: () => {
+            envShakeControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              runtimeTick: tick,
+              envShakeWorld: fighter.envShakeWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+          contact: () => {
+            contactControllerDispatchWorld.apply({
+              actor: fighter,
+              controller,
+              contactWorld: fighter.contactWorld,
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+        },
+        hooks: {
+          runtimeController: () => {
+            controllerDispatchWorld.apply(fighter, controller, {
+              context: runtimeControllerContext(fighter, owner, tick, stageBounds),
+              recordController: (actor, recordedController) => compatibilityTelemetryWorld.recordController(actor, recordedController),
+              recordOperation: (actor, operation) => compatibilityTelemetryWorld.recordOperation(actor, operation),
+            });
+          },
+        },
+      });
+      return activeDispatch.stop ? "stop" : "continue";
+    },
+  });
 }
 
 function controllerIgnoresHitPause(controller: ControllerIr): boolean {
   return (firstNumber(findParam(controller, "ignorehitpause")) ?? 0) !== 0;
 }
 
-function runtimeControllerContext(fighter: FighterMatchState, owner: FighterMatchState, tick: number) {
-  return {
-    getConst: (name: string) => runtimeDefinitionConst(owner.definition, name),
-    hitPauseTime: () => fighter.hitPause,
-    random: () => nextRuntimeRandom(fighter),
-    stageTime: tick,
-  };
+function runtimeControllerContext(
+  fighter: FighterMatchState,
+  owner: FighterMatchState,
+  tick: number,
+  stageBounds: MugenStageDefinition["bounds"],
+) {
+  return controllerEvaluationContextWorld.create({
+    actor: fighter,
+    owner,
+    stageBounds,
+    tick,
+    getConst: (stateOwner, name) => runtimeDefinitionConst(stateOwner.definition, name),
+    nextRandom: (actor) => nextRuntimeRandom(actor),
+  });
 }
 
-function createAfterImageSample(fighter: FighterMatchState): RuntimeAfterImageSample | undefined {
-  const frame = getCurrentFrame(fighter);
-  if (!frame) {
-    return undefined;
-  }
-  return {
-    age: 0,
-    pos: { ...fighter.runtime.pos },
-    facing: fighter.runtime.facing,
-    ...spriteOwnerSnapshot(fighter),
-    spriteGroup: frame.spriteGroup,
-    spriteIndex: frame.spriteIndex,
-    offsetX: frame.offsetX,
-    offsetY: frame.offsetY,
-  };
+function createAfterImageSample(fighter: FighterMatchState) {
+  return afterImageSampleWorld.create({ actor: fighter, frame: getCurrentFrame(fighter) });
 }
 
 function canEnterState(target: FighterMatchState, stateId: number, owner: FighterMatchState = target): boolean {
@@ -1288,7 +1132,7 @@ function advanceContactTimers(fighter: FighterMatchState): void {
 }
 
 function getRuntimeHurtBoxes(fighter: FighterMatchState): MugenAnimationFrame["clsn2"] | undefined {
-  return getCurrentFrame(fighter)?.clsn2;
+  return frameWorld.currentFrame(fighter)?.clsn2;
 }
 
 function applyAutoGuardStart(
@@ -1297,27 +1141,17 @@ function applyAutoGuardStart(
   guardWorld: RuntimeGuardWorld,
   guardDistanceWorld: RuntimeGuardDistanceWorld,
 ): void {
-  if (defender.definition.source !== "imported") {
-    return;
-  }
-  if (
-    !guardWorld.canAttemptAutoGuardStart(defender.currentInput, defender.runtime, {
-      currentMoveActive: Boolean(defender.currentMove),
-      hitPause: defender.hitPause,
-      hitStun: defender.hitStun,
-    })
-  ) {
-    return;
-  }
-  if (!evaluateRuntimeInGuardDist(defender, attacker, guardDistanceWorld)) {
-    return;
-  }
-  const stateNo = guardWorld.defaultGuardStartStateNo(defender.runtime, (candidate) => canEnterState(defender, candidate));
-  if (stateNo === undefined || !canEnterState(defender, stateNo)) {
-    return;
-  }
-  enterState(defender, stateNo, undefined, { clearStateOwner: true });
-  guardWorld.applyAutoGuardStart(defender.runtime);
+  autoGuardStartWorld.apply({
+    defender,
+    attacker,
+    guardWorld,
+    hooks: {
+      isInGuardDistance: (candidateDefender, candidateAttacker) =>
+        evaluateRuntimeInGuardDist(candidateDefender, candidateAttacker, guardDistanceWorld),
+      canEnterState: (candidateDefender, stateNo) => canEnterState(candidateDefender, stateNo),
+      enterState: (candidateDefender, stateNo, options) => enterState(candidateDefender, stateNo, undefined, options),
+    },
+  });
 }
 
 function shouldPreserveImportedStateMoveType(fighter: FighterMatchState): boolean {
@@ -1336,7 +1170,7 @@ function evaluateRuntimeInGuardDist(
   opponent: FighterMatchState,
   guardDistanceWorld: RuntimeGuardDistanceWorld = defaultGuardDistanceWorld,
 ): boolean {
-  const hurtBoxes = getCurrentFrame(fighter)?.clsn2 ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
+  const hurtBoxes = frameWorld.currentHurtBoxes(fighter);
   return guardDistanceWorld.isInGuardDistance(
     { runtime: fighter.runtime, hurtBoxes },
     {
@@ -1349,64 +1183,45 @@ function evaluateRuntimeInGuardDist(
 }
 
 function getCurrentFrame(fighter: FighterMatchState): MugenAnimationFrame | undefined {
-  return fighter.currentAction.frames[fighter.runtime.frameIndex];
+  return frameWorld.currentFrame(fighter);
 }
 
-function spriteOwnerSnapshot(fighter: FighterMatchState): {
-  spriteOwnerId: string;
-  spriteOwnerDefinitionId: string;
-  spriteOwnerLabel: string;
-} {
-  const owner = fighter.stateOwner ?? fighter;
-  return {
-    spriteOwnerId: owner.id,
-    spriteOwnerDefinitionId: owner.definition.id,
-    spriteOwnerLabel: owner.label,
-  };
+function tryApplyStateEntry(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): boolean {
+  return stateEntryRouteWorld.apply(fighter, opponent, tick, {
+    triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
+    resolveStateId: (dispatch, _controller, actor, targetOpponent, stageTime) =>
+      resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, actor, targetOpponent, actor, stageBounds, stageTime),
+    recordStateEntryRoute: (actor, controller, stateId) =>
+      compatibilityTelemetryWorld.recordStateEntryRoute(actor, controller, stateId),
+    startMove: (actor, move, label) => startMoveWithSpec(actor, move, label),
+    enterState: (actor, stateId) => enterState(actor, stateId),
+  }).applied;
 }
 
-function tryApplyStateEntry(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): boolean {
-  const entries = fighter.runtimeProgram?.stateEntries ?? [];
-  if (entries.length === 0) {
-    return false;
-  }
-
-  for (const controller of entries) {
-    const dispatch = dispatchStateProgramController(controller);
-    if (dispatch.kind !== "change-state") {
-      continue;
-    }
-    if (!triggersPass(controller, fighter, opponent, fighter, tick)) {
-      continue;
-    }
-    const stateId = resolveDispatchNumber(dispatch.stateId, dispatch.stateExpression, fighter, opponent, fighter, tick);
-    if (stateId === undefined) {
-      continue;
-    }
-    compatibilityTelemetryWorld.recordStateEntryRoute(fighter, controller.source, stateId);
-    const move = fighter.definition.stateMoves?.get(stateId);
-    if (move) {
-      startMoveWithSpec(fighter, move, controller.name ?? `state ${stateId}`);
-    } else {
-      enterState(fighter, stateId);
-    }
-    return true;
-  }
-
-  return false;
-}
-
-function runStateEntrySetupControllers(fighter: FighterMatchState, opponent: FighterMatchState, tick: number): void {
+function runStateEntrySetupControllers(
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  stageBounds: MugenStageDefinition["bounds"],
+  tick: number,
+): void {
   stateEntrySetupWorld.apply({
     actor: fighter,
     opponent,
     tick,
-    triggersPass,
+    triggersPass: (controller, actor, targetOpponent, owner, activeTick) =>
+      triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
     executeController: (controller, actor, stageTime) => {
       controllerDispatchWorld.apply(actor, controller, {
         context: {
           hitPauseTime: () => actor.hitPause,
           random: () => nextRuntimeRandom(actor),
+          stageBounds,
           stageTime,
         },
         recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
@@ -1422,29 +1237,17 @@ function triggersPass(
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
   stageTime?: number,
+  stageBounds?: MugenStageDefinition["bounds"],
 ): boolean {
-  const triggerAll = controller.triggers.filter((trigger) => trigger.index === 0);
-  if (!triggerAll.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner, stageTime))) {
-    return false;
-  }
-
-  const grouped = new Map<number, typeof controller.triggers>();
-  for (const trigger of controller.triggers) {
-    if (trigger.index <= 0) {
-      continue;
-    }
-    const triggers = grouped.get(trigger.index) ?? [];
-    triggers.push(trigger);
-    grouped.set(trigger.index, triggers);
-  }
-
-  if (grouped.size === 0) {
-    return true;
-  }
-
-  return [...grouped.values()].some((triggers) =>
-    triggers.every((trigger) => evaluateRuntimeTrigger(trigger, fighter, opponent, owner, stageTime)),
-  );
+  return triggerGateWorld.passes({
+    controller,
+    actor: fighter,
+    opponent,
+    owner,
+    tick: stageTime,
+    evaluateTrigger: (trigger, actor, targetOpponent, stateOwner, tick) =>
+      evaluateRuntimeTrigger(trigger, actor, targetOpponent, stateOwner, tick, stageBounds),
+  });
 }
 
 function resolveDispatchNumber(
@@ -1453,23 +1256,30 @@ function resolveDispatchNumber(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): number | undefined {
-  if (value !== undefined) {
-    return value;
-  }
-  if (!expression) {
-    return undefined;
-  }
-  return expressionContextWorld.evaluateNumber(expression, {
+  return dispatchEvaluationWorld.resolveNumber({
+    value,
+    expression,
     actor: fighter,
     opponent,
+    opponents: [opponent],
     owner,
-    stageTime,
-    random: () => nextRuntimeRandom(fighter),
-    animTimeRemaining: getAnimTimeRemaining(fighter),
-    animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
-    inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
+    tick: stageTime,
+    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
+      expressionContextWorld.create({
+        actor,
+        opponent: targetOpponent,
+        opponents: targetOpponents,
+        owner: stateOwner,
+        stageBounds,
+        stageTime: tick,
+        random: () => nextRuntimeRandom(actor),
+        animTimeRemaining: getAnimTimeRemaining(actor),
+        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
+        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
+      }),
   });
 }
 
@@ -1479,13 +1289,31 @@ function resolveDispatchBoolean(
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
+  stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): boolean | undefined {
-  if (value !== undefined) {
-    return value;
-  }
-  const numberValue = resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageTime);
-  return numberValue === undefined ? undefined : numberValue !== 0;
+  return dispatchEvaluationWorld.resolveBoolean({
+    value,
+    expression,
+    actor: fighter,
+    opponent,
+    opponents: [opponent],
+    owner,
+    tick: stageTime,
+    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
+      expressionContextWorld.create({
+        actor,
+        opponent: targetOpponent,
+        opponents: targetOpponents,
+        owner: stateOwner,
+        stageBounds,
+        stageTime: tick,
+        random: () => nextRuntimeRandom(actor),
+        animTimeRemaining: getAnimTimeRemaining(actor),
+        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
+        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
+      }),
+  });
 }
 
 function evaluateRuntimeTrigger(
@@ -1494,35 +1322,31 @@ function evaluateRuntimeTrigger(
   opponent: FighterMatchState,
   owner: FighterMatchState = fighter,
   stageTime?: number,
+  stageBounds?: MugenStageDefinition["bounds"],
 ): boolean {
-  return expressionContextWorld.evaluateTrigger(trigger, {
+  return triggerEvaluationWorld.passes({
+    trigger,
     actor: fighter,
     opponent,
+    opponents: [opponent],
     owner,
-    stageTime,
-    random: () => nextRuntimeRandom(fighter),
-    animTimeRemaining: getAnimTimeRemaining(fighter),
-    animElemTime: (elementNumber) => getAnimElemTime(fighter, elementNumber),
-    inGuardDist: () => evaluateRuntimeInGuardDist(fighter, opponent),
+    tick: stageTime,
+    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
+      expressionContextWorld.create({
+        actor,
+        opponent: targetOpponent,
+        opponents: targetOpponents,
+        owner: stateOwner,
+        stageBounds,
+        stageTime: tick,
+        random: () => nextRuntimeRandom(actor),
+        animTimeRemaining: getAnimTimeRemaining(actor),
+        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
+        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
+      }),
   });
 }
 
-function runtimeAttackMultiplier(definition: DemoFighterDefinition): number | undefined {
-  const attack = definition.constants?.["data.attack"];
-  return attack === undefined ? undefined : boundedRuntimeDamageMultiplier(attack / 100);
-}
-
-function runtimeDefenseMultiplier(definition: DemoFighterDefinition): number | undefined {
-  const defence = definition.constants?.["data.defence"];
-  return defence === undefined || defence <= 0 ? undefined : boundedRuntimeDamageMultiplier(100 / defence);
-}
-
-function boundedRuntimeDamageMultiplier(value: number): number {
-  if (!Number.isFinite(value)) {
-    return 1;
-  }
-  return Math.max(0, Math.min(10, Math.round(value * 1000) / 1000));
-}
 
 function getAnimTimeRemaining(fighter: FighterMatchState): number {
   return runtimeAnimationTimeRemaining(fighter);

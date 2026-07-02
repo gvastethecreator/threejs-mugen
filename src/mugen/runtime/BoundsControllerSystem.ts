@@ -1,6 +1,7 @@
 import type { BoundsControllerOp, CollisionControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import { evaluateExpression } from "./ExpressionEvaluator";
+import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -112,85 +113,9 @@ function evaluateNumber(
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,
     random: context.random,
+    stageBounds: context.stageBounds,
     stageTime: context.stageTime,
   });
   const value = Number(evaluated);
   return Number.isFinite(value) ? value : undefined;
-}
-
-function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
-  const key = name.trim().toLowerCase();
-  if (key === "animtype") {
-    return state.hitVars?.animType ?? 0;
-  }
-  if (key === "groundtype") {
-    return state.hitVars?.groundType ?? 0;
-  }
-  if (key === "airtype") {
-    return state.hitVars?.airType ?? 0;
-  }
-  if (key === "isbound") {
-    return state.hitVars?.isBound ? 1 : 0;
-  }
-  if (key === "fall") {
-    return state.hitFall?.falling ? 1 : 0;
-  }
-  if (key === "fall.damage") {
-    return state.hitFall?.damage ?? 0;
-  }
-  if (key === "fall.defence_up") {
-    return state.hitFall?.defenceUp ?? 100;
-  }
-  if (key === "fall.kill") {
-    return state.hitFall?.kill === false ? 0 : 1;
-  }
-  if (key === "fall.xvel" || key === "fall.xvelocity") {
-    return state.hitFall?.velocity.x ?? 0;
-  }
-  if (key === "fall.yvel" || key === "fall.yvelocity") {
-    return state.hitFall?.velocity.y ?? 0;
-  }
-  if (key === "fall.recover") {
-    return state.hitFall?.recover && (state.hitFall.recoverTime ?? 0) <= 0 ? 1 : 0;
-  }
-  if (key === "fall.recovertime") {
-    return state.hitFall?.recoverTime ?? 0;
-  }
-  if (key === "down.recover") {
-    return state.hitFall?.downRecover === false ? 0 : 1;
-  }
-  if (key === "recovertime" || key === "down.recovertime") {
-    return state.hitFall?.downRecoverTime ?? 0;
-  }
-  if (key === "yaccel") {
-    return 0.44;
-  }
-  if (key === "fall.envshake.time") {
-    return state.hitFall?.envShake?.time ?? 0;
-  }
-  if (key === "fall.envshake.freq") {
-    return state.hitFall?.envShake?.freq ?? 60;
-  }
-  if (key === "fall.envshake.ampl") {
-    return state.hitFall?.envShake?.ampl ?? 0;
-  }
-  if (key === "fall.envshake.phase") {
-    return state.hitFall?.envShake?.phase ?? 0;
-  }
-  if (key === "xvel") {
-    return state.hitVelocity?.x ?? 0;
-  }
-  if (key === "yvel") {
-    return state.hitVelocity?.y ?? 0;
-  }
-  if (key === "hittime") {
-    return state.guardStun ?? 0;
-  }
-  if (key === "slidetime") {
-    return state.guardSlideTime ?? 0;
-  }
-  if (key === "ctrltime") {
-    return state.guardControlTime ?? 0;
-  }
-  return undefined;
 }

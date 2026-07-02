@@ -123,7 +123,15 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.vel).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVelocity).toEqual({ x: 3, y: -1 });
-    expect(defender.runtime.hitVars).toEqual({ animType: 0, groundType: 1, airType: 1, isBound: false });
+    expect(defender.runtime.hitVars).toEqual({
+      animType: 0,
+      groundType: 1,
+      airType: 1,
+      isBound: false,
+      hitShakeTime: 4,
+      hitTime: 7,
+      guarded: true,
+    });
     expect(defender.runtime.moveType).toBe("H");
     expect(guardHookCount).toBe(1);
     expect(attacker.removedExplodsOnGetHit).toBe(0);
@@ -188,7 +196,14 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guarding).toBe(false);
     expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });
-    expect(defender.runtime.hitVars).toEqual({ animType: 3, groundType: 2, airType: 4, isBound: false });
+    expect(defender.runtime.hitVars).toEqual({
+      animType: 3,
+      groundType: 2,
+      airType: 4,
+      isBound: false,
+      hitShakeTime: 6,
+      hitTime: 13,
+    });
     expect(defender.runtime.hitFall).toMatchObject({
       falling: true,
       damage: 7,

@@ -63,6 +63,7 @@ export type RuntimeProjectileClashInput = {
   leftProjectiles: RuntimeProjectile[];
   rightProjectiles: RuntimeProjectile[];
   log: (line: string) => void;
+  recordProjectileCancel?: (projectile: RuntimeProjectile) => void;
   removeProjectilesMarkedForRemoval: () => void;
 };
 
@@ -140,6 +141,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.stun, result.pause);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -154,6 +156,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.stun, result.pause);
       input.applyHitState?.(defender);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
@@ -179,6 +182,8 @@ export class RuntimeProjectileCombatWorld {
         if (left.priority === right.priority) {
           markRuntimeProjectileForRemoval(left, "cancel");
           markRuntimeProjectileForRemoval(right, "cancel");
+          input.recordProjectileCancel?.(left);
+          input.recordProjectileCancel?.(right);
           log(
             `Projectile clash: ${leftLabel} ${left.serialId} traded with ${rightLabel} ${right.serialId} at priority ${left.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
           );
@@ -186,6 +191,7 @@ export class RuntimeProjectileCombatWorld {
           const previousPriority = left.priority;
           left.priority = decrementProjectilePriority(left.priority);
           markRuntimeProjectileForRemoval(right, "cancel");
+          input.recordProjectileCancel?.(right);
           log(
             `Projectile clash: ${leftLabel} ${left.serialId} canceled ${rightLabel} ${right.serialId} by priority ${previousPriority} > ${right.priority}; winner priority ${previousPriority} -> ${left.priority}; ${right.serialId} ${describeRuntimeProjectileRemoval(right)}`,
           );
@@ -193,6 +199,7 @@ export class RuntimeProjectileCombatWorld {
           const previousPriority = right.priority;
           right.priority = decrementProjectilePriority(right.priority);
           markRuntimeProjectileForRemoval(left, "cancel");
+          input.recordProjectileCancel?.(left);
           log(
             `Projectile clash: ${rightLabel} ${right.serialId} canceled ${leftLabel} ${left.serialId} by priority ${previousPriority} > ${left.priority}; winner priority ${previousPriority} -> ${right.priority}; ${left.serialId} ${describeRuntimeProjectileRemoval(left)}`,
           );
@@ -217,6 +224,18 @@ export function resolveRuntimeProjectileClashes(input: RuntimeProjectileClashInp
 
 function decrementProjectilePriority(priority: number): number {
   return Math.max(0, priority - 1);
+}
+
+function runtimeGetHitVarsFromProjectileResult(guarded: boolean, hitTime: number, hitShakeTime: number): CharacterRuntimeState["hitVars"] {
+  return {
+    animType: 0,
+    groundType: 1,
+    airType: 1,
+    isBound: false,
+    hitShakeTime,
+    hitTime,
+    ...(guarded ? { guarded: true } : {}),
+  };
 }
 
 function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {

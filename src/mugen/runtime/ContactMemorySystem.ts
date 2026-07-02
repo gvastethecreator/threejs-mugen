@@ -25,6 +25,9 @@ export type RuntimeContactMemory = {
   projectileContactTime?: number;
   projectileHitTime?: number;
   projectileGuardTime?: number;
+  projectileCancelState?: number;
+  projectileCancelId?: number;
+  projectileCancelTime?: number;
 };
 
 export type RuntimeContactKind = "contact" | "hit" | "guard";
@@ -88,6 +91,10 @@ export class RuntimeContactMemoryWorld {
     markRuntimeProjectileContact(memory, stateNo, projectileId, kind);
   }
 
+  markProjectileCancel(memory: RuntimeContactMemory, stateNo: number, projectileId: number | undefined): void {
+    markRuntimeProjectileCancel(memory, stateNo, projectileId);
+  }
+
   advance(memory: RuntimeContactMemory): void {
     advanceRuntimeContactTimers(memory);
   }
@@ -128,6 +135,10 @@ export class RuntimeContactMemoryWorld {
     projectileId?: number,
   ): number {
     return runtimeProjectileContactTime(memory, stateNo, kind, projectileId);
+  }
+
+  projectileCancelTime(memory: RuntimeContactMemory, stateNo: number, projectileId?: number): number {
+    return runtimeProjectileCancelTime(memory, stateNo, projectileId);
   }
 }
 
@@ -254,6 +265,16 @@ export function markRuntimeProjectileContact(
   }
 }
 
+export function markRuntimeProjectileCancel(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  projectileId: number | undefined,
+): void {
+  memory.projectileCancelState = stateNo;
+  memory.projectileCancelId = projectileId;
+  memory.projectileCancelTime = 0;
+}
+
 export function advanceRuntimeContactTimers(memory: RuntimeContactMemory): void {
   if (memory.moveContactTime !== undefined) memory.moveContactTime += 1;
   if (memory.moveHitTime !== undefined) memory.moveHitTime += 1;
@@ -262,6 +283,7 @@ export function advanceRuntimeContactTimers(memory: RuntimeContactMemory): void 
   if (memory.projectileContactTime !== undefined) memory.projectileContactTime += 1;
   if (memory.projectileHitTime !== undefined) memory.projectileHitTime += 1;
   if (memory.projectileGuardTime !== undefined) memory.projectileGuardTime += 1;
+  if (memory.projectileCancelTime !== undefined) memory.projectileCancelTime += 1;
 }
 
 export function runtimeMoveContactValue(memory: RuntimeContactMemory, stateNo: number, kind: RuntimeContactKind): number {
@@ -327,6 +349,17 @@ export function runtimeProjectileContactTime(
     return memory.projectileGuardState === stateNo ? memory.projectileGuardTime ?? 0 : -1;
   }
   return memory.projectileContactState === stateNo ? memory.projectileContactTime ?? 0 : -1;
+}
+
+export function runtimeProjectileCancelTime(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  projectileId?: number,
+): number {
+  if (projectileId !== undefined && memory.projectileCancelId !== projectileId) {
+    return -1;
+  }
+  return memory.projectileCancelState === stateNo ? memory.projectileCancelTime ?? 0 : -1;
 }
 
 function clampHitCount(value: number): number {

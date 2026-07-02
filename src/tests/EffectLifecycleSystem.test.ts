@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
+import { compileStateProgram } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
 import type { MugenStateController } from "../mugen/model/MugenState";
-import { RuntimeEffectActorWorld } from "../mugen/runtime/EffectActorSystem";
+import {
+  RuntimeEffectActorWorld,
+  type RuntimeEffectPresentationAdvanceOptions,
+} from "../mugen/runtime/EffectActorSystem";
 import { RuntimeEffectLifecycleWorld, type RuntimeEffectLifecycleActor } from "../mugen/runtime/EffectLifecycleSystem";
+import type { RuntimeHelperAdvanceOptions } from "../mugen/runtime/HelperSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
 describe("EffectLifecycleSystem", () => {
@@ -42,6 +47,99 @@ describe("EffectLifecycleSystem", () => {
     expect(actor.runtime.moveType).toBe("H");
     expect(effectActorWorld.getStore("p1").explods.map((explod) => explod.explodId)).toEqual([11]);
   });
+
+  it("forwards stage bounds, GameTime, and runtime tick into helper controllers", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const actor = lifecycleActor(effectActorWorld);
+    const lifecycle = new RuntimeEffectLifecycleWorld();
+    const helper = effectActorWorld.spawnHelper("p1", {
+      ...helperInput({ id: "42", anim: "900", removetime: "-1" }),
+      runtimeProgram: {
+        states: [
+          compileStateProgram(
+            state(6000, 900, [
+              controller("PlaySnd", { value: "S7,3", channel: "4" }, ["GameTime >= 7"]),
+              controller("VelSet", { x: "FrontEdgeDist", y: "0" }, ["GameTime >= 7"]),
+              controller("ChangeState", { value: "6001" }, ["GameTime >= 7"]),
+            ]),
+          ),
+        ],
+      },
+      animations: new Map([[900, action(900)]]),
+    });
+
+    lifecycle.advanceActive(actor, { bounds: { left: -160, right: 160 } }, undefined, {
+      stageTime: 6,
+      runtimeTick: 66,
+    });
+
+    expect(helper.stateNo).toBe(6000);
+    expect(helper.soundEvents).toEqual([]);
+
+    lifecycle.advanceActive(actor, { bounds: { left: -160, right: 160 } }, undefined, {
+      stageTime: 7,
+      runtimeTick: 77,
+    });
+
+    expect(helper.soundEvents[0]).toMatchObject({ type: "PlaySnd", group: 7, index: 3, channel: 4, runtimeTick: 77 });
+    expect(helper.vel.x).toBe(160);
+    expect(helper.stateNo).toBe(6001);
+  });
+
+  it("forwards the current opponent as an id-bearing helper roster into active and paused contexts", () => {
+    const lifecycle = new RuntimeEffectLifecycleWorld();
+    const stage = { bounds: { left: -160, right: 160 } };
+    const activeOptions: RuntimeHelperAdvanceOptions[] = [];
+    const presentationOptions: RuntimeEffectPresentationAdvanceOptions[] = [];
+    const actor = lifecycleActorWithCapturedOptions(activeOptions, presentationOptions);
+    const opponentRuntime = runtimeState();
+    opponentRuntime.pos.x = 48;
+    const opponent: RuntimeEffectLifecycleActor = {
+      ...lifecycleActorWithCapturedOptions([], []),
+      id: "p2",
+      runtime: opponentRuntime,
+    };
+
+    lifecycle.advanceActive(actor, stage, opponent, { stageTime: 12, runtimeTick: 120 });
+    lifecycle.advancePausedPresentation(actor, "Pause", stage, opponent, { stageTime: 13, runtimeTick: 130 });
+
+    expect(activeOptions[0]?.opponentId).toBe("p2");
+    expect(activeOptions[0]?.opponentState).toBe(opponentRuntime);
+    expect(activeOptions[0]?.opponentRoster?.[0]?.id).toBe("p2");
+    expect(activeOptions[0]?.opponentRoster?.[0]?.state).toBe(opponentRuntime);
+    expect(activeOptions[0]?.stageTime).toBe(12);
+    expect(activeOptions[0]?.runtimeTick).toBe(120);
+
+    expect(presentationOptions[0]?.pauseKind).toBe("Pause");
+    expect(presentationOptions[0]?.opponentId).toBe("p2");
+    expect(presentationOptions[0]?.opponentState).toBe(opponentRuntime);
+    expect(presentationOptions[0]?.opponentRoster?.[0]?.id).toBe("p2");
+    expect(presentationOptions[0]?.opponentRoster?.[0]?.state).toBe(opponentRuntime);
+    expect(presentationOptions[0]?.stageTime).toBe(13);
+    expect(presentationOptions[0]?.runtimeTick).toBe(130);
+  });
+
+  it("builds helper rosters from explicit lifecycle opponent lists before falling back to the current opponent", () => {
+    const lifecycle = new RuntimeEffectLifecycleWorld();
+    const stage = { bounds: { left: -160, right: 160 } };
+    const activeOptions: RuntimeHelperAdvanceOptions[] = [];
+    const actor = lifecycleActorWithCapturedOptions(activeOptions, []);
+    const far = opponentLifecycleActor("p2-far", 160);
+    const near = opponentLifecycleActor("p2-near", 80);
+    const tied = opponentLifecycleActor("p2-tie", -80);
+
+    lifecycle.advanceActive(actor, stage, far, {
+      opponents: [far, near, tied],
+      stageTime: 21,
+      runtimeTick: 210,
+    });
+
+    expect(activeOptions[0]?.opponentId).toBe("p2-far");
+    expect(activeOptions[0]?.opponentState).toBe(far.runtime);
+    expect(activeOptions[0]?.opponentRoster?.map((entry) => entry.id)).toEqual(["p2-near", "p2-tie", "p2-far"]);
+    expect(activeOptions[0]?.opponentRoster?.map((entry) => entry.state)).toEqual([near.runtime, tied.runtime, far.runtime]);
+    expect("opponents" in activeOptions[0]!).toBe(false);
+  });
 });
 
 function lifecycleActor(effectActorWorld: RuntimeEffectActorWorld): RuntimeEffectLifecycleActor {
@@ -49,6 +147,38 @@ function lifecycleActor(effectActorWorld: RuntimeEffectActorWorld): RuntimeEffec
     id: "p1",
     runtime: runtimeState(),
     effectActorWorld,
+  };
+}
+
+function lifecycleActorWithCapturedOptions(
+  activeOptions: RuntimeHelperAdvanceOptions[],
+  presentationOptions: RuntimeEffectPresentationAdvanceOptions[],
+): RuntimeEffectLifecycleActor {
+  return {
+    id: "p1",
+    runtime: runtimeState(),
+    effectActorWorld: {
+      advanceActiveEffects: (_ownerId, _stage, options) => {
+        activeOptions.push(options ?? {});
+      },
+      advancePresentationEffects: (_ownerId, _bindAnchor, options) => {
+        presentationOptions.push(options ?? {});
+      },
+      explodSnapshots: () => [],
+      helperSnapshots: () => [],
+      projectileSnapshots: () => [],
+      removeExplodsOnGetHit: () => undefined,
+    },
+  };
+}
+
+function opponentLifecycleActor(id: string, x: number): RuntimeEffectLifecycleActor {
+  const state = runtimeState();
+  state.pos.x = x;
+  return {
+    id,
+    runtime: state,
+    effectActorWorld: new RuntimeEffectActorWorld(),
   };
 }
 
@@ -113,14 +243,27 @@ function projectileInput(params: Record<string, string>) {
   };
 }
 
-function controller(type: string, params: Record<string, string>): MugenStateController {
+function controller(type: string, params: Record<string, string>, triggers: string[] = []): MugenStateController {
   return {
     stateId: 200,
     type,
     params,
-    triggers: [],
+    triggers: triggers.map((expression, index) => ({ index: index + 1, expression, raw: `trigger${index + 1} = ${expression}`, line: index + 1 })),
     line: 1,
     rawHeader: `[State 200, ${type}]`,
+  };
+}
+
+function state(id: number, anim: number, controllers: MugenStateController[]) {
+  return {
+    id,
+    type: "S",
+    moveType: "I",
+    physics: "S",
+    anim,
+    rawParams: {},
+    controllers,
+    line: 1,
   };
 }
 

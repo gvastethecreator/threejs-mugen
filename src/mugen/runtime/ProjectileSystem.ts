@@ -67,6 +67,7 @@ export type RuntimeProjectile = {
   hasHit: boolean;
   lastContactKind?: RuntimeProjectileContactKind;
   lastContactTime?: number;
+  lastCancelTime?: number;
 };
 
 export type RuntimeProjectileRemovalReason = "hit" | "timeout" | "bounds" | "cancel";
@@ -454,6 +455,13 @@ export function runtimeProjectileContactTime(
   return hasRuntimeProjectileContact(projectile, kind, projectileId) ? (projectile.lastContactTime ?? 0) : -1;
 }
 
+export function runtimeProjectileCancelTime(projectile: RuntimeProjectile, projectileId?: number): number {
+  if (projectileId !== undefined && projectile.projectileId !== projectileId) {
+    return -1;
+  }
+  return projectile.lastCancelTime ?? -1;
+}
+
 export function markRuntimeProjectileForRemoval(
   projectile: RuntimeProjectile,
   reason: RuntimeProjectileRemovalReason,
@@ -464,6 +472,9 @@ export function markRuntimeProjectileForRemoval(
   projectile.removalReason = reason;
   projectile.removalAnimNo = resolveProjectileRemovalAnim(projectile, reason);
   projectile.hasHit = projectile.hasHit || reason === "hit" || reason === "cancel";
+  if (reason === "cancel") {
+    projectile.lastCancelTime = 0;
+  }
 }
 
 export function isRuntimeProjectileMarkedForRemoval(projectile: RuntimeProjectile): boolean {
@@ -554,6 +565,9 @@ function advanceRuntimeProjectileTerminalPlayback(projectile: RuntimeProjectile)
 function advanceRuntimeProjectileContactTimer(projectile: RuntimeProjectile): void {
   if (projectile.lastContactTime !== undefined) {
     projectile.lastContactTime += 1;
+  }
+  if (projectile.lastCancelTime !== undefined) {
+    projectile.lastCancelTime += 1;
   }
 }
 

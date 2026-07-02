@@ -126,7 +126,11 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
-    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
+    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
+      guarded: true,
+      hitShakeTime: result.pause,
+      hitTime: result.stun,
+    });
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
@@ -160,7 +164,10 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
-    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move);
+    defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
+      hitShakeTime: result.pause,
+      hitTime: result.stun,
+    });
     defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
@@ -193,12 +200,18 @@ function interruptCurrentMove(actor: RuntimeDirectCombatActor): void {
   actor.hasHit = false;
 }
 
-function runtimeGetHitVarsFromMove(move: DemoMove): CharacterRuntimeState["hitVars"] {
+function runtimeGetHitVarsFromMove(
+  move: DemoMove,
+  timing: { guarded?: boolean; hitShakeTime: number; hitTime: number },
+): CharacterRuntimeState["hitVars"] {
   return {
     animType: move.hitVars?.animType ?? 0,
     groundType: move.hitVars?.groundType ?? 1,
     airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,
     isBound: false,
+    hitShakeTime: timing.hitShakeTime,
+    hitTime: timing.hitTime,
+    ...(timing.guarded ? { guarded: true } : {}),
   };
 }
 

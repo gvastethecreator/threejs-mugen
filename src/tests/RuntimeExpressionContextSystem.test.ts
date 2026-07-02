@@ -6,6 +6,7 @@ import {
   RuntimeExpressionContextWorld,
   type RuntimeExpressionContextActor,
   runtimeActorHasState,
+  runtimeActorTeamSide,
   runtimeDefinitionConst,
   runtimeHitVar,
 } from "../mugen/runtime/RuntimeExpressionContextSystem";
@@ -70,10 +71,103 @@ describe("RuntimeExpressionContextWorld", () => {
     });
   });
 
+  it("passes stage bounds into edge-distance expression reads", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", {
+      pos: { x: 20, y: 0 },
+      facing: 1,
+      bodyWidth: { front: 18, back: 44 },
+    });
+    const opponent = runtimeActor("p2", "Rival");
+
+    expect(
+      world.evaluateNumber("FrontEdgeDist + BackEdgeBodyDist", {
+        actor,
+        opponent,
+        stageBounds: { left: -100, right: 160 },
+      }),
+    ).toBe(216);
+    expect(world.evaluateNumber("FrontEdgeDist", { actor, opponent })).toBe(999);
+  });
+
+  it("exposes bounded TeamSide values for players and first-generation helper ids", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+
+    expect(world.evaluateNumber("TeamSide + EnemyNear, TeamSide", { actor, opponent })).toBe(3);
+    expect(runtimeActorTeamSide(runtimeActor("p1-helper-0", "Author"))).toBe(1);
+    expect(runtimeActorTeamSide(runtimeActor("p2-helper-0", "Rival"))).toBe(2);
+    expect(runtimeActorTeamSide(runtimeActor("training", "Neutral"))).toBe(0);
+  });
+
+  it("routes EnemyNear indexes and NumEnemy through an explicit runtime opponent roster", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const firstOpponent = runtimeActor("p2", "Rival", { life: 875, stateNo: 3000 });
+    const secondOpponent = runtimeActor("p3", "Extra", { life: 333, stateNo: 5000 });
+
+    expect(
+      world.evaluateNumber("NumEnemy + EnemyNear(1), Life + EnemyNear(var(2)), StateNo", {
+        actor: { ...actor, runtime: { ...actor.runtime, vars: [0, 0, 1] } },
+        opponent: firstOpponent,
+        opponents: [firstOpponent, secondOpponent],
+      }),
+    ).toBe(5335);
+    expect(world.evaluateNumber("NumEnemy", { actor, opponent: firstOpponent })).toBe(1);
+    expect(world.evaluateNumber("EnemyNear(1), Life", { actor, opponent: firstOpponent })).toBe(0);
+  });
+
+  it("orders explicit EnemyNear rosters by nearest body distance with stable ties", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author", {
+      pos: { x: 0, y: 0 },
+      facing: 1,
+      bodyWidth: { front: 10, back: 10 },
+    });
+    const far = runtimeActor("p3", "Far", {
+      pos: { x: 160, y: 0 },
+      life: 333,
+      bodyWidth: { front: 12, back: 12 },
+    });
+    const near = runtimeActor("p2", "Near", {
+      pos: { x: 80, y: 0 },
+      life: 875,
+      bodyWidth: { front: 12, back: 12 },
+    });
+    const tiedFirst = runtimeActor("p4", "TieA", {
+      pos: { x: -80, y: 0 },
+      life: 444,
+      bodyWidth: { front: 12, back: 12 },
+    });
+    const tiedSecond = runtimeActor("p5", "TieB", {
+      pos: { x: -80, y: 0 },
+      life: 555,
+      bodyWidth: { front: 12, back: 12 },
+    });
+
+    const input = { actor, opponent: far, opponents: [far, near, tiedFirst, tiedSecond] };
+    expect(world.evaluateNumber("EnemyNear(0), Life", input)).toBe(875);
+    expect(world.evaluateNumber("EnemyNear(1), Life", input)).toBe(444);
+    expect(world.evaluateNumber("EnemyNear(2), Life", input)).toBe(555);
+    expect(world.evaluateNumber("EnemyNear(3), Life", input)).toBe(333);
+  });
+
+  it("normalizes transition sentinel state time to observable Time zero", () => {
+    const world = new RuntimeExpressionContextWorld();
+    const actor = runtimeActor("p1", "Author");
+    const opponent = runtimeActor("p2", "Rival");
+    actor.stateElapsed = -1;
+
+    expect(world.evaluateNumber("Time + StateTime", { actor, opponent })).toBe(0);
+  });
+
   it("evaluates compiled triggers through the same runtime read model", () => {
     const world = new RuntimeExpressionContextWorld();
     const actor = runtimeActor("p1", "Author", { stateNo: 200, animNo: 200 });
     const opponent = runtimeActor("p2", "Rival");
+    actor.contact.projectileGuardState = 200;
+    actor.contact.projectileGuardTime = 3;
 
     const trigger = compiledTrigger('command = "fire" && ProjHit(77) && InGuardDist');
 
@@ -84,12 +178,33 @@ describe("RuntimeExpressionContextWorld", () => {
         inGuardDist: () => true,
       }),
     ).toBe(true);
+    expect(world.evaluateTrigger(compiledTrigger("ProjContactTime(0) >= 0 && ProjContactTime(77) >= 0"), { actor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjContactTime(0) + ProjContactTime(77)", { actor, opponent })).toBe(22);
+    expect(world.evaluateTrigger(compiledTrigger("ProjHitTime(0) >= 0 && ProjHitTime(77) >= 0"), { actor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjHitTime(0) + ProjHitTime(77)", { actor, opponent })).toBe(22);
+    expect(world.evaluateTrigger(compiledTrigger("ProjGuarded(77) && ProjGuardedTime(0) >= 0"), { actor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjGuardedTime(0) + ProjGuardedTime(77)", { actor, opponent })).toBe(6);
+    expect(world.evaluateTrigger(compiledTrigger("ProjCancelTime(0) >= 0 && ProjCancelTime(77) >= 0"), { actor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjCancelTime(0) + ProjCancelTime(77)", { actor, opponent })).toBe(10);
+    expect(world.evaluateNumber("ProjContactTime(99)", { actor, opponent })).toBe(-1);
+    expect(world.evaluateNumber("ProjHitTime(99)", { actor, opponent })).toBe(-1);
+    expect(world.evaluateNumber("ProjGuardedTime(99)", { actor, opponent })).toBe(-1);
+    expect(world.evaluateNumber("ProjCancelTime(99)", { actor, opponent })).toBe(-1);
   });
 
   it("exposes shared const, state, and HitVar helpers", () => {
     const actor = runtimeActor("p1", "Author", {
-      hitVars: { animType: 2, isBound: true },
-      hitFall: { falling: true, damage: 31, defenceUp: 80, velocity: { x: -2, y: -8 } },
+      hitVars: { animType: 2, isBound: true, guarded: true },
+      guardStun: 9,
+      guardSlideTime: 5,
+      guardControlTime: 7,
+      hitFall: {
+        falling: true,
+        damage: 31,
+        defenceUp: 80,
+        velocity: { x: -2, y: -8 },
+        envShake: { time: 15, freq: 178, ampl: 6, phase: 0 },
+      },
     });
 
     expect(runtimeDefinitionConst(actor.definition, " DATA.ATTACK ")).toBe(200);
@@ -98,9 +213,48 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(runtimeActorHasState({ ...actor, runtimeProgram: undefined }, 777)).toBe(true);
     expect(runtimeHitVar(actor.runtime, "animtype")).toBe(2);
     expect(runtimeHitVar(actor.runtime, "isbound")).toBe(1);
+    expect(runtimeHitVar(actor.runtime, "guarded")).toBe(1);
     expect(runtimeHitVar(actor.runtime, "fall.damage")).toBe(31);
     expect(runtimeHitVar(actor.runtime, "fall.defence_up")).toBe(80);
     expect(runtimeHitVar(actor.runtime, "fall.xvel")).toBe(-2);
+    expect(runtimeHitVar(actor.runtime, "fall.envshake.time")).toBe(15);
+    expect(runtimeHitVar(actor.runtime, "fall.envshake.freq")).toBe(178);
+    expect(runtimeHitVar(actor.runtime, "fall.envshake.ampl")).toBe(6);
+    expect(runtimeHitVar(actor.runtime, "fall.envshake.phase")).toBe(0);
+    expect(runtimeHitVar(actor.runtime, "hittime")).toBe(9);
+    expect(runtimeHitVar(actor.runtime, "slidetime")).toBe(5);
+    expect(runtimeHitVar(actor.runtime, "ctrltime")).toBe(7);
+
+    const normalHit = runtimeActor("p1", "Author");
+    normalHit.hitStun = 13;
+    normalHit.hitPause = 4;
+    expect(runtimeHitVar(normalHit.runtime, "hittime", { hitStun: normalHit.hitStun })).toBe(13);
+    expect(runtimeHitVar(normalHit.runtime, "hitshaketime", { hitPause: normalHit.hitPause })).toBe(4);
+    expect(new RuntimeExpressionContextWorld().evaluateNumber("GetHitVar(hittime) + GetHitVar(hitshaketime)", {
+      actor: normalHit,
+      opponent: runtimeActor("p2", "Rival"),
+    })).toBe(17);
+  });
+
+  it("keeps GetHitVar fall.recover distinct from CanRecover timing", () => {
+    const actor = runtimeActor("p1", "Author", {
+      hitFall: {
+        falling: true,
+        damage: 31,
+        velocity: { y: -8 },
+        recover: true,
+        recoverTime: 12,
+        downRecover: true,
+        downRecoverTime: 45,
+      },
+    });
+
+    expect(runtimeHitVar(actor.runtime, "fall.recover")).toBe(1);
+    expect(runtimeHitVar(actor.runtime, "fall.recovertime")).toBe(12);
+    expect(runtimeHitVar(actor.runtime, "down.recover")).toBe(1);
+    expect(runtimeHitVar(actor.runtime, "down.recovertime")).toBe(45);
+    expect(runtimeHitVar(actor.runtime, "recovertime")).toBe(45);
+    expect(new RuntimeExpressionContextWorld().evaluateNumber("CanRecover", { actor, opponent: runtimeActor("p2", "Rival") })).toBe(0);
   });
 });
 
@@ -183,9 +337,14 @@ function contactMemory(): RuntimeContactMemory {
     receivedHitsCount: 2,
     projectileContactState: 200,
     projectileHitState: 200,
+    projectileGuardState: 200,
     projectileId: 77,
     projectileContactTime: 11,
     projectileHitTime: 11,
+    projectileGuardTime: 3,
+    projectileCancelState: 200,
+    projectileCancelId: 77,
+    projectileCancelTime: 5,
   };
 }
 

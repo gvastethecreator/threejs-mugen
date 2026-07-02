@@ -129,56 +129,15 @@
     color: color-mix(in srgb, var(--pending) 88%, var(--text));
   }
 
-.app-shell.mode-studio .workspace-action-grid button,
-  .app-shell.mode-studio .workbench-action-bar button,
-  .app-shell.mode-studio .command-action-column button,
-  .app-shell.mode-studio .action-stack button,
-  .app-shell.mode-studio .full-width-action,
-  .app-shell.mode-studio .primary-action {
-    min-height: 36px;
-    border-color: var(--editor-edge);
-    border-radius: 0;
-    background: var(--editor-command);
-    color: color-mix(in srgb, var(--text) 88%, var(--muted));
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.045),
-      inset 0 -1px 0 rgba(0, 0, 0, 0.76);
-  }
-
-.app-shell.mode-studio .workspace-action-grid button:hover,
-  .app-shell.mode-studio .workbench-action-bar button:hover,
-  .app-shell.mode-studio .command-action-column button:hover,
-  .app-shell.mode-studio .action-stack button:hover,
-  .app-shell.mode-studio .full-width-action:hover,
-  .app-shell.mode-studio .primary-action:hover {
-    background: var(--editor-command-hover);
-  }
-
-.app-shell.mode-studio .workspace-action-grid button.primary-action,
-  .app-shell.mode-studio .primary-action {
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.055),
-      inset 0 -2px 0 color-mix(in srgb, var(--section-accent) 44%, transparent);
-  }
-
 .app-shell.mode-studio .studio-mission-strip,
   .app-shell.mode-studio .workbench-surface-grid,
   .app-shell.mode-studio .workbench-lane-strip {
     gap: 0;
   }
 
-.app-shell.mode-studio .studio-mission-node.is-ok::after,
-  .app-shell.mode-studio .workbench-route-button.is-ok .route-icon,
+.app-shell.mode-studio .workbench-route-button.is-ok .route-icon,
   .app-shell.mode-studio .workbench-lane-strip .is-ok b {
     color: var(--ok);
-  }
-
-.app-shell.mode-studio .studio-mission-node.is-warn::after,
-  .app-shell.mode-studio .studio-mission-node.is-planned::after,
-  .app-shell.mode-studio .studio-mission-node.is-pending::after,
-  .app-shell.mode-studio .studio-mission-node.is-partial::after {
-    color: var(--pending);
-    background: var(--pending);
   }
 
 .app-shell.mode-studio .workbench-route-button.is-warn .route-icon,

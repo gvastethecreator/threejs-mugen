@@ -449,13 +449,4 @@
     box-shadow: inset 0 0 0 3px var(--editor-panel-pressed);
   }
 
-.app-shell.mode-studio .meter-life span,
-  .app-shell.mode-studio .hud-life span {
-    background: #879767;
-  }
-
-.app-shell.mode-studio .meter-power span,
-  .app-shell.mode-studio .hud-power span {
-    background: #839ab4;
-  }
 }

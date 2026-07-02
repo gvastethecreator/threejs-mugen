@@ -35,6 +35,7 @@ import {
   createRuntimeProjectile,
   hasRuntimeProjectileContact,
   modifyRuntimeProjectiles,
+  runtimeProjectileCancelTime,
   runtimeProjectileContactTime,
   runtimeProjectilesToSnapshots,
   shouldKeepRuntimeProjectileAfterRemoval,
@@ -237,7 +238,12 @@ export class RuntimeEffectActorWorld {
   resolveProjectileClashes(
     leftOwnerId: string,
     rightOwnerId: string,
-    input: { leftLabel: string; rightLabel: string; log: (line: string) => void },
+    input: {
+      leftLabel: string;
+      rightLabel: string;
+      log: (line: string) => void;
+      recordProjectileCancel?: (projectile: RuntimeProjectile) => void;
+    },
   ): void {
     this.projectileCombatWorld.resolveClashes({
       ...input,
@@ -365,6 +371,7 @@ export function advanceRuntimeHelperActors(
 ): void {
   store.helpers = advanceRuntimeHelpers(store.helpers, stage, {
     ...options,
+    stageBounds: options?.stageBounds ?? stage.bounds,
     countExplods: (helper, explodId) => {
       if (options?.countExplods) {
         return options.countExplods(helper, explodId);
@@ -394,6 +401,12 @@ export function advanceRuntimeHelperActors(
         return options.projectileContactTime(helper, kind, projectileId);
       }
       return runtimeHelperProjectileContactTime(store, helper, kind, projectileId);
+    },
+    projectileCancelTime: (helper, projectileId) => {
+      if (options?.projectileCancelTime) {
+        return options.projectileCancelTime(helper, projectileId);
+      }
+      return runtimeHelperProjectileCancelTime(store, helper, projectileId);
     },
     onSpawnExplod: (helper, controller) => {
       if (options?.onSpawnExplod) {
@@ -584,6 +597,18 @@ export function runtimeHelperProjectileContactTime(
   const times = store.projectiles
     .filter((projectile) => projectile.parentId === helper.serialId)
     .map((projectile) => runtimeProjectileContactTime(projectile, kind, projectileId))
+    .filter((time) => time >= 0);
+  return times.length === 0 ? -1 : Math.min(...times);
+}
+
+export function runtimeHelperProjectileCancelTime(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  projectileId?: number,
+): number {
+  const times = store.projectiles
+    .filter((projectile) => projectile.parentId === helper.serialId)
+    .map((projectile) => runtimeProjectileCancelTime(projectile, projectileId))
     .filter((time) => time >= 0);
   return times.length === 0 ? -1 : Math.min(...times);
 }

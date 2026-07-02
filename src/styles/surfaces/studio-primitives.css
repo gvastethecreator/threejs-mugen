@@ -20,6 +20,8 @@
     --studio-ledge-dim: #707b85;
     --studio-ledge-icon-muted: #a0aab4;
     --studio-ledge-ok: #8ca286;
+    --studio-ledge-warn: #b68f61;
+    --studio-ledge-danger: #bf6868;
   }
 
   .app-shell.mode-studio .workbench-ledger-panel,
@@ -100,12 +102,11 @@
     overflow: hidden;
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.1;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
@@ -144,6 +145,105 @@
 }
 
 @media (min-width: 1161px) {
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .studio-kv,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) .studio-kv {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledger-edge);
+    border-radius: 0;
+    background: var(--studio-ledger-bg);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .studio-kv dt,
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .studio-kv dd,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) .studio-kv dt,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) .studio-kv dd {
+    display: grid;
+    min-height: var(--studio-ledger-kv-row-min, 26px);
+    height: auto;
+    align-content: center;
+    margin: 0;
+    padding: 5px 8px;
+    border: 0;
+    border-right: 1px solid var(--studio-ledger-edge);
+    border-bottom: 1px solid var(--studio-ledger-edge);
+    border-radius: 0;
+    background: var(--studio-ledger-row);
+    font-family: var(--mono);
+    font-size: var(--studio-ledger-kv-font-size, 12px);
+    line-height: 1.12;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .studio-kv dt,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) .studio-kv dt {
+    color: var(--studio-ledger-muted);
+    text-align: right;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .studio-kv dd,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) .studio-kv dd {
+    min-width: 0;
+    overflow: visible;
+    color: var(--studio-ledger-text);
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .badge-row:not(.record-evidence),
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) :is(.badge-row, .contract-pill-row) {
+    display: grid;
+    grid-template-columns: var(--studio-ledger-badge-grid, repeat(auto-fit, minmax(68px, 1fr)));
+    gap: 0;
+    margin: 0;
+    overflow: hidden;
+    border: 0;
+    border-bottom: 1px solid var(--studio-ledger-edge);
+    border-radius: 0;
+    background: var(--studio-ledger-bg);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"]) .pane-right .badge-row:not(.record-evidence) .badge,
+  .app-shell.mode-studio:is([data-studio-tab="modules"], [data-studio-tab="debug"]) :is(.badge-row, .contract-pill-row) .badge {
+    display: inline-grid;
+    min-width: 0;
+    min-height: 23px;
+    align-content: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--studio-ledger-badge-padding, 0 5px);
+    border: 0;
+    border-right: 1px solid var(--studio-ledger-edge);
+    border-radius: 0;
+    background: var(--studio-ledger-row);
+    color: var(--studio-ledger-muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: var(--studio-ledger-badge-line, 1);
+    overflow-wrap: var(--studio-ledger-badge-wrap, normal);
+    text-overflow: ellipsis;
+    white-space: var(--studio-ledger-badge-space, nowrap);
+    box-shadow: none;
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"], [data-studio-tab="modules"], [data-studio-tab="debug"]) .badge:is(.ok, .active) {
+    color: var(--studio-ledger-ok);
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"], [data-studio-tab="modules"], [data-studio-tab="debug"]) .badge.warn {
+    color: var(--studio-ledger-warn);
+  }
+
+  .app-shell.mode-studio:is([data-studio-tab="build"], [data-studio-tab="evidence"], [data-studio-tab="modules"], [data-studio-tab="debug"]) .badge.error {
+    color: var(--studio-ledger-danger);
+  }
+
   .app-shell.mode-studio :is(
     .workbench-route-button span,
     .workbench-route-button strong,

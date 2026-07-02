@@ -1,6 +1,7 @@
 import type { CollisionBox } from "../model/CollisionBox";
-import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAnimation";
+import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
+import { RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import type {
   ActorSnapshot,
   CharacterRuntimeState,
@@ -12,6 +13,8 @@ import type {
 } from "./types";
 import type { RuntimeEffectSnapshotGroups } from "./EffectLifecycleSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
+
+const frameWorld = new RuntimeFrameWorld();
 
 export type RuntimeSnapshotActor = {
   runtime: {
@@ -87,8 +90,8 @@ export class RuntimeSnapshotWorld {
   }
 
   actor(actor: RuntimePlayerSnapshotActor): ActorSnapshot {
-    const frame = currentFrame(actor);
-    const activeHitbox = isCurrentMoveActive(actor) ? [actor.currentMove.hitbox] : frame?.clsn1 ?? [];
+    const frame = frameWorld.currentFrame(actor);
+    const activeHitbox = frameWorld.currentAttackBoxes(actor);
     const targetSnapshot = actor.targetWorld.snapshot(actor);
     return {
       id: actor.id,
@@ -120,8 +123,8 @@ export class RuntimeSnapshotWorld {
           : {}),
       },
       frame,
-      clsn1: activeHitbox.map((box) => ({ ...box })),
-      clsn2: frame?.clsn2.map((box) => ({ ...box })) ?? [{ x1: -24, y1: -96, x2: 24, y2: 0 }],
+      clsn1: activeHitbox,
+      clsn2: frameWorld.currentHurtBoxes(actor),
       soundEvents: actor.soundEvents.map((event) => ({ ...event })),
       hitEffectEvents: actor.hitEffectEvents.map((event) => ({
         ...event,
@@ -149,16 +152,6 @@ export function cameraCenterX(actors: RuntimeSnapshotActor[]): number {
   const cameraActors = actors.filter((actor) => actor.runtime.screenBound?.moveCameraX !== false);
   const source = cameraActors.length > 0 ? cameraActors : actors;
   return source.reduce((sum, actor) => sum + actor.runtime.pos.x, 0) / Math.max(1, source.length);
-}
-
-function currentFrame(actor: RuntimePlayerSnapshotActor): MugenAnimationFrame | undefined {
-  return actor.currentAction.frames[actor.runtime.frameIndex];
-}
-
-function isCurrentMoveActive(actor: RuntimePlayerSnapshotActor): actor is RuntimePlayerSnapshotActor & {
-  currentMove: NonNullable<RuntimePlayerSnapshotActor["currentMove"]>;
-} {
-  return Boolean(actor.currentMove && actor.moveTick >= actor.currentMove.activeStart && actor.moveTick <= actor.currentMove.activeEnd);
 }
 
 function spriteOwnerSnapshot(actor: RuntimePlayerSnapshotActor): {

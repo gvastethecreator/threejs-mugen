@@ -11,6 +11,10 @@
   --surface-chip: #0d1015;
   --surface-meter: #0b0d11;
   --scrollbar-track: #090a0d;
+  --scrollbar-thumb: #343b44;
+  --scrollbar-thumb-hover: #46505a;
+  --meter-life-fill: #8f985d;
+  --meter-power-fill: #7e92ad;
   --text-warm: #fff9e8;
   --recess-2: #080a0d;
   --text: #f2f3f4;
@@ -38,6 +42,7 @@
   --shadow-selected: inset 0 1px 0 rgba(255, 255, 255, 0.055), inset 0 -1px 0 rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(142, 154, 166, 0.2);
   --focus-ring: 0 0 0 2px rgba(142, 154, 166, 0.28);
   --motion-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --studio-row-transition: background-color 140ms var(--motion-out), color 140ms var(--motion-out), outline-color 140ms var(--motion-out), box-shadow 140ms var(--motion-out);
   --display: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", sans-serif;
   --mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   --sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
@@ -53,3 +58,5 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@media (prefers-reduced-motion: reduce) { :root { --studio-row-transition: none; } }

@@ -58,8 +58,8 @@
     border: 0;
     border-bottom: 1px solid var(--command-edge-strong);
     border-radius: 0;
-    background: #050608;
-    box-shadow: inset 0 -1px 0 #000;
+    background: var(--command-panel-low);
+    box-shadow: inset 0 -1px 0 var(--command-bg);
   }
 
   .app-shell.mode-studio .studio-chrome-brand,
@@ -88,7 +88,7 @@
     place-items: center;
     border: 1px solid color-mix(in srgb, var(--section-accent) 68%, var(--command-edge-strong));
     border-radius: 2px;
-    background: #070a0f;
+    background: var(--command-panel);
     color: var(--section-accent);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.08),
@@ -162,10 +162,9 @@
   .app-shell.mode-studio .studio-chrome-kicker {
     color: var(--command-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     text-align: left;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .studio-chrome-value {
@@ -192,7 +191,7 @@
   .app-shell.mode-studio .studio-chrome-value em {
     color: var(--command-dim);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     font-style: normal;
   }
 
@@ -206,20 +205,20 @@
 
   .app-shell.mode-studio .studio-chrome-dot.is-p1,
   .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-value b:first-of-type {
-    color: #75a9e5;
+    color: var(--command-blue);
   }
 
   .app-shell.mode-studio .studio-chrome-dot.is-p1 {
-    background: #2e80dd;
+    background: var(--command-blue);
   }
 
   .app-shell.mode-studio .studio-chrome-dot.is-p2,
   .app-shell.mode-studio .studio-chrome-matchup .studio-chrome-value b:last-of-type {
-    color: #b987d6;
+    color: var(--accent-2);
   }
 
   .app-shell.mode-studio .studio-chrome-dot.is-p2 {
-    background: #a94fce;
+    background: var(--accent-2);
   }
 
   .app-shell.mode-studio .studio-chrome-dot.is-live,
@@ -254,7 +253,7 @@
     overflow: hidden;
     padding: 0 8px;
     border-right: 0;
-    background: #050608;
+    background: var(--command-panel-low);
   }
 
   .app-shell.mode-studio .studio-chrome-actions button {
@@ -269,8 +268,8 @@
     padding: 0 8px;
     border: 1px solid var(--command-edge-strong);
     border-radius: 2px;
-    background: #090d12;
-    color: #dce3ea;
+    background: var(--command-row-alt);
+    color: var(--studio-text);
     font-size: 12px;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.07),
@@ -279,10 +278,10 @@
 
   .app-shell.mode-studio .studio-chrome-actions button:hover,
   .app-shell.mode-studio .studio-chrome-actions button:focus-visible {
-    border-color: #56616d;
+    border-color: var(--command-dim);
     background: var(--command-hot);
     color: var(--command-text);
-    outline: 1px solid #637180;
+    outline: 1px solid var(--command-muted);
     outline-offset: -2px;
   }
 
@@ -291,7 +290,7 @@
   }
 
   .app-shell.mode-studio .studio-chrome-command-prefix {
-    color: #c8d1dc;
+    color: var(--studio-text);
     font-family: var(--mono);
     font-size: 13px;
   }
@@ -299,12 +298,12 @@
   .app-shell.mode-studio .studio-chrome-playtest {
     grid-template-columns: max-content minmax(0, 1fr);
     border-color: color-mix(in srgb, var(--command-blue) 66%, var(--command-edge-strong));
-    background: #10161d;
-    color: #f3f7fb;
+    background: var(--command-hot);
+    color: var(--command-text);
   }
 
   .app-shell.mode-studio .studio-chrome-playtest .ui-icon {
-    color: #dbe7f3;
+    color: var(--command-text);
   }
 
   .app-shell.mode-studio .studio-chrome-actions .studio-chrome-utility {
@@ -324,7 +323,7 @@
     display: none;
     min-width: 0;
     overflow: hidden;
-    font-size: 10.5px;
+    font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
     white-space: nowrap;

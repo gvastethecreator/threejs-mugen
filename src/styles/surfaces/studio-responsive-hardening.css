@@ -102,7 +102,7 @@
     border-color: color-mix(in srgb, var(--legacy-stage-accent) 42%, var(--legacy-frame));
     border-radius: 2px;
     color: color-mix(in srgb, var(--legacy-stage-accent) 78%, var(--text));
-    background: #0b0e13;
+    background: var(--legacy-row);
   }
 }
 
@@ -574,20 +574,20 @@
     --asset-ledger-row-alt: var(--editor-panel, #090d11);
     --asset-ledger-warn: var(--warn, #b99b72);
     --asset-ledger-ok: var(--ok, #8ca286);
-    --asset-row-icon-size: 18px;
-    --asset-row-side-min: 54px;
-    --asset-row-min-height: 38px;
+    --asset-row-icon-size: 20px;
+    --asset-row-side-min: 62px;
+    --asset-row-min-height: 44px;
     --asset-row-gap: 6px;
     --asset-row-padding: 5px 7px;
     --asset-inline-row-padding: 5px 7px;
-    --asset-row-title-size: 11.5px;
-    --asset-row-meta-size: 10px;
+    --asset-row-title-size: 12px;
+    --asset-row-meta-size: 12px;
     --asset-row-action-line-clamp: 1;
     --asset-meta-line-clamp: 1;
-    --asset-kv-label-width: 86px;
-    --asset-kv-min-height: 24px;
+    --asset-kv-label-width: 98px;
+    --asset-kv-min-height: 28px;
     --asset-kv-padding: 4px 7px;
-    --asset-kv-font-size: 9.5px;
+    --asset-kv-font-size: 12px;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"].app-shell .pane-right {

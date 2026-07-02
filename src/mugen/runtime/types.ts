@@ -126,6 +126,9 @@ export type RuntimeGetHitVars = {
   groundType?: number;
   airType?: number;
   isBound?: boolean;
+  guarded?: boolean;
+  hitTime?: number;
+  hitShakeTime?: number;
 };
 
 export type RuntimeCustomState = {
@@ -176,6 +179,7 @@ export type RuntimeAfterImageSample = {
   facing: 1 | -1;
   spriteOwnerId?: string;
   spriteOwnerDefinitionId?: string;
+  spriteOwnerLabel?: string;
   spriteGroup: number;
   spriteIndex: number;
   offsetX: number;

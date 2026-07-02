@@ -35,6 +35,10 @@ export type RuntimeCompatibilityTelemetryActor = {
   compatibilityTick: number;
 };
 
+export type RuntimeCompatibilityTelemetryEventOptions = {
+  stateNo?: number;
+};
+
 export class RuntimeCompatibilityTelemetryWorld {
   isImportedActor(actor: RuntimeCompatibilityTelemetryActor): boolean {
     return actor.definition.source === "imported" || actor.stateOwner?.definition.source === "imported";
@@ -72,22 +76,30 @@ export class RuntimeCompatibilityTelemetryWorld {
     this.recordController(actor, controller);
   }
 
-  recordController(actor: RuntimeCompatibilityTelemetryActor, controller: MugenStateController): void {
+  recordController(
+    actor: RuntimeCompatibilityTelemetryActor,
+    controller: MugenStateController,
+    options: RuntimeCompatibilityTelemetryEventOptions = {},
+  ): void {
     if (!this.isImportedActor(actor)) {
       return;
     }
     const key = controller.type || controller.name || "Unknown";
     actor.executedControllerCounts[key] = (actor.executedControllerCounts[key] ?? 0) + 1;
-    this.appendControllerEvent(actor, controller);
+    this.appendControllerEvent(actor, controller, undefined, options);
   }
 
-  recordOperation(actor: RuntimeCompatibilityTelemetryActor, operation: ControllerOp): void {
+  recordOperation(
+    actor: RuntimeCompatibilityTelemetryActor,
+    operation: ControllerOp,
+    options: RuntimeCompatibilityTelemetryEventOptions = {},
+  ): void {
     if (!this.isImportedActor(actor)) {
       return;
     }
     const key = this.operationKey(operation);
     actor.executedOperationCounts[key] = (actor.executedOperationCounts[key] ?? 0) + 1;
-    this.appendControllerEvent(actor, undefined, key);
+    this.appendControllerEvent(actor, undefined, key, options);
   }
 
   buildSession(actors: RuntimeCompatibilityTelemetryActor[]): { actors: ActorCompatibilitySession[] } | undefined {
@@ -183,12 +195,13 @@ export class RuntimeCompatibilityTelemetryWorld {
     actor: RuntimeCompatibilityTelemetryActor,
     controller?: MugenStateController,
     operation?: string,
+    options: RuntimeCompatibilityTelemetryEventOptions = {},
   ): void {
     const key = controller?.type || controller?.name || operation || "Unknown";
     actor.controllerEvents.push({
       sequence: actor.nextControllerEventSequence++,
       tick: actor.compatibilityTick,
-      stateNo: actor.runtime.stateNo,
+      stateNo: options.stateNo ?? actor.runtime.stateNo,
       controller: key,
       ...(controller?.name ? { name: controller.name } : {}),
       ...(controller?.line !== undefined ? { line: controller.line } : {}),

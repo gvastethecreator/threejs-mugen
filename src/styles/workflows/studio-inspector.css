@@ -77,13 +77,13 @@
   .app-shell.mode-studio[data-studio-tab="inspector"] .badge,
   .app-shell.mode-studio[data-studio-tab="inspector"] .status-badge {
     font-family: var(--mono);
-    font-size: 10px;
-    line-height: 1.08;
+    font-size: 12px;
+    line-height: 1.12;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv {
     display: grid;
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 104px minmax(0, 1fr);
     gap: 0;
     margin: 0;
     overflow: hidden;
@@ -96,7 +96,7 @@
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dt,
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dd {
-    min-height: 26px;
+    min-height: 29px;
     margin: 0;
     padding: 5px 8px;
     border: 0;
@@ -105,14 +105,13 @@
     border-radius: 0;
     background: var(--inspector-row);
     font-family: var(--mono);
-    font-size: 10.5px;
-    line-height: 1.12;
+    font-size: 12px;
+    line-height: 1.15;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dt {
     color: var(--inspector-muted);
     text-align: right;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-kv dd {
@@ -197,17 +196,16 @@
   .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame span,
   .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame small {
     min-width: 0;
-    overflow: hidden;
-    line-height: 1.1;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .list-title,
   .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame strong,
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat strong {
     color: var(--inspector-text);
-    font-size: 11.5px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .timeline-frame span,
@@ -215,7 +213,7 @@
   .app-shell.mode-studio[data-studio-tab="inspector"] .studio-stat span {
     color: var(--inspector-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .badge-row,
@@ -377,22 +375,19 @@
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head strong,
   .app-shell.mode-studio[data-studio-tab="inspector"] .state-controller-row-head small {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow-wrap: normal;
-    word-break: normal;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 
   .app-shell.mode-studio[data-studio-tab="inspector"] .list-item .badge-row .badge {
-    min-height: 18px;
+    min-height: 20px;
     justify-content: center;
     padding: 2px 5px;
     border: 1px solid var(--inspector-edge);
     border-radius: 0;
     background: var(--inspector-cell);
     color: var(--inspector-muted);
-    font-size: 9.5px;
+    font-size: 12px;
   }
 
   .app-shell.mode-inspect .state-row-main > .badge-row .badge,

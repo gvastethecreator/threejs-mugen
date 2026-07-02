@@ -272,6 +272,21 @@ describe("PauseSystem", () => {
   it("wires paused runtime target, effect lifecycle, and constraint systems", () => {
     const world = new RuntimePausedMatchWorld();
     const calls: string[] = [];
+    const activeLifecycleOptions: Array<{
+      actorId: string;
+      opponentId?: string;
+      opponents: string[];
+      stageTime?: number;
+      runtimeTick?: number;
+    }> = [];
+    const pausedLifecycleOptions: Array<{
+      actorId: string;
+      pauseKind: string;
+      opponentId?: string;
+      opponents: string[];
+      stageTime?: number;
+      runtimeTick?: number;
+    }> = [];
     const pause = runtimePause("p1", { remaining: 3, moveTime: 1 });
     const p1 = runtimePausedActor("p1", 1, calls);
     const p2 = runtimePausedActor("p2", 2, calls);
@@ -288,13 +303,34 @@ describe("PauseSystem", () => {
       p2Input: new Set(["B"]),
       p2Controlled: false,
       stage: { bounds: { left: -160, right: 160 } },
+      stageTime: 111,
+      runtimeTick: 222,
       actorConstraintWorld: {
         clampToStage: (runtime) => calls.push(`clamp:${runtimeLabel(runtime)}`),
       },
       effectLifecycleWorld: {
-        advanceActive: (actor) => calls.push(`active-effects:${actor.id}`),
+        advanceActive: (actor, _stage, opponent, options) => {
+          calls.push(`active-effects:${actor.id}`);
+          activeLifecycleOptions.push({
+            actorId: actor.id,
+            opponentId: opponent?.id,
+            opponents: options?.opponents?.map((entry) => entry.id ?? "none") ?? [],
+            stageTime: options?.stageTime,
+            runtimeTick: options?.runtimeTick,
+          });
+        },
         advancePresentation: (actor) => calls.push(`presentation:${actor.id}`),
-        advancePausedPresentation: (actor, pauseKind) => calls.push(`paused-presentation:${actor.id}:${pauseKind}`),
+        advancePausedPresentation: (actor, pauseKind, _stage, opponent, options) => {
+          calls.push(`paused-presentation:${actor.id}:${pauseKind}`);
+          pausedLifecycleOptions.push({
+            actorId: actor.id,
+            pauseKind,
+            opponentId: opponent?.id,
+            opponents: options?.opponents?.map((entry) => entry.id ?? "none") ?? [],
+            stageTime: options?.stageTime,
+            runtimeTick: options?.runtimeTick,
+          });
+        },
       },
       currentPause: () => pause,
       canActorMove: (actorId) => actorId === "p1",
@@ -322,6 +358,12 @@ describe("PauseSystem", () => {
       "clamp:p1",
       "paused-presentation:p2:Pause",
       "tick-pause",
+    ]);
+    expect(activeLifecycleOptions).toEqual([
+      { actorId: "p1", opponentId: "p2", opponents: ["p2"], stageTime: 111, runtimeTick: 222 },
+    ]);
+    expect(pausedLifecycleOptions).toEqual([
+      { actorId: "p2", pauseKind: "Pause", opponentId: "p1", opponents: ["p1"], stageTime: 111, runtimeTick: 222 },
     ]);
   });
 

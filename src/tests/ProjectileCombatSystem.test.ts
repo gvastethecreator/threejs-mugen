@@ -95,6 +95,15 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.life).toBe(996);
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.guarding).toBe(true);
+    expect(defender.runtime.hitVars).toEqual({
+      animType: 0,
+      groundType: 1,
+      airType: 1,
+      isBound: false,
+      hitShakeTime: 3,
+      hitTime: 8,
+      guarded: true,
+    });
     expect(attacker.runtime.power).toBe(3000);
     expect(effects).toEqual(["p1:p2:projectile-0:guard"]);
     expect(logs).toEqual(["P2 guarded P1 projectile for 4; hits remaining 0, miss 0; hit removal anim none"]);
@@ -109,6 +118,7 @@ describe("ProjectileCombatSystem", () => {
       projectile({ serialId: "p2-projectile-0", ownerId: "p2", priority: 5, pos: { x: 40, y: 0 }, facing: -1 }),
     ];
     const logs: string[] = [];
+    const cancels: string[] = [];
     const world = new RuntimeProjectileCombatWorld();
 
     world.resolveClashes({
@@ -117,6 +127,7 @@ describe("ProjectileCombatSystem", () => {
       leftProjectiles,
       rightProjectiles,
       log: (line) => logs.push(line),
+      recordProjectileCancel: (entry) => cancels.push(`${entry.ownerId}:${entry.projectileId}:${entry.lastCancelTime}`),
       removeProjectilesMarkedForRemoval: () => {
         leftProjectiles = leftProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
         rightProjectiles = rightProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
@@ -126,6 +137,7 @@ describe("ProjectileCombatSystem", () => {
     expect(logs).toEqual([
       "Projectile clash: P1 p1-projectile-0 traded with P2 p2-projectile-0 at priority 5; p1-projectile-0 cancel removal anim none; p2-projectile-0 cancel removal anim none",
     ]);
+    expect(cancels).toEqual(["p1:77:0", "p2:77:0"]);
     expect(leftProjectiles).toEqual([]);
     expect(rightProjectiles).toEqual([]);
   });
@@ -172,6 +184,7 @@ describe("ProjectileCombatSystem", () => {
       }),
     ];
     const logs: string[] = [];
+    const cancels: string[] = [];
 
     resolveRuntimeProjectileClashes({
       leftLabel: "P1",
@@ -179,6 +192,7 @@ describe("ProjectileCombatSystem", () => {
       leftProjectiles,
       rightProjectiles,
       log: (line) => logs.push(line),
+      recordProjectileCancel: (entry) => cancels.push(`${entry.ownerId}:${entry.projectileId}:${entry.lastCancelTime}`),
       removeProjectilesMarkedForRemoval: () => {
         leftProjectiles = leftProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
         rightProjectiles = rightProjectiles.filter((entry) => !entry.hasHit || !entry.removeOnHit);
@@ -188,6 +202,7 @@ describe("ProjectileCombatSystem", () => {
     expect(logs).toEqual([
       "Projectile clash: P1 p1-projectile-0 canceled P2 p2-projectile-0 by priority 3 > 1; winner priority 3 -> 2; p2-projectile-0 cancel removal anim 920",
     ]);
+    expect(cancels).toEqual(["p2:77:0"]);
     expect(leftProjectiles.map((entry) => entry.serialId)).toEqual(["p1-projectile-0"]);
     expect(leftProjectiles[0]?.hasHit).toBe(false);
     expect(leftProjectiles[0]?.priority).toBe(2);

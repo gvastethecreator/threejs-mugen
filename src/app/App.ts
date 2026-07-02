@@ -250,6 +250,9 @@ function iconForAction(label: string, attribute: string): StudioIconName {
   if (key.includes("playtest") || key.includes("match")) {
     return "match";
   }
+  if (key.includes("reset")) {
+    return "reset";
+  }
   if (key.includes("evidence") || key.includes("trace")) {
     return "evidence";
   }
@@ -675,6 +678,7 @@ export class App {
   private traceArtifacts: RuntimeTraceArtifact[] = [];
   private storedTraceEvidence: StoredTraceEvidenceEntry[] = [];
   private selectedTraceFrameIndex = 0;
+  private studioFocusedTrustRowId?: string;
   private commandPaletteOpen = false;
   private commandPaletteQuery = "";
   private commandPaletteActiveIndex = 0;
@@ -802,6 +806,10 @@ export class App {
       const target = event.target as HTMLElement;
       const action = target.closest<HTMLElement>("[data-action]")?.dataset.action;
       const commandId = target.closest<HTMLElement>("[data-command-id]")?.dataset.commandId;
+      const trustRowId = target.closest<HTMLElement>("[data-trust-row-id]")?.dataset.trustRowId;
+      if (trustRowId) {
+        this.studioFocusedTrustRowId = trustRowId;
+      }
       if (commandId) {
         this.executeCommandPaletteAction(commandId);
         return;
@@ -2911,6 +2919,12 @@ export class App {
     if (this.mode === "inspect") {
       const loaded = Boolean(this.character);
       const characterName = this.character?.definition.info.displayName ?? this.character?.definition.info.name ?? "No character loaded";
+      const actionButtons = [
+        { label: "Open ZIP", detail: "Local package", attribute: 'data-action="load-zip"', primary: true },
+        { label: "Folder", detail: "Local source", attribute: 'data-action="load-folder"', primary: false },
+        { label: "Workbench", detail: "Studio state", attribute: 'data-mode="studio"', primary: false },
+        { label: "Report", detail: "Compatibility", attribute: 'data-action="export-report"', primary: false, disabled: !loaded },
+      ];
       return `
         <div class="workspace-actions" aria-label="Inspector quick actions">
           <div class="workspace-next">
@@ -2919,10 +2933,7 @@ export class App {
             <small>${loaded ? "Browse AIR, states, commands, collisions, and compatibility facts." : "Drop a ZIP/folder or choose files locally. Nothing is uploaded."}</small>
           </div>
           <div class="workspace-action-grid">
-            <button type="button" class="primary-action" data-action="load-zip">Open ZIP</button>
-            <button type="button" data-action="load-folder">Folder</button>
-            <button type="button" data-mode="studio">Workbench</button>
-            <button type="button" data-action="export-report" ${loaded ? "" : "disabled"}>Report</button>
+            ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
           </div>
         </div>
       `;
@@ -2931,6 +2942,12 @@ export class App {
     const diagnostics = (this.character?.diagnostics.length ?? 0) + this.importedStages.reduce((total, stage) => total + stage.diagnostics.length, 0);
     const p1 = this.findFighter(this.selectedP1);
     const p2 = this.findFighter(this.selectedP2);
+    const actionButtons = [
+      { label: "Reset", detail: "Restart round", attribute: 'data-action="reset-round"', primary: true },
+      { label: "Inspect", detail: "Character data", attribute: 'data-mode="inspect"', primary: false },
+      { label: "Debug", detail: "Runtime lens", attribute: 'data-studio-tab="debug"', primary: false },
+      { label: "Ship", detail: "Build desk", attribute: 'data-studio-tab="build"', primary: false },
+    ];
     return `
       <div class="workspace-actions" aria-label="Runtime quick actions">
         <div class="workspace-next">
@@ -2939,10 +2956,7 @@ export class App {
           <small>${diagnostics ? `${diagnostics} diagnostics need review before this build is clean.` : "Runtime roster is ready for local testing."}</small>
         </div>
         <div class="workspace-action-grid">
-          <button type="button" class="primary-action" data-action="reset-round">Reset</button>
-          <button type="button" data-mode="inspect">Inspect</button>
-          <button type="button" data-studio-tab="debug">Debug</button>
-          <button type="button" data-studio-tab="build">Ship</button>
+          ${actionButtons.map((button) => this.renderWorkspaceActionButton(button)).join("")}
         </div>
       </div>
     `;
@@ -2972,10 +2986,10 @@ export class App {
     }
   }
 
-  private renderWorkspaceActionButton(input: { label: string; detail: string; attribute: string; primary: boolean }): string {
+  private renderWorkspaceActionButton(input: { label: string; detail: string; attribute: string; primary: boolean; disabled?: boolean }): string {
     const ariaLabel = `${input.label}: ${input.detail}`;
     return `
-      <button type="button"${input.primary ? ' class="primary-action"' : ""} ${input.attribute} aria-label="${escapeHtml(ariaLabel)}">
+      <button type="button"${input.primary ? ' class="primary-action"' : ""} ${input.attribute} aria-label="${escapeHtml(ariaLabel)}"${input.disabled ? " disabled" : ""}>
         ${tablerIcon(iconForAction(input.label, input.attribute), "ui-icon action-icon")}
         <span class="workspace-action-label">${escapeHtml(input.label)}</span>
         <small>${escapeHtml(input.detail)}</small>
@@ -6667,11 +6681,12 @@ export class App {
 
   private renderStudioTrustContractRow(row: StudioTrustContractRow): string {
     const statusClass = this.statusClassName(row.status);
+    const focusClass = this.studioFocusedTrustRowId === row.id ? " is-linked-focus" : "";
     const actionAttribute = this.studioTrustActionAttribute(row);
     const blockerLabel = row.blockedBy.length ? `blocked by ${row.blockedBy.slice(0, 2).join(" / ")}` : "no blockers";
     const ariaLabel = `${row.label}: ${row.detail}. Next: ${row.nextLabel}`;
     return `
-      <button type="button" class="studio-trust-contract-row is-${statusClass}" ${actionAttribute} aria-label="${escapeHtml(ariaLabel)}">
+      <button type="button" class="studio-trust-contract-row is-${statusClass}${focusClass}" data-trust-row-id="${escapeHtml(row.id)}" ${actionAttribute} aria-label="${escapeHtml(ariaLabel)}">
         <span class="studio-trust-contract-lane">
           ${tablerIcon(this.iconForStudioTrustLane(row.lane), "ui-icon studio-trust-contract-icon")}
           <b>${escapeHtml(this.labelForStudioTrustLane(row.lane))}</b>
@@ -10357,6 +10372,7 @@ export class App {
         studioDebugFilter: StudioDebugFilter;
         studioEvidence: StudioEvidenceSummary;
         studioTrustChain: StudioTrustContractRow[];
+        studioFocusedTrustRowId?: string;
         traceFrameScrubber: StudioTraceFrameScrubberSummary;
         studioTab: StudioTab;
         project: GameProjectManifest;
@@ -10389,6 +10405,7 @@ export class App {
       studioDebugFilter: this.studioDebugFilter,
       studioEvidence: this.getStudioEvidenceSummary(),
       studioTrustChain: this.getStudioTrustContractRows(studio),
+      studioFocusedTrustRowId: this.studioFocusedTrustRowId,
       traceFrameScrubber: this.getTraceFrameScrubberSummary(),
       studioTab: this.studioTab,
       project: this.getGameProjectManifest(studio),

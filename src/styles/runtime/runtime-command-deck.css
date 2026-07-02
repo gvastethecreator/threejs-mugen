@@ -18,14 +18,14 @@
     --legacy-rule: rgba(220, 226, 234, 0.075);
     --surface-accent: var(--legacy-accent);
     grid-template-columns: minmax(286px, 300px) minmax(640px, 1fr) minmax(292px, 318px);
-    background: #040506;
+    background: var(--surface-flat-recessed);
   }
 
   .app-shell.mode-match .pane,
   .app-shell.mode-match .pane-right,
   .app-shell.mode-inspect .pane,
   .app-shell.mode-inspect .pane-right {
-    background: #06080b;
+    background: var(--panel-3);
     box-shadow:
       inset -1px 0 0 rgba(255, 255, 255, 0.045),
       inset -2px 0 0 rgba(0, 0, 0, 0.88);
@@ -43,7 +43,7 @@
     gap: 7px;
     padding: 10px 10px 9px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.92);
-    background: #080a0d;
+    background: var(--recess-2);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.065),
       inset 0 -1px 0 rgba(0, 0, 0, 0.86);
@@ -131,7 +131,7 @@
   .app-shell.mode-inspect .mode-switch button.is-active {
     border-left-color: var(--mode-accent);
     color: var(--text);
-    background: #12161c;
+    background: var(--surface-flat-raised);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.07),
       inset 0 -1px 0 rgba(0, 0, 0, 0.82);
@@ -223,11 +223,6 @@
     gap: 1px;
   }
 
-  .app-shell.mode-match .command-launcher strong,
-  .app-shell.mode-inspect .command-launcher strong {
-    line-height: 1.05;
-  }
-
   .app-shell.mode-match .command-launcher small,
   .app-shell.mode-inspect .command-launcher small {
     color: color-mix(in srgb, var(--muted) 82%, var(--text));
@@ -265,6 +260,8 @@
     border-bottom: 0;
   }
 
+  .app-shell.mode-match .command-launcher strong,
+  .app-shell.mode-inspect .command-launcher strong,
   .app-shell.mode-match .workspace-summary b,
   .app-shell.mode-inspect .workspace-summary b,
   .app-shell.mode-match .workspace-summary small,
@@ -280,7 +277,7 @@
     border-color: var(--legacy-frame);
     border-left: 1px solid var(--section-accent);
     border-radius: 2px;
-    background: #090c10;
+    background: var(--surface-flat);
   }
 
   .app-shell.mode-match .match-setup-panel {
@@ -299,7 +296,7 @@
   .app-shell.mode-inspect .runtime-debug-panel {
     padding: 9px 10px;
     border-top-color: var(--legacy-rule);
-    background: #080b0f;
+    background: var(--recess-2);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.035),
       inset 0 -1px 0 rgba(0, 0, 0, 0.76);
@@ -335,7 +332,7 @@
   .app-shell.mode-match .workspace-action-grid .primary-action,
   .app-shell.mode-inspect .workspace-action-grid .primary-action {
     border-color: color-mix(in srgb, var(--section-accent, var(--surface-accent)) 48%, var(--legacy-frame-strong));
-    background: #11151b;
+    background: var(--surface-flat-raised);
     box-shadow:
       inset 2px 0 0 color-mix(in srgb, var(--section-accent, var(--surface-accent)) 80%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.07),

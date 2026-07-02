@@ -58,6 +58,14 @@ describe("RuntimeHitPauseWorld", () => {
   it("wires runtime command buffering and paused presentation", () => {
     const world = new RuntimeHitPauseWorld();
     const calls: string[] = [];
+    const pausedLifecycleOptions: Array<{
+      actorId: string;
+      pauseKind: string;
+      opponentId?: string;
+      opponents: string[];
+      stageTime?: number;
+      runtimeTick?: number;
+    }> = [];
     const p1 = runtimeActor("p1", 2, calls);
     const p2 = runtimeActor("p2", 1, calls);
 
@@ -68,8 +76,20 @@ describe("RuntimeHitPauseWorld", () => {
       p2Input: new Set(["B"]),
       tick: 22,
       stage: { bounds: { left: -160, right: 160 } },
+      stageTime: 71,
+      runtimeTick: 72,
       effectLifecycleWorld: {
-        advancePausedPresentation: (actor, pauseKind) => calls.push(`presentation:${actor.id}:${pauseKind}`),
+        advancePausedPresentation: (actor, pauseKind, _stage, opponent, options) => {
+          calls.push(`presentation:${actor.id}:${pauseKind}`);
+          pausedLifecycleOptions.push({
+            actorId: actor.id,
+            pauseKind,
+            opponentId: opponent?.id,
+            opponents: options?.opponents?.map((entry) => entry.id ?? "none") ?? [],
+            stageTime: options?.stageTime,
+            runtimeTick: options?.runtimeTick,
+          });
+        },
       },
       runIgnoredControllers: (fighter, opponent) => calls.push(`ignored:${fighter.id}:${opponent.id}`),
     });
@@ -81,6 +101,10 @@ describe("RuntimeHitPauseWorld", () => {
       "ignored:p2:p1",
       "presentation:p1:hitpause",
       "presentation:p2:hitpause",
+    ]);
+    expect(pausedLifecycleOptions).toEqual([
+      { actorId: "p1", pauseKind: "hitpause", opponentId: "p2", opponents: ["p2"], stageTime: 71, runtimeTick: 72 },
+      { actorId: "p2", pauseKind: "hitpause", opponentId: "p1", opponents: ["p1"], stageTime: 71, runtimeTick: 72 },
     ]);
     expect(result).toEqual({ paused: true, globalPause: 2, p1Remaining: 1, p2Remaining: 0 });
   });

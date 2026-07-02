@@ -6,7 +6,7 @@
 
   .app-shell.mode-studio .pane {
     background: var(--studio-panel-low);
-    border-color: #020305;
+    border-color: var(--desk-bg);
     box-shadow:
       inset -1px 0 0 var(--studio-line),
       inset 1px 0 0 rgba(255, 255, 255, 0.035);
@@ -50,11 +50,10 @@
   .app-shell.mode-studio .panel-kicker {
     color: var(--surface-accent);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1.1;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .workspace-brand h1,
@@ -138,9 +137,8 @@
   .app-shell.mode-studio .stage-status-metric small {
     color: var(--studio-dim);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.05;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .tabs,
@@ -178,7 +176,7 @@
   .app-shell.mode-studio input[type="number"] {
     border-color: var(--studio-line-strong);
     border-radius: 0;
-    background: #0b0f14;
+    background: var(--studio-row);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.045),
       inset 0 -1px 0 rgba(0, 0, 0, 0.74);
@@ -189,13 +187,13 @@
   .app-shell.mode-studio button:focus-visible,
   .app-shell.mode-studio .button:focus-visible {
     border-color: color-mix(in srgb, var(--surface-accent) 68%, var(--studio-line-strong));
-    background: #141a21;
+    background: var(--studio-row-hot);
   }
 
   .app-shell.mode-studio .primary-action,
   .app-shell.mode-studio .workspace-action-grid .primary-action {
     border-color: color-mix(in srgb, var(--surface-accent) 72%, var(--studio-line-strong));
-    background: #11161c;
+    background: color-mix(in srgb, var(--studio-row-hot) 72%, var(--studio-row));
     box-shadow: inset 3px 0 0 var(--surface-accent);
   }
 
@@ -269,7 +267,7 @@
   .app-shell.mode-studio .asset-row-kind {
     color: var(--studio-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.14;
   }
 
@@ -290,7 +288,7 @@
   .app-shell.mode-studio .studio-kv dd,
   .app-shell.mode-studio .kv dt,
   .app-shell.mode-studio .kv dd {
-    min-height: 27px;
+    min-height: 29px;
     align-content: center;
     margin: 0;
     padding: 4px 8px;
@@ -300,15 +298,14 @@
     border-radius: 0;
     background: var(--studio-row);
     font-family: var(--mono);
-    font-size: 10px;
-    line-height: 1.1;
+    font-size: 12px;
+    line-height: 1.15;
   }
 
   .app-shell.mode-studio .studio-kv dt,
   .app-shell.mode-studio .kv dt {
     color: var(--studio-dim);
     text-align: right;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .studio-kv dd,
@@ -326,23 +323,23 @@
 
   .app-shell.mode-studio .badge,
   .app-shell.mode-studio .status-badge {
-    min-height: 18px;
+    min-height: 20px;
     padding: 2px 5px;
     border-color: var(--studio-line-strong);
     border-radius: 0;
-    background: #070a0e;
+    background: var(--studio-panel-low);
     box-shadow: none;
     color: var(--studio-muted);
     font-family: var(--mono);
-    font-size: 9.5px;
-    line-height: 1;
+    font-size: 12px;
+    line-height: 1.05;
   }
 
   .app-shell.mode-studio .badge.ok,
   .app-shell.mode-studio .status-badge.ok,
   .app-shell.mode-studio .is-ok b,
   .app-shell.mode-studio .is-ok strong {
-    color: #a5b39f;
+    color: color-mix(in srgb, var(--ok) 78%, var(--studio-text));
   }
 
   .app-shell.mode-studio .badge.warn,
@@ -351,7 +348,7 @@
   .app-shell.mode-studio .is-partial b,
   .app-shell.mode-studio .is-pending b,
   .app-shell.mode-studio .is-planned b {
-    color: #c2a08e;
+    color: color-mix(in srgb, var(--warn) 68%, var(--studio-text));
   }
 
   .app-shell.mode-studio .badge.error,
@@ -359,14 +356,14 @@
   .app-shell.mode-studio .is-error b,
   .app-shell.mode-studio .is-blocked b,
   .app-shell.mode-studio .is-unsupported b {
-    color: #c7837f;
+    color: color-mix(in srgb, var(--danger) 78%, var(--studio-text));
   }
 
   .app-shell.mode-studio .stage-status-card,
   .app-shell.mode-studio .toolbar-group {
     border-color: var(--studio-line-strong);
     border-radius: 0;
-    background: #0b0f14;
+    background: var(--studio-row);
     box-shadow: none;
   }
 
@@ -376,7 +373,7 @@
     min-height: 46px;
     overflow: hidden;
     padding: 0;
-    background: rgba(7, 10, 14, 0.9);
+    background: color-mix(in srgb, var(--studio-panel-low) 90%, transparent);
   }
 
   .app-shell.mode-studio .stage-status {

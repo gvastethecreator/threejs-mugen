@@ -1,5 +1,1900 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Default air fall get-hit trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-fall-gethit` trace evidence for airborne defender-owned Common1-style fall routing when a fall `HitDef` omits `p2stateno`.
+- Reused the existing `defaultGetHitFall` fixture path with `shakeStateNo: 5020` and an air-prep script instead of creating a separate Common1 fixture.
+- Added bounded `shakeStateType` / `shakePhysics` fixture options so the synthetic `5020` state can be authored as air state `A` / physics `N` while the older `5000` route stays unchanged.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air Common1 fall"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 260/260 artifacts, 240 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-fall-gethit.json` checksum `1230a2f3`, initial checksum `a98d51df`, final checksum `2ad2abf9`.
+- Gate label: `imported-default-fall-gethit-golden`; required executed states include `200`, `5020`, `5030`, and `5050`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style fall state order can route an airborne defender through `5020 -> 5030 -> 5050` after a fall `HitDef` without `p2stateno`.
+
+Claim blocked:
+- Exact air get-hit animation choice, exact `HitShakeOver` / `HitOver` timing, ground impact, bounce, lie-down, landing, recovery input, controller-loop tick order, visual/audio parity, score movement, and full Common1 fall/get-hit parity remain blocked.
+
+Next:
+- Continue into `5020 -> 5030 -> 5050 -> 5100` ground impact, landing/recovery breadth, or another R1 Common1/FightFX precision gate.
+
+## 2026-07-02 - Default air get-hit trace gate
+
+Changed:
+- Added required `synthetic-imported-default-air-gethit` trace evidence for defender-owned air default get-hit selection when a `HitDef` omits `p2stateno`.
+- Reused the shared synthetic imported default get-hit preset seam with an air-prep script and `getHitStateNo: 5020`; no new parallel fixture path.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air Common1 get-hit"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 259/259 artifacts, 239 required and 20 optional.
+- New required artifact: `synthetic-imported-default-air-gethit.json` checksum `dc4fb7c9`, initial checksum `1a3b9c61`, final checksum `2fd842bb`.
+- Gate label: `imported-default-air-gethit-golden`; final P2 state is `5020`, `stateType` is `A`, and `moveType` is `H`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style state selection can route an airborne defender into state `5020` after a direct `HitDef` without `p2stateno`.
+
+Claim blocked:
+- Exact air get-hit animation choice, fall route, landing route, air recovery, hitshake/hitover progression from `5020`, controller-loop tick order, visual/audio parity, score movement, and full Common1 get-hit parity remain blocked.
+
+Next:
+- Continue into deeper `5020` progression/landing, deeper `5010` progression, or another R1 Common1/FightFX precision gate.
+
+## 2026-07-01 - Default crouch get-hit trace gate
+
+Changed:
+- Added required `synthetic-imported-default-crouch-gethit` trace evidence for defender-owned crouch default get-hit selection when a `HitDef` omits `p2stateno`.
+- Prefactored the existing synthetic imported default get-hit preset with `gateLabel`, `getHitStateNo`, and script overrides so stand/crouch routes share one fixture seam.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "crouch Common1 get-hit"` -> 1 file / 1 test.
+- `pnpm qa:trace` passed -> 258/258 artifacts, 238 required and 20 optional.
+- New required artifact: `synthetic-imported-default-crouch-gethit.json` checksum `7ec18c61`, initial checksum `2840bc81`, final checksum `1c47d038`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported defender-owned Common1-style state selection can route a held-crouch defender into state `5010` after a direct `HitDef` without `p2stateno`.
+
+Claim blocked:
+- Exact crouch get-hit animation choice, slide timing, fall routing, hitshake/hitover progression from `5010`, controller-loop tick order, visual/audio parity, score movement, and full Common1 get-hit parity remain blocked.
+
+Next:
+- Continue into air default get-hit `5020`, deeper `5010` progression, or another R1 Common1/FightFX precision gate.
+
+## 2026-07-01 - Projectile fixed-id contact/guard-time trace gates
+
+Changed:
+- Added required `synthetic-imported-projectile-contacttime-id` and `synthetic-imported-projectile-guardedtime-id` trace evidence for owner-state fixed-id `ProjContactTime(77)` / `ProjGuardedTime(77)` branching.
+- Extended the existing synthetic imported Projectile fixture with `projContactTimeStateNo` / `projGuardedTimeStateNo` branch hooks instead of creating a parallel fixture.
+- Registered both traces in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile .*time"` -> 1 file / 16 tests.
+- `pnpm qa:trace` passed -> 257/257 artifacts, 237 required and 20 optional.
+- New required artifacts: `synthetic-imported-projectile-contacttime-id.json` checksum `e9ebf36a`, final checksum `8aa67975`; `synthetic-imported-projectile-guardedtime-id.json` checksum `dfd08f28`, final checksum `4f804ef7`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported owner-state CNS can branch after bounded player-owned Projectile contact/guard markers using fixed-id `ProjContactTime(77)` and `ProjGuardedTime(77)`.
+
+Claim blocked:
+- Exact contact/guard tick-order/lifetime, multi-projectile same-id selection, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, and full Projectile timing parity remain blocked.
+
+Next:
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile cancel-time owner any-id trace gate
+
+Changed:
+- Added required `synthetic-imported-projectile-canceltime-any` trace evidence for owner-state `ProjCancelTime(0)` cancel-time branching.
+- Reused the existing synthetic imported Projectile cancel-time fixture seam with `projCancelTimeTrigger = "ProjCancelTime(0) >= 0"` and a dedicated cancel terminal anim/state.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile cancel-time"` -> 1 file / 4 tests.
+- `pnpm qa:trace` passed -> 255/255 artifacts, 235 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-canceltime-any.json` checksum `5bff1961`, final checksum `509bf89c`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported owner-state CNS can branch after a bounded player-owned Projectile is canceled by an opposing Projectile clash using `ProjCancelTime(0)` as the any-projectile cancel counter.
+
+Claim blocked:
+- Exact cancel tick-order/lifetime, broader dynamic expression parity, multi-projectile any-id arbitration beyond this route, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, and full Projectile cancel parity remain blocked.
+
+Next:
+- Continue into R1 Common1/FightFX precision or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile cancel-time owner var-id trace gate
+
+Changed:
+- Added required `synthetic-imported-projectile-canceltime-var` trace evidence for owner-state `ProjCancelTime(var(0))` cancel-time branching after owner-local `VarSet` seeds Projectile id `77`.
+- Reused the synthetic imported Projectile cancel-time fixture seam instead of duplicating the whole fighter builder.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile cancel-time"` -> 1 file / 3 tests.
+- `pnpm qa:trace` passed -> 254/254 artifacts, 234 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-canceltime-var.json` checksum `e057e102`, final checksum `029fd1b9`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported owner-state CNS can branch after a bounded player-owned Projectile with var-backed id `var(0)` is canceled by an opposing Projectile clash using `ProjCancelTime(var(0))` as the cancel counter.
+
+Claim blocked:
+- Exact cancel tick-order/lifetime, broader dynamic expression parity, multi-projectile id `0` selection, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, and full Projectile cancel parity remain blocked.
+
+Next:
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile cancel-time owner dynamic-id trace gate
+
+Changed:
+- Added required `synthetic-imported-projectile-canceltime-dynamic` trace evidence for owner-state expression-derived `ProjCancelTime(77 + var(0))` cancel-time branching.
+- Added focused preset coverage for the owner-state dynamic-id route.
+- Prefactored the synthetic imported trace fighter fixture with a `projCancelTimeTrigger` option so future owner-state cancel-time trigger variants can be tested without duplicating the whole fighter builder.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile cancel-time"` -> 1 file / 2 tests.
+- `pnpm test` passed -> 114 files / 995 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm qa:trace` passed -> 253/253 artifacts, 233 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-projectile-canceltime-dynamic.json` checksum `0da26c87`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported owner-state CNS can branch after a bounded player-owned Projectile with expression-derived id `77 + var(0)` is canceled by an opposing Projectile clash using `ProjCancelTime(77 + var(0))` as the cancel counter.
+
+Claim blocked:
+- Exact cancel tick-order/lifetime, broader dynamic expression parity, multi-projectile id `0` selection, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, and full Projectile cancel parity remain blocked.
+
+Next:
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile cancel-time dynamic-id trace gate
+
+Changed:
+- Added required `synthetic-imported-helper-projcanceltime-dynamic` trace evidence for helper-local expression-derived `ProjCancelTime(8869 + var(0))` cancel-time branching.
+- Added focused helper-local runtime coverage proving nonzero `var(n)` can select the matching helper-parented canceled Projectile id while nonmatching dynamic ids stay inactive.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused helper-local runtime coverage: `pnpm exec vitest run src/tests/EffectActorSystem.test.ts --testNamePattern "ProjCancelTime"` -> 1 file / 2 tests.
+- Focused preset coverage: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ProjCancelTime"` -> 1 file / 3 tests.
+- `pnpm test` passed -> 114 files / 994 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm qa:trace` passed -> 252/252 artifacts, 232 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-helper-projcanceltime-dynamic.json` checksum `cc78dde2`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Imported helper-local CNS can branch after a bounded helper-parented owner-side Projectile with expression-derived id `8869 + var(0)` is canceled by an opposing Projectile clash using `ProjCancelTime(8869 + var(0))` as the cancel counter.
+- Focused helper-local runtime coverage also proves nonzero var-backed `ProjCancelTime(var(n))` id selection against helper-parented canceled Projectiles.
+
+Claim blocked:
+- Exact cancel tick-order/lifetime, broader dynamic expression parity, multi-projectile same-id selection, exact priority classes, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, and full Helper/Projectile cancel parity remain blocked.
+
+Next:
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - RuntimeActiveControllerDispatchWorld ownership extraction
+
+Changed:
+- Added `RuntimeActiveControllerDispatchWorld` as the active-controller route boundary after scan/trigger pass.
+- Routed active state/animation mutation, shared runtime-controller execution, active side-effect dispatch, and unsupported fail-soft dispatch through the new boundary.
+- Updated `PlayableMatchRuntime` to delegate active-controller dispatch selection while keeping concrete hooks/worlds/frame/target/tick context in the match runtime.
+
+Evidence:
+- Focused dispatch coverage: `pnpm exec vitest run src/tests/RuntimeActiveControllerDispatchSystem.test.ts` -> 1 file / 4 tests.
+- `pnpm test` passed -> 114 files / 992 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the known Vite large-chunk warning.
+- `pnpm qa:trace` passed -> 251/251 artifacts, 231 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with existing CRLF normalization warnings only.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+- Current imported active-controller dispatch route selection has a named, testable boundary that preserves existing route order.
+
+Claim blocked:
+- Exact CNS VM tick order, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, missing-action fallback parity, target/combat/presentation semantic parity, unsupported-feature reporting breadth, visual parity, score movement, and full MUGEN/IKEMEN active-controller parity remain blocked.
+
+Next:
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile cancel-time fixed-id trace gate
+
+Changed:
+- Added required `synthetic-imported-helper-projcanceltime-id` trace evidence for helper-local `ProjCancelTime(8868)` fixed-id cancel-time branching.
+- Extended helper-local cancel-time coverage so `ProjCancelTime(8896)` remains inactive while matching `ProjCancelTime(8897)` advances after the helper-parented Projectile cancel in focused coverage.
+- Registered the trace in `scripts/qa_traces.cjs` required artifacts without touching frontend CSS/UI.
+
+Evidence:
+- Focused preset/runtime coverage: `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ProjCancelTime"` -> 3 passed.
+- `pnpm qa:trace` passed -> 251/251 artifacts, 231 required and 20 optional.
+- New required artifact: `synthetic-imported-helper-projcanceltime-id.json` checksum `fc412176`.
+
+Claim allowed:
+- Imported helper-local CNS can branch after a bounded helper-parented owner-side Projectile with id `8868` is canceled by an opposing Projectile clash using `ProjCancelTime(8868)` as the fixed-id cancel counter.
+
+Claim blocked:
+- Exact cancel tick-order/lifetime, dynamic ids, multi-projectile same-id selection, exact priority classes, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, and full Helper/Projectile cancel parity remain blocked.
+
+## 2026-07-01 - Helper Projectile cancel-time any trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projcanceltime-any` trace evidence for helper-local `ProjCancelTime(0)` any-projectile cancel-time branching.
+- Wired helper-local expression contexts through `RuntimeEffectActorWorld` so helper-local CNS reads cancel timers only from helper-parented owner-side Projectiles.
+- Added a synthetic helper Projectile clash route with `projcancelanim` terminal playback and focused helper-local VM coverage proving player-owned Projectile cancel markers stay ignored.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused helper-local/preset tests passed: `ProjCancelTime` -> 2 tests.
+- `pnpm qa:trace` passed -> 250/250 artifacts, 230 required and 20 optional.
+- New required artifact: `synthetic-imported-helper-projcanceltime-any.json` checksum `f7e7fa01`.
+- No `pnpm qa:smoke` because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported helper-local CNS can branch after a bounded helper-parented owner-side Projectile is canceled by an opposing Projectile clash using `ProjCancelTime(0)` as the current helper-local any-projectile cancel counter.
+
+Claim blocked:
+
+- Exact cancel tick-order/lifetime, exact projectile priority classes, multi-projectile any-id selection semantics beyond this route, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Helper/Projectile cancel parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile cancel-time owner-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-canceltime` trace evidence for bounded owner-state `ProjCancelTime(77)` branching.
+- Wired projectile-vs-projectile clash cancellation into owner contact memory so the owner of the canceled player-owned Projectile can read the cancel marker from imported CNS.
+- Added `ProjCancelTime` to expression compiler/evaluator/runtime expression context support, with `0` treated as the bounded any-id read path.
+- Extended projectile clash tests, match-interaction wiring, contact-memory coverage, expression-context/compiler tests, and trace preset coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile cancel-time` -> 1 test.
+- `pnpm qa:trace` passed -> 249/249 artifacts, 229 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-canceltime.json` checksum `64e8dec4`.
+- `pnpm typecheck` passed before docs update.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-state CNS can branch after that owner's bounded player-owned Projectile is canceled by an opposing Projectile clash using `ProjCancelTime(77)`.
+
+Claim blocked:
+
+- Exact cancel tick-order/lifetime, exact projectile priority classes, multi-projectile id `0` selection semantics, helper-owned Projectile cancel routing, redirects, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile cancel parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile guard/contact-time any trace gates
+
+Changed:
+
+- Added required `synthetic-imported-helper-projguardedtime-any` trace evidence for helper-local `ProjGuardedTime(0)` any-projectile guard-time branching.
+- Added required `synthetic-imported-helper-projcontacttime-any` trace evidence for helper-local `ProjContactTime(0)` any-projectile contact-time branching.
+- Prefactored synthetic helper Projectile guard/contact route generation so those route blocks can use explicit `branchTrigger` strings instead of only fixed-id defaults.
+- Added focused helper-local VM coverage proving same-owner player Projectiles stay ignored by helper-local any-id guard/contact reads while helper-parented Projectiles satisfy the branch after contact age advances.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset tests passed: `RuntimeTraceGatePresets` `Helper ProjGuardedTime any` / `Helper ProjContactTime any` -> 2 tests.
+- Focused helper-local VM tests passed: `EffectActorSystem` `ProjGuardedTime(0)` and `ProjContactTime(0)` -> 2 tests.
+- Trace probe passed: `pnpm qa:trace` -> 248/248 artifacts, 228 required and 20 optional.
+- New required artifacts: `synthetic-imported-helper-projguardedtime-any.json` checksum `bd64e9db`; `synthetic-imported-helper-projcontacttime-any.json` checksum `5c6a4e11`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported helper-local CNS can branch after bounded helper-parented Projectile guard/contact markers using `ProjGuardedTime(0)` and `ProjContactTime(0)` as current helper-local any-projectile counters.
+
+Claim blocked:
+
+- Exact contact/guard tick-order/lifetime, multi-projectile any-id selection semantics, helper-owned custom-state targets, redirects, teams/simul, visual/audio parity, score movement, and full Helper/Projectile parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile hit-time any trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projhittime-any` trace evidence for a helper-local `Projectile` hit-time branch using `ProjHitTime(0)`.
+- Added a synthetic helper route where a visual Helper spawns owner-side Projectile anim `988` with `parentId = p1-helper-0`, waits in state/action `1260` / anim `986`, then branches to state/action `1261` / anim `987` after the helper-parented Projectile records a hit.
+- Registered the artifact in `pnpm qa:trace` and added focused preset plus `EffectActorSystem` coverage proving helper-local `ProjHitTime(0)` ignores player-owned Projectile contact and reads helper-parented Projectile hit contact.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Helper ProjHitTime any` -> 1 test.
+- Focused helper-local VM test passed: `EffectActorSystem` `ProjHitTime(0)` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 246/246 artifacts, 226 required and 20 optional.
+- New required artifact: `synthetic-imported-helper-projhittime-any.json` checksum `bca9f47b`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported helper-local CNS can branch after a bounded helper-parented Projectile hit using `ProjHitTime(0)` as the current helper-local any-projectile hit-time counter.
+
+Claim blocked:
+
+- Exact hit tick-order/lifetime, multi-projectile any-id selection semantics, exact helper-local contact/guard timing beyond bounded any-id gates, helper-owned custom-state targets, redirects, teams/simul, visual/audio parity, score movement, and full Helper/Projectile parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile hit-time any trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hittime-any` trace evidence for a player-owned `Projectile` hit-time branch using `ProjHitTime(0)`.
+- Extended the synthetic Projectile fixture with a `projHitTimeAnyStateNo` branch so the owner can route into state/action `282` after the projectile records a hit.
+- Registered the artifact in `pnpm qa:trace` and added focused preset/compiler/context coverage for bounded `ProjHitTime(0)` any-projectile semantics.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile hit-time` -> 1 test.
+- Focused read-model/compiler tests passed: `RuntimeExpressionContextWorld` compiled triggers and `RuntimeCompiler` supported trigger expressions.
+- Trace probe passed: `pnpm qa:trace` -> 245/245 artifacts, 225 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-hittime-any.json` checksum `47c1cf7f`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-state CNS can branch after a bounded player-owned Projectile hit using `ProjHitTime(0)` as the current any-projectile hit counter.
+
+Claim blocked:
+
+- Exact hit tick-order/lifetime, multi-projectile selection semantics, helper-owned Projectile `id = 0`, redirects, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile hit parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile contact-time any trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-contacttime-any` trace evidence for a player-owned `Projectile` contact-time branch using `ProjContactTime(0)`.
+- Extended the synthetic Projectile fixture with a `projContactTimeAnyStateNo` branch so the owner can route into state/action `281` after the projectile records contact.
+- Registered the artifact in `pnpm qa:trace` and added focused preset/compiler/context coverage for bounded `ProjContactTime(0)` any-projectile semantics.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile contact-time` -> 1 test.
+- Focused read-model/compiler tests passed: `RuntimeExpressionContextWorld` compiled triggers and `RuntimeCompiler` supported trigger expressions.
+- Trace probe passed: `pnpm qa:trace` -> 244/244 artifacts, 224 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-contacttime-any.json` checksum `f1751155`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-state CNS can branch after a bounded player-owned Projectile contact using `ProjContactTime(0)` as the current any-projectile contact counter.
+
+Claim blocked:
+
+- Exact contact tick-order/lifetime, multi-projectile selection semantics, helper-owned Projectile `id = 0`, redirects, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile contact parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile guarded-time any trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-guardedtime-any` trace evidence for a player-owned `Projectile` guarded contact-time branch using `ProjGuardedTime(0)`.
+- Extended the synthetic Projectile fixture with a `projGuardedTimeAnyStateNo` branch so the owner can route into state/action `279` after the defender guards the projectile.
+- Registered the artifact in `pnpm qa:trace` and added focused preset/compiler/context coverage for bounded `ProjGuardedTime(0)` any-projectile semantics.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile guarded-time` -> 1 test.
+- Focused read-model/compiler tests passed: `RuntimeExpressionContextWorld` compiled triggers and `RuntimeCompiler` supported trigger expressions.
+- Trace probe passed: `pnpm qa:trace` -> 243/243 artifacts, 223 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-guardedtime-any.json` checksum `c8473340`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-state CNS can branch after a bounded player-owned Projectile guard using `ProjGuardedTime(0)` as the current any-projectile guarded-contact counter.
+
+Claim blocked:
+
+- Exact guard tick-order/lifetime, multi-projectile selection semantics, helper-owned Projectile `id = 0`, redirects, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - HitDef plus Projectile target-memory mix trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitdef-projectile-target-mix` trace evidence for one owner retaining separate direct `HitDef` and player-owned `Projectile` target ids.
+- Extended the synthetic Projectile fixture helper with `projectileId` so mixed target-memory routes can prove distinct ids instead of reusing `77`.
+- Added a mixed contact route where direct `HitDef` id `77` and Projectile id `78` both hit P2 in one active state, then P1 branches through `NumTarget(77)`, `Target(77), Life`, `NumTarget(78)`, and `Target(78), Life` into state/action `278`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage for direct hit evidence, projectile lifecycle/payload evidence, and both owner target links.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `HitDef plus Projectile target mix` -> 1 test.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 931 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 242/242 artifacts, 222 required and 20 optional, and `pnpm check:boundaries`.
+- Trace probe passed: `pnpm qa:trace` -> 242/242 artifacts, 222 required and 20 optional.
+- New required artifact: `synthetic-imported-hitdef-projectile-target-mix.json` checksum `e98d4857`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-local target memory can retain and read separate direct `HitDef` and player-owned `Projectile` target ids in one bounded active-state route.
+
+Claim blocked:
+
+- Target mutation mixing, helper-owned projectile targets, helper-owned custom state tables, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, and full MUGEN/IKEMEN target/combat parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile Air Guard GetHitVar hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime` trace evidence for helper-parented Projectile air guard hitshake metadata.
+- Extended the synthetic helper `ProjGuard` fixture path so helper-local Projectile controllers can preserve authored `guardflag` instead of forcing `MA`.
+- Added an airborne helper Projectile route where P2 blocks while airborne, runs defender-owned `154 -> 155`, then branches through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `317`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage for helper spawn telemetry, helper-parented Projectile lifecycle/target links, air guard `HitVelSet` / `VelAdd`, and branch evidence.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Helper Projectile GetHitVar air guard hitshaketime` -> 1 test.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 930 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 241/241 artifacts, 221 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- Trace probe passed: `pnpm qa:trace` -> 241/241 artifacts, 221 required and 20 optional.
+- New required artifact: `synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime.json` checksum `3c3f2e25`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned air guard-hit CNS can read bounded helper-parented Projectile air guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Helper-owned custom states, exact helper Projectile air guard timing/landing/effects, projectile presentation, custom-state inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile Air Guard GetHitVar hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-air-guard-hitshaketime` trace evidence for player-owned Projectile air guard hitshake metadata.
+- Extended the synthetic Projectile fixture path so Projectile controllers preserve authored `guardflag` instead of forcing `MA`.
+- Added a close-range air-guard projectile fixture route where P2 blocks while airborne, runs `154 -> 155`, then branches through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `316`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage for Projectile, air guard `HitVelSet` / `VelAdd`, and branch evidence.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile GetHitVar air guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 240/240 artifacts, 220 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-gethitvar-air-guard-hitshaketime.json` checksum `3fcf1421`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 929 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 240/240 artifacts, 220 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned air guard-hit CNS can read bounded player-owned Projectile air guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Helper-parented Projectile air guard metadata, exact air guard timing/landing/proximity, projectile presentation, custom-state inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Air Guard GetHitVar hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-air-guard-hitshaketime` trace evidence for air guard hitshake metadata.
+- Extended the synthetic Common1 guard block so air guard-hit state `155` can branch through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `315`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage for `154 -> 155 -> 315` with airborne guard input, typed `HitVelSet`, `VelAdd`, and branch evidence.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `air guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 239/239 artifacts, 219 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-air-guard-hitshaketime.json` checksum `703e9328`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 928 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 239/239 artifacts, 219 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned air guard-hit CNS can read bounded direct-`HitDef` air guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Exact air guard timing/landing/proximity, guard end/effects, helper/projectile air-guard variants, custom-state inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Crouch Guard GetHitVar hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-crouch-guard-hitshaketime` trace evidence for crouch guard hitshake metadata.
+- Extended the synthetic Common1 guard block so crouch guard-hit state `153` can branch through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `314`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage for `152 -> 153 -> 314` with crouch guard input, typed `HitVelSet`, and branch evidence.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `crouch guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 238/238 artifacts, 218 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-crouch-guard-hitshaketime.json` checksum `b31d1dac`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 927 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 238/238 artifacts, 218 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned crouch guard-hit CNS can read bounded direct-`HitDef` crouch guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Exact crouch guard timing/proximity, guard end/effects, air guard hitshake metadata, helper/projectile crouch-guard variants, custom-state inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile GetHitVar guard hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime` trace evidence for helper-parented Projectile guard hitshake metadata.
+- The new route branches from defender-owned state `151` through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `313` after a helper-spawned Projectile guard, typed `HitVelSet`, and typed `CtrlSet`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage with helper/projectile world lifecycle, effect payload, and target-link evidence.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Helper Projectile GetHitVar guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 237/237 artifacts, 217 required and 20 optional.
+- New required artifact: `synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime.json` checksum `64a1a8bd`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 926 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 237/237 artifacts, 217 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned guard-hit CNS can read bounded helper-parented Projectile guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Helper-owned custom states, exact helper Projectile guard timing/effects, projectile visual/audio presentation parity, custom-state guarded metadata, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Projectile GetHitVar guard hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-guard-hitshaketime` trace evidence for player-owned Projectile guard metadata.
+- The new route branches from defender-owned state `151` through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `312` after a player-owned Projectile guard, typed `HitVelSet`, and typed `CtrlSet`.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `Projectile GetHitVar guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 236/236 artifacts, 216 required and 20 optional.
+- New required artifact: `synthetic-imported-projectile-gethitvar-guard-hitshaketime.json` checksum `724f66d6`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 925 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 236/236 artifacts, 216 required and 20 optional, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned guard-hit CNS can read bounded player-owned Projectile guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Helper-parented Projectile hitshake metadata, custom-state guarded metadata, exact hitpause lifetime, guard timing/effects, projectile visual/audio presentation parity, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar guard hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-guard-hitshaketime` trace evidence for defender-owned Common1-style guard-hit CNS.
+- The new route branches from state `151` through `GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1` into state/action `311` after a direct `HitDef` guard and typed `HitVelSet` evidence.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `guard hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 235/235 artifacts, 215 required and 20 optional before the Projectile guard hitshaketime gate was added.
+- New required artifact: `synthetic-imported-gethitvar-guard-hitshaketime.json` checksum `31d76de9`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 924 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 235/235 artifacts, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned guard-hit CNS can read bounded direct-`HitDef` guard hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Exact hitpause lifetime, guard timing/proximity, guard end, guard effects, custom-state/helper/projectile inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar hitshaketime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-hitshaketime` trace evidence for normal defender-owned Common1-style get-hit CNS.
+- The new route branches from state `5000` through `GetHitVar(hitshaketime) > 0 && !GetHitVar(guarded)` into state/action `310` after a direct `HitDef` hit.
+- Registered the artifact in `pnpm qa:trace` and added focused trace-preset coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `RuntimeTraceGatePresets` `hitshaketime` -> 1 test.
+- Trace probe passed: `pnpm qa:trace` -> 234/234 artifacts, 214 required and 20 optional before the guard hitshaketime gate was added.
+- New required artifact: `synthetic-imported-gethitvar-hitshaketime.json` checksum `655107b9`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 923 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 234/234 artifacts, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned normal get-hit CNS can read bounded direct-contact hitshake timing metadata through `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Exact hitpause tick lifetime, hitshake lifetime, custom-state/helper/projectile inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN get-hit parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar hittime trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-hittime` trace evidence for normal defender-owned Common1-style get-hit CNS.
+- Direct and projectile combat now preserve bounded `hitTime` / `hitShakeTime` metadata in runtime `hitVars`, so `GetHitVar(hittime)` and `GetHitVar(hitshaketime)` can read contact timing after state entry.
+- `RuntimeHitVarSystem` now owns shared `GetHitVar(...)` lookup semantics for context-world triggers and controller-side expression evaluation.
+- The new route branches from state `5000` through `GetHitVar(hittime) > 0 && !GetHitVar(guarded)` into state/action `309` after a direct `HitDef` hit.
+- Registered the artifact in `pnpm qa:trace` and added focused preset, direct combat, projectile combat, and expression-context coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused tests passed: `RuntimeExpressionContextSystem`, `DirectCombatSystem`, `ProjectileCombatSystem`, and `RuntimeTraceGatePresets` -> 249 tests.
+- Trace probe passed: `pnpm qa:trace` -> 233/233 artifacts, 213 required and 20 optional before the hitshaketime gate was added.
+- New required artifact: `synthetic-imported-gethitvar-hittime.json` checksum `a11beef0`.
+- Full closeout gates passed for this round: `pnpm test` -> 110 files / 922 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 233/233 artifacts, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned normal get-hit CNS can read bounded direct-contact hit timing metadata through `GetHitVar(hittime)` and `GetHitVar(hitshaketime)`.
+
+Claim blocked:
+
+- Exact hitstun tick order, hitshake lifetime, custom-state/helper/projectile inheritance breadth, exact VM timing, visual parity, score movement, and full MUGEN/IKEMEN get-hit parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar guard timing trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-guard-timing` trace evidence for defender-owned Common1-style guard-hit CNS.
+- The route branches from state `151` through `GetHitVar(hittime) > 0`, `GetHitVar(slidetime) = 5`, and `GetHitVar(ctrltime) = 7` into state/action `308` after a direct `HitDef` guard and typed `HitVelSet` evidence.
+- Added a configurable guard-hit branch trigger to synthetic trace fixture generation while preserving existing default branch timing.
+- Registered the artifact in `pnpm qa:trace` and added focused preset plus expression-context coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Trace probe passed: `pnpm qa:trace` -> 232/232 artifacts, 212 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-guard-timing.json` checksum `cf92c669`.
+- Full closeout gates for this round: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported defender-owned guard-hit CNS can read direct-`HitDef` guard timing metadata through `GetHitVar(hittime)`, `GetHitVar(slidetime)`, and `GetHitVar(ctrltime)`.
+
+Claim blocked:
+
+- Exact guard timing/proximity, guard end, guard effects, projectile/helper/custom-state inheritance, exact VM tick order, visual parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar down-recover trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-down-recover` trace evidence for owner-backed get-hit CNS.
+- The route branches from state `5100` through `GetHitVar(down.recover)`, `GetHitVar(down.recovertime)`, and alias `GetHitVar(recovertime)` into state/action `307` before lie-down recovery consumes the timer.
+- Registered the artifact in `pnpm qa:trace` and added focused preset plus expression-context alias coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Trace probe passed: `pnpm qa:trace` -> 231/231 artifacts, 211 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-down-recover.json` checksum `b8a7aef0`.
+- Full closeout gates for this round: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-backed get-hit CNS can read stored direct-`HitDef` down-recovery flag/timer metadata through `GetHitVar(down.recover)`, `GetHitVar(down.recovertime)`, and alias `GetHitVar(recovertime)`.
+
+Claim blocked:
+
+- Exact liedown tables, 5110/5120 tick order, metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, and full MUGEN/IKEMEN Common1 recovery parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar fall env-shake trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-fall-envshake` trace evidence for owner-backed get-hit CNS.
+- The route branches from state `5100` through `GetHitVar(fall.envshake.time)`, `GetHitVar(fall.envshake.freq)`, `GetHitVar(fall.envshake.ampl)`, and `GetHitVar(fall.envshake.phase)` into state/action `306` before `FallEnvShake` presentation executes.
+- Extended `RuntimeTraceHitFallRequirement` so final actor gates can require `envShakeFreq` and `envShakePhase`, not only time/ampl.
+- Registered the artifact in `pnpm qa:trace` and added focused preset plus expression-context coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Trace probe passed: `pnpm qa:trace` -> 230/230 artifacts, 210 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-fall-envshake.json` checksum `6364632a`.
+- Full closeout gates for this round: `pnpm test`, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace`, `pnpm check:boundaries`, and `git diff --check`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-backed get-hit CNS can read stored direct-`HitDef` fall env-shake metadata through `GetHitVar(fall.envshake.*)` before presentation consumes it.
+
+Claim blocked:
+
+- Exact camera waveform, pause/stage/layer interaction, metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, and full MUGEN/IKEMEN fall presentation parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - GetHitVar fall metadata trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-fall-metadata` trace evidence for owner-backed get-hit CNS.
+- The route branches from state `5100` through `GetHitVar(fall.damage)`, `GetHitVar(fall.kill)`, `GetHitVar(fall.xvel)`, and `GetHitVar(fall.yvel)` into state/action `305` before `HitFallDamage` resolves.
+- Registered the artifact in `pnpm qa:trace` and added focused preset coverage.
+- No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused preset test passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "fall metadata"` -> 1 file / 1 test.
+- Focused hit-var tests passed: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts -t "fall\\.damage|fall\\.kill|runtime hit variables"` -> 1 file / 2 tests, 1 skipped file.
+- `pnpm qa:trace` passes: 229/229 artifacts, 209 required and 20 optional.
+- New required artifact: `synthetic-imported-gethitvar-fall-metadata.json` checksum `474fa734`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported owner-backed get-hit CNS can read stored direct-`HitDef` fall damage, kill, and X/Y velocity metadata through `GetHitVar(fall.*)` before fall damage resolution.
+
+Claim blocked:
+
+- Exact fall metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, and full MUGEN/IKEMEN fall/get-hit parity.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - TeamSide trigger gate
+
+Changed:
+
+- Added bounded `TeamSide` support to the expression compiler/evaluator.
+- Routed player and first-generation helper side metadata through `RuntimeExpressionContextWorld` and helper-local expression contexts: `p1` / `p1-*` resolve to side `1`, `p2` / `p2-*` resolve to side `2`, unknown actor ids resolve to `0`.
+- Preserved side metadata through `EnemyNear`, `Target`, `Parent`, and `Root` redirect contexts where the current bounded runtime supplies those contexts.
+- Added required `synthetic-imported-teamside` trace evidence where State -1 routes through `TeamSide = 1` and `EnemyNear, TeamSide = 2` into state/action `299` without `HitDef` / combat side effects.
+- Updated runtime support docs and QA gate docs. No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused tests passed: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "TeamSide|supported and unsupported trigger expressions|basic MUGEN-style comparisons|runtime expression context"` -> 4 files / 5 tests.
+- `pnpm typecheck` passes.
+- `pnpm qa:trace` passes: 228/228 artifacts, 208 required and 20 optional.
+- New required artifact: `synthetic-imported-teamside.json` checksum `f55695b7`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Imported State -1 CNS can branch on bounded one-on-one side context via `TeamSide` and `EnemyNear, TeamSide`.
+
+Claim blocked:
+
+- Teams/simul/turns, indexed opponent selection, helper-owned opponent lists, dynamic side ownership, visual parity, score movement, and full MUGEN/IKEMEN `TeamSide` semantics.
+
+Next:
+
+- Continue into another R1 Common1/FightFX precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile controller telemetry trace hardening
+
+Changed:
+
+- Bridged helper-local `Projectile` controller/op telemetry from the visual Helper micro-VM into owner compatibility telemetry through `RuntimeEffectLifecycleWorld` and `PlayableMatchRuntime`.
+- Added explicit event `stateNo` support to `RuntimeCompatibilityTelemetryWorld.recordController(...)` / `recordOperation(...)`, so helper telemetry can stay under imported owner `p1` while preserving helper state `1200`.
+- Widened helper-local operation callbacks to `ControllerOp` and report the `projectile` operation only after a successful helper-local `Projectile` spawn.
+- Hardened `synthetic-imported-helper-projectile-gethitvar-guarded` to require controller `Projectile`, operation `projectile`, and a p1 controller-event sequence from helper state `1200`.
+- Updated runtime compatibility docs with intentional helper-Projectile checksum drift. No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused telemetry test passed: `pnpm vitest run src/tests/RuntimeCompatibilityTelemetrySystem.test.ts` -> 1 file / 5 tests.
+- Focused runtime preset test passed: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file / 223 tests.
+- `pnpm qa:trace` passes: 226/226 artifacts, 206 required and 20 optional.
+- Strengthened required artifact: `synthetic-imported-helper-projectile-gethitvar-guarded.json` checksum `2b413bd7`.
+- Intentional helper-Projectile trace checksum drift: `synthetic-imported-helper-projectile.json` `b6269136`, `synthetic-imported-helper-modifyprojectile.json` `09d3f7e4`, `synthetic-imported-helper-projhit.json` `2d9a281e`, `synthetic-imported-helper-projguard.json` `1c2c18a5`, `synthetic-imported-helper-projcontact.json` `67ed6c2d`, `synthetic-imported-helper-numproj.json` `3312a554`, `synthetic-imported-helper-projectile-target.json` `49261b53`, `synthetic-imported-helper-projectile-default-target.json` `b0daddf6`, `synthetic-imported-helper-projectile-bare-target.json` `8c9129c1`, `synthetic-imported-helper-projectile-target-controllers.json` `58688be8`, `synthetic-imported-helper-projectile-default-target-controllers.json` `0c4c69ae`, `synthetic-imported-helper-projectile-targetstate.json` `b12e1cb3`, and `synthetic-imported-helper-projectile-default-targetstate.json` `918c42a1`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Helper-local `Projectile` execution in the bounded visual Helper micro-VM now appears in imported owner compatibility telemetry as controller `Projectile`, operation `projectile`, and controller-event state `1200`, and the guarded GetHitVar helper Projectile gate requires it.
+
+Claim blocked:
+
+- Custom-state guarded metadata, exact helper Projectile guard timing/effects, helper-owned Projectile combat/contact presentation, helper-owned custom state tables, visual parity, score movement, and full Common1/helper Projectile parity.
+
+Next:
+
+- Continue into another R1 guard/FightFX/Common1 precision gate or a deeper R2 helper/effect/combat ownership seam.
+
+## 2026-07-01 - Helper Projectile GetHitVar guarded required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-gethitvar-guarded` trace evidence where an imported defender blocks a helper-parented Projectile, executes `150 -> 151`, runs `HitVelSet` / `CtrlSet`, branches through `GetHitVar(guarded) = 1` into state/action `304`, then returns to idle/control.
+- Extended the helper Projectile guard fixture route with optional `guard.hittime`, `guard.slidetime`, and `guard.ctrltime` fields without changing existing helper Projectile defaults.
+- Extended imported default guard-state trace requirements so gates can require helper/projectile lifecycle, effect-store, effect-payload, and target-link evidence.
+- Registered the new trace as required in `scripts/qa_traces.cjs` and added focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording. No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused runtime preset test passed: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts` -> 1 file / 223 tests.
+- `pnpm test` passes: 110 files / 913 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 226/226 artifacts, 206 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-helper-projectile-gethitvar-guarded.json` checksum `3dad5d5d`.
+- Previous player-owned Projectile guarded artifact remains required: `synthetic-imported-projectile-gethitvar-guarded.json` checksum `a0104472`.
+- Previous direct `HitDef` guarded artifact remains required: `synthetic-imported-gethitvar-guarded.json` checksum `7c36defb`.
+- Current optional private KFM QCF artifact remains `kfm-official-qcf-x.json` checksum `349cd995`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current imported defender-owned guard-hit CNS can read helper-parented Projectile guard metadata through `GetHitVar(guarded)` after guard-hit velocity/control controllers, with helper/projectile lifecycle, payload, owner target-link, and helper target-link evidence.
+
+Claim blocked:
+
+- Helper micro-VM `Projectile` controller/op telemetry, custom-state guarded metadata, exact helper Projectile guard timing/effects, visual parity, score movement, and full Common1/guard parity.
+
+Next:
+
+- Continue into another R1 guard/FightFX/Common1 precision gate or a deeper R2 helper/effect/combat ownership seam. Do not reselect the direct, player Projectile, or helper Projectile guarded gates or the recent fall-recover / AnimElem / OwnerMetrics / P2Distance / P2StateContext / StateContext / GameTime / EdgeDistance gates.
+
+## 2026-07-01 - Projectile GetHitVar guarded required trace gate
+
+Changed:
+
+- Added bounded `RuntimeGetHitVars.guarded` metadata for player-owned `Projectile` guard results.
+- Extended the synthetic Projectile trace fixture builder so required gates can emit `guard.slidetime`, `guard.ctrltime`, and a bounded Projectile-only `guard.hittime` without changing existing Projectile defaults.
+- Added required `synthetic-imported-projectile-gethitvar-guarded` trace evidence where an imported defender blocks a player-owned Projectile-only attack, executes `150 -> 151`, runs `HitVelSet` / `CtrlSet`, branches through `GetHitVar(guarded) = 1` into state/action `303`, then returns to idle/control.
+- Added focused Projectile combat and trace-preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording. No CSS, Studio UI, renderer, sprite, or visible frontend work was touched.
+
+Evidence:
+
+- Focused runtime tests passed: `pnpm vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 2 files / 228 tests.
+- `pnpm test` passes: 110 files / 912 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 225/225 artifacts, 205 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-projectile-gethitvar-guarded.json` checksum `a0104472`.
+- Previous direct `HitDef` guarded artifact remains required: `synthetic-imported-gethitvar-guarded.json` checksum `7c36defb`.
+- Current optional private KFM QCF artifact remains `kfm-official-qcf-x.json` checksum `349cd995`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current imported defender-owned guard-hit CNS can read player-owned Projectile guard metadata through `GetHitVar(guarded)` after guard-hit velocity/control controllers.
+
+Claim blocked:
+
+- Helper-parented Projectile guarded metadata, custom-state guarded metadata, exact guard timing/effects, visual parity, score movement, and full Common1/guard parity.
+
+Next:
+
+- Continue into another R1 guard/FightFX/Common1 precision gate or a deeper R2 helper/effect/combat ownership seam. Do not reselect the direct or Projectile guarded gates or the recent fall-recover / AnimElem / OwnerMetrics / P2Distance / P2StateContext / StateContext / GameTime / EdgeDistance gates.
+
+## 2026-07-01 - GetHitVar guarded required trace gate
+
+Changed:
+
+- Added bounded `RuntimeGetHitVars.guarded` metadata for direct `HitDef` guard results.
+- Propagated `GetHitVar(guarded)` across active/passive runtime expression read-model helpers.
+- Added required `synthetic-imported-gethitvar-guarded` trace evidence where an imported defender blocks a direct `HitDef`, executes `150 -> 151`, runs `HitVelSet` / `CtrlSet`, branches through `GetHitVar(guarded) = 1` into state/action `302`, then returns to idle/control.
+- Added focused direct-combat, expression-context, CNS executor, and trace-preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- Focused runtime tests passed: `pnpm vitest run src/tests/DirectCombatSystem.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 255 tests.
+- `pnpm test` passes: 110 files / 911 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 224/224 artifacts, 204 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-gethitvar-guarded.json` checksum `7c36defb`.
+- Current optional private KFM QCF artifact remains `kfm-official-qcf-x.json` checksum `349cd995`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current imported defender-owned guard-hit CNS can read direct `HitDef` guard metadata through `GetHitVar(guarded)` after guard-hit velocity/control controllers.
+
+Claim blocked:
+
+- Projectile/helper/custom-state guarded metadata, exact guard timing/effects, visual parity, score movement, and full Common1/guard parity.
+
+Next:
+
+- Continue into another R1 guard/FightFX/Common1 precision gate or a deeper R2 helper/effect/combat ownership seam. Do not reselect this guarded gate or the recent fall-recover / AnimElem / OwnerMetrics / P2Distance / P2StateContext / StateContext / GameTime / EdgeDistance gates.
+
+## 2026-07-01 - GetHitVar fall.recover required trace gate
+
+Changed:
+
+- Corrected runtime `GetHitVar(fall.recover)` read-models so they return the HitDef recovery-allowed flag instead of the countdown-gated `CanRecover` result.
+- Kept `CanRecover` countdown-gated: it remains false while `fall.recovertime` is positive.
+- Added required `synthetic-imported-gethitvar-fall-recover` trace evidence for an owner-backed get-hit branch through `GetHitVar(fall.recover) = 1 && GetHitVar(fall.recovertime) > 0 && !CanRecover`.
+- Added focused context, expression, executor, and preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording and aligned current optional KFM QCF checksum evidence to the latest `qa:trace` output.
+
+Evidence:
+
+- `pnpm test` passes: 110 files / 910 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing large-chunk warning.
+- `pnpm qa:trace` passes: 223/223 artifacts, 203 required and 20 optional.
+- `pnpm check:boundaries` passes.
+- `git diff --check` passes with existing CRLF normalization warnings only.
+- New required artifact: `synthetic-imported-gethitvar-fall-recover.json` checksum `259b300f`.
+- Current optional private KFM QCF artifact: `kfm-official-qcf-x.json` checksum `349cd995`.
+- No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+
+Claim allowed:
+
+- Current imported owner-backed get-hit CNS can read the HitDef recovery-allowed flag through `GetHitVar(fall.recover)` separately from countdown-gated `CanRecover`.
+
+Claim blocked:
+
+- Exact recovery threshold tables, custom-state lifetime, helper/projectile inheritance, controller-loop timing, visual parity, score movement, and full Common1/get-hit parity.
+
+Next:
+
+- Continue into R1 Common1/guard/FightFX precision or deeper R2 helper/effect/combat ownership. Do not reselect this fall-recover gate or the recent AnimElem/OwnerMetrics/P2Distance/P2StateContext/StateContext/GameTime/EdgeDistance gates.
+
+## 2026-07-01 - AnimElem offset required trace gate
+
+Changed:
+
+- Added exact legacy `AnimElem = n` / `AnimElem = n, op t` evaluation before the generic expression parser and a conservative numeric rewrite for simple composite expressions.
+- Updated the existing synthetic `AnimElem` trace to emit `AnimElem = 2, = 0`.
+- Added `createSyntheticImportedAnimElemOffsetTraceArtifact` for a bounded imported active-state `AnimElem = 2, = 4` route.
+- Added the required `synthetic-imported-animelem-offset` QA trace artifact and focused evaluator/preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "AnimElem"` passes: 2 files / 5 tests.
+- `pnpm qa:trace` passes: 222/222 artifacts, 202 required and 20 optional.
+- Final gates passed: `pnpm test` 110 files / 907 tests, `pnpm typecheck`, `pnpm build` with the existing large-chunk warning, `pnpm qa:trace` 222/222 artifacts with 202 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output.
+- New required artifact: `synthetic-imported-animelem-offset.json` checksum `4484031d`.
+- Existing paired required artifact remains: `synthetic-imported-animelem.json` checksum `683d9a10`.
+
+Claim allowed:
+
+- Current imported active-state CNS can branch on bounded current-actor AIR element start and elapsed time through `AnimElem = n` / `AnimElem = n, op t` numeric forms, including simple composite expressions such as `Time >= 0 && AnimElem = 2, = 4`.
+
+Claim blocked:
+
+- AIR loop semantics, negative-duration semantics, helper/state-owner namespaces, persistent-controller timing, visual parity, score movement, and full MUGEN/IKEMEN animation VM parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `AnimElem` start/offset, `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - OwnerMetrics required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedOwnerMetricsTraceArtifact` for a bounded imported State -1 owner metric route.
+- Extended the synthetic imported trace fighter with an `ownerMetricsStateEntry` CNS block and matching state/action `298`.
+- Normalized the `RuntimeExpressionContextWorld` expression read for `Time` / `StateTime` so the internal post-transition `stateElapsed = -1` sentinel is observable as `0` to CNS triggers.
+- Added the required `synthetic-imported-owner-metrics` QA trace artifact and focused preset/context coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "owner metrics|transition sentinel"` passes: 2 files / 2 tests.
+- `pnpm qa:trace` passes: 220/220 artifacts, 200 required and 20 optional.
+- New required artifact: `synthetic-imported-owner-metrics.json` checksum `1a61aaeb`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded current-owner trigger context: `StateNo = 0`, `Anim = 0`, `Time >= 0`, `Life = 1000`, `Power = 0`, `Pos X < 0`, `Pos Y = 0`, `Vel X = 0`, and `Vel Y = 0`, routing P1 into state/action `298` without combat side effects.
+
+Claim blocked:
+
+- Exact VM tick ordering, helper/team/redirect state namespaces, localcoord scaling, visual parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - P2Distance required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedP2DistanceTraceArtifact` for a bounded imported State -1 opponent spacing route.
+- Extended the synthetic imported trace fighter with a `p2DistanceStateEntry` CNS block and matching state/action `297`.
+- Added the required `synthetic-imported-p2-distance` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "P2 distance"` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 219/219 artifacts, 199 required and 20 optional.
+- New required artifact: `synthetic-imported-p2-distance.json` checksum `2c584be0`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded current-opponent spacing trigger context: `P2Dist X = 55`, `P2Dist Y = 0`, `P2BodyDist X = 7`, and `P2BodyDist Y = 0`, routing P1 into state/action `297` without combat side effects.
+
+Claim blocked:
+
+- Teams/simul, helpers, exact opponent selection, localcoord scaling, push/corner adjustment, score movement, and full MUGEN/IKEMEN spacing parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - P2StateContext required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedP2StateContextTraceArtifact` for a bounded imported State -1 opponent metadata route.
+- Extended the synthetic imported trace fighter with a `p2StateContextEntry` CNS block and matching state/action `296`.
+- Added the required `synthetic-imported-p2-state-context` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "P2 state-context"` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 218/218 artifacts, 198 required and 20 optional.
+- New required artifact: `synthetic-imported-p2-state-context.json` checksum `caf32557`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded current-opponent metadata trigger context: `P2StateType = S` and `P2MoveType = I`, routing P1 into state/action `296` without combat side effects.
+
+Claim blocked:
+
+- Teams/simul, helpers, custom-state opponent ownership, exact opponent selection, persistent-controller parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - StateContext required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedStateContextTraceArtifact` for a bounded imported State -1 owner context route.
+- Extended the synthetic imported trace fighter with a `stateContextEntry` CNS block and matching state/action `295`.
+- Added the required `synthetic-imported-state-context` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "state-context"` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 217/217 artifacts, 197 required and 20 optional.
+- New required artifact: `synthetic-imported-state-context.json` checksum `cb9c3d1e`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded owner control and state metadata trigger context: `ctrl`, `StateType = S`, `MoveType = I`, and `Physics = S`, routing P1 into state/action `295` without combat side effects.
+
+Claim blocked:
+
+- Helper/team/redirect metadata ownership, exact controller-loop ordering, persistent-controller parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `StateContext`, `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - GameTime required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedGameTimeTraceArtifact` for a bounded imported State -1 `GameTime` route.
+- Extended the synthetic imported trace fighter with a `gameTimeEntry` CNS block and matching state/action `294`.
+- Added the required `synthetic-imported-gametime` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "GameTime"` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 216/216 artifacts, 196 required and 20 optional.
+- New required artifact: `synthetic-imported-gametime.json` checksum `bab573f3`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded global match tick through `GameTime >= 4`, routing P1 into state/action `294` without combat side effects.
+
+Claim blocked:
+
+- Exact pause accounting, replay/rollback timing, multi-round timer ownership, IKEMEN round-system behavior, score movement, and full MUGEN/IKEMEN global timing parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `GameTime`, `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - Edge-distance required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedEdgeDistanceTraceArtifact` for a bounded imported State -1 edge-distance route.
+- Extended the synthetic imported trace fighter with an `edgeDistanceEntry` CNS block and matching state/action `293`.
+- Added the required `synthetic-imported-edge-distance` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "edge-distance"` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 215/215 artifacts, 195 required and 20 optional.
+- New required artifact: `synthetic-imported-edge-distance.json` checksum `785de452`.
+
+Claim allowed:
+
+- Current imported State -1 CNS can branch on bounded stage edge-distance triggers: `FrontEdgeDist = 340`, `BackEdgeDist = 300`, `FrontEdgeBodyDist = 301`, and `BackEdgeBodyDist = 261` route P1 into state/action `293` without combat side effects.
+
+Claim blocked:
+
+- Exact camera/screen edge parity, localcoord scaling, push/corner behavior, teams/simul/helper namespace breadth, exact tick order, visual parity, score movement, and full MUGEN/IKEMEN edge-distance parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect `EdgeDistance`, `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, match reset, or full-chain fall recovery gates.
+
+## 2026-07-01 - Common1 full fall-recovery chain order gate
+
+Changed:
+
+- Strengthened `synthetic-imported-default-fall-recovery.json` so the required gate now checks the full bounded Common1-style fall get-hit chain before the existing lie-down/get-up route.
+- Added required controller-event sequence evidence for `5000` `ChangeState`, `5030` `VelAdd` / `HitVelSet` / `kinematic:hitvelset` / `ChangeState`, `5050` `VelAdd` / `ChangeState`, then the existing `5110 -> 5120 -> 0` get-up settlement route.
+- Added required actor-frame sequence evidence for imported P2 `5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120`, while preserving the bounded `hitFall.downRecoverTime` countdown-range and first-to-last-drop evidence in `5110`.
+
+Evidence:
+
+- Focused test passes: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "default Common1 fall recovery chain"` -> 1 file / 1 test.
+- `pnpm qa:trace` passes: 214/214 artifacts, 194 required and 20 optional.
+- Strengthened required artifact: `synthetic-imported-default-fall-recovery.json` checksum stays `d83797d9`.
+
+Claim allowed:
+
+- Current bounded imported Common1-style fall recovery trace proves ordered airborne fall get-hit, falling, ground impact, bounce entry, lie-down, get-up, and return-to-idle/control evidence on the synthetic route.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN controller-loop tick order, exact bounce physics, exact fall/down recovery tables, public bundled KFM parity, input recovery breadth, guard-state parity, score movement, and full Common1 VM parity.
+
+Next:
+
+- Continue into R1 guard/FightFX/Common1 precision or deeper R2 helper/effect/combat ownership. Do not reselect this full-chain fall recovery route.
+
+## 2026-07-01 - AnimElemTime required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedAnimElemTimeTraceArtifact` for a bounded imported active-state AIR element-timing route.
+- Extended the synthetic imported trace fighter with multi-frame action `200` durations and `animElemTimeExit` CNS generation.
+- Added the required `synthetic-imported-animelemtime` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern AnimElemTime` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 214/214 artifacts, 194 required and 20 optional.
+- New required artifact: `synthetic-imported-animelemtime.json` checksum `2036557d`.
+
+Claim allowed:
+
+- Current imported active-state CNS can branch on current AIR element elapsed time: action `200` advances through authored frame durations `[2,4,4]`, then `AnimElemTime(2) = 2` routes P1 into state `292` without combat side effects.
+
+Claim blocked:
+
+- Exact AIR loop semantics, invalid-element bottom values, negative-duration semantics, helper/state-owner animation namespaces, persistent-controller timing, exact controller-loop tick order, score movement, and full animation VM parity.
+
+Next:
+
+- Continue into R1 Common1 recovery/guard loop precision, FightFX/common presentation precision, or deeper R2 helper/effect/combat ownership. Do not reselect `AnimElemTime`, `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, or match reset gates.
+
+## 2026-07-01 - AnimTime required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedAnimTimeTraceArtifact` for a bounded imported active-state animation-end route.
+- Extended the synthetic imported trace fighter with `animTimeExit` CNS generation and state/action fixture wiring.
+- Added the required `synthetic-imported-animtime` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern AnimTime` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 213/213 artifacts, 193 required and 20 optional.
+- New required artifact: `synthetic-imported-animtime.json` checksum `9e42b546`.
+
+Claim allowed:
+
+- Current imported active-state CNS can wait inside state `200` for its own AIR action to finish, then route through `AnimTime = 0` into state `291` without combat side effects.
+
+Claim blocked:
+
+- Exact AIR negative-duration semantics, looped-action semantics, state-owner/helper namespaces, persistent-controller timing, exact controller-loop tick order, score movement, and full animation VM parity.
+
+Next:
+
+- Continue into R1 Common1 recovery/guard loop precision, FightFX/common presentation precision, or deeper R2 helper/effect/combat ownership. Do not reselect `AnimTime`, `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, or match reset gates.
+
+## 2026-07-01 - SelfAnimExist required trace gate
+
+Changed:
+
+- Added `createSyntheticImportedSelfAnimExistTraceArtifact` for a bounded imported State -1 own-animation lookup route.
+- Extended the synthetic imported trace fighter with `selfAnimExistEntry` CNS generation and action/state fixture wiring.
+- Added the required `synthetic-imported-selfanimexist` QA trace artifact and focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern SelfAnimExist` passes: 1 file / 1 test.
+- `pnpm qa:trace` passes: 212/212 artifacts, 192 required and 20 optional.
+- New required artifact: `synthetic-imported-selfanimexist.json` checksum `99930032`.
+
+Claim allowed:
+
+- Current imported State -1 routing can branch on bounded own AIR action existence: `SelfAnimExist(200)` routes while missing action `9999` fails closed before state `290`.
+
+Claim blocked:
+
+- Redirected animation owners, helper/parent/root lookup, common/FightFX namespaces, exact MUGEN/IKEMEN animation lookup parity, score movement, and full trigger parity.
+
+Next:
+
+- Continue into R1 Common1/FightFX precision or deeper R2 helper/effect/combat ownership. Do not reselect `SelfAnimExist`, `SelfStateNoExist`, EnemyNear index, identity, fighter-state factory, or match reset gates.
+
+## 2026-07-01 - RuntimeFighterStateWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeFighterStateWorld` for bounded fighter runtime-state construction.
+- Moved resource maxima, damage multipliers from constants, initial runtime/action/control/resource state, command buffers, contact memory, telemetry buckets, injected world references, deterministic RNG seed, and lazy runtime-program compilation out of `PlayableMatchRuntime`.
+- Routed constructor and reset fighter creation through the same named factory boundary.
+- Added focused coverage proving injected-world preservation, bounded constants, initial runtime state, p2 priority, native no-program behavior, command buffer setup, and contact memory setup.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeFighterStateSystem.test.ts src/tests/RuntimeMatchResetSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passes: 3 files / 74 tests.
+- `pnpm test` passes: 110 files / 892 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 211/211 artifacts, 191 required and 20 optional.
+- `pnpm check:boundaries` passes.
+
+Claim allowed:
+
+- Current P1/P2 fighter construction has a named, testable R2 boundary that preserves native/imported initial state and injected world ownership.
+
+Claim blocked:
+
+- Exact player lifecycle parity, helper/custom-state clone breadth, team/simul roster ownership, intro/round lifecycle, visual parity, score movement, and full actor registry parity.
+
+Next:
+
+- Return to R1 Common1/FightFX precision or deeper R2 helper/effect/combat ownership. Do not reselect fighter-state factory, match reset, helper TargetState handler binding, frame/collision, or afterimage sample ownership.
+
+## 2026-07-01 - RuntimeMatchResetWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeMatchResetWorld` for bounded match reset orchestration.
+- Moved round timer reset, pause reset, EnvColor reset, effect actor store reset, in-place P1/P2 recreation, helper TargetState handler reattachment, and reset logging out of `PlayableMatchRuntime.reset()`.
+- Kept `PlayableMatchRuntime` as the integration owner for concrete fighter construction, stage starts, injected worlds, and field assignment.
+- Added focused coverage proving reset order, actor identity preservation, helper handler reattachment, and log handoff.
+
+Evidence:
+
+- `pnpm vitest run src/tests/RuntimeMatchResetSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passes: 2 files / 72 tests.
+- `pnpm test` passes: 109 files / 890 tests.
+- `pnpm typecheck` passes.
+- `pnpm build` passes with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passes: 211/211 artifacts, 191 required and 20 optional.
+- `pnpm check:boundaries` passes.
+
+Claim allowed:
+
+- Current sandbox reset lifecycle has a named, testable R2 boundary that preserves actor/store identity and callback reattachment.
+
+Claim blocked:
+
+- Exact round-flow parity, continue/round intro semantics, helper/custom-state reset breadth, screenpack/lifebar reset behavior, visual parity, score movement, and full MUGEN/IKEMEN match lifecycle parity.
+
+Next:
+
+- Return to R1 Common1/FightFX precision or deeper R2 helper/effect/combat ownership. Do not reselect match reset, helper TargetState handler binding, frame/collision, or afterimage sample ownership.
+
+## 2026-07-01 - RuntimeHelperTargetStateWorld handler binding extraction
+
+Changed:
+
+- Moved helper TargetState handler attach/re-attach wiring into `RuntimeHelperTargetStateWorld`.
+- Routed `PlayableMatchRuntime` constructor/reset callback binding through the same helper TargetState boundary that already handles owner validation, target lookup, unavailable-state no-op, and owner-backed target state entry.
+- Added focused coverage proving stale owner handlers are replaced and owner/helper/target/state id context forwards correctly.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeHelperTargetStateSystem.test.ts src/tests/RuntimeFrameSystem.test.ts src/tests/RuntimeSnapshotSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 4 files / 86 tests.
+- `pnpm test` passed 108 files / 889 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current helper-local `TargetState` callback binding uses a named, testable runtime boundary shared with helper-owned target state entry.
+
+Claim blocked:
+
+- Helper-owned custom-state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper TargetState timing, visual parity, score movement, and full Helper VM parity remain blocked.
+
+## 2026-07-01 - Studio ledger nowrap readability pass
+
+Changed:
+
+- Let Trust ledger build actions wrap instead of clipping into single-line ellipsis.
+- Let Modules/Debug section copy, module/list rows, and debug selection details wrap inside their ledger cells.
+- Let Inspector list/timeline rows and state-controller headers wrap descriptive text instead of truncating it.
+- Kept badges, status cells, ids, and compact controls on their existing dense treatment.
+- Updated Studio/UI trackers with the current detector and CSS budget truth.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 161 to 155 and `nowrap-risk` dropped from 86 to 80, with `fixed-width-mobile-risk` still 75 and `hardcoded-color-drift` still 0.
+- `pnpm qa:css:budget` passed: 535,843 bytes / 2,353 rules / 117 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 105 files / 880 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-BnjXaMRu.css` at 447.08 kB.
+- `pnpm qa:smoke` passed in started-Vite mode with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected `studio-build.png`, `studio-evidence.png`, `studio-modules.png`, `studio-debug.png`, `studio-debug-inspector-jump.png`, `studio-workbench-tablet.png`, and `runtime-mobile.png`; no new wrapping overlap, horizontal overflow, clipped primary action, or viewport breakage was visible.
+- `git diff --check` passed with existing CRLF normalization warnings only.
+
+Claim allowed:
+
+- Current Trust/System/Inspector ledger copy has fewer forced single-line truncation points while staying below the CSS byte/rule/overlap budget.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, cross-file ownership overlap, repeated declaration primitives, broader responsive/content hardening, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-01 - RuntimeFrameWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeFrameWorld` for bounded current AIR frame lookup plus cloned `Clsn1` / `Clsn2` projection.
+- Moved player snapshot collision-box projection through the new frame boundary so active move hitboxes, frame hitboxes, and default hurtboxes use one renderer-independent contract.
+- Routed `PlayableMatchRuntime` current-frame, guard-distance hurtbox, and `AfterImage` frame reads through the same boundary while preserving direct frame `Clsn1` handoff for `ReversalDef`.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeFrameSystem.test.ts src/tests/RuntimeSnapshotSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 3 files / 82 tests.
+- `pnpm test` passed 108 files / 888 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current match runtime and snapshot projection share a named, testable boundary for current AIR frame lookup, active-hitbox projection, cloned hurtbox projection, and missing-frame default hurtbox fallback.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN collision priority, frame timing, guard-distance thresholds, rotated/scaled box semantics, helper/team/redirect collision ownership, renderer parity, score movement, and full frame/collision VM parity remain blocked.
+
+## 2026-07-01 - RuntimeAfterImageSampleWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeAfterImageSampleWorld` for bounded `AfterImage` sample projection from actor runtime state plus current AIR frame.
+- Moved afterimage sample object creation out of `PlayableMatchRuntime` while preserving cloned position, facing, frame sprite metadata, and self/state-owner sprite owner metadata.
+- Made `RuntimeAfterImageSample.spriteOwnerLabel` explicit because runtime samples already carried that metadata through the previous spread path.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeAfterImageSampleSystem.test.ts src/tests/SpriteEffectSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 3 files / 85 tests.
+- `pnpm test` passed 107 files / 884 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current `AfterImage` / `AfterImageTime` ghost-trail sampling has a named, testable runtime boundary for actor/frame-to-sample projection before `RuntimeSpriteEffectWorld` captures samples.
+
+Claim blocked:
+
+- Exact sprite material math, draw-order parity, sampling cadence parity, helper/redirect ownership, palette/remap interaction, renderer parity, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+## 2026-07-01 - RuntimeControllerEvaluationContextWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeControllerEvaluationContextWorld` for bounded `StateControllerExecutor` context creation used by active runtime-controller dispatch.
+- Moved `runtimeControllerContext` callback assembly out of local inline object construction in `PlayableMatchRuntime`.
+- Kept `PlayableMatchRuntime` as owner of actor/owner selection, deterministic random source, concrete const lookup, dispatch order, and exact VM timing.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeControllerEvaluationContextSystem.test.ts src/tests/RuntimeDispatchEvaluationSystem.test.ts src/tests/RuntimeTriggerEvaluationSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 4 files / 79 tests.
+- `pnpm test` passed 106 files / 881 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current active runtime-controller executor context has a named, testable world boundary for owner const reads, actor hitpause reads, actor random callbacks, and stage-time forwarding.
+
+Claim blocked:
+
+- Full passive-controller parity, exact CNS controller-loop timing, helper/team/redirect context scopes, exact random stream parity, visual parity, score movement, and full MUGEN/IKEMEN controller VM parity remain blocked.
+
+## 2026-07-01 - RuntimeDispatchEvaluationWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeDispatchEvaluationWorld` for bounded active-controller dynamic dispatch-param fallback.
+- Moved `resolveDispatchNumber` / `resolveDispatchBoolean` fallback expression evaluation out of `PlayableMatchRuntime`.
+- Kept compiled numeric/Boolean values as the first path, with dynamic expressions evaluated only when compiled values are absent.
+- Kept `RuntimeExpressionContextWorld` as the concrete read-model owner while `PlayableMatchRuntime` supplies actor/opponent/owner selection, random/time callbacks, animation timing callbacks, `InGuardDist`, concrete dispatch, and exact VM timing.
+
+Evidence:
+
+- Focused integration test: `pnpm vitest run src/tests/RuntimeDispatchEvaluationSystem.test.ts src/tests/RuntimeTriggerEvaluationSystem.test.ts src/tests/RuntimeTriggerGateSystem.test.ts src/tests/RuntimeActiveControllerScanSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 6 files / 90 tests.
+- `pnpm test` passed 105 files / 880 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded active-controller dispatch params have a named, testable world boundary for compiled-value precedence, context handoff, finite numeric truncation, Boolean truthiness, and actor/opponent/owner/tick forwarding.
+
+Claim blocked:
+
+- Full dynamic-param parity, exact CNS controller tick order, persistent-controller timing, helper/team/redirect parameter scopes, expression language parity, visual parity, score movement, and full MUGEN/IKEMEN controller VM parity remain blocked.
+
+## 2026-07-01 - Studio token-zero color drift pass
+
+Changed:
+
+- Added shared scrollbar and meter-fill tokens for Studio/runtime surfaces.
+- Routed Studio desktop scrollbar track/thumb/hover, legacy console bay backgrounds, stage/console editor shell backgrounds, life/power meters, Studio chrome hover, and Match/Inspect versus badge backgrounds through existing/shared tokens instead of direct literals.
+- Removed the redundant Studio-scoped life/power meter override because the shared meter token rule now owns the same visual role.
+- Updated Studio/UI trackers with the current detector and CSS budget truth.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 175 to 161 and `hardcoded-color-drift` dropped from 14 to 0, with `nowrap-risk` still 86 and `fixed-width-mobile-risk` still 75.
+- `pnpm qa:css:budget` passed: 536,002 bytes / 2,353 rules / 117 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 103 files / 873 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-Bc9mvBYr.css` at 447.19 kB.
+- `pnpm qa:smoke` passed in started-Vite mode with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected Runtime desktop, Studio Workbench, Command Palette, Build, Debug, and the direct Inspect screenshot at `.scratch/qa/qa-smoke/inspect-desktop-token-zero.png`; no new meter contrast regression, scrollbar mismatch, command/editor shell background regression, horizontal overflow, or viewport overlap was visible.
+
+Claim allowed:
+
+- Current scanned Studio/runtime CSS has no remaining `hardcoded-color-drift` detector findings, and shared scrollbar/meter/editor chrome colors now route through tokens without adding rules over budget.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, cross-file ownership overlap, repeated declaration primitives, broader responsive/content hardening, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-01 - RuntimeTriggerEvaluationWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeTriggerEvaluationWorld` for bounded single-trigger expression evaluation.
+- Moved normalized `TriggerIr` evaluation out of `PlayableMatchRuntime.evaluateRuntimeTrigger`.
+- Kept `RuntimeExpressionContextWorld` as the read-model/context owner and `RuntimeTriggerGateWorld` as the `triggerall` / numbered-group owner.
+- Kept `PlayableMatchRuntime` as integration owner for actor/opponent/owner selection, next-random source, animation timing callbacks, `InGuardDist`, concrete dispatch, and exact VM timing.
+
+Evidence:
+
+- Focused integration test: `pnpm vitest run src/tests/RuntimeTriggerEvaluationSystem.test.ts src/tests/RuntimeTriggerGateSystem.test.ts src/tests/RuntimeActiveControllerScanSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 5 files / 86 tests.
+- `pnpm test` passed 104 files / 876 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded active/state-entry single-trigger evaluation has a named, testable world boundary for context creation handoff, normalized expression evaluation, Boolean pass/fail projection, and actor/opponent/owner/tick forwarding.
+
+Claim blocked:
+
+- Full expression language parity, persistent-controller timing, exact CNS trigger tick order, helper/team/redirect trigger scopes, visual parity, score movement, and full MUGEN/IKEMEN trigger VM parity remain blocked.
+
+## 2026-07-01 - RuntimeTriggerGateWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeTriggerGateWorld` for bounded CNS trigger grouping/order evaluation.
+- Moved `triggerall` AND handling plus numbered `triggerN` OR-group scanning out of `PlayableMatchRuntime.triggersPass`.
+- Kept `PlayableMatchRuntime` as integration owner for concrete expression evaluation, actor/opponent/owner context, next-random source, animation timing callbacks, controller dispatch, and exact VM timing.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTriggerGateSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 2 files / 75 tests.
+- Focused integration test: `pnpm vitest run src/tests/RuntimeTriggerGateSystem.test.ts src/tests/RuntimeActiveControllerScanSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 4 files / 83 tests.
+- `pnpm test` passed 103 files / 873 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded active/state-entry trigger filtering has a named, testable world boundary covering `triggerall` short-circuit, numbered trigger-group OR behavior, no-numbered-trigger pass-through, group short-circuit order, and callback context forwarding.
+
+Claim blocked:
+
+- Full expression language parity, persistent-controller timing, exact CNS trigger tick order, helper/team/redirect trigger scopes, visual parity, score movement, and full MUGEN/IKEMEN trigger VM parity remain blocked.
+
+## 2026-07-01 - Runtime command-room token pass
+
+Changed:
+
+- Routed Runtime/Inspect command-deck and legacy command-room direct background colors through existing shared/local surface tokens.
+- Consolidated the runtime command-deck `line-height: 1.05` declaration into the existing shared text rhythm selector group.
+- Updated Studio/UI trackers with the current CSS detector and budget truth.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 189 to 175 and `hardcoded-color-drift` dropped from 28 to 14, with `nowrap-risk` still 86 and `fixed-width-mobile-risk` still 75.
+- `src/styles/runtime/runtime-command-deck.css` and `src/styles/runtime/runtime-legacy-command-room.css` no longer report `hardcoded-color-drift`; remaining runtime findings are the existing nowrap/fixed-width candidates.
+- `pnpm qa:css:budget` passed: 535,917 bytes / 2,355 rules / 117 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 101 files / 866 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-CvQQQuX2.css` at 446.89 kB.
+- `pnpm qa:smoke` passed in started-Vite mode with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected Runtime desktop/mobile, Studio Workbench desktop/tablet, Studio Build, Stage, Assets, Evidence, Debug, and the direct Inspect screenshot at `.scratch/qa/qa-smoke/inspect-desktop-runtime-token.png`; no new token contrast regression, command-room shell mismatch, horizontal overflow, or viewport overlap was visible.
+
+Claim allowed:
+
+- Runtime/Inspect command-room shell backgrounds now follow the shared token palette, and the runtime command-deck no longer carries a duplicate single-purpose line-height rule.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, residual color drift, cross-file ownership overlap, broader primitive extraction, editor workflows, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-01 - RuntimeAutoGuardStartWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeAutoGuardStartWorld` for bounded imported auto guard-start orchestration.
+- Moved imported-defender guard, auto guard eligibility handoff, `InGuardDist` gate, guard-start state selection/availability, clear-state-owner entry, and guard-start runtime mutation out of `PlayableMatchRuntime`.
+- Kept `RuntimeGuardWorld` as guard-rule primitive owner and `PlayableMatchRuntime` as integration owner for `InGuardDist`, concrete state availability/entry, and broader combat/guard timing.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeAutoGuardStartSystem.test.ts` passed 1 file / 3 tests.
+- Focused integration test: `pnpm vitest run src/tests/RuntimeAutoGuardStartSystem.test.ts src/tests/GuardSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 3 files / 78 tests.
+- `pnpm test` passed 102 files / 869 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded imported auto guard-start orchestration has a named, testable world boundary covering imported-only entry, current-input/current-move/pause/stun eligibility, guard-distance gating, guard-start state availability, and no-mutation fail-closed behavior.
+
+Claim blocked:
+
+- Exact proximity-guard timing, guard-end/effects/audio, helper/team/redirect guard ownership, visual parity, score movement, and full MUGEN/IKEMEN guard VM parity remain blocked.
+
+## 2026-07-01 - RuntimeActiveControllerScanWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeActiveControllerScanWorld` for bounded active-state controller scan ownership.
+- Moved owner/state-owner selection, imported/owner-backed guard, active state-program lookup, `ignorehitpause` filtering, trigger gating, controller iteration, and stop/continue flow out of the top of `PlayableMatchRuntime.runActiveStateControllers`.
+- Kept `PlayableMatchRuntime` as integration owner for trigger evaluation, controller classification, concrete side-effect dispatch, state/animation mutation, and broader controller ordering.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeActiveControllerScanSystem.test.ts` passed 1 file / 3 tests.
+- Focused integration test: `pnpm vitest run src/tests/RuntimeActiveControllerScanSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` passed 2 files / 74 tests.
+- `pnpm test` passed 101 files / 866 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- Current bounded active-state controller scanning has a named, testable world boundary covering owner-backed scanning, hitpause-only filtering, stop-after-ChangeState flow, missing-state skip, non-imported skip, and failed-trigger no-op.
+
+Claim blocked:
+
+- Exact CNS VM tick order, persistent controller semantics, helper/team/redirect controller scopes, full controller-loop parity, visual parity, score movement, and full MUGEN/IKEMEN active-controller parity remain blocked.
+
+## 2026-07-01 - RuntimeTargetStateEntryWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeTargetStateEntryWorld` for bounded active-state `TargetState` state-entry routing.
+- Moved controller-owner resolution, state-owner preservation, unavailable-target-state fail-closed behavior, and owner-backed target state-entry handoff out of `PlayableMatchRuntime`.
+- Kept `RuntimeTargetControllerDispatchWorld` as the Target-controller dispatch owner, `RuntimeTargetWorld` as the target-memory/candidate owner, and `PlayableMatchRuntime` as integration owner for concrete state availability, state entry mutation, trigger filtering, and broader controller ordering.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTargetStateEntrySystem.test.ts` passed 1 file / 3 tests.
+- Focused related test: `pnpm vitest run src/tests/RuntimeTargetStateEntrySystem.test.ts src/tests/RuntimeHelperTargetStateSystem.test.ts src/tests/RuntimeHelperProjectileTargetSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts` passed 4 files / 14 tests.
+- `pnpm test` passed 100 files / 863 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- Current bounded active-state `TargetState` entry has a named, testable world boundary covering controller-owned entry, owner-backed custom-state preservation, and unavailable-state no-op behavior.
+
+Claim blocked:
+
+- Exact `TargetState` tick order, throws, helper/team/multi-target target state selection, full custom-state parity, visual parity, score movement, and full MUGEN/IKEMEN `TargetState` parity remain blocked.
+
+## 2026-07-01 - Studio desktop foundation token pass
+
+Changed:
+
+- Routed Studio desktop foundation badge, status-badge, stage-status-card, stage-status-main, and stage-status metric colors through existing Studio/global tokens instead of local hex literals.
+- Merged the duplicate Workbench/Debug `.empty-state` chrome declaration in `src/styles/workflows/studio-workbench-module-hardening.css` into one shared rule.
+- Updated Studio/UI trackers with the current CSS detector and budget truth.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 196 to 189 and `hardcoded-color-drift` dropped from 35 to 28, with `nowrap-risk` still 86 and `fixed-width-mobile-risk` still 75.
+- `src/styles/desktop/studio-desktop-foundation.css` no longer reports `hardcoded-color-drift`; remaining findings there are 2 `nowrap-risk` and 1 `fixed-width-mobile-risk`.
+- `pnpm qa:css:budget` passed: 535,761 bytes / 2,356 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 99 files / 860 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-C6q-sQ_u.css` at 446.73 kB.
+- `pnpm qa:smoke` passed in started-Vite mode with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected Runtime desktop/mobile, Studio Workbench desktop/tablet, Studio Build, Stage, Assets, Evidence, Debug, Modules, command palette, and Build Trust Focus screenshots; no new token contrast regression, badge/status background mismatch, empty-state chrome regression, horizontal overflow, or viewport overlap was visible.
+
+Claim allowed:
+
+- Studio desktop foundation status surfaces now follow the shared token palette, and Workbench/Debug empty states no longer carry a duplicated chrome rule.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, runtime/legacy/desktop color literals, cross-file ownership overlap, broader primitive extraction, editor workflows, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
+
+## 2026-07-01 - RuntimeHelperTargetStateWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHelperTargetStateWorld` for bounded helper-owned `TargetState` state-entry routing.
+- Moved helper/owner identity validation, target lookup fail-closed behavior, target state availability checks, and owner-backed target state-entry handoff out of `PlayableMatchRuntime`.
+- Kept `PlayableMatchRuntime` as integration owner for concrete target lookup, state availability, state entry, controller callback placement, and broader helper/custom-state ordering.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeHelperTargetStateSystem.test.ts src/tests/RuntimeHelperProjectileTargetSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts` passed 3 files / 11 tests.
+- `pnpm test` passed 99 files / 860 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded helper-owned `TargetState` routing has a named, testable world boundary covering owner-backed entry, owner-mismatch skip, missing-target no-op, and unavailable-state no-op behavior.
+
+Claim blocked:
+
+- Helper-owned custom state table parity, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper `TargetState` timing, visual parity, score movement, and full helper `TargetState` parity remain blocked.
+
+## 2026-07-01 - RuntimeHelperProjectileTargetWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeHelperProjectileTargetWorld` for bounded helper-parented Projectile target-memory mirroring.
+- Moved owner-parented Projectile skip, parent Helper lookup by runtime serial, missing-helper no-op, and helper-local target-memory write out of `PlayableMatchRuntime`.
+- Kept `PlayableMatchRuntime` as integration owner for projectile-combat callback placement, concrete owner/defender/projectile tuples, effect actor store access, target-world wiring, and broader combat/effect ordering.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeHelperProjectileTargetSystem.test.ts src/tests/RuntimeStateEntryRouteSystem.test.ts` passed 2 files / 8 tests.
+- `pnpm test` passed 98 files / 857 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded helper-parented Projectile contact target mirroring has a named, testable world boundary covering helper mirror, owner-projectile skip, and missing-helper fail-closed behavior.
+
+Claim blocked:
+
+- Exact helper Projectile target lifetime, helper-owned custom-state tables, teams/simul, multi-target/helper-owned opponent selection, exact combat/effect tick order, visual parity, score movement, and full helper Projectile parity remain blocked.
+
+## 2026-07-01 - RuntimeStateEntryRouteWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeStateEntryRouteWorld` for bounded State -1 `ChangeState` route selection.
+- Moved state-entry iteration, non-ChangeState filtering, trigger gating, dynamic state-id resolution handoff, route telemetry, authored state-move selection, and raw state-entry fallback out of `PlayableMatchRuntime`.
+- Kept `PlayableMatchRuntime` as integration owner for trigger evaluation, expression resolution, concrete state entry, move startup, runtime tick order, and broader controller execution.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeStateEntryRouteSystem.test.ts` passed 1 file / 5 tests.
+- `pnpm test` passed 97 files / 854 tests.
+- `pnpm typecheck` passed.
+- `pnpm build` passed with the existing large-chunk warning.
+- `pnpm qa:trace` passed 211/211 artifacts: 191 required and 20 optional. Vite also reported port 24678 already in use after the passing trace run.
+- `pnpm check:boundaries` passed.
+- `git diff --check` passed with CRLF/LF normalization warnings only.
+
+Claim allowed:
+
+- Current bounded State -1 `ChangeState` routing has a named, testable world boundary covering route-to-move, route-to-state, failed-trigger/unresolved no-op scans, dynamic expression handoff, and empty-list skip behavior.
+
+Claim blocked:
+
+- Exact State -1 VM timing, persistent-controller semantics, helper/team/redirect routing breadth, full CNS/IKEMEN command-state parity, visual parity, score movement, and full MUGEN/IKEMEN parity remain blocked.
+
+## 2026-07-01 - Studio command shell token pass
+
+Changed:
+
+- Routed Studio command shell chrome, player markers, command input, action buttons, and Playtest button colors through existing command/studio tokens instead of local hex literals.
+- Raised the remaining command-shell kicker/value support text to the current 12px readability floor while preserving dense command-desk layout and authored label case.
+- Kept Studio navigation, command actions, runtime/project data, status wiring, and viewport layout unchanged.
+- Tightened `RuntimeStateEntryRouteWorld` move typing through a read-only `stateMoves` contract and actor-derived hook move type so the existing state-entry route extraction stays type-clean through production build without changing runtime routing behavior.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 204 to 196 and `hardcoded-color-drift` dropped from 43 to 35, with `nowrap-risk` still 86 and `fixed-width-mobile-risk` still 75.
+- `src/styles/command/studio-command-shell.css` no longer reports `hardcoded-color-drift`; remaining findings there are 2 `nowrap-risk` and 1 `fixed-width-mobile-risk`.
+- `pnpm qa:css:budget` passed: 535,853 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 97 files / 854 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-DP0-rH4P.css` at 446.79 kB.
+- `pnpm qa:smoke` passed with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Build Trust Focus, Modules, Stage, Assets, Evidence, and Debug screenshots; no new command-shell overlap, unreadable token state, viewport regression, or mobile/tablet collapse was visible.
+- `pnpm qa:trace` passed 211/211 artifacts, 191 required and 20 optional; `synthetic-imported-projectile-target-redirect` checksum stayed `cd099094` and `synthetic-imported-enemynear-index` stayed `b97e2eda`.
+- `git diff --check` passed with only existing CRLF normalization warnings reported.
+
+Claim allowed:
+
+- Studio command shell chrome now follows the shared command palette for panels, player state, action affordances, command text, hover/focus, and playtest emphasis without changing behavior.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, command/runtime/legacy/desktop color literals, cross-file ownership overlap, editor workflows, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
+
 ## 2026-07-01 - RuntimeHelperCombatWorld ownership extraction
 
 Changed:
@@ -19,6 +1914,35 @@ Claim allowed:
 Claim blocked:
 
 - Exact helper hitpause/tick order, helper-owned custom-state tables, multi-target/team helper combat, helper-owned Projectile combat/contact presentation, visual parity, score movement, and full Helper VM parity remain blocked.
+
+## 2026-07-01 - Studio shell color token pass
+
+Changed:
+
+- Routed Studio desktop shell topbar, workstation, playfield, and command playfield control colors through existing Studio/station/global tokens instead of local hex literals.
+- Kept shell layout, URL-backed tabs, action wiring, HUD placement, toolbar structure, status states, and runtime/project data unchanged.
+- Preserved the 12px visible text floor and authored-case labels while aligning shell panels, edges, active states, icons, and toolbar cells to the shared command-desk palette.
+- Restored the runtime helper-combat state hook referenced by the live smoke loop and removed its stale unused input import, so helper combat uses the existing bounded state-entry adapter instead of throwing a browser `ReferenceError`.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 225 to 204 and `hardcoded-color-drift` dropped from 64 to 43, with `nowrap-risk` still 86 and `fixed-width-mobile-risk` still 75.
+- `pnpm qa:css:budget` passed: 535,657 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm qa:css:detail` confirms the same zero duplicate/shadowed-rule state and leaves remaining debt in repeated declaration groups plus cross-file overlaps.
+- `pnpm typecheck` passed after the smoke-blocking runtime hook fix.
+- `pnpm test` passed: 95 files / 846 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-DkRcBOPk.css` at 446.60 kB.
+- `pnpm qa:smoke` passed with Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage/BGCtrl, Assets, Evidence, Debug, and debug-lens screenshots regenerated.
+- Visual QA inspected Runtime desktop/mobile, Studio Workbench desktop/tablet, command palette, Build, Modules, source relink, Stage, Assets, Evidence, and Debug screenshots; no new shell overlap, unreadable token state, or playfield/control regression was visible.
+- `pnpm qa:trace` passed 211/211 artifacts, 191 required and 20 optional; `synthetic-imported-enemynear-index` checksum stayed `b97e2eda`.
+
+Claim allowed:
+
+- Studio shell/chrome/playfield colors now follow shared tokens for panel, edge, text, active, icon, HUD, and toolbar states, reducing design-token drift without changing behavior.
+
+Claim blocked:
+
+- Remaining nowrap, fixed-width, command/runtime/legacy/desktop color literals, cross-file ownership overlap, editor workflows, runtime compatibility, score movement, and full MUGEN/IKEMEN parity remain open.
 
 ## 2026-07-01 - EnemyNear indexed 1v1 trace gate
 
@@ -43,6 +1967,38 @@ Claim blocked:
 
 - Team/simul nth-nearest enemy selection, helper-owned opponent lists, redirect mutation, dynamic-index parity, exact IKEMEN/MUGEN EnemyNear lifetime/ordering, score movement, and full parity remain blocked.
 
+## 2026-07-01 - Studio label case readability pass
+
+Changed:
+
+- Removed forced uppercase transforms from non-status Studio command, shell, Workbench, Assets, Stage, Trust Chain, Modules, and Debug micro-labels.
+- Kept source text, status badges, icons, layout, focus states, grid structure, and runtime behavior unchanged.
+- Preserved dense mono label treatment while letting operational copy read in authored case instead of shout-style body metadata.
+- Kept the existing bounded `EnemyNear(1)` fail-closed path quiet inside nested dynamic `Target(...)` index checks so the current CNS subset tests and trace gate remain aligned.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 253 to 225, P3 from 92 to 64, and `all-caps-body` from 28 to 0.
+- `pnpm qa:css:budget` passed: 534,939 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `rg -n "text-transform: uppercase" src\styles` returned no matches.
+- Focused CNS/compatibility tests passed: `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/CompatibilityReport.test.ts` passed 3 files / 64 tests.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 845 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-aW1R9tkE.css` at 445.87 kB.
+- `pnpm qa:smoke` passed with Workbench desktop/tablet overflow checks clear, command-palette accessibility true, Studio Trust Chain rows shared, Stage/BGCtrl checks intact, Assets/Debug data intact, and trace checksum `d99b9475`.
+- `pnpm qa:trace` passed 211/211 artifacts, 191 required and 20 optional; `synthetic-imported-enemynear-index` checksum is `b97e2eda`.
+- Visual QA inspected `studio-workbench.png`, `studio-command-palette.png`, `studio-build.png`, `studio-modules.png`, `studio-assets.png`, `studio-stage.png`, and `studio-debug.png`; authored-case labels stayed readable with no visible rail overflow, button collapse, or broken state hierarchy.
+- `git diff --check` passed; only existing CRLF normalization warnings were reported.
+
+Claim allowed:
+
+- Studio non-status micro-labels now preserve authored case across command chrome, Workbench, Assets, Stage, Build/Evidence, Modules, and Debug, reducing visual noise without changing data or actions.
+- Nested dynamic `Target(EnemyNear(1), StateNo)` checks remain fail-closed in the current one-opponent route without surfacing a raw unsupported `EnemyNear` report.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, hardcoded-color, and cross-file ownership debt stays open; this does not add Studio workflow features, editor tools, score movement, team/simul `EnemyNear(n)` selection, helper-owned opponent selection, broad redirect parity, or full MUGEN/IKEMEN compatibility.
+
 ## 2026-07-01 - HitDef Data spark fallback trace gates
 
 Changed:
@@ -54,12 +2010,7 @@ Changed:
 Evidence:
 
 - Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "data-spark|data guard-spark"` passed 2 tests.
-- `pnpm test` passed 95 files / 845 tests.
-- `pnpm typecheck` passed.
-- `pnpm build` passed with existing Vite large-chunk warning.
 - `pnpm qa:trace` passed 210/210 artifacts, 190 required and 20 optional.
-- `pnpm check:boundaries` passed.
-- `git diff --check` passed with only pre-existing CRLF warnings in unrelated dirty UI/CSS files.
 - New checksums: `synthetic-imported-hitdef-data-spark.json` `d950796c`; `synthetic-imported-hitdef-data-guard-spark.json` `7bd9d162`.
 
 Claim allowed:
@@ -69,6 +2020,33 @@ Claim allowed:
 Claim blocked:
 
 - Exact FightFX/common lookup, renderer binding/timing/layering/scale/palette, SND playback, helper-owned presentation, broad HitDef parity, public KFM asset support, score movement, and full MUGEN/IKEMEN parity remain blocked.
+
+## 2026-07-01 - Studio action label wrap pass
+
+Changed:
+
+- Removed forced `white-space: nowrap` from Workbench action/asset/output text, Build/Evidence action labels, and Modules/Debug full-width actions.
+- Kept grid structure, button semantics, min heights, colors, icons, and status badges unchanged.
+- Let action copy and selected workbench metadata wrap naturally when content is longer than the desktop rail can show cleanly.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 257 to 253, P2 from 165 to 161, and `nowrap-risk` from 90 to 86.
+- `pnpm qa:css:budget` passed: 535,823 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 845 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-SxjhcpTA.css` at 446.57 kB.
+- `pnpm qa:smoke` passed with Workbench desktop/tablet overflow checks clear, command-palette accessibility true, Studio Trust Chain rows shared, Stage/BGCtrl checks intact, Assets/Debug data intact, and trace checksum `d99b9475`.
+- Visual QA inspected `studio-workbench.png`, `studio-build.png`, `studio-modules.png`, `studio-debug.png`, and `studio-evidence-world-delta.png`; wrapped action labels stayed readable with no visible rail overflow, button collapse, or broken state hierarchy.
+- `git diff --check` passed; only existing CRLF normalization warnings were reported.
+
+Claim allowed:
+
+- Studio Workbench, Build/Evidence, and Modules/Debug action text no longer forces single-line truncation where wrapping improves readability.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add Studio workflow features, editor tools, runtime compatibility, or score movement.
 
 ## 2026-07-01 - HitDef compiler default spark fallback
 
@@ -96,6 +2074,34 @@ Claim blocked:
 
 - No new trace artifact, no renderer/audio playback parity, no exact FightFX/common visual parity, no broader HitDef semantics, no public bundled KFM asset, no score movement, and no full MUGEN/IKEMEN parity.
 
+## 2026-07-01 - Studio shell surface color-token pass
+
+Changed:
+
+- Replaced remaining hardcoded desktop Studio shell surface colors in `src/styles/shell/studio-shell-surface-system.css` with existing `--desk-*`, `--studio-*`, `--ok`, `--warn`, and `--danger` tokens.
+- Kept selectors, layout, row structure, badge semantics, toolbar behavior, and runtime state unchanged.
+- Preserved the hard neutral desktop register while making shared badges, controls, stage status cards, and pane borders inherit the same system palette as the rest of Studio.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 265 to 257, P3 from 100 to 92, and `hardcoded-color-drift` from 72 to 64.
+- `studio-shell-surface-system.css` hardcoded-color findings dropped from 8 to 0.
+- `pnpm qa:css:budget` passed: 535,923 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 843 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-C7vcbupv.css` at 446.64 kB.
+- `pnpm qa:smoke` passed with Workbench desktop/tablet overflow checks clear, command-palette accessibility true, Studio Trust Chain rows shared, Stage/BGCtrl checks intact, Assets/Debug data intact, and trace checksum `d99b9475`.
+- Visual QA inspected `studio-workbench.png`, `studio-build.png`, `studio-stage.png`, `studio-debug.png`, and `studio-command-palette.png`; shared shell badges, controls, stage status cards, and pane borders stayed readable with no visible overflow or broken state hierarchy.
+- `git diff --check` passed; only existing CRLF normalization warnings were reported.
+
+Claim allowed:
+
+- Studio shared shell badges, controls, stage status cards, and pane borders now follow existing color tokens instead of local literal colors.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add Studio workflow features, editor tools, runtime compatibility, or score movement.
+
 ## 2026-07-01 - Optional KFM QCF default spark gate
 
 Changed:
@@ -108,10 +2114,6 @@ Evidence:
 
 - Focused test: `pnpm vitest run src/tests/importedFighter.test.ts` passed 1 file / 6 tests.
 - `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; optional `kfm-official-qcf-x.json` checksum remains `70a3e6b2`.
-- `pnpm test` passed: 95 files / 841 tests.
-- `pnpm typecheck` passed.
-- `pnpm build` passed with the existing Vite large-chunk warning.
-- `pnpm check:boundaries` passed.
 
 Claim allowed:
 
@@ -121,31 +2123,60 @@ Claim blocked:
 
 - No public bundled KFM asset, score movement, exact Kung Fu Palm timing, exact pushback, renderer/audio playback parity, broad special-move compatibility, or full MUGEN/IKEMEN special-route parity.
 
-
-## 2026-07-01 - Optional KFM QCF x contact gate
+## 2026-07-01 - Studio KV label readability pass
 
 Changed:
 
-- Added an extended QCF x contact script and reusable official KFM QCF x actor/controller sequence requirements.
-- Tightened optional `kfm-official-qcf-x.json` so the private official KFM fixture must prove `QCF_x` input into state `1000`, ordered `11 -> 20 -> 1000` actor-frame evidence, `ChangeState` / `PosAdd` / `HitDef`, typed `kinematic:posadd` / `hitdef`, authored `PlaySnd` telemetry for `S0,3` and `S5,4`, target link `p1 -> p2 / 0`, final P1 target/power state, and final P2 damage/hitfall state.
-- Updated runtime compatibility docs with claim allowed / claim blocked wording for this private-fixture special-route proof.
+- Removed forced uppercase from Studio key/value data labels across Assets, Inspector, Stage, Build/Evidence, Modules/Debug, and shared Studio KV primitives.
+- Preserved the mono label weight, alignment, row structure, and existing surface-specific hierarchy while making dense metadata labels read as authored text instead of shouted body copy.
+- Kept selectors and runtime behavior unchanged.
+- Aligned two imported-fighter spark assertion reads with the optional `stateMoves` type so the final typecheck gate stays green without changing fixture behavior.
 
 Evidence:
 
-- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "QCF"` passed.
-- `pnpm qa:trace` passed 208/208 artifacts, 188 required and 20 optional; `kfm-official-qcf-x.json` checksum `70a3e6b2`.
-- `pnpm test` passed: 95 files / 839 tests.
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 272 to 265, P3 from 107 to 100, and `all-caps-body` from 35 to 28.
+- `pnpm qa:css:budget` passed: 535,676 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
 - `pnpm typecheck` passed.
-- `pnpm build` passed with the existing Vite large-chunk warning.
-- `pnpm check:boundaries` passed.
+- `pnpm test` passed: 95 files / 841 tests.
+- `pnpm build` passed; Vite kept the existing large-chunk warning and emitted `dist/assets/index-CfNN9VHu.css` at 446.34 kB.
+- `pnpm qa:smoke` passed with Workbench desktop/tablet overflow checks clear, command-palette accessibility true, Studio Trust Chain rows shared, Stage/BGCtrl checks intact, Assets/Debug data intact, and trace checksum `d99b9475`.
+- Visual QA inspected `studio-build.png`, `studio-evidence.png`, `studio-assets.png`, `studio-stage.png`, `studio-modules.png`, `studio-debug.png`, and `studio-debug-inspector-jump.png`; KV rows stayed aligned/readable with no new visible overflow or broken hierarchy.
+- `git diff --check` passed; only existing CRLF normalization warnings were reported.
 
 Claim allowed:
 
-- The private official KFM fixture now proves one bounded Kung Fu Palm route from `QCF_x` command input to contact, including state/action order, controller/operation evidence, sound telemetry, target memory, and final damage/hitfall state.
+- Studio ledger key/value labels now keep dense metadata hierarchy without forcing uppercase across body-data rows.
 
 Claim blocked:
 
-- No public bundled KFM asset, exact special timing, pushback, spark rendering, broad special-move compatibility, score movement, or full MUGEN/IKEMEN parity is claimed.
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add Studio workflow features, package/source drilldowns, runtime compatibility, or score movement.
+
+## 2026-07-01 - Studio Stage Lab color-token pass
+
+Changed:
+
+- Replaced Stage Lab desktop diagnostics literal colors with shared Studio/global tokens for panels, rows, badges, text, muted metadata, and status rails.
+- Kept Stage diagnostics layout and selectors intact while aligning imported-stage rows with the same Studio ledger palette used by other workbench surfaces.
+- Removed redundant Stage Lab comment noise so the CSS budget stays under the frozen ceiling.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total CSS findings dropped from 280 to 272, P3 from 115 to 107, and `hardcoded-color-drift` from 80 to 72.
+- Stage Lab hardcoded-color findings dropped to 0.
+- `pnpm qa:css:budget` passed: 535,899 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 838 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` passed; Workbench desktop/tablet overflow false, command palette accessibility true, Stage reports 7 rendered layers, BGCtrl Lab reports 4 bounded controllers, Build/Evidence Trust Chain rows remain shared, and trace checksum `d99b9475`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-stage.png`, `studio-stage-bgctrl.png`, and `studio-workbench.png`; no new overlap, broken hierarchy, missing status rail, clipped Stage diagnostics, or viewport overflow was observed.
+
+Claim allowed:
+
+- Studio Stage Lab diagnostics now route their visible desktop panel, row, badge, text, and rail colors through existing tokens instead of one-off literal color values.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add Stage editing, BGCtrl parity, runtime compatibility, or score movement.
 
 ## 2026-07-01 - Optional KFM ground recovery actor-frame gate
 
@@ -188,6 +2219,60 @@ Claim allowed:
 Claim blocked:
 
 - No bundled/public KFM asset, score movement, exact recovery thresholds, exact velocity math, exact controller-loop tick order, guard-state parity, or full MUGEN/IKEMEN recovery parity.
+
+## 2026-07-01 - Studio command palette color-token pass
+
+Changed:
+
+- Replaced command palette result, focus, rail, and status literal colors with existing palette/global tokens.
+- Kept the local `--cp-*` seed colors as the command palette owner and avoided adding new selectors or runtime behavior.
+- Preserved the dense command-table layout while aligning its status rails and focus states with the Studio token system.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total findings dropped from 288 to 280, P3 from 123 to 115, and `hardcoded-color-drift` from 88 to 80.
+- Command palette hardcoded-color findings dropped to 0.
+- `pnpm qa:css:budget` passed: 535,831 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 838 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` passed; Workbench desktop/tablet overflow false, command palette accessibility true, Build Trust Chain focus remains `package-bundle`, Stage reports 7 rendered layers, Assets/Debug/Evidence checks passed, and trace checksum `d99b9475`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-command-palette.png`, `studio-workbench.png`, `studio-build.png`, and `studio-evidence.png`; no new overlap, broken hierarchy, missing focus state, or status-color regression was observed.
+
+Claim allowed:
+
+- The desktop Studio command palette now routes its visible result/status/focus color declarations through tokens instead of one-off literal color values.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add command actions, package/source drilldowns, runtime compatibility, or score movement.
+
+## 2026-07-01 - Studio responsive CSS consolidation pass
+
+Changed:
+
+- Removed the Assets drawer summary truncation rule that was already covered by the shared `studio-ledger-drawer` primitive.
+- Consolidated Build/Evidence compact action-label truncation into one shared Trust Chain action selector.
+- Updated Studio CSS/docs metrics so the current interface budget reflects the smaller active stylesheet.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; total findings dropped from 290 to 288, P2 from 167 to 165, and `nowrap-risk` from 92 to 90.
+- `pnpm qa:css:budget` passed: 535,672 bytes / 2,357 rules / 118 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 `src/style.css` overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 837 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` passed; Workbench desktop/tablet overflow false, command palette accessibility true, Build Trust Chain focus remains `package-bundle`, Stage reports 7 rendered layers, Assets/Debug/Evidence checks passed, and trace checksum `d99b9475`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-assets.png`, `studio-build.png`, `studio-evidence.png`, `studio-workbench.png`, `studio-workbench-tablet.png`, and `studio-command-palette.png`; no new overlap, broken hierarchy, or viewport overflow was observed.
+
+Claim allowed:
+
+- The current Studio CSS baseline has a lower byte/rule/repeated-group footprint while preserving the shared drawer and Trust Chain action behavior.
+- This pass removes two local `nowrap` detector findings without adding new CSS owners or runtime behavior.
+
+Claim blocked:
+
+- Remaining fixed-width, nowrap, all-caps, hardcoded-color, and cross-file ownership debt stays open; this does not add package/source drilldowns, change runtime compatibility, or move port scores.
 
 ## 2026-07-01 - Player Projectile default Target controller gate
 
@@ -233,6 +2318,147 @@ Claim allowed:
 Claim blocked:
 
 - Direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, and full Projectile default TargetState parity remain blocked.
+
+## 2026-07-01 - Studio reduced-motion transition guard
+
+Changed:
+
+- Added local `prefers-reduced-motion` contracts to the base motion token, base controls, desktop command polish, Build/Evidence trust ledgers, and Modules/Debug system ledgers.
+- Reused `--studio-row-transition` for the desktop command row/action feedback instead of carrying a local transition declaration list.
+- Kept normal desktop microinteractions intact: row/action hover and focus still use quiet color/outline feedback, while reduced-motion users get no local transition travel.
+
+Evidence:
+
+- Static interface detector passed with no P1 findings; `missing-reduced-motion-guard` dropped from 5 to 0, total findings from 295 to 290, and P2 findings from 172 to 167.
+- Broad motion scan found no `transition: all`, `transition-all`, broad `will-change`, `scale(0)`, or `ease-in` in `src/styles` / `src/app`.
+- `pnpm qa:css:budget` passed: 536,014 bytes / 2,359 rules / 119 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 src/style overlaps, 0 cross-file shadowed rules.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 836 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:smoke` passed; Workbench desktop/tablet overflow false, command palette accessibility true, Build Trust Chain focus remains `package-bundle`, Stage reports 7 rendered layers, and Assets/Debug/Evidence checks passed.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `studio-build.png`, `studio-modules.png`, `studio-debug.png`, `studio-command-palette.png`, `studio-workbench-tablet.png`, `studio-evidence.png`, and `studio-stage.png`; no new overlap, broken hierarchy, or viewport overflow was observed.
+- `git diff --check` passed with existing CRLF normalization warnings.
+
+Claim allowed:
+
+- Studio row/action transition owners now have local reduced-motion guards in addition to the global accessibility guard.
+- The local static detector no longer reports missing reduced-motion guards in `src/styles`.
+- CSS remains under the frozen budget ceiling while preserving exact duplicate and shadowed-rule zeroes.
+
+Claim blocked:
+
+- This does not remove remaining fixed-width, nowrap, all-caps, or hardcoded-color detector findings; it does not reduce repeated declaration groups below 119, add package/source drilldowns, change runtime compatibility, or move port scores.
+
+## 2026-07-01 - Studio-wide CSS text floor
+
+Changed:
+
+- Raised visible Studio command, shell, desktop, workflow, shared primitive, and responsive Assets CSS text below 12px to a 12px floor across `src/styles`.
+- Widened compact mission/status/KV/badge columns where the larger text needed room, while keeping the change inside existing CSS owners.
+- Moved Stage layer diagnostics badges below layer metadata so 12px metadata no longer stacks vertically in the imported-stage layer rows.
+- Kept this as CSS/product-surface polish only: no project data binding, runtime logic, trace semantics, or Studio workflow behavior changed.
+
+Evidence:
+
+- Local `rg` check found no remaining sub-12px `font-size` literal or variable in `src/styles`.
+- Static interface detector passed with no P1 findings; tiny-text findings dropped from 36 to 0, total findings from 378 to 295, P2 findings from 242 to 172, and P3 findings from 136 to 123.
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 835 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:css:budget` passed: 535,080 bytes / 2,354 rules / 119 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 src/style overlaps, 0 cross-file shadowed rules.
+- `pnpm qa:smoke` passed; Workbench desktop/tablet overflow false, command palette accessibility true, Build Trust Chain focus remains `package-bundle`, Stage reports 7 rendered layers, and Assets/Debug/Evidence checks passed.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-workbench.png`, `studio-command-palette.png`, `studio-assets.png`, `studio-stage.png`, `studio-build.png`, `studio-evidence.png`, `studio-debug-inspector-jump.png`, and `studio-workbench-tablet.png`; Stage layer metadata no longer stacks vertically and no new incoherent overlap was observed.
+
+Claim allowed:
+
+- `src/styles` now has no sub-12px CSS `font-size` literal or variable, and Studio command/shell/workflow text is more readable without exceeding CSS budget.
+- Stage layer diagnostics keep 12px metadata readable by separating metadata and status badges.
+- Local CSS tiny-text detector debt is closed for the current Studio stylesheet graph.
+
+Claim blocked:
+
+- This does not remove remaining nowrap/fixed-width/design-token P2 findings, reduce repeated declaration groups below 119, add package/source drilldowns, change runtime compatibility, or move port scores.
+
+## 2026-07-01 - Studio Trust/System ledger readability floor
+
+Changed:
+
+- Raised Trust Chain and Modules/Debug functional ledger typography to a 12px floor in `src/styles/workflows/studio-trust-ledgers.css` and `src/styles/workflows/studio-system-ledgers.css`.
+- Kept Build/Evidence plus Modules/Debug on the shared `studio-primitives.css` KV/badge primitive while grouping a repeated Debug selected-strong style to stay inside CSS budget.
+- Widened the Trust Chain `Impact` label column so the 12px mono label no longer collides with impact copy.
+- Corrected pre-existing helper Projectile runtime test expectation drift back to the already documented `life = 982` evidence, leaving the new player-owned Projectile target redirect `969` proof unchanged.
+- Updated Studio UI docs and the S1 local issue with current CSS metrics.
+
+Evidence:
+
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 833 tests.
+- Focused helper Projectile target/bare-target runtime tests passed after the expectation correction.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:css:budget` passed: 535,168 bytes / 2,354 rules / 119 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 src/style overlaps, 0 cross-file shadowed rules.
+- UI detector passed with no P1 findings.
+- `pnpm qa:smoke` passed; Build Trust Chain focused row remains `package-bundle`; Workbench tablet overflow false.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-build-trust-focus.png`, `studio-modules.png`, `studio-debug.png`, and `studio-workbench-tablet.png`; Trust Chain Impact copy no longer collides with the label, Modules/Debug remain scannable, and tablet remains overflow-free.
+
+Claim allowed:
+
+- Trust Chain and Modules/Debug ledger copy now has a 12px functional readability floor without exceeding CSS budget.
+- Trust Chain Impact labels have enough column width for the larger mono label.
+- Helper Projectile target/bare-target tests again match the documented `life = 982` helper evidence.
+
+Claim blocked:
+
+- This does not add package-file/source-file drilldowns, true editing workflows, persistent source handles, runtime compatibility, score movement, or full CSS cascade cleanup.
+
+## 2026-07-01 - Player Projectile target redirect gate
+
+Changed:
+
+- Added required runtime trace artifact `synthetic-imported-projectile-target-redirect.json`.
+- Added `withHitDef: false` to the synthetic imported fighter fixture generator so Projectile-only target-memory gates can isolate Projectile hits from direct HitDef routes without changing existing fixture defaults.
+- Registered the new artifact in `pnpm qa:trace` required coverage and added focused preset coverage.
+- Updated runtime compatibility docs with claim allowed / claim blocked wording for player-owned Projectile target redirect reads.
+
+Evidence:
+
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile Target redirect"` passed.
+- `pnpm qa:trace` passed 204/204 artifacts, 184 required and 20 optional; new checksum `cd099094`.
+
+Claim allowed:
+
+- A player-owned Projectile-only route can hit P2, record owner target link `p1 -> p2 / 77`, route P1 from state `200` to `277` through `NumTarget(77)` plus `Target(77), Life <= 969`, and preserve Projectile lifecycle/effect payload evidence.
+
+Claim blocked:
+
+- Direct HitDef plus Projectile target mixing, target mutation through redirects, helper-owned projectile targets, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, and full Projectile target parity.
+
+## 2026-07-01 - Studio Trust Chain focus and ledger CSS primitive pass
+
+Changed:
+
+- Consolidated shared Build/Evidence and Modules/Debug ledger `studio-kv` / badge-row styling behind `src/styles/surfaces/studio-primitives.css` aliases while keeping trust/system workflow CSS ownership.
+- Added visible Trust Chain focused-row state through `studioFocusedTrustRowId`, `data-trust-row-id`, and `.studio-trust-contract-row.is-linked-focus`.
+- Extended `pnpm qa:smoke` to click the package Trust Chain row, assert focused row state, and capture `.scratch/qa/qa-smoke/studio-build-trust-focus.png`.
+- Updated Studio UI docs/roadmap issue with current CSS metrics and no-score workflow claim.
+
+Evidence:
+
+- `pnpm typecheck` passed.
+- `pnpm test` passed: 95 files / 832 tests.
+- `pnpm build` passed with the existing Vite large-chunk warning.
+- `pnpm qa:css:budget` passed: 535,188 bytes / 2,355 rules / 119 repeated declaration groups / 107 cross-file overlaps; 0 duplicate selectors, 0 exact duplicate rules, 0 src/style overlaps, 0 cross-file shadowed rules.
+- UI detector passed with no P1 findings.
+- `pnpm qa:smoke` passed; Build Trust Chain focused row proof `trustFocusedRow = package-bundle` / `trustFocusedRowClass = package-bundle`; screenshot `.scratch/qa/qa-smoke/studio-build-trust-focus.png`.
+- Visual inspection covered `.scratch/qa/qa-smoke/studio-build-trust-focus.png`, `studio-build.png`, `studio-evidence.png`, `studio-modules.png`, `studio-workbench-tablet.png`, and `runtime-mobile.png`; no new overlap, clipping, or broken desktop/mobile hierarchy was observed.
+
+Claim allowed:
+
+- Studio Trust Chain clicks leave a visible focused package/source/trace/gate row after navigation, and smoke now guards the focused-row contract.
+- Build/Evidence and Modules/Debug ledger KV/badge CSS share one primitive without increasing CSS budget or adding exact duplicate rules.
+
+Claim blocked:
+
+- This does not add package-file/source-file drilldowns, true editing workflows, persistent source handles, new runtime compatibility, score movement, or full CSS cascade cleanup.
 
 ## 2026-07-01 - Helper Projectile bare Target gate
 
@@ -5313,3 +7539,55 @@ These are future horizons, not blockers for the private usable MVP.
 270. Done RuntimeTargetWorld candidate-resolution ownership extraction: `RuntimeTargetWorld.resolveCandidates` now owns bounded target-candidate filtering from live target memory before current Target* / BindToTarget controller application and active TargetBind / BindToTarget position application. `PlayableMatchRuntime` and the match/pause loops still supply the currently materialized concrete actor roster and own trigger ordering, state validation, helper/projectile actor materialization, and combat context. Focused `TargetSystem` coverage proves actor-id and target-id filtering plus mutation only against remembered targets. `pnpm exec vitest run src/tests/TargetSystem.test.ts` passes 1 file / 20 tests, `pnpm test` passes 94 files / 797 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, `pnpm qa:trace` passes 178/178 artifacts with 158 required and 20 optional, `pnpm check:boundaries` passes, and `git diff --check` passes with CRLF-normalization warnings for `docs/NEXT_BUILD_ROADMAP.md` and `docs/ROADMAP_PACKAGE_MILESTONES.md`. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current two-actor Target* side effects and active target bindings have a named, testable candidate-resolution boundary without trace drift. Claim blocked: helper/projectile target ownership, exact team/multi-target selection, exact target lifetime, throw binding, exact bind tick order, visual parity, score movement, and full MUGEN/IKEMEN target VM parity.
 
 271. Done helper-local NumProj trace gate: `HelperSystem` can now evaluate bounded helper-local `NumProj` / `NumProjID(id)` through a projectile-count callback supplied by `RuntimeEffectActorWorld`, and `EffectActorSystem` counts only helper-parented owner-side Projectiles while excluding removed projectiles. Focused `EffectActorSystem` coverage proves same-id player-owned Projectiles do not satisfy the helper-local count and removed helper-parented Projectiles are excluded. Required `synthetic-imported-helper-numproj.json` checksum `4f8612b0` proves a visual Helper routes `1200 -> 1213` / anim `933` through `NumProjID(8851) > 0` after spawning owner-side Projectile anim `944` with `parentId = p1-helper-0`. `pnpm test` passes 95 files / 802 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing large-chunk warning, `pnpm qa:trace` passes 181/181 artifacts with 161 required and 20 optional, and `pnpm check:boundaries` passes. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current first-generation visual Helper actors can branch on helper-local `NumProjID(id)` against helper-parented owner-side Projectile actors. Claim blocked: helper-owned Projectile combat/contact presentation, helper-owned target memory, exact projectile namespace scopes, dynamic ids/params, teams, `ProjContact` timing, exact helper tick order, visual parity, score movement, and full MUGEN/IKEMEN Helper/Projectile parity.
+
+272. Done bounded edge-distance expression cut: `ExpressionEvaluator` now computes `FrontEdgeDist`, `BackEdgeDist`, `FrontEdgeBodyDist`, and `BackEdgeBodyDist` from supplied stage bounds and actor facing/body width, while preserving the previous no-stage fallback of `999`. `PlayableMatchRuntime`, `RuntimeExpressionContextWorld`, `RuntimeControllerEvaluationContextWorld`, `StateControllerExecutor`, extracted passive controller systems, `EffectActorSystem`, and `HelperSystem` now forward stage bounds into active trigger evaluation, dynamic controller-param fallback, passive controller expression fallback, and first-generation visual Helper micro-VM contexts. Focused `RuntimeCnsSubset`, `RuntimeExpressionContextSystem`, and `EffectActorSystem` coverage proves direct evaluator values, runtime-context values, helper-local trigger branches, helper-local controller expressions, body-width subtraction, facing-aware front/back selection, and no-stage fallback. `pnpm test` passes 110 files / 897 tests, `pnpm typecheck` passes, `pnpm build` passes with the existing Vite large-chunk warning, `pnpm qa:trace` passes 214/214 artifacts with 194 required and 20 optional, `pnpm check:boundaries` passes, and `git diff --check` passes with CRLF-normalization warnings for existing touched docs/CSS files. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current runtime and first-generation visual Helper CNS expressions can branch on bounded stage edge distance when stage bounds are available. Claim blocked: exact camera/screen edge parity, localcoord scaling, teams/simul/helper namespace breadth, push/corner behavior, exact tick order, visual parity, score movement, and full MUGEN/IKEMEN edge-distance parity.
+
+273. Done edge-distance required trace gate: `synthetic-imported-edge-distance.json` checksum `785de452` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, evaluates `FrontEdgeDist = 340`, `BackEdgeDist = 300`, `FrontEdgeBodyDist = 301`, and `BackEdgeBodyDist = 261` against the close training stage bounds, and routes P1 into state/action `293` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and fresh `pnpm qa:trace` passes 215/215 artifacts with 195 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on supplied stage edge-distance triggers with body-width subtraction. Claim blocked: exact camera/screen edge parity, localcoord scaling, teams/simul/helper namespace breadth, push/corner behavior, exact tick order, visual parity, score movement, and full MUGEN/IKEMEN edge-distance parity.
+
+274. Done GameTime required trace gate: `synthetic-imported-gametime.json` checksum `bab573f3` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route delays the `x` command until the bounded global tick reaches `GameTime >= 4`, then routes P1 into state/action `294` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and fresh `pnpm qa:trace` passes 216/216 artifacts with 196 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on current global game time through `GameTime`. Claim blocked: exact pause accounting, replay/rollback timing, multi-round timer ownership, IKEMEN round-system behavior, score movement, and full MUGEN/IKEMEN global timing parity.
+
+275. Done StateContext required trace gate: `synthetic-imported-state-context.json` checksum `cb9c3d1e` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, then evaluates `ctrl`, `StateType = S`, `MoveType = I`, and `Physics = S` before routing P1 into state/action `295` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and fresh `pnpm qa:trace` passes 217/217 artifacts with 197 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on current owner control and state metadata trigger context. Claim blocked: helper/team/redirect metadata ownership, exact controller-loop ordering, persistent-controller parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+276. Done P2StateContext required trace gate: `synthetic-imported-p2-state-context.json` checksum `caf32557` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, then evaluates `P2StateType = S` and `P2MoveType = I` before routing P1 into state/action `296` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and fresh `pnpm qa:trace` passes 218/218 artifacts with 198 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on current-opponent state/move metadata trigger context. Claim blocked: teams/simul, helpers, custom-state opponent ownership, exact opponent selection, persistent-controller parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+277. Done P2Distance required trace gate: `synthetic-imported-p2-distance.json` checksum `2c584be0` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, then evaluates `P2Dist X = 55`, `P2Dist Y = 0`, `P2BodyDist X = 7`, and `P2BodyDist Y = 0` before routing P1 into state/action `297` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and fresh `pnpm qa:trace` passes 219/219 artifacts with 199 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on current-opponent spacing trigger context. Claim blocked: teams/simul, helpers, exact opponent selection, localcoord scaling, push/corner adjustment, score movement, and full MUGEN/IKEMEN spacing parity.
+
+278. Done OwnerMetrics required trace gate: `synthetic-imported-owner-metrics.json` checksum `1a61aaeb` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, then evaluates `StateNo = 0`, `Anim = 0`, `Time >= 0`, `Life = 1000`, `Power = 0`, `Pos X < 0`, `Pos Y = 0`, `Vel X = 0`, and `Vel Y = 0` before routing P1 into state/action `298` without `HitDef` or combat side effects. `RuntimeExpressionContextWorld` now clamps the internal post-transition `stateElapsed = -1` sentinel to observable `Time` / `StateTime` zero for CNS expression reads. Focused `RuntimeExpressionContextSystem` and `RuntimeTraceGatePresets` coverage proves the sentinel read and artifact requirements, and fresh `pnpm qa:trace` passes 220/220 artifacts with 200 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported State -1 routing can branch on current-owner state, animation, time, resource, position, and velocity trigger context. Claim blocked: exact VM tick ordering, helper/team/redirect state namespaces, localcoord scaling, visual parity, score movement, and full MUGEN/IKEMEN trigger parity.
+
+279. Done AnimElem required trace gate: `synthetic-imported-animelem.json` checksum `683d9a10` is now a required `pnpm qa:trace` artifact. The synthetic imported active-state route enters state `200`, advances through authored AIR frame durations `[2,4,4]`, then evaluates `AnimElem = 2` before routing P1 into state/action `299` without `HitDef` or combat side effects. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements, and final gates passed: `pnpm test` 110 files / 905 tests, `pnpm typecheck`, `pnpm build` with the existing large-chunk warning, `pnpm qa:trace` 221/221 artifacts with 201 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded imported active-state CNS can branch on the current AIR element number. Claim blocked: exact one-tick `AnimElem` trigger parity, AIR loop semantics, negative-duration semantics, helper/state-owner namespaces, persistent-controller timing, visual parity, score movement, and full MUGEN/IKEMEN animation VM parity.
+
+280. Done ChangeAnim2 elem/elemtime required trace gate: `synthetic-imported-changeanim2-elem.json` checksum `b0b46d33` is now a required `pnpm qa:trace` artifact. The synthetic imported State -1 route presses `x`, enters state `200`, executes active-state `ChangeAnim2 value = 207`, `elem = 3`, and `elemtime = 1`, retargets to a known state-owner AIR action with authored frame durations `[4,5,6]`, and final P1 evidence ends at `frameIndex = 2` / `animTime = 20`. Focused `RuntimeTraceGatePresets` coverage proves the artifact requirements and final snapshot timing, and fresh `pnpm qa:trace` passes 227/227 artifacts with 207 required and 20 optional. No `pnpm qa:smoke` was run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded active-state `ChangeAnim2` can seed a known owner-backed AIR element/time route. Claim blocked: missing-action fallback, redirects/helper/custom-state ownership, multi-import SFF namespaces, exact controller tick order, visual parity, score movement, and full MUGEN/IKEMEN animation-source parity.
+
+281. Done RuntimeAnimationWorld active action-retarget ownership cut: `RuntimeAnimationWorld` now owns bounded active action lookup/reset plus `elem` / `elemtime` seeding for known AIR actions, extending the earlier animation-advance boundary. `PlayableMatchRuntime` delegates its local `changeAction` helper through the animation world while still owning active-state `ChangeAnim` / `ChangeAnim2` controller dispatch, state-owner selection, concrete state/action entry, and controller ordering. Focused `RuntimeAnimationSystem` coverage now proves authored-action retargeting, same-action element retargeting without full reset, and missing-action no-mutation behavior. Verification passed: `pnpm exec vitest run src/tests/RuntimeAnimationSystem.test.ts` 10 tests, `pnpm typecheck`, `pnpm test` 110 files / 948 tests, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current active action retarget mutation has a named animation-world boundary without trace drift. Claim blocked: exact AIR negative-duration semantics, missing-action fallback parity, full `elem` / `elemtime` parity, helper/team redirect namespaces, controller tick order, visual parity, score movement, and full MUGEN/IKEMEN animation VM parity.
+
+282. Done RuntimeEffectLifecycleWorld helper advance-context ownership cut: `RuntimeEffectLifecycleWorld` now forwards `stageBounds`, `stageTime`, and `runtimeTick` into first-generation visual Helper active and paused lifecycle passes. `RuntimeMatchInteractionWorld`, `RuntimePausedMatchWorld`, `RuntimeHitPauseWorld`, and `PlayableMatchRuntime` now pass the current match tick through that boundary, so helper-local controller execution can evaluate stage edge-distance params, global `GameTime` / `StageTime`, and audio telemetry with the caller's runtime tick instead of falling back to helper age or missing stage bounds. Focused `EffectLifecycleSystem` coverage proves helper-local `GameTime` rejection/pass behavior, `FrontEdgeDist` controller-param evaluation from stage bounds, `PlaySnd` `runtimeTick` telemetry, and `ChangeState` handoff. Verification passed: `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts` 2 tests, `pnpm typecheck`, `pnpm test` 110 files / 949 tests, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current first-generation visual Helper lifecycle controller execution receives explicit match stage/time/tick context through a named effect-lifecycle boundary. Claim blocked: exact helper-local clock parity, pause/combat ordering parity, helper/root/parent/target redirect breadth, teams/simul, full helper VM parity, visual parity, score movement, and full MUGEN/IKEMEN Helper lifecycle parity.
+
+283. Done helper-local EnemyNear indexed redirect context cut: `ExpressionEvaluator` now accepts an explicit enemy-near redirect callback for `EnemyNear(index)`, and `HelperSystem` can pass a bounded `opponentStates` list into helper-local trigger/value evaluation. Focused coverage proves direct evaluator support, dynamic index expressions through `var(n)`, helper-local indexed routing, and missing-index fail-closed behavior; the runtime still falls back to the existing one-opponent context when no list exists. Verification passed: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts --testNamePattern "common MUGEN"` 1 test, `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/EffectActorSystem.test.ts --testNamePattern "EnemyNear"` 3 tests, `pnpm typecheck`, `pnpm test` 110 files / 950 tests, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current bounded helper-local redirect execution can read `EnemyNear(0)`, `EnemyNear(1)`, and `EnemyNear(var(n))` from caller-supplied opponent runtime states. Claim blocked: teams/simul opponent ordering, helper-owned opponent rosters, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN Helper VM parity.
+
+284. Done helper-local NumEnemy explicit opponent-context cut: `ExpressionEvaluator` now accepts an explicit `NumEnemy` provider, clamps invalid provider values to `0`, and keeps the existing one-opponent fallback when no provider exists. `HelperSystem` derives helper-local `NumEnemy` from the same bounded `opponentStates` list used by caller-provided `EnemyNear(index)` redirects, so helper-local CNS can gate indexed reads with an explicit opponent count. Focused coverage proves direct evaluator override/clamp behavior and helper-local `NumEnemy = 2` routing beside `EnemyNear(1)` reads. Verification passed: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/EffectActorSystem.test.ts --testNamePattern "EnemyNear|common MUGEN"` 2 files / 4 tests, `pnpm test` 110 files / 950 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current bounded helper-local trigger execution can read `NumEnemy` from caller-supplied opponent runtime-state lists. Claim blocked: teams/simul opponent ordering, helper-owned opponent rosters, caller-independent nearest-enemy selection, broader indexed redirect ownership beyond supplied lists, visual parity, score movement, and full MUGEN/IKEMEN Helper VM parity.
+
+285. Done RuntimeExpressionContextWorld opponent-roster read-model cut: `RuntimeExpressionContextWorld` now accepts an optional explicit opponent roster and wires `EnemyNear(index)` plus `NumEnemy` through that list before falling back to the current one-opponent context. Focused `RuntimeExpressionContextSystem` coverage proves roster-backed `EnemyNear(1)` / `EnemyNear(var(n))` reads, `NumEnemy = 2`, default one-opponent fallback, and missing-index fail-closed behavior. Verification passed: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts --testNamePattern "opponent roster|TeamSide"` 1 file / 2 tests, `pnpm test` 110 files / 951 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: active runtime expression contexts can evaluate caller-supplied opponent rosters through the shared read model. Claim blocked: teams/simul opponent ordering, helper-owned opponent rosters, caller-independent nearest-enemy selection, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+286. Done Runtime trigger/dispatch opponent-roster passthrough cut: `RuntimeDispatchEvaluationWorld` and `RuntimeTriggerEvaluationWorld` now forward optional explicit opponent rosters into their context factories, and `PlayableMatchRuntime` routes its current one-opponent list through the same seam into `RuntimeExpressionContextWorld`. Focused coverage proves roster forwarding plus `NumEnemy` reads through dynamic controller-param fallback and trigger evaluation. Verification passed: `pnpm exec vitest run src/tests/RuntimeDispatchEvaluationSystem.test.ts src/tests/RuntimeTriggerEvaluationSystem.test.ts` 2 files / 7 tests, `pnpm test` 110 files / 951 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: active runtime trigger and dynamic-param adapters preserve caller-supplied opponent rosters all the way into the shared read model. Claim blocked: teams/simul opponent ordering, helper-owned opponent rosters, caller-independent nearest-enemy selection, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+287. Done RuntimeExpressionContextWorld EnemyNear nearest-roster ordering cut: explicit opponent rosters supplied to `RuntimeExpressionContextWorld` are now sorted by bounded nearest body-distance before `EnemyNear(index)` resolves, with caller order preserved for stable ties and `NumEnemy` still reporting the supplied roster length. Focused coverage proves `EnemyNear(0..3)` resolves nearest/stable-tie/far order from an unsorted roster while the existing one-opponent fallback stays intact. Verification passed: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts --testNamePattern "EnemyNear"` 1 file / 2 tests, `pnpm test` 110 files / 952 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: active runtime expression contexts can resolve caller-supplied opponent rosters in bounded n-th-nearest order through the shared read model. Claim blocked: real teams/simul roster ownership, helper-owned opponent rosters, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+288. Done RuntimeOpponentSelectionWorld ownership extraction cut: `RuntimeOpponentSelectionWorld` now owns bounded horizontal body-distance scoring and stable nearest-roster ordering for runtime opponent lists, and `RuntimeExpressionContextWorld` delegates explicit `EnemyNear(index)` roster ordering through that boundary instead of keeping opponent sorting inline. Focused coverage proves nearest ordering, stable ties, finite-before-nonfinite sorting, distance values, and unchanged `EnemyNear` integration. Verification passed: `pnpm exec vitest run src/tests/RuntimeOpponentSelectionSystem.test.ts` 1 file / 2 tests, `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts --testNamePattern EnemyNear` 1 file / 2 tests, `pnpm test` 111 files / 954 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: active runtime expression contexts resolve caller-supplied opponent rosters through a named opponent-selection boundary. Claim blocked: real teams/simul roster registry, helper-owned opponent rosters, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+289. Done helper-local opponent selection boundary reuse cut: `RuntimeOpponentSelectionWorld` now also owns raw runtime-state list ordering, and `HelperSystem` routes caller-supplied helper-local `opponentStates` through that boundary before `EnemyNear(index)`, `EnemyNear(var(n))`, `NumEnemy`, and direct helper opponent context resolve. Focused coverage proves raw runtime-state ordering plus a visual Helper resolving an unsorted `[far, near, tie]` list by nearest/stable-tie order. Verification passed: `pnpm exec vitest run src/tests/RuntimeOpponentSelectionSystem.test.ts` 1 file / 3 tests, `pnpm exec vitest run src/tests/EffectActorSystem.test.ts --testNamePattern "EnemyNear indexed|nearest opponent distance"` 1 file / 2 tests, `pnpm test` 111 files / 956 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded visual Helper micro-VM contexts resolve caller-supplied opponent-state lists through the named opponent-selection boundary. Claim blocked: real teams/simul roster registry, helper-owned opponent roster discovery, opponent ids for non-current helper-roster entries, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+290. Done helper-local opponent roster metadata cut: `HelperSystem` now accepts optional helper-local `opponentRoster` entries carrying id plus runtime state, keeps that metadata attached while `RuntimeOpponentSelectionWorld` sorts by nearest body distance, and uses the entry id for bounded `EnemyNear(index), TeamSide` redirects after sorting. Focused coverage proves an unsorted roster with ids resolves a non-current `EnemyNear(1), TeamSide = 2` after nearest/stable-tie ordering. Verification passed: `pnpm exec vitest run src/tests/EffectActorSystem.test.ts --testNamePattern "opponent roster ids|nearest opponent distance"` 1 file / 2 tests, `pnpm exec vitest run src/tests/RuntimeOpponentSelectionSystem.test.ts` 1 file / 3 tests, `pnpm test` 111 files / 957 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: bounded visual Helper micro-VM contexts can resolve caller-supplied opponent roster state plus id metadata through the named opponent-selection boundary. Claim blocked: real teams/simul roster registry, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+291. Done effect-lifecycle opponent roster bridge cut: `RuntimeEffectLifecycleWorld` now forwards the current opponent as an id-bearing `opponentRoster` into active and paused first-generation visual Helper lifecycle contexts while preserving legacy `opponentId` / `opponentState` fallback. Focused `EffectLifecycleSystem` coverage proves active and paused lifecycle options carry the current opponent id plus runtime state, so real lifecycle helper advancement now uses the same metadata path `HelperSystem` and `RuntimeOpponentSelectionWorld` already understand. Verification passed: `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts --testNamePattern "opponent roster|stage bounds"` 1 file / 1 test, `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts` 1 file / 3 tests, `pnpm test` 111 files / 958 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current first-generation visual Helper lifecycle execution receives the current opponent through the id-bearing roster metadata path. Claim blocked: real teams/simul roster registry, multi-opponent lifecycle roster construction, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+292. Done opponent-selection roster builder cut: `RuntimeOpponentSelectionWorld` now builds id-bearing `opponentRoster` entries in nearest order without cloning runtime states, `RuntimeHelperOpponentEntry` is now an alias of that shared roster-entry contract for full `CharacterRuntimeState`, and `RuntimeEffectLifecycleWorld` delegates current-opponent lifecycle roster construction through the named opponent-selection boundary. Focused coverage proves ids and state refs survive nearest ordering, and active/paused lifecycle forwarding still carries the current opponent metadata. Verification passed: `pnpm exec vitest run src/tests/RuntimeOpponentSelectionSystem.test.ts src/tests/EffectLifecycleSystem.test.ts --testNamePattern "opponent roster|id-bearing|nearest"` 2 files / 3 tests, `pnpm exec vitest run src/tests/RuntimeOpponentSelectionSystem.test.ts src/tests/EffectLifecycleSystem.test.ts` 2 files / 7 tests, `pnpm test` 111 files / 959 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current first-generation visual Helper lifecycle execution gets current-opponent roster metadata from `RuntimeOpponentSelectionWorld`, not an inline array. Claim blocked: real teams/simul roster registry, multi-opponent lifecycle roster sources, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+293. Done effect-lifecycle explicit opponent list cut: `RuntimeEffectLifecycleWorld` now accepts an explicit lifecycle `opponents` list, builds an id-bearing nearest-order `opponentRoster` through `RuntimeOpponentSelectionWorld`, keeps legacy current `opponentId` / `opponentState` separate for one-opponent fallback routes, and strips the `opponents` control field before helper options reach `HelperSystem`. Focused coverage proves an unsorted `[far, near, tied]` lifecycle list becomes a nearest-order helper roster while the current direct opponent remains the legacy fallback target. Verification passed: `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts --testNamePattern "opponent"` 1 file / 2 tests, `pnpm exec vitest run src/tests/EffectLifecycleSystem.test.ts` 1 file / 4 tests, `pnpm test` 111 files / 960 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: first-generation visual Helper lifecycle callers can supply explicit multi-opponent roster sources into the existing helper-local read path. Claim blocked: real teams/simul roster registry, automatic match-level multi-opponent lifecycle wiring, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+294. Done concrete lifecycle opponent source bridge cut: `RuntimeMatchInteractionWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` now pass explicit one-opponent lifecycle `opponents` lists into `RuntimeEffectLifecycleWorld` from concrete 1v1 match/pause/hitpause routes while preserving the legacy direct opponent argument for current `opponentId` / `opponentState` fallback paths. Focused coverage proves normal-loop active lifecycle, paused-match active lifecycle, paused-match frozen presentation, and hitpause presentation calls carry `[current opponent]` plus stage/runtime tick metadata into the explicit roster source path. Verification passed: `pnpm exec vitest run src/tests/MatchInteractionSystem.test.ts src/tests/PauseSystem.test.ts src/tests/RuntimeHitPauseSystem.test.ts` 3 files / 19 tests, `pnpm test` 111 files / 960 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current concrete 1v1 lifecycle callers now exercise the explicit opponent-list source path used by helper-local roster construction. Claim blocked: real teams/simul roster registry, automatic multi-opponent match roster discovery, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, broader indexed redirect ownership beyond supplied lists, redirect mutation, visual parity, score movement, and full MUGEN/IKEMEN helper/team VM parity.
+
+295. Done RuntimeActiveStateDispatchWorld ownership extraction cut: `RuntimeActiveStateDispatchWorld` now owns bounded active-state `ChangeState` / `SelfState` and `ChangeAnim` / `ChangeAnim2` dispatch mutation previously inline in `PlayableMatchRuntime`. `PlayableMatchRuntime` still owns active-controller scan order, trigger filtering, side-effect dispatch, and state/action callback implementations, but delegates dynamic numeric/boolean param resolution, controller telemetry, state entry handoff, optional ctrl mutation, state-owner animation source selection, and `elem` / `elemtime` handoff through the named world. Verification passed: `pnpm exec vitest run src/tests/RuntimeActiveStateDispatchSystem.test.ts` 1 file / 4 tests, `pnpm test` 112 files / 964 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current active-state state/animation dispatch has a named, testable world boundary without changing trace behavior. Claim blocked: exact CNS VM tick order, persistent-controller semantics, helper/team/redirect controller scopes, missing-action fallback parity, full ChangeState/ChangeAnim VM parity, visual parity, score movement, and full MUGEN/IKEMEN runtime parity.
+
+296. Done RuntimeActiveSideEffectDispatchWorld ownership extraction cut: `RuntimeActiveSideEffectDispatchWorld` now owns bounded active-state side-effect dispatch routing previously inline in `PlayableMatchRuntime`: `HitDef`, `ReversalDef`, `Width`, `FallEnvShake`, sprite-effect families, effect-spawn families, `Target*` / `BindToTarget`, `Pause` / `SuperPause`, sound, `EnvColor`, `EnvShake`, and contact controller routes are grouped through one named router before delegating to existing controller worlds. `PlayableMatchRuntime` still supplies concrete world instances, frame lookup, target-entry hooks, telemetry callbacks, stage/tick context, and exact active-loop ordering. Verification passed: `pnpm exec vitest run src/tests/RuntimeActiveSideEffectDispatchSystem.test.ts src/tests/RuntimeActiveStateDispatchSystem.test.ts` 2 files / 28 tests, `pnpm test` 113 files / 988 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current active side-effect controller routing has a named, testable boundary without adding new controller semantics. Claim blocked: exact CNS VM tick order, persistent-controller semantics, helper/team/redirect controller scopes, side-effect ordering parity, target/combat/presentation semantic parity, visual parity, score movement, and full MUGEN/IKEMEN runtime parity.
+
+297. Done RuntimeActiveControllerDispatchWorld ownership extraction cut: `RuntimeActiveControllerDispatchWorld` now owns bounded active-controller route orchestration after scan/trigger pass. The new boundary tries `RuntimeActiveStateDispatchWorld` first for `ChangeState` / `SelfState` and `ChangeAnim` / `ChangeAnim2`, routes shared runtime-controller execution second, routes `RuntimeActiveSideEffectDispatchWorld` third, and keeps unsupported dispatches fail-soft/reportable last. `PlayableMatchRuntime` now delegates route selection while still supplying concrete hooks, world instances, frame lookup, target-entry callbacks, telemetry callbacks, stage/tick context, and active-loop order. Verification passed: `pnpm exec vitest run src/tests/RuntimeActiveControllerDispatchSystem.test.ts` 1 file / 4 tests, `pnpm test` 114 files / 992 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 251/251 artifacts with 231 required and 20 optional, `pnpm check:boundaries`, and `git diff --check` with existing CRLF normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay output. Claim allowed: current imported active-controller dispatch route selection has a named, testable boundary that preserves existing route order. Claim blocked: exact CNS VM tick order, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, missing-action fallback parity, target/combat/presentation semantic parity, unsupported-feature reporting breadth, visual parity, score movement, and full MUGEN/IKEMEN active-controller parity.

@@ -50,9 +50,8 @@
   .app-shell.mode-studio .workbench-health-next small {
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 12px;
     letter-spacing: 0;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .workbench-health-track {
@@ -90,10 +89,9 @@
     overflow: hidden;
     color: var(--studio-ledge-text);
     font-family: var(--mono);
-    font-size: 11.5px;
+    font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
@@ -206,7 +204,6 @@
     font-size: 12px;
     line-height: 1.12;
     text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .workbench-active-asset-main small,
@@ -217,18 +214,17 @@
     min-width: 0;
     overflow: hidden;
     color: var(--studio-ledge-muted);
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.18;
     text-overflow: ellipsis;
     text-transform: none;
-    white-space: nowrap;
   }
 
   .app-shell.mode-studio .workbench-warning-meta {
     max-width: 90px;
     justify-self: end;
     color: var(--studio-ledge-muted);
-    font-size: 10.5px;
+    font-size: 12px;
     text-align: right;
   }
 
@@ -274,10 +270,9 @@
     overflow: hidden;
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 

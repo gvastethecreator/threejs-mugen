@@ -38,7 +38,7 @@ time = 20
       'P2BodyDist X < 40 && SelfAnimExist(anim + 3) && SelfStateNoExist(5000) && SelfCommand = "x" && StageTime >= 3 && Alive && RoundNo = 1 && RoundState = 2 && RoundsExisted = 0 && !MatchOver && LifeMax >= Life && PowerMax >= Power',
     );
     const contact = compileExpression(
-      "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjHitTime(77) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
+      "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjContactTime(0) >= 0 || ProjHitTime(0) >= 0 || ProjHitTime(77) >= 0 || ProjGuardedTime(0) >= 0 || ProjCancelTime(0) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
     );
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
@@ -51,7 +51,7 @@ time = 20
     const dynamicTargetRedirect = compileExpression("Target(var(0) + 1), Life > 0");
     const nestedRedirect = compileExpression("Time = 0 && Parent,Var(3) = 7 && Root,Vel X = 4");
     const p2Metrics = compileExpression(
-      'NumEnemy && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
+      'NumEnemy && TeamSide = 1 && Facing = 1 && P2Facing = -1 && P2Life > 0 && P2Power >= 0 && Name = "KFM" && P1Name = "KFM" && P2Name != "Training" && AuthorName = "Elecbyte" && PrevAnim = 205 && PrevStateType = A && PrevMoveType = A',
     );
     const enemyNearIndexed = compileExpression("enemynear(1), stateno = 5000");
     const enemyNearDynamicIndex = compileExpression("enemynear(var(0)), stateno = 5000");
@@ -75,7 +75,7 @@ time = 20
     expect(clean.identifiers).toContain("LifeMax");
     expect(clean.identifiers).toContain("PowerMax");
     expect(contact.supportLevel).toBe("executable");
-    expect(contact.functions).toEqual(["NumTarget", "ProjGuarded", "ProjHit", "ProjHitTime"]);
+    expect(contact.functions).toEqual(["NumTarget", "ProjCancelTime", "ProjContactTime", "ProjGuarded", "ProjGuardedTime", "ProjHit", "ProjHitTime"]);
     expect(contact.identifiers).toEqual([
       "HitCount",
       "HitPauseTime",
@@ -124,6 +124,7 @@ time = 20
       "PrevAnim",
       "PrevMoveType",
       "PrevStateType",
+      "TeamSide",
     ]);
     expect(enemyNearIndexed.supportLevel).toBe("executable");
     expect(enemyNearIndexed.identifiers).toEqual(["stateno"]);

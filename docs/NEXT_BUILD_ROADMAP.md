@@ -1,6 +1,6 @@
 # Next Build Roadmap
 
-Last updated: 2026-07-01
+Last updated: 2026-07-02
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -78,6 +78,398 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 active controller dispatch ownership
+  -> RuntimeActiveControllerDispatchWorld now owns active-controller route orchestration after scan/trigger pass
+  -> state/animation mutation routes first, shared runtime controllers route second, active side effects route third, unsupported dispatches stay fail-soft/reportable
+  -> focused RuntimeActiveControllerDispatchSystem coverage proves state-first stop, runtime-controller handoff, side-effect handoff, and unsupported pass-through
+  -> ownership cleanup only; no exact CNS VM timing, persistent-controller semantics, helper/team/redirect scopes, side-effect ordering parity, missing-action fallback parity, visual parity, score movement, or full active-controller parity claim
+R2 concrete lifecycle opponent source bridge
+  -> RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, and RuntimeHitPauseWorld now pass explicit one-opponent lifecycle opponents lists into RuntimeEffectLifecycleWorld from the real 1v1 match/pause/hitpause routes
+  -> legacy direct opponent arguments remain present for current opponentId/opponentState fallback paths
+  -> focused MatchInteractionSystem, PauseSystem, and RuntimeHitPauseSystem coverage proves active and paused lifecycle options carry [current opponent] plus stage/runtime ticks
+  -> ownership cleanup only; no real teams/simul roster registry, automatic multi-opponent match roster discovery, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 effect-lifecycle explicit opponent list
+  -> RuntimeEffectLifecycleWorld accepts an explicit opponents list and builds nearest-order opponentRoster through RuntimeOpponentSelectionWorld
+  -> legacy current opponentId/opponentState remains separate for one-opponent fallback routes
+  -> focused EffectLifecycleSystem coverage proves an unsorted [far, near, tied] list becomes nearest-order helper roster and does not leak the opponents control field into helper options
+  -> ownership cleanup only; no real teams/simul roster registry, automatic match-level multi-opponent lifecycle wiring, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 opponent-selection roster builder
+  -> RuntimeOpponentSelectionWorld now builds id-bearing opponentRoster entries in nearest order without cloning runtime states
+  -> RuntimeEffectLifecycleWorld delegates current-opponent lifecycle roster construction through that named boundary
+  -> focused RuntimeOpponentSelectionSystem coverage proves ids and state refs survive nearest ordering; EffectLifecycleSystem coverage keeps active/paused forwarding green
+  -> ownership cleanup only; no real teams/simul roster registry, multi-opponent lifecycle roster sources, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 effect-lifecycle opponent roster bridge
+  -> RuntimeEffectLifecycleWorld now forwards the current opponent as an id-bearing opponentRoster into active and paused Helper lifecycle contexts
+  -> legacy opponentId/opponentState stays present, but first-generation visual Helper lifecycle now uses the same metadata path HelperSystem can sort/read
+  -> focused EffectLifecycleSystem coverage proves active and paused options carry the current opponent id plus runtime state
+  -> ownership cleanup only; no real teams/simul roster registry, multi-opponent lifecycle roster construction, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 helper-local opponent roster metadata
+  -> HelperSystem now accepts caller-supplied helper-local opponentRoster entries with id plus runtime state
+  -> RuntimeOpponentSelectionWorld keeps that metadata attached while sorting, so EnemyNear(index), TeamSide can resolve non-current entries after nearest ordering
+  -> focused EffectActorSystem coverage proves an unsorted roster with ids resolves EnemyNear(1), TeamSide = 2 after sorting
+  -> ownership cleanup only; no real teams/simul roster registry, helper-owned opponent roster discovery, richer identity metadata beyond ids/team side, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 helper-local opponent selection boundary reuse
+  -> HelperSystem now routes caller-supplied helper-local opponentStates through RuntimeOpponentSelectionWorld
+  -> helper-local EnemyNear(index), EnemyNear(var(n)), NumEnemy, and direct helper opponent context now share nearest-roster ordering with active runtime expression contexts
+  -> focused RuntimeOpponentSelectionSystem coverage proves raw runtime-state list ordering; EffectActorSystem coverage proves helper-local unsorted [far, near, tie] lists resolve by nearest/stable-tie order
+  -> ownership cleanup only; no real teams/simul roster registry, helper-owned opponent roster discovery, opponent ids for non-current roster entries, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+R2 RuntimeOpponentSelectionWorld ownership extraction
+  -> RuntimeOpponentSelectionWorld now owns bounded horizontal body-distance scoring and stable nearest-roster ordering for runtime opponent lists
+  -> RuntimeExpressionContextWorld delegates explicit EnemyNear(index) roster ordering through that boundary instead of keeping opponent sorting inline
+  -> focused RuntimeOpponentSelectionSystem coverage proves nearest ordering, stable ties, finite-before-nonfinite sorting, and distance values; RuntimeExpressionContextSystem EnemyNear coverage stays green
+  -> ownership cleanup only; no real teams/simul roster registry, helper-owned opponent roster, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+Previous R2 EnemyNear nearest-roster ordering
+  -> RuntimeExpressionContextWorld now sorts explicit opponent rosters by bounded nearest body-distance before resolving EnemyNear(index)
+  -> stable ties preserve caller order, NumEnemy still reports supplied roster length, and one-opponent fallback stays intact
+  -> focused RuntimeExpressionContextSystem coverage proves EnemyNear(0..3) resolves nearest/stable-tie/far order from an unsorted roster
+  -> read-context cleanup only; no real teams/simul roster ownership, helper-owned opponent roster, y-axis/priority selection parity, target/redirect mutation, visual parity, score movement, or full helper/team VM claim
+Previous R2 trigger/dispatch opponent roster passthrough
+  -> RuntimeDispatchEvaluationWorld and RuntimeTriggerEvaluationWorld now forward optional explicit opponent rosters into createContext
+  -> PlayableMatchRuntime routes its current one-opponent list through the same seam, so future team/simul rosters have a typed path into RuntimeExpressionContextWorld
+  -> focused RuntimeDispatchEvaluationSystem and RuntimeTriggerEvaluationSystem coverage proves roster forwarding plus NumEnemy evaluation through dynamic param and trigger paths
+  -> adapter ownership cleanup only; no real teams/simul roster ownership, helper-owned opponent roster, broader indexed redirects beyond caller-provided opponent-state lists, visual parity, score movement, or full helper/team VM claim
+Previous R2 runtime expression opponent roster context
+  -> RuntimeExpressionContextWorld now accepts an optional explicit opponent roster and wires EnemyNear(index) plus NumEnemy through that list
+  -> focused RuntimeExpressionContextSystem coverage proves roster-backed EnemyNear(1), EnemyNear(var(n)), NumEnemy = 2, default one-opponent fallback, and missing-index fail-closed behavior
+  -> context ownership cleanup only; no real teams/simul roster ownership, helper-owned opponent roster, broader indexed redirects beyond caller-provided opponent-state lists, visual parity, score movement, or full helper/team VM claim
+Previous R2 helper-local EnemyNear / NumEnemy explicit opponent context
+  -> ExpressionEvaluator can resolve EnemyNear(index) through an explicit enemy-near redirect callback before falling back to the current single-opponent context
+  -> ExpressionEvaluator can read NumEnemy from an explicit provider, clamping invalid provider values to 0
+  -> HelperSystem can pass an explicit opponentStates list into helper-local trigger/value evaluation, so bounded visual Helpers can evaluate EnemyNear(0), EnemyNear(var(n)), and NumEnemy against supplied runtime states
+  -> focused RuntimeCnsSubset and EffectActorSystem tests prove direct evaluator support, dynamic index expressions, helper-local indexed routing, explicit opponent-count reads, and missing-index fail-closed behavior
+  -> context/redirect/count cleanup only; no teams/simul opponent ordering, helper-owned opponent roster, broader indexed redirects beyond caller-provided opponent-state lists, visual parity, score movement, or full helper VM claim
+Previous R2 RuntimeEffectLifecycleWorld helper advance-context ownership
+  -> RuntimeEffectLifecycleWorld now forwards stageBounds, stageTime, and runtimeTick into helper-local active and paused lifecycle passes
+  -> RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, RuntimeHitPauseWorld, and PlayableMatchRuntime pass current tick context through that boundary
+  -> focused EffectLifecycleSystem tests prove helper-local GameTime rejection/pass behavior, FrontEdgeDist param evaluation from stage bounds, PlaySnd runtimeTick telemetry, and ChangeState handoff
+  -> ownership/context cleanup only; no exact helper clock parity, pause/combat ordering parity, broader indexed/team redirects, teams/simul, visual parity, score movement, or full helper VM claim
+Current R1 Common1 default air fall get-hit required trace gate
+  -> synthetic-imported-default-air-fall-gethit.json checksum 1230a2f3 is required in qa:trace
+  -> airborne imported defender routes through defender-owned Common1-style states 5020 -> 5030 -> 5050 after fall HitDef without p2stateno
+  -> final checksum 2ad2abf9; gate label imported-default-fall-gethit-golden
+  -> pnpm qa:trace passes 260/260 artifacts, 240 required and 20 optional
+  -> state/order evidence only; no exact air get-hit animation, exact HitShakeOver/HitOver timing, ground impact, bounce, lie-down, landing, recovery input, controller-loop timing, visual/audio parity, score movement, or full Common1 fall/get-hit parity claim
+Previous R1 Common1 default air get-hit required trace gate
+  -> synthetic-imported-default-air-gethit.json checksum dc4fb7c9 is required in qa:trace
+  -> airborne imported defender routes into defender-owned Common1-style state 5020 after direct HitDef without p2stateno
+  -> final checksum 2fd842bb; gate label imported-default-air-gethit-golden
+  -> that checkpoint passed 259/259 artifacts, 239 required and 20 optional
+  -> state-selection evidence only; no exact air get-hit animation, fall route, landing route, air recovery, HitShakeOver/HitOver progression, controller-loop timing, visual/audio parity, score movement, or full Common1 get-hit parity claim
+Previous R1 Common1 default crouch get-hit required trace gate
+  -> synthetic-imported-default-crouch-gethit.json checksum 7ec18c61 is required in qa:trace
+  -> held-crouch imported defender routes into defender-owned Common1-style state 5010 after direct HitDef without p2stateno
+  -> final checksum 1c47d038; gate label imported-default-crouch-gethit-golden
+  -> that checkpoint passed 258/258 artifacts, 238 required and 20 optional
+  -> state-selection evidence only; no exact crouch get-hit animation, slide timing, fall routing, HitShakeOver/HitOver progression, controller-loop timing, visual/audio parity, score movement, or full Common1 get-hit parity claim
+Previous R1 Projectile fixed-id contact/guard-time required trace gates
+  -> synthetic-imported-projectile-contacttime-id.json checksum e9ebf36a and synthetic-imported-projectile-guardedtime-id.json checksum dfd08f28 are required in qa:trace
+  -> bounded owner-state ProjContactTime(77) and ProjGuardedTime(77) branch after player-owned Projectile contact/guard markers
+  -> P1 routes from state/action 200 into 321 and 322 with hit/guard event/reason, Projectile lifecycle, effect-store, and target-link evidence
+  -> that checkpoint passed 257/257 artifacts, 237 required and 20 optional
+  -> fixed-id contact/guard-time trigger evidence only; no exact contact/guard tick-order/lifetime, multi-projectile same-id selection, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, or full Projectile timing parity claim
+Previous R1 Projectile cancel-time owner any-id required trace gate
+  -> synthetic-imported-projectile-canceltime-any.json checksum 5bff1961 is required in qa:trace
+  -> bounded owner-state ProjCancelTime(0) branches after that owner's player-owned Projectile id 77 is canceled by an opposing Projectile clash
+  -> P2 routes from state/action 200 into 320 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 918, projectile lifecycle, effect-store, and payload evidence
+  -> owner-state any-id cancel-time trigger evidence for one canceled Projectile route only; no exact cancel tick-order/lifetime, broad dynamic expression parity, multi-projectile any-id arbitration beyond this route, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, or full Projectile cancel parity claim
+Previous R1 Projectile cancel-time owner var-id required trace gate
+  -> synthetic-imported-projectile-canceltime-var.json checksum e057e102 is required in qa:trace
+  -> bounded owner-state ProjCancelTime(var(0)) branches after owner-local VarSet seeds canceled player-owned Projectile id 77
+  -> P2 routes from state/action 200 into 319 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 917, projectile lifecycle, effect-store, and payload evidence
+  -> owner-state var-backed cancel-time trigger evidence only; no exact cancel tick-order/lifetime, broad dynamic expression parity, multi-projectile any-id arbitration, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, or full Projectile cancel parity claim
+Previous R1 Projectile cancel-time owner dynamic-id required trace gate
+  -> synthetic-imported-projectile-canceltime-dynamic.json checksum 0da26c87 is required in qa:trace
+  -> bounded owner-state expression-derived ProjCancelTime(77 + var(0)) can branch after that owner's player-owned Projectile is canceled by an opposing Projectile clash
+  -> P2 routes from state/action 200 into 318 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 916, projectile lifecycle, effect-store, and payload evidence
+  -> owner-state dynamic-id cancel-time trigger evidence only; no exact cancel tick-order/lifetime, broad dynamic expression parity, multi-projectile any-id arbitration, exact priority classes, helper-owned projectile routing, redirects, teams/simul, visual/audio parity, score movement, or full Projectile cancel parity claim
+Previous R2 RuntimeAnimationWorld active action-retarget ownership
+  -> RuntimeAnimationWorld now owns bounded active action lookup/reset plus elem/elemtime seeding for known AIR actions
+  -> PlayableMatchRuntime delegates its local changeAction helper through that boundary while still owning active controller dispatch, state-owner selection, state entry, and controller ordering
+  -> focused RuntimeAnimationSystem tests prove authored-action retargeting, same-action element retargeting, and missing-action no-mutation behavior
+  -> pnpm qa:trace remains stable at 251/251 artifacts, 231 required and 20 optional
+  -> ownership cleanup only; no exact AIR negative-duration semantics, missing-action fallback parity, full elem/elemtime parity, helper/team redirect namespaces, controller tick-order parity, visual parity, score movement, or full animation VM claim
+Previous R1 Helper Projectile cancel-time dynamic-id required trace gate
+  -> synthetic-imported-helper-projcanceltime-dynamic.json checksum cc78dde2 remains required in qa:trace
+  -> bounded helper-local expression-derived ProjCancelTime(8869 + var(0)) can branch after a matching helper-parented owner-side Projectile is canceled by an opposing Projectile clash
+  -> focused EffectActorSystem coverage separately proves nonzero ProjCancelTime(var(n)) id selection against helper-parented canceled Projectiles
+  -> Helper routes from state/action 1270 into 1271 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 1018, helper/projectile lifecycle, effect-store, and payload evidence
+  -> that checkpoint passed 252/252 artifacts, 232 required and 20 optional before later owner-state gates were added
+  -> helper-local dynamic-id cancel-time trigger evidence only; no exact cancel tick-order/lifetime, broad dynamic expression parity, multi-projectile same-id selection, exact priority classes, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile cancel parity claim
+Previous R1 Helper Projectile cancel-time fixed-id required trace gate
+  -> synthetic-imported-helper-projcanceltime-id.json checksum fc412176 remains required in qa:trace
+  -> bounded helper-local ProjCancelTime(8868) can branch after a matching helper-parented owner-side Projectile is canceled by an opposing Projectile clash
+  -> Helper routes from state/action 1268 into 1269 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 1008, helper/projectile lifecycle, effect-store, and payload evidence
+  -> pnpm qa:trace passes 251/251 artifacts, 231 required and 20 optional
+  -> helper-local fixed-id cancel-time trigger evidence only; no exact cancel tick-order/lifetime, multi-projectile same-id selection, exact priority classes, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile cancel parity claim
+Previous R1 Helper Projectile cancel-time any required trace gate
+  -> synthetic-imported-helper-projcanceltime-any.json checksum f7e7fa01 remains required in qa:trace
+  -> bounded helper-local ProjCancelTime(0) can branch after a helper-parented Projectile is canceled by an opposing Projectile clash
+  -> Helper routes from state/action 1266 into 1267 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback anim 998, helper/projectile lifecycle, effect-store, and payload evidence
+  -> pnpm qa:trace passed 250/250 artifacts, 230 required and 20 optional at that checkpoint
+  -> helper-local cancel-time trigger evidence only; no exact cancel tick-order/lifetime, exact priority classes, multi-projectile any-id selection beyond this route, helper-owned custom states, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile cancel parity claim
+Previous R1 Projectile cancel-time owner-state required trace gate
+  -> synthetic-imported-projectile-canceltime.json checksum 64e8dec4 remains required in qa:trace
+  -> bounded owner-state ProjCancelTime(77) can branch after that owner's player-owned Projectile is canceled by an opposing Projectile clash
+  -> P2 routes into state/action 283 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback, projectile lifecycle, effect-store, and payload evidence
+  -> this is owner-state cancel-time trigger evidence only; no exact cancel tick-order/lifetime, exact priority classes, multi-projectile any-id arbitration, redirects, teams/simul, visual/audio parity, score movement, or full Projectile cancel parity claim
+Previous R1 Helper Projectile guard/contact-time any required trace gates
+  -> synthetic-imported-helper-projguardedtime-any.json checksum bd64e9db and synthetic-imported-helper-projcontacttime-any.json checksum 5c6a4e11 are now required in qa:trace
+  -> bounded helper-local ProjGuardedTime(0) and ProjContactTime(0) can branch after helper-parented Projectile guard/contact markers
+  -> Helper routes into state/actions 1263 and 1265 with guard event/reason, helper/projectile lifecycle, effect-store, target-link, and sound/FightFX package evidence
+  -> this is helper-local guard/contact-time trigger evidence only; no exact contact/guard tick-order/lifetime, multi-projectile any-id selection, helper-owned custom-state targets, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile parity claim
+Previous R1 Helper Projectile hit-time any required trace gate
+  -> synthetic-imported-helper-projhittime-any.json checksum bca9f47b remains required in qa:trace
+  -> bounded helper-local ProjHitTime(0) can branch after a helper-parented Projectile hits P2
+  -> Helper routes into state/action 1261 with hit event/reason, helper/projectile lifecycle, effect-store, target-link, and sound/FightFX package evidence
+  -> this is helper-local hit-time trigger evidence only; no exact hit tick-order/lifetime, multi-projectile any-id selection, helper-owned custom-state targets, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile parity claim
+Previous R1 Projectile hit-time any required trace gate
+  -> synthetic-imported-projectile-hittime-any.json checksum 47c1cf7f remains required in qa:trace
+  -> bounded owner-state ProjHitTime(0) can branch after a player-owned Projectile hits P2
+  -> P1 routes into state/action 282 with hit event/reason, Projectile lifecycle, effect-store, and target-link evidence
+  -> pnpm qa:trace passed 245/245 artifacts, 225 required and 20 optional at that checkpoint
+  -> this is hit-time trigger evidence only; no exact hit tick-order/lifetime, multi-projectile id=0 selection, exact helper-local timing beyond bounded helper gates, redirects, teams/simul, visual/audio parity, score movement, or full Projectile hit parity claim
+Previous R1 Projectile contact-time any required trace gate
+  -> synthetic-imported-projectile-contacttime-any.json checksum f1751155 is now required in qa:trace
+  -> bounded owner-state ProjContactTime(0) can branch after a player-owned Projectile hits P2
+  -> P1 routes into state/action 281 with hit event/reason, Projectile lifecycle, effect-store, and target-link evidence
+  -> pnpm qa:trace passed 244/244 artifacts, 224 required and 20 optional at that checkpoint
+  -> this is contact-time trigger evidence only; no exact contact tick-order/lifetime, multi-projectile id=0 selection, exact helper-local timing beyond bounded helper gates, redirects, teams/simul, visual/audio parity, score movement, or full Projectile contact parity claim
+Previous R1 Projectile guarded-time any required trace gate
+  -> synthetic-imported-projectile-guardedtime-any.json checksum c8473340 is now required in qa:trace
+  -> bounded owner-state ProjGuardedTime(0) can branch after P2 guards a player-owned Projectile
+  -> P1 routes into state/action 279 with guard event/reason, Projectile lifecycle, effect-store, and target-link evidence
+  -> pnpm qa:trace passed 243/243 artifacts, 223 required and 20 optional at that checkpoint
+  -> this is guarded contact-time trigger evidence only; no exact guard tick-order/lifetime, multi-projectile id=0 selection, exact helper-local timing beyond bounded helper gates, redirects, teams/simul, visual/audio parity, score movement, or full Projectile guard parity claim
+Previous R1 HitDef plus Projectile target-memory mix required trace gate
+  -> synthetic-imported-hitdef-projectile-target-mix.json checksum e98d4857 is now required in qa:trace
+  -> bounded owner-local target memory can retain direct HitDef id 77 and player-owned Projectile id 78 in one active state
+  -> P1 branches through NumTarget(77), Target(77), Life, NumTarget(78), and Target(78), Life into state/action 278
+  -> requires direct hit evidence, Projectile lifecycle/payload evidence, and both owner target links
+  -> pnpm qa:trace passed 242/242 artifacts, 222 required and 20 optional at that checkpoint
+  -> this is target-memory trigger evidence only; no Target* mutation mixing, helper-owned projectile targets, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full target/combat parity claim
+Previous R1 Helper Projectile Air Guard GetHitVar hitshaketime required trace gate
+  -> synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime.json checksum 3c3f2e25 is now required in qa:trace
+  -> bounded defender-owned air guard-hit CNS can branch from state 155 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 317 after a helper-parented Projectile air guard
+  -> requires helper-local Projectile spawn telemetry plus helper/projectile lifecycle and owner/helper target-link evidence
+  -> pnpm qa:trace passed 241/241 artifacts, 221 required and 20 optional before the target-mix gate was added
+  -> this is helper-parented Projectile air guard hitshake timing metadata trigger evidence only; no helper-owned custom states, exact helper Projectile air guard timing/landing/effects, projectile presentation, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 Projectile Air Guard GetHitVar hitshaketime required trace gate
+  -> synthetic-imported-projectile-gethitvar-air-guard-hitshaketime.json checksum 3fcf1421 is now required in qa:trace
+  -> bounded defender-owned air guard-hit CNS can branch from state 155 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 316 after a player-owned Projectile air guard
+  -> pnpm qa:trace passed 240/240 artifacts, 220 required and 20 optional before the helper Projectile air guard hitshaketime gate was added
+  -> this is player-owned Projectile air guard hitshake timing metadata trigger evidence only; no exact air guard timing/landing/proximity, projectile presentation, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 Air Guard GetHitVar hitshaketime required trace gate
+  -> synthetic-imported-gethitvar-air-guard-hitshaketime.json checksum 703e9328 is now required in qa:trace
+  -> bounded defender-owned air guard-hit CNS can branch from state 155 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 315 after a direct HitDef air guard
+  -> pnpm qa:trace passed 239/239 artifacts, 219 required and 20 optional before the Projectile air guard hitshaketime gate was added
+  -> this is air guard hitshake timing metadata trigger evidence only; no exact air guard timing/landing/proximity, guard end/effects, helper/projectile air-guard variants, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 Crouch Guard GetHitVar hitshaketime required trace gate
+  -> synthetic-imported-gethitvar-crouch-guard-hitshaketime.json checksum b31d1dac is now required in qa:trace
+  -> bounded defender-owned crouch guard-hit CNS can branch from state 153 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 314 after a direct HitDef crouch guard
+  -> pnpm qa:trace passed 238/238 artifacts, 218 required and 20 optional before the air guard hitshaketime gate was added
+  -> this is crouch guard hitshake timing metadata trigger evidence only; no exact crouch guard timing/proximity, guard end/effects, helper/projectile crouch-guard variants, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 Helper Projectile GetHitVar guard hitshaketime required trace gate
+  -> synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime.json checksum 64a1a8bd is now required in qa:trace
+  -> bounded defender-owned guard-hit CNS can branch from state 151 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 313 after a helper-parented Projectile guard
+  -> pnpm qa:trace passed 237/237 artifacts, 217 required and 20 optional before the crouch guard hitshaketime gate was added
+  -> this is helper-parented Projectile guard hitshake timing metadata trigger evidence only; no helper-owned custom states, exact helper Projectile guard timing/effects, projectile visual/audio parity, custom-state inheritance breadth, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 Projectile GetHitVar guard hitshaketime required trace gate
+  -> synthetic-imported-projectile-gethitvar-guard-hitshaketime.json checksum 724f66d6 is now required in qa:trace
+  -> bounded defender-owned guard-hit CNS can branch from state 151 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 312 after a player-owned Projectile guard
+  -> pnpm qa:trace passed 236/236 artifacts, 216 required and 20 optional before the Helper Projectile guard hitshaketime gate was added
+  -> this is player-owned Projectile guard hitshake timing metadata trigger evidence only; no exact hitpause lifetime, guard timing/effects, projectile visual/audio parity, custom-state inheritance breadth, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 GetHitVar guard hitshaketime required trace gate
+  -> synthetic-imported-gethitvar-guard-hitshaketime.json checksum 31d76de9 is now required in qa:trace
+  -> bounded defender-owned guard-hit CNS can branch from state 151 through GetHitVar(hitshaketime) > 0 && GetHitVar(guarded) = 1 into state/action 311 after a direct HitDef guard
+  -> pnpm qa:trace passed 235/235 artifacts, 215 required and 20 optional before the Projectile guard hitshaketime gate was added
+  -> this is direct-HitDef guard hitshake timing metadata trigger evidence only; no exact hitpause lifetime, guard timing/proximity, guard end/effects, custom-state/helper/projectile inheritance breadth, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+Previous R1 GetHitVar hitshaketime required trace gate
+  -> synthetic-imported-gethitvar-hitshaketime.json checksum 655107b9 is now required in qa:trace
+  -> bounded defender-owned normal get-hit CNS can branch from state 5000 through GetHitVar(hitshaketime) > 0 && !GetHitVar(guarded) into state/action 310 after a direct HitDef hit
+  -> pnpm qa:trace passed 234/234 artifacts, 214 required and 20 optional before the guard hitshaketime gate was added
+  -> this is direct-contact normal hitshake timing metadata trigger evidence only; no exact hitpause tick lifetime, hitshake lifetime, custom-state/helper/projectile inheritance breadth, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN get-hit parity claim
+Previous R1 GetHitVar hittime required trace gate
+  -> synthetic-imported-gethitvar-hittime.json checksum a11beef0 is now required in qa:trace
+  -> bounded defender-owned normal get-hit CNS can branch from state 5000 through GetHitVar(hittime) > 0 && !GetHitVar(guarded) into state/action 309 after a direct HitDef hit
+  -> pnpm qa:trace passed 233/233 artifacts, 213 required and 20 optional before the hitshaketime gate was added
+  -> this is direct-contact normal hit timing metadata trigger evidence only; no exact hitstun tick order, custom-state/helper/projectile inheritance breadth, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN get-hit parity claim
+R1 GetHitVar guard timing required trace gate
+  -> synthetic-imported-gethitvar-guard-timing.json checksum cf92c669 is now required in qa:trace
+  -> bounded defender-owned guard-hit CNS can branch from state 151 through GetHitVar(hittime) > 0, GetHitVar(slidetime) = 5, and GetHitVar(ctrltime) = 7 into state/action 308 after a direct HitDef guard
+  -> pnpm qa:trace passed 232/232 artifacts, 212 required and 20 optional before the hittime gate was added
+  -> this is direct-HitDef guard timing metadata trigger evidence only; no exact guard timing/proximity, guard end, guard effects, projectile/helper/custom-state inheritance, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN guard parity claim
+R1 GetHitVar down-recover required trace gate
+  -> synthetic-imported-gethitvar-down-recover.json checksum b8a7aef0 is now required in qa:trace
+  -> bounded owner-backed get-hit CNS can branch from state 5100 through GetHitVar(down.recover) = 1, GetHitVar(down.recovertime) = 45, and alias GetHitVar(recovertime) = 45 into state/action 307 before lie-down recovery consumes the timer
+  -> pnpm qa:trace passed 231/231 artifacts, 211 required and 20 optional before the guard timing gate was added
+  -> this is stored direct-HitDef down-recovery metadata trigger evidence only; no exact liedown tables, 5110/5120 tick order, metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN Common1 recovery parity claim
+R1 GetHitVar fall env-shake required trace gate
+  -> synthetic-imported-gethitvar-fall-envshake.json checksum 6364632a is now required in qa:trace
+  -> bounded owner-backed get-hit CNS can branch from state 5100 through GetHitVar(fall.envshake.time) = 15, GetHitVar(fall.envshake.freq) = 178, GetHitVar(fall.envshake.ampl) = 6, and GetHitVar(fall.envshake.phase) = 0 into state/action 306 before FallEnvShake presentation executes
+  -> pnpm qa:trace passed 230/230 artifacts, 210 required and 20 optional before the down-recover gate was added
+  -> this is stored direct-HitDef fall env-shake metadata trigger evidence only; no exact camera waveform, pause/stage/layer interaction, metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN fall presentation parity claim
+R1 GetHitVar fall metadata required trace gate
+  -> synthetic-imported-gethitvar-fall-metadata.json checksum 474fa734 is now required in qa:trace
+  -> bounded owner-backed get-hit CNS can branch from state 5100 through GetHitVar(fall.damage) = 70, GetHitVar(fall.kill) = 0, GetHitVar(fall.xvel) = 3, and GetHitVar(fall.yvel) = -6 into state/action 305 before HitFallDamage resolves
+  -> pnpm qa:trace passed 229/229 artifacts, 209 required and 20 optional before the fall env-shake gate was added
+  -> this is stored direct-HitDef fall metadata trigger evidence only; no exact fall metadata lifetime/stacking, redirects, helper/projectile/custom-state inheritance, exact VM tick order, visual parity, score movement, or full MUGEN/IKEMEN fall/get-hit parity claim
+R1 TeamSide required trace gate
+  -> synthetic-imported-teamside.json checksum f55695b7 is now required in qa:trace
+  -> bounded imported State -1 CNS can branch on one-on-one side context: TeamSide = 1 plus EnemyNear, TeamSide = 2 route P1 into state/action 299 without HitDef / combat side effects
+  -> pnpm qa:trace passed 228/228 artifacts, 208 required and 20 optional before later GetHitVar timing gates were added
+  -> this is one-on-one side-context trigger evidence only; no teams/simul/turns, indexed opponent selection, helper-owned opponent lists, dynamic side ownership, visual parity, score movement, or full TeamSide parity claim
+R1 Helper Projectile GetHitVar guarded required trace gate
+  -> synthetic-imported-helper-projectile-gethitvar-guarded.json checksum 2b413bd7 is now required in qa:trace
+  -> bounded defender-owned guard-hit CNS can branch on GetHitVar(guarded) = 1 after helper-parented Projectile guard, 150 -> 151 guard-hit routing, HitVelSet, and CtrlSet, then route P2 into state/action 304
+  -> pnpm qa:trace passed 226/226 artifacts, 206 required and 20 optional before TeamSide and later GetHitVar timing gates were added
+  -> this is helper-parented Projectile guard metadata trigger evidence with helper-local Projectile controller/op telemetry only; no custom-state guarded metadata, exact guard timing/effects, visual parity, score movement, or full Common1/guard parity claim
+  -> previous direct HitDef guarded evidence remains synthetic-imported-gethitvar-guarded.json checksum 7c36defb
+R1 GetHitVar fall-recover required trace gate
+  -> synthetic-imported-gethitvar-fall-recover.json checksum 259b300f remains required in qa:trace
+  -> bounded owner-backed get-hit CNS can branch on GetHitVar(fall.recover) = 1 while GetHitVar(fall.recovertime) > 0 and !CanRecover, then route P2 from state 5100 into state/action 301
+  -> this is get-hit metadata trigger evidence only; no exact recovery threshold tables, custom-state lifetime, helper/projectile inheritance, controller-loop timing, visual parity, score movement, or full Common1/get-hit parity claim
+R1 AnimElem offset required trace gate
+  -> synthetic-imported-animelem-offset.json checksum 4484031d is now required in qa:trace
+  -> bounded imported active-state CNS can advance action 200 through authored AIR frame durations [2,6,4], then exit through AnimElem = 2, = 4 into state 300 without HitDef / combat side effects
+  -> synthetic-imported-animelem.json checksum 683d9a10 remains required for AnimElem = 2, = 0 into state 299
+  -> pnpm qa:trace passes 222/222 artifacts, 202 required and 20 optional
+  -> this is current-actor animation-element trigger evidence only; no AIR loop semantics, negative-duration semantics, state-owner/helper namespaces, persistent-controller timing, visual parity, score movement, or full animation VM parity claim
+R1 OwnerMetrics required trace gate
+  -> synthetic-imported-owner-metrics.json checksum 1a61aaeb is now required in qa:trace
+  -> bounded imported State -1 CNS can branch on current-owner StateNo, Anim, Time, Life, Power, Pos X/Y, and Vel X/Y triggers, then route P1 into state/action 298 without HitDef / combat side effects
+  -> RuntimeExpressionContextWorld normalizes the post-transition stateElapsed = -1 sentinel to observable Time/StateTime zero for CNS reads
+  -> pnpm qa:trace passes 220/220 artifacts, 200 required and 20 optional
+  -> this is owner metric trigger evidence only; no exact VM tick ordering, helper/team/redirect state namespaces, localcoord scaling, visual parity, score movement, or full trigger parity claim
+R1 P2Distance required trace gate
+  -> synthetic-imported-p2-distance.json checksum 2c584be0 is now required in qa:trace
+  -> bounded imported State -1 CNS can branch on current-opponent spacing triggers P2Dist X/Y and P2BodyDist X/Y, then route P1 into state/action 297 without HitDef / combat side effects
+  -> pnpm qa:trace passes 219/219 artifacts, 199 required and 20 optional
+  -> this is two-actor spacing evidence only; no teams/simul, helpers, exact opponent selection, localcoord scaling, push/corner adjustment, visual parity, score movement, or full spacing parity claim
+R1 P2StateContext required trace gate
+  -> synthetic-imported-p2-state-context.json checksum caf32557 is now required in qa:trace
+  -> bounded imported State -1 CNS can branch on current-opponent metadata triggers P2StateType = S and P2MoveType = I, then route P1 into state/action 296 without HitDef / combat side effects
+  -> pnpm qa:trace passes 218/218 artifacts, 198 required and 20 optional
+  -> this is two-actor opponent-context evidence only; no teams/simul, helpers, custom-state opponent ownership, exact opponent selection, visual parity, score movement, or full trigger parity claim
+R1 StateContext required trace gate
+  -> synthetic-imported-state-context.json checksum cb9c3d1e is now required in qa:trace
+  -> bounded imported State -1 CNS can branch on owner context triggers ctrl, StateType = S, MoveType = I, and Physics = S, then route P1 into state/action 295 without HitDef / combat side effects
+  -> pnpm qa:trace passes 217/217 artifacts, 197 required and 20 optional
+  -> this is trigger-context evidence only; no helper/team/redirect metadata ownership, exact controller-loop ordering, visual parity, score movement, or full trigger parity claim
+R1 GameTime required trace gate
+  -> synthetic-imported-gametime.json checksum bab573f3 is now required in qa:trace
+  -> bounded imported State -1 CNS can delay x until GameTime >= 4, then route P1 into state/action 294 without HitDef / combat side effects
+  -> pnpm qa:trace passes 216/216 artifacts, 196 required and 20 optional
+  -> this is trigger evidence only; no exact pause accounting, replay/rollback timing, multi-round timer ownership, IKEMEN round-system behavior, visual parity, score movement, or full global timing parity claim
+R1 EdgeDistance required trace gate
+  -> synthetic-imported-edge-distance.json checksum 785de452 is now required in qa:trace
+  -> bounded imported State -1 CNS can evaluate FrontEdgeDist = 340, BackEdgeDist = 300, FrontEdgeBodyDist = 301, and BackEdgeBodyDist = 261 against supplied stage bounds, then route P1 into state/action 293 without HitDef / combat side effects
+  -> that checkpoint passed pnpm qa:trace at 215/215 artifacts, 195 required and 20 optional
+  -> this is trigger evidence only; no exact camera/screen edge parity, localcoord scaling, push/corner behavior, teams/simul/helper namespace breadth, visual parity, score movement, or full edge-distance parity claim
+R1 AnimElemTime required trace gate
+  -> synthetic-imported-animelemtime.json checksum 2036557d is now required in qa:trace
+  -> bounded imported active-state CNS can advance action 200 through authored AIR frame durations [2,4,4], then exit through AnimElemTime(2) = 2 into state 292 without HitDef / combat side effects
+  -> that checkpoint passed pnpm qa:trace at 214/214 artifacts, 194 required and 20 optional
+  -> this is trigger evidence only; no exact AIR loop semantics, invalid-element bottom values, negative-duration semantics, state-owner/helper namespaces, persistent-controller timing, visual parity, score movement, or full animation VM parity claim
+R1 AnimTime required trace gate
+  -> synthetic-imported-animtime.json checksum 9e42b546 is now required in qa:trace
+  -> bounded imported active-state CNS can keep P1 in state 200 for the authored AIR duration, then exit through AnimTime = 0 into state 291 without HitDef / combat side effects
+  -> pnpm qa:trace passes 213/213 artifacts, 193 required and 20 optional
+  -> this is trigger evidence only; no exact AIR negative-duration semantics, looped-action semantics, state-owner/helper namespaces, persistent-controller timing, visual parity, score movement, or full animation VM parity claim
+R1 SelfAnimExist required trace gate
+  -> synthetic-imported-selfanimexist.json checksum 99930032 is now required in qa:trace
+  -> bounded imported State -1 routing can branch on own AIR action existence: SelfAnimExist(200) routes, missing action 9999 fails closed, and P1 enters state 290
+  -> pnpm qa:trace passes 212/212 artifacts, 192 required and 20 optional
+  -> this is trigger evidence only; no redirected animation-owner lookup, helper/parent/root lookup, common/FightFX namespace parity, visual parity, score movement, or full trigger parity claim
+R2 RuntimeFighterStateWorld ownership extraction
+  -> RuntimeFighterStateWorld now owns bounded fighter runtime-state construction for resource maxima, damage multipliers, initial action/control/resource state, command buffers, contact memory, telemetry buckets, injected world references, deterministic RNG seed, and lazy runtime-program compilation
+  -> PlayableMatchRuntime delegates P1/P2 construction while still supplying stage starts, actor ids, definitions, and injected match worlds
+  -> focused RuntimeFighterStateSystem coverage proves injected-world preservation, bounded constants, initial runtime state, p2 priority, native no-program behavior, and command/contact setup
+  -> this is R2 ownership cleanup only; no exact player lifecycle parity, helper/custom-state clone breadth, team/simul roster ownership, intro/round lifecycle, visual parity, score movement, or full actor registry parity claim
+R2 RuntimeMatchResetWorld ownership extraction
+  -> RuntimeMatchResetWorld now owns bounded match reset orchestration for round/pause/env/effect resets, in-place fighter recreation, helper TargetState handler reattachment, and reset logging
+  -> PlayableMatchRuntime delegates reset lifecycle while still supplying fighter construction, stage starts, injected worlds, and concrete field assignment
+  -> focused RuntimeMatchResetSystem coverage proves reset order, actor identity preservation, helper handler reattachment, and log handoff; PlayableMatchRuntime coverage preserves external effect-store reset behavior
+  -> this is R2 ownership cleanup only; no exact round-flow parity, continue/round intro semantics, helper/custom-state reset breadth, screenpack/lifebar reset behavior, visual parity, score movement, or full match lifecycle parity claim
+R2 RuntimeHelperTargetStateWorld handler binding extraction
+  -> RuntimeHelperTargetStateWorld now owns bounded helper TargetState handler attach/re-attach wiring for match actors
+  -> PlayableMatchRuntime delegates constructor/reset callback binding through the same world that already handles helper owner validation, target lookup, unavailable-state no-op, and owner-backed target state entry
+  -> focused RuntimeHelperTargetStateSystem coverage proves owner-specific handlers replace stale handlers and forward owner/helper/target/state id context
+  -> this is R2 ownership cleanup only; no helper-owned custom-state table parity, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper TargetState timing, visual parity, score movement, or full Helper VM parity claim
+R2 RuntimeFrameWorld ownership extraction
+  -> RuntimeFrameWorld now owns bounded current AIR frame lookup plus cloned Clsn1/Clsn2 projection for runtime and snapshot consumers
+  -> PlayableMatchRuntime delegates current-frame reads, guard-distance hurtbox fallback, and AfterImage sample frame reads through the named boundary while preserving frame-Clsn1 ReversalDef handoff
+  -> RuntimeSnapshotWorld delegates active move hitbox, frame hitbox, and missing-frame default hurtbox projection through the same boundary
+  -> this is R2 ownership cleanup only; no exact collision priority, frame timing, guard-distance threshold, rotated/scaled box semantics, helper/team/redirect collision ownership, renderer parity, score movement, or full collision VM parity claim
+R2 RuntimeAfterImageSampleWorld ownership extraction
+  -> RuntimeAfterImageSampleWorld now owns bounded AfterImage sample projection from actor runtime state plus current AIR frame
+  -> PlayableMatchRuntime delegates cloned position, facing, self/state-owner sprite owner metadata, and sprite group/index/offset sample creation before RuntimeSpriteEffectWorld captures the sample
+  -> focused RuntimeAfterImageSampleSystem coverage proves no-frame fail-closed behavior, clone isolation, self owner metadata, and custom-state state-owner metadata
+  -> this is R2 ownership cleanup only; no exact ghost-trail sampling cadence, material/blend parity, helper/team/redirect presentation ownership, renderer parity, score movement, or full presentation VM parity claim
+R2 RuntimeControllerEvaluationContextWorld ownership extraction
+  -> RuntimeControllerEvaluationContextWorld now owns bounded StateControllerExecutor context creation from PlayableMatchRuntime
+  -> owner const reads, actor hitpause reads, actor random callbacks, and stage-time forwarding route through a named context factory before active runtime-controller dispatch
+  -> focused RuntimeControllerEvaluationContextSystem coverage proves owner/actor/tick callback forwarding
+  -> this is R2 ownership cleanup only; no full passive-controller parity, exact CNS controller-loop timing, helper/team/redirect context scopes, exact random stream parity, visual parity, score movement, or full controller VM parity claim
+R2 RuntimeDispatchEvaluationWorld ownership extraction
+  -> RuntimeDispatchEvaluationWorld now owns bounded dynamic active-controller dispatch-param fallback from PlayableMatchRuntime
+  -> compiled numeric/Boolean values short-circuit, dynamic fallback expressions request a context from RuntimeExpressionContextWorld, numeric results are finite/truncated, and Boolean params use numeric truthiness
+  -> focused RuntimeDispatchEvaluationSystem coverage proves compiled-value precedence, actor/opponent/owner/tick forwarding, numeric fallback evaluation, Boolean truthiness, and fail-closed missing/non-numeric expressions
+  -> this is R2 ownership cleanup only; no full dynamic-param parity, persistent-controller timing, exact CNS controller tick order, helper/team/redirect parameter scopes, visual parity, score movement, or full controller VM parity claim
+R2 RuntimeTriggerEvaluationWorld ownership extraction
+  -> RuntimeTriggerEvaluationWorld now owns bounded normalized TriggerIr expression evaluation from PlayableMatchRuntime
+  -> actor/opponent/owner/tick forwarding, context-factory handoff, raw expression result capture, and Boolean pass/fail projection route through the named world
+  -> focused RuntimeTriggerEvaluationSystem coverage proves context forwarding, normalized expression use, and false zero-result behavior
+  -> this is R2 ownership cleanup only; no full expression language parity, persistent-controller timing, exact CNS trigger tick order, helper/team/redirect trigger scopes, visual parity, score movement, or full trigger VM parity claim
+R2 RuntimeTriggerGateWorld ownership extraction
+  -> RuntimeTriggerGateWorld now owns bounded CNS trigger grouping/order from PlayableMatchRuntime
+  -> triggerall AND preconditions, numbered triggerN OR groups, no-numbered-trigger pass-through, and short-circuit ordering route through the named world
+  -> focused RuntimeTriggerGateSystem coverage proves triggerall failure skips numbered groups, first passing numbered group wins, no-numbered groups pass after triggerall, all-failing numbered groups fail, and actor/opponent/owner/tick callback context is forwarded
+  -> this is R2 ownership cleanup only; no full expression language parity, persistent-controller timing, exact CNS trigger tick order, helper/team/redirect trigger scopes, visual parity, score movement, or full trigger VM parity claim
+R2 RuntimeAutoGuardStartWorld ownership extraction
+  -> RuntimeAutoGuardStartWorld now owns bounded imported auto guard-start orchestration from PlayableMatchRuntime
+  -> imported-defender filtering, current input/current move/hitpause/hitstun eligibility handoff, InGuardDist gating, guard-start state selection/availability, clear-state-owner entry, and guard-start runtime mutation route through the named world
+  -> focused RuntimeAutoGuardStartSystem coverage proves successful imported guard start plus non-imported, ineligible, out-of-distance, and unavailable-state fail-closed paths
+  -> this is R2 ownership cleanup only; no exact proximity-guard timing, guard-end/effects/audio, helper/team/redirect guard ownership, visual parity, score movement, or full guard VM parity claim
+R2 RuntimeActiveControllerScanWorld ownership extraction
+  -> RuntimeActiveControllerScanWorld now owns bounded active-state controller scanning from PlayableMatchRuntime
+  -> owner/state-owner selection, imported/owner-backed guard, active state lookup, ignorehitpause filtering, trigger gating, controller iteration, and stop/continue flow after state-changing controllers route through the named world
+  -> focused RuntimeActiveControllerScanSystem coverage proves owner-backed scanning, hitpause-only filtering, stop-after-ChangeState flow, missing-state skip, non-imported skip, and failed-trigger no-op
+  -> this is R2 ownership cleanup only; no exact CNS VM tick order, persistent controller semantics, helper/team/redirect controller scopes, full controller-loop parity, visual parity, score movement, or full active-controller parity claim
+R2 RuntimeActiveControllerDispatchWorld ownership extraction
+  -> RuntimeActiveControllerDispatchWorld now owns bounded active-controller route orchestration from PlayableMatchRuntime after scan/trigger pass
+  -> route order is state/animation mutation first, shared runtime-controller execution second, active side-effect dispatch third, and unsupported fail-soft dispatch last
+  -> focused RuntimeActiveControllerDispatchSystem coverage proves state-first stop, runtime-controller handoff, side-effect handoff, and unsupported pass-through
+  -> this is R2 ownership cleanup only; no exact CNS VM tick order, persistent-controller semantics, helper/team/redirect controller scopes, side-effect ordering parity, missing-action fallback parity, visual parity, score movement, or full active-controller parity claim
+R2 RuntimeActiveStateDispatchWorld ownership extraction
+  -> RuntimeActiveStateDispatchWorld now owns bounded active-state ChangeState/SelfState and ChangeAnim/ChangeAnim2 dispatch mutation from PlayableMatchRuntime
+  -> dynamic numeric/boolean param resolution, controller telemetry, state-entry handoff, optional ctrl mutation, state-owner animation source selection, and elem/elemtime handoff route through the named world while the match runtime still owns scan order, trigger filtering, side-effect dispatch, and concrete callbacks
+  -> focused RuntimeActiveStateDispatchSystem coverage proves dynamic SelfState with anim/ctrl, ChangeAnim2 owner/elem routing, unresolved state/animation fail-closed behavior, and non-state dispatch pass-through
+  -> this is R2 ownership cleanup only; no exact CNS VM tick order, persistent-controller semantics, helper/team/redirect controller scopes, missing-action fallback parity, full ChangeState/ChangeAnim VM parity, visual parity, score movement, or full active-controller parity claim
+R2 RuntimeActiveSideEffectDispatchWorld ownership extraction
+  -> RuntimeActiveSideEffectDispatchWorld now owns bounded active-state side-effect dispatch routing from PlayableMatchRuntime
+  -> HitDef/ReversalDef/Width/FallEnvShake/Pause/Sound/EnvColor/EnvShake/contact singleton routes plus sprite-effect, effect-spawn, and Target*/BindToTarget grouped routes are classified through one named router before existing controller worlds execute them
+  -> focused RuntimeActiveSideEffectDispatchSystem coverage proves every current side-effect route maps to the expected handler, missing hooks fail soft, and non-side-effect dispatches pass through
+  -> this is R2 ownership cleanup only; no exact CNS VM tick order, persistent-controller semantics, helper/team/redirect controller scopes, side-effect ordering parity, target/combat/presentation semantic parity, visual parity, score movement, or full active-controller parity claim
+R2 RuntimeTargetStateEntryWorld ownership extraction
+  -> RuntimeTargetStateEntryWorld now owns bounded active-state TargetState state-entry routing from PlayableMatchRuntime
+  -> existing owner-backed custom-state ownership is preserved, the controller actor becomes the owner otherwise, unavailable target states fail closed, and successful entries route the target into owner-backed state data through explicit hooks
+  -> focused RuntimeTargetStateEntrySystem coverage proves controller-owned entry, owner-backed custom-state preservation, and unavailable-state no-op
+  -> this is R2 ownership cleanup only; no exact TargetState tick order, throws, helper/team/multi-target target state selection, full custom-state parity, visual parity, score movement, or full TargetState parity claim
+R2 RuntimeHelperTargetStateWorld ownership extraction
+  -> RuntimeHelperTargetStateWorld now owns bounded helper-owned TargetState state-entry routing from PlayableMatchRuntime
+  -> helper/owner identity is checked before target lookup, missing targets fail closed, unavailable target states fail closed, and successful entries route the target into owner-backed state data through explicit state-entry hooks
+  -> focused RuntimeHelperTargetStateSystem coverage proves owner-backed entry, owner-mismatch skip, missing-target no-op, and unavailable-state no-op
+  -> this is R2 ownership cleanup only; no helper-owned custom state table parity, throws, teams/simul, multi-target/helper-owned opponent selection, exact helper TargetState timing, visual parity, score movement, or full helper TargetState parity claim
+R2 RuntimeHelperProjectileTargetWorld ownership extraction
+  -> RuntimeHelperProjectileTargetWorld now owns bounded helper-parented Projectile target-memory mirroring from PlayableMatchRuntime
+  -> owner-parented Projectile contacts skip, helper-parented Projectile contacts resolve the parent Helper by runtime serial, missing helpers fail closed, and successful contacts write the Projectile target id into helper-local target memory through TargetSystem
+  -> focused RuntimeHelperProjectileTargetSystem coverage proves mirror, owner-projectile skip, and missing-helper no-op behavior
+  -> this is R2 ownership cleanup only; no exact helper Projectile target lifetime, helper-owned custom-state tables, teams/simul, multi-target/helper-owned opponent selection, exact combat/effect tick order, visual parity, score movement, or full helper Projectile parity claim
+R2 RuntimeStateEntryRouteWorld ownership extraction
+  -> RuntimeStateEntryRouteWorld now owns bounded State -1 ChangeState route selection from PlayableMatchRuntime
+  -> state-entry iteration, non-ChangeState filtering, trigger gating, dynamic state-id resolver handoff, route telemetry, authored state-move selection, and raw state-entry fallback route through that world
+  -> focused RuntimeStateEntryRouteSystem coverage proves route-to-move, route-to-state, failed trigger / unresolved state-id no-op scans, dynamic expression handoff, and empty-list skip behavior
+  -> this is R2 ownership cleanup only; no exact State -1 VM order, persistent controller semantics, helper/team/redirect command ownership, full CNS VM parity, score movement, or full command-routing parity claim
 R2 RuntimeHelperCombatWorld ownership extraction
   -> RuntimeHelperCombatWorld now owns bounded helper-owned direct HitDef contact resolution from PlayableMatchRuntime
   -> helper iteration, direct-combat actor projection, active/contact checks, HitBy/NotHitBy reject logging, direct hit/guard handoff, imported default get-hit/guard-state hooks, helper target memory, contact presentation, and helper state sync route through that world
@@ -89,44 +481,44 @@ R2 player Projectile default Target-controller gate
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 0, then delayed owner-local TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop execute from target memory
   -> evidence includes projectile effect anim 915, lifecycle spawn/remove, effect payload ownerId p1 / effectId 0 / hasHit true / removalReason hit / terminalReason hit, TargetBind offset 36,-12, final P1 targetCount 0, and final P2 life 949 / power 40
   -> current qa:trace aggregate is 208/208 artifacts, 188 required and 20 optional
-  -> this narrows player-owned Projectile default Target side effects only; no direct HitDef plus Projectile mixing, helper-owned custom state tables, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
+  -> this narrows player-owned Projectile default Target side effects only; no Target* mutation mixing, helper-owned custom state tables, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 player Projectile default TargetState gate
   -> synthetic-imported-projectile-default-targetstate.json checksum 8f35f1fa is now a required qa:trace artifact
   -> player state 200 spawns Projectile with omitted projid/id, so runtime target memory defaults to id 0 without direct HitDef controller evidence in this isolated fixture
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 0, then delayed owner-local TargetState value 888 routes P2 through attacker-owned state data 888 -> 889 before SelfState returns P2 to state 0/control
   -> evidence includes projectile effect anim 914, lifecycle spawn/remove, effect payload ownerId p1 / effectId 0 / hasHit true / removalReason hit / terminalReason hit, required ChangeState/TargetState/SelfState execution, custom-owner P2 frames, and final P2 life 969
   -> that checkpoint passed qa:trace at 207/207 artifacts, 187 required and 20 optional
-  -> this narrows player-owned Projectile default TargetState into owner-backed state data only; no direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile default TargetState parity claim
+  -> this narrows player-owned Projectile default TargetState into owner-backed state data only; no Target* mutation mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile default TargetState parity claim
 R2 player Projectile TargetState gate
   -> synthetic-imported-projectile-targetstate.json checksum dd1c7962 is now a required qa:trace artifact
   -> player state 200 spawns Projectile id 77 without direct HitDef controller evidence in this isolated fixture
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 77, then delayed owner-local TargetState value 888 routes P2 through attacker-owned state data 888 -> 889 before SelfState returns P2 to state 0/control
   -> evidence includes projectile effect anim 913, lifecycle spawn/remove, effect payload ownerId p1 / effectId 77 / hasHit true / removalReason hit / terminalReason hit, required ChangeState/TargetState/SelfState execution, custom-owner P2 frames, and final P2 life 969
   -> current qa:trace aggregate is 206/206 artifacts, 186 required and 20 optional
-  -> this narrows player-owned Projectile TargetState into owner-backed state data only; no direct HitDef plus Projectile mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile TargetState parity claim
+  -> this narrows player-owned Projectile TargetState into owner-backed state data only; no Target* mutation mixing, helper-owned custom state tables, throws, teams/simul, multi-target selection, exact target lifetime/tick order, exact final-animation parity, visual parity, score movement, or full Projectile TargetState parity claim
 R2 player Projectile Target-controller gate
   -> synthetic-imported-projectile-target-controllers.json checksum 8c7bd6c2 is now a required qa:trace artifact
   -> player state 200 spawns Projectile id 77 without direct HitDef controller evidence in this isolated fixture
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 77, then owner-local TargetLifeAdd/TargetPowerAdd/TargetVelSet/TargetVelAdd/TargetFacing/TargetBind/TargetDrop execute from target memory
   -> evidence includes projectile effect anim 912, lifecycle spawn/remove, effect payload ownerId p1 / effectId 77 / hasHit true / removalReason hit / terminalReason hit, TargetBind offset 36,-12, final P1 targetCount 0, and final P2 life 949 / power 40
   -> current qa:trace aggregate is 205/205 artifacts, 185 required and 20 optional
-  -> this narrows player-owned Projectile Target side effects only; no direct HitDef plus Projectile mixing, helper-owned projectile target controller breadth beyond existing helper gates, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
+  -> this narrows player-owned Projectile Target side effects only; no Target* mutation mixing, helper-owned projectile target controller breadth beyond existing helper gates, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 player Projectile target redirect gate
   -> synthetic-imported-projectile-target-redirect.json checksum cd099094 is now a required qa:trace artifact
   -> player state 200 spawns Projectile id 77 without a direct HitDef controller requirement in this isolated fixture
   -> Projectile hits P2 for 31, records owner target link p1 -> p2 / 77, and routes P1 through NumTarget(77) plus Target(77), Life <= 969 into state 277 / anim 277
   -> evidence includes projectile effect anim 911, lifecycle spawn/remove, effect payload ownerId p1 / effectId 77 / hasHit true / removalReason hit / terminalReason hit, and final P2 life 969
   -> current qa:trace aggregate is 204/204 artifacts, 184 required and 20 optional
-  -> this narrows player-owned Projectile target-memory trigger reads only; no direct HitDef plus Projectile mixing, target mutation through redirects, helper-owned projectile targets, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
+  -> this narrows player-owned Projectile target-memory trigger reads only; no Target* mutation mixing, helper-owned projectile targets, teams/simul, multi-target selection, exact target lifetime/tick order, visual parity, score movement, or full Projectile target parity claim
 R2 helper Projectile bare Target gate
-  -> synthetic-imported-helper-projectile-bare-target.json checksum 91bce1e6 is now a required qa:trace artifact
+  -> synthetic-imported-helper-projectile-bare-target.json checksum 8c9129c1 is now a required qa:trace artifact
   -> helper state 1200 spawns owner-side Projectile id 8863, mirrors target memory into the Helper, branches through NumTarget(8863) plus bare Target, Life, and reaches helper state 1242 / anim 978
   -> evidence includes target links p1 -> p2 / 8863 and p1-helper-0 -> p2 / 8863, projectile parentId p1-helper-0, projectile effectId 8863, helper targetCount = 1, final P2 life 982, helper-side S5,11, and FightFX F7017
   -> that checkpoint passed qa:trace at 203/203 artifacts, 183 required and 20 optional
-  -> previous helper Projectile default TargetState proof remains required: synthetic-imported-helper-projectile-default-targetstate.json checksum 24bf7d1c
-  -> previous helper Projectile explicit TargetState proof remains required: synthetic-imported-helper-projectile-targetstate.json checksum f5f26b21
-  -> previous helper Projectile default Target-controller proof remains required: synthetic-imported-helper-projectile-default-target-controllers.json checksum 6d8c51dd
-  -> previous helper Projectile explicit Target-controller proof remains required: synthetic-imported-helper-projectile-target-controllers.json checksum ebf5099a
+  -> previous helper Projectile default TargetState proof remains required: synthetic-imported-helper-projectile-default-targetstate.json checksum 918c42a1
+  -> previous helper Projectile explicit TargetState proof remains required: synthetic-imported-helper-projectile-targetstate.json checksum b12e1cb3
+  -> previous helper Projectile default Target-controller proof remains required: synthetic-imported-helper-projectile-default-target-controllers.json checksum 0c4c69ae
+  -> previous helper Projectile explicit Target-controller proof remains required: synthetic-imported-helper-projectile-target-controllers.json checksum 58688be8
   -> previous helper TargetState proof remains required: synthetic-imported-helper-targetstate.json checksum 011633b8
   -> previous helper direct-HitDef Target-controller proof remains required: synthetic-imported-helper-target-controllers.json checksum 61f4c61e
   -> previous helper bare Target, Life proof remains required: synthetic-imported-helper-bare-target.json checksum 15f3c1db
@@ -134,8 +526,8 @@ R2 helper Projectile bare Target gate
   -> previous default Target(0), Life proof remains required: synthetic-imported-default-target-redirect.json checksum d43caabf
   -> previous default NumTarget(0) proof remains required: synthetic-imported-default-numtarget.json checksum 5869ebbd
   -> previous helper direct default-target proof remains required: synthetic-imported-helper-default-target.json checksum e1bcced0
-  -> previous helper Projectile default-target proof remains required: synthetic-imported-helper-projectile-default-target.json checksum b1541afc
-  -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 1a44cc04
+  -> previous helper Projectile default-target proof remains required: synthetic-imported-helper-projectile-default-target.json checksum b0daddf6
+  -> previous helper Projectile explicit-id proof remains required: synthetic-imported-helper-projectile-target.json checksum 49261b53
   -> previous helper direct-target proof remains required: synthetic-imported-helper-target.json checksum 68f95b67
   -> previous helper direct-combat proof remains required: synthetic-imported-helper-hitdef.json checksum 89f9e876
   -> this narrows direct player target reads plus explicit/default/bare helper HitDef and helper-parented Projectile target memory plus bounded helper-owned direct-HitDef and explicit/default helper-parented Projectile Target side effects and owner-backed helper direct-HitDef/explicit-default Projectile TargetState only; no helper-owned custom state tables, throws, teams/simul, multi-target/helper-owned opponent selection, exact target lifetime/tick order, exact helper hitpause/tick order, exact helper HitDef/Projectile lifetime parity, visual parity, score movement, or full target/combat/projectile parity claim
@@ -159,12 +551,12 @@ R1 official-style ground recovery sequence gate
   -> synthetic-imported-default-fall-official-ground-recovery.json checksum 74b72495 remains required
   -> gates official-style synthetic Common1 route 5050 -> 5200 -> 5201 -> 52 -> 0 after command = "recovery" near ground
 R2 helper-local ProjContactTime trace gate
-  -> synthetic-imported-helper-projcontact.json checksum 07653cee is now a required qa:trace artifact
+  -> synthetic-imported-helper-projcontact.json checksum 67ed6c2d is now a required qa:trace artifact
   -> helper-local ProjContact(8855) and ProjContactTime(8855) >= 1 branch after helper-parented owner-side Projectile generic contact
   -> visual Helper routes 1200 -> 1220 -> 1221 / anims 949 and 950 after spawning owner-side Projectile anim 951 with parentId p1-helper-0
   -> focused EffectActorSystem coverage proves same-id player-owned Projectile contact is ignored while helper-parented Projectile contact triggers the branch after contact age advances
   -> that checkpoint passed qa:trace at 185/185 artifacts, 165 required and 20 optional
-  -> previous helper-local ProjGuarded checksum 3353eda7, ProjHit checksum 3892716e, ModifyProjectile checksum 77df008b, and NumProj checksum 4f8612b0 remain required helper-projectile proofs
+  -> previous helper-local ProjGuarded checksum 1c2c18a5, ProjHit checksum 2d9a281e, ModifyProjectile checksum 09d3f7e4, and NumProj checksum 3312a554 remain required helper-projectile proofs
   -> this narrows helper-local generic projectile-contact trigger evidence only; no helper-owned Projectile combat/contact presentation, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, exact ProjContact/ProjHit/ProjGuarded tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, score movement, or full parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now a required qa:trace artifact
@@ -178,10 +570,10 @@ R2 RuntimeTargetWorld candidate-resolution ownership
   -> no helper/projectile target ownership, exact team/multi-target selection, exact target lifetime, throw binding, exact bind tick order, visual parity, or score movement claim
 R2 RuntimeExpressionContextWorld ownership extraction
   -> RuntimeExpressionContextWorld now owns bounded active runtime ExpressionContext creation for imported triggers and dynamic controller-param fallback
-  -> PlayableMatchRuntime delegates target redirects, contact/projectile/effect count reads, command/const/state/anim/hitvar reads, HitDefAttr, HitPauseTime/HitOver/HitShakeOver, InGuardDist, random/stage/time wiring to that world
-  -> PlayableMatchRuntime still owns trigger grouping/order, active-state dispatch, next-random source, animation timing callbacks, and exact VM timing
-  -> focused RuntimeExpressionContextSystem coverage proves numeric reads, Target redirect, compiled trigger evaluation, const/state/HitVar helpers, and shared context creation
-  -> no full expression language parity, composite HitDefAttr parity, helper/team/redirect mutation, exact VM timing, visual parity, or score movement claim
+  -> PlayableMatchRuntime delegates target redirects, contact/projectile/effect count reads, command/const/state/anim/hitvar reads, HitDefAttr, HitPauseTime/HitOver/HitShakeOver, InGuardDist, random/stage/time wiring, and bounded stage edge-distance reads to that world
+  -> PlayableMatchRuntime still owns active-state dispatch, next-random source, animation timing callbacks, and exact VM timing
+  -> focused RuntimeExpressionContextSystem, RuntimeCnsSubset, and EffectActorSystem coverage proves numeric reads, Target redirect, compiled trigger evaluation, const/state/HitVar helpers, shared context creation, stage-bound FrontEdge/BackEdge values, no-stage fallback, and helper-local edge-distance trigger/value routing
+  -> no full expression language parity, composite HitDefAttr parity, exact screen/camera edge behavior, localcoord scaling, helper/team/redirect mutation, exact VM timing, visual parity, or score movement claim
 R2 RuntimeStateTransitionControllerWorld ownership extraction
   -> RuntimeStateTransitionControllerWorld now owns bounded passive ChangeState/SelfState setup in the basic StateControllerExecutor path
   -> StateControllerExecutor delegates raw-param value/stateno expression fallback, previous-state metadata writes, frame/time reset, optional ctrl, and missing-value reporting to the world
@@ -329,21 +721,21 @@ R1 resource actor-frame evidence gate
   -> no exact resource scaling, helper/team/redirect resource ownership, round/KO flow, dynamic lowering, full controller VM parity, or score movement claim
 R1 bounded Common1 recovery timer actor-frame gates
   -> RuntimeTraceGate.requiredActorFrames can require observed hitFall.downRecoverTime ranges plus first-to-last drop
-  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 5110 has bounded hitFall.downRecoverTime countdown-range and first-to-last-drop evidence before the existing 5110 -> 5120 get-up order
+  -> required synthetic-imported-default-fall-recovery.json checksum d83797d9 now proves imported P2 full-chain order 5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120, with bounded hitFall.downRecoverTime countdown-range and first-to-last-drop evidence in 5110 before get-up
   -> RuntimeTraceGate.requiredActorFrames can now also require observed hitFall.recoverTime first-to-last drop
   -> required synthetic-imported-default-fall-recovery-threshold.json checksum 7bb15a5f and synthetic-imported-default-fall-recovery-tick-order.json checksum e2691aab now prove imported P2 5050 drops from first recoverTime 1 to last recoverTime 0 before 5210 recovery
   -> focused RuntimeTraceArtifact and RuntimeTraceGatePresets coverage proves the field and preset
   -> no exact down.recovertime/fall.recovertime tables, exact Common1 controller-loop timing, animation timing, velocity math, recovery-input branching, public bundled KFM support, full fall-recovery parity, or score movement claim
 R2 bounded helper-local Projectile gate
   -> HelperSystem can dispatch bounded helper-local Projectile through RuntimeEffectActorWorld for current visual Helpers
-  -> required synthetic-imported-helper-projectile.json checksum 893f9427 proves a visual Helper routes from 1200 to 1212 / anim 932 while spawning owner-side projectile anim 943 with parentId p1-helper-0
+  -> required synthetic-imported-helper-projectile.json checksum b6269136 proves a visual Helper routes from 1200 to 1212 / anim 932 while spawning owner-side projectile anim 943 with parentId p1-helper-0
   -> pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
-  -> no helper-owned projectile combat/contact presentation, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, helper-owned custom state tables, exact helper projectile namespace scopes, indexed/team/helper-owned redirects, exact helper HitDef/Projectile lifetime parity, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no helper-owned projectile combat/contact presentation, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, helper-owned custom state tables, exact helper projectile namespace scopes, broader indexed/team/helper-owned redirects beyond caller-provided EnemyNear(index) lists, exact helper HitDef/Projectile lifetime parity, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local NumHelper gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can evaluate bounded helper-local NumHelper(id) through RuntimeEffectActorWorld for current visual Helpers against owner-side visual Helper actors in the same effect store
   -> required synthetic-imported-helper-numhelper.json checksum 4e32e951 proves a visual Helper routes from 1200 to 1211 / anim 931 through NumHelper(42) > 0
-  -> no exact helper effect-count/ownership parity, indexed/team/helper-owned redirects, exact helper HitDef lifetime/multi-hit parity, helper-owned Projectile combat/contact presentation, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
+  -> no exact helper effect-count/ownership parity, broader indexed/team/helper-owned redirects beyond caller-provided EnemyNear(index) lists, exact helper HitDef lifetime/multi-hit parity, helper-owned Projectile combat/contact presentation, full helper combat/contact parity, helper-owned effect namespaces, helper-bound Explod timing beyond the static spawn/remove/modify/count-id route, dynamic effect params, position rebinding, FightFX/common routing, nested helper ancestry, exact helper tick order, full helper/effect parity, or score movement claim
 R2 bounded helper-local NumExplod gate
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
   -> HelperSystem can evaluate bounded helper-local NumExplod(id) through RuntimeEffectActorWorld for current visual Helpers after helper-local static Explod spawn
@@ -370,7 +762,7 @@ R2 bounded helper-local EnemyNear gate
   -> HelperSystem expression contexts now receive current two-player opponent runtime state through RuntimeEffectLifecycleWorld during normal, pause, and hitpause presentation paths
   -> required synthetic-imported-helper-enemynear.json checksum 35498955 proves a visual Helper can route from state 1200 to 1202 / anim 922 through helper-local EnemyNear, StateNo and EnemyNear, Life reads
   -> superseded by helper-local Projectile gate; pnpm qa:trace now passes 178/178 artifacts, 158 required and 20 optional
-  -> no EnemyNear(index), teams/simul/turns, helper-owned opponents, keyctrl, nested helper ancestry, helper-owned combat/effects/projectiles, exact opponent selection, exact helper tick order, full helper redirect parity, or score movement claim
+  -> superseded by the caller-provided EnemyNear(index) context cut for explicit opponent-state lists; still no caller-independent indexed enemy selection, teams/simul/turns, helper-owned opponents, keyctrl, nested helper ancestry, helper-owned combat/effects/projectiles, exact opponent selection, exact helper tick order, full helper redirect parity, or score movement claim
 R1 bounded dynamic Target redirect trigger gate
   -> ExpressionCompiler and ExpressionEvaluator classify bounded Target, ... and static Target(id), ... trigger redirects as executable in the current two-player target-memory context
   -> PlayableMatchRuntime resolves Target(id) from RuntimeTargetWorld target memory for active-state and State -1 trigger evaluation
@@ -467,7 +859,7 @@ R2 helper-local micro-VM ownership
   -> helper-local resources now include bounded LifeAdd/LifeSet/PowerAdd/PowerSet state and trigger evidence in focused tests
   -> helper-local redirects now include bounded Parent/Root read-only trigger/value evaluation against owner runtime state plus bounded EnemyNear read-only trigger/value evaluation against current opponent state, with focused EffectActorSystem and trace coverage
   -> helper-local static owner binding now includes bounded BindToParent / BindToRoot unit coverage and required BindToParent plus BindToRoot trace coverage with ownerBind target/offset payload requirements
-  -> no indexed redirects, EnemyNear(index), player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, helper-owned custom state tables, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper-owned Projectile combat/contact beyond bounded target memory, helper-owned effect namespaces, exact helper HitDef lifetime/multi-hit parity, full helper combat parity, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
+  -> superseded by the caller-provided EnemyNear(index) context cut for explicit opponent-state lists; still no broader indexed/team/helper-owned redirects, player-state BindToParent/BindToRoot, dynamic bind params, team/keyctrl ownership, exact helper resource scopes, helper-owned opponents, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, helper-owned custom state tables, helper fvar/sysvar VarRandom, exact random stream parity, exact helper-local sound timing/channel/redirect ownership, helper-owned Projectile combat/contact beyond bounded target memory, helper-owned effect namespaces, exact helper HitDef lifetime/multi-hit parity, full helper combat parity, nested helper ancestry, exact tick-order/pause parity, full custom-state helper lifecycle, or score movement claim
 R2 visual-helper removal ownership
   -> HelperSystem removes current visual helper actors by helper id, runtime serial, or owner-wide clear
   -> RuntimeEffectActorWorld owns the p1/p2-isolated store mutation and reports removed counts
@@ -512,11 +904,11 @@ R1 required Common1 fall get-hit entry trace strengthening
   -> required trace now gates ordered P2 5000 ChangeState before 5030 VelAdd / HitVelSet / kinematic:hitvelset / ChangeState before 5050 VelAdd / ChangeState plus actor-frame 5000 -> 5030 -> 5050
   -> optional kfm-official-default-fall-gethit.json checksum 0b3ece0c now requires bounded official KFM 5000/5030/5050/5100/5101/5110 controller/typed-operation order and actor-frame order when the private fixture exists
   -> no exact Common1 controller-loop tick order, fall/bounce/liedown velocity math, recovery branching, guard-state parity, public bundled KFM, or full fall get-hit parity claim
-R1 required Common1 lie-down/get-up recovery trace strengthening
+R1 required Common1 full-chain recovery trace strengthening
   -> synthetic-imported-default-fall-recovery.json checksum d83797d9
-  -> required trace now gates ordered P2 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState plus actor-frame 5110 -> 5120 and bounded hitFall.downRecoverTime countdown-range / first-to-last-drop evidence in 5110
+  -> required trace now gates ordered P2 5000 -> 5030 -> 5050 -> 5100 -> 5101 -> 5110 -> 5120 controller/frame evidence, including 5110 ChangeState before 5120 VelSet / HitFallSet / ChangeState and bounded hitFall.downRecoverTime countdown-range / first-to-last-drop evidence in 5110
   -> optional kfm-official-default-fall-recovery.json checksum b1c6456a now requires bounded official KFM 5110/5120 controller/typed-operation order when the private fixture exists
-  -> no exact Common1 controller-loop tick order, threshold/down-recovery table, velocity math, recovery-input branching, public bundled KFM, or full fall recovery parity claim
+  -> no exact Common1 controller-loop tick order, threshold/down-recovery table, velocity/bounce math, recovery-input breadth, public bundled KFM, or full fall recovery parity claim
 R1 required Common1 stand get-hit progression trace strengthening
   -> synthetic-imported-default-gethit-progression.json checksum ef2a67f8
   -> required trace now gates ordered P2 5000 ChangeState before 5001 ChangeState plus actor-frame 5000 -> 5001 and final idle/control
@@ -624,7 +1016,9 @@ I1 text-system scanner expansion
   -> no ZSS/Lua/text rendering/runtime execution claim
 ```
 
-Do not reselect `Target*` final side-effect trace strengthening, `HitBy`, target-owned custom-state, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, optional KFM recovery-threshold drop gate, Common1 too-early recovery-input positive-window gate, official-style synthetic recovery threshold / too-early promotion, official-style synthetic ground recovery sequence, resource actor-frame evidence, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root/opponent read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus selected-frame/multi-frame trace metadata, selected HitSpark AIR-frame offset/duration requirements, `RuntimeContactPresentationWorld`, `RuntimeCombatResolutionWorld`, `RuntimeHelperCombatWorld`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `RuntimeResourceWorld`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeTargetWorld.resolveCandidates`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeBoundsControllerWorld` ownership, `RuntimeHitFallControllerWorld` ownership, `RuntimeStateTypeWorld` ownership, `RuntimeDamageScaleWorld` ownership, `RuntimeHitDefenseWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld` ownership, `RuntimeStateEntryWorld` ownership, `RuntimeStunWorld` ownership, `RuntimePausedMatchWorld` ownership, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
+
+Do not reselect `GetHitVar guard timing`, `GetHitVar down-recover`, `GetHitVar fall env-shake`, `GetHitVar fall metadata`, `TeamSide`, `Target*` final side-effect trace strengthening, `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `HitBy`, target-owned custom-state, `SelfAnimExist`, `AnimTime`, `AnimElemTime`, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, optional KFM recovery-threshold drop gate, Common1 too-early recovery-input positive-window gate, official-style synthetic recovery threshold / too-early promotion, official-style synthetic ground recovery sequence, resource actor-frame evidence, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root/opponent read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus selected-frame/multi-frame trace metadata, selected HitSpark AIR-frame offset/duration requirements, `RuntimeContactPresentationWorld`, `RuntimeCombatResolutionWorld`, `RuntimeHelperCombatWorld`, `RuntimeHelperProjectileTargetWorld`, `RuntimeHelperTargetStateWorld`, `RuntimeTargetStateEntryWorld`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `RuntimeAutoGuardStartWorld`, `RuntimeActiveControllerScanWorld`, `RuntimeActiveControllerDispatchWorld`, `RuntimeActiveStateDispatchWorld`, `RuntimeActiveSideEffectDispatchWorld`, `RuntimeStateEntryRouteWorld`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `RuntimeResourceWorld`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeTargetWorld.resolveCandidates`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeAnimationWorld` active action-retarget ownership deepening, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeBoundsControllerWorld` ownership, `RuntimeHitFallControllerWorld` ownership, `RuntimeStateTypeWorld` ownership, `RuntimeDamageScaleWorld` ownership, `RuntimeHitDefenseWorld` ownership, `RuntimeAssertSpecialWorld` ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld` ownership, `RuntimeOrientationWorld` ownership, `RuntimeGuardWorld` ownership, `RuntimeGetHitStateWorld` ownership, `RuntimeHitStateTransitionWorld` ownership, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 ## Next 10 Build Slices
 
@@ -665,7 +1059,7 @@ Goal: mutable match behavior moves behind named systems so future ports can repl
 
 Build sequence:
 
-1. Keep `RuntimeContactPresentationWorld`, `RuntimeRandomSystem`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
+1. Keep `RuntimeContactPresentationWorld`, `RuntimeRandomSystem`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveLifecycleWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld`, `RuntimeCompatibilityTelemetryWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` stable after extraction, including the player actor and effect snapshot projection methods on `RuntimeSnapshotWorld`.
 2. Deepen helper/effect/combat ownership after current contact/recovery/target-binding/hit-eligibility ownership cuts.
 3. Keep checksum drift stable unless the behavior intentionally changes.
 4. Prefer tests around ownership boundaries before adding new runtime features.

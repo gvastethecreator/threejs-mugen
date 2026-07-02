@@ -12,6 +12,18 @@ body {
   background: var(--surface-flat);
 }
 
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p,
+.empty-state span,
+.list-meta {
+  text-wrap: pretty;
+}
+
 button,
 .button {
   font: inherit;
@@ -50,6 +62,8 @@ button:disabled {
   opacity: 0.45;
   transform: none;
 }
+
+@media (prefers-reduced-motion: reduce) { button, .button { transition: none; } }
 
 button:focus-visible,
 select:focus-visible,
@@ -106,5 +120,5 @@ pre,
 *::-webkit-scrollbar-thumb {
   border: 3px solid var(--scrollbar-track);
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--scrollbar-thumb);
 }

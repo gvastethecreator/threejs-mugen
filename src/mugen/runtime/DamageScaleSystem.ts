@@ -1,6 +1,7 @@
 import type { DamageScaleControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import { evaluateExpression } from "./ExpressionEvaluator";
+import { runtimeHitVar } from "./RuntimeHitVarSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
 
@@ -74,37 +75,9 @@ function evaluateNumber(
     getHitVar: (name) => runtimeHitVar(state, name),
     hitPauseTime: context.hitPauseTime,
     random: context.random,
+    stageBounds: context.stageBounds,
     stageTime: context.stageTime,
   });
   const value = Number(evaluated);
   return Number.isFinite(value) ? value : undefined;
-}
-
-function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
-  const key = name.trim().toLowerCase();
-  if (key === "animtype") {
-    return state.hitVars?.animType ?? 0;
-  }
-  if (key === "groundtype") {
-    return state.hitVars?.groundType ?? 0;
-  }
-  if (key === "airtype") {
-    return state.hitVars?.airType ?? 0;
-  }
-  if (key === "isbound") {
-    return state.hitVars?.isBound ? 1 : 0;
-  }
-  if (key === "fall") {
-    return state.hitFall?.falling ? 1 : 0;
-  }
-  if (key === "fall.damage") {
-    return state.hitFall?.damage ?? 0;
-  }
-  if (key === "fall.defence_up") {
-    return state.hitFall?.defenceUp ?? 100;
-  }
-  if (key === "fall.kill") {
-    return state.hitFall?.kill === false ? 0 : 1;
-  }
-  return undefined;
 }

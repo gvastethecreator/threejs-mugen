@@ -12,13 +12,13 @@
     --asset-row-padding: 6px 7px;
     --asset-inline-row-padding: 7px 8px;
     --asset-row-title-size: 12.5px;
-    --asset-row-meta-size: 11px;
+    --asset-row-meta-size: 12px;
     --asset-row-action-line-clamp: 2;
     --asset-meta-line-clamp: 2;
-    --asset-kv-label-width: 94px;
-    --asset-kv-min-height: 27px;
+    --asset-kv-label-width: 104px;
+    --asset-kv-min-height: 29px;
     --asset-kv-padding: 4px 8px;
-    --asset-kv-font-size: 10.8px;
+    --asset-kv-font-size: 12px;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] #left-pane,
@@ -109,9 +109,8 @@
     grid-row: 1 / span 3;
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
-    font-size: 10.5px;
+    font-size: 12px;
     letter-spacing: 0;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .selection-summary strong,

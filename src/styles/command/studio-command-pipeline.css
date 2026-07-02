@@ -31,15 +31,14 @@
   .app-shell.mode-studio .workspace-actions-head span {
     color: var(--command-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 850;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .workspace-actions-head b {
     color: var(--section-accent);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .studio-mission-strip {
@@ -55,9 +54,9 @@
   .app-shell.mode-studio .studio-mission-node {
     --studio-mission-rail: #3b4651;
     display: grid;
-    grid-template-columns: 26px minmax(0, 1fr) 40px;
-    grid-template-rows: minmax(24px, auto) minmax(15px, auto);
-    min-height: 54px;
+    grid-template-columns: 26px minmax(0, 1fr) minmax(52px, max-content);
+    grid-template-rows: minmax(26px, auto) minmax(17px, auto);
+    min-height: 58px;
     width: 100%;
     gap: 2px 8px;
     align-items: center;
@@ -105,18 +104,6 @@
     --studio-mission-rail: var(--command-risk);
   }
 
-  .app-shell.mode-studio .studio-mission-node.is-ok::before,
-  .app-shell.mode-studio .studio-mission-node.is-active::before {
-    background: var(--command-ok);
-  }
-
-  .app-shell.mode-studio .studio-mission-node.is-warn::before,
-  .app-shell.mode-studio .studio-mission-node.is-partial::before,
-  .app-shell.mode-studio .studio-mission-node.is-pending::before,
-  .app-shell.mode-studio .studio-mission-node.is-planned::before {
-    background: var(--command-warn);
-  }
-
   .app-shell.mode-studio .studio-mission-step {
     grid-column: 1;
     grid-row: 1 / 3;
@@ -128,7 +115,7 @@
     align-self: center;
     border: 1px solid var(--command-edge);
     border-radius: 2px;
-    background: #070a0e;
+    background: var(--command-panel-low);
     color: var(--section-accent);
   }
 
@@ -157,11 +144,10 @@
     min-width: 0;
     overflow: hidden;
     color: var(--command-text);
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 850;
     line-height: 1.1;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
@@ -171,7 +157,7 @@
     margin-right: 0;
     color: var(--command-muted);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
     font-style: normal;
     font-weight: 850;
     text-align: right;
@@ -184,7 +170,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--command-muted);
-    font-size: 10.5px;
+    font-size: 12px;
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -202,7 +188,7 @@
     max-width: 100%;
     color: var(--command-dim);
     font-family: var(--mono);
-    font-size: 9.5px;
+    font-size: 12px;
     justify-self: start;
     text-align: left;
   }
@@ -212,18 +198,17 @@
     grid-row: 1;
     align-self: center;
     justify-self: end;
-    min-width: 38px;
-    padding: 3px 4px;
+    min-width: 52px;
+    padding: 3px 5px;
     border: 1px solid var(--command-edge-strong);
     border-radius: 2px;
-    background: #06080b;
+    background: var(--command-panel-low);
     color: var(--command-muted);
     font-family: var(--mono);
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 850;
     line-height: 1;
     text-align: center;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .studio-mission-node.is-ok .studio-mission-state {
@@ -274,7 +259,7 @@
   }
 
   .app-shell.mode-studio .workspace-action-grid button.primary-action {
-    background: #111820;
+    background: var(--command-hot);
     box-shadow: inset 3px 0 0 var(--section-accent);
   }
 
@@ -298,7 +283,7 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="workbench"] .workbench-action-bar button.primary-action {
-    background: #111820;
+    background: var(--command-hot);
     box-shadow: inset 3px 0 0 var(--section-accent);
   }
 
@@ -347,7 +332,7 @@
 
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-topline {
     display: grid;
-    grid-template-columns: 15px minmax(0, 1fr) 34px;
+    grid-template-columns: 15px minmax(0, 1fr) minmax(44px, max-content);
     min-height: 40px;
     min-width: 0;
     align-items: center;
@@ -365,7 +350,7 @@
     min-width: 0;
     overflow: hidden;
     color: var(--desk-text);
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 780;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -378,18 +363,18 @@
 
   .app-shell.mode-studio .studio-tab-section.is-compact .tab-state {
     display: inline-grid;
-    min-width: 30px;
-    max-width: 34px;
-    height: 18px;
+    min-width: 44px;
+    max-width: 54px;
+    height: 22px;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border: 1px solid var(--desk-edge-strong);
     border-radius: 2px;
-    background: #06080b;
+    background: var(--command-panel-low);
     color: var(--desk-dim);
     font-family: var(--mono);
-    font-size: 8.5px;
+    font-size: 12px;
     font-weight: 850;
     line-height: 1;
     box-shadow: none;

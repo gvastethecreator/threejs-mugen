@@ -6,6 +6,8 @@ export { normalizeMugenExpression } from "../compiler/ExpressionCompiler";
 export type ExpressionContext = {
   self: CharacterRuntimeState;
   opponent?: CharacterRuntimeState;
+  enemyNear?: (index: number) => ExpressionRedirectTarget | undefined;
+  stageBounds?: { left: number; right: number };
   parent?: CharacterRuntimeState;
   root?: CharacterRuntimeState;
   target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
@@ -13,6 +15,10 @@ export type ExpressionContext = {
   authorName?: string;
   opponentName?: string;
   opponentAuthorName?: string;
+  teamSide?: number;
+  opponentTeamSide?: number;
+  parentTeamSide?: number;
+  rootTeamSide?: number;
   isHelper?: boolean;
   helperId?: number;
   animExists?: (animationId: number) => boolean;
@@ -30,6 +36,7 @@ export type ExpressionContext = {
   moveHit?: () => boolean | number;
   moveGuarded?: () => boolean | number;
   moveReversed?: () => boolean | number;
+  numEnemy?: () => number;
   numExplod?: (explodId?: number) => number;
   numHelper?: (helperId?: number) => number;
   numProj?: (projectileId?: number) => number;
@@ -40,6 +47,7 @@ export type ExpressionContext = {
   projContactTime?: (projectileId?: number) => number;
   projHitTime?: (projectileId?: number) => number;
   projGuardedTime?: (projectileId?: number) => number;
+  projCancelTime?: (projectileId?: number) => number;
   animElemTime?: (elementNumber: number) => number | undefined;
   random?: () => number;
   reportUnsupported?: (feature: string) => void;
@@ -60,6 +68,8 @@ export type ExpressionRedirectTarget = {
   authorName?: string;
   opponentName?: string;
   opponentAuthorName?: string;
+  teamSide?: number;
+  opponentTeamSide?: number;
 };
 
 export function evaluateExpression(expression: string, context: ExpressionContext): boolean | number | string {
@@ -67,6 +77,10 @@ export function evaluateExpression(expression: string, context: ExpressionContex
   const redirected = evaluateActorRedirect(normalized, context);
   if (redirected !== undefined) {
     return redirected;
+  }
+  const animElemTrigger = evaluateAnimElemTrigger(normalized, context);
+  if (animElemTrigger !== undefined) {
+    return animElemTrigger;
   }
   const commandMatch = /^(?:command|selfcommand)\s*(=|!=)\s*"([^"]+)"$/i.exec(normalized.trim());
   if (commandMatch) {
@@ -79,7 +93,7 @@ export function evaluateExpression(expression: string, context: ExpressionContex
     return hitDefAttrMatch[1] === "!=" ? (active ? 0 : 1) : active;
   }
 
-  const parser = new ExpressionParser(tokenize(normalized), context);
+  const parser = new ExpressionParser(tokenize(rewriteAnimElemTriggerSyntax(normalized)), context);
   return parser.parse();
 }
 
@@ -87,6 +101,68 @@ type ExpressionValue = boolean | number | string;
 
 const commandIdentifierMarker = "__mugen_command_identifier__";
 const failedRedirectMarker = "__mugen_failed_redirect__";
+
+type AnimElemTriggerOperator = "=" | "!=" | "<" | ">" | "<=" | ">=";
+
+function evaluateAnimElemTrigger(expression: string, context: ExpressionContext): number | undefined {
+  const match = /^animelem\s*=\s*([^,]+?)(?:\s*,\s*(<=|>=|!=|=|<|>)\s*(.+))?$/i.exec(expression.trim());
+  if (!match) {
+    return undefined;
+  }
+
+  const elementExpression = (match[1] ?? "0").trim();
+  const elapsedExpression = (match[3] ?? "0").trim();
+  if (/[&|]/.test(elementExpression) || /[&|]/.test(elapsedExpression)) {
+    return undefined;
+  }
+
+  const elementNumber = Math.floor(numeric(evaluateExpressionFragment(elementExpression, context)));
+  if (elementNumber <= 0) {
+    return 0;
+  }
+
+  const operator = (match[2] ?? "=") as AnimElemTriggerOperator;
+  const targetElapsed = numeric(evaluateExpressionFragment(elapsedExpression, context));
+  const elapsed = currentAnimElemTime(context, elementNumber);
+  return compareAnimElemElapsed(elapsed, targetElapsed, operator) ? 1 : 0;
+}
+
+function evaluateExpressionFragment(expression: string, context: ExpressionContext): ExpressionValue {
+  const parser = new ExpressionParser(tokenize(normalizeMugenExpression(expression)), context);
+  return parser.parse();
+}
+
+function currentAnimElemTime(context: ExpressionContext, elementNumber: number): number {
+  return context.animElemTime?.(elementNumber) ?? (context.self.frameIndex + 1 === elementNumber ? 0 : -1);
+}
+
+function compareAnimElemElapsed(left: number, right: number, operator: AnimElemTriggerOperator): boolean {
+  if (operator === "=") {
+    return left === right;
+  }
+  if (operator === "!=") {
+    return left !== right;
+  }
+  if (operator === "<") {
+    return left < right;
+  }
+  if (operator === ">") {
+    return left > right;
+  }
+  if (operator === "<=") {
+    return left <= right;
+  }
+  return left >= right;
+}
+
+function rewriteAnimElemTriggerSyntax(expression: string): string {
+  const numericFragment = "-?\\d+(?:\\.\\d+)?";
+  const withElapsed = new RegExp(`\\banimelem\\s*=\\s*(${numericFragment})\\s*,\\s*(<=|>=|!=|=|<|>)\\s*(${numericFragment})`, "gi");
+  const atElementStart = new RegExp(`\\banimelem\\s*=\\s*(${numericFragment})`, "gi");
+  return expression
+    .replace(withElapsed, "AnimElemTime($1) $2 $3")
+    .replace(atElementStart, "AnimElemTime($1) = 0");
+}
 
 function evaluateActorRedirect(expression: string, context: ExpressionContext): ExpressionValue | undefined {
   const redirect = /^(enemynear|parent|root|target)(?:\s*\(([^)]*)\))?\s*,\s*(.+)$/i.exec(expression.trim());
@@ -122,6 +198,8 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
       authorName: redirected.authorName,
       opponentName: redirected.opponentName ?? context.name,
       opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
+      teamSide: redirected.teamSide,
+      opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
     });
   }
   if (index) {
@@ -136,6 +214,7 @@ function evaluateActorRedirect(expression: string, context: ExpressionContext): 
   return evaluateExpression(expressionBody, {
     ...context,
     self: redirectedSelf,
+    teamSide: target === "parent" ? context.parentTeamSide : context.rootTeamSide,
   });
 }
 
@@ -346,6 +425,8 @@ class ExpressionParser {
         authorName: redirected.authorName,
         opponentName: redirected.opponentName ?? this.context.name,
         opponentAuthorName: redirected.opponentAuthorName ?? this.context.authorName,
+        teamSide: redirected.teamSide,
+        opponentTeamSide: redirected.opponentTeamSide ?? this.context.teamSide,
       };
     }
     if (index) {
@@ -360,6 +441,7 @@ class ExpressionParser {
     return {
       ...this.context,
       self: redirectedSelf,
+      teamSide: target === "parent" ? this.context.parentTeamSide : this.context.rootTeamSide,
     };
   }
 
@@ -527,6 +609,9 @@ class ExpressionParser {
     if (lower === "roundsexisted" || lower === "matchover") {
       return 0;
     }
+    if (lower === "teamside") {
+      return Math.max(0, Math.trunc(this.context.teamSide ?? 0));
+    }
     if (lower === "hitfall") {
       return this.context.self.hitFall?.falling ? 1 : 0;
     }
@@ -558,8 +643,17 @@ class ExpressionParser {
     if (lower === "command" || lower === "selfcommand") {
       return commandIdentifierMarker;
     }
-    if (lower === "backedgebodydist" || lower === "frontedgebodydist" || lower === "backedgedist" || lower === "frontedgedist") {
-      return 999;
+    if (lower === "backedgebodydist") {
+      return this.edgeDist("back", true);
+    }
+    if (lower === "frontedgebodydist") {
+      return this.edgeDist("front", true);
+    }
+    if (lower === "backedgedist") {
+      return this.edgeDist("back", false);
+    }
+    if (lower === "frontedgedist") {
+      return this.edgeDist("front", false);
     }
     if (lower === "inguarddist") {
       return this.context.inGuardDist?.() ? 1 : 0;
@@ -589,7 +683,7 @@ class ExpressionParser {
       return this.numHelper();
     }
     if (lower === "numenemy") {
-      return this.context.opponent ? 1 : 0;
+      return this.numEnemy();
     }
     if (lower === "numproj" || lower === "numprojid") {
       return this.numProj();
@@ -611,6 +705,9 @@ class ExpressionParser {
     }
     if (lower === "projguardedtime") {
       return this.context.projGuardedTime?.() ?? -1;
+    }
+    if (lower === "projcanceltime") {
+      return this.context.projCancelTime?.() ?? -1;
     }
     if (/^(s|c|a|l|i|h|n|sc|na|sa|ha)$/i.test(identifier)) {
       return identifier.toUpperCase();
@@ -699,6 +796,9 @@ class ExpressionParser {
     if (lower === "projguardedtime") {
       return this.context.projGuardedTime?.(optionalProjectileTimeId(args[0])) ?? -1;
     }
+    if (lower === "projcanceltime") {
+      return this.context.projCancelTime?.(optionalProjectileTimeId(args[0])) ?? -1;
+    }
     this.context.reportUnsupported?.(identifier);
     return 0;
   }
@@ -750,6 +850,28 @@ class ExpressionParser {
     return Math.max(0, Math.abs(opponent.pos.x - this.context.self.pos.x) - 48);
   }
 
+  private edgeDist(direction: "front" | "back", body: boolean): number {
+    const bounds = this.context.stageBounds;
+    if (!bounds) {
+      return 999;
+    }
+    const state = this.context.self;
+    const axisDistance =
+      direction === "front"
+        ? state.facing === 1
+          ? bounds.right - state.pos.x
+          : state.pos.x - bounds.left
+        : state.facing === 1
+          ? state.pos.x - bounds.left
+          : bounds.right - state.pos.x;
+    if (!body) {
+      return Math.max(0, axisDistance);
+    }
+    const width = state.bodyWidth ?? { front: 39, back: 39 };
+    const bodyWidth = direction === "front" ? width.front : width.back;
+    return Math.max(0, axisDistance - bodyWidth);
+  }
+
   private numTarget(targetId?: number): number {
     const runtimeValue = this.context.numTarget?.(targetId);
     if (runtimeValue !== undefined) {
@@ -768,6 +890,17 @@ class ExpressionParser {
 
   private numHelper(helperId?: number): number {
     return this.context.numHelper?.(helperId) ?? 0;
+  }
+
+  private numEnemy(): number {
+    const runtimeValue = this.context.numEnemy?.();
+    if (runtimeValue === undefined) {
+      return this.context.opponent ? 1 : 0;
+    }
+    if (!Number.isFinite(runtimeValue)) {
+      return 0;
+    }
+    return Math.max(0, Math.trunc(runtimeValue));
   }
 
   private isHelper(helperId?: number): number {
@@ -931,6 +1064,8 @@ function defaultHitVar(name: string): number {
     airtype: 0,
     groundtype: 0,
     hittime: 0,
+    hitshaketime: 0,
+    guarded: 0,
     isbound: 0,
     slidetime: 0,
     xvel: 0,
@@ -1021,6 +1156,20 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
   if (enemyIndex === "unsupported") {
     return "fail";
   }
+  const redirected = context.enemyNear?.(enemyIndex);
+  if (redirected) {
+    return {
+      ...context,
+      self: redirected.self,
+      opponent: redirected.opponent ?? context.self,
+      name: redirected.name,
+      authorName: redirected.authorName,
+      opponentName: redirected.opponentName ?? context.name,
+      opponentAuthorName: redirected.opponentAuthorName ?? context.authorName,
+      teamSide: redirected.teamSide,
+      opponentTeamSide: redirected.opponentTeamSide ?? context.teamSide,
+    };
+  }
   if (enemyIndex > 0) {
     return "fail";
   }
@@ -1036,6 +1185,8 @@ function enemyNearRedirectContext(index: string | undefined, context: Expression
     authorName: context.opponentAuthorName,
     opponentName: context.name,
     opponentAuthorName: context.authorName,
+    teamSide: context.opponentTeamSide,
+    opponentTeamSide: context.teamSide,
   };
 }
 

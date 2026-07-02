@@ -67,6 +67,8 @@ export type RuntimePausedMatchRuntimeWorldInput<TActor extends RuntimePausedMatc
     RuntimeEffectLifecycleWorld,
     "advanceActive" | "advancePresentation" | "advancePausedPresentation"
   >;
+  stageTime?: number;
+  runtimeTick?: number;
   currentPause: () => RuntimeMatchPause | undefined;
   canActorMove: (actorId: string) => boolean;
   pushCommandBuffer: (actor: TActor, input: Set<string>) => void;
@@ -206,6 +208,8 @@ export class RuntimePausedMatchWorld {
     input: RuntimePausedMatchRuntimeWorldInput<TActor>,
   ): RuntimePausedMatchAdvanceResult {
     const { actorConstraintWorld, effectLifecycleWorld, stage } = input;
+    const opponentFor = (actor: TActor) => (actor === input.p1 ? input.p2 : input.p1);
+    const opponentsFor = (actor: TActor) => [opponentFor(actor)];
 
     return this.advance({
       p1: input.p1,
@@ -220,13 +224,22 @@ export class RuntimePausedMatchWorld {
       handleAi: input.handleAi,
       advanceFighter: input.advanceFighter,
       advanceTargetMemory: (actor) => actor.targetWorld.advance(actor),
-      advanceActiveEffects: (actor) => effectLifecycleWorld.advanceActive(actor, stage, actor === input.p1 ? input.p2 : input.p1),
+      advanceActiveEffects: (actor) =>
+        effectLifecycleWorld.advanceActive(actor, stage, opponentFor(actor), {
+          stageTime: input.stageTime,
+          runtimeTick: input.runtimeTick,
+          opponents: opponentsFor(actor),
+        }),
       advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),
       applyTargetBindings: (actor, opponent) => actor.targetWorld.applyTargetBindings(actor, [opponent]),
       applyBindToTarget: (actor, opponent) => actor.targetWorld.applyBindToTarget(actor, [opponent]),
       clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage),
       advancePausedPresentation: (actor, pause) =>
-        effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, actor === input.p1 ? input.p2 : input.p1),
+        effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, opponentFor(actor), {
+          stageTime: input.stageTime,
+          runtimeTick: input.runtimeTick,
+          opponents: opponentsFor(actor),
+        }),
       tickPause: input.tickPause,
     });
   }

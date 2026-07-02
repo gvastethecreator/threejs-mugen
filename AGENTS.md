@@ -35,6 +35,12 @@
 ## Work Cadence
 
 - Prefer small runtime/evidence cuts over broad rewrites.
+- Before implementation, look for a small prefactor that makes the intended change easy, then make the easy change.
+- Break broad requests into smaller proof-producing slices before editing.
+- Reuse existing systems, contracts, libraries, fixtures, and gates before creating new ones.
+- Consider focused tests before implementation when behavior can be isolated cheaply.
+- Document new claims, blocked scope, and edge cases as part of the cut.
+- Prefer correctness and clear error handling before performance tuning; optimize only when evidence says it matters.
 - Start each non-trivial round by checking `git status --short --branch`, then reading the queue docs named below. Do not trust stale chat memory over repo truth.
 - Before answering port progress or choosing next work, read `docs/PORT_COMPLETION_SCORECARD.md` and `docs/PROGRESS_TRACKER.md`.
 - Before starting a new implementation slice, read `docs/ROADMAP_EXECUTION_BOARD.md` and the linked `.scratch/roadmap/issues/<NN>-*.md`.

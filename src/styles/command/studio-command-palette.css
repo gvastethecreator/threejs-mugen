@@ -1,7 +1,18 @@
-/* Studio command palette desktop overlay. Extracted from src/style.css so palette ownership is isolated. */
-/* Desktop Command Palette: professional command table, neutral and hard-edged. */
 @media (min-width: 981px) {
   .app-shell.mode-studio .command-palette-shell {
+    --cp-bg: #080b0f;
+    --cp-panel: #0d1116;
+    --cp-panel-alt: #10151b;
+    --cp-cell: #05080c;
+    --cp-header: #11161c;
+    --cp-header-alt: #171c22;
+    --cp-hot: #1a2027;
+    --cp-selected: #202832;
+    --cp-edge: #252c34;
+    --cp-edge-strong: #303842;
+    --cp-text: #edf1f5;
+    --cp-muted: #9aa5b1;
+    --cp-dim: #6f7a85;
     align-items: start;
     padding-top: 34px;
   }
@@ -17,14 +28,14 @@
     width: min(900px, calc(100vw - 40px));
     max-height: min(650px, calc(100vh - 88px));
     overflow: hidden;
-    border: 1px solid #2c333b;
+    border: 1px solid var(--cp-edge-strong);
     border-radius: 0;
-    background: #080b0f;
+    background: var(--cp-bg);
     box-shadow:
       0 18px 32px rgba(0, 0, 0, 0.48),
-      0 0 0 1px #030405,
-      inset 0 1px 0 #38404a,
-      inset 0 -1px 0 #030405;
+      0 0 0 1px var(--cp-cell),
+      inset 0 1px 0 var(--cp-edge-strong),
+      inset 0 -1px 0 var(--cp-cell);
   }
 
   .app-shell.mode-studio .command-palette-header {
@@ -33,8 +44,8 @@
     min-height: 35px;
     gap: 6px;
     padding: 5px 6px 5px 9px;
-    border-bottom: 1px solid #2c333b;
-    background: #11161c;
+    border-bottom: 1px solid var(--cp-edge-strong);
+    background: var(--cp-header);
   }
 
   .app-shell.mode-studio .command-palette-title-block {
@@ -49,20 +60,19 @@
     height: 20px;
     align-content: center;
     padding: 0 7px;
-    border-right: 1px solid #303842;
-    color: #9aa5b1;
+    border-right: 1px solid var(--cp-edge-strong);
+    color: var(--cp-muted);
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
   }
 
   .app-shell.mode-studio .command-palette-header h2 {
     margin: 0;
-    color: #edf1f5;
+    color: var(--cp-text);
     font-size: 14.5px;
     font-weight: 700;
     letter-spacing: 0;
@@ -71,10 +81,10 @@
   .app-shell.mode-studio .command-palette-count,
   .app-shell.mode-studio .command-palette-close {
     min-height: 24px;
-    border: 1px solid #303842;
+    border: 1px solid var(--cp-edge-strong);
     border-radius: 0;
-    background: #090d12;
-    color: #d7dde5;
+    background: var(--cp-cell);
+    color: var(--cp-text);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       inset 0 -1px 0 rgba(0, 0, 0, 0.58);
@@ -95,8 +105,8 @@
 
   .app-shell.mode-studio .command-palette-close:hover,
   .app-shell.mode-studio .command-palette-close:focus-visible {
-    background: #171d24;
-    outline: 1px solid #56616e;
+    background: var(--cp-hot);
+    outline: 1px solid var(--cp-dim);
     outline-offset: -2px;
   }
 
@@ -106,16 +116,16 @@
     gap: 0;
     padding: 0;
     border: 0;
-    border-bottom: 1px solid #2c333b;
-    background: #0a0e13;
+    border-bottom: 1px solid var(--cp-edge-strong);
+    background: color-mix(in srgb, var(--cp-bg) 76%, var(--cp-header));
   }
 
   .app-shell.mode-studio .command-palette-search span {
     min-height: 38px;
     align-content: center;
     padding: 0 10px;
-    border-right: 1px solid #2c333b;
-    color: #a6b0bb;
+    border-right: 1px solid var(--cp-edge-strong);
+    color: color-mix(in srgb, var(--cp-muted) 86%, var(--cp-text));
     font-family: var(--mono);
     font-size: 12px;
   }
@@ -125,17 +135,17 @@
     padding: 0 12px;
     border: 0;
     border-radius: 0;
-    background: #05080c;
-    color: #edf1f5;
+    background: var(--cp-cell);
+    color: var(--cp-text);
     font-size: 13.5px;
     outline: 0;
-    box-shadow: inset 3px 0 0 #4d5967;
+    box-shadow: inset 3px 0 0 var(--cp-dim);
   }
 
   .app-shell.mode-studio .command-palette-search input:focus-visible {
     box-shadow:
-      inset 3px 0 0 #8a94a0,
-      inset 0 0 0 1px #4c5662;
+      inset 3px 0 0 var(--accent),
+      inset 0 0 0 1px var(--cp-dim);
   }
 
   .app-shell.mode-studio .command-palette-grid-head {
@@ -143,20 +153,19 @@
     grid-template-columns: minmax(0, 1fr) 114px 92px;
     gap: 0;
     padding: 0;
-    border-bottom: 1px solid #303842;
-    background: #171c22;
+    border-bottom: 1px solid var(--cp-edge-strong);
+    background: var(--cp-header-alt);
   }
 
   .app-shell.mode-studio .command-palette-grid-head span {
     min-height: 28px;
     align-content: center;
     padding: 0 9px;
-    border-right: 1px solid #303842;
-    color: #98a3af;
+    border-right: 1px solid var(--cp-edge-strong);
+    color: var(--cp-muted);
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0;
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio .command-palette-grid-head span:last-child {
@@ -171,8 +180,8 @@
     overflow-x: hidden;
     overscroll-behavior: contain;
     padding: 0;
-    border-top: 1px solid #07090c;
-    background: #080b0f;
+    border-top: 1px solid var(--cp-cell);
+    background: var(--cp-bg);
   }
 
   .app-shell.mode-studio .command-result {
@@ -182,10 +191,10 @@
     gap: 7px;
     padding: 6px 10px 6px 7px;
     border: 0;
-    border-bottom: 1px solid #252c34;
+    border-bottom: 1px solid var(--cp-edge);
     border-radius: 0;
-    background: #0d1116;
-    color: #e6ebf0;
+    background: var(--cp-panel);
+    color: var(--cp-text);
     box-shadow: none;
   }
 
@@ -193,37 +202,37 @@
     position: absolute;
     inset: 0 auto 0 0;
     width: 3px;
-    background: #65707c;
+    background: var(--cp-dim);
     content: "";
     opacity: 0.68;
   }
 
   .app-shell.mode-studio .command-result:nth-child(even) {
-    background: #10151b;
+    background: var(--cp-panel-alt);
   }
 
   .app-shell.mode-studio .command-result.tone-ok::before {
-    background: #5f956d;
+    background: var(--ok);
   }
 
   .app-shell.mode-studio .command-result.tone-warn::before {
-    background: #b38a4c;
+    background: var(--warn);
   }
 
   .app-shell.mode-studio .command-result.tone-error::before {
-    background: #b65d5a;
+    background: var(--danger);
   }
 
   .app-shell.mode-studio .command-result.tone-active::before {
-    background: #638fbd;
+    background: var(--accent);
   }
 
   .app-shell.mode-studio .command-result:hover,
   .app-shell.mode-studio .command-result:focus-visible,
   .app-shell.mode-studio .command-result.is-active,
   .app-shell.mode-studio .command-result[aria-selected="true"] {
-    background: #1a2027;
-    outline: 1px solid #4d5865;
+    background: var(--cp-hot);
+    outline: 1px solid var(--cp-dim);
     outline-offset: -1px;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
@@ -242,8 +251,8 @@
 
   .app-shell.mode-studio .command-result.is-active,
   .app-shell.mode-studio .command-result[aria-selected="true"] {
-    background: #202832;
-    outline-color: #667381;
+    background: var(--cp-selected);
+    outline-color: var(--cp-dim);
     box-shadow:
       inset 4px 0 0 color-mix(in srgb, var(--command-signal, var(--desk-active)) 82%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -253,29 +262,29 @@
     width: 25px;
     height: 25px;
     justify-self: center;
-    border: 1px solid #303842;
+    border: 1px solid var(--cp-edge-strong);
     border-radius: 0;
-    background: #070a0e;
-    color: #c9d1da;
+    background: var(--cp-cell);
+    color: var(--cp-text);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.04),
       inset 0 -1px 0 rgba(0, 0, 0, 0.62);
   }
 
   .app-shell.mode-studio .command-result.tone-ok .command-result-icon {
-    color: #8fbc96;
+    color: var(--ok);
   }
 
   .app-shell.mode-studio .command-result.tone-warn .command-result-icon {
-    color: #c8a66d;
+    color: var(--warn);
   }
 
   .app-shell.mode-studio .command-result.tone-error .command-result-icon {
-    color: #cf7b77;
+    color: var(--danger);
   }
 
   .app-shell.mode-studio .command-result.tone-active .command-result-icon {
-    color: #89afd2;
+    color: var(--accent);
   }
 
   .app-shell.mode-studio .command-result-main {
@@ -287,7 +296,7 @@
   .app-shell.mode-studio .command-result-main strong {
     min-width: 0;
     overflow: hidden;
-    color: #f0f3f6;
+    color: color-mix(in srgb, var(--cp-text) 92%, white);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 0;
@@ -300,7 +309,7 @@
     display: -webkit-box;
     min-width: 0;
     overflow: hidden;
-    color: #9ca6b1;
+    color: var(--cp-muted);
     font-size: 12px;
     letter-spacing: 0;
     line-height: 1.15;
@@ -317,7 +326,7 @@
     justify-content: stretch;
     gap: 0;
     min-width: 0;
-    border-left: 1px solid #252c34;
+    border-left: 1px solid var(--cp-edge);
   }
 
   .app-shell.mode-studio .command-result-group,
@@ -332,35 +341,34 @@
     border: 0;
     border-radius: 0;
     background: transparent;
-    color: #c4ccd5;
+    color: color-mix(in srgb, var(--cp-muted) 72%, var(--cp-text));
     font-family: var(--mono);
     font-size: 12px;
     line-height: 1;
     text-overflow: ellipsis;
-    text-transform: uppercase;
     white-space: nowrap;
     box-shadow: none;
   }
 
   .app-shell.mode-studio .command-result-signal {
-    border-left: 1px solid #252c34;
-    color: #aeb8c3;
+    border-left: 1px solid var(--cp-edge);
+    color: color-mix(in srgb, var(--cp-muted) 84%, var(--cp-text));
   }
 
   .app-shell.mode-studio .command-result-signal.signal-ok {
-    color: #8fbc96;
+    color: var(--ok);
   }
 
   .app-shell.mode-studio .command-result-signal.signal-warn {
-    color: #c8a66d;
+    color: var(--warn);
   }
 
   .app-shell.mode-studio .command-result-signal.signal-error {
-    color: #cf7b77;
+    color: var(--danger);
   }
 
   .app-shell.mode-studio .command-result-signal.signal-active {
-    color: #89afd2;
+    color: var(--accent);
   }
 
   .app-shell.mode-studio .command-palette-results .empty-state.compact {
@@ -368,10 +376,10 @@
     min-height: 118px;
     justify-items: start;
     padding: 18px 20px;
-    border: 1px solid #252c34;
+    border: 1px solid var(--cp-edge);
     border-radius: 0;
-    background: #0d1116;
-    color: #dce2e8;
+    background: var(--cp-panel);
+    color: color-mix(in srgb, var(--cp-text) 82%, var(--cp-muted));
     box-shadow: none;
   }
 
@@ -381,7 +389,7 @@
 
   .app-shell.mode-studio .command-palette-results .empty-state.compact span {
     max-width: 640px;
-    color: #9ca6b1;
+    color: var(--cp-muted);
     font-size: 12.5px;
     line-height: 1.35;
   }
@@ -394,12 +402,12 @@
   }
 
   .app-shell.mode-studio .command-palette-results::-webkit-scrollbar-track {
-    background: #05080c;
-    border-left: 1px solid #252c34;
+    background: var(--cp-cell);
+    border-left: 1px solid var(--cp-edge);
   }
 
   .app-shell.mode-studio .command-palette-results::-webkit-scrollbar-thumb {
-    background: #343d47;
-    border: 2px solid #05080c;
+    background: color-mix(in srgb, var(--cp-muted) 32%, var(--cp-edge));
+    border: 2px solid var(--cp-cell);
   }
 }

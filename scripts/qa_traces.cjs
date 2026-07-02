@@ -76,6 +76,36 @@ async function main() {
       artifact: presets.createSyntheticImportedAnimationTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-changeanim2-elem",
+      required: true,
+      artifact: presets.createSyntheticImportedChangeAnim2ElemTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-animtime",
+      required: true,
+      artifact: presets.createSyntheticImportedAnimTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-animelemtime",
+      required: true,
+      artifact: presets.createSyntheticImportedAnimElemTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-animelem",
+      required: true,
+      artifact: presets.createSyntheticImportedAnimElemTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-animelem-offset",
+      required: true,
+      artifact: presets.createSyntheticImportedAnimElemOffsetTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-edge-distance",
+      required: true,
+      artifact: presets.createSyntheticImportedEdgeDistanceTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-sound",
       required: true,
       artifact: presets.createSyntheticImportedSoundTraceArtifact(),
@@ -131,6 +161,26 @@ async function main() {
       artifact: presets.createSyntheticImportedP2MetricsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-teamside",
+      required: true,
+      artifact: presets.createSyntheticImportedTeamSideTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-p2-state-context",
+      required: true,
+      artifact: presets.createSyntheticImportedP2StateContextTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-p2-distance",
+      required: true,
+      artifact: presets.createSyntheticImportedP2DistanceTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-owner-metrics",
+      required: true,
+      artifact: presets.createSyntheticImportedOwnerMetricsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-identity",
       required: true,
       artifact: presets.createSyntheticImportedIdentityTraceArtifact(),
@@ -141,6 +191,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSelfStateNoExistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-selfanimexist",
+      required: true,
+      artifact: presets.createSyntheticImportedSelfAnimExistTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-selfcommand",
       required: true,
       artifact: presets.createSyntheticImportedSelfCommandTraceArtifact(),
@@ -149,6 +204,16 @@ async function main() {
       name: "synthetic-imported-stagetime",
       required: true,
       artifact: presets.createSyntheticImportedStageTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gametime",
+      required: true,
+      artifact: presets.createSyntheticImportedGameTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-state-context",
+      required: true,
+      artifact: presets.createSyntheticImportedStateContextTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-alive",
@@ -264,6 +329,91 @@ async function main() {
       name: "synthetic-imported-gethitvar-fall-defence-up",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-fall-recover",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarFallRecoverTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-fall-metadata",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarFallMetadataTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-fall-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarFallEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-down-recover",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarDownRecoverTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-hittime",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarHitTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-guard-timing",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarGuardTimingTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-crouch-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarCrouchGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-air-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarAirGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-guarded",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarGuardedTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-guarded",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-guarded",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-gethitvar-animtype",
@@ -539,6 +689,21 @@ async function main() {
       ),
     });
     artifacts.push({
+      name: "synthetic-imported-default-crouch-gethit",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultCrouchGetHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-default-air-gethit",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultAirGetHitTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-default-air-fall-gethit",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultAirFallGetHitTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-gethit-progression",
       required: true,
       artifact: presets.createImportedDefaultGetHitProgressionTraceArtifact(
@@ -787,6 +952,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTargetRedirectTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-projectile-target-mix",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefProjectileTargetMixTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-target-controllers",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTargetControllersTraceArtifact(),
@@ -815,6 +985,31 @@ async function main() {
       name: "synthetic-imported-projectile-time",
       required: true,
       artifact: presets.createSyntheticImportedProjectileTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hittime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-contacttime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileContactTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-contacttime-id",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileContactTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-guardedtime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardedTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-guardedtime-id",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardedTimeTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-motion",
@@ -855,6 +1050,26 @@ async function main() {
       name: "synthetic-imported-projectile-priority-cancel",
       required: true,
       artifact: presets.createSyntheticImportedProjectilePriorityCancelTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-canceltime",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileCancelTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-canceltime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileCancelTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-canceltime-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileCancelTimeDynamicTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-canceltime-var",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileCancelTimeVarTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper",
@@ -907,6 +1122,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjHitTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projhittime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjHitTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-target",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileTargetTraceArtifact(),
@@ -947,9 +1167,34 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projguardedtime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projcontact",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjContactTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projcontacttime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjContactTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projcanceltime-any",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjCancelTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projcanceltime-id",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjCancelTimeIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projcanceltime-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-hitdef",
@@ -1840,18 +2085,32 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-projectile-target-redirect",
+    "synthetic-imported-hitdef-projectile-target-mix",
     "synthetic-imported-projectile-target-controllers",
     "synthetic-imported-projectile-default-target-controllers",
     "synthetic-imported-projectile-targetstate",
     "synthetic-imported-projectile-default-targetstate",
+    "synthetic-imported-projectile-hittime-any",
+    "synthetic-imported-projectile-contacttime-any",
+    "synthetic-imported-projectile-contacttime-id",
+    "synthetic-imported-projectile-guardedtime-any",
+    "synthetic-imported-projectile-guardedtime-id",
     "synthetic-imported-projectile-motion",
     "synthetic-imported-projectile-velmul",
     "synthetic-imported-modifyprojectile",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
+    "synthetic-imported-projectile-canceltime",
+    "synthetic-imported-projectile-canceltime-any",
+    "synthetic-imported-projectile-canceltime-dynamic",
+    "synthetic-imported-projectile-canceltime-var",
+    "synthetic-imported-helper-projcanceltime-any",
+    "synthetic-imported-helper-projcanceltime-id",
+    "synthetic-imported-helper-projcanceltime-dynamic",
     "synthetic-imported-explod-velocity",
     "synthetic-imported-helper-ishelper",
     "synthetic-imported-helper-projhit",
+    "synthetic-imported-helper-projhittime-any",
     "synthetic-imported-helper-projectile-target",
     "synthetic-imported-helper-projectile-bare-target",
     "synthetic-imported-helper-projectile-target-controllers",
@@ -1886,7 +2145,27 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-data-damage-scale",
     "synthetic-imported-fall-defence-up",
     "synthetic-imported-gethitvar-fall-defence-up",
+    "synthetic-imported-gethitvar-fall-recover",
+    "synthetic-imported-gethitvar-fall-metadata",
+    "synthetic-imported-gethitvar-fall-envshake",
+    "synthetic-imported-gethitvar-down-recover",
+    "synthetic-imported-gethitvar-hittime",
+    "synthetic-imported-gethitvar-hitshaketime",
+    "synthetic-imported-gethitvar-guard-timing",
+    "synthetic-imported-gethitvar-guard-hitshaketime",
+    "synthetic-imported-gethitvar-crouch-guard-hitshaketime",
+    "synthetic-imported-gethitvar-air-guard-hitshaketime",
+    "synthetic-imported-gethitvar-guarded",
+    "synthetic-imported-projectile-gethitvar-guarded",
+    "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
+    "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime",
+    "synthetic-imported-helper-projectile-gethitvar-guarded",
+    "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
+    "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
     "synthetic-imported-gethitvar-animtype",
+    "synthetic-imported-default-crouch-gethit",
+    "synthetic-imported-default-air-gethit",
+    "synthetic-imported-default-air-fall-gethit",
     "synthetic-imported-default-fall-recovery-threshold",
     "synthetic-imported-default-fall-official-recovery-threshold",
     "synthetic-imported-default-fall-recovery-tick-order",
@@ -1917,9 +2196,20 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-resource",
     "synthetic-imported-control",
     "synthetic-imported-animation",
+    "synthetic-imported-animtime",
+    "synthetic-imported-animelemtime",
+    "synthetic-imported-animelem",
+    "synthetic-imported-animelem-offset",
+    "synthetic-imported-edge-distance",
+    "synthetic-imported-gametime",
+    "synthetic-imported-state-context",
     "synthetic-imported-sound",
     "synthetic-imported-noop",
     "synthetic-imported-enemynear-index",
+    "synthetic-imported-p2-state-context",
+    "synthetic-imported-p2-distance",
+    "synthetic-imported-owner-metrics",
+    "synthetic-imported-selfanimexist",
     "synthetic-imported-alive",
     "synthetic-imported-round-trigger",
     "synthetic-imported-round-ko",

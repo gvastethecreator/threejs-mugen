@@ -95,7 +95,7 @@
 
 .console {
   border-top-color: rgba(255, 255, 255, 0.08);
-  background: #05070a;
+  background: var(--editor-panel-pressed);
 }
 
 .console-toolbar {
@@ -107,7 +107,7 @@
 }
 
 .console-list {
-  background: #05070a;
+  background: var(--editor-panel-pressed);
 }
 
 .log-line {
@@ -320,12 +320,12 @@ button.list-item:hover {
 
 .meter-life span,
 .hud-life span {
-  background: #8f985d;
+  background: var(--meter-life-fill);
 }
 
 .meter-power span,
 .hud-power span {
-  background: #7e92ad;
+  background: var(--meter-power-fill);
 }
 
 .studio-tab-section.is-compact .studio-tabs,

@@ -80,6 +80,6 @@
   }
 
   .app-shell.mode-studio[data-studio-tab="stage"] .pane-right .stage-layer-row.is-error {
-    box-shadow: inset 3px 0 0 #c87772;
+    box-shadow: inset 3px 0 0 var(--studio-ledge-danger);
   }
 }

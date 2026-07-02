@@ -25,6 +25,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("StageTime >= 7", { self: state, stageTime: 8 })).toBe(1);
     expect(evaluateExpression("GameTime = 8", { self: state, stageTime: 8 })).toBe(1);
     expect(evaluateExpression("StageTime > 0", { self: state })).toBe(0);
+    expect(evaluateExpression("TeamSide = 1", { self: state, teamSide: 1 })).toBe(1);
+    expect(evaluateExpression("EnemyNear, TeamSide = 2", { self: state, opponent: runtimeState(), teamSide: 1, opponentTeamSide: 2 })).toBe(1);
     expect(evaluateExpression("var(1)", { self: runtimeState({ vars: [0, 1] }) })).toBe(1);
     expect(evaluateExpression("sysvar(0)", { self: runtimeState({ sysvars: [1] }) })).toBe(1);
     expect(evaluateExpression("power >= 1000", { self: runtimeState({ power: 0 }) })).toBe(0);
@@ -55,6 +57,32 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("AnimElemTime(3) < 0", { self: state, animElemTime: (elem) => (elem === 3 ? -2 : undefined) })).toBe(1);
   });
 
+  it("evaluates legacy AnimElem trigger timing through the runtime timing callback", () => {
+    const state = runtimeState({ frameIndex: 1 });
+    const context = {
+      self: state,
+      animElemTime: (elem: number) => {
+        if (elem === 2) {
+          return 4;
+        }
+        if (elem === 3) {
+          return 0;
+        }
+        return -1;
+      },
+    };
+
+    expect(evaluateExpression("AnimElem = 2", { self: state, animElemTime: (elem) => (elem === 2 ? 0 : -1) })).toBe(1);
+    expect(evaluateExpression("AnimElem = 2", context)).toBe(0);
+    expect(evaluateExpression("AnimElem = 2, = 4", context)).toBe(1);
+    expect(evaluateExpression("AnimElem = 2, >= 4", context)).toBe(1);
+    expect(evaluateExpression("AnimElem = 2, < 4", context)).toBe(0);
+    expect(evaluateExpression("Time >= 0 && AnimElem = 2, = 4", context)).toBe(1);
+    expect(evaluateExpression("AnimElem = 3 && Time >= 0", context)).toBe(1);
+    expect(evaluateExpression("AnimElem = 3, = 0", context)).toBe(1);
+    expect(evaluateExpression("AnimElem = 0", context)).toBe(0);
+  });
+
   it("evaluates hit shake and hit over triggers through runtime callbacks", () => {
     const state = runtimeState({ moveType: "H" });
 
@@ -82,6 +110,8 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("ProjHitTime(77) >= 2", { self: state, projHitTime: (id) => (id === 77 ? 2 : -1) })).toBe(1);
     expect(evaluateExpression("ProjContactTime(0) = 3", { self: state, projContactTime: (id) => (id === undefined ? 3 : -1) })).toBe(1);
     expect(evaluateExpression("ProjGuardedTime(77) < 0", { self: state, projGuardedTime: () => -1 })).toBe(1);
+    expect(evaluateExpression("ProjCancelTime(0) = 4", { self: state, projCancelTime: (id) => (id === undefined ? 4 : -1) })).toBe(1);
+    expect(evaluateExpression("ProjCancelTime(77) >= 2", { self: state, projCancelTime: (id) => (id === 77 ? 2 : -1) })).toBe(1);
     expect(evaluateExpression("NumTarget > 0", { self: runtimeState({ targetCount: 1 }) })).toBe(1);
     expect(evaluateExpression("NumTarget(77) = 1", { self: state, numTarget: (id) => (id === 77 ? 1 : 0) })).toBe(1);
     expect(
@@ -104,11 +134,23 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("abs(vel x) < Const(movement.stand.friction.threshold)", { self: state })).toBe(1);
     expect(evaluateExpression("P2BodyDist X < 50", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Dist Y = 8", { self: state, opponent })).toBe(1);
+    const stageBounds = { left: -100, right: 160 };
+    const edgeState = runtimeState({ pos: { x: 20, y: 0 }, facing: 1, bodyWidth: { front: 18, back: 44 } });
+    expect(evaluateExpression("FrontEdgeDist = 140", { self: edgeState, stageBounds })).toBe(1);
+    expect(evaluateExpression("BackEdgeDist = 120", { self: edgeState, stageBounds })).toBe(1);
+    expect(evaluateExpression("FrontEdgeBodyDist = 122", { self: edgeState, stageBounds })).toBe(1);
+    expect(evaluateExpression("BackEdgeBodyDist = 76", { self: edgeState, stageBounds })).toBe(1);
+    const turnedEdgeState = runtimeState({ pos: { x: 20, y: 0 }, facing: -1, bodyWidth: { front: 18, back: 44 } });
+    expect(evaluateExpression("FrontEdgeDist = 120", { self: turnedEdgeState, stageBounds })).toBe(1);
+    expect(evaluateExpression("BackEdgeBodyDist = 96", { self: turnedEdgeState, stageBounds })).toBe(1);
+    expect(evaluateExpression("FrontEdgeDist = 999", { self: edgeState })).toBe(1);
     expect(evaluateExpression("Facing = 1", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Facing = 1", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Life = 1000", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("P2Power = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("NumEnemy", { self: state, opponent })).toBe(1);
+    expect(evaluateExpression("NumEnemy = 2", { self: state, opponent, numEnemy: () => 2 })).toBe(1);
+    expect(evaluateExpression("NumEnemy = 0", { self: state, opponent, numEnemy: () => Number.NaN })).toBe(1);
     expect(evaluateExpression('Name = "Kung Fu Man"', { self: state, name: "Kung Fu Man" })).toBe(1);
     expect(evaluateExpression('P1Name = "Kung Fu Man"', { self: state, name: "Kung Fu Man" })).toBe(1);
     expect(evaluateExpression('P2Name = "Mira Volt"', { self: state, opponent, opponentName: "Mira Volt" })).toBe(1);
@@ -135,6 +177,27 @@ describe("ExpressionEvaluator", () => {
     ).toBe(1);
     expect(evaluateExpression("EnemyNear, StateNo = 0", { self: state, opponent })).toBe(1);
     expect(evaluateExpression("EnemyNear(0), MoveType = H", { self: state, opponent })).toBe(1);
+    const indexedOpponent = {
+      ...opponent,
+      stateNo: 5000,
+      life: 650,
+      vars: Array.from({ length: 60 }, (_, index) => (index === 2 ? 1 : index === 4 ? 11 : 0)),
+    };
+    expect(
+      evaluateExpression("EnemyNear(1), StateNo = 5000 && EnemyNear(var(2)), Var(4) = 11", {
+        self: {
+          ...state,
+          vars: Array.from({ length: 60 }, (_, index) => (index === 2 ? 1 : 0)),
+        },
+        opponent,
+        enemyNear: (index) =>
+          index === 0
+            ? { self: opponent, opponent: state }
+            : index === 1
+              ? { self: indexedOpponent, opponent: state }
+              : undefined,
+      }),
+    ).toBe(1);
     const enemyNearIndexUnsupported: string[] = [];
     expect(
       evaluateExpression("EnemyNear(1), StateNo = 0", {
@@ -262,6 +325,17 @@ describe("ExpressionEvaluator", () => {
 
     expect(evaluateExpression("HitFall", { self: state })).toBe(1);
     expect(evaluateExpression("CanRecover", { self: state })).toBe(0);
+    expect(
+      evaluateExpression("GetHitVar(fall.recover) && !CanRecover", {
+        self: state,
+        getHitVar: (name) => {
+          const key = name.toLowerCase();
+          if (key === "fall.recover") return state.hitFall?.recover ? 1 : 0;
+          if (key === "fall.recovertime") return state.hitFall?.recoverTime;
+          return undefined;
+        },
+      }),
+    ).toBe(1);
     state.hitFall = { ...state.hitFall!, recoverTime: 0 };
     expect(evaluateExpression("CanRecover", { self: state })).toBe(1);
     expect(
@@ -311,6 +385,22 @@ describe("StateControllerExecutor", () => {
     expect(compiled.operation).toEqual({ kind: "kinematic", controllerType: "velset", x: 4, y: -3 });
     expect(irResult.vel).toEqual(parsedResult.vel);
     expect(irResult.vel).toEqual({ x: 4, y: -3 });
+  });
+
+  it("keeps controller GetHitVar fall.recover independent from recovery timer", () => {
+    const state = runtimeState({
+      hitFall: {
+        falling: true,
+        damage: 0,
+        velocity: { y: -6 },
+        recover: true,
+        recoverTime: 20,
+      },
+    });
+
+    const result = executeStateController(controller("VelSet", { x: "GetHitVar(fall.recover)", y: "CanRecover" }), state, () => undefined);
+
+    expect(result.vel).toEqual({ x: 1, y: 0 });
   });
 
   it("evaluates HitPauseTime in runtime controller params when context supplies actor hitpause", () => {
@@ -389,7 +479,8 @@ describe("StateControllerExecutor", () => {
     const typedState = executeControllerIr(
       compileControllerIr(
         controller("PowerSet", {
-          value: "100 + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound)",
+          value:
+            "100 + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound) + GetHitVar(guarded) * 1000",
         }),
       ),
       runtimeState({
@@ -398,12 +489,13 @@ describe("StateControllerExecutor", () => {
           groundType: 2,
           airType: 3,
           isBound: false,
+          guarded: true,
         },
       }),
       () => undefined,
     );
 
-    expect(typedState.power).toBe(424);
+    expect(typedState.power).toBe(1424);
   });
 
   it("executes additional simple CNS controllers and expression params", () => {

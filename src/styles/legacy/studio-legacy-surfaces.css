@@ -268,8 +268,8 @@
   display: inline-grid;
   align-self: start;
   justify-self: end;
-  min-width: 34px;
-  max-width: 46px;
+  min-width: 52px;
+  max-width: 58px;
   padding: 2px 5px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--panel-border) 82%, #000);
@@ -277,12 +277,11 @@
   background: color-mix(in srgb, var(--surface-flat) 88%, #000);
   color: var(--subtle);
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1;
   text-align: center;
   text-overflow: ellipsis;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 

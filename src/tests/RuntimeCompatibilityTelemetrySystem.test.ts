@@ -68,6 +68,24 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
     expect(importedActor.controllerEvents.at(-1)).toMatchObject({ controller: "Ctrl164", tick: 164, sequence: 164 });
   });
 
+  it("records controller-event state overrides for owner-backed helper telemetry", () => {
+    const world = new RuntimeCompatibilityTelemetryWorld();
+    const importedActor = actor("imported");
+    const controller = stateController("Projectile", "Helper Projectile");
+
+    world.recordController(importedActor, controller, { stateNo: 1244 });
+    world.recordOperation(importedActor, { kind: "projectile", velocity: [0, 0], removeTime: 8, spritePriority: 2, priority: 1, hitCount: 1, missTime: 0, damage: 30, hitPause: 0, hitStun: 12, removeOnHit: true } as ControllerOp, {
+      stateNo: 1244,
+    });
+
+    expect(importedActor.executedControllerCounts.Projectile).toBe(1);
+    expect(importedActor.executedOperationCounts.projectile).toBe(1);
+    expect(importedActor.controllerEvents).toEqual([
+      expect.objectContaining({ controller: "Projectile", name: "Helper Projectile", stateNo: 1244 }),
+      expect.objectContaining({ controller: "projectile", operation: "projectile", stateNo: 1244 }),
+    ]);
+  });
+
   it("keeps controller operation keys stable for trace/session consumers", () => {
     const world = new RuntimeCompatibilityTelemetryWorld();
 

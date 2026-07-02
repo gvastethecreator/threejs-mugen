@@ -171,7 +171,9 @@ export type RuntimeTraceHitFallRequirement = {
   downRecover?: boolean;
   downRecoverTime?: number;
   envShakeTime?: number;
+  envShakeFreq?: number;
   envShakeAmpl?: number;
+  envShakePhase?: number;
 };
 
 export type RuntimeTraceFrame = {
@@ -3011,7 +3013,9 @@ function compareHitFallRequirement(
     ["hitFall.downRecover", requirement.downRecover, hitFall.downRecover],
     ["hitFall.downRecoverTime", requirement.downRecoverTime, hitFall.downRecoverTime],
     ["hitFall.envShake.time", requirement.envShakeTime, hitFall.envShake?.time],
+    ["hitFall.envShake.freq", requirement.envShakeFreq, hitFall.envShake?.freq],
     ["hitFall.envShake.ampl", requirement.envShakeAmpl, hitFall.envShake?.ampl],
+    ["hitFall.envShake.phase", requirement.envShakePhase, hitFall.envShake?.phase],
   ];
   for (const [label, expected, actual] of comparisons) {
     if (expected !== undefined && actual !== expected) {

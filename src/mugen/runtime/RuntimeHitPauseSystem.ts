@@ -28,6 +28,8 @@ export type RuntimeHitPauseRuntimeWorldInput<TActor extends RuntimeHitPauseRunti
   p2Input: Set<string>;
   tick: number;
   stage: Pick<MugenStageDefinition, "bounds">;
+  stageTime?: number;
+  runtimeTick?: number;
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advancePausedPresentation">;
   runIgnoredControllers: (actor: TActor, opponent: TActor) => void;
 };
@@ -71,6 +73,9 @@ export class RuntimeHitPauseWorld {
   advanceRuntime<TActor extends RuntimeHitPauseRuntimeActor>(
     input: RuntimeHitPauseRuntimeWorldInput<TActor>,
   ): RuntimeHitPauseAdvanceResult {
+    const opponentFor = (actor: TActor) => (actor === input.p1 ? input.p2 : input.p1);
+    const opponentsFor = (actor: TActor) => [opponentFor(actor)];
+
     return this.advance({
       p1: input.p1,
       p2: input.p2,
@@ -79,7 +84,11 @@ export class RuntimeHitPauseWorld {
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(input.tick, actorInput, { hitPause: true }),
       runIgnoredControllers: input.runIgnoredControllers,
       advancePausedPresentation: (actor) =>
-        input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, actor === input.p1 ? input.p2 : input.p1),
+        input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, opponentFor(actor), {
+          stageTime: input.stageTime ?? input.tick,
+          runtimeTick: input.runtimeTick ?? input.tick,
+          opponents: opponentsFor(actor),
+        }),
     });
   }
 }

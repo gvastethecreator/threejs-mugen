@@ -1,4 +1,4 @@
-import type { HelperControllerOp } from "../compiler/ControllerOps";
+import type { ControllerOp, HelperControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
@@ -12,6 +12,8 @@ import {
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
+import { runtimeActorTeamSide } from "./RuntimeExpressionContextSystem";
+import { RuntimeOpponentSelectionWorld, type RuntimeOpponentRosterEntry } from "./RuntimeOpponentSelectionSystem";
 import { executeControllerIr } from "./StateControllerExecutor";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
@@ -26,7 +28,6 @@ import {
   RuntimeTargetWorld,
   type RuntimeTarget,
   type RuntimeTargetBinding,
-  type RuntimeTargetControllerDispatchOperation,
   type RuntimeTargetWorldActor,
 } from "./TargetSystem";
 import type { ActorSnapshot, CharacterRuntimeState, RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
@@ -60,6 +61,7 @@ export type RuntimeHelper = {
   bindToTarget?: RuntimeTargetBinding;
   pos: { x: number; y: number };
   vel: { x: number; y: number };
+  bodyWidth?: { front: number; back: number };
   scale: { x: number; y: number };
   facing: 1 | -1;
   ctrl: boolean;
@@ -96,19 +98,25 @@ export type RuntimeHelperOwnerBind = {
 
 export type RuntimeHelperPauseKind = "hitpause" | "Pause" | "SuperPause";
 
+export type RuntimeHelperOpponentEntry = RuntimeOpponentRosterEntry<CharacterRuntimeState>;
+
 export type RuntimeHelperAdvanceOptions = {
   pauseKind?: RuntimeHelperPauseKind;
+  stageBounds?: MugenStageDefinition["bounds"];
   stageTime?: number;
   runtimeTick?: number;
   opponentId?: string;
   parentState?: CharacterRuntimeState;
   rootState?: CharacterRuntimeState;
   opponentState?: CharacterRuntimeState;
+  opponentStates?: CharacterRuntimeState[];
+  opponentRoster?: readonly RuntimeHelperOpponentEntry[];
   countExplods?: (helper: RuntimeHelper, explodId?: number) => number;
   countHelpers?: (helper: RuntimeHelper, helperId?: number) => number;
   countProjectiles?: (helper: RuntimeHelper, projectileId?: number) => number;
   projectileContact?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => boolean;
   projectileContactTime?: (helper: RuntimeHelper, kind: RuntimeHelperProjectileContactKind, projectileId?: number) => number;
+  projectileCancelTime?: (helper: RuntimeHelper, projectileId?: number) => number;
   targetCandidates?: RuntimeTargetWorldActor[];
   enterTargetState?: (helper: RuntimeHelper, target: RuntimeTargetWorldActor, stateId: number) => void;
   onSpawnExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
@@ -117,7 +125,7 @@ export type RuntimeHelperAdvanceOptions = {
   onModifyExplod?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onModifyProjectile?: (helper: RuntimeHelper, controller: ControllerIr) => boolean;
   onController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
-  onOperation?: (helper: RuntimeHelper, operation: RuntimeTargetControllerDispatchOperation) => void;
+  onOperation?: (helper: RuntimeHelper, operation: ControllerOp) => void;
   onUnsupportedController?: (helper: RuntimeHelper, controller: ControllerIr) => void;
 };
 
@@ -142,6 +150,7 @@ export type RuntimeHelperSpawnInput = {
   stateNo?: number;
   animNo: number;
   pos: { x: number; y: number };
+  bodyWidth?: { front: number; back: number };
   fallbackFacing: 1 | -1;
 };
 
@@ -172,6 +181,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     targetBindings: [],
     pos: input.pos,
     vel: helperVelocity(input.controller, operation),
+    bodyWidth: input.bodyWidth,
     scale: helperScale(input.controller, operation),
     facing: forcedFacing === -1 || forcedFacing === 1 ? forcedFacing : input.fallbackFacing,
     ctrl: false,
@@ -238,11 +248,14 @@ export function runRuntimeHelperStateControllers(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "stageBounds"
     | "stageTime"
     | "runtimeTick"
     | "parentState"
     | "rootState"
     | "opponentState"
+    | "opponentStates"
+    | "opponentRoster"
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
@@ -311,6 +324,7 @@ export function runRuntimeHelperStateControllers(
       applyRuntimeStateToHelper(
         helper,
         executeControllerIr(controller, helperRuntimeState(helper), () => undefined, {
+          stageBounds: options.stageBounds,
           stageTime: options.stageTime,
         }),
       );
@@ -348,6 +362,9 @@ export function runRuntimeHelperStateControllers(
     if (dispatch.kind === "side-effect" && dispatch.effect === "projectile") {
       if (options.onSpawnProjectile?.(helper, controller)) {
         options.onController?.(helper, controller);
+        if (controller.operation?.kind === "projectile") {
+          options.onOperation?.(helper, controller.operation);
+        }
         continue;
       }
       options.onUnsupportedController?.(helper, controller);
@@ -476,6 +493,7 @@ const helperRuntimeControllers = new Set([
 const helperHitDefWorld = new RuntimeHitDefControllerDispatchWorld();
 const helperTargetWorld = new RuntimeTargetWorld();
 const helperTargetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld();
+const helperOpponentSelectionWorld = new RuntimeOpponentSelectionWorld();
 
 export function activateRuntimeHelperHitDef(
   helper: RuntimeHelper,
@@ -561,11 +579,14 @@ function helperTriggersPass(
   controller: ControllerIr,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "stageBounds"
     | "stageTime"
     | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
+    | "opponentStates"
+    | "opponentRoster"
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
@@ -600,11 +621,14 @@ function resolveHelperNumber(
   expression: string | undefined,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "stageBounds"
     | "stageTime"
     | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
+    | "opponentStates"
+    | "opponentRoster"
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
@@ -716,29 +740,41 @@ function helperExpressionContext(
   helper: RuntimeHelper,
   options: Pick<
     RuntimeHelperAdvanceOptions,
+    | "stageBounds"
     | "stageTime"
     | "opponentId"
     | "parentState"
     | "rootState"
     | "opponentState"
+    | "opponentStates"
     | "countExplods"
     | "countHelpers"
     | "countProjectiles"
     | "projectileContact"
     | "projectileContactTime"
+    | "projectileCancelTime"
   > = {},
 ) {
+  const opponentRoster = helperOpponentRoster(helper, options);
+  const currentOpponent = opponentRoster[0];
   return {
     self: helperRuntimeState(helper),
-    opponent: options.opponentState ? cloneRuntimeStateForRedirect(options.opponentState) : undefined,
+    opponent: currentOpponent ? cloneRuntimeStateForRedirect(currentOpponent.state) : undefined,
+    enemyNear: (index: number) => helperEnemyNearRedirect(helper, opponentRoster, index),
     parent: options.parentState ? cloneRuntimeStateForRedirect(options.parentState) : undefined,
     root: options.rootState ? cloneRuntimeStateForRedirect(options.rootState) : undefined,
+    teamSide: runtimeActorTeamSide({ id: helper.ownerId }),
+    opponentTeamSide: currentOpponent?.id === undefined ? undefined : runtimeActorTeamSide({ id: currentOpponent.id }),
+    parentTeamSide: runtimeActorTeamSide({ id: helper.ownerId }),
+    rootTeamSide: runtimeActorTeamSide({ id: helper.rootId ?? helper.ownerId }),
     isHelper: true,
     helperId: helper.helperId,
+    stageBounds: options.stageBounds,
     stageTime: options.stageTime,
     stateTime: helper.stateTime,
     target: (targetId?: number) => helperTargetRedirect(helper, options, targetId),
     numTarget: (targetId?: number) => helperTargetWorld.count(runtimeHelperTargetActor(helper), targetId),
+    numEnemy: () => opponentRoster.length,
     numExplod: (explodId?: number) => options.countExplods?.(helper, explodId) ?? 0,
     numHelper: (helperId?: number) => options.countHelpers?.(helper, helperId) ?? 0,
     numProj: (projectileId?: number) => options.countProjectiles?.(helper, projectileId) ?? 0,
@@ -748,6 +784,7 @@ function helperExpressionContext(
     projContactTime: (projectileId?: number) => options.projectileContactTime?.(helper, "contact", projectileId) ?? -1,
     projHitTime: (projectileId?: number) => options.projectileContactTime?.(helper, "hit", projectileId) ?? -1,
     projGuardedTime: (projectileId?: number) => options.projectileContactTime?.(helper, "guard", projectileId) ?? -1,
+    projCancelTime: (projectileId?: number) => options.projectileCancelTime?.(helper, projectileId) ?? -1,
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };
@@ -767,6 +804,7 @@ export function helperRuntimeState(helper: RuntimeHelper): CharacterRuntimeState
     life: helper.life,
     powerMax: helper.powerMax,
     power: helper.power,
+    bodyWidth: helper.bodyWidth ? { ...helper.bodyWidth } : undefined,
     ctrl: helper.ctrl,
     stateType: helper.stateType,
     moveType: helper.moveType,
@@ -851,6 +889,63 @@ function advanceRuntimeHelperTargetMemory(helper: RuntimeHelper): void {
   syncRuntimeHelperTargetActor(helper, actor);
 }
 
+function helperEnemyNearRedirect(
+  helper: RuntimeHelper,
+  opponentRoster: readonly RuntimeHelperResolvedOpponentEntry[],
+  index: number,
+) {
+  const opponent = opponentRoster[index];
+  if (!opponent) {
+    return undefined;
+  }
+  return {
+    self: cloneRuntimeStateForRedirect(opponent.state),
+    opponent: helperRuntimeState(helper),
+    teamSide: opponent.id === undefined ? undefined : runtimeActorTeamSide({ id: opponent.id }),
+    opponentTeamSide: runtimeActorTeamSide({ id: helper.ownerId }),
+  };
+}
+
+type RuntimeHelperResolvedOpponentEntry = RuntimeHelperOpponentEntry & {
+  runtime: CharacterRuntimeState;
+};
+
+function helperOpponentRoster(
+  helper: RuntimeHelper,
+  options: Pick<RuntimeHelperAdvanceOptions, "opponentId" | "opponentState" | "opponentStates" | "opponentRoster">,
+): readonly RuntimeHelperResolvedOpponentEntry[] {
+  if (options.opponentRoster) {
+    return sortHelperOpponentRoster(helper, options.opponentRoster.map(resolveHelperOpponentEntry));
+  }
+  if (options.opponentStates) {
+    return sortHelperOpponentRoster(
+      helper,
+      options.opponentStates.map((state) =>
+        resolveHelperOpponentEntry({
+          state,
+          ...(options.opponentId !== undefined && state === options.opponentState ? { id: options.opponentId } : {}),
+        }),
+      ),
+    );
+  }
+  return options.opponentState ? [resolveHelperOpponentEntry({ id: options.opponentId, state: options.opponentState })] : [];
+}
+
+function sortHelperOpponentRoster(
+  helper: RuntimeHelper,
+  roster: readonly RuntimeHelperResolvedOpponentEntry[],
+): readonly RuntimeHelperResolvedOpponentEntry[] {
+  const runtime = helperRuntimeState(helper);
+  return helperOpponentSelectionWorld.orderByNearest({ state: runtime, runtime }, roster);
+}
+
+function resolveHelperOpponentEntry(entry: RuntimeHelperOpponentEntry): RuntimeHelperResolvedOpponentEntry {
+  return {
+    ...entry,
+    runtime: entry.state,
+  };
+}
+
 function helperTargetRedirect(
   helper: RuntimeHelper,
   options: Pick<RuntimeHelperAdvanceOptions, "opponentId" | "opponentState">,
@@ -866,6 +961,8 @@ function helperTargetRedirect(
   return {
     self: cloneRuntimeStateForRedirect(options.opponentState),
     opponent: helperRuntimeState(helper),
+    teamSide: runtimeActorTeamSide({ id: options.opponentId }),
+    opponentTeamSide: runtimeActorTeamSide({ id: helper.ownerId }),
   };
 }
 

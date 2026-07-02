@@ -4,9 +4,9 @@
   .app-shell.mode-studio .studio-chrome-actions {
     min-height: 34px;
     border: 0;
-    border-right: 1px solid #252c34;
+    border-right: 1px solid var(--station-line);
     border-radius: 0;
-    background: #080b0f;
+    background: var(--studio-panel);
     box-shadow: none;
   }
 
@@ -14,7 +14,7 @@
     grid-template-columns: 18px minmax(0, 1fr);
     gap: 7px;
     padding: 4px 8px;
-    border-left: 1px solid #252c34;
+    border-left: 1px solid var(--station-line);
   }
 
   .app-shell.mode-studio .studio-chrome-brand span {
@@ -33,15 +33,15 @@
   }
 
   .app-shell.mode-studio .studio-chrome-brand strong {
-    color: #eef2f5;
-    font-size: 11px;
+    color: var(--station-text);
+    font-size: 12px;
     font-weight: 800;
   }
 
   .app-shell.mode-studio .studio-chrome-brand small {
-    color: #8d98a4;
+    color: var(--studio-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .studio-chrome-actions {
@@ -49,9 +49,9 @@
     grid-auto-flow: column;
     grid-auto-columns: minmax(50px, max-content);
     overflow: hidden;
-    border-left: 1px solid #303842;
-    border-right: 1px solid #252c34;
-    background: #05070a;
+    border-left: 1px solid var(--station-line-strong);
+    border-right: 1px solid var(--station-line);
+    background: var(--studio-panel-low);
   }
 
   .app-shell.mode-studio .studio-chrome-actions button {
@@ -63,11 +63,11 @@
     justify-content: center;
     padding: 3px 8px;
     border: 0;
-    border-right: 1px solid #252c34;
+    border-right: 1px solid var(--station-line);
     border-radius: 0;
-    background: #0a0d11;
-    color: #d8e0e7;
-    font-size: 10.5px;
+    background: var(--station-panel);
+    color: var(--studio-text);
+    font-size: 12px;
     box-shadow: none;
   }
 
@@ -78,16 +78,16 @@
   .app-shell.mode-studio .studio-chrome-actions .ui-icon {
     width: 14px;
     height: 14px;
-    color: #8b96a2;
+    color: var(--studio-muted);
   }
 
   .app-shell.mode-studio .studio-chrome-actions button.is-active {
-    background: #18212b;
-    color: #f2f5f7;
-    box-shadow: inset 0 -2px 0 #83909d;
+    background: var(--station-row-hot);
+    color: var(--station-text);
+    box-shadow: inset 0 -2px 0 var(--station-info);
   }
 
   .app-shell.mode-studio .studio-chrome-actions button[data-action="open-command-palette"] .ui-icon {
-    color: #89afd2;
+    color: var(--station-info);
   }
 }

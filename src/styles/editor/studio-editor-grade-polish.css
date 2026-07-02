@@ -76,7 +76,7 @@
 .app-shell.mode-studio .studio-chrome-actions button:hover,
   .app-shell.mode-studio .studio-chrome-actions button.is-active {
     border-color: color-mix(in srgb, var(--section-accent) 44%, var(--editor-edge));
-    background: #161b21;
+    background: var(--surface-flat-strong);
   }
 
 .app-shell.mode-studio .studio-chrome-actions span {

@@ -6,6 +6,7 @@ import {
   runtimeAnimationElementTime,
   runtimeAnimationTimeRemaining,
   type RuntimeAnimationActor,
+  type RuntimeAnimationChangeActor,
 } from "../mugen/runtime/RuntimeAnimationSystem";
 
 describe("RuntimeAnimationWorld", () => {
@@ -119,6 +120,80 @@ describe("RuntimeAnimationWorld", () => {
     expect(runtimeAnimationElementTime(actor, 2)).toBe(0);
     expect(runtimeAnimationElementTime(actor, 99)).toBeUndefined();
   });
+
+  it("changes to an authored action and applies elem timing through the animation world", () => {
+    const world = new RuntimeAnimationWorld();
+    const nextAction = action(20, [3, 5, 2]);
+    const actor = runtimeChangeActor(action(10, [1]));
+
+    const result = world.changeAction(actor, {
+      actionId: 20,
+      actionOwner: actionOwner(nextAction),
+      elem: 2,
+      elemTime: 4,
+    });
+
+    expect(result).toMatchObject({
+      applied: true,
+      actionFound: true,
+      changed: true,
+      elementApplied: true,
+      frameIndex: 1,
+      frameElapsed: 4,
+      animTime: 7,
+    });
+    expect(actor.currentAction).toBe(nextAction);
+    expect(actor.runtime).toMatchObject({ animNo: 20, animationSource: "self", frameIndex: 1, animTime: 7 });
+    expect(actor.animationComplete).toBe(false);
+  });
+
+  it("applies elem timing without resetting when the current action already matches", () => {
+    const world = new RuntimeAnimationWorld();
+    const currentAction = action(20, [3, 5, 2]);
+    const actor = runtimeChangeActor(currentAction, { animNo: 20, frameIndex: 2, frameElapsed: 1, animTime: 9 });
+
+    const result = world.changeAction(actor, {
+      actionId: 20,
+      actionOwner: actionOwner(currentAction),
+      elem: 2,
+      elemTime: 99,
+    });
+
+    expect(result).toMatchObject({
+      applied: true,
+      actionFound: true,
+      changed: false,
+      elementApplied: true,
+      frameIndex: 1,
+      frameElapsed: 4,
+      animTime: 7,
+    });
+    expect(actor.currentAction).toBe(currentAction);
+    expect(actor.runtime).toMatchObject({ animNo: 20, frameIndex: 1, animTime: 7 });
+  });
+
+  it("reports missing action without mutating actor animation state", () => {
+    const world = new RuntimeAnimationWorld();
+    const currentAction = action(10, [2]);
+    const actor = runtimeChangeActor(currentAction, { animNo: 10, frameIndex: 0, frameElapsed: 1, animTime: 1 });
+
+    const result = world.changeAction(actor, {
+      actionId: 404,
+      actionOwner: actionOwner(currentAction),
+    });
+
+    expect(result).toMatchObject({
+      applied: false,
+      actionFound: false,
+      changed: false,
+      elementApplied: false,
+      frameIndex: 0,
+      frameElapsed: 1,
+      animTime: 1,
+    });
+    expect(actor.currentAction).toBe(currentAction);
+    expect(actor.runtime).toMatchObject({ animNo: 10, frameIndex: 0, animTime: 1 });
+  });
 });
 
 function runtimeActor(
@@ -134,6 +209,32 @@ function runtimeActor(
       frameIndex: options.frameIndex ?? 0,
     },
   };
+}
+
+function runtimeChangeActor(
+  currentAction: MugenAnimationAction,
+  options: Partial<RuntimeAnimationChangeActor> & {
+    animNo?: number;
+    animationSource?: RuntimeAnimationChangeActor["runtime"]["animationSource"];
+    frameIndex?: number;
+    animTime?: number;
+  } = {},
+): RuntimeAnimationChangeActor {
+  return {
+    currentAction,
+    frameElapsed: options.frameElapsed ?? 0,
+    animationComplete: options.animationComplete ?? false,
+    runtime: {
+      animNo: options.animNo ?? currentAction.id,
+      animationSource: options.animationSource ?? "self",
+      animTime: options.animTime ?? 0,
+      frameIndex: options.frameIndex ?? 0,
+    },
+  };
+}
+
+function actionOwner(...actions: MugenAnimationAction[]) {
+  return { animations: new Map(actions.map((candidate) => [candidate.id, candidate])) };
 }
 
 function action(id: number, durations: number[], loopStart?: number): MugenAnimationAction {

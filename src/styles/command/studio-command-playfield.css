@@ -7,7 +7,7 @@
     border-inline: 1px solid var(--command-edge-strong);
     background: var(--studio-ledge-stage);
     box-shadow:
-      inset 0 0 0 1px #151c23,
+      inset 0 0 0 1px var(--studio-row-hot),
       inset 0 0 0 10px rgba(0, 0, 0, 0.18);
   }
 
@@ -30,7 +30,7 @@
     width: min(820px, calc(100% - 54px));
     max-width: min(820px, calc(100% - 54px));
     gap: 12px;
-    border-color: #4b5661;
+    border-color: var(--station-soft);
     background: rgba(4, 6, 8, 0.93);
   }
 
@@ -66,13 +66,13 @@
     --stage-toolbar-edge: var(--studio-ledge-toolbar-edge);
     --stage-toolbar-line: var(--studio-ledge-toolbar-edge);
     --stage-toolbar-bg: rgba(4, 6, 8, 0.94);
-    --stage-toolbar-cell-bg: #0b0f14;
-    --stage-toolbar-label-bg: #06080b;
-    --stage-toolbar-hover-bg: #151b22;
-    --stage-toolbar-text: #dce3ea;
+    --stage-toolbar-cell-bg: var(--station-row);
+    --stage-toolbar-label-bg: var(--studio-panel-low);
+    --stage-toolbar-hover-bg: var(--station-row-hot);
+    --stage-toolbar-text: var(--studio-text);
     --stage-toolbar-muted: var(--desk-dim);
-    --stage-toolbar-icon: #c7d0da;
-    --stage-toolbar-select-bg: #05070a;
+    --stage-toolbar-icon: var(--station-text);
+    --stage-toolbar-select-bg: var(--studio-panel-low);
     top: auto;
     right: 12px;
     bottom: 12px;

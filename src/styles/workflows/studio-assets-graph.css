@@ -92,7 +92,6 @@
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
     font-size: var(--asset-row-meta-size);
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-graph-node>.badge {

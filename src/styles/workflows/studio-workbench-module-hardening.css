@@ -62,7 +62,8 @@
   background: var(--editor-row);
 }
 
-.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state {
+.app-shell.mode-studio[data-studio-tab="workbench"] .empty-state,
+.app-shell.mode-studio[data-studio-tab="debug"] .empty-state {
   min-height: 0;
   padding: 8px 9px;
   border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
@@ -178,14 +179,6 @@
   white-space: normal;
   overflow-wrap: anywhere;
   text-overflow: clip;
-}
-
-.app-shell.mode-studio[data-studio-tab="debug"] .empty-state {
-  min-height: 0;
-  padding: 8px 9px;
-  border: 1px solid color-mix(in srgb, var(--editor-edge) 70%, transparent);
-  background: var(--editor-row);
-  box-shadow: none;
 }
 
 .app-shell.mode-studio[data-studio-tab="debug"] .debug-filter-button.is-selected,

@@ -28,7 +28,7 @@
     --studio-dim: #717b86;
     --surface-accent: #9aa3ad;
     grid-template-columns: clamp(300px, 21vw, 340px) minmax(640px, 1fr) clamp(304px, 22vw, 360px);
-    background: #05070a;
+    background: var(--studio-panel-low);
   }
 
   .app-shell.mode-studio .workspace-header {
@@ -37,7 +37,7 @@
     gap: 7px;
     padding: 8px 9px;
     border-bottom: 1px solid var(--studio-line-strong);
-    background: #080b0f;
+    background: var(--studio-panel);
     box-shadow: none;
   }
 
@@ -49,14 +49,13 @@
     gap: 8px;
     padding: 0 7px;
     border: 1px solid var(--station-line);
-    background: #080b0f;
+    background: var(--studio-panel);
   }
 
   .app-shell.mode-studio .workspace-brand .workspace-eyebrow {
     color: var(--station-muted);
     font-family: var(--mono);
-    font-size: 10px;
-    text-transform: uppercase;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .workspace-brand h1 {
@@ -70,8 +69,8 @@
   .app-shell.mode-studio .workspace-brand p {
     grid-column: 1 / -1;
     margin: -2px 0 2px;
-    color: #7e8995;
-    font-size: 10.5px;
+    color: var(--station-muted);
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .mode-control-stack {
@@ -86,22 +85,22 @@
     gap: 0;
     overflow: hidden;
     border: 1px solid var(--station-line-strong);
-    background: #07090d;
+    background: var(--studio-panel-low);
     box-shadow: none;
   }
 
   .app-shell.mode-studio .mode-switch button {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 7px;
-    grid-template-rows: 15px 13px;
-    min-height: 33px;
+    grid-template-rows: 17px 15px;
+    min-height: 37px;
     gap: 0 5px;
     padding: 4px 6px;
     border: 0;
     border-right: 1px solid var(--station-line);
     border-radius: 0;
     background: var(--station-panel);
-    color: #d9e0e7;
+    color: var(--studio-text);
     text-align: left;
     box-shadow: none;
   }
@@ -115,9 +114,9 @@
   .app-shell.mode-studio .mode-switch .mode-hint {
     grid-column: 1;
     align-self: end;
-    color: #8d98a4;
+    color: var(--studio-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .mode-switch .mode-status {
@@ -130,34 +129,34 @@
     width: 6px;
     height: 18px;
     align-self: center;
-    border: 1px solid #38424c;
+    border: 1px solid var(--studio-line-strong);
     border-radius: 0;
-    background: #56616d;
+    background: var(--station-soft);
     box-shadow: none;
   }
 
   .app-shell.mode-studio .mode-switch .mode-dot.is-ok {
     background: var(--station-ok);
-    border-color: color-mix(in srgb, var(--station-ok) 54%, #38424c);
+    border-color: color-mix(in srgb, var(--station-ok) 54%, var(--studio-line-strong));
   }
 
   .app-shell.mode-studio .mode-switch .mode-dot.is-warn {
     background: var(--station-warn);
-    border-color: color-mix(in srgb, var(--station-warn) 54%, #38424c);
+    border-color: color-mix(in srgb, var(--station-warn) 54%, var(--studio-line-strong));
   }
 
   .app-shell.mode-studio .mode-switch button:hover,
   .app-shell.mode-studio .mode-switch button:focus-visible {
     background: var(--station-row-hot);
-    outline: 1px solid #4a5663;
+    outline: 1px solid var(--station-soft);
     outline-offset: -1px;
   }
 
   .app-shell.mode-studio .mode-switch button.is-active {
-    background: #161c23;
+    background: var(--station-row-hot);
     box-shadow:
-      inset 0 2px 0 #788592,
-      inset 0 -1px 0 #020304;
+      inset 0 2px 0 var(--station-muted),
+      inset 0 -1px 0 var(--desk-bg);
   }
 
   .app-shell.mode-studio .workspace-summary {
@@ -166,7 +165,7 @@
     gap: 0;
     overflow: hidden;
     border: 1px solid var(--station-line-strong);
-    background: #07090d;
+    background: var(--studio-panel-low);
     box-shadow: none;
   }
 
@@ -208,7 +207,7 @@
     padding: 5px 7px;
     border: 1px solid var(--station-line-strong);
     border-radius: 0;
-    background: #080b0f;
+    background: var(--studio-panel);
     color: var(--station-text);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
   }
@@ -216,7 +215,7 @@
   .app-shell.mode-studio .command-launcher:hover,
   .app-shell.mode-studio .command-launcher:focus-visible {
     background: var(--station-row-hot);
-    outline: 1px solid #4a5663;
+    outline: 1px solid var(--station-soft);
     outline-offset: -1px;
   }
 
@@ -231,26 +230,26 @@
   }
 
   .app-shell.mode-studio .command-launcher strong {
-    color: #eef2f5;
-    font-size: 11px;
+    color: var(--station-text);
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .command-launcher small {
-    color: #8d98a4;
+    color: var(--studio-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .command-launcher .badge {
-    min-width: 28px;
+    min-width: 34px;
     height: 22px;
     justify-content: center;
     border: 1px solid var(--station-line);
     border-radius: 0;
-    background: #0f1318;
-    color: #cfd7df;
+    background: var(--station-rail);
+    color: var(--studio-text);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .app-shell.mode-studio .workspace-actions {
@@ -259,7 +258,7 @@
     padding: 0;
     border: 1px solid var(--station-line-strong);
     border-radius: 0;
-    background: #07090d;
+    background: var(--studio-panel-low);
     box-shadow: none;
   }
 
@@ -270,7 +269,7 @@
     border: 0;
     border-bottom: 1px solid var(--station-line);
     border-radius: 0;
-    background: #0b0f14;
+    background: var(--station-row);
     box-shadow: none;
   }
 
@@ -305,7 +304,7 @@
   .app-shell.mode-studio .workspace-action-grid .action-icon {
     width: 15px;
     height: 15px;
-    color: #a8b2bd;
+    color: var(--station-muted);
   }
 
   .app-shell.mode-studio .workspace-action-grid button.primary-action .action-icon {
@@ -313,17 +312,17 @@
   }
 
   .app-shell.mode-studio .workspace-action-grid .workspace-action-label {
-    color: #eef2f5;
-    font-size: 11px;
+    color: var(--station-text);
+    font-size: 12px;
     font-weight: 750;
   }
 
   .app-shell.mode-studio .workspace-action-grid button small {
     justify-self: end;
     max-width: 92px;
-    color: #8f9aa6;
+    color: var(--station-muted);
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 12px;
     text-align: right;
   }
 }

@@ -59,6 +59,13 @@ describe("RuntimeMatchInteractionWorld", () => {
   it("wires runtime target, effect lifecycle, projectile clash, and constraint systems", () => {
     const world = new RuntimeMatchInteractionWorld();
     const calls: string[] = [];
+    const activeLifecycleOptions: Array<{
+      actorId: string;
+      opponentId?: string;
+      opponents: string[];
+      stageTime?: number;
+      runtimeTick?: number;
+    }> = [];
     const tag = (label: string, fighter?: string, opponent?: string) => {
       calls.push([label, fighter, opponent].filter(Boolean).join(":"));
     };
@@ -75,12 +82,23 @@ describe("RuntimeMatchInteractionWorld", () => {
       p1,
       p2,
       stage: { bounds: { left: -160, right: 160 } },
+      stageTime: 91,
+      runtimeTick: 92,
       actorConstraintWorld: {
         separate: (left, right) => tag("separate", runtimeLabel(left), runtimeLabel(right)),
         clampToStage: (runtime) => tag("clamp", runtimeLabel(runtime)),
       },
       effectLifecycleWorld: {
-        advanceActive: (fighter) => tag("active-effects", fighter.id),
+        advanceActive: (fighter, _stage, opponent, options) => {
+          tag("active-effects", fighter.id);
+          activeLifecycleOptions.push({
+            actorId: fighter.id,
+            opponentId: opponent?.id,
+            opponents: options?.opponents?.map((entry) => entry.id ?? "none") ?? [],
+            stageTime: options?.stageTime,
+            runtimeTick: options?.runtimeTick,
+          });
+        },
         advancePresentation: (fighter) => tag("presentation", fighter.id),
       },
       resolvePriorityClash: (left, right) => {
@@ -98,6 +116,7 @@ describe("RuntimeMatchInteractionWorld", () => {
       "active-effects:p1",
       "active-effects:p2",
       "projectile-clash:p1/Nova:p2/Mira",
+      "projectile-cancel:p1:0:77",
       "separate:p1:p2",
       "target-bind:p1:p2",
       "target-bind:p2:p1",
@@ -113,6 +132,10 @@ describe("RuntimeMatchInteractionWorld", () => {
       "clamp:p2",
       "presentation:p1",
       "presentation:p2",
+    ]);
+    expect(activeLifecycleOptions).toEqual([
+      { actorId: "p1", opponentId: "p2", opponents: ["p2"], stageTime: 91, runtimeTick: 92 },
+      { actorId: "p2", opponentId: "p1", opponents: ["p1"], stageTime: 91, runtimeTick: 92 },
     ]);
   });
 });
@@ -141,6 +164,12 @@ function runtimeActor(id: string, label: string, x: number, calls: string[]): Ru
     runtime,
     targets: [],
     targetBindings: [],
+    contact: {},
+    contactWorld: {
+      markProjectileCancel: (_contact, stateNo, projectileId) => {
+        calls.push(`projectile-cancel:${id}:${stateNo}:${projectileId ?? "none"}`);
+      },
+    },
     targetWorld: {
       advance: (fighter) => calls.push(`target-memory:${fighter.id}`),
       applyTargetBindings: (fighter, candidates) => {
@@ -161,6 +190,7 @@ function runtimeActor(id: string, label: string, x: number, calls: string[]): Ru
       removeExplodsOnGetHit: () => undefined,
       resolveProjectileClashes: (leftOwnerId, rightOwnerId, input) => {
         calls.push(`projectile-clash:${leftOwnerId}/${input.leftLabel}:${rightOwnerId}/${input.rightLabel}`);
+        input.recordProjectileCancel?.({ ownerId: leftOwnerId, projectileId: 77 } as never);
       },
     },
   } as RuntimeMatchInteractionRuntimeActor;

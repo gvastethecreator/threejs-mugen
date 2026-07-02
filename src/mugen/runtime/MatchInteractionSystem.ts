@@ -1,5 +1,6 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
@@ -28,6 +29,8 @@ export type RuntimeMatchInteractionWorldInput<TFighter> = RuntimeMatchInteractio
 export type RuntimeMatchInteractionRuntimeActor = RuntimeEffectLifecycleActor &
   RuntimeTargetWorldActor & {
     label: string;
+    contact: RuntimeContactMemory;
+    contactWorld: Pick<RuntimeContactMemoryWorld, "markProjectileCancel">;
     targetWorld: Pick<RuntimeTargetWorld, "advance" | "applyTargetBindings" | "applyBindToTarget">;
     effectActorWorld: RuntimeEffectLifecycleActor["effectActorWorld"] & Pick<RuntimeEffectActorWorld, "resolveProjectileClashes">;
   };
@@ -37,6 +40,8 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
     stage: Pick<MugenStageDefinition, "bounds">;
     actorConstraintWorld: Pick<RuntimeActorConstraintWorld, "separate" | "clampToStage">;
     effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "advanceActive" | "advancePresentation">;
+    stageTime?: number;
+    runtimeTick?: number;
     resolvePriorityClash: (left: TFighter, right: TFighter) => string | undefined;
     resolveDirectCombat: (attacker: TFighter, defender: TFighter) => void;
     resolveProjectileCombat: (attacker: TFighter, defender: TFighter) => void;
@@ -80,17 +85,28 @@ export class RuntimeMatchInteractionWorld {
     input: RuntimeMatchInteractionRuntimeWorldInput<TFighter>,
   ): void {
     const { actorConstraintWorld, effectLifecycleWorld, p1, p2, stage } = input;
+    const opponentFor = (fighter: TFighter) => (fighter === p1 ? p2 : p1);
+    const opponentsFor = (fighter: TFighter) => [opponentFor(fighter)];
 
     this.advance({
       p1,
       p2,
       advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
-      advanceActiveEffects: (fighter) => effectLifecycleWorld.advanceActive(fighter, stage, fighter === p1 ? p2 : p1),
+      advanceActiveEffects: (fighter) =>
+        effectLifecycleWorld.advanceActive(fighter, stage, opponentFor(fighter), {
+          stageTime: input.stageTime,
+          runtimeTick: input.runtimeTick,
+          opponents: opponentsFor(fighter),
+        }),
       resolveProjectileClashes: (left, right) =>
         left.effectActorWorld.resolveProjectileClashes(left.id, right.id, {
           leftLabel: left.label,
           rightLabel: right.label,
           log: input.log,
+          recordProjectileCancel: (projectile) => {
+            const owner = projectile.ownerId === right.id ? right : left;
+            owner.contactWorld.markProjectileCancel(owner.contact, owner.runtime.stateNo, projectile.projectileId);
+          },
         }),
       separateActors: (left, right) => actorConstraintWorld.separate(left.runtime, right.runtime),
       applyTargetBindings: (fighter, opponent) => fighter.targetWorld.applyTargetBindings(fighter, [opponent]),

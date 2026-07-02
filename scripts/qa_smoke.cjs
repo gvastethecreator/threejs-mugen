@@ -136,6 +136,7 @@ async function main() {
         studioWorkbenchTablet: path.join(outDir, "studio-workbench-tablet.png"),
         commandPalette: path.join(outDir, "studio-command-palette.png"),
         studioBuild: path.join(outDir, "studio-build.png"),
+        studioBuildTrustFocus: path.join(outDir, "studio-build-trust-focus.png"),
         studioModules: path.join(outDir, "studio-modules.png"),
         studioModulesContracts: path.join(outDir, "studio-modules-contracts.png"),
         studioSourceRelink: path.join(outDir, "studio-source-relink.png"),
@@ -543,6 +544,12 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
   await packageDownload.saveAs(packagePath);
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.projectBundle));
   await page.screenshot({ path: path.join(outDir, "studio-build.png"), fullPage: true });
+  const packageTrustRow = page.locator('.studio-trust-contract-row[data-trust-row-id="package-bundle"]').first();
+  if (await packageTrustRow.isVisible()) {
+    await packageTrustRow.click();
+    await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioFocusedTrustRowId === "package-bundle");
+    await page.screenshot({ path: path.join(outDir, "studio-build-trust-focus.png"), fullPage: true });
+  }
   const downloadedArtifact = JSON.parse(fs.readFileSync(tracePath, "utf8"));
   const downloadedPackage = await inspectPackageZip(packagePath);
   return page.evaluate((downloadedArtifact) => {
@@ -562,6 +569,8 @@ async function captureStudioBuild(page, baseUrl, outDir, importedFixturePath) {
       trustChainDeltas: bridge?.studioTrustChain?.map((row) => `${row.id}:${row.freshness}:${row.delta}`) ?? [],
       trustChainNextActions: bridge?.studioTrustChain?.map((row) => row.nextLabel).filter(Boolean) ?? [],
       trustChainBlocked: bridge?.studioTrustChain?.filter((row) => row.state === "blocked").map((row) => row.id) ?? [],
+      trustFocusedRow: bridge?.studioFocusedTrustRowId ?? null,
+      trustFocusedRowClass: document.querySelector(".studio-trust-contract-row.is-linked-focus")?.dataset.trustRowId ?? null,
       trustChainButtonBindings: [...document.querySelectorAll(".studio-trust-contract-row")].map((row) => ({
         action: row.dataset.action,
         studioTab: row.dataset.studioTab,
@@ -1567,6 +1576,9 @@ function assertSmoke(diagnostics) {
   if (trustBindingAt(studioBuild, "compatibility-gates")?.evidenceFilter !== "gate") {
     failures.push("studio-build: compatibility Trust Chain row did not target gate evidence");
   }
+  if (studioBuild.trustFocusedRow !== "package-bundle" || studioBuild.trustFocusedRowClass !== "package-bundle") {
+    failures.push("studio-build: Trust Chain click did not leave a visible package-bundle focus row");
+  }
   if (!studioBuild.compiledProject) {
     failures.push("studio-build: compiledProject missing after compile action");
   }
@@ -2030,6 +2042,8 @@ function summarizeDiagnostics(diagnostics) {
       trustChainTargets: diagnostics.checks.studioBuild.trustChainTargets,
       trustChainDeltas: diagnostics.checks.studioBuild.trustChainDeltas,
       trustChainBlocked: diagnostics.checks.studioBuild.trustChainBlocked,
+      trustFocusedRow: diagnostics.checks.studioBuild.trustFocusedRow,
+      trustFocusedRowClass: diagnostics.checks.studioBuild.trustFocusedRowClass,
     },
     studioModules: {
       schema: diagnostics.checks.studioModules.contractSchema,

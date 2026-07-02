@@ -5,9 +5,12 @@ import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeContactKind, RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorCountKind, RuntimeEffectActorWorld } from "./EffectActorSystem";
 import { evaluateExpression, type ExpressionContext, type ExpressionRedirectTarget } from "./ExpressionEvaluator";
+import { runtimeHitVar } from "./RuntimeHitVarSystem";
+import { RuntimeOpponentSelectionWorld } from "./RuntimeOpponentSelectionSystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import { evaluateTriggerIr } from "./TriggerEvaluator";
-import type { CharacterRuntimeState } from "./types";
+
+export { runtimeHitVar, type RuntimeHitVarTiming } from "./RuntimeHitVarSystem";
 
 export type RuntimeExpressionContextDefinition = {
   displayName: string;
@@ -36,6 +39,7 @@ export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
     | "receivedHitsValue"
     | "hasProjectileContact"
     | "projectileContactTime"
+    | "projectileCancelTime"
   >;
   targetWorld: Pick<RuntimeTargetWorld, "count" | "find">;
   effectActorWorld: Pick<RuntimeEffectActorWorld, "countActors">;
@@ -44,7 +48,9 @@ export type RuntimeExpressionContextActor = RuntimeTargetWorldActor & {
 export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContextActor> = {
   actor: TActor;
   opponent: TActor;
+  opponents?: readonly TActor[];
   owner?: TActor;
+  stageBounds?: { left: number; right: number };
   stageTime?: number;
   random?: () => number;
   animTimeRemaining?: number;
@@ -54,20 +60,27 @@ export type RuntimeExpressionContextInput<TActor extends RuntimeExpressionContex
 };
 
 export class RuntimeExpressionContextWorld {
+  constructor(private readonly opponentSelectionWorld = new RuntimeOpponentSelectionWorld()) {}
+
   create<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): ExpressionContext {
     const { actor, opponent } = input;
     const owner = input.owner ?? actor;
+    const opponentRoster = this.opponentRoster(input);
 
     return {
       self: actor.runtime,
       opponent: opponent.runtime,
+      enemyNear: (index) => this.resolveEnemyNearRedirect(actor, opponentRoster, index),
       name: actor.definition.displayName,
       authorName: actor.definition.authorName,
       opponentName: opponent.definition.displayName,
       opponentAuthorName: opponent.definition.authorName,
+      teamSide: runtimeActorTeamSide(actor),
+      opponentTeamSide: runtimeActorTeamSide(opponent),
+      stageBounds: input.stageBounds,
       target: (targetId) => this.resolveTargetRedirect(actor, opponent, targetId),
       stageTime: input.stageTime,
-      stateTime: actor.stateElapsed,
+      stateTime: runtimeExpressionStateTime(actor),
       random: input.random,
       animTimeRemaining: input.animTimeRemaining,
       animElemTime: input.animElemTime,
@@ -75,7 +88,7 @@ export class RuntimeExpressionContextWorld {
       stateExists: (stateNo) => runtimeActorHasState(actor, stateNo),
       commandActive: (name) => actor.commandBuffer.isCommandActive(name, actor.definition.commands ?? []),
       getConst: (name) => runtimeDefinitionConst(owner.definition, name),
-      getHitVar: (name) => runtimeHitVar(actor.runtime, name),
+      getHitVar: (name) => runtimeHitVar(actor.runtime, name, { hitPause: actor.hitPause, hitStun: actor.hitStun }),
       hitDefAttr: (filter) => (actor.currentMove ? hitAttributeMatches(filter, actor.currentMove.attr ?? "S,NA") : false),
       hitCount: () => this.moveHitCountValue(actor, false),
       hitPauseTime: () => actor.hitPause,
@@ -88,6 +101,7 @@ export class RuntimeExpressionContextWorld {
       moveReversed: () => this.moveReversedValue(actor),
       receivedDamage: () => this.receivedDamageValue(actor),
       receivedHits: () => this.receivedHitsValue(actor),
+      numEnemy: () => opponentRoster.length,
       numExplod: (explodId) => this.countEffectActors(actor, "explod", explodId),
       numHelper: (helperId) => this.countEffectActors(actor, "helper", helperId),
       numProj: (projectileId) => this.countEffectActors(actor, "projectile", projectileId),
@@ -98,6 +112,7 @@ export class RuntimeExpressionContextWorld {
       projContactTime: (projectileId) => this.projectileContactTime(actor, "contact", projectileId),
       projHitTime: (projectileId) => this.projectileContactTime(actor, "hit", projectileId),
       projGuardedTime: (projectileId) => this.projectileContactTime(actor, "guard", projectileId),
+      projCancelTime: (projectileId) => this.projectileCancelTime(actor, projectileId),
       uniqueHitCount: () => this.moveHitCountValue(actor, true),
       reportUnsupported: input.reportUnsupported,
     };
@@ -134,6 +149,29 @@ export class RuntimeExpressionContextWorld {
       authorName: opponent.definition.authorName,
       opponentName: actor.definition.displayName,
       opponentAuthorName: actor.definition.authorName,
+      teamSide: runtimeActorTeamSide(opponent),
+      opponentTeamSide: runtimeActorTeamSide(actor),
+    };
+  }
+
+  resolveEnemyNearRedirect<TActor extends RuntimeExpressionContextActor>(
+    actor: TActor,
+    opponents: readonly TActor[],
+    index: number,
+  ): ExpressionRedirectTarget | undefined {
+    const opponent = opponents[index];
+    if (!opponent) {
+      return undefined;
+    }
+    return {
+      self: opponent.runtime,
+      opponent: actor.runtime,
+      name: opponent.definition.displayName,
+      authorName: opponent.definition.authorName,
+      opponentName: actor.definition.displayName,
+      opponentAuthorName: actor.definition.authorName,
+      teamSide: runtimeActorTeamSide(opponent),
+      opponentTeamSide: runtimeActorTeamSide(actor),
     };
   }
 
@@ -165,6 +203,10 @@ export class RuntimeExpressionContextWorld {
     return actor.contactWorld.projectileContactTime(actor.contact, actor.runtime.stateNo, kind, projectileId);
   }
 
+  projectileCancelTime(actor: RuntimeExpressionContextActor, projectileId?: number): number {
+    return actor.contactWorld.projectileCancelTime(actor.contact, actor.runtime.stateNo, projectileId);
+  }
+
   countTargets(actor: RuntimeExpressionContextActor, targetId?: number): number {
     return actor.targetWorld.count(actor, targetId);
   }
@@ -172,6 +214,16 @@ export class RuntimeExpressionContextWorld {
   countEffectActors(actor: RuntimeExpressionContextActor, kind: RuntimeEffectActorCountKind, actorId?: number): number {
     return actor.effectActorWorld.countActors(actor.id, kind, actorId);
   }
+
+  private opponentRoster<TActor extends RuntimeExpressionContextActor>(input: RuntimeExpressionContextInput<TActor>): readonly TActor[] {
+    const opponents = input.opponents ?? [input.opponent];
+    return this.opponentSelectionWorld.orderByNearest(input.actor, opponents);
+  }
+}
+
+function runtimeExpressionStateTime(actor: Pick<RuntimeExpressionContextActor, "runtime" | "stateElapsed">): number {
+  const elapsed = Number.isFinite(actor.stateElapsed) ? actor.stateElapsed : actor.runtime.animTime;
+  return Math.max(0, Math.trunc(Number.isFinite(elapsed) ? elapsed : 0));
 }
 
 export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, "runtimeProgram" | "definition">, stateNo: number): boolean {
@@ -183,83 +235,17 @@ export function runtimeActorHasState(actor: Pick<RuntimeExpressionContextActor, 
   );
 }
 
-export function runtimeDefinitionConst(definition: Pick<RuntimeExpressionContextDefinition, "constants">, name: string): number | undefined {
-  return definition.constants?.[name.trim().toLowerCase()];
+export function runtimeActorTeamSide(actor: Pick<RuntimeExpressionContextActor, "id">): number {
+  const normalized = actor.id.trim().toLowerCase();
+  if (normalized === "p1" || normalized.startsWith("p1-")) {
+    return 1;
+  }
+  if (normalized === "p2" || normalized.startsWith("p2-")) {
+    return 2;
+  }
+  return 0;
 }
 
-export function runtimeHitVar(state: CharacterRuntimeState, name: string): number | undefined {
-  const key = name.trim().toLowerCase();
-  if (key === "animtype") {
-    return state.hitVars?.animType ?? 0;
-  }
-  if (key === "groundtype") {
-    return state.hitVars?.groundType ?? 0;
-  }
-  if (key === "airtype") {
-    return state.hitVars?.airType ?? 0;
-  }
-  if (key === "isbound") {
-    return state.hitVars?.isBound ? 1 : 0;
-  }
-  if (key === "fall") {
-    return state.hitFall?.falling ? 1 : 0;
-  }
-  if (key === "fall.damage") {
-    return state.hitFall?.damage ?? 0;
-  }
-  if (key === "fall.defence_up") {
-    return state.hitFall?.defenceUp ?? 100;
-  }
-  if (key === "fall.kill") {
-    return state.hitFall?.kill === false ? 0 : 1;
-  }
-  if (key === "fall.xvel" || key === "fall.xvelocity") {
-    return state.hitFall?.velocity.x ?? 0;
-  }
-  if (key === "fall.yvel" || key === "fall.yvelocity") {
-    return state.hitFall?.velocity.y ?? 0;
-  }
-  if (key === "fall.recover") {
-    return state.hitFall?.recover && (state.hitFall.recoverTime ?? 0) <= 0 ? 1 : 0;
-  }
-  if (key === "fall.recovertime") {
-    return state.hitFall?.recoverTime ?? 0;
-  }
-  if (key === "down.recover") {
-    return state.hitFall?.downRecover === false ? 0 : 1;
-  }
-  if (key === "recovertime" || key === "down.recovertime") {
-    return state.hitFall?.downRecoverTime ?? 0;
-  }
-  if (key === "fall.envshake.time") {
-    return state.hitFall?.envShake?.time ?? 0;
-  }
-  if (key === "fall.envshake.freq") {
-    return state.hitFall?.envShake?.freq ?? 60;
-  }
-  if (key === "fall.envshake.ampl") {
-    return state.hitFall?.envShake?.ampl ?? 0;
-  }
-  if (key === "fall.envshake.phase") {
-    return state.hitFall?.envShake?.phase ?? 0;
-  }
-  if (key === "xvel") {
-    return state.hitVelocity?.x ?? 0;
-  }
-  if (key === "yvel") {
-    return state.hitVelocity?.y ?? 0;
-  }
-  if (key === "hittime") {
-    return state.guardStun ?? 0;
-  }
-  if (key === "slidetime") {
-    return state.guardSlideTime ?? 0;
-  }
-  if (key === "ctrltime") {
-    return state.guardControlTime ?? 0;
-  }
-  if (key === "yaccel") {
-    return 0.44;
-  }
-  return undefined;
+export function runtimeDefinitionConst(definition: Pick<RuntimeExpressionContextDefinition, "constants">, name: string): number | undefined {
+  return definition.constants?.[name.trim().toLowerCase()];
 }

@@ -133,13 +133,6 @@
     -webkit-line-clamp: var(--asset-meta-line-clamp);
   }
 
-  .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .asset-inspector-drawer > summary :is(span, small) {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .app-shell.mode-studio[data-studio-tab="assets"] .replacement-candidate .badge-row {
     display: flex;
     flex-wrap: wrap;
@@ -211,7 +204,6 @@
 
   .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dt {
     color: var(--studio-ledge-muted);
-    text-transform: uppercase;
   }
 
   .app-shell.mode-studio[data-studio-tab="assets"] .pane-right .studio-kv dd {
@@ -264,7 +256,7 @@
   .app-shell.mode-studio[data-studio-tab="assets"] .asset-row-export {
     display: inline-grid;
     min-width: 0;
-    min-height: 18px;
+    min-height: 20px;
     align-content: center;
     justify-content: center;
     overflow: visible;
@@ -274,8 +266,8 @@
     background: var(--studio-ledge-control-alt);
     color: var(--studio-ledge-muted);
     font-family: var(--mono);
-    font-size: 9.5px;
-    line-height: 1;
+    font-size: 12px;
+    line-height: 1.05;
     text-overflow: clip;
     white-space: nowrap;
     box-shadow: none;
