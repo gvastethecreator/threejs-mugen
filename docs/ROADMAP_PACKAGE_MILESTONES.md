@@ -175,6 +175,11 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 combat bridge ownership
+  -> RuntimeMatchCombatBridgeWorld now owns bounded priority/direct/projectile/helper combat resolver construction from PlayableMatchRuntime
+  -> RuntimeMatchInteractionWorld receives callback routes from one named bridge instead of inline match-loop closures
+  -> focused RuntimeMatchCombatBridgeSystem coverage proves priority/direct/projectile/helper wiring, hurtbox forwarding, projectile target-memory forwarding, and log forwarding
+  -> ownership cleanup only; no exact combat priority, helper-owned contact timing, projectile hit/cancel timing, teams/simul/multi-target combat breadth, visual/audio parity, score movement, or full combat VM claim
 R2 move start ownership
   -> RuntimeMoveStartWorld now owns bounded native/imported state-move startup from PlayableMatchRuntime
   -> selected currentMove/currentMoveLabel, moveTick reset, hasHit reset, reversal cleanup, attack moveType, control handoff, and authored state-entry handoff route through one boundary

@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchCombatBridgeWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchCombatBridgeWorld` as the bounded combat-callback bridge consumed by `PlayableMatchRuntime` before `RuntimeMatchInteractionWorld.advanceRuntime`.
+- Moved priority-clash, direct-combat, projectile-combat, and helper-combat resolver wiring out of the inline match loop and into one named runtime boundary.
+- Added focused `RuntimeMatchCombatBridgeSystem` coverage for priority/direct/projectile/helper route wiring, hurtbox callback forwarding, projectile target-memory callback forwarding, and log forwarding.
+- No combat result semantics, Common1/custom-state routing semantics, projectile/helper semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchCombatBridgeSystem.test.ts` -> 1 file / 1 test.
+- Full closeout gates passed: `pnpm test` -> 119 files / 1020 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, and `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current match interaction combat callback construction has a named, testable ownership boundary while preserving the existing `RuntimeMatchInteractionWorld` callback contract.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN direct-combat priority, helper-owned combat/contact timing, projectile hit/cancel timing, teams/simul/multi-target combat breadth, visual/audio parity, score movement, and full combat VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard precision.
+
 ## 2026-07-02 - RuntimeMoveStartWorld ownership extraction
 
 Changed:

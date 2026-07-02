@@ -48,6 +48,7 @@ import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
+import { RuntimeMatchCombatBridgeWorld } from "./RuntimeMatchCombatBridgeSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
 import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
@@ -153,6 +154,7 @@ const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
+const matchCombatBridgeWorld = new RuntimeMatchCombatBridgeWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -461,6 +463,28 @@ export class PlayableMatchRuntime {
       );
       applyAutoGuardStart(this.p1, this.p2, this.guardWorld, this.guardDistanceWorld);
     }
+    const combatResolvers = matchCombatBridgeWorld.createResolvers({
+      combatResolutionWorld: this.combatResolutionWorld,
+      helperCombatWorld: this.helperCombatWorld,
+      directCombatWorld: this.directCombatWorld,
+      hitOverrideWorld: this.hitOverrideWorld,
+      reversalWorld: this.reversalWorld,
+      guardWorld: this.guardWorld,
+      getHitStateWorld: this.getHitStateWorld,
+      hitStateTransitionWorld: this.hitStateTransitionWorld,
+      contactPresentationWorld: this.contactPresentationWorld,
+      effectLifecycleWorld: this.effectLifecycleWorld,
+      targetWorld: this.targetWorld,
+      runtimeTick: this.tick,
+      getHurtBoxes: getRuntimeHurtBoxes,
+      combatStateHooks: runtimeCombatStateHooks,
+      helperStateHooks: runtimeHelperCombatStateHooks,
+      defaultHurtBoxes: defaultRuntimeHurtBoxes,
+      rememberProjectileTarget: (source, target, projectile) =>
+        this.rememberHelperProjectileTarget(source, target, projectile),
+      log: (line) => this.logs.unshift(line),
+    });
+
     this.matchInteractionWorld.advanceRuntime({
       p1: this.p1,
       p2: this.p2,
@@ -469,59 +493,10 @@ export class PlayableMatchRuntime {
       runtimeTick: this.tick,
       actorConstraintWorld: this.actorConstraintWorld,
       effectLifecycleWorld: this.effectLifecycleWorld,
-      resolvePriorityClash: (left, right) =>
-        this.combatResolutionWorld.resolvePriorityClash({
-          left,
-          right,
-          directCombatWorld: this.directCombatWorld,
-        }),
-      resolveDirectCombat: (attacker, defender) =>
-        this.combatResolutionWorld.resolveDirect({
-          attacker,
-          defender,
-          directCombatWorld: this.directCombatWorld,
-          hitOverrideWorld: this.hitOverrideWorld,
-          reversalWorld: this.reversalWorld,
-          guardWorld: this.guardWorld,
-          getHitStateWorld: this.getHitStateWorld,
-          hitStateTransitionWorld: this.hitStateTransitionWorld,
-          contactPresentationWorld: this.contactPresentationWorld,
-          runtimeTick: this.tick,
-          getHurtBoxes: getRuntimeHurtBoxes,
-          stateHooks: runtimeCombatStateHooks,
-          log: (line) => this.logs.unshift(line),
-        }),
-      resolveProjectileCombat: (attacker, defender) =>
-        this.combatResolutionWorld.resolveProjectile({
-          attacker,
-          defender,
-          hitOverrideWorld: this.hitOverrideWorld,
-          effectLifecycleWorld: this.effectLifecycleWorld,
-          guardWorld: this.guardWorld,
-          getHitStateWorld: this.getHitStateWorld,
-          contactPresentationWorld: this.contactPresentationWorld,
-          runtimeTick: this.tick,
-          getHurtBoxes: getRuntimeHurtBoxes,
-          stateHooks: runtimeCombatStateHooks,
-          rememberProjectileTarget: (source, target, projectile) =>
-            this.rememberHelperProjectileTarget(source, target, projectile),
-          log: (line) => this.logs.unshift(line),
-        }),
-      resolveHelperCombat: (attacker, defender) =>
-        this.helperCombatWorld.resolveDirect({
-          owner: attacker,
-          defender,
-          directCombatWorld: this.directCombatWorld,
-          guardWorld: this.guardWorld,
-          getHitStateWorld: this.getHitStateWorld,
-          contactPresentationWorld: this.contactPresentationWorld,
-          targetWorld: this.targetWorld,
-          runtimeTick: this.tick,
-          getHurtBoxes: getRuntimeHurtBoxes,
-          stateHooks: runtimeHelperCombatStateHooks,
-          defaultHurtBoxes: defaultRuntimeHurtBoxes,
-          log: (line) => this.logs.unshift(line),
-        }),
+      resolvePriorityClash: combatResolvers.resolvePriorityClash,
+      resolveDirectCombat: combatResolvers.resolveDirectCombat,
+      resolveProjectileCombat: combatResolvers.resolveProjectileCombat,
+      resolveHelperCombat: combatResolvers.resolveHelperCombat,
       log: (line) => this.logs.unshift(line),
     });
 

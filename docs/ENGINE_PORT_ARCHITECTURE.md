@@ -161,6 +161,8 @@ Current typed operation coverage includes bounded static `hitfall:*`, `kinematic
 
 `RuntimeMoveStartWorld` owns the bounded state-move startup mutation that used to live inline in `PlayableMatchRuntime`: selected current move and label, move tick reset, hit/reversal cleanup, attack `moveType`, control handoff, and authored action state-entry handoff through injected callbacks. `PlayableMatchRuntime` still supplies the concrete control mutation, state-entry implementation, input route, and State -1 route timing, so this is ownership cleanup rather than exact command timing, cancel windows, helper/team/redirect move startup, or full move VM parity.
 
+`RuntimeMatchCombatBridgeWorld` owns the bounded combat resolver construction that used to live inline in `PlayableMatchRuntime` immediately before `RuntimeMatchInteractionWorld.advanceRuntime`: priority clash, direct combat, projectile combat, and helper combat callbacks are created through one named bridge. `PlayableMatchRuntime` still supplies concrete combat worlds, state hooks, hurtbox lookup, projectile target-memory callback, and logging, so this is ownership cleanup rather than exact priority, helper-owned contact timing, projectile timing, teams/simul, multi-target breadth, or full combat VM parity.
+
 `RuntimeInputControlWorld` owns the bounded local player and simple AI control intent that used to live inline in `PlayableMatchRuntime`: input blocking gates, State -1 setup/entry precedence, local punch/kick intent, crouch/jump/walk/idle mutation, airborne drift, `AssertSpecial NoWalk` suppression, simple AI chase, and AI attack cooldown. `PlayableMatchRuntime` still supplies state-entry, action-change, state-number, and move-start hooks, so this is current sandbox control ownership cleanup, not exact command timing, real MUGEN AI, AILevel, ctrl edge parity, or full MUGEN/IKEMEN input routing.
 
 `RuntimeKinematicsWorld` owns the bounded actor position integration that used to live inline in `PlayableMatchRuntime`: horizontal/vertical position advance, current sandbox airborne gravity, ground snap, imported hit-state ground-snap preservation, and landing idle-action requests through injected callbacks. `PlayableMatchRuntime` still owns authored kinematic controller execution, Common1 recovery hooks, stage constraints, and concrete state/action entry, so this is current-behavior ownership cleanup, not exact `yaccel` constants, landing timing, air-recovery parity, helper physics ownership, or full MUGEN/IKEMEN physics parity.
@@ -306,6 +308,7 @@ MatchWorld
   RuntimeStunWorld
   RuntimeInputControlWorld
   RuntimeMoveStartWorld
+  RuntimeMatchCombatBridgeWorld
   RuntimeMoveLifecycleWorld
   RuntimeStateClockWorld
   RuntimeStateMetadataWorld
@@ -401,7 +404,8 @@ The current extraction order is:
 66. `RuntimeHelperCombatWorld`: own bounded helper-owned direct `HitDef` contact resolution, helper target-memory updates, contact presentation, and helper state sync outside inline `PlayableMatchRuntime` branching.
 67. `MatchWorld`: keep app/tests pointed at the facade while moving tick order and actor registries behind it.
 68. `RuntimeMoveStartWorld`: own bounded native/imported state-move startup for selected move metadata, attack-state reset, control handoff, and authored state-entry handoff outside inline match-loop branching.
-69. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned projectile/contact presentation, and exact projectile parity behind similarly small contracts.
+69. `RuntimeMatchCombatBridgeWorld`: own bounded priority/direct/projectile/helper combat resolver construction outside inline match-loop branching.
+70. Combat/effect actor systems: move richer target controller effects, real helper state machines, helper-owned projectile/contact presentation, and exact projectile parity behind similarly small contracts.
 
 ### Render Adapter
 
