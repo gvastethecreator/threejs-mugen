@@ -85,7 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R2 RuntimeSnapshotWorld match envelope ownership
+R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
+  -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
+  -> RuntimeHelperTargetStateWorld still owns helper owner validation and no-op result semantics
+  -> focused RuntimeMatchHelperTargetStateSystem coverage proves roster-backed target resolution, stale target payload isolation, missing-target no-op, and owner-mismatch fail-closed behavior
+  -> ownership cleanup only; no score movement, helper custom-state table breadth, throws, teams/simul actor registry, multi-target helper ownership, exact helper TargetState timing, visual/audio parity, or full Helper VM claim
+Previous R2 RuntimeSnapshotWorld match envelope ownership
   -> RuntimeSnapshotWorld.match() owns the full match snapshot envelope outside PlayableMatchRuntime
   -> selected P1 action, playback/speed/toggles, match pause handoff, stage/camera, round, player actors, effects, compatibility-session handoff, and log cap route through one boundary
   -> focused RuntimeSnapshotSystem coverage proves envelope fields, actor/effect clone isolation, and 80-line log trimming

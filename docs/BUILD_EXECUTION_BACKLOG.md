@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchHelperTargetStateWorld actor-resolution extraction
+
+Changed:
+- Added `RuntimeMatchHelperTargetStateWorld` as the bounded match-level actor-resolution seam for helper-owned `TargetState` entry.
+- Moved helper `TargetState` target lookup out of inline `PlayableMatchRuntime` and into a roster-backed world while keeping helper owner validation and fail-closed result semantics in `RuntimeHelperTargetStateWorld`.
+- Added focused `RuntimeMatchHelperTargetStateSystem` coverage for roster-backed target resolution, stale target payload isolation, missing-target no-op behavior, and owner-mismatch fail-closed behavior.
+- No helper VM semantics, controller order, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Full closeout gates passed: `pnpm test` -> 129 files / 1048 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer, Studio UI, sprites, CSS, or visible gameplay presentation.
+
+Claim allowed:
+- Current helper-owned `TargetState` match actor resolution has a named, testable ownership boundary while preserving existing owner validation and no-op behavior.
+
+Claim blocked:
+- Helper-owned custom-state tables, throws, teams/simul actor registries, multi-target helper ownership, exact helper TargetState timing, visual/audio parity, score movement, and full Helper VM parity remain blocked.
+
+Next:
+- Continue R1 KFM/Common1/FightFX precision or R2 helper/effect/combat ownership. Do not count this extraction as new gameplay semantics.
+
 ## 2026-07-02 - RuntimeSnapshotWorld match envelope ownership extraction
 
 Changed:

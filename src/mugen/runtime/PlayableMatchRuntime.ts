@@ -60,6 +60,7 @@ import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
 import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
+import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
 import { RuntimeActiveControllerDispatchWorld } from "./RuntimeActiveControllerDispatchSystem";
@@ -169,6 +170,7 @@ const matchTickBranchWorld = new RuntimeMatchTickBranchWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
+const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
 
@@ -321,27 +323,15 @@ export class PlayableMatchRuntime {
     targetActor: RuntimeTargetWorldActor,
     stateId: number,
   ): void {
-    this.helperTargetStateWorld.enter({
+    matchHelperTargetStateWorld.enter({
       owner,
       helper,
       targetActor,
       stateId,
-      hooks: {
-        resolveTarget: (candidate) => this.fighterById(candidate.id),
-        canEnterState: (target, targetStateId, stateOwner) => canEnterState(target, targetStateId, stateOwner),
-        enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
-      },
+      actors: [this.p1, this.p2],
+      canEnterState: (target, targetStateId, stateOwner) => canEnterState(target, targetStateId, stateOwner),
+      enterState: (target, targetStateId, options) => enterState(target, targetStateId, undefined, options),
     });
-  }
-
-  private fighterById(actorId: string): FighterMatchState | undefined {
-    if (actorId === this.p1.id) {
-      return this.p1;
-    }
-    if (actorId === this.p2.id) {
-      return this.p2;
-    }
-    return undefined;
   }
 
   dispatch(command: MatchRuntimeCommand): MugenSnapshot {
