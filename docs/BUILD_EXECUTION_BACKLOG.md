@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 PlaySnd abspan trace telemetry
+
+Changed:
+- Required `synthetic-imported-sound.json` now includes a second static `PlaySnd` probe with `value = S5,1`, `channel = 3`, and `abspan = -64`.
+- The required sound-event rule, trace evidence summary, and final actor sound-event telemetry now demand `absPan: -64` beside existing `legacyVolume`, `lowPriority`, `volumescale`, `freqmul`, `loop`, `pan`, `SndPan`, and `StopSnd` evidence.
+- No playback semantics changed; this promotes static `abspan` from focused-test-only coverage into required trace evidence.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "sound artifact"` -> 1 file / 3 relevant tests, 272 skipped.
+- Trace gate: `pnpm qa:trace` -> 281/281 artifacts, 256 required and 25 optional; `synthetic-imported-sound.json` checksum is now `cc9c8c49`, with required/evidence/final `absPan: -64` confirmed.
+
+Claim allowed:
+- Static absolute `PlaySnd abspan` is preserved as bounded diagnostic/playback telemetry through compiler/runtime/trace.
+
+Claim blocked:
+- Dynamic pan params, exact IKEMEN/MUGEN panning semantics, pre-RC8 legacy volume gain semantics, exact audio priority classes, global channel fallback, pause/superpause audio, timing/mixing, visual/audio parity, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX/recovery precision or choose another deeper R2 helper/effect/combat ownership seam.
+
 ## 2026-07-02 - R1 PlaySnd legacy volume telemetry
 
 Changed:
