@@ -43,6 +43,7 @@ import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
+import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
@@ -149,6 +150,7 @@ const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld()
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
+const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 
 export type MatchInput = {
   p1: Set<string>;
@@ -364,10 +366,7 @@ export class PlayableMatchRuntime {
     this.tick += 1;
     const p1Input = input.p1;
     const p2Input = input.p2 ?? new Set<string>();
-    this.p1.compatibilityTick = this.tick;
-    this.p2.compatibilityTick = this.tick;
-    this.p1.currentInput = new Set(p1Input);
-    this.p2.currentInput = new Set(p2Input);
+    matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 
     this.hitEligibilityWorld.resetFrameFlags(this.p1.runtime);
     this.hitEligibilityWorld.resetFrameFlags(this.p2.runtime);
@@ -411,8 +410,7 @@ export class PlayableMatchRuntime {
     }
 
     this.round.tickTimer();
-    this.p1.commandBuffer.push(this.tick, p1Input);
-    this.p2.commandBuffer.push(this.tick, p2Input);
+    matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
     handlePlayerInput(this.p1, p1Input, this.p2, this.stage.bounds, this.tick, this.inputControlWorld);
     if (input.p2) {
       handlePlayerInput(this.p2, p2Input, this.p1, this.stage.bounds, this.tick, this.inputControlWorld);

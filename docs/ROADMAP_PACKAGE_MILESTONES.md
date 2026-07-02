@@ -175,6 +175,15 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 match tick input ownership
+  -> RuntimeMatchTickInputWorld now owns bounded normal-match input/tick stamping from PlayableMatchRuntime
+  -> actor compatibilityTick, cloned currentInput, and normal non-hitpause command-buffer writes route through one boundary
+  -> focused RuntimeMatchTickInputSystem coverage proves clone isolation, tick stamping, normal buffer writes without hitPause, and separation from pause/hitpause buffering
+  -> ownership cleanup only; no exact command timing, input conflict priority, pause/hitpause command parity, helper/team/redirect command ownership, visual parity, score movement, or full input VM claim
+R2 helper telemetry ownership
+  -> RuntimeHelperTelemetryWorld owns bounded helper-local Projectile controller/op telemetry binding from PlayableMatchRuntime
+  -> focused RuntimeHelperTelemetrySystem coverage proves projectile controller/op recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement
+  -> ownership cleanup only; no exact helper Projectile tick timing, helper-owned Projectile combat/contact presentation, teams/simul helper telemetry, visual/audio parity, or full Helper VM claim
 R2 fighter advance ownership
   -> RuntimeFighterAdvanceWorld now owns bounded per-fighter advance order from PlayableMatchRuntime
   -> sprite-effect tick, hit eligibility slots, HitOverride slots, contact timers, render-angle reset, state clock, frame constraints, recovery-window tick, preserve-moveType read, stun, move lifecycle, kinematics, animation, active controllers, ground-recovery landing, lie-down recovery, and frozen-position preservation route through one boundary

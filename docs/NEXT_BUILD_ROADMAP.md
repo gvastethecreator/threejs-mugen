@@ -78,6 +78,15 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 match tick input ownership
+  -> RuntimeMatchTickInputWorld now owns bounded normal-match input/tick stamping from PlayableMatchRuntime
+  -> actor compatibilityTick, cloned currentInput, and normal non-hitpause command-buffer writes route through one boundary
+  -> focused RuntimeMatchTickInputSystem coverage proves clone isolation, tick stamping, normal buffer writes without hitPause, and separation from pause/hitpause buffering
+  -> ownership cleanup only; no exact command timing, input conflict priority, pause/hitpause command parity, helper/team/redirect command ownership, visual parity, score movement, or full input VM claim
+R2 helper telemetry ownership
+  -> RuntimeHelperTelemetryWorld owns bounded helper-local Projectile controller/op telemetry binding from PlayableMatchRuntime
+  -> focused RuntimeHelperTelemetrySystem coverage proves projectile controller/op recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement
+  -> ownership cleanup only; no exact helper Projectile tick timing, helper-owned Projectile combat/contact presentation, teams/simul helper telemetry, visual/audio parity, or full Helper VM claim
 R1 Common1 default crouch get-hit progression
   -> synthetic-imported-default-crouch-gethit-progression.json checksum fd986a9e is now required
   -> held-crouch imported defender routes 5010 -> 5011 -> 0 through HitShakeOver and HitOver after direct HitDef without p2stateno

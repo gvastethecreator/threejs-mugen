@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchTickInputWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchTickInputWorld` as the normal-match input/tick stamping boundary consumed by `PlayableMatchRuntime`.
+- Moved per-frame `compatibilityTick` / cloned `currentInput` stamping and normal-loop command-buffer pushes out of `PlayableMatchRuntime.advanceOneTick`.
+- Added focused `RuntimeMatchTickInputSystem` coverage for input clone isolation, actor tick stamping, normal command-buffer writes without `hitPause`, and keeping stamping separate from pause/hitpause buffering.
+- No runtime input semantics, command parser semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Full closeout gates passed: `pnpm test` -> 117 files / 1017 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` was intentionally not run because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal match tick input stamping and non-hitpause command-buffer writes have a named, testable ownership boundary while preserving existing pause and hitpause buffering ownership.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN command timing, input priority/conflict semantics, pause/hitpause command-buffer parity, helper/team/redirect command ownership, visual parity, score movement, and full input VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard precision.
+
 ## 2026-07-02 - RuntimeHelperTelemetryWorld ownership extraction
 
 Changed:

@@ -399,6 +399,7 @@ Issue: `.scratch/roadmap/issues/01-runtime-compatibility-gates.md`
 
 Build next:
 
+- Current proof: `RuntimeMatchTickInputWorld` owns bounded normal-match input/tick stamping consumed by `PlayableMatchRuntime`, with focused coverage for `compatibilityTick`, cloned `currentInput`, normal non-hitpause command-buffer writes, and separation from pause/hitpause buffering while trace behavior is expected to remain stable.
 - Current proof: `RuntimeHelperTelemetryWorld` owns bounded helper-local Projectile controller/op telemetry binding consumed by `PlayableMatchRuntime`, with focused coverage for projectile controller/operation recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement while trace behavior is expected to remain stable.
 - Current proof: `RuntimeRoundSystem` owns bounded round timer, KO/time-over finish state, winner/message projection, and reset semantics, with focused unit coverage and unchanged `pnpm qa:trace` aggregate behavior.
 - Current proof: required `synthetic-imported-round-ko.json` checksum `bfd5f073` and `synthetic-imported-round-timeover.json` checksum `7d9f7907` use `RuntimeTraceGate.requiredRoundFrames` to gate bounded `RoundSnapshot` KO and time-over/draw evidence.
