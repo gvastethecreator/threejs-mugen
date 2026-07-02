@@ -124,6 +124,7 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.vel).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVelocity).toEqual({ x: 3, y: -1 });
     expect(defender.runtime.hitVars).toEqual({
+      damage: 11,
       animType: 0,
       groundType: 1,
       airType: 1,
@@ -197,6 +198,7 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.hitVars).toEqual({
+      damage: 30,
       animType: 3,
       groundType: 2,
       airType: 4,

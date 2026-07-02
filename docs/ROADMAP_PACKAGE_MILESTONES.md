@@ -85,17 +85,22 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 Common1 default crouch get-hit progression trace gate
+R1 GetHitVar damage trace gate
+  -> synthetic-imported-gethitvar-damage.json checksum 2c726114 is required in qa:trace
+  -> defender-owned normal get-hit CNS branches from 5000 into state/action 323 through GetHitVar(damage) = 37 && !GetHitVar(guarded) after direct HitDef contact
+  -> direct and projectile contact paths store bounded applied damage in shared runtime hit vars, but this required trace only claims the direct normal-hit branch
+  -> pnpm qa:trace passes 269/269 artifacts, 246 required and 23 optional
+  -> damage metadata trigger evidence only; no score movement, exact damage lifetime/rounding, guard-chip semantics, helper/projectile/custom-state inheritance breadth, teams/simul, visual/audio parity, or full get-hit parity claim
+Previous R1 Common1 default crouch get-hit progression trace gate
   -> synthetic-imported-default-crouch-gethit-progression.json checksum fd986a9e is required in qa:trace
   -> held-crouch imported defender routes through defender-owned Common1-style states 5010 -> 5011 -> 0 after direct HitDef without p2stateno
   -> evidence includes ordered 5010:ChangeState -> 5011:ChangeState controller events, ordered 5010 -> 5011 actor frames, crouch state/physics telemetry, collision telemetry, final checksum d6b64044, and final idle/control
-  -> that required checkpoint passed 267/267 artifacts, 245 required and 22 optional before the latest optional KFM addendum
+  -> that required checkpoint passed 267/267 artifacts, 245 required and 22 optional before later addenda
   -> crouch HitShakeOver/HitOver progression evidence only; no score movement, exact tick timing, exact crouch get-hit animation/slide tables, fall routing, custom-state/helper/team breadth, visual/audio parity, or full Common1 get-hit parity claim
 Optional R1 KFM/Common1 crouch get-hit progression fixture gate
   -> kfm-official-default-crouch-gethit-progression.json checksum 3d197fae passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM held-crouch route executes prep state 11, then Common1 5010 -> 5011 -> 0 through HitShakeOver / HitOver
   -> KFM-specific evidence pins 5010 anim 5010, 5011 anim 5020, Clsn2 = 2/3, body width 39/39, crouch slide HitVelSet / VelMul / VelSet / DefenceMulSet typed-operation order, final checksum f469a942, and final idle/control
-  -> pnpm qa:trace passes 268/268 artifacts, 245 required and 23 optional
   -> private-fixture confidence only; no public KFM support, no score movement, no exact tick/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
   -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass when .scratch/fixtures/kfm-official.zip exists

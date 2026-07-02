@@ -78,6 +78,12 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 GetHitVar damage trace gate
+  -> synthetic-imported-gethitvar-damage.json checksum 2c726114 is now required
+  -> defender-owned normal get-hit CNS branches from 5000 into state/action 323 through GetHitVar(damage) = 37 && !GetHitVar(guarded) after direct HitDef contact
+  -> direct and projectile contact paths store bounded applied damage in shared runtime hit vars
+  -> pnpm qa:trace passes 269/269 artifacts, 246 required and 23 optional
+  -> damage metadata trigger evidence only; no exact damage lifetime/rounding, guard-chip semantics, helper/projectile/custom-state inheritance breadth, visual/audio parity, score movement, or full get-hit parity claim
 R2 match post-fighter ownership
   -> RuntimeMatchPostFighterWorld now owns bounded normal active-match post-fighter bridge wiring from PlayableMatchRuntime
   -> combat resolver construction and RuntimeMatchInteractionWorld.advanceRuntime handoff route through one named boundary
@@ -122,7 +128,7 @@ R2 helper telemetry ownership
   -> RuntimeHelperTelemetryWorld owns bounded helper-local Projectile controller/op telemetry binding from PlayableMatchRuntime
   -> focused RuntimeHelperTelemetrySystem coverage proves projectile controller/op recording, helper-state attribution, owner-state fallback, non-projectile ignore behavior, and stale handler replacement
   -> ownership cleanup only; no exact helper Projectile tick timing, helper-owned Projectile combat/contact presentation, teams/simul helper telemetry, visual/audio parity, or full Helper VM claim
-R1 Common1 default crouch get-hit progression
+Previous R1 Common1 default crouch get-hit progression
   -> synthetic-imported-default-crouch-gethit-progression.json checksum fd986a9e is now required
   -> held-crouch imported defender routes 5010 -> 5011 -> 0 through HitShakeOver and HitOver after direct HitDef without p2stateno
   -> gate requires ordered controller events, ordered actor frames, crouch state/physics telemetry, Clsn2 telemetry, final checksum d6b64044, and final idle/control
@@ -201,7 +207,7 @@ Previous R2 RuntimeEffectLifecycleWorld helper advance-context ownership
 Optional R1 KFM/Common1 crouch get-hit progression fixture gate
   -> kfm-official-default-crouch-gethit-progression.json checksum 3d197fae passes with private .scratch/fixtures/kfm-official.zip
   -> confirms real KFM held-crouch prep 11 plus Common1 5010 -> 5011 -> 0 through HitShakeOver / HitOver, with KFM-specific frame evidence, crouch slide HitVelSet / VelMul / VelSet / DefenceMulSet typed-operation order, and final control
-  -> pnpm qa:trace passes 268/268 artifacts, 245 required and 23 optional
+  -> current qa:trace aggregate is superseded by the later GetHitVar damage gate
   -> optional private fixture confidence only; no public KFM, score movement, exact tick timing/table/fall/custom-state/team/visual/audio/full parity claim
 Optional R1 KFM/Common1 air-entry recovery fixture gates
   -> kfm-official-default-air-fall-recovery-input.json checksum 3bce8aba and kfm-official-default-air-fall-recovery-too-early.json checksum b199382a pass with private .scratch/fixtures/kfm-official.zip
@@ -1108,6 +1114,8 @@ I1 ZSS state-block scanner expansion
 Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
+
+Do not reselect `synthetic-imported-gethitvar-damage` or the bounded direct-contact `GetHitVar(damage) = 37` normal get-hit branch as fresh next work; it is now closed and required.
 
 Do not reselect `GetHitVar guard timing`, `GetHitVar down-recover`, `GetHitVar fall env-shake`, `GetHitVar fall metadata`, `TeamSide`, `Target*` final side-effect trace strengthening, `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `HitBy`, target-owned custom-state, `SelfAnimExist`, `AnimTime`, `AnimElemTime`, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, optional KFM recovery-threshold drop gate, Common1 too-early recovery-input positive-window gate, official-style synthetic recovery threshold / too-early promotion, official-style synthetic ground recovery sequence, resource actor-frame evidence, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root/opponent read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus selected-frame/multi-frame trace metadata, selected HitSpark AIR-frame offset/duration requirements, `RuntimeContactPresentationWorld`, `RuntimeCombatResolutionWorld`, `RuntimeHelperCombatWorld`, `RuntimeHelperProjectileTargetWorld`, `RuntimeHelperTargetStateWorld`, `RuntimeTargetStateEntryWorld`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `RuntimeAutoGuardStartWorld`, `RuntimeActiveControllerScanWorld`, `RuntimeActiveControllerDispatchWorld`, `RuntimeActiveStateDispatchWorld`, `RuntimeActiveSideEffectDispatchWorld`, `RuntimeStateEntryRouteWorld`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `RuntimeResourceWorld`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeTargetWorld.resolveCandidates`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeAnimationWorld` active action-retarget ownership deepening, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveStartWorld`, `RuntimeMoveLifecycleWorld`, `RuntimeMatchFighterAdvanceWorld`, `RuntimeMatchPauseControllerWorld`, `RuntimeMatchCombatBridgeWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeBoundsControllerWorld` ownership, `RuntimeHitFallControllerWorld` ownership, `RuntimeStateTypeWorld`, `RuntimeDamageScaleWorld`, `RuntimeHitDefenseWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld`, `RuntimeFighterAdvanceWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 

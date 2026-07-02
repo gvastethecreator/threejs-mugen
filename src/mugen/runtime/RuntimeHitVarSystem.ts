@@ -14,6 +14,9 @@ export function runtimeHitVar(
   if (key === "animtype") {
     return state.hitVars?.animType ?? 0;
   }
+  if (key === "damage") {
+    return state.hitVars?.damage ?? 0;
+  }
   if (key === "groundtype") {
     return state.hitVars?.groundType ?? 0;
   }

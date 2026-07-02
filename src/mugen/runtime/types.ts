@@ -122,6 +122,7 @@ export type RuntimeReversalDef = {
 };
 
 export type RuntimeGetHitVars = {
+  damage?: number;
   animType?: number;
   groundType?: number;
   airType?: number;

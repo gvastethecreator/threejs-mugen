@@ -141,7 +141,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.stun, result.pause);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.damage, result.stun, result.pause);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -156,7 +156,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.stun, result.pause);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.damage, result.stun, result.pause);
       input.applyHitState?.(defender);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
@@ -226,8 +226,14 @@ function decrementProjectilePriority(priority: number): number {
   return Math.max(0, priority - 1);
 }
 
-function runtimeGetHitVarsFromProjectileResult(guarded: boolean, hitTime: number, hitShakeTime: number): CharacterRuntimeState["hitVars"] {
+function runtimeGetHitVarsFromProjectileResult(
+  guarded: boolean,
+  damage: number,
+  hitTime: number,
+  hitShakeTime: number,
+): CharacterRuntimeState["hitVars"] {
   return {
+    damage: Math.max(0, Math.round(damage)),
     animType: 0,
     groundType: 1,
     airType: 1,

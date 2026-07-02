@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - GetHitVar damage metadata gate
+
+Changed:
+- Added bounded `RuntimeGetHitVars.damage` storage for direct `HitDef` and projectile hit/guard combat results.
+- Exposed `GetHitVar(damage)` through `RuntimeHitVarSystem`, shared runtime expression contexts, and the default expression fallback.
+- Added required trace preset `synthetic-imported-gethitvar-damage.json` so imported defender-owned Common1-style get-hit CNS can branch from `5000` into state/action `323` through `GetHitVar(damage) = 37 && !GetHitVar(guarded)` after direct `HitDef` contact.
+- Added focused direct-combat, projectile-combat, expression-context, CNS subset, and trace-preset coverage.
+- No frontend, CSS, renderer, sprite, audio, packaged asset, trace schema, or broad combat priority semantics changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/DirectCombatSystem.test.ts src/tests/ProjectileCombatSystem.test.ts -t "GetHitVar damage|runtime hit variables|controller params|bounded hit results|projectile hit|projectile guard"` -> 4 files passed, 1 skipped, 10 tests passed, 299 skipped.
+- Trace gate passed before docs update: `pnpm qa:trace` -> 269/269 artifacts, 246 required and 23 optional; new artifact `synthetic-imported-gethitvar-damage.json` checksum `2c726114`.
+- Full closeout gates passed: `pnpm test` -> 123 files / 1031 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 269/269 artifacts, 246 required and 23 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Bounded imported defender-owned Common1-style normal get-hit CNS can branch on direct-contact `GetHitVar(damage)` metadata, and shared runtime hit vars now carry applied damage for direct and projectile contact paths.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN damage lifetime/rounding, guard-chip semantics, helper/projectile/custom-state inheritance breadth, teams/simul, visual/audio parity, score movement, and full get-hit parity remain blocked.
+
+Next:
+- Continue R1 guard/FightFX/Common1 precision or R2 helper/effect/combat ownership. Do not reselect the just-closed GetHitVar damage gate as fresh work.
+
 ## 2026-07-02 - RuntimeMatchPostFighterWorld ownership extraction
 
 Changed:

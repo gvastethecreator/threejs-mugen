@@ -128,6 +128,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
       guarded: true,
+      damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
     });
@@ -165,6 +166,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
+      damage: result.damage,
       hitShakeTime: result.pause,
       hitTime: result.stun,
     });
@@ -202,9 +204,10 @@ function interruptCurrentMove(actor: RuntimeDirectCombatActor): void {
 
 function runtimeGetHitVarsFromMove(
   move: DemoMove,
-  timing: { guarded?: boolean; hitShakeTime: number; hitTime: number },
+  timing: { guarded?: boolean; damage: number; hitShakeTime: number; hitTime: number },
 ): CharacterRuntimeState["hitVars"] {
   return {
+    damage: Math.max(0, Math.round(timing.damage)),
     animType: move.hitVars?.animType ?? 0,
     groundType: move.hitVars?.groundType ?? 1,
     airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,

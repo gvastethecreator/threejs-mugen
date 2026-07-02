@@ -480,11 +480,12 @@ describe("StateControllerExecutor", () => {
       compileControllerIr(
         controller("PowerSet", {
           value:
-            "100 + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound) + GetHitVar(guarded) * 1000",
+            "100 + GetHitVar(damage) + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound) + GetHitVar(guarded) * 1000",
         }),
       ),
       runtimeState({
         hitVars: {
+          damage: 9,
           animType: 4,
           groundType: 2,
           airType: 3,
@@ -495,7 +496,7 @@ describe("StateControllerExecutor", () => {
       () => undefined,
     );
 
-    expect(typedState.power).toBe(1424);
+    expect(typedState.power).toBe(1433);
   });
 
   it("executes additional simple CNS controllers and expression params", () => {

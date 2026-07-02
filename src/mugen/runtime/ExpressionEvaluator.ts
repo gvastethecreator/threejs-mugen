@@ -1044,6 +1044,7 @@ function defaultHitVar(name: string): number {
   const values: Record<string, number> = {
     animtype: 0,
     ctrltime: 0,
+    damage: 0,
     fall: 0,
     "fall.damage": 0,
     "fall.defence_up": 100,

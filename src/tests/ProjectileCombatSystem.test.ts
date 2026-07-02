@@ -62,6 +62,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.hitPause).toBe(4);
     expect(defender.hitStun).toBe(13);
     expect(defender.runtime.moveType).toBe("H");
+    expect(defender.runtime.hitVars?.damage).toBe(42);
     expect(receivedDamage).toBe(42);
     expect(attacker.runtime.power).toBe(40);
     expect(targets).toEqual(["p2:77"]);
@@ -96,6 +97,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.ctrl).toBe(false);
     expect(defender.runtime.guarding).toBe(true);
     expect(defender.runtime.hitVars).toEqual({
+      damage: 4,
       animType: 0,
       groundType: 1,
       airType: 1,
