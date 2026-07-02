@@ -1619,6 +1619,36 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-crouch-guard-slide-stop",
+        required: false,
+        artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
+          script: presets.importedDefaultCrouchGuardStateScript(),
+          requiredExecutedStates: [200, 152, 153],
+          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredControllerEventSequences: [presets.officialKfmCrouchGuardSlideStopControllerSequence()],
+          requiredActorFrames: presets.officialKfmCrouchGuardHitPhysicsFrames(),
+          requiredActiveCommands: ["holddown", "x"],
+          requiredFinalActors: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              life: 995,
+              ctrl: true,
+              stateType: "C",
+              moveType: "I",
+              physics: "C",
+            },
+          ],
+          targetId: "kfm-official-default-crouch-guard-slide-stop-golden",
+          targetLabel: "Official KFM Common1 crouch guard slide-stop route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 executes HitVelSet, VelSet, CtrlSet, and final ChangeState in order after direct guarded contact while holding down-back, with bounded actor-frame crouch state/physics/body telemetry. The observed KFM route returns toward crouch/control rather than being claimed as a public 130 guard-hold route. This does not prove public KFM support, exact guard timing, proximity guard, guard effects, air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-air-guard-state",
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {

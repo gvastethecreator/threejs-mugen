@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Optional official KFM crouch guard slide-stop fixture gate
+
+Changed:
+- `kfm-official-default-crouch-guard-slide-stop.json` is now an optional private-fixture trace artifact when `.scratch/fixtures/kfm-official.zip` exists.
+- `RuntimeTraceGatePresets` now exports `officialKfmCrouchGuardSlideStopControllerSequence()` so KFM crouch guard evidence can require `153` `HitVelSet`, typed `kinematic:hitvelset`, `VelSet`, typed `kinematic:velset`, `CtrlSet`, typed `resource:ctrlset`, and final `ChangeState` in order.
+- `pnpm qa:trace` registers the stricter KFM crouch gate beside the existing KFM crouch guard-state gate without claiming a public `130` guard-hold return; the observed real KFM route returns toward crouch/control.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "official KFM guard controller-order"` -> 1 file / 1 test, 268 skipped.
+- Trace gate: `pnpm qa:trace` -> 275/275 artifacts, 250 required and 25 optional; `kfm-official-default-crouch-guard-slide-stop.json` checksum `d11153d0`.
+- Full gates: `pnpm test` -> 130 files / 1061 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 275/275 artifacts, 250 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Private official KFM fixture confidence now covers bounded crouch guard-hit state `153` slide-stop/control controller and typed-operation order after direct guarded contact while holding down-back.
+
+Claim blocked:
+- Public KFM support, exact guard timing, proximity guard, guard effects, public `130` guard-hold return claim, air slide-stop parity, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity remain blocked.
+
+Next:
+- Continue R1 guard/recovery loop precision or R2 MatchWorld helper/effect ownership.
+
 ## 2026-07-02 - Crouch guard slide-stop trace gate
 
 Changed:

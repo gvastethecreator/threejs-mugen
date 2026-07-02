@@ -4694,6 +4694,25 @@ export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceContr
   };
 }
 
+export function officialKfmCrouchGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: "Official KFM 152/153 crouch guard slide-stop and control order",
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: 152, controller: "ChangeAnim" },
+      { stateNo: 152, controller: "ChangeState" },
+      { stateNo: 153, controller: "HitVelSet" },
+      { stateNo: 153, operation: "kinematic:hitvelset" },
+      { stateNo: 153, controller: "VelSet" },
+      { stateNo: 153, operation: "kinematic:velset" },
+      { stateNo: 153, controller: "CtrlSet" },
+      { stateNo: 153, operation: "resource:ctrlset" },
+      { stateNo: 153, controller: "ChangeState" },
+    ],
+  };
+}
+
 export function officialKfmAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 154/155 air guard-hit and landing controller order",

@@ -84,7 +84,7 @@ R1 Common1 crouch guard slide-stop trace gate
   -> active-command evidence requires holddown and x
   -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame evidence proves crouch guard-slide velocity before stop/control
-  -> pnpm qa:trace now passes 274/274 artifacts, 250 required and 24 optional
+  -> pnpm qa:trace now passes 275/275 artifacts, 250 required and 25 optional after the optional KFM crouch mirror
   -> crouch guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan now compile into typed audio:playsnd metadata
@@ -134,7 +134,7 @@ R1 EnvShake required trace restoration
   -> synthetic-imported-envshake.json checksum 061f17d5 is required in qa:trace again
   -> imported state 200 gates ChangeState, EnvShake, HitDef, typed envshake operation evidence, and RuntimeEnvShakeEvent telemetry for p1
   -> event evidence pins time 16, freq 30, ampl -7, phase 0.5, and stateNo 200
-  -> current pnpm qa:trace passes 274/274 artifacts, 250 required and 24 optional after later guard gates
+  -> current pnpm qa:trace passes 275/275 artifacts, 250 required and 25 optional after later guard gates
   -> evidence-pipeline restoration only; no exact camera waveform, pause/stage/layer interaction, helper/redirect ownership, visual/audio parity, score movement, or full presentation parity claim
 Previous R1 Common1 stand guard slide-stop trace gate
   -> synthetic-imported-default-guard-slide-stop.json checksum a9663641 is now required
@@ -144,9 +144,12 @@ Previous R1 Common1 stand guard slide-stop trace gate
   -> that required checkpoint passed pnpm qa:trace at 271/271 artifacts, 248 required and 23 optional
   -> stand guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, crouch/air parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 Optional R1 KFM/Common1 guard slide-stop fixture gate
+  -> kfm-official-default-crouch-guard-slide-stop.json checksum d11153d0 passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM/Common1 crouch guard-hit state 153 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact while holding down-back
+  -> the observed KFM route returns toward crouch/control; this does not claim a public 130 guard-hold return
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 272/272 artifacts, 248 required and 24 optional
+  -> pnpm qa:trace passes 275/275 artifacts, 250 required and 25 optional
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 match active ownership
   -> RuntimeMatchActiveWorld now owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
