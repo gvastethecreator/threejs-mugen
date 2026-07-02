@@ -45,6 +45,8 @@ export function createRuntimeSoundEvent(
   const volumeScale = operation?.volumeScale ?? firstNumber(findControllerParam(controller, "volumescale"));
   const freqMul = operation?.freqMul ?? firstNumber(findControllerParam(controller, "freqmul"));
   const loop = operation?.loop ?? firstBoolean(findControllerParam(controller, "loop"));
+  const pan = operation?.pan ?? firstNumber(findControllerParam(controller, "pan"));
+  const absPan = operation?.absPan ?? firstNumber(findControllerParam(controller, "abspan"));
   return {
     type: operation ? operationSoundEventType(operation) : soundEventType(controller),
     group: parsed?.group,
@@ -54,6 +56,8 @@ export function createRuntimeSoundEvent(
     ...(volumeScale !== undefined ? { volumeScale } : {}),
     ...(freqMul !== undefined ? { freqMul } : {}),
     ...(loop !== undefined ? { loop } : {}),
+    ...(pan !== undefined ? { pan } : {}),
+    ...(absPan !== undefined ? { absPan } : {}),
     raw: rawValue,
     ...soundPrefixMetadata(actor, parsed?.rawPrefix),
     stateNo: actor.runtime.stateNo,

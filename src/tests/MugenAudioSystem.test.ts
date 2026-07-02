@@ -4,6 +4,7 @@ import {
   resolveRuntimeAudioEventAction,
   resolveRuntimeSoundGain,
   resolveRuntimeSoundPlaybackRate,
+  resolveRuntimeSoundStereoPan,
 } from "../game/audio/MugenAudioSystem";
 import type { SndArchive } from "../mugen/model/MugenSound";
 
@@ -53,6 +54,17 @@ describe("MugenAudioSystem", () => {
     expect(resolveRuntimeSoundPlaybackRate({ freqMul: -2 })).toBe(1);
     expect(resolveRuntimeSoundPlaybackRate({ freqMul: 99 })).toBe(4);
     expect(resolveRuntimeSoundPlaybackRate({ freqMul: 0.5 }, 2)).toBe(1);
+  });
+
+  it("maps PlaySnd pan and abspan into bounded stereo panning", () => {
+    expect(resolveRuntimeSoundStereoPan({})).toBe(0);
+    expect(resolveRuntimeSoundStereoPan({ absPan: 160 })).toBe(0.5);
+    expect(resolveRuntimeSoundStereoPan({ absPan: -640 })).toBe(-1);
+    expect(resolveRuntimeSoundStereoPan({ pan: 64 }, { actorX: 0, actorFacing: 1, cameraX: 0 })).toBe(0.2);
+    expect(resolveRuntimeSoundStereoPan({ pan: 64 }, { actorX: 0, actorFacing: -1, cameraX: 0 })).toBe(-0.2);
+    expect(resolveRuntimeSoundStereoPan({ pan: 0 }, { actorX: 160, actorFacing: 1, cameraX: 0 })).toBe(0.5);
+    expect(resolveRuntimeSoundStereoPan({ pan: 0 }, { actorX: 160, actorFacing: 1, cameraX: 160 })).toBe(0);
+    expect(resolveRuntimeSoundStereoPan({ pan: 64, absPan: -160 }, { actorX: 160, actorFacing: 1, cameraX: 0 })).toBe(-0.5);
   });
 });
 

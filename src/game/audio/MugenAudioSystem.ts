@@ -1,5 +1,5 @@
 import { findSound, type MugenSound, type SndArchive } from "../../mugen/model/MugenSound";
-import type { MugenSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
+import type { ActorSnapshot, MugenSnapshot, RuntimeSoundEvent } from "../../mugen/runtime/types";
 
 export type MugenAudioDiagnostics = {
   available: boolean;
@@ -20,6 +20,14 @@ export type RuntimeAudioEventAction =
 const DEFAULT_SOUND_GAIN = 0.55;
 const MIN_PLAYBACK_RATE = 0.01;
 const MAX_PLAYBACK_RATE = 4;
+const DEFAULT_PAN_HALF_WIDTH = 320;
+
+export type RuntimeSoundPanContext = {
+  actorX?: number;
+  actorFacing?: 1 | -1;
+  cameraX?: number;
+  halfWidth?: number;
+};
 
 export class MugenAudioSystem {
   private context?: AudioContext;
@@ -84,7 +92,7 @@ export class MugenAudioSystem {
         }
         const action = resolveRuntimeAudioEventAction(event, this.hasActiveChannel(event.channel));
         if (action.type === "play") {
-          void this.play(event, action);
+          void this.play(event, action, actor, snapshot);
         } else if (action.type === "stop") {
           this.stop(action.channel);
         } else {
@@ -119,7 +127,12 @@ export class MugenAudioSystem {
     this.floatingSources.clear();
   }
 
-  private async play(event: RuntimeSoundEvent, action: Extract<RuntimeAudioEventAction, { type: "play" }>): Promise<void> {
+  private async play(
+    event: RuntimeSoundEvent,
+    action: Extract<RuntimeAudioEventAction, { type: "play" }>,
+    actor: ActorSnapshot,
+    snapshot: MugenSnapshot,
+  ): Promise<void> {
     const archive = this.resolveArchive(event);
     if (event.group === undefined || event.index === undefined || !archive) {
       this.missing += 1;
@@ -145,7 +158,18 @@ export class MugenAudioSystem {
     source.buffer = buffer;
     source.playbackRate.value = resolveRuntimeSoundPlaybackRate(event);
     source.loop = event.loop === true;
-    source.connect(gain).connect(context.destination);
+    const stereoPan = resolveRuntimeSoundStereoPan(event, {
+      actorX: actor.runtime.pos.x,
+      actorFacing: actor.runtime.facing,
+      cameraX: snapshot.stage.camera.x,
+    });
+    if (stereoPan !== 0 && typeof context.createStereoPanner === "function") {
+      const panner = context.createStereoPanner();
+      panner.pan.value = stereoPan;
+      source.connect(gain).connect(panner).connect(context.destination);
+    } else {
+      source.connect(gain).connect(context.destination);
+    }
     if (action.channel !== undefined) {
       this.stop(action.channel);
       this.activeChannels.set(action.channel, source);
@@ -260,6 +284,23 @@ export function resolveRuntimeSoundPlaybackRate(
   return clamp(safeBaseRate * event.freqMul, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE);
 }
 
+export function resolveRuntimeSoundStereoPan(
+  event: Pick<RuntimeSoundEvent, "pan" | "absPan">,
+  context: RuntimeSoundPanContext = {},
+): number {
+  const halfWidth = Math.max(1, Math.abs(context.halfWidth ?? DEFAULT_PAN_HALF_WIDTH));
+  if (event.absPan !== undefined) {
+    return clamp(event.absPan / halfWidth, -1, 1);
+  }
+  if (event.pan === undefined) {
+    return 0;
+  }
+  const actorX = context.actorX ?? 0;
+  const actorFacing = context.actorFacing ?? 1;
+  const cameraX = context.cameraX ?? 0;
+  return clamp((actorX + event.pan * actorFacing - cameraX) / halfWidth, -1, 1);
+}
+
 function eventKey(actorId: string, event: RuntimeSoundEvent): string {
   return [
     actorId,
@@ -275,6 +316,8 @@ function eventKey(actorId: string, event: RuntimeSoundEvent): string {
     event.volumeScale ?? "-",
     event.freqMul ?? "-",
     event.loop ? "loop" : "-",
+    event.pan ?? "-",
+    event.absPan ?? "-",
   ].join(":");
 }
 

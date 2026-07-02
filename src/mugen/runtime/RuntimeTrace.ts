@@ -693,6 +693,8 @@ export type RuntimeTraceSoundEventRequirement = {
   volumeScale?: number;
   freqMul?: number;
   loop?: boolean;
+  pan?: number;
+  absPan?: number;
   raw?: string;
   soundPrefix?: string;
   stateNo?: number;
@@ -716,6 +718,8 @@ export type RuntimeTraceGateSoundEventEvidence = {
   volumeScale?: number;
   freqMul?: number;
   loop?: boolean;
+  pan?: number;
+  absPan?: number;
   raw?: string;
   soundPrefix?: string;
   stateNo: number;
@@ -2176,6 +2180,8 @@ function summarizeSoundEventEvidence(
     volumeScale: event.volumeScale,
     freqMul: event.freqMul,
     loop: event.loop,
+    pan: event.pan,
+    absPan: event.absPan,
     raw: event.raw,
     soundPrefix: event.soundPrefix,
     stateNo: event.stateNo,
@@ -2201,6 +2207,8 @@ function soundEventEvidenceKey(event: RuntimeTraceGateSoundEventEvidence): strin
     event.volumeScale ?? "",
     event.freqMul ?? "",
     event.loop ? "loop" : "",
+    event.pan ?? "",
+    event.absPan ?? "",
     event.raw ?? "",
     event.soundPrefix ?? "",
     event.stateNo,
@@ -2229,6 +2237,8 @@ function matchesSoundEventRequirement(
     (requirement.volumeScale === undefined || event.volumeScale === requirement.volumeScale) &&
     (requirement.freqMul === undefined || event.freqMul === requirement.freqMul) &&
     (requirement.loop === undefined || (requirement.loop ? event.loop === true : event.loop !== true)) &&
+    (requirement.pan === undefined || event.pan === requirement.pan) &&
+    (requirement.absPan === undefined || event.absPan === requirement.absPan) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
     (requirement.soundPrefix === undefined || event.soundPrefix === requirement.soundPrefix) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&

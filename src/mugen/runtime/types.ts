@@ -204,6 +204,8 @@ export type RuntimeSoundEvent = {
   volumeScale?: number;
   freqMul?: number;
   loop?: boolean;
+  pan?: number;
+  absPan?: number;
   raw?: string;
   soundPrefix?: string;
   stateNo: number;

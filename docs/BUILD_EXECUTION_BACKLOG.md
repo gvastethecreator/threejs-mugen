@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - PlaySnd pan and abspan handoff
+
+Changed:
+- `AudioControllerOp` now preserves static `PlaySnd pan` and `abspan` as typed `audio:playsnd` metadata, and `AudioEventSystem` emits them as bounded `RuntimeSoundEvent.pan` / `absPan` trace/debug/audio telemetry.
+- `RuntimeTrace.requiredSoundEvents` can require `pan` and `absPan`; required `synthetic-imported-sound.json` still passes with checksum `c9d880c0` while requiring `PlaySnd channel = 2`, `lowpriority = 1`, `volumescale = 50`, `freqmul = 0.5`, `loop = 1`, and `pan = 32`.
+- `MugenAudioSystem` maps `RuntimeSoundEvent.pan` / `absPan` into bounded Web Audio stereo panning through `resolveRuntimeSoundStereoPan(...)`. Relative `pan` uses actor x, facing, and stage camera x; absolute `abspan` uses screen-center offset. Both clamp to Web Audio `[-1, 1]`.
+- This follows Elecbyte's `PlaySnd` docs for `pan` / `abspan`, but remains a bounded browser adapter approximation. `SndPan` remains separate and unsupported.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 325 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `synthetic-imported-sound.json` remains checksum `c9d880c0` with `lowPriority: true`, `volumeScale: 50`, `freqMul: 0.5`, `loop: true`, and `pan: 32` evidence.
+- Full gates: `pnpm test` -> 130 files / 1058 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with existing CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Static imported `PlaySnd pan = 32` survives compiler/runtime/trace handoff; static `PlaySnd abspan = -64` survives compiler/runtime focused tests; the browser audio adapter applies bounded actor/camera-aware stereo panning for decodable SND playback.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN audio parity, `SndPan`, dynamic pan params, panning over non-640 localcoord/view widths, legacy `volume`, exact channel priority classes, global channel fallback, timing/mixing, sample start/end behavior, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
+
+Next:
+- Return to R1 Common1 guard/recovery precision or R2 MatchWorld ownership. Further audio work should target `SndPan` only if it can land as a separate typed controller with trace/runtime evidence.
+
 ## 2026-07-02 - PlaySnd freqmul and loop handoff
 
 Changed:
