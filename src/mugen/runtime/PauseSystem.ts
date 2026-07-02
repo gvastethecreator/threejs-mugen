@@ -4,6 +4,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 import type { RuntimeMatchPauseSnapshot } from "./types";
@@ -189,6 +190,8 @@ export class RuntimePauseControllerDispatchWorld {
 }
 
 export class RuntimePausedMatchWorld {
+  private readonly opponentContextWorld = new RuntimeMatchOpponentContextWorld();
+
   advance<TActor extends RuntimePausedMatchActor>(input: RuntimePausedMatchWorldInput<TActor>): RuntimePausedMatchAdvanceResult {
     const pause = input.currentPause();
     if (!pause) {
@@ -236,8 +239,7 @@ export class RuntimePausedMatchWorld {
     input: RuntimePausedMatchRuntimeWorldInput<TActor>,
   ): RuntimePausedMatchAdvanceResult {
     const { actorConstraintWorld, effectLifecycleWorld, stage } = input;
-    const opponentFor = (actor: TActor) => (actor === input.p1 ? input.p2 : input.p1);
-    const opponentsFor = (actor: TActor) => [opponentFor(actor)];
+    const pair = { p1: input.p1, p2: input.p2 };
 
     return this.advance({
       p1: input.p1,
@@ -252,22 +254,32 @@ export class RuntimePausedMatchWorld {
       handleAi: input.handleAi,
       advanceFighter: input.advanceFighter,
       advanceTargetMemory: (actor) => actor.targetWorld.advance(actor),
-      advanceActiveEffects: (actor) =>
-        effectLifecycleWorld.advanceActive(actor, stage, opponentFor(actor), {
+      advanceActiveEffects: (actor) => {
+        const context = this.opponentContextWorld.forActor(pair, actor);
+        if (!context) {
+          return;
+        }
+        effectLifecycleWorld.advanceActive(actor, stage, context.opponent, {
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
-          opponents: opponentsFor(actor),
-        }),
+          opponents: context.opponents,
+        });
+      },
       advancePresentationEffects: (actor) => effectLifecycleWorld.advancePresentation(actor),
       applyTargetBindings: (actor, opponent) => actor.targetWorld.applyTargetBindings(actor, [opponent]),
       applyBindToTarget: (actor, opponent) => actor.targetWorld.applyBindToTarget(actor, [opponent]),
       clampToStage: (actor) => actorConstraintWorld.clampToStage(actor.runtime, stage),
-      advancePausedPresentation: (actor, pause) =>
-        effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, opponentFor(actor), {
+      advancePausedPresentation: (actor, pause) => {
+        const context = this.opponentContextWorld.forActor(pair, actor);
+        if (!context) {
+          return;
+        }
+        effectLifecycleWorld.advancePausedPresentation(actor, pause.type, stage, context.opponent, {
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
-          opponents: opponentsFor(actor),
-        }),
+          opponents: context.opponents,
+        });
+      },
       tickPause: input.tickPause,
     });
   }

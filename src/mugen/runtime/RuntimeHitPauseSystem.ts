@@ -1,6 +1,7 @@
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { CommandBuffer } from "./CommandBuffer";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 
 export type RuntimeHitPauseActor = {
   hitPause: number;
@@ -42,6 +43,8 @@ export type RuntimeHitPauseAdvanceResult = {
 };
 
 export class RuntimeHitPauseWorld {
+  private readonly opponentContextWorld = new RuntimeMatchOpponentContextWorld();
+
   advance<TActor extends RuntimeHitPauseActor>(input: RuntimeHitPauseWorldInput<TActor>): RuntimeHitPauseAdvanceResult {
     const globalPause = Math.max(input.p1.hitPause, input.p2.hitPause);
     if (globalPause <= 0) {
@@ -73,8 +76,7 @@ export class RuntimeHitPauseWorld {
   advanceRuntime<TActor extends RuntimeHitPauseRuntimeActor>(
     input: RuntimeHitPauseRuntimeWorldInput<TActor>,
   ): RuntimeHitPauseAdvanceResult {
-    const opponentFor = (actor: TActor) => (actor === input.p1 ? input.p2 : input.p1);
-    const opponentsFor = (actor: TActor) => [opponentFor(actor)];
+    const pair = { p1: input.p1, p2: input.p2 };
 
     return this.advance({
       p1: input.p1,
@@ -83,12 +85,17 @@ export class RuntimeHitPauseWorld {
       p2Input: input.p2Input,
       pushCommandBuffer: (actor, actorInput) => actor.commandBuffer.push(input.tick, actorInput, { hitPause: true }),
       runIgnoredControllers: input.runIgnoredControllers,
-      advancePausedPresentation: (actor) =>
-        input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, opponentFor(actor), {
+      advancePausedPresentation: (actor) => {
+        const context = this.opponentContextWorld.forActor(pair, actor);
+        if (!context) {
+          return;
+        }
+        input.effectLifecycleWorld.advancePausedPresentation(actor, "hitpause", input.stage, context.opponent, {
           stageTime: input.stageTime ?? input.tick,
           runtimeTick: input.runtimeTick ?? input.tick,
-          opponents: opponentsFor(actor),
-        }),
+          opponents: context.opponents,
+        });
+      },
     });
   }
 }

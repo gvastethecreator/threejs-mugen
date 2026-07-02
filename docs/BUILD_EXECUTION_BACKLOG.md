@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeMatchOpponentContextWorld ownership
+
+Changed:
+- Added `RuntimeMatchOpponentContextWorld` as the bounded current 1v1 match-opponent context boundary.
+- `RuntimeMatchInteractionWorld`, `RuntimePausedMatchWorld`, and `RuntimeHitPauseWorld` now delegate active/pause/hitpause lifecycle opponent context construction through that seam instead of rebuilding `opponentFor` / `[opponent]` lists locally.
+- The new world owns mirrored P1/P2 opponent selection, singleton lifecycle `opponents` list projection, and fail-closed behavior for actors outside the current pair.
+- Roadmap, progress, scorecard, architecture, support, workplan, continuity, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeMatchOpponentContextSystem.test.ts src/tests/MatchInteractionSystem.test.ts src/tests/PauseSystem.test.ts src/tests/RuntimeHitPauseSystem.test.ts` -> 4 files / 23 tests.
+- Full gates: `pnpm test` -> 134 files / 1075 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current concrete 1v1 match/pause/hitpause lifecycle bridges have a named, testable opponent-context boundary: P1/P2 mirror correctly into direct opponent plus singleton lifecycle list, and unknown actors fail closed.
+
+Claim blocked:
+- Real teams/simul roster ownership, automatic multi-opponent match discovery, helper-owned opponent roster discovery, richer identity beyond actor refs, exact helper lifecycle/pause/combat ordering, visual/audio parity, score movement, and full match/helper VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose another deeper R2 helper/effect/combat ownership seam that is not 1v1 opponent context construction.
+
 ## 2026-07-02 - R2 RuntimeEffectHelperContextWorld ownership
 
 Changed:

@@ -3,6 +3,7 @@ import type { RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import type { RuntimeContactMemory, RuntimeContactMemoryWorld } from "./ContactMemorySystem";
 import type { RuntimeEffectActorWorld } from "./EffectActorSystem";
 import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from "./EffectLifecycleSystem";
+import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
 
 export type RuntimeMatchInteractionFighterPair<TFighter> = {
@@ -50,6 +51,8 @@ export type RuntimeMatchInteractionRuntimeWorldInput<TFighter extends RuntimeMat
   };
 
 export class RuntimeMatchInteractionWorld {
+  private readonly opponentContextWorld = new RuntimeMatchOpponentContextWorld();
+
   advance<TFighter>(input: RuntimeMatchInteractionWorldInput<TFighter>): void {
     const { p1, p2 } = input;
 
@@ -85,19 +88,23 @@ export class RuntimeMatchInteractionWorld {
     input: RuntimeMatchInteractionRuntimeWorldInput<TFighter>,
   ): void {
     const { actorConstraintWorld, effectLifecycleWorld, p1, p2, stage } = input;
-    const opponentFor = (fighter: TFighter) => (fighter === p1 ? p2 : p1);
-    const opponentsFor = (fighter: TFighter) => [opponentFor(fighter)];
+    const pair = { p1, p2 };
 
     this.advance({
       p1,
       p2,
       advanceTargetMemory: (fighter) => fighter.targetWorld.advance(fighter),
-      advanceActiveEffects: (fighter) =>
-        effectLifecycleWorld.advanceActive(fighter, stage, opponentFor(fighter), {
+      advanceActiveEffects: (fighter) => {
+        const context = this.opponentContextWorld.forActor(pair, fighter);
+        if (!context) {
+          return;
+        }
+        effectLifecycleWorld.advanceActive(fighter, stage, context.opponent, {
           stageTime: input.stageTime,
           runtimeTick: input.runtimeTick,
-          opponents: opponentsFor(fighter),
-        }),
+          opponents: context.opponents,
+        });
+      },
       resolveProjectileClashes: (left, right) =>
         left.effectActorWorld.resolveProjectileClashes(left.id, right.id, {
           leftLabel: left.label,

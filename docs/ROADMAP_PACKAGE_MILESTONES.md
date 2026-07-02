@@ -85,6 +85,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchOpponentContextWorld ownership
+  -> RuntimeMatchOpponentContextWorld owns current 1v1 match-opponent context construction for lifecycle bridges outside RuntimeMatchInteractionWorld, RuntimePausedMatchWorld, and RuntimeHitPauseWorld
+  -> mirrored P1/P2 opponent selection, singleton lifecycle opponents list projection, and unknown-actor fail-closed behavior route through one seam
+  -> focused RuntimeMatchOpponentContextSystem coverage proves mirrored contexts and fail-closed behavior; existing MatchInteraction/Pause/RuntimeHitPause coverage proves active, pause, and hitpause callers still forward direct opponent plus explicit one-opponent lifecycle list
+  -> ownership cleanup only; no score movement, real teams/simul roster ownership, automatic multi-opponent match discovery, helper-owned opponent roster discovery, richer identity beyond actor refs, exact helper lifecycle/pause/combat ordering, visual/audio parity, or full match/helper VM claim
 R2 RuntimeEffectHelperContextWorld ownership
   -> RuntimeEffectHelperContextWorld owns visual Helper lifecycle context construction outside RuntimeEffectLifecycleWorld
   -> complete-owner validation, parent/root projection, current opponent fallback, explicit lifecycle opponents-to-nearest-roster projection, explicit roster override, target candidates, and helper TargetState/telemetry hooks route through one seam
