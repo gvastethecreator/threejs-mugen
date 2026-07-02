@@ -94,6 +94,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeActiveControllerHookSetWorld ownership
+  -> RuntimeActiveControllerHookSetWorld owns bounded active-controller hook-set construction outside PlayableMatchRuntime
+  -> state mutation hooks, side-effect controller hooks, and fallback runtime-controller hooks group behind one named boundary before RuntimeActiveControllerRunWorld executes
+  -> focused RuntimeActiveControllerHookSetSystem coverage proves every current hook route is preserved plus optional unsupported-hook omission
+  -> ownership cleanup only; no score movement, no new controller semantics, exact hook ordering parity, helper/team/redirect scopes, unsupported-controller breadth, visual/audio parity, or full CNS VM parity claim
 R2 RuntimeMatchPausedBridgeWorld ownership
   -> RuntimeMatchPausedBridgeWorld owns bounded match-level bridge construction into RuntimePausedMatchWorld.advanceRuntime outside PlayableMatchRuntime
   -> pause snapshot lookup, source-movetime eligibility, pause tick mutation, hitpause-style command buffering, stage/time metadata, actor-constraint/effect-lifecycle forwarding, and paused player/AI/fighter callbacks pass through one named boundary
@@ -1434,6 +1439,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHelperTargetStateWorld` ownership extraction
 - `RuntimeTargetStateEntryWorld` ownership extraction
 - `RuntimeActiveControllerScanWorld` ownership extraction
+- `RuntimeActiveControllerHookSetWorld` ownership extraction
 - `RuntimeActiveControllerDispatchWorld` ownership extraction
 - `RuntimeActiveStateDispatchWorld` ownership extraction
 - `RuntimeActiveSideEffectDispatchWorld` ownership extraction

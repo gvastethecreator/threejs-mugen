@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 active-controller hook-set ownership
+
+Changed:
+- Added `RuntimeActiveControllerHookSetWorld` as the named active-controller hook-set construction boundary.
+- `PlayableMatchRuntime.runActiveStateControllers(...)` now groups state mutation hooks, side-effect controller hooks, and fallback runtime-controller hooks through that boundary before `RuntimeActiveControllerRunWorld` executes.
+- Added focused coverage proving every current hook route is preserved and optional unsupported-hook omission stays exact.
+- Updated runtime support, architecture, roadmap board, package ladder, next-build roadmap, continuity guide, workplan, progress tracker, and local runtime issue wording with ownership-only claim language.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/RuntimeActiveControllerHookSetSystem.test.ts` -> 1 file / 2 tests.
+- Test suite: `pnpm test` -> 146 files / 1108 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 286/286 artifacts, 260 required and 26 optional; no failed artifacts or skipped optional fixtures.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current active-controller hook-set construction has a named, focused-tested ownership boundary before active controller execution.
+
+Claim blocked:
+- New controller semantics, exact CNS VM tick order, persistent-controller semantics, helper/team/redirect scopes, unsupported-controller breadth, hook ordering parity, visual/audio parity, score movement, and full MUGEN/IKEMEN CNS VM parity remain blocked.
+
 ## 2026-07-02 - R2 paused-match bridge ownership
 
 Changed:
