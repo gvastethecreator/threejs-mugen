@@ -206,6 +206,9 @@ function scanText(path: string, text: string, findings: FindingAccumulator, zssF
     if (assignment && IKEMEN_STAGE_PARAM_NAMES.has(assignment.key)) {
       findings.add("stage", `IKEMEN stage parameter ${assignment.key}`, location, raw, "3D/Z or extended stage metadata is reported; renderer falls back to the 2D stage path.");
     }
+    if (assignment?.key === "type" && isIkemenVideoBackgroundValue(assignment.value) && isStageOrScreenpackDefPath(normalizedPath)) {
+      findings.add("stage", "IKEMEN video background layer", location, raw, "Video-backed backgrounds are reported but not decoded or rendered by the current stage pipeline.");
+    }
     if (assignment && assignment.key.startsWith("trigger")) {
       for (const trigger of findIkemenTriggers(assignment.value)) {
         findings.add("trigger", `IKEMEN extended trigger ${trigger}`, location, raw, "Extended trigger is not part of the current expression subset.");
@@ -249,6 +252,15 @@ function normalize(path: string): string {
 
 function unquote(value: string): string {
   return value.trim().replace(/^["']|["']$/g, "");
+}
+
+function isStageOrScreenpackDefPath(normalizedPath: string): boolean {
+  return normalizedPath.endsWith(".def") && /(^|\/)(stages|data)\//.test(normalizedPath);
+}
+
+function isIkemenVideoBackgroundValue(value: string): boolean {
+  const normalized = unquote(value).trim().toLowerCase();
+  return normalized === "video" || normalized === "v";
 }
 
 function addUnique(values: string[], value: string): void {
@@ -452,8 +464,11 @@ const IKEMEN_STAGE_PARAM_NAMES = new Set([
   "zoffsetlink",
   "startz",
   "stagecamera.z",
+  "scenenumber",
   "model",
   "modelfile",
+  "modeloffset",
+  "modelrotate",
   "modelscale",
   "attachedchar",
   "fov",

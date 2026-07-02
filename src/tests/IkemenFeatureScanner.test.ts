@@ -115,7 +115,7 @@ describe("scanIkemenFeatures", () => {
       ["data\\fight.def", "[Files]\nfont1 = f-4x6.fnt\n"],
       [
         "stages\\tower.def",
-        "[Camera]\nstagecamera.z = 32\nzoffsetlink = 1\nstartz = -16\nverticalfollowzoomdelta = 0.25\n[State 0, Zoom]\ntype = Zoom\ntrigger1 = StageTime > 20 && SelfCommand = \"zoom\"\n",
+        "[Camera]\nstagecamera.z = 32\nzoffsetlink = 1\nstartz = -16\nverticalfollowzoomdelta = 0.25\n[BGDef]\nscenenumber = 2\nmodeloffset = 0, 12, -64\nmodelrotate = 0, 45, 0\nmodelscale = 1, 1, 1\n[BG intro-video]\ntype = video\npath = video/intro.webm\n[State 0, Zoom]\ntype = Zoom\ntrigger1 = StageTime > 20 && SelfCommand = \"zoom\"\n",
       ],
       ["stages\\tower.obj", ""],
     ]);
@@ -136,6 +136,11 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN stage parameter zoffsetlink"]).toBe(1);
     expect(report.features["IKEMEN stage parameter startz"]).toBe(1);
     expect(report.features["IKEMEN stage parameter verticalfollowzoomdelta"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter scenenumber"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter modeloffset"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter modelrotate"]).toBe(1);
+    expect(report.features["IKEMEN stage parameter modelscale"]).toBe(1);
+    expect(report.features["IKEMEN video background layer"]).toBe(1);
     expect(report.features["IKEMEN controller Zoom"]).toBe(1);
     expect(report.features["IKEMEN extended trigger StageTime"]).toBeUndefined();
     expect(report.features["IKEMEN extended trigger SelfCommand"]).toBeUndefined();

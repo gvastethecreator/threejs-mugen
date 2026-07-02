@@ -111,7 +111,7 @@ The scanner should recognize and report:
 - screenpack/select signals such as `unlock` and `commandlist`
 - character-specific `fightfx.prefix` metadata
 - extended triggers/controllers and selected `AssertSpecial` flags
-- extended stage/system/motif features, including named 3D/Z stage params and model-stage assets
+- extended stage/system/motif features, including named 3D/Z stage params, model-stage assets, IKEMEN BGDef model transform metadata, and video background layers
 - profile-specific constants and params
 
 `fightfx.prefix` is now a narrow exception with bounded runtime evidence: imported DEF raw metadata can flow into F-prefixed FightFX hit-spark and hit-sound trace events, and `[Files] fx = ...` packages with matching FightFX `[Info] prefix` can be loaded/selected for runtime spark frames plus prefixed SND lookup. Exact IKEMEN `sys.ffx` lifetime/refcount/cache semantics, channel fallback, screenpack ownership, visual/audio timing/layering/scale/palette/mixing, and broader IKEMEN-only behavior remain unsupported unless a runtime gate proves a bounded subset.

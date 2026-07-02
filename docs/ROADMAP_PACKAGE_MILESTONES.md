@@ -43,6 +43,15 @@ G1 setup-project refresh
   -> docs-only control work; no runtime, Studio, IKEMEN, modular, or score claim
 ```
 
+Latest I1 scanner checkpoint:
+
+```txt
+I1 IKEMEN stage/BGDef presentation scan
+  -> `IkemenFeatureScanner` recognizes source-mapped `scenenumber`, `modeloffset`, `modelrotate`, `modelscale`, and `type = video` background layers
+  -> focused scanner test proves recognized/unsupported feature counts beside existing Windows-style package/stage coverage
+  -> scanner/reporting only; no model-stage rendering, video decoding, screenpack parity, or IKEMEN runtime claim
+```
+
 Latest Studio/UI checkpoint:
 
 ```txt

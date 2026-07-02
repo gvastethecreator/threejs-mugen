@@ -24,6 +24,16 @@ G1 setup-project refresh
   -> no score movement; return to R1/R2 evidence-producing work next
 ```
 
+Latest IKEMEN scanner truth:
+
+```txt
+I1 IKEMEN stage/BGDef presentation scan
+  -> scanner-only recognition covers source-mapped `scenenumber`, `modeloffset`, `modelrotate`, `modelscale`, and `type = video` background layers from local Ikemen-GO `bgdef.go` / `stage.go`
+  -> focused `IkemenFeatureScanner` coverage proves recognized/unsupported classification
+  -> no model-stage rendering, no video decoding, no screenpack parity, no IKEMEN execution
+  -> no score movement; return to R1 Common1/FightFX precision or R2 MatchWorld ownership next
+```
+
 Latest Studio/UI truth:
 
 ```txt

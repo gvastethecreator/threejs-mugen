@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-07-02 - I1 IKEMEN stage/BGDef presentation scanner expansion
+
+Changed:
+- Added scanner-only recognition for IKEMEN stage/BGDef presentation signals source-mapped to the local Ikemen-GO `bgdef.go` / `stage.go` snapshot.
+- `IkemenFeatureScanner` now reports `scenenumber`, `modeloffset`, `modelrotate`, and `modelscale` as named IKEMEN stage parameters.
+- `IkemenFeatureScanner` now reports `type = video` / `type = v` background layers in `data/` or `stages/` DEF packages as IKEMEN video background layers.
+- Updated I1 scanner docs, compatibility profiles, supported-features wording, scorecard evidence, roadmap board, package ladder, and local issue state with recognized/unsupported claim language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/IkemenFeatureScanner.test.ts` -> 1 file / 7 tests.
+- Test suite: `pnpm test` -> 143 files / 1104 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warning on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage rendering, or visible gameplay output.
+
+Claim allowed:
+- Compatibility reports can classify IKEMEN model-scene metadata and video-backed BG layers as recognized/unsupported scanner findings before runtime execution.
+
+Claim blocked:
+- IKEMEN model-stage rendering, video decoding/playback, screenpack/lifebar parity, ZSS execution, Lua execution, rollback/netplay, score movement, and full IKEMEN runtime compatibility remain blocked.
+
+Next:
+- Return to R1 Common1/FightFX precision or R2 MatchWorld ownership. If staying in I1, prefer source-mapped screenpack/Lua/ZSS scanner cuts that still require focused scanner tests and blocked runtime wording.
+
 ## 2026-07-02 - R2 RuntimeActiveControllerRunWorld ownership bridge
 
 Changed:

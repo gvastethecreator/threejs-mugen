@@ -82,7 +82,7 @@ Until the profile layer exists in code, reports should avoid claiming generic "f
 
 - Helper edge cases, projectile edge cases, custom states, throws, exact pause/super-pause layering, advanced explods/bindings, and AI.
 - ZSS should be treated as an Ikemen-inspired later layer, not as MVP scope.
-- IKEMEN text-system features such as `Text`, `ModifyText`, `RemoveText`, and `NumText`, plus ZSS `[Statedef ...]` / `[State ...]` code blocks, are scanner/reporting scope only until a dedicated ZSS/text rendering/removal runtime exists.
+- IKEMEN text-system features such as `Text`, `ModifyText`, `RemoveText`, and `NumText`, plus ZSS `[Statedef ...]` / `[State ...]` code blocks, BGDef model-scene metadata, and video background layers, are scanner/reporting scope only until dedicated ZSS/text/model/video runtime paths exist.
 
 Every unsupported feature should include format, feature, severity, location, raw text where available, fallback, and count.
 
