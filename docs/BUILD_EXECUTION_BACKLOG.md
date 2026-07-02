@@ -1,5 +1,26 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R2 RuntimeMatchHelperBindingWorld ownership
+
+Changed:
+- `RuntimeMatchHelperBindingWorld` now owns bounded match-level helper callback wiring outside `PlayableMatchRuntime`.
+- Helper-owned `TargetState` owner handlers and helper-local Projectile telemetry handlers now attach through one named seam.
+- `PlayableMatchRuntime` now delegates helper binding while still supplying the concrete owners, target-state route, and compatibility telemetry recorder.
+- Roadmap, progress, scorecard, architecture, workplan, and local runtime issue docs now name this as the latest R2 ownership checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/RuntimeMatchHelperBindingSystem.test.ts` -> 1 file / 1 test.
+- Full gates: `pnpm test` -> 131 files / 1067 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Current match-level helper callback wiring has a named, testable ownership boundary: owner-specific helper `TargetState` route forwarding, stale handler replacement, helper-state/owner-state Projectile telemetry attribution, and non-Projectile telemetry ignore behavior are covered.
+
+Claim blocked:
+- Helper-owned custom-state tables, throws, teams/simul actor registries, multi-target helper ownership, exact helper TargetState/projectile timing, broad helper telemetry semantics, visual/audio parity, score movement, and full Helper VM parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or choose a deeper R2 helper/effect/combat ownership seam that is not helper callback binding.
+
 ## 2026-07-02 - Required synthetic HitFall recover-true trace gate
 
 Changed:

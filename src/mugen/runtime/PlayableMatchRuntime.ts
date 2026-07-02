@@ -42,7 +42,7 @@ import { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
-import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
+import { RuntimeMatchHelperBindingWorld } from "./RuntimeMatchHelperBindingSystem";
 import { RuntimeMatchActiveWorld } from "./RuntimeMatchActiveSystem";
 import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchHitPauseWorld } from "./RuntimeMatchHitPauseSystem";
@@ -59,7 +59,6 @@ import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
-import { RuntimeHelperTargetStateWorld } from "./RuntimeHelperTargetStateSystem";
 import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerScanWorld } from "./RuntimeActiveControllerScanSystem";
@@ -160,7 +159,7 @@ const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWor
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
-const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
+const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
 const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchHitPauseWorld = new RuntimeMatchHitPauseWorld();
@@ -248,7 +247,6 @@ export class PlayableMatchRuntime {
   private readonly matchPauseControllerWorld = new RuntimeMatchPauseControllerWorld();
   private readonly helperCombatWorld = new RuntimeHelperCombatWorld();
   private readonly helperProjectileTargetWorld = new RuntimeHelperProjectileTargetWorld();
-  private readonly helperTargetStateWorld = new RuntimeHelperTargetStateWorld();
   private readonly moveLifecycleWorld = new RuntimeMoveLifecycleWorld();
   private readonly inputControlWorld = new RuntimeInputControlWorld();
   private readonly kinematicsWorld = new RuntimeKinematicsWorld();
@@ -308,12 +306,16 @@ export class PlayableMatchRuntime {
   }
 
   private attachHelperTargetStateHandlers(): void {
-    this.helperTargetStateWorld.attachOwnerHandlers([this.p1, this.p2], (owner, helper, target, stateId) =>
-      this.enterHelperOwnedTargetState(owner, helper, target, stateId),
-    );
-    helperTelemetryWorld.attachProjectileTelemetry([this.p1, this.p2], {
-      recordController: (owner, controller, context) => compatibilityTelemetryWorld.recordController(owner, controller, context),
-      recordOperation: (owner, operation, context) => compatibilityTelemetryWorld.recordOperation(owner, operation, context),
+    matchHelperBindingWorld.attach({
+      owners: [this.p1, this.p2],
+      enterTargetState: (owner, helper, target, stateId) =>
+        this.enterHelperOwnedTargetState(owner, helper, target, stateId),
+      telemetryRecorder: {
+        recordController: (owner, controller, context) =>
+          compatibilityTelemetryWorld.recordController(owner, controller, context),
+        recordOperation: (owner, operation, context) =>
+          compatibilityTelemetryWorld.recordOperation(owner, operation, context),
+      },
     });
   }
 

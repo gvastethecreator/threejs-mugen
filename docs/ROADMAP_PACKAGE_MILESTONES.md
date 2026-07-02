@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeMatchHelperBindingWorld ownership
+  -> RuntimeMatchHelperBindingWorld owns match-level helper callback wiring outside PlayableMatchRuntime
+  -> helper-owned TargetState owner handlers and helper-local Projectile telemetry handlers attach through one named seam
+  -> RuntimeMatchHelperTargetStateWorld still owns actor-resolution entry; RuntimeHelperTelemetryWorld still owns Projectile-only filtering and helper/owner state attribution
+  -> focused RuntimeMatchHelperBindingSystem coverage proves owner-specific target-state route forwarding, stale handler replacement, helper-state/owner-state telemetry attribution, and non-Projectile telemetry ignore behavior
+  -> ownership cleanup only; no score movement, helper custom-state table breadth, throws, teams/simul actor registry, multi-target helper ownership, exact helper TargetState/projectile timing, broad helper telemetry semantics, visual/audio parity, or full Helper VM claim
 R1 Common1 HitFall recover-true trace gate
   -> synthetic-imported-hitfall-recover-true.json checksum f1e3424a is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5240 -> 0 through HitFall && GetHitVar(fall.recover) && !CanRecover

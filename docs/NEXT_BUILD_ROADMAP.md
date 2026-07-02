@@ -135,7 +135,13 @@ R1 FightFX prefix package selection
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and now gates fightFxPrefix = kfm evidence
   -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
   -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, global channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, or full hit-effect parity claim
-R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
+R2 RuntimeMatchHelperBindingWorld ownership
+  -> RuntimeMatchHelperBindingWorld owns match-level helper callback wiring outside PlayableMatchRuntime
+  -> helper-owned TargetState owner handlers and helper-local Projectile telemetry handlers attach through one named seam
+  -> RuntimeMatchHelperTargetStateWorld still owns actor-resolution entry, and RuntimeHelperTelemetryWorld still owns Projectile-only filtering/attribution
+  -> focused RuntimeMatchHelperBindingSystem coverage proves owner-specific target-state route forwarding, stale handler replacement, helper-state/owner-state telemetry attribution, and non-Projectile telemetry ignore behavior
+  -> ownership cleanup only; no helper custom-state table breadth, throws, teams/simul actor registry, multi-target helper ownership, exact helper TargetState/projectile timing, broad helper telemetry semantics, visual/audio parity, score movement, or full Helper VM claim
+Previous R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> helper owner validation and fail-closed result semantics still route through RuntimeHelperTargetStateWorld
   -> focused RuntimeMatchHelperTargetStateSystem coverage proves roster-backed target resolution, stale target payload isolation, missing-target no-op, and owner-mismatch fail-closed behavior
