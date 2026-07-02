@@ -887,6 +887,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitFallCanRecoverTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitfall-recover-true",
+      required: true,
+      artifact: presets.createSyntheticImportedHitFallRecoverTrueTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitfall-recover-false",
       required: true,
       artifact: presets.createSyntheticImportedHitFallRecoverFalseTraceArtifact(),
@@ -2358,6 +2363,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-fall-ground-recovery",
     "synthetic-imported-default-fall-official-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
+    "synthetic-imported-hitfall-recover-true",
     "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",
     "synthetic-imported-screenbound-camera",

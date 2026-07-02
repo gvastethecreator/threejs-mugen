@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Required synthetic HitFall recover-true trace gate
+
+Changed:
+- `synthetic-imported-hitfall-recover-true.json` is now a required trace artifact for a bounded Common1-style `HitFall && GetHitVar(fall.recover) && !CanRecover` branch.
+- `RuntimeTraceGatePresets` now exports `createSyntheticImportedHitFallRecoverTrueTraceArtifact()` and `defaultHitFallRecoverTrueProbeControllerSequence()`.
+- `pnpm qa:trace` now includes the recover-enabled-but-not-yet-recoverable gate as a required artifact.
+- Roadmap, progress, scorecard, support, QA, workplan, and local runtime issue docs now name the new gate as the latest runtime checkpoint with no score movement.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "HitFall recover true"` -> 1 file / 1 test, 273 skipped.
+- Trace gate: `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `synthetic-imported-hitfall-recover-true.json` checksum `f1e3424a`.
+- Full gates: `pnpm test` -> 130 files / 1066 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 280/280 artifacts, 255 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Bounded synthetic Common1-style recover-enabled-but-not-yet-recoverable fall routing is trace-gated: P2 takes a fall `HitDef` with `fall.recover = 1` and no `p2stateno`, routes `5000 -> 5030 -> 5050 -> 5240 -> 0`, executes ordered `HitVelSet`, `kinematic:hitvelset`, `VelAdd`, and named `HitFall Recover Enabled Probe` `ChangeState`, requires positive `fall.recovertime` metadata in `5050` and `5240`, forbids recovery states `5210`/`5200`, and returns to idle/control.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN recovery threshold tables, exact Common1 controller-loop timing, recovery arbitration, fall/CanRecover precedence, visual/audio parity, score movement, and full fall/recovery parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/fall/recovery precision or R2 MatchWorld helper/effect/combat ownership.
+
 ## 2026-07-02 - Required synthetic HitFall recover-disabled trace gate
 
 Changed:

@@ -19,6 +19,7 @@ import {
   createSyntheticImportedHitFallCanRecoverTraceArtifact,
   createSyntheticImportedHitFallFalseTraceArtifact,
   createSyntheticImportedHitFallRecoverFalseTraceArtifact,
+  createSyntheticImportedHitFallRecoverTrueTraceArtifact,
   createSyntheticImportedGetHitVarAnimTypeTraceArtifact,
   createSyntheticImportedGetHitVarDownRecoverTraceArtifact,
   createSyntheticImportedGetHitVarFallDefenceUpTraceArtifact,
@@ -61,6 +62,7 @@ import {
   defaultFallGroundImpactControllerSequence,
   defaultHitFallCanRecoverProbeControllerSequence,
   defaultHitFallRecoverFalseProbeControllerSequence,
+  defaultHitFallRecoverTrueProbeControllerSequence,
   defaultFallLieDownGetUpActorFrameSequence,
   defaultFallLieDownGetUpControllerSequence,
   defaultGetHitProgressionActorFrameSequence,
@@ -9405,6 +9407,75 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
     const probeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5220);
+    expect(fallFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(probeFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
+    expect(fallFrame?.lastTick ?? 0).toBeLessThan(probeFrame?.firstTick ?? 0);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 0,
+      moveType: "I",
+      ctrl: true,
+    });
+  });
+
+  it("creates a required synthetic imported HitFall recover true artifact", () => {
+    const artifact = createSyntheticImportedHitFallRecoverTrueTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitfall-recover-true-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "imported-default-fall-gethit-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([0, 200, 5000, 5030, 5050, 5240]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([5210, 5200]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x"]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      defaultHitFallRecoverTrueProbeControllerSequence(),
+    ]);
+    expect(gate?.requirements.requiredActorFrameSequences).toEqual([
+      defaultFallGetHitActorFrameSequence([5000, 5030, 5050, 5240]),
+    ]);
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5050,
+        moveType: "H",
+        observedHitFallRecoverTimeAtLeast: 1,
+        observedHitFallRecoverTimeMinAtLeast: 1,
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 5240,
+        moveType: "H",
+        observedHitFallRecoverTimeMinAtLeast: 1,
+        minFrames: 1,
+      },
+    ]);
+    const fallFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5050);
+    const probeFrame = evidence?.actorFrames.find((frame) => frame.actorId === "p2" && frame.stateNo === 5240);
     expect(fallFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
     expect(probeFrame?.minHitFallRecoverTime).toBeGreaterThanOrEqual(1);
     expect(fallFrame?.lastTick ?? 0).toBeLessThan(probeFrame?.firstTick ?? 0);

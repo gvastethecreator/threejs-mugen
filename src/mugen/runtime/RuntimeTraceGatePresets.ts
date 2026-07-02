@@ -7542,6 +7542,29 @@ export function defaultHitFallCanRecoverProbeControllerSequence(
   };
 }
 
+export function defaultHitFallRecoverTrueProbeControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  fallProbeStateNo = 5240,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${fallProbeStateNo} HitFall true and fall.recover true route`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "HitFall Recover Enabled Probe" },
+      { stateNo: fallProbeStateNo, controller: "ChangeState", name: "Bounded Return" },
+    ],
+  };
+}
+
 export function defaultHitFallRecoverFalseProbeControllerSequence(
   shakeStateNo = 5000,
   airStateNo = 5030,
@@ -9516,6 +9539,82 @@ export function createSyntheticImportedHitFallCanRecoverTraceArtifact(
       ],
       notes: [
         "Synthetic imported HitFall/CanRecover trace proves a defender-owned Common1-style fall route can execute a branch gated by HitFall while CanRecover is still false, with positive fall.recovertime evidence before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery thresholds, complete recovery-input behavior, or full Common1 parity.",
+      ],
+    },
+  );
+}
+
+export function createSyntheticImportedHitFallRecoverTrueTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitfall-recover-true",
+      displayName: "Synthetic Imported HitFall Recover True",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        fallProbeStateNo: 5240,
+        fallProbeName: "HitFall Recover Enabled Probe",
+        fallProbeExpression: "HitFall && GetHitVar(fall.recover) && !CanRecover",
+        fallProbeTime: 2,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitfall-recover-true-golden",
+      targetLabel: "Synthetic imported HitFall recover true route",
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-hitfall-recover-true-attacker",
+        displayName: "Synthetic Imported HitFall Recover True Attacker",
+        groundVelocity: [-3, -6],
+        fall: {
+          ...commonGetHitFallData(),
+          recover: true,
+          recoverTime: 20,
+        },
+      }),
+      requiredExecutedStates: [0, 200, 5000, 5030, 5050, 5240],
+      forbiddenExecutedStates: [5210, 5200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
+      requiredControllerEventSequences: [defaultHitFallRecoverTrueProbeControllerSequence()],
+      requiredActorFrameSequences: [defaultFallGetHitActorFrameSequence([5000, 5030, 5050, 5240])],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5050,
+          moveType: "H",
+          observedHitFallRecoverTimeAtLeast: 1,
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5240,
+          moveType: "H",
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          moveType: "I",
+          ctrl: true,
+        },
+      ],
+      notes: [
+        "Synthetic imported HitFall recover-true trace proves a defender-owned Common1-style fall route can branch on HitFall while stored fall.recover is enabled but CanRecover remains false, with positive fall.recovertime metadata preserved before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery thresholds, full recovery-input arbitration, fall/CanRecover precedence, or full Common1 parity.",
       ],
     },
   );
