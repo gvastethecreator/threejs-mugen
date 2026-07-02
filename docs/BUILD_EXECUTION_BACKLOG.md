@@ -1,5 +1,28 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 HitFall CanRecover-ready trace gate
+
+Changed:
+- Added required `synthetic-imported-hitfall-canrecover-ready.json` runtime trace gate for a bounded Common1-style `HitFall && CanRecover` branch.
+- Added `fallSettleTime` to the synthetic default get-hit fall builder so a fixture can remain in `5050` long enough for `fall.recovertime` to drop positive-to-zero without active recovery input.
+- Registered the artifact in `scripts/qa_traces.cjs` required trace generation and required artifact coverage.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, workplan, progress tracker, context, and local runtime issue wording with claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "HitFall true and CanRecover true"` -> 1 file / 1 test, 281 skipped.
+- Trace gate: `pnpm qa:trace` -> 287/287 artifacts, 261 required and 26 optional; `synthetic-imported-hitfall-canrecover-ready.json` checksum `c0097d7f`.
+- Test suite: `pnpm test` -> 146 files / 1109 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded Common1-style `HitFall && CanRecover` branching is now trace-gated after `fall.recovertime` drops positive-to-zero, without active `recovery` command, while recovery states `5210` and `5200` are forbidden.
+
+Claim blocked:
+- Exact recovery threshold tables, exact Common1 controller-loop timing, recovery-input arbitration, velocity math, public KFM support, visual/audio parity, score movement, and full MUGEN/IKEMEN fall/recovery parity remain blocked.
+
 ## 2026-07-02 - R2 active-controller hook-set ownership
 
 Changed:

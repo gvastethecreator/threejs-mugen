@@ -94,6 +94,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 Common1 HitFall CanRecover-ready trace gate
+  -> synthetic-imported-hitfall-canrecover-ready.json checksum c0097d7f is required in qa:trace
+  -> defender routes 5000 -> 5030 -> 5050 -> 5250 -> 0 through HitFall && CanRecover after fall.recovertime drops positive-to-zero
+  -> no active recovery command; 5210/5200 remain forbidden
+  -> pnpm qa:trace passes 287/287 artifacts, 261 required and 26 optional
+  -> bounded readiness trigger/order evidence only; no score movement or full recovery parity claim
 R2 RuntimeActiveControllerHookSetWorld ownership
   -> RuntimeActiveControllerHookSetWorld owns bounded active-controller hook-set construction outside PlayableMatchRuntime
   -> state mutation hooks, side-effect controller hooks, and fallback runtime-controller hooks group behind one named boundary before RuntimeActiveControllerRunWorld executes
@@ -197,7 +203,14 @@ R1 EnvColor under-layer trace gate
   -> synthetic-imported-envcolor.json checksum 956b0f4b remains the matching under = 0 route
   -> that checkpoint passed 281/281 artifacts, 256 required and 25 optional
   -> bounded stage-flash layer-flag handoff only; no score movement, exact blend math, layer/window ordering, pause timing, renderer parity, visual parity, or full presentation parity claim
-R1 Common1 HitFall recover-true trace gate
+R1 Common1 HitFall CanRecover-ready trace gate
+  -> synthetic-imported-hitfall-canrecover-ready.json checksum c0097d7f is required in qa:trace
+  -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5250 -> 0 through HitFall && CanRecover after fall.recovertime drops positive-to-zero
+  -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall CanRecover Ready Probe ChangeState
+  -> active-command evidence excludes recovery while recovery states 5210 and 5200 are forbidden
+  -> pnpm qa:trace passes 287/287 artifacts, 261 required and 26 optional
+  -> bounded CanRecover-ready trigger/order evidence only; no score movement, exact recovery threshold tables, controller-loop timing, recovery-input arbitration, velocity math, visual/audio parity, or full fall/recovery parity claim
+Previous R1 Common1 HitFall recover-true trace gate
   -> synthetic-imported-hitfall-recover-true.json checksum f1e3424a is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5240 -> 0 through HitFall && GetHitVar(fall.recover) && !CanRecover
   -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall Recover Enabled Probe ChangeState

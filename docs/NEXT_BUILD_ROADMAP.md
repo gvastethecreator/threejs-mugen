@@ -196,7 +196,14 @@ R1 EnvColor under-layer trace gate
   -> existing synthetic-imported-envcolor.json checksum 956b0f4b remains the under = 0 route
   -> that checkpoint passed 281/281 artifacts, 256 required and 25 optional
   -> bounded stage-flash layer-flag evidence only; no score movement or exact presentation parity claim
-R1 Common1 HitFall recover-true trace gate
+R1 Common1 HitFall CanRecover-ready trace gate
+  -> synthetic-imported-hitfall-canrecover-ready.json checksum c0097d7f is now required
+  -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5250 -> 0 through HitFall && CanRecover after fall.recovertime drops positive-to-zero
+  -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall CanRecover Ready Probe ChangeState
+  -> active-command evidence excludes recovery while recovery states 5210 and 5200 are forbidden
+  -> pnpm qa:trace passes 287/287 artifacts, 261 required and 26 optional
+  -> bounded CanRecover-ready trigger/order evidence only; no exact recovery threshold tables, controller-loop timing, recovery-input arbitration, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
+Previous R1 Common1 HitFall recover-true trace gate
   -> synthetic-imported-hitfall-recover-true.json checksum f1e3424a is now required
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5240 -> 0 through HitFall && GetHitVar(fall.recover) && !CanRecover
   -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> named HitFall Recover Enabled Probe ChangeState
