@@ -196,12 +196,17 @@ R1 EnvColor under-layer trace gate
   -> existing synthetic-imported-envcolor.json checksum 956b0f4b remains the under = 0 route
   -> that checkpoint passed 281/281 artifacts, 256 required and 25 optional
   -> bounded stage-flash layer-flag evidence only; no score movement or exact presentation parity claim
+R1 optional official KFM ground-recovery priority trace gate
+  -> kfm-official-default-fall-ground-recovery-priority.json checksum 6d361534 passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM mirrors the required near-ground recovery route 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0
+  -> generic air-recovery state 5210 plus lie-down chain states stay forbidden
+  -> private-fixture confidence only; no public KFM support, exact thresholds, velocity math, controller-loop tick order, visual/audio parity, or score movement
 R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is now required
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery"
   -> required order includes positive-to-zero fall.recovertime, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> active-command evidence includes x and recovery; generic air-recovery state 5210 plus lie-down chain states are forbidden
-  -> pnpm qa:trace passes 289/289 artifacts, 263 required and 26 optional
+  -> pnpm qa:trace passes 290/290 artifacts, 263 required and 27 optional after the optional KFM mirror
   -> bounded ground-over-air recovery selection evidence only; no exact recovery threshold tables, controller-loop timing, ground/air arbitration constants, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is now required

@@ -94,12 +94,17 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 optional official KFM ground-recovery priority trace gate
+  -> kfm-official-default-fall-ground-recovery-priority.json checksum 6d361534 passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM mirrors the required near-ground recovery route 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0
+  -> generic air-recovery state 5210 and lie-down chain states stay forbidden
+  -> private-fixture confidence only; no public KFM support, exact thresholds, velocity math, tick-order parity, or score movement
 R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
   -> defender routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through active command = "recovery" near ground
   -> required order includes 5050 recovery countdown, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> generic air-recovery state 5210 and lie-down chain states remain forbidden
-  -> pnpm qa:trace passes 289/289 artifacts, 263 required and 26 optional
+  -> pnpm qa:trace passes 290/290 artifacts, 263 required and 27 optional after the optional KFM mirror
   -> bounded ground-over-air recovery selection evidence only; no score movement or full recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde remains required in qa:trace
@@ -221,7 +226,7 @@ R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery" while generic air recovery state 5210 is forbidden
   -> required evidence includes positive-to-zero fall.recovertime, named ground-recovery controller/typed-operation order, final idle/control, and forbidden lie-down chain states
-  -> pnpm qa:trace passes 289/289 artifacts, 263 required and 26 optional
+  -> pnpm qa:trace passes 290/290 artifacts, 263 required and 27 optional after optional kfm-official-default-fall-ground-recovery-priority.json checksum 6d361534
   -> bounded ground-over-air recovery selection evidence only; no score movement, exact recovery threshold tables, ground/air arbitration constants, velocity math, visual/audio parity, or full recovery parity claim
 R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is required in qa:trace

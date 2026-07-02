@@ -10744,6 +10744,57 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("keeps ground-recovery priority constraints configurable for imported fixture mirrors", () => {
+    const imported = createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-fall-ground-recovery-priority-options",
+      displayName: "Synthetic Imported Default Fall Ground Recovery Priority Options",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        groundRecoveryStateNo: 5200,
+        groundRecoveryLandStateNo: 5201,
+        landStateNo: 52,
+        includeGroundRecovery: true,
+      },
+    });
+    const artifact = createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {
+      generatedAt: "2026-06-25T00:00:00.000Z",
+      targetId: "synthetic-imported-default-fall-ground-recovery-priority-options-golden",
+      targetLabel: "Synthetic imported ground-recovery priority option route",
+      forbiddenExecutedStates: [5210, 5100, 5101, 5110, 5120],
+      requiredExecutedOperations: [
+        "hitdef",
+        "kinematic:hitvelset",
+        "kinematic:posset",
+        "kinematic:velset",
+        "resource:ctrlset",
+      ],
+      requiredControllerEventSequences: [defaultGroundRecoveryControllerSequence()],
+    });
+
+    expect(artifact.status).toBe("passed");
+    const gate = artifact.gates[0];
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([5210, 5100, 5101, 5110, 5120]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual([
+      "hitdef",
+      "kinematic:hitvelset",
+      "kinematic:posset",
+      "kinematic:velset",
+      "resource:ctrlset",
+    ]);
+    expect(gate?.evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 5030, 5050, 5200, 5201, 52]));
+    expect(gate?.evidence?.executedStates).not.toEqual(expect.arrayContaining([5210, 5100, 5101, 5110, 5120]));
+    expect(gate?.evidence?.executedOperations).toMatchObject({
+      hitdef: expect.any(Number),
+      "kinematic:hitvelset": expect.any(Number),
+      "kinematic:posset": expect.any(Number),
+      "kinematic:velset": expect.any(Number),
+      "resource:ctrlset": expect.any(Number),
+    });
+  });
+
   it("creates a required synthetic imported official-style Common1 ground-recovery sequence artifact", () => {
     const artifact = createSyntheticImportedDefaultFallOfficialGroundRecoveryTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",

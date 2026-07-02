@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Optional official KFM ground recovery priority trace gate
+
+Changed:
+- Added optional `kfm-official-default-fall-ground-recovery-priority.json` runtime trace generation when `.scratch/fixtures/kfm-official.zip` exists locally.
+- Reused `createImportedDefaultFallGroundRecoveryTraceArtifact` with stricter forbidden-state and typed-operation requirements, avoiding a duplicate KFM-only runner.
+- Added focused trace preset coverage proving imported ground-recovery gates can preserve priority constraints through configurable forbidden states and required operations.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, workplan, progress tracker, context, and local runtime issue wording with private-fixture claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ground-recovery priority constraints"` -> 1 file / 1 test, 284 skipped.
+- Trace gate: `pnpm qa:trace` -> 290/290 artifacts, 263 required and 27 optional; `kfm-official-default-fall-ground-recovery-priority.json` checksum `6d361534`.
+- Test suite: `pnpm test` -> 146 files / 1112 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- With the private official KFM fixture present, the real KFM defender chooses the near-ground Common1 `5200/5201/52` recovery route while generic air-recovery state `5210` and lie-down chain states stay forbidden, with bounded actor-frame order plus typed hit/landing kinematic operation evidence.
+
+Claim blocked:
+- Exact ground/air recovery arbitration constants, exact recovery threshold tables, velocity math, controller-loop tick order, public bundled KFM support, visual/audio parity, score movement, and full MUGEN/IKEMEN recovery parity remain blocked.
+
 ## 2026-07-02 - R1 ground recovery priority trace gate
 
 Changed:

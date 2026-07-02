@@ -1984,6 +1984,21 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-fall-ground-recovery-priority",
+        required: false,
+        artifact: presets.createImportedDefaultFallGroundRecoveryTraceArtifact(imported, {
+          targetId: "kfm-official-default-fall-ground-recovery-priority-golden",
+          targetLabel: "Official KFM Common1 ground recovery priority over air recovery route",
+          requiredControllerEventSequences: [presets.officialKfmGroundRecoveryControllerSequence()],
+          requiredActorFrameSequences: [presets.officialKfmGroundRecoveryActorFrameSequence()],
+          forbiddenExecutedStates: [5210, 5100, 5101, 5110, 5120],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "kinematic:posset"],
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender chooses the near-ground Common1 5200/5201/52 recovery route while generic air-recovery state 5210 and the lie-down chain stay forbidden. The gate also requires bounded official KFM actor-frame order and typed hit/landing kinematic operation evidence. This is private-fixture priority confidence only; it does not prove exact ground/air recovery arbitration constants, recovery threshold tables, velocity math, controller-loop tick order, public bundled KFM support, or full MUGEN/IKEMEN recovery parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-x-state-exit",
         required: false,
         artifact: presets.createImportedStateExitTraceArtifact(imported, {
