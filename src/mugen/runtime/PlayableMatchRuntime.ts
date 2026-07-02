@@ -43,6 +43,7 @@ import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
+import { RuntimeMatchFrameStartWorld } from "./RuntimeMatchFrameStartSystem";
 import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
@@ -155,6 +156,7 @@ const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld()
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
+const matchFrameStartWorld = new RuntimeMatchFrameStartWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
@@ -378,12 +380,13 @@ export class PlayableMatchRuntime {
     const p2Input = input.p2 ?? new Set<string>();
     matchTickInputWorld.stampFrame({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
 
-    this.hitEligibilityWorld.resetFrameFlags(this.p1.runtime);
-    this.hitEligibilityWorld.resetFrameFlags(this.p2.runtime);
-    this.applyPreFacingAssertSpecial(this.p1, this.p2);
-    this.applyPreFacingAssertSpecial(this.p2, this.p1);
-    this.orientationWorld.updateAutoFacing(this.p1.runtime, this.p2.runtime);
-    this.orientationWorld.updateAutoFacing(this.p2.runtime, this.p1.runtime);
+    matchFrameStartWorld.advance({
+      p1: this.p1,
+      p2: this.p2,
+      resetFrameFlags: (fighter) => this.hitEligibilityWorld.resetFrameFlags(fighter.runtime),
+      applyPreFacingAssertSpecial: (fighter, opponent) => this.applyPreFacingAssertSpecial(fighter, opponent),
+      updateAutoFacing: (fighter, opponent) => this.orientationWorld.updateAutoFacing(fighter.runtime, opponent.runtime),
+    });
 
     if (
       this.hitPauseWorld.advanceRuntime({

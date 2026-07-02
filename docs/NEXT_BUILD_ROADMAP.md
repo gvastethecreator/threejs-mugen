@@ -90,6 +90,11 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
   -> pnpm qa:trace passes 272/272 artifacts, 248 required and 24 optional
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
+R2 match frame-start ownership
+  -> RuntimeMatchFrameStartWorld now owns normal active-match frame-start ordering outside PlayableMatchRuntime
+  -> per-frame hit/assert flag reset, pre-facing AssertSpecial, and auto-facing route through one named boundary before hitpause/pause handling
+  -> focused RuntimeMatchFrameStartSystem coverage proves reset-before-assert and assert-before-facing order for both players
+  -> ownership cleanup only; no exact frame-start tick order, pause/hitpause arbitration, helper/team/redirect frame-start ownership, visual/audio parity, score movement, or full match VM claim
 Previous R1 GetHitVar velocity trace gate
   -> synthetic-imported-gethitvar-velocity.json checksum 878a03f7 is required
   -> defender-owned normal get-hit CNS branches from 5000 into state/action 324 through GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded) after direct HitDef contact

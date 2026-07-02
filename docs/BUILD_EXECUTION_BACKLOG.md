@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchFrameStartWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchFrameStartWorld` as the bounded normal active-match frame-start boundary consumed by `PlayableMatchRuntime`.
+- Moved per-frame hit/assert flag reset, pre-facing `AssertSpecial`, and auto-facing ordering out of inline match-loop wiring.
+- Added focused `RuntimeMatchFrameStartSystem` coverage for reset-before-assert and assert-before-facing order for both players.
+- No hitpause, pause, combat, controller, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused gate passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchFrameStartSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` -> 2 files / 72 tests.
+- Full closeout gates passed: `pnpm test` -> 124 files / 1034 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm qa:trace` -> 272/272 artifacts, 248 required and 24 optional, `pnpm check:boundaries`, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active-match frame-start reset/assert/facing ordering has a named, testable ownership boundary while preserving existing `RuntimeHitEligibilityWorld`, pre-facing `AssertSpecial`, and `RuntimeOrientationWorld` semantics.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN frame-start tick order, pause/hitpause arbitration, helper/team/redirect frame-start ownership, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 match-loop ownership slices or R1 KFM/Common1/FightFX precision. Do not reselect the just-closed frame-start ownership extraction as fresh work.
+
 ## 2026-07-02 - GetHitVar damage metadata gate
 
 Changed:
