@@ -43,6 +43,7 @@ export function createRuntimeSoundEvent(
   const parsed = parseMugenSoundRef(rawValue);
   const lowPriority = operation?.lowPriority ?? firstBoolean(findControllerParam(controller, "lowpriority"));
   const volumeScale = operation?.volumeScale ?? firstNumber(findControllerParam(controller, "volumescale"));
+  const legacyVolume = operation?.legacyVolume ?? firstNumber(findControllerParam(controller, "volume"));
   const freqMul = operation?.freqMul ?? firstNumber(findControllerParam(controller, "freqmul"));
   const loop = operation?.loop ?? firstBoolean(findControllerParam(controller, "loop"));
   const pan = operation?.pan ?? firstNumber(findControllerParam(controller, "pan"));
@@ -54,6 +55,7 @@ export function createRuntimeSoundEvent(
     channel: operation?.channel ?? firstNumber(findControllerParam(controller, "channel")),
     ...(lowPriority !== undefined ? { lowPriority } : {}),
     ...(volumeScale !== undefined ? { volumeScale } : {}),
+    ...(legacyVolume !== undefined ? { legacyVolume } : {}),
     ...(freqMul !== undefined ? { freqMul } : {}),
     ...(loop !== undefined ? { loop } : {}),
     ...(pan !== undefined ? { pan } : {}),

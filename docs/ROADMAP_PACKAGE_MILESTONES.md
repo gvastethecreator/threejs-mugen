@@ -166,15 +166,15 @@ R1 Common1 crouch guard slide-stop trace gate
   -> current pnpm qa:trace now passes 281/281 artifacts, 256 required and 25 optional after the required EnvColor under-layer gate
   -> crouch guard slide-stop/control evidence only; no score movement, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
-  -> static PlaySnd lowpriority, volumescale, freqmul, loop, and pan lower into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority / volumeScale / freqMul / loop / pan
+  -> static PlaySnd lowpriority, volumescale, legacy volume, freqmul, loop, and pan lower into typed audio:playsnd metadata and RuntimeSoundEvent.lowPriority / volumeScale / legacyVolume / freqMul / loop / pan
   -> static SndPan channel plus pan/abspan lower into typed audio:sndpan metadata and RuntimeSoundEvent pan / absPan telemetry
-  -> RuntimeTrace requiredSoundEvents can require lowPriority, volumeScale, freqMul, loop, pan, absPan, and SndPan event telemetry
-  -> synthetic-imported-sound.json now has checksum 91574367 and gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, freqmul = 0.5, loop = 1, pan = 32, SndPan channel 2 / pan = -48, and StopSnd channel 2
+  -> RuntimeTrace requiredSoundEvents can require lowPriority, volumeScale, legacyVolume, freqMul, loop, pan, absPan, and SndPan event telemetry
+  -> synthetic-imported-sound.json remains checksum 91574367 and gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, volume = -8, freqmul = 0.5, loop = 1, pan = 32, SndPan channel 2 / pan = -48, and StopSnd channel 2
   -> MugenAudioSystem routes explicit-channel actions through resolveRuntimeAudioEventAction: normal PlaySnd replaces, low-priority PlaySnd skips active channels, StopSnd channel -1 / omitted channel stops all tracked channels
-  -> MugenAudioSystem routes volumeScale through resolveRuntimeSoundGain as bounded Web Audio gain scaling
+  -> MugenAudioSystem routes volumeScale through resolveRuntimeSoundGain as bounded Web Audio gain scaling and deliberately ignores legacy volume during modern playback while preserving diagnostics
   -> MugenAudioSystem routes freqMul through resolveRuntimeSoundPlaybackRate as bounded Web Audio playback-rate scaling and maps loop to source looping; unchannelled sources are now tracked for stop-all cleanup
   -> MugenAudioSystem routes pan/abspan through resolveRuntimeSoundStereoPan as bounded Web Audio stereo panning; SndPan updates active explicit channel panners; focused tests prove static abspan lowering
-  -> bounded Web Audio channel arbitration, volumescale, freqmul, loop, pan, abspan, and SndPan only; no exact priority classes, legacy volume, dynamic pan params, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
+  -> bounded Web Audio channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, and SndPan only; no exact priority classes, pre-RC8 volume gain semantics, dynamic pan params, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
   -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames and F sound refs before global data/fightfx.* fallback

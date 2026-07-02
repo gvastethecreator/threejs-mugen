@@ -202,6 +202,7 @@ export type RuntimeSoundEvent = {
   channel?: number;
   lowPriority?: boolean;
   volumeScale?: number;
+  legacyVolume?: number;
   freqMul?: number;
   loop?: boolean;
   pan?: number;

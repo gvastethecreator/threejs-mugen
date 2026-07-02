@@ -1,5 +1,25 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 PlaySnd legacy volume telemetry
+
+Changed:
+- Added `legacyVolume` to typed audio controller ops, `RuntimeSoundEvent`, and runtime trace sound-event requirement/evidence summaries.
+- Required `synthetic-imported-sound.json` now demands static `PlaySnd volume = -8` telemetry beside existing `lowpriority`, `volumescale`, `freqmul`, `loop`, `pan`, `SndPan`, and `StopSnd` evidence.
+- Web Audio playback still ignores legacy `volume`; gain continues to come from `volumescale`.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 3 files / 329 tests.
+- Trace gate: `pnpm qa:trace` -> 281/281 artifacts, 256 required and 25 optional; `synthetic-imported-sound.json` checksum remains `91574367`, with required/evidence/final `legacyVolume: -8` confirmed.
+
+Claim allowed:
+- Static legacy `PlaySnd volume` is preserved as diagnostic metadata through compiler/runtime/trace.
+
+Claim blocked:
+- Pre-RC8 legacy volume gain semantics, exact audio priority classes, dynamic sound params, global channel fallback, pause/superpause audio, timing/mixing, visual/audio parity, score movement, and full MUGEN/IKEMEN audio parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX/recovery precision or choose another deeper R2 helper/effect/combat ownership seam.
+
 ## 2026-07-02 - R1 EnvColor under-layer trace gate
 
 Changed:

@@ -89,6 +89,7 @@ export type AudioControllerOp = {
   channel?: number;
   lowPriority?: boolean;
   volumeScale?: number;
+  legacyVolume?: number;
   freqMul?: number;
   loop?: boolean;
   pan?: number;
@@ -1222,6 +1223,7 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
   const channel = firstNumber(findParam(controller, "channel"));
   const lowPriority = type === "playsnd" ? booleanNumber(findParam(controller, "lowpriority")) : undefined;
   const volumeScale = type === "playsnd" ? firstNumber(findParam(controller, "volumescale")) : undefined;
+  const legacyVolume = type === "playsnd" ? firstNumber(findParam(controller, "volume")) : undefined;
   const freqMul = type === "playsnd" ? firstNumber(findParam(controller, "freqmul")) : undefined;
   const loop = type === "playsnd" ? booleanNumber(findParam(controller, "loop")) : undefined;
   const pan = type === "playsnd" || type === "sndpan" ? firstNumber(findParam(controller, "pan")) : undefined;
@@ -1239,6 +1241,7 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
     channel,
     lowPriority,
     volumeScale,
+    legacyVolume,
     freqMul,
     loop,
     pan,

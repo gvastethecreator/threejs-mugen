@@ -425,7 +425,7 @@ time = 20
   });
 
   it("compiles static PlaySnd and StopSnd controllers into typed audio operations", () => {
-    const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50", freqmul: "0.5", loop: "1", pan: "32" }));
+    const play = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", channel: "2", lowpriority: "1", volumescale: "50", volume: "-8", freqmul: "0.5", loop: "1", pan: "32" }));
     const absolutePan = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,1", abspan: "-64" }));
     const pan = compileControllerIr(controller(200, "SndPan", [], { channel: "2", pan: "-48" }));
     const absoluteChannelPan = compileControllerIr(controller(200, "SndPan", [], { channel: "3", abspan: "96" }));
@@ -440,6 +440,7 @@ time = 20
       channel: 2,
       lowPriority: true,
       volumeScale: 50,
+      legacyVolume: -8,
       freqMul: 0.5,
       loop: true,
       pan: 32,

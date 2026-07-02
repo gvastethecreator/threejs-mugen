@@ -691,6 +691,7 @@ export type RuntimeTraceSoundEventRequirement = {
   channel?: number;
   lowPriority?: boolean;
   volumeScale?: number;
+  legacyVolume?: number;
   freqMul?: number;
   loop?: boolean;
   pan?: number;
@@ -716,6 +717,7 @@ export type RuntimeTraceGateSoundEventEvidence = {
   channel?: number;
   lowPriority?: boolean;
   volumeScale?: number;
+  legacyVolume?: number;
   freqMul?: number;
   loop?: boolean;
   pan?: number;
@@ -2178,6 +2180,7 @@ function summarizeSoundEventEvidence(
     channel: event.channel,
     lowPriority: event.lowPriority,
     volumeScale: event.volumeScale,
+    legacyVolume: event.legacyVolume,
     freqMul: event.freqMul,
     loop: event.loop,
     pan: event.pan,
@@ -2205,6 +2208,7 @@ function soundEventEvidenceKey(event: RuntimeTraceGateSoundEventEvidence): strin
     event.channel ?? "",
     event.lowPriority ? "low" : "",
     event.volumeScale ?? "",
+    event.legacyVolume ?? "",
     event.freqMul ?? "",
     event.loop ? "loop" : "",
     event.pan ?? "",
@@ -2235,6 +2239,7 @@ function matchesSoundEventRequirement(
     (requirement.lowPriority === undefined ||
       (requirement.lowPriority ? event.lowPriority === true : event.lowPriority !== true)) &&
     (requirement.volumeScale === undefined || event.volumeScale === requirement.volumeScale) &&
+    (requirement.legacyVolume === undefined || event.legacyVolume === requirement.legacyVolume) &&
     (requirement.freqMul === undefined || event.freqMul === requirement.freqMul) &&
     (requirement.loop === undefined || (requirement.loop ? event.loop === true : event.loop !== true)) &&
     (requirement.pan === undefined || event.pan === requirement.pan) &&
