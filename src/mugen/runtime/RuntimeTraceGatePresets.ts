@@ -7294,6 +7294,9 @@ export function createImportedDefaultFallGetHitTraceArtifact(
     attacker?: DemoFighterDefinition;
     script?: RuntimeTraceInputFrame[];
     requiredExecutedStates?: number[];
+    forbiddenExecutedStates?: number[];
+    requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
+    requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredActorFrames?: RuntimeTraceActorFrameRequirement[];
     requiredActorFrameSequences?: RuntimeTraceActorFrameSequenceRequirement[];
     requiredControllerEventSequences?: RuntimeTraceControllerEventSequenceRequirement[];
@@ -7332,8 +7335,9 @@ export function createImportedDefaultFallGetHitTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 5000, 5030, 5050],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        forbiddenExecutedStates: options.forbiddenExecutedStates,
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredActorFrames: options.requiredActorFrames,
         requiredActorFrameSequences: options.requiredActorFrameSequences,
         requiredControllerEventSequences: options.requiredControllerEventSequences,
@@ -7505,6 +7509,29 @@ export function defaultFallGetHitControllerSequence(
       { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
       { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
       { stateNo: fallStateNo, controller: "ChangeState", name: "Bounded Settle" },
+    ],
+  };
+}
+
+export function defaultHitFallCanRecoverProbeControllerSequence(
+  shakeStateNo = 5000,
+  airStateNo = 5030,
+  fallStateNo = 5050,
+  fallProbeStateNo = 5220,
+): RuntimeTraceControllerEventSequenceRequirement {
+  return {
+    label: `${shakeStateNo}/${airStateNo}/${fallStateNo}/${fallProbeStateNo} HitFall true and CanRecover false route`,
+    actorId: "p2",
+    allowSameTick: true,
+    steps: [
+      { stateNo: shakeStateNo, controller: "ChangeState", name: "Fall Hit Shake Over" },
+      { stateNo: airStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: airStateNo, controller: "HitVelSet", name: "Apply Hit Velocity" },
+      { stateNo: airStateNo, operation: "kinematic:hitvelset" },
+      { stateNo: airStateNo, controller: "ChangeState", name: "Fall" },
+      { stateNo: fallStateNo, controller: "VelAdd", name: "Gravity" },
+      { stateNo: fallStateNo, controller: "ChangeState", name: "HitFall CanRecover Probe" },
+      { stateNo: fallProbeStateNo, controller: "ChangeState", name: "Bounded Return" },
     ],
   };
 }
@@ -9389,6 +9416,80 @@ export function createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(
       },
     ],
   });
+}
+
+export function createSyntheticImportedHitFallCanRecoverTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitfall-canrecover",
+      displayName: "Synthetic Imported HitFall CanRecover",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        fallProbeStateNo: 5220,
+        fallProbeTime: 2,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitfall-canrecover-golden",
+      targetLabel: "Synthetic imported HitFall true and CanRecover false route",
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-hitfall-canrecover-attacker",
+        displayName: "Synthetic Imported HitFall CanRecover Attacker",
+        groundVelocity: [-3, -6],
+        fall: {
+          ...commonGetHitFallData(),
+          recover: true,
+          recoverTime: 20,
+        },
+      }),
+      requiredExecutedStates: [0, 200, 5000, 5030, 5050, 5220],
+      forbiddenExecutedStates: [5210, 5200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
+      requiredControllerEventSequences: [defaultHitFallCanRecoverProbeControllerSequence()],
+      requiredActorFrameSequences: [defaultFallGetHitActorFrameSequence([5000, 5030, 5050, 5220])],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5050,
+          moveType: "H",
+          observedHitFallRecoverTimeAtLeast: 1,
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5220,
+          moveType: "H",
+          observedHitFallRecoverTimeMinAtLeast: 1,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          moveType: "I",
+          ctrl: true,
+        },
+      ],
+      notes: [
+        "Synthetic imported HitFall/CanRecover trace proves a defender-owned Common1-style fall route can execute a branch gated by HitFall while CanRecover is still false, with positive fall.recovertime evidence before returning to idle/control. It does not claim exact MUGEN/IKEMEN recovery thresholds, complete recovery-input behavior, or full Common1 parity.",
+      ],
+    },
+  );
 }
 
 export function createImportedHitstunTraceArtifact(
@@ -17872,6 +17973,7 @@ export type SyntheticImportedTraceFighterOptions = {
     bounceStateNo?: number;
     liedownStateNo?: number;
     recoverStateNo?: number;
+    fallProbeStateNo?: number;
     recoveryInputStateNo?: number;
     groundRecoveryStateNo?: number;
     groundRecoveryLandStateNo?: number;
@@ -17884,10 +17986,12 @@ export type SyntheticImportedTraceFighterOptions = {
     bounceAnimNo?: number;
     liedownAnimNo?: number;
     recoverAnimNo?: number;
+    fallProbeAnimNo?: number;
     recoveryInputAnimNo?: number;
     groundRecoveryAnimNo?: number;
     groundRecoveryLandAnimNo?: number;
     landAnimNo?: number;
+    fallProbeTime?: number;
     includeRecoveryChain?: boolean;
     includeRecoveryInput?: boolean;
     includeRecoveryInputLanding?: boolean;
@@ -19182,6 +19286,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
               options.defaultGetHitFall.fallStateNo ?? 5050,
               traceAction(options.defaultGetHitFall.fallAnimNo ?? options.defaultGetHitFall.fallStateNo ?? 5050),
             ],
+            ...(options.defaultGetHitFall.fallProbeStateNo === undefined
+              ? []
+              : ([[
+                  options.defaultGetHitFall.fallProbeAnimNo ?? options.defaultGetHitFall.fallProbeStateNo,
+                  traceAction(options.defaultGetHitFall.fallProbeAnimNo ?? options.defaultGetHitFall.fallProbeStateNo),
+                ]] as Array<[number, MugenAnimationAction]>)),
             ...(options.defaultGetHitFall.includeRecoveryChain
               ? ([
                   [
@@ -20266,6 +20376,7 @@ function defaultGetHitFallBlock(state: {
   bounceStateNo?: number;
   liedownStateNo?: number;
   recoverStateNo?: number;
+  fallProbeStateNo?: number;
   recoveryInputStateNo?: number;
   groundRecoveryStateNo?: number;
   groundRecoveryLandStateNo?: number;
@@ -20278,10 +20389,12 @@ function defaultGetHitFallBlock(state: {
   bounceAnimNo?: number;
   liedownAnimNo?: number;
   recoverAnimNo?: number;
+  fallProbeAnimNo?: number;
   recoveryInputAnimNo?: number;
   groundRecoveryAnimNo?: number;
   groundRecoveryLandAnimNo?: number;
   landAnimNo?: number;
+  fallProbeTime?: number;
   includeRecoveryChain?: boolean;
   includeRecoveryInput?: boolean;
   includeRecoveryInputLanding?: boolean;
@@ -20297,6 +20410,7 @@ function defaultGetHitFallBlock(state: {
   const bounceStateNo = state.bounceStateNo ?? 5101;
   const liedownStateNo = state.liedownStateNo ?? 5110;
   const recoverStateNo = state.recoverStateNo ?? 5120;
+  const fallProbeStateNo = state.fallProbeStateNo ?? 5220;
   const recoveryInputStateNo = state.recoveryInputStateNo ?? 5210;
   const groundRecoveryStateNo = state.groundRecoveryStateNo ?? 5200;
   const groundRecoveryLandStateNo = state.groundRecoveryLandStateNo ?? 5201;
@@ -20309,13 +20423,27 @@ function defaultGetHitFallBlock(state: {
   const bounceAnimNo = state.bounceAnimNo ?? bounceStateNo;
   const liedownAnimNo = state.liedownAnimNo ?? liedownStateNo;
   const recoverAnimNo = state.recoverAnimNo ?? recoverStateNo;
+  const fallProbeAnimNo = state.fallProbeAnimNo ?? fallProbeStateNo;
   const recoveryInputAnimNo = state.recoveryInputAnimNo ?? recoveryInputStateNo;
   const groundRecoveryAnimNo = state.groundRecoveryAnimNo ?? groundRecoveryStateNo;
   const groundRecoveryLandAnimNo = state.groundRecoveryLandAnimNo ?? groundRecoveryLandStateNo;
   const landAnimNo = state.landAnimNo ?? 0;
+  const fallProbeTime = state.fallProbeTime ?? 2;
   const settleTarget = state.includeRecoveryChain ? groundStateNo : 0;
   const settleCtrl = state.includeRecoveryChain ? 0 : 1;
   const settleTime = state.includeGroundRecovery ? 60 : 6;
+  const fallProbeBlock =
+    state.fallProbeStateNo === undefined
+      ? ""
+      : `
+[State ${fallStateNo}, HitFall CanRecover Probe]
+type = ChangeState
+triggerall = HitFall
+triggerall = !CanRecover
+trigger1 = Time >= ${fallProbeTime}
+value = ${fallProbeStateNo}
+
+`;
   return `
 [Statedef ${shakeStateNo}]
 type = ${shakeStateType}
@@ -20384,6 +20512,7 @@ type = VelAdd
 trigger1 = 1
 y = GetHitVar(yaccel)
 
+${fallProbeBlock}
 ${state.includeGroundRecovery ? `[State ${fallStateNo}, Ground Recovery Input]
 type = ChangeState
 triggerall = Vel Y > 0
@@ -20404,9 +20533,27 @@ type = ChangeState
 trigger1 = Time = ${settleTime}
 value = ${settleTarget}
 ctrl = ${settleCtrl}
+${state.fallProbeStateNo === undefined ? "" : defaultFallProbeBlock({ fallProbeStateNo, fallProbeAnimNo })}
 ${state.includeRecoveryChain ? defaultFallRecoveryChainBlock({ groundStateNo, bounceStateNo, liedownStateNo, recoverStateNo, groundAnimNo, bounceAnimNo, liedownAnimNo, recoverAnimNo }) : ""}
 ${state.includeRecoveryInput ? defaultFallRecoveryInputBlock({ recoveryInputStateNo, recoveryInputAnimNo, landStateNo, landAnimNo, includeLanding: state.includeRecoveryInputLanding === true }) : ""}
 ${state.includeGroundRecovery ? defaultGroundRecoveryInputBlock({ groundRecoveryStateNo, groundRecoveryLandStateNo, landStateNo, groundRecoveryAnimNo, groundRecoveryLandAnimNo, landAnimNo }) : ""}
+`;
+}
+
+function defaultFallProbeBlock(state: { fallProbeStateNo: number; fallProbeAnimNo: number }): string {
+  return `
+[Statedef ${state.fallProbeStateNo}]
+type = A
+movetype = H
+physics = N
+anim = ${state.fallProbeAnimNo}
+ctrl = 0
+
+[State ${state.fallProbeStateNo}, Bounded Return]
+type = ChangeState
+trigger1 = Time >= 2
+value = 0
+ctrl = 1
 `;
 }
 

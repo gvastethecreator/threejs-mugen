@@ -882,6 +882,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDefaultFallRecoveryTooEarlyTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitfall-canrecover",
+      required: true,
+      artifact: presets.createSyntheticImportedHitFallCanRecoverTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-default-fall-official-recovery-too-early",
       required: true,
       artifact: presets.createImportedDefaultFallRecoveryTooEarlyTraceArtifact(

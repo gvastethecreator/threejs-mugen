@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - Required synthetic HitFall / CanRecover trace gate
+
+Changed:
+- `synthetic-imported-hitfall-canrecover.json` is now a required trace artifact for a bounded Common1-style `HitFall && !CanRecover` branch.
+- `defaultGetHitFallBlock` has an opt-in `fallProbeStateNo` route: state `5050` can branch through named `HitFall CanRecover Probe` when `HitFall` is true and `CanRecover` is still false.
+- `createImportedDefaultFallGetHitTraceArtifact` can now receive explicit required/forbidden states, controllers, and typed operations so precise Common1 sub-gates reuse the shared artifact builder instead of duplicating trace construction.
+- `RuntimeTraceGatePresets` now exports `createSyntheticImportedHitFallCanRecoverTraceArtifact()` and `defaultHitFallCanRecoverProbeControllerSequence()`.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "HitFall true"` -> 1 file / 1 test, 270 skipped.
+- Trace gate: `pnpm qa:trace` -> 277/277 artifacts, 252 required and 25 optional; `synthetic-imported-hitfall-canrecover.json` checksum `7cf7ab46`.
+- Full gates: `pnpm test` -> 130 files / 1063 tests; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 277/277 artifacts, 252 required and 25 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> passed with CRLF normalization warnings on edited docs.
+
+Claim allowed:
+- Bounded synthetic Common1-style `HitFall` true / `CanRecover` false routing is trace-gated: P2 takes a fall `HitDef` without `p2stateno`, routes `5000 -> 5030 -> 5050 -> 5220 -> 0`, executes ordered `HitVelSet`, `VelAdd`, and named probe `ChangeState`, requires positive `fall.recovertime` in `5050` and `5220`, and forbids recovery states `5210`/`5200`.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN recovery threshold tables, exact Common1 controller-loop timing, recovery arbitration, visual/audio parity, score movement, and full fall/recovery parity remain blocked.
+
+Next:
+- Continue R1 Common1 recovery precision or R2 MatchWorld helper/effect/combat ownership.
+
 ## 2026-07-02 - Required synthetic air guard landing trace gate
 
 Changed:
