@@ -288,6 +288,12 @@ function scanZssSyntaxLine(line: string, location: string, raw: string, findings
   if (/^\[function\b/i.test(line)) {
     findings.add("controller", "ZSS function definition", location, raw, "ZSS functions are recognized as scanner-only code structure.");
   }
+  if (/^\[statedef\b/i.test(line)) {
+    findings.add("controller", "ZSS statedef block", location, raw, "ZSS state definitions are recognized as scanner-only code structure.");
+  }
+  if (/^\[state\b/i.test(line)) {
+    findings.add("controller", "ZSS state controller block", location, raw, "ZSS state controller blocks are recognized as scanner-only code structure.");
+  }
   if (/\blet\s+[a-z_][a-z0-9_]*\s*=/i.test(line)) {
     findings.add("controller", "ZSS local variable", location, raw, "ZSS local variables are not compiled by the browser runtime.");
   }

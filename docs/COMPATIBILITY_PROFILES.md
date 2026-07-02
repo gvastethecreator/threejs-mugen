@@ -104,8 +104,8 @@ Current report contract:
 The scanner should recognize and report:
 
 - ZSS files and references
-- ZSS controller syntax
-- IKEMEN-GO ZSS presentation/system controllers such as `LifeBarAction`, `GameMakeAnim`, `Text`, `RemoveText`, and `RedLifeSet`, plus text-system triggers such as `NumText`
+- ZSS `[Statedef ...]` / `[State ...]` code blocks and controller syntax
+- IKEMEN-GO ZSS presentation/system controllers such as `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus text-system triggers such as `NumText`
 - Lua/script hooks, including `hook.*` registration/execution calls
 - IKEMEN-only config files
 - screenpack/select signals such as `unlock` and `commandlist`

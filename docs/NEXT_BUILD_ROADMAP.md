@@ -1084,10 +1084,10 @@ R2 RuntimeGuardWorld ownership extraction
 Latest IKEMEN scanner truth:
 
 ```txt
-I1 text-system scanner expansion
-  -> IkemenFeatureScanner recognizes RemoveText and NumText as report-only IKEMEN text-system signals
+I1 ZSS state-block scanner expansion
+  -> IkemenFeatureScanner recognizes ZSS [Statedef]/[State] blocks and ModifyText as report-only IKEMEN signals
   -> focused scanner test coverage proves recognized/unsupported classification
-  -> no ZSS/Lua/text rendering/runtime execution claim
+  -> no ZSS/Lua/text rendering/removal/runtime execution claim
 ```
 
 Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.

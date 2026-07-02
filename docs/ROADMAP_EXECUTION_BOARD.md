@@ -340,7 +340,7 @@ Latest CSS cleanup addendum: `pnpm qa:css:budget` now guards the current CSS deb
 | --- | --- | --- | --- |
 | Playable sandbox | Playable native/generated match with Three.js, HUD, stage, debug, smoke evidence. | Keep stable while compatibility and Studio move. | Does not prove imported MUGEN parity. |
 | MUGEN runtime | Partial imported runtime with many typed controller/trigger trace gates. | KFM/Common1 recovery, guard, tick-order, and MatchWorld ownership cuts. | Full CNS VM, helpers, custom states, teams, screenpacks. |
-| IKEMEN | Scanner/reporting only for ZSS/Lua/config/screenpack/model-stage signals. | Expand scanner references and unsupported reporting. | No ZSS/Lua execution, rollback, netplay, IKEMEN runtime semantics. |
+| IKEMEN | Scanner/reporting only for ZSS/Lua/config/screenpack/model-stage signals, now including ZSS state blocks and text lifecycle signals. | Expand scanner references and unsupported reporting. | No ZSS/Lua execution, rollback, netplay, IKEMEN runtime semantics. |
 | Studio | Workbench, Assets, Evidence, Build, Debug, Character/Stage surfaces exist. | Make Build/Evidence the single trust chain for next actions and stale/blocking state. | Full editor, asset DB, production export. |
 | Generated assets | Native/generated fighters and stages are playable evidence for authoring pipeline. | Provenance plus motion/scale/baseline QA ingestion. | Imported compatibility credit. |
 | Modular engine | Boundary docs exist, platformer slice intentionally delayed. | Extract only contracts proven by fighting runtime and Studio evidence. | Production multi-genre engine. |
@@ -521,7 +521,7 @@ Issue: `.scratch/roadmap/issues/04-ikemen-scan-and-reference.md`
 
 Build next:
 
-- Current proof: `IkemenFeatureScanner` recognizes IKEMEN-GO data ZSS presentation/system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as scanner-only unsupported findings, with focused scanner coverage.
+- Current proof: `IkemenFeatureScanner` recognizes ZSS `[Statedef ...]` / `[State ...]` code blocks and IKEMEN-GO data ZSS presentation/text-system controllers `LifeBarAction`, `GameMakeAnim`, `Text`, `ModifyText`, `RemoveText`, and `RedLifeSet`, plus the text-count trigger `NumText`, as scanner-only unsupported findings, with focused scanner coverage.
 - Map more Ikemen-GO source/docs signals into scanner-only findings.
 - Keep every finding classified as recognized, unsupported, or unknown unless runtime execution is gated.
 

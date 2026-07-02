@@ -157,7 +157,7 @@ describe("scanIkemenFeatures", () => {
       ],
       [
         "data/action.zss",
-        'lifeBarAction{spr: const(MsgFirstAttack), 0; top: 1}\ngameMakeAnim{value: F60; pos: 0,0}\ntext{text: "Ready"; layerno: 1}\nremoveText{id: 4}\nredLifeSet{value: lifeMax}\nif NumText(4) > 0 { removeText{id: 4} }\n',
+        '[Statedef -2]\n[State -2, Text lifecycle]\nlifeBarAction{spr: const(MsgFirstAttack), 0; top: 1}\ngameMakeAnim{value: F60; pos: 0,0}\ntext{text: "Ready"; layerno: 1}\nmodifyText{id: 4; text: "Fight"}\nremoveText{id: 4}\nredLifeSet{value: lifeMax}\nif NumText(4) > 0 { removeText{id: 4} }\n',
       ],
       [
         "data/system.def",
@@ -178,6 +178,8 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN RedirectID controller parameter"]).toBe(1);
     expect(report.features["IKEMEN fightfx action prefix"]).toBe(1);
     expect(report.features["ZSS function definition"]).toBe(1);
+    expect(report.features["ZSS statedef block"]).toBe(1);
+    expect(report.features["ZSS state controller block"]).toBe(1);
     expect(report.features["ZSS local variable"]).toBe(1);
     expect(report.features["ZSS ignoreHitPause block"]).toBe(1);
     expect(report.features["ZSS persistent block"]).toBe(1);
@@ -190,6 +192,7 @@ describe("scanIkemenFeatures", () => {
     expect(report.features["IKEMEN controller GetHitVarSet"]).toBe(1);
     expect(report.features["IKEMEN controller LifeBarAction"]).toBe(1);
     expect(report.features["IKEMEN controller MapSet"]).toBe(1);
+    expect(report.features["IKEMEN controller ModifyText"]).toBe(1);
     expect(report.features["IKEMEN controller RedLifeSet"]).toBe(1);
     expect(report.features["IKEMEN controller RemoveText"]).toBe(2);
     expect(report.features["IKEMEN controller Text"]).toBe(1);
