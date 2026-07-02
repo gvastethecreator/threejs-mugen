@@ -2428,6 +2428,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-common-guard-spark",
     "synthetic-imported-hitdef-fightfx-guard-spark",
     "synthetic-imported-hitdef-guard-effect-package",
+    "synthetic-imported-assertspecial-unguardable",
     "synthetic-imported-assertspecial-control",
     "synthetic-imported-assertspecial-crouch-guarddeny",
     "synthetic-imported-assertspecial-air-guarddeny",

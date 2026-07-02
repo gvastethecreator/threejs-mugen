@@ -1,5 +1,24 @@
 # Build Execution Backlog
 
+## 2026-07-02 - R1 AssertSpecial unguardable coverage hardening
+
+Changed:
+- Added `synthetic-imported-assertspecial-unguardable` to the `pnpm qa:trace` required artifact coverage contract in `scripts/qa_traces.cjs`.
+- The artifact was already a required trace gate; this cut makes the coverage summary fail if the attacker-side `Unguardable` oracle stops contributing required controller/operation/evidence coverage.
+- No runtime semantics changed.
+
+Evidence:
+- Trace gate: `pnpm qa:trace` -> 281/281 artifacts, 256 required and 25 optional; `synthetic-imported-assertspecial-unguardable.json` checksum remains `e84aa12d`.
+
+Claim allowed:
+- The bounded attacker-side `AssertSpecial Unguardable` oracle is now protected by both required artifact execution and required coverage-summary presence.
+
+Claim blocked:
+- Exact `AssertSpecial` priority, lifetime/persistence layering, pause interaction, helper/team/global ownership, KFM/Common1 confirmation, guard effects, visual parity, score movement, and full MUGEN/IKEMEN guard parity remain blocked.
+
+Next:
+- Continue R1 Common1 guard/recovery precision or R2 helper/effect/combat ownership with a behavior or ownership gate, not another coverage-only pass unless drift appears.
+
 ## 2026-07-02 - R1 PlaySnd abspan trace telemetry
 
 Changed:

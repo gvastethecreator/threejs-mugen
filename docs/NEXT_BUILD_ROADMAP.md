@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 AssertSpecial unguardable coverage hardening
+  -> synthetic-imported-assertspecial-unguardable.json checksum e84aa12d remains required
+  -> scripts/qa_traces.cjs now also requires that oracle in the required artifact coverage-summary contract
+  -> pnpm qa:trace passes 281/281 artifacts, 256 required and 25 optional
+  -> QA hardening only; no score movement, no new guard semantics, no exact priority/lifetime/pause/helper/team/global parity claim
 R2 RuntimeMatchPresentationSnapshotWorld ownership
   -> RuntimeMatchPresentationSnapshotWorld owns bounded match presentation snapshot input construction outside PlayableMatchRuntime
   -> camera shake, stage flash, and P1/P2 effect snapshot groups route through one seam before RuntimeSnapshotWorld.match builds the renderer-independent snapshot
