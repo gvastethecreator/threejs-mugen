@@ -64,8 +64,22 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     commands: character.commands,
     runtimeProgram: character.runtimeProgram,
     animations,
+    fightFxPrefix: fightFxPrefix(character),
     hitSparkLibraries: normalizeHitSparkLibraries(character),
   };
+}
+
+function fightFxPrefix(character: MugenCharacter): string | undefined {
+  const value = rawSectionValue(character.definition.rawSections, "info", "fightfx.prefix")?.trim().toLowerCase();
+  return value ? value : undefined;
+}
+
+function rawSectionValue(sections: MugenCharacter["definition"]["rawSections"], sectionName: string, keyName: string): string | undefined {
+  const section = Object.entries(sections).find(([name]) => name.toLowerCase() === sectionName)?.[1];
+  if (!section) {
+    return undefined;
+  }
+  return Object.entries(section).find(([key]) => key.toLowerCase() === keyName)?.[1];
 }
 
 function normalizeHitSparkLibraries(character: MugenCharacter): DemoFighterDefinition["hitSparkLibraries"] | undefined {

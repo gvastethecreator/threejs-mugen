@@ -59,6 +59,8 @@ Operational queue lock:
 
 ## 2026-07-02 Runtime Evidence Note
 
+The required FightFX hit-spark trace gate now carries character prefix metadata: imported DEF `[Info] fightfx.prefix` flows into runtime `fightFxPrefix`, F-prefixed FightFX asset frames, `HitSpark` events, and `RuntimeTrace.requiredHitEffectEvents`. `synthetic-imported-hitdef-fightfx-spark.json` remains checksum `11537b56` and now validates `fightFxPrefix = kfm`. This is metadata handoff only; alternate FightFX package lookup, exact screenpack/motif ownership, renderer timing/layering/scale/palette parity, score movement, and full hit-effect parity remain blocked.
+
 The required imported `EnvShake` trace gate is restored in `pnpm qa:trace`: `synthetic-imported-envshake.json` checksum `061f17d5` now runs with the aggregate 273/273 artifacts, 249 required and 24 optional. This gate proves bounded imported `EnvShake` controller telemetry, typed `envshake` operation evidence, and `RuntimeEnvShakeEvent` output for P1 state `200`. It is evidence-pipeline restoration only; exact waveform, pause/stage/layer interaction, helper/redirect ownership, visual/audio parity, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
 
 ## 2026-06-25 Construction Consensus

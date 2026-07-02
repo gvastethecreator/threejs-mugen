@@ -28,6 +28,7 @@ export class RuntimeHitEffectWorld {
     if (parsed?.sparkNo !== undefined && parsed.sparkNo < 0) {
       return undefined;
     }
+    const fightFxPrefix = assetFrame?.fightFxPrefix ?? assetFrames?.find((frame) => frame.fightFxPrefix)?.fightFxPrefix;
     const event: RuntimeHitEffectEvent = {
       type: "HitSpark",
       kind,
@@ -40,6 +41,7 @@ export class RuntimeHitEffectWorld {
       runtimeTick,
       assetFrame,
       assetFrames,
+      ...(fightFxPrefix ? { fightFxPrefix } : {}),
       ...(contact ? { contactId: contact.contactId, contactTick: contact.contactTick, contactKind: contact.contactKind } : {}),
     };
     pushRuntimeHitEffectEvent(actor.hitEffectEvents, event);

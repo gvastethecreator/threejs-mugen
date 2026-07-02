@@ -211,6 +211,7 @@ export type RuntimeSoundEvent = {
 
 export type RuntimeHitEffectAssetFrame = {
   source: "player" | "common" | "fightfx";
+  fightFxPrefix?: string;
   actionId: number;
   frameIndex: number;
   spriteGroup: number;
@@ -232,6 +233,7 @@ export type RuntimeHitEffectEvent = {
   runtimeTick?: number;
   assetFrame?: RuntimeHitEffectAssetFrame;
   assetFrames?: RuntimeHitEffectAssetFrame[];
+  fightFxPrefix?: string;
   contactId?: string;
   contactTick?: number;
   contactKind?: RuntimeHitDefContactKind;

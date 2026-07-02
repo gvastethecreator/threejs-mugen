@@ -3252,6 +3252,7 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
     hitSpark: "F7002",
     sparkXy: [18, -68],
     moveHitStateNo: 261,
+    fightFxPrefix: "kfm",
     hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7002, 8102),
   });
   return createImportedXTraceArtifact(attacker, {
@@ -3272,6 +3273,7 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
         offsetX: 18,
         offsetY: -68,
         assetSource: "fightfx",
+        fightFxPrefix: "kfm",
         assetActionId: 7002,
         assetFrameIndex: 0,
         ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
@@ -3284,7 +3286,7 @@ export function createSyntheticImportedHitDefFightFxSparkTraceArtifact(options: 
       },
     ],
     notes: [
-      "Synthetic imported HitDef FightFX-spark trace proves an F-prefixed sparkno can resolve bounded FightFX multi-frame AIR metadata from runtime hit-spark libraries, including frame count, frame indices, and total authored frame duration before renderer handoff. It does not claim exact FightFX sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN hit-effect parity.",
+      "Synthetic imported HitDef FightFX-spark trace proves an F-prefixed sparkno can resolve bounded FightFX multi-frame AIR metadata from runtime hit-spark libraries, including character fightfx.prefix metadata, frame count, frame indices, and total authored frame duration before renderer handoff. It does not claim exact alternate FightFX package lookup, sprite lookup, render timing, layering, scale, palette, motif/screenpack ownership, or full MUGEN/IKEMEN hit-effect parity.",
     ],
   });
 }
@@ -17635,6 +17637,7 @@ export type SyntheticImportedTraceFighterOptions = {
   hitSpark?: string;
   guardSpark?: string;
   sparkXy?: [number, number];
+  fightFxPrefix?: string;
   hitSparkLibraries?: DemoFighterDefinition["hitSparkLibraries"];
   dataSparkNo?: number;
   dataGuardSparkNo?: number;
@@ -18487,6 +18490,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     states: stateFile.states,
     stateEntryControllers,
     commands,
+    fightFxPrefix: options.fightFxPrefix,
     hitSparkLibraries: options.hitSparkLibraries,
     animations: new Map([
       [0, options.passiveReversalDef ? reversalTraceAction(0) : traceAction(0)],

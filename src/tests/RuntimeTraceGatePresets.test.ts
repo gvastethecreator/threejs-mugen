@@ -5391,6 +5391,7 @@ describe("RuntimeTraceGatePresets", () => {
           raw: "F7002",
           rawPrefix: "F",
           assetSource: "fightfx",
+          fightFxPrefix: "kfm",
           assetActionId: 7002,
           assetFrameIndex: 0,
           assetFrameOffsetX: 3,
@@ -5409,6 +5410,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
       expect.objectContaining({
         assetSource: "fightfx",
+        fightFxPrefix: "kfm",
         assetFrameOffsetX: 3,
         assetFrameOffsetY: -4,
         assetFrameDuration: 5,

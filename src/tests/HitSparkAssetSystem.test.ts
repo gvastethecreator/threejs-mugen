@@ -49,6 +49,7 @@ describe("HitSparkAssetSystem", () => {
 
   it("resolves unprefixed common and F-prefixed FightFX library frames", () => {
     const activeActor = actor({
+      fightFxPrefix: "kfm",
       hitSparkLibraries: {
         common: { animations: new Map([[7000, action(7000, 7200, [4])]]) },
         fightfx: { animations: new Map([[7002, action(7002, 8300, [6])]]) },
@@ -59,7 +60,7 @@ describe("HitSparkAssetSystem", () => {
       { source: "common", actionId: 7000, frameIndex: 0, spriteGroup: 7200, spriteIndex: 0, duration: 4 },
     ]);
     expect(resolveRuntimeHitSparkAssetFrames(activeActor, "F7002")).toMatchObject([
-      { source: "fightfx", actionId: 7002, frameIndex: 0, spriteGroup: 8300, spriteIndex: 0, duration: 6 },
+      { source: "fightfx", fightFxPrefix: "kfm", actionId: 7002, frameIndex: 0, spriteGroup: 8300, spriteIndex: 0, duration: 6 },
     ]);
   });
 
@@ -76,6 +77,7 @@ function actor(options: Partial<RuntimeHitSparkAssetActor["definition"]> & { sta
   return {
     definition: {
       animations: options.animations ?? new Map(),
+      fightFxPrefix: options.fightFxPrefix,
       hitSparkLibraries: options.hitSparkLibraries,
     },
     stateOwner: options.stateOwner,

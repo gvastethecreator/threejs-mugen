@@ -114,6 +114,8 @@ The scanner should recognize and report:
 - extended stage/system/motif features, including named 3D/Z stage params and model-stage assets
 - profile-specific constants and params
 
+`fightfx.prefix` is now a narrow exception with runtime metadata evidence: imported DEF raw metadata can flow into F-prefixed FightFX hit-spark trace events. Exact alternate FightFX package lookup remains unsupported, and the scanner profile still reports broader IKEMEN-only behavior as unsupported unless a runtime gate proves a bounded subset.
+
 Until execution gates exist, IKEMEN-only features must be labeled `Recognized` plus `Unsupported`, not `Executed Partial`.
 
 ### Shared Modules

@@ -106,9 +106,49 @@ describe("RuntimeContactPresentationSystem", () => {
       contactKind: "guard",
     });
   });
+
+  it("preserves FightFX prefix metadata on F-prefixed contact spark events", () => {
+    const world = new RuntimeContactPresentationWorld();
+    const attacker = actor("p1", 200, 6, {
+      fightFxPrefix: "kfm",
+      hitSparkLibraries: {
+        fightfx: {
+          animations: new Map([[7002, action(7002, 2)]]),
+        },
+      },
+    });
+
+    world.emitHitDefContact({
+      attacker,
+      defender: { id: "p2" },
+      kind: "hit",
+      runtimeTick: 140,
+      move: {
+        hitSpark: "F7002",
+        sparkXy: [18, -68],
+      },
+    });
+
+    expect(attacker.hitEffectEvents[0]).toMatchObject({
+      sparkNo: 7002,
+      rawPrefix: "F",
+      fightFxPrefix: "kfm",
+      assetFrame: {
+        source: "fightfx",
+        fightFxPrefix: "kfm",
+        actionId: 7002,
+        spriteIndex: 2,
+      },
+    });
+  });
 });
 
-function actor(id: string, stateNo: number, stateElapsed: number): RuntimeContactPresentationActor {
+function actor(
+  id: string,
+  stateNo: number,
+  stateElapsed: number,
+  options: Partial<Pick<RuntimeContactPresentationActor["definition"], "fightFxPrefix" | "hitSparkLibraries">> = {},
+): RuntimeContactPresentationActor {
   return {
     id,
     runtime: { stateNo },
@@ -122,6 +162,8 @@ function actor(id: string, stateNo: number, stateElapsed: number): RuntimeContac
         [7000, action(7000, 0)],
         [7001, action(7001, 0)],
       ]),
+      fightFxPrefix: options.fightFxPrefix,
+      hitSparkLibraries: options.hitSparkLibraries,
     },
   };
 }

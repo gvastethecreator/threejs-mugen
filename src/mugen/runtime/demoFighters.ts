@@ -98,6 +98,7 @@ export type DemoFighterDefinition = {
   commands?: MugenCommand[];
   runtimeProgram?: RuntimeProgramIr;
   animations: Map<number, MugenAnimationAction>;
+  fightFxPrefix?: string;
   hitSparkLibraries?: Partial<Record<HitSparkLibrarySource, HitSparkLibrary>>;
 };
 

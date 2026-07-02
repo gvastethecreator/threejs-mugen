@@ -730,6 +730,7 @@ export type RuntimeTraceHitEffectEventRequirement = {
   offsetX?: number;
   offsetY?: number;
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
+  fightFxPrefix?: string;
   assetActionId?: number;
   assetFrameIndex?: number;
   assetFrameOffsetX?: number;
@@ -760,6 +761,7 @@ export type RuntimeTraceGateHitEffectEventEvidence = {
   rawPrefix?: string;
   offset?: { x: number; y: number };
   assetSource?: NonNullable<NonNullable<ActorSnapshot["hitEffectEvents"]>[number]["assetFrame"]>["source"];
+  fightFxPrefix?: string;
   assetActionId?: number;
   assetFrameIndex?: number;
   assetFrameOffsetX?: number;
@@ -2224,6 +2226,7 @@ function summarizeHitEffectEventEvidence(
   event: NonNullable<RuntimeTraceActor["hitEffectEvents"]>[number],
 ): RuntimeTraceGateHitEffectEventEvidence {
   const assetFrameSummary = summarizeHitEffectAssetFrames(event.assetFrames);
+  const fightFxPrefix = event.fightFxPrefix ?? event.assetFrame?.fightFxPrefix;
   return {
     actorId: actor.id,
     label: actor.label,
@@ -2236,6 +2239,7 @@ function summarizeHitEffectEventEvidence(
     rawPrefix: event.rawPrefix,
     offset: event.offset ? { ...event.offset } : undefined,
     assetSource: event.assetFrame?.source,
+    ...(fightFxPrefix ? { fightFxPrefix } : {}),
     assetActionId: event.assetFrame?.actionId,
     assetFrameIndex: event.assetFrame?.frameIndex,
     assetFrameOffsetX: event.assetFrame?.offsetX,
@@ -2269,6 +2273,7 @@ function hitEffectEventEvidenceKey(event: RuntimeTraceGateHitEffectEventEvidence
     event.offset?.x ?? "",
     event.offset?.y ?? "",
     event.assetSource ?? "",
+    event.fightFxPrefix ?? "",
     event.assetActionId ?? "",
     event.assetFrameIndex ?? "",
     event.assetFrameOffsetX ?? "",
@@ -2303,6 +2308,7 @@ function matchesHitEffectEventRequirement(
     (requirement.offsetX === undefined || sameTraceNumber(event.offset?.x ?? NaN, requirement.offsetX)) &&
     (requirement.offsetY === undefined || sameTraceNumber(event.offset?.y ?? NaN, requirement.offsetY)) &&
     (requirement.assetSource === undefined || event.assetSource === requirement.assetSource) &&
+    (requirement.fightFxPrefix === undefined || event.fightFxPrefix === requirement.fightFxPrefix) &&
     (requirement.assetActionId === undefined || event.assetActionId === requirement.assetActionId) &&
     (requirement.assetFrameIndex === undefined || event.assetFrameIndex === requirement.assetFrameIndex) &&
     (requirement.assetFrameOffsetX === undefined || sameTraceNumber(event.assetFrameOffsetX ?? NaN, requirement.assetFrameOffsetX)) &&
@@ -3320,6 +3326,7 @@ function cloneTraceHitEffectEvent(event: NonNullable<ActorSnapshot["hitEffectEve
     offset: event.offset ? { ...event.offset } : undefined,
     assetFrame: event.assetFrame ? { ...event.assetFrame } : undefined,
     assetFrames: event.assetFrames?.map((frame) => ({ ...frame })),
+    ...(event.fightFxPrefix ? { fightFxPrefix: event.fightFxPrefix } : {}),
     stateNo: event.stateNo,
     tick: event.tick,
     runtimeTick: event.runtimeTick,

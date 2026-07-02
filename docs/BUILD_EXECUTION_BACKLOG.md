@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - FightFX prefix runtime metadata handoff
+
+Changed:
+- `createImportedFighterDefinition` now carries IKEMEN/MUGEN `[Info] fightfx.prefix` raw DEF metadata into imported runtime fighter definitions, normalized to lowercase.
+- `HitSparkAssetSystem` carries that prefix on F-prefixed FightFX asset frames, and `RuntimeHitEffectWorld` preserves it on emitted `HitSpark` events for trace/debug/renderer consumers.
+- `RuntimeTrace.requiredHitEffectEvents` can now require `fightFxPrefix`, and the required `synthetic-imported-hitdef-fightfx-spark.json` gate requires `fightFxPrefix = kfm` alongside existing selected-frame/multi-frame FightFX AIR evidence.
+- This is metadata/runtime handoff only. It does not implement alternate FightFX package lookup, full motif/screenpack ownership, exact sprite lookup, scale, palette, timing, or renderer parity.
+
+Evidence:
+- Focused gate: `pnpm vitest run src/tests/importedFighter.test.ts src/tests/HitSparkAssetSystem.test.ts src/tests/RuntimeContactPresentationSystem.test.ts src/tests/RuntimeTraceArtifact.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 5 files / 297 tests.
+- Trace gate: `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional. Required `synthetic-imported-hitdef-fightfx-spark.json` remains checksum `11537b56` and now contains/validates `fightFxPrefix = kfm` evidence.
+- `pnpm qa:smoke` was not run because this cut does not touch frontend, renderer behavior, CSS, sprites, visible gameplay presentation, or Studio layout.
+
+Claim allowed:
+- Imported character `fightfx.prefix` metadata can survive DEF parsing, runtime fighter import, F-prefixed FightFX spark asset-frame selection, hit-effect event insertion, and required trace-gate evidence.
+
+Claim blocked:
+- Exact IKEMEN alternate FightFX package routing, screenpack/motif FightFX ownership, renderer visual parity, sprite lookup parity, timing/layering/scale/palette parity, helper/team/custom-state presentation ownership, and full MUGEN/IKEMEN hit-effect parity remain blocked.
+
+Next:
+- Continue R1 Common1/FightFX precision by routing prefixed FightFX packages/assets only when a source-backed loader path and trace/smoke evidence exist, or return to R2 helper/effect/combat ownership.
+
 ## 2026-07-02 - IKEMEN character FightFX prefix scanner expansion
 
 Changed:

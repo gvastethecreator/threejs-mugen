@@ -9,6 +9,7 @@ type RuntimeHitSparkAssetLibrary = {
 
 type RuntimeHitSparkAssetDefinition = {
   animations: Map<number, MugenAnimationAction>;
+  fightFxPrefix?: string;
   hitSparkLibraries?: Partial<Record<HitSparkLibrarySource, RuntimeHitSparkAssetLibrary>>;
 };
 
@@ -55,18 +56,25 @@ function resolveLibraryHitSparkAssetFrames(
   actionId: number,
 ): RuntimeHitEffectAssetFrame[] {
   const owner = actor.stateOwner ?? actor;
-  return actionFramesToHitSparkAssetFrames(source, actionId, owner.definition.hitSparkLibraries?.[source]?.animations.get(actionId));
+  const fightFxPrefix = source === "fightfx" ? owner.definition.fightFxPrefix : undefined;
+  return actionFramesToHitSparkAssetFrames(
+    source,
+    actionId,
+    owner.definition.hitSparkLibraries?.[source]?.animations.get(actionId),
+    fightFxPrefix,
+  );
 }
 
 function actionFramesToHitSparkAssetFrames(
   source: RuntimeHitEffectAssetFrame["source"],
   actionId: number,
   action?: MugenAnimationAction,
+  fightFxPrefix?: string,
 ): RuntimeHitEffectAssetFrame[] {
   if (!action) {
     return [];
   }
-  return action.frames.map((frame, frameIndex) => frameToHitSparkAssetFrame(source, actionId, frame, frameIndex));
+  return action.frames.map((frame, frameIndex) => frameToHitSparkAssetFrame(source, actionId, frame, frameIndex, fightFxPrefix));
 }
 
 function frameToHitSparkAssetFrame(
@@ -74,9 +82,11 @@ function frameToHitSparkAssetFrame(
   actionId: number,
   frame: MugenAnimationFrame,
   frameIndex: number,
+  fightFxPrefix?: string,
 ): RuntimeHitEffectAssetFrame {
   return {
     source,
+    ...(fightFxPrefix ? { fightFxPrefix } : {}),
     actionId,
     frameIndex,
     spriteGroup: frame.spriteGroup,

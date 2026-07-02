@@ -800,6 +800,7 @@ describe("RuntimeTraceArtifact", () => {
   it("fails hit-effect gates when selected AIR frame metadata does not match", () => {
     const assetFrame = {
       source: "fightfx" as const,
+      fightFxPrefix: "kfm",
       actionId: 7002,
       frameIndex: 0,
       spriteGroup: 8102,
@@ -866,6 +867,7 @@ describe("RuntimeTraceArtifact", () => {
               raw: "F7002",
               rawPrefix: "F",
               assetSource: "fightfx",
+              fightFxPrefix: "kfm",
               assetActionId: 7002,
               assetFrameIndex: 0,
               assetFrameOffsetX: 4,
@@ -888,10 +890,11 @@ describe("RuntimeTraceArtifact", () => {
         assetFrameOffsetX: 3,
         assetFrameOffsetY: -4,
         assetFrameDuration: 5,
+        fightFxPrefix: "kfm",
       }),
     ]);
     expect(artifact.gates[0]?.failures).toEqual([
-      "Missing hit-effect event: actorId=p1, kind=hit, sparkNo=7002, raw=F7002, rawPrefix=F, assetSource=fightfx, assetActionId=7002, assetFrameIndex=0, assetFrameOffsetX=4, assetFrameOffsetY=-4, assetFrameDuration=5, assetSpriteGroup=8102, assetSpriteIndex=0 >= 1 (actual 0)",
+      "Missing hit-effect event: actorId=p1, kind=hit, sparkNo=7002, raw=F7002, rawPrefix=F, assetSource=fightfx, fightFxPrefix=kfm, assetActionId=7002, assetFrameIndex=0, assetFrameOffsetX=4, assetFrameOffsetY=-4, assetFrameDuration=5, assetSpriteGroup=8102, assetSpriteIndex=0 >= 1 (actual 0)",
     ]);
   });
 });

@@ -87,6 +87,23 @@ describe("createImportedFighterDefinition", () => {
     });
   });
 
+  it("carries IKEMEN FightFX prefix metadata from DEF raw info sections", () => {
+    const animations = new Map<number, MugenAnimationAction>([
+      [0, action(0, [[0, 0, 0]])],
+      [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+    ]);
+    const character = fakeCharacter(animations);
+    character.definition.rawSections = {
+      Info: {
+        "fightfx.prefix": "KFM",
+      },
+    };
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.fightFxPrefix).toBe("kfm");
+  });
+
   it("uses CNS Data HitDef spark defaults when a state HitDef omits spark refs", () => {
     const animations = new Map<number, MugenAnimationAction>([
       [0, action(0, [[0, 0, 0]])],

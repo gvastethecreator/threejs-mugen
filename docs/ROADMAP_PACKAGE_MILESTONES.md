@@ -85,6 +85,12 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R1 FightFX prefix runtime metadata handoff
+  -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
+  -> F-prefixed FightFX asset frames and HitSpark events preserve fightFxPrefix
+  -> RuntimeTrace requiredHitEffectEvents can require fightFxPrefix
+  -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and now gates fightFxPrefix = kfm
+  -> metadata handoff only; no alternate FightFX package lookup, exact motif/screenpack ownership, renderer timing/layer/scale/palette parity, score movement, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> RuntimeHelperTargetStateWorld still owns helper owner validation and no-op result semantics
