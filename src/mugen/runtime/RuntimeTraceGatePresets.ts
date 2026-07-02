@@ -3297,7 +3297,8 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-hit-effect-package-attacker",
     displayName: "Synthetic Imported HitDef Hit Effect Package Attacker",
-    hitSound: "S5,0",
+    fightFxPrefix: "kfm",
+    hitSound: "F5,0",
     hitSpark: "F7002",
     sparkXy: [18, -68],
     moveHitStateNo: 261,
@@ -3317,6 +3318,8 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
         type: "PlaySnd",
         group: 5,
         index: 0,
+        raw: "F5,0",
+        soundPrefix: "kfm",
         stateNo: 200,
       },
     ],
@@ -3353,6 +3356,8 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
           type: "PlaySnd",
           group: 5,
           index: 0,
+          raw: "F5,0",
+          soundPrefix: "kfm",
           stateNo: 200,
           contactKind: "hit",
           requireContactId: true,
@@ -3380,7 +3385,7 @@ export function createSyntheticImportedHitDefHitEffectPackageTraceArtifact(
       },
     ],
     notes: [
-      "Synthetic imported HitDef hit-effect package trace proves one direct hit contact can emit bounded hitsound telemetry and FightFX hit-spark multi-frame AIR metadata with shared contact package metadata before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
+      "Synthetic imported HitDef hit-effect package trace proves one direct hit contact can emit bounded F-prefixed hitsound telemetry with resolved fightfx.prefix metadata and FightFX hit-spark multi-frame AIR metadata with shared contact package metadata before renderer/audio handoff. It does not claim exact effect ordering inside the tick, SND playback/mixing, common/FightFX layering, scale, palette, motif ownership, or full MUGEN/IKEMEN hit-effect parity.",
     ],
   });
 }

@@ -80,12 +80,16 @@ Latest implementation truth:
 ```txt
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
-  -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF assets
-  -> matching fightfx.prefix selects that package for runtime F spark frames before global data/fightfx.* fallback
+  -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
+  -> matching fightfx.prefix selects that package for runtime F spark frames and F sound refs before global data/fightfx.* fallback
+  -> decoded prefixed SND archives register through the existing Web Audio route by soundPrefix
   -> F-prefixed FightFX spark asset frames and HitSpark events preserve fightFxPrefix for trace/debug/renderer consumers
+  -> F-prefixed PlaySnd/HitDef sound refs preserve soundPrefix for trace/debug/audio consumers
   -> RuntimeTrace requiredHitEffectEvents can require fightFxPrefix
+  -> RuntimeTrace requiredHitEffectEvents can require soundPrefix on sound telemetry
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and now gates fightFxPrefix = kfm evidence
-  -> bounded package-selection support only; no exact sys.ffx lifetime/refcount, SND fallback, motif/screenpack ownership, renderer timing/layer/scale/palette parity, or full hit-effect parity claim
+  -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
+  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> helper owner validation and fail-closed result semantics still route through RuntimeHelperTargetStateWorld
@@ -1030,7 +1034,7 @@ R2 visual-helper removal ownership
   -> focused EffectActorSystem and EffectSpawnSystem tests prove the boundary
   -> no redirects, parent/root/team ownership, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, helper-owned custom state tables, helper-owned Projectile combat/contact beyond bounded target memory, exact helper HitDef lifetime/multi-hit parity, exact lifecycle tick-order parity, or score movement claim
 R1 required combined hit/guard-effect contact-package trace strengthening
-  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1
+  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 with hitsound F5,0 plus soundPrefix = kfm
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7
@@ -1178,7 +1182,7 @@ I1/R1 character FightFX prefix package expansion
   -> runtime carries fightfx.prefix into bounded F-prefixed FightFX hit-spark trace metadata
   -> loader/runtime can select matching character [Files] fx FightFX AIR/SFF packages for F spark frames
   -> ZSS [Statedef]/[State] blocks and ModifyText remain report-only IKEMEN scanner signals
-  -> no full sys.ffx lifetime/refcount, SND fallback, ZSS/Lua/text rendering/removal/runtime execution claim
+  -> no full sys.ffx lifetime/refcount/cache semantics, exact channel fallback, ZSS/Lua/text rendering/removal/runtime execution claim
 ```
 
 Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.

@@ -8,6 +8,9 @@ export type RuntimeSoundActor = {
   runtime: {
     stateNo: number;
   };
+  definition?: {
+    fightFxPrefix?: string;
+  };
   stateElapsed: number;
 };
 
@@ -37,13 +40,14 @@ export function createRuntimeSoundEvent(
   operation?: AudioControllerOp,
 ): RuntimeSoundEvent {
   const rawValue = operation?.value ?? findControllerParam(controller, "value");
-  const parsed = parseMugenSoundValue(rawValue);
+  const parsed = parseMugenSoundRef(rawValue);
   return {
     type: operation ? operationSoundEventType(operation) : soundEventType(controller),
     group: parsed?.group,
     index: parsed?.index,
     channel: operation?.channel ?? firstNumber(findControllerParam(controller, "channel")),
     raw: rawValue,
+    ...soundPrefixMetadata(actor, parsed?.rawPrefix),
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -76,12 +80,13 @@ export class RuntimeAudioWorld {
     if (!sound) {
       return undefined;
     }
-    const parsed = parseMugenSoundValue(sound);
+    const parsed = parseMugenSoundRef(sound);
     const event: RuntimeSoundEvent = {
       type: "PlaySnd",
       group: parsed?.group,
       index: parsed?.index,
       raw: sound,
+      ...soundPrefixMetadata(actor, parsed?.rawPrefix),
       stateNo: actor.runtime.stateNo,
       tick: actor.stateElapsed,
       runtimeTick,
@@ -111,14 +116,30 @@ export class RuntimeAudioControllerDispatchWorld {
 }
 
 export function parseMugenSoundValue(value: string | undefined): { group: number; index: number } | undefined {
+  const parsed = parseMugenSoundRef(value);
+  return parsed ? { group: parsed.group, index: parsed.index } : undefined;
+}
+
+function parseMugenSoundRef(value: string | undefined): { rawPrefix?: "F" | "S"; group: number; index: number } | undefined {
   if (!value) {
     return undefined;
   }
-  const match = /^\s*S?\s*(-?\d+)\s*,\s*(-?\d+)/i.exec(value);
-  if (!match || match[1] === undefined || match[2] === undefined) {
+  const match = /^\s*([FS])?\s*(-?\d+)\s*,\s*(-?\d+)/i.exec(value);
+  if (!match || match[2] === undefined || match[3] === undefined) {
     return undefined;
   }
-  return { group: Number(match[1]), index: Number(match[2]) };
+  const rawPrefix = match[1]?.toUpperCase() as "F" | "S" | undefined;
+  return { ...(rawPrefix ? { rawPrefix } : {}), group: Number(match[2]), index: Number(match[3]) };
+}
+
+function soundPrefixMetadata(
+  actor: RuntimeSoundActor,
+  rawPrefix: "F" | "S" | undefined,
+): Pick<RuntimeSoundEvent, "soundPrefix"> {
+  if (rawPrefix !== "F") {
+    return {};
+  }
+  return { soundPrefix: actor.definition?.fightFxPrefix ?? "f" };
 }
 
 function soundEventType(controller: MugenStateController): RuntimeSoundEvent["type"] {

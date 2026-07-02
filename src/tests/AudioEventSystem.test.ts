@@ -89,6 +89,7 @@ describe("AudioEventSystem", () => {
   it("parses optional S prefix and negative sound ids", () => {
     expect(parseMugenSoundValue("5, 2")).toEqual({ group: 5, index: 2 });
     expect(parseMugenSoundValue("S-3,-7")).toEqual({ group: -3, index: -7 });
+    expect(parseMugenSoundValue("F5,0")).toEqual({ group: 5, index: 0 });
     expect(parseMugenSoundValue("abc")).toBeUndefined();
   });
 
@@ -170,6 +171,24 @@ describe("AudioEventSystem", () => {
       contactId: "direct:p1:p2:140:200:6:hit",
       contactTick: 140,
       contactKind: "hit",
+    });
+  });
+
+  it("tags F-prefixed sounds with the actor FightFX prefix", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 6), definition: { fightFxPrefix: "kfm_fx" }, soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitHitDefSound(fighter, "F5,0", 140);
+
+    expect(event).toMatchObject({
+      type: "PlaySnd",
+      group: 5,
+      index: 0,
+      raw: "F5,0",
+      soundPrefix: "kfm_fx",
+      stateNo: 200,
+      tick: 6,
+      runtimeTick: 140,
     });
   });
 });

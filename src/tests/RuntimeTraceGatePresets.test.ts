@@ -5205,6 +5205,7 @@ describe("RuntimeTraceGatePresets", () => {
           type: "PlaySnd",
           group: 5,
           index: 0,
+          raw: "S5,0",
           stateNo: 200,
         }),
       ]),
@@ -5452,6 +5453,8 @@ describe("RuntimeTraceGatePresets", () => {
           type: "PlaySnd",
           group: 5,
           index: 0,
+          raw: "F5,0",
+          soundPrefix: "kfm",
           stateNo: 200,
         }),
       ]),
@@ -5488,7 +5491,7 @@ describe("RuntimeTraceGatePresets", () => {
       source: "imported",
       actorKind: "player",
       contactKind: "hit",
-      sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, contactKind: "hit" }),
+      sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, raw: "F5,0", soundPrefix: "kfm", contactKind: "hit" }),
       hitEffect: expect.objectContaining({
         kind: "hit",
         sparkNo: 7002,
@@ -5506,6 +5509,8 @@ describe("RuntimeTraceGatePresets", () => {
         type: "PlaySnd",
         group: 5,
         index: 0,
+        raw: "F5,0",
+        soundPrefix: "kfm",
       }),
     ]);
     expect(artifact.gates[0]?.requirements.requiredHitEffectEvents).toEqual([
@@ -5525,7 +5530,7 @@ describe("RuntimeTraceGatePresets", () => {
         source: "imported",
         actorKind: "player",
         contactKind: "hit",
-        sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, requireContactId: true }),
+        sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 0, raw: "F5,0", soundPrefix: "kfm", requireContactId: true }),
         hitEffect: expect.objectContaining({
           kind: "hit",
           sparkNo: 7002,

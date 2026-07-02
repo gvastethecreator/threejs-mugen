@@ -3,7 +3,7 @@ import { MugenCharacterLoader } from "../mugen/loader/MugenCharacterLoader";
 import { VirtualFileSystem } from "../mugen/loader/VirtualFileSystem";
 
 describe("MugenCharacterLoader system assets", () => {
-  it("loads fight.def FightFX AIR/SFF as common and fightfx hit spark libraries", async () => {
+  it("loads fight.def FightFX AIR/SFF/SND as common and fightfx hit spark libraries", async () => {
     const vfs = new VirtualFileSystem();
     vfs.addFile(
       "chars/kfm/kfm.def",
@@ -47,12 +47,19 @@ fightfx.sff = fightfx.sff
         { group: 9100, index: 1, axisX: 4, axisY: 5 },
       ]),
     );
+    vfs.addFile("data/fightfx.snd", createSndV1([{ group: 7, index: 1 }]));
 
     const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
 
     expect(character.systemAssets?.fightDefPath).toBe("data/fight.def");
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.airPath).toBe("data/fightfx.air");
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.sffPath).toBe("data/fightfx.sff");
+    expect(character.systemAssets?.hitSparkLibraries.fightfx?.sndPath).toBe("data/fightfx.snd");
+    expect(character.systemAssets?.hitSparkLibraries.fightfx?.soundArchive?.sounds[0]).toMatchObject({
+      group: 7,
+      index: 1,
+      format: "wav",
+    });
     expect(character.systemAssets?.hitSparkLibraries.fightfx?.animations.get(7001)?.frames[0]).toMatchObject({
       spriteGroup: 9100,
       spriteIndex: 0,
@@ -99,6 +106,7 @@ prefix = KFM_FX
 [Files]
 air = kfmfx.air
 sff = kfmfx.sff
+snd = kfmfx.snd
 `),
     );
     vfs.addFile(
@@ -115,6 +123,7 @@ sff = kfmfx.sff
         { group: 9800, index: 1, axisX: 6, axisY: 7 },
       ]),
     );
+    vfs.addFile("chars/kfm/kfmfx.snd", createSndV1([{ group: 5, index: 0 }]));
 
     const character = await new MugenCharacterLoader().load("kfm.zip", vfs);
 
@@ -123,6 +132,9 @@ sff = kfmfx.sff
     expect(prefixed?.prefix).toBe("kfm_fx");
     expect(prefixed?.airPath).toBe("chars/kfm/kfmfx.air");
     expect(prefixed?.sffPath).toBe("chars/kfm/kfmfx.sff");
+    expect(prefixed?.sndPath).toBe("chars/kfm/kfmfx.snd");
+    expect(prefixed?.soundArchive?.metadata).toEqual({ soundTotal: 1, decodedTotal: 1 });
+    expect(prefixed?.soundArchive?.sounds[0]).toMatchObject({ group: 5, index: 0, format: "wav" });
     expect(prefixed?.animations.get(7002)?.frames).toHaveLength(2);
     expect(prefixed?.animations.get(7002)?.frames[0]).toMatchObject({
       spriteGroup: 9800,
@@ -181,6 +193,54 @@ function createSffV1(specs: SffSpriteSpec[]): ArrayBuffer {
   }
 
   return bytes.buffer;
+}
+
+function createSndV1(specs: Array<{ group: number; index: number }>): ArrayBuffer {
+  const chunks = specs.map((_, index) => createTinyWav(index));
+  const totalLength = 512 + chunks.reduce((total, chunk) => total + 16 + chunk.length, 0);
+  const bytes = new Uint8Array(totalLength);
+  const view = new DataView(bytes.buffer);
+
+  bytes.set(ascii("ElecbyteSnd\0"), 0);
+  view.setUint16(12, 4, true);
+  view.setUint16(14, 0, true);
+  view.setUint32(16, specs.length, true);
+  view.setUint32(20, 512, true);
+
+  let offset = 512;
+  for (let soundNumber = 0; soundNumber < specs.length; soundNumber += 1) {
+    const spec = specs[soundNumber]!;
+    const chunk = chunks[soundNumber]!;
+    const nextOffset = soundNumber === specs.length - 1 ? 0 : offset + 16 + chunk.length;
+    view.setUint32(offset, nextOffset, true);
+    view.setUint32(offset + 4, chunk.length, true);
+    view.setInt32(offset + 8, spec.group, true);
+    view.setInt32(offset + 12, spec.index, true);
+    bytes.set(chunk, offset + 16);
+    offset = nextOffset;
+  }
+
+  return bytes.buffer;
+}
+
+function createTinyWav(sample: number): Uint8Array {
+  const bytes = new Uint8Array(45);
+  const view = new DataView(bytes.buffer);
+  bytes.set(ascii("RIFF"), 0);
+  view.setUint32(4, 37, true);
+  bytes.set(ascii("WAVE"), 8);
+  bytes.set(ascii("fmt "), 12);
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 8000, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  bytes.set(ascii("data"), 36);
+  view.setUint32(40, 1, true);
+  bytes[44] = sample;
+  return bytes;
 }
 
 function createPcx2x2(): Uint8Array {

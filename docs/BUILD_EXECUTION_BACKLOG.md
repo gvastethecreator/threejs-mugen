@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-02 - FightFX SND prefix package routing
+
+Changed:
+- `MugenSystemAssetsLoader` now resolves optional `[Files] snd` entries from system `fight.def`/FightFX packages and IKEMEN-style character `[Files] fx = ...` packages, parses the referenced SND archive, and stores `sndPath` / `soundArchive` on each `MugenSystemHitSparkLibrary`.
+- `AudioEventSystem` now parses `F` / `S` sound prefixes from static refs such as `F5,0`; F-prefixed runtime sound events carry `soundPrefix` from the actor `fightFxPrefix` metadata for trace/debug/audio consumers.
+- `MugenAudioSystem` now keeps prefix-keyed SND archives separate from the character SND archive and resolves `soundPrefix` fail-closed instead of silently falling back to the player archive.
+- `App` registers global and character FightFX SND archives into the audio route, and `RuntimeTrace.requiredHitEffectEvents` can require `soundPrefix`.
+- Required `synthetic-imported-hitdef-hit-effect-package.json` keeps checksum `46aa5ce1` but now gates `hitsound = F5,0` with `soundPrefix = kfm` beside the existing FightFX `sparkno = F7002` metadata.
+- This is bounded package-selection and prefixed-SND lookup only. It does not implement exact IKEMEN `sys.ffx` lifetime/refcount/cache semantics, exact channel fallback, sound priority/arbitration, pan/volume/looping, timing/mixing, motif/screenpack ownership, or full audio/presentation parity.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/MugenSystemAssetsLoader.test.ts src/tests/AudioEventSystem.test.ts src/tests/MugenAudioSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files / 283 tests.
+- Full gates: `pnpm test` -> 130 files / 1054 tests, `pnpm typecheck`, `pnpm build`, `pnpm qa:trace` -> 273/273 artifacts, 249 required and 24 optional, `pnpm check:boundaries`, `pnpm qa:smoke`, and `git diff --check` -> passed. `git diff --check` only reported existing CRLF normalization warnings on edited docs.
+- Visual smoke reviewed `runtime-desktop.png`, `runtime-mobile.png`, and `studio-debug-audio.png`: runtime/studio still render, the match remains playable, and the Debug Audio lens shows SND loaded. Existing missing `sound/kfm.mid` stage-audio warning remains non-blocking.
+
+Claim allowed:
+- Imported character/system FightFX packages can carry AIR/SFF/SND assets, select a matching package through imported `fightfx.prefix`, tag F-prefixed hit sounds with `soundPrefix`, and route that prefix into trace evidence plus Web Audio archive lookup.
+
+Claim blocked:
+- Full IKEMEN/MUGEN FightFX/audio system parity, exact `sys.ffx` cache/refcount semantics, exact SND channel fallback, sound priority/arbitration, pan/volume/looping, timing/mixing, screenpack/motif ownership, visual timing/layering/scale/palette parity, helper/team/custom-state presentation ownership, and score movement remain blocked.
+
+Next:
+- Continue R1 FightFX/common presentation precision with exact channel/timing/mixing semantics or return to R1/R2 Common1/helper ownership if that produces stronger runtime evidence first.
+
 ## 2026-07-02 - Character FightFX prefix package selection
 
 Changed:
@@ -7180,7 +7204,7 @@ The first usable horizon is not "full MUGEN." It is a private workbench where a 
 
 - `synthetic-imported-default-fall-ground-recovery.json` is now stricter without changing its current checksum `7945fd93`: the required gate still proves bounded near-ground `5050 -> 5200 -> 5201 -> 52 -> 0` recovery selection and velocity telemetry, and now also requires an ordered named controller/typed-operation sequence across `5050` gravity/recovery input, `5200` self-land, `5201` ground-recovery velocity/position/safety/land, and `52` land velocity/position/control restore. Claim allowed: this bounded synthetic Common1-style ground recovery route has stronger controller-order evidence. Claim blocked: exact threshold tables, exact velocity math, broad KFM parity, and full MUGEN/IKEMEN VM tick order.
 
-- First-pass package FightFX/common spark asset loading is now wired: `MugenCharacterLoader` discovers optional `data/fight.def`, resolves `fightfx.air` / `fightfx.sff`, parses AIR actions as current common/FightFX hit-spark libraries, decodes the system SFF when possible, `createImportedFighterDefinition` carries those package-backed libraries into runtime fighter definitions, and `App` registers decoded system SFF sprites through a global hit-spark provider route. Focused tests cover loader discovery/decoding, imported-fighter library handoff, `HitSparkRenderer` resolving package-backed `common`/`fightfx` frames through the global sprite provider without player-owner context, bounded AIR-duration frame advance, bounded AIR/SFF axis binding around the `sparkxy` anchor, and QA diagnostics for selected frame, sprite axis, and local mesh position. Claim allowed: package-backed common/FightFX spark AIR/SFF can enter the bounded `HitSparkRenderer` sprite lookup path, advance frames by AIR durations, bind sprite meshes from AIR offsets plus SFF axes with facing, and expose frame/axis diagnostics for inspection. Claim blocked: exact layering, scale, palette, motif/screenpack ownership, and full FightFX parity.
+- First-pass package FightFX/common spark asset loading is now wired: `MugenCharacterLoader` discovers optional `data/fight.def`, resolves `fightfx.air` / `fightfx.sff`, parses AIR actions as current common/FightFX hit-spark libraries, decodes the system SFF and SND when possible, `createImportedFighterDefinition` carries those package-backed libraries into runtime fighter definitions, and `App` registers decoded system SFF sprites through a global hit-spark provider route. Focused tests cover loader discovery/decoding, imported-fighter library handoff, `HitSparkRenderer` resolving package-backed `common`/`fightfx` frames through the global sprite provider without player-owner context, bounded AIR-duration frame advance, bounded AIR/SFF axis binding around the `sparkxy` anchor, and QA diagnostics for selected frame, sprite axis, and local mesh position. Claim allowed: package-backed common/FightFX spark AIR/SFF can enter the bounded `HitSparkRenderer` sprite lookup path, advance frames by AIR durations, bind sprite meshes from AIR offsets plus SFF axes with facing, and expose frame/axis diagnostics for inspection. Claim blocked: exact layering, scale, palette, motif/screenpack ownership, and full FightFX parity.
 
 ## Usable MVP Definition
 

@@ -690,6 +690,7 @@ export type RuntimeTraceSoundEventRequirement = {
   index?: number;
   channel?: number;
   raw?: string;
+  soundPrefix?: string;
   stateNo?: number;
   contactId?: string;
   contactTick?: number;
@@ -708,6 +709,7 @@ export type RuntimeTraceGateSoundEventEvidence = {
   index?: number;
   channel?: number;
   raw?: string;
+  soundPrefix?: string;
   stateNo: number;
   eventTick: number;
   runtimeTick?: number;
@@ -2163,6 +2165,7 @@ function summarizeSoundEventEvidence(
     index: event.index,
     channel: event.channel,
     raw: event.raw,
+    soundPrefix: event.soundPrefix,
     stateNo: event.stateNo,
     eventTick: event.tick,
     runtimeTick: event.runtimeTick,
@@ -2183,6 +2186,7 @@ function soundEventEvidenceKey(event: RuntimeTraceGateSoundEventEvidence): strin
     event.index ?? "",
     event.channel ?? "",
     event.raw ?? "",
+    event.soundPrefix ?? "",
     event.stateNo,
     event.eventTick,
     event.runtimeTick ?? "",
@@ -2205,6 +2209,7 @@ function matchesSoundEventRequirement(
     (requirement.index === undefined || event.index === requirement.index) &&
     (requirement.channel === undefined || event.channel === requirement.channel) &&
     (requirement.raw === undefined || event.raw === requirement.raw) &&
+    (requirement.soundPrefix === undefined || event.soundPrefix === requirement.soundPrefix) &&
     (requirement.stateNo === undefined || event.stateNo === requirement.stateNo) &&
     (requirement.contactId === undefined || event.contactId === requirement.contactId) &&
     (requirement.contactTick === undefined || event.contactTick === requirement.contactTick) &&

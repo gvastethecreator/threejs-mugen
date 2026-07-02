@@ -14,6 +14,7 @@ export type MugenAudioDiagnostics = {
 export class MugenAudioSystem {
   private context?: AudioContext;
   private archive?: SndArchive;
+  private readonly prefixedArchives = new Map<string, SndArchive>();
   private readonly bufferPromises = new Map<string, Promise<AudioBuffer | undefined>>();
   private readonly activeChannels = new Map<number, AudioBufferSourceNode>();
   private readonly seenEvents = new Set<string>();
@@ -22,9 +23,16 @@ export class MugenAudioSystem {
   private played = 0;
   private missing = 0;
 
-  setArchive(archive: SndArchive | undefined): void {
+  setArchive(archive: SndArchive | undefined, prefixedArchives: Record<string, SndArchive | undefined> = {}): void {
     this.stopAll();
     this.archive = archive;
+    this.prefixedArchives.clear();
+    for (const [prefix, prefixedArchive] of Object.entries(prefixedArchives)) {
+      const normalizedPrefix = prefix.trim().toLowerCase();
+      if (normalizedPrefix && prefixedArchive) {
+        this.prefixedArchives.set(normalizedPrefix, prefixedArchive);
+      }
+    }
     this.bufferPromises.clear();
     this.seenEvents.clear();
     this.errors.length = 0;
@@ -42,7 +50,7 @@ export class MugenAudioSystem {
 
   processSnapshot(snapshot: MugenSnapshot): void {
     const soundActors = [...snapshot.actors, ...(snapshot.effects ?? [])];
-    if (!this.archive || soundActors.length === 0) {
+    if (!this.hasAnyArchive() || soundActors.length === 0) {
       return;
     }
     for (const actor of soundActors) {
@@ -71,10 +79,11 @@ export class MugenAudioSystem {
   }
 
   getDiagnostics(): MugenAudioDiagnostics {
+    const archives = this.archives();
     return {
-      available: Boolean(this.archive),
+      available: this.hasAnyArchive(),
       unlocked: this.unlocked,
-      sounds: this.archive?.sounds.length ?? 0,
+      sounds: archives.reduce((total, archive) => total + archive.sounds.length, 0),
       decoded: this.bufferPromises.size,
       played: this.played,
       missing: this.missing,
@@ -90,11 +99,12 @@ export class MugenAudioSystem {
   }
 
   private async play(event: RuntimeSoundEvent): Promise<void> {
-    if (event.group === undefined || event.index === undefined || !this.archive) {
+    const archive = this.resolveArchive(event);
+    if (event.group === undefined || event.index === undefined || !archive) {
       this.missing += 1;
       return;
     }
-    const sound = findSound(this.archive, event.group, event.index);
+    const sound = findSound(archive, event.group, event.index);
     if (!sound || sound.format !== "wav") {
       this.missing += 1;
       return;
@@ -104,7 +114,7 @@ export class MugenAudioSystem {
     if (context.state !== "running") {
       return;
     }
-    const buffer = await this.getAudioBuffer(sound);
+    const buffer = await this.getAudioBuffer(event.soundPrefix, sound);
     if (!buffer) {
       return;
     }
@@ -139,8 +149,8 @@ export class MugenAudioSystem {
     this.activeChannels.delete(channel);
   }
 
-  private getAudioBuffer(sound: MugenSound): Promise<AudioBuffer | undefined> {
-    const key = `${sound.group},${sound.index}`;
+  private getAudioBuffer(prefix: string | undefined, sound: MugenSound): Promise<AudioBuffer | undefined> {
+    const key = `${prefix?.toLowerCase() ?? "self"}:${sound.group},${sound.index}`;
     const existing = this.bufferPromises.get(key);
     if (existing) {
       return existing;
@@ -161,6 +171,27 @@ export class MugenAudioSystem {
       this.context = new AudioContext();
     }
     return this.context;
+  }
+
+  private resolveArchive(event: RuntimeSoundEvent): SndArchive | undefined {
+    const prefix = event.soundPrefix?.trim().toLowerCase();
+    if (!prefix || prefix === "s") {
+      return this.archive;
+    }
+    return this.prefixedArchives.get(prefix);
+  }
+
+  private hasAnyArchive(): boolean {
+    return Boolean(this.archive) || this.prefixedArchives.size > 0;
+  }
+
+  private archives(): SndArchive[] {
+    const archives: SndArchive[] = [];
+    if (this.archive) {
+      archives.push(this.archive);
+    }
+    archives.push(...this.prefixedArchives.values());
+    return archives;
   }
 }
 

@@ -1546,13 +1546,31 @@ export class App {
   }
 
   private installCharacterSoundArchive(character: MugenCharacter): void {
-    this.audio.setArchive(character.soundArchive);
+    const prefixedArchives = this.characterFightFxSoundArchives(character);
+    this.audio.setArchive(character.soundArchive, prefixedArchives);
     const archive = character.soundArchive;
     if (!archive) {
       this.log("Character SND was not loaded; PlaySnd remains debug-only");
-      return;
+    } else {
+      this.log(`Character SND decoded ${archive.metadata.decodedTotal}/${archive.metadata.soundTotal} WAV sounds`);
     }
-    this.log(`Character SND decoded ${archive.metadata.decodedTotal}/${archive.metadata.soundTotal} WAV sounds`);
+    for (const [prefix, soundArchive] of Object.entries(prefixedArchives)) {
+      this.log(`FightFX ${prefix} SND decoded ${soundArchive.metadata.decodedTotal}/${soundArchive.metadata.soundTotal} WAV sounds`);
+    }
+  }
+
+  private characterFightFxSoundArchives(character: MugenCharacter): Record<string, NonNullable<MugenCharacter["soundArchive"]>> {
+    const result: Record<string, NonNullable<MugenCharacter["soundArchive"]>> = {};
+    const fightfx = character.systemAssets?.hitSparkLibraries.fightfx;
+    if (fightfx?.soundArchive) {
+      result.f = fightfx.soundArchive;
+    }
+    for (const library of Object.values(character.systemAssets?.fightFxLibraries ?? {})) {
+      if (library.prefix && library.soundArchive) {
+        result[library.prefix] = library.soundArchive;
+      }
+    }
+    return result;
   }
 
   private installCharacterSffProvider(character: MugenCharacter): void {

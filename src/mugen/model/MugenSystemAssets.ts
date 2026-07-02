@@ -1,4 +1,5 @@
 import type { MugenAnimationAction, MugenDiagnostic } from "./MugenAnimation";
+import type { SndArchive } from "./MugenSound";
 import type { SffArchive } from "./MugenSprite";
 
 export type MugenSystemHitSparkLibrarySource = "common" | "fightfx";
@@ -9,8 +10,10 @@ export type MugenSystemHitSparkLibrary = {
   defPath?: string;
   airPath?: string;
   sffPath?: string;
+  sndPath?: string;
   animations: Map<number, MugenAnimationAction>;
   spriteArchive?: SffArchive;
+  soundArchive?: SndArchive;
   diagnostics: MugenDiagnostic[];
 };
 

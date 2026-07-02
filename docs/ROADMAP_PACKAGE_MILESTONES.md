@@ -86,11 +86,13 @@ Latest runtime compatibility checkpoint:
 
 ```txt
 R1 FightFX prefix package selection
-  -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF assets
-  -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames before global data/fightfx.* fallback
+  -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
+  -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames and F sound refs before global data/fightfx.* fallback
   -> decoded prefixed SFF archives register through the existing global hit-spark provider route
+  -> decoded prefixed SND archives register through the existing Web Audio route by soundPrefix
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and still gates fightFxPrefix = kfm metadata
-  -> bounded package-selection support only; no exact sys.ffx lifetime/refcount, SND fallback, motif/screenpack ownership, renderer timing/layer/scale/palette parity, score movement, or full hit-effect parity claim
+  -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
+  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, score movement, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> RuntimeHelperTargetStateWorld still owns helper owner validation and no-op result semantics
@@ -1035,7 +1037,7 @@ R2 visual-helper removal ownership
 R1 required combined hit/guard-effect contact-package trace strengthening
   -> synthetic-imported-hitdef-common-guard-spark.json checksum 7650a09c gates unprefixed common/default source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno 7003
   -> synthetic-imported-hitdef-fightfx-guard-spark.json checksum 32f3e92d gates F-prefixed FightFX source-frame plus selected-frame/multi-frame AIR metadata for guard.sparkno F7004
-  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound S5,0 telemetry plus FightFX sparkno F7002 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
+  -> synthetic-imported-hitdef-hit-effect-package.json checksum 46aa5ce1 gates one direct HitDef hit contact with hitsound F5,0 telemetry, soundPrefix = kfm, and FightFX sparkno F7002 source-frame plus selected-frame/multi-frame AIR metadata sharing one contact package
   -> synthetic-imported-hitdef-guard-effect-package.json checksum 1c3167b7 gates one guarded direct HitDef contact with guardsound S6,0 telemetry plus FightFX guard.sparkno F7004 source-frame and selected-frame/multi-frame AIR metadata sharing one contact package
   -> required package traces require direct/guarded HitDef contact, attacker-side PlaySnd/HitSpark telemetry, shared non-empty contactId/contactTick/contactKind metadata, selected first-frame offset 3,-4, selected first-frame duration 5, at least 2 asset frames, frame indices [0, 1], and total authored duration 11 before renderer/audio handoff
   -> current aggregate after the player Projectile default Target-controller gate is 208/208 artifacts, 188 required and 20 optional

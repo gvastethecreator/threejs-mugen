@@ -3,6 +3,7 @@ import type { MugenCharacterDef } from "../model/MugenCharacter";
 import type { MugenSystemAssets, MugenSystemHitSparkLibrary, MugenSystemHitSparkLibrarySource } from "../model/MugenSystemAssets";
 import { parseAir } from "../parsers/AirParser";
 import { parseDef } from "../parsers/DefParser";
+import { parseSnd } from "../parsers/SndParser";
 import { SffParser } from "../parsers/SffParser";
 import type { PathResolver } from "./PathResolver";
 import type { VirtualFileSystem } from "./VirtualFileSystem";
@@ -22,6 +23,7 @@ export async function loadMugenSystemAssets(
   const explicit = fightDefPath ? readFightDefRefs(vfs, fightDefPath, resolver) : {};
   const airPath = explicit.airPath ?? findBestBasename(resolver, "fightfx.air");
   const sffPath = explicit.sffPath ?? findBestBasename(resolver, "fightfx.sff");
+  const sndPath = explicit.sndPath ?? findBestBasename(resolver, "fightfx.snd") ?? findBestBasename(resolver, "fx.snd");
   const characterFxPaths = findCharacterFightFxPaths(options.characterDefinition, options.characterDefPath, resolver);
 
   if (!fightDefPath && !airPath && !sffPath && characterFxPaths.length === 0) {
@@ -45,7 +47,7 @@ export async function loadMugenSystemAssets(
     });
   }
 
-  const systemPackage = await loadAirSffPackage(vfs, airPath, sffPath, diagnostics);
+  const systemPackage = await loadAirSffSndPackage(vfs, airPath, sffPath, sndPath, diagnostics);
 
   const hitSparkLibraries: MugenSystemAssets["hitSparkLibraries"] = {};
   if (systemPackage.animations.size > 0 || systemPackage.spriteArchive) {
@@ -53,16 +55,20 @@ export async function loadMugenSystemAssets(
       "fightfx",
       airPath,
       sffPath,
+      sndPath,
       systemPackage.animations,
       systemPackage.spriteArchive,
+      systemPackage.soundArchive,
       diagnostics,
     );
     hitSparkLibraries.common = createLibrary(
       "common",
       airPath,
       sffPath,
+      sndPath,
       systemPackage.animations,
       systemPackage.spriteArchive,
+      systemPackage.soundArchive,
       diagnostics,
     );
   }
@@ -93,14 +99,16 @@ export async function loadMugenSystemAssets(
   };
 }
 
-async function loadAirSffPackage(
+async function loadAirSffSndPackage(
   vfs: VirtualFileSystem,
   airPath: string | undefined,
   sffPath: string | undefined,
+  sndPath: string | undefined,
   diagnostics: MugenDiagnostic[],
 ): Promise<{
   animations: Map<number, MugenSystemHitSparkLibrary["animations"] extends Map<number, infer T> ? T : never>;
   spriteArchive: MugenSystemHitSparkLibrary["spriteArchive"];
+  soundArchive: MugenSystemHitSparkLibrary["soundArchive"];
 }> {
   const animations = new Map();
   if (airPath) {
@@ -128,7 +136,24 @@ async function loadAirSffPackage(
     }
   }
 
-  return { animations, spriteArchive };
+  let soundArchive: MugenSystemHitSparkLibrary["soundArchive"];
+  if (sndPath) {
+    const buffer = vfs.readArrayBuffer(sndPath);
+    if (buffer) {
+      const snd = parseSnd(buffer);
+      soundArchive = snd;
+      for (const warning of snd.warnings) {
+        diagnostics.push({
+          severity: "warning",
+          format: "snd",
+          file: sndPath,
+          message: warning,
+        });
+      }
+    }
+  }
+
+  return { animations, spriteArchive, soundArchive };
 }
 
 async function loadCharacterFightFxLibrary(
@@ -154,6 +179,7 @@ async function loadCharacterFightFxLibrary(
   const files = getSection(definition.rawSections, "Files");
   const airPath = resolveExisting(resolver, fxDefPath, getValue(files, ["air", "anim"]));
   const sffPath = resolveExisting(resolver, fxDefPath, getValue(files, ["sff", "sprite"]));
+  const sndPath = resolveExisting(resolver, fxDefPath, getValue(files, ["snd", "sound"]));
   if (!airPath) {
     diagnostics.push({
       severity: "warning",
@@ -171,8 +197,8 @@ async function loadCharacterFightFxLibrary(
     });
   }
 
-  const loaded = await loadAirSffPackage(vfs, airPath, sffPath, diagnostics);
-  return createLibrary("fightfx", airPath, sffPath, loaded.animations, loaded.spriteArchive, diagnostics, {
+  const loaded = await loadAirSffSndPackage(vfs, airPath, sffPath, sndPath, diagnostics);
+  return createLibrary("fightfx", airPath, sffPath, sndPath, loaded.animations, loaded.spriteArchive, loaded.soundArchive, diagnostics, {
     prefix,
     defPath: fxDefPath,
   });
@@ -182,8 +208,10 @@ function createLibrary(
   source: MugenSystemHitSparkLibrarySource,
   airPath: string | undefined,
   sffPath: string | undefined,
+  sndPath: string | undefined,
   animations: Map<number, MugenSystemHitSparkLibrary["animations"] extends Map<number, infer T> ? T : never>,
   spriteArchive: MugenSystemHitSparkLibrary["spriteArchive"],
+  soundArchive: MugenSystemHitSparkLibrary["soundArchive"],
   diagnostics: MugenDiagnostic[],
   metadata: Pick<MugenSystemHitSparkLibrary, "prefix" | "defPath"> = {},
 ): MugenSystemHitSparkLibrary {
@@ -192,8 +220,10 @@ function createLibrary(
     ...metadata,
     airPath,
     sffPath,
+    sndPath,
     animations: new Map(animations),
     spriteArchive,
+    soundArchive,
     diagnostics: diagnostics.slice(),
   };
 }
@@ -202,14 +232,16 @@ function readFightDefRefs(
   vfs: VirtualFileSystem,
   fightDefPath: string,
   resolver: PathResolver,
-): { airPath?: string; sffPath?: string } {
+): { airPath?: string; sffPath?: string; sndPath?: string } {
   const definition = parseDef(vfs.readText(fightDefPath) ?? "", fightDefPath);
   const files = getSection(definition.rawSections, "Files");
   const airRef = getValue(files, ["fightfx.air", "fightfx.anim", "fx.air"]);
   const sffRef = getValue(files, ["fightfx.sff", "fx.sff"]);
+  const sndRef = getValue(files, ["snd", "fightfx.snd", "fx.snd"]);
   return {
     airPath: resolveExisting(resolver, fightDefPath, airRef),
     sffPath: resolveExisting(resolver, fightDefPath, sffRef),
+    sndPath: resolveExisting(resolver, fightDefPath, sndRef),
   };
 }
 
