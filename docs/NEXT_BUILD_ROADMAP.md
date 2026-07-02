@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 match input-control ownership
+  -> RuntimeMatchInputControlWorld now owns bounded normal active-match P1/P2-controlled/simple-AI input dispatch from PlayableMatchRuntime
+  -> P1 player input, controlled P2 player input, and uncontrolled P2 simple-AI fallback route through one named boundary after normal command-buffer writes
+  -> focused RuntimeMatchInputControlSystem coverage proves P1-before-controlled-P2 ordering, mirrored opponent arguments, and P1-before-AI fallback ordering
+  -> ownership cleanup only; no exact MUGEN/IKEMEN input priority, command timing, input-conflict resolution, pause/hitpause command parity, helper/team/redirect command ownership, AI parity, visual/audio parity, score movement, or full input VM claim
 R2 match round ownership
   -> RuntimeMatchRoundWorld now owns bounded active-match round timer delegation and finish side effects from PlayableMatchRuntime
   -> timer tick, KO/time-over stop, and round-finish log emission route through one named boundary

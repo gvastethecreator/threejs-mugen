@@ -175,6 +175,16 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 match input-control ownership
+  -> RuntimeMatchInputControlWorld now owns bounded normal active-match P1/P2-controlled/simple-AI input dispatch from PlayableMatchRuntime
+  -> P1 player input, controlled P2 player input, and uncontrolled P2 simple-AI fallback route through one named boundary after normal command-buffer writes
+  -> focused RuntimeMatchInputControlSystem coverage proves P1-before-controlled-P2 ordering, mirrored opponent arguments, and P1-before-AI fallback ordering
+  -> ownership cleanup only; no exact input priority, command timing, input-conflict resolution, pause/hitpause command parity, helper/team/redirect command ownership, AI parity, visual/audio parity, score movement, or full input VM claim
+R2 match round ownership
+  -> RuntimeMatchRoundWorld now owns bounded active-match round timer delegation and finish side effects from PlayableMatchRuntime
+  -> timer tick, KO/time-over stop, and round-finish log emission route through one named boundary
+  -> focused RuntimeMatchRoundSystem coverage proves timer delegation, finish stop/log mutation, and no-finish no-op behavior
+  -> ownership cleanup only; no exact round-flow timing, intros/winposes, KO slowdown, continue flow, teams/simul/turns, lifebar/screenpack behavior, visual/audio parity, score movement, or full round VM claim
 R2 match fighter-advance ownership
   -> RuntimeMatchFighterAdvanceWorld now owns bounded active 1v1 fighter-advance orchestration from PlayableMatchRuntime
   -> P1 advance, P2 auto-guard start, pause-gated P2 advance, and P1 auto-guard start route through one named boundary
@@ -1205,6 +1215,14 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeSnapshotWorld` player actor projection
 - `RuntimeCompatibilityTelemetryWorld` ownership extraction
 - `RuntimeFighterAdvanceWorld` ownership extraction
+- `RuntimeHelperTelemetryWorld` ownership extraction
+- `RuntimeMatchTickInputWorld` ownership extraction
+- `RuntimeMoveStartWorld` ownership extraction
+- `RuntimeMatchCombatBridgeWorld` ownership extraction
+- `RuntimeMatchPauseControllerWorld` ownership extraction
+- `RuntimeMatchFighterAdvanceWorld` ownership extraction
+- `RuntimeMatchRoundWorld` ownership extraction
+- `RuntimeMatchInputControlWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

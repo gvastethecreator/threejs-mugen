@@ -43,6 +43,7 @@ import { RuntimeInputControlWorld } from "./RuntimeInputControlSystem";
 import { RuntimeDispatchEvaluationWorld } from "./RuntimeDispatchEvaluationSystem";
 import { RuntimeExpressionContextWorld, runtimeDefinitionConst } from "./RuntimeExpressionContextSystem";
 import { RuntimeHelperTelemetryWorld } from "./RuntimeHelperTelemetrySystem";
+import { RuntimeMatchInputControlWorld } from "./RuntimeMatchInputControlSystem";
 import { RuntimeMatchTickInputWorld } from "./RuntimeMatchTickInputSystem";
 import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
@@ -155,6 +156,7 @@ const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld()
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
+const matchInputControlWorld = new RuntimeMatchInputControlWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
 const matchCombatBridgeWorld = new RuntimeMatchCombatBridgeWorld();
@@ -421,12 +423,16 @@ export class PlayableMatchRuntime {
 
     matchRoundWorld.tickTimer(this.round);
     matchTickInputWorld.pushNormalCommandBuffers({ tick: this.tick, p1: this.p1, p2: this.p2, p1Input, p2Input });
-    handlePlayerInput(this.p1, p1Input, this.p2, this.stage.bounds, this.tick, this.inputControlWorld);
-    if (input.p2) {
-      handlePlayerInput(this.p2, p2Input, this.p1, this.stage.bounds, this.tick, this.inputControlWorld);
-    } else {
-      handleSimpleAi(this.p2, this.p1, this.tick, this.inputControlWorld);
-    }
+    matchInputControlWorld.apply({
+      p1: this.p1,
+      p2: this.p2,
+      p1Input,
+      p2Input,
+      p2Controlled: input.p2 !== undefined,
+      handlePlayerInput: (fighter, fighterInput, opponent) =>
+        handlePlayerInput(fighter, fighterInput, opponent, this.stage.bounds, this.tick, this.inputControlWorld),
+      handleAi: (fighter, opponent) => handleSimpleAi(fighter, opponent, this.tick, this.inputControlWorld),
+    });
     matchFighterAdvanceWorld.advancePair({
       p1: this.p1,
       p2: this.p2,

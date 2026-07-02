@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchInputControlWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchInputControlWorld` as the bounded normal active-match P1/P2/player-vs-AI input dispatch boundary consumed by `PlayableMatchRuntime`.
+- Moved normal active-match P1 input dispatch plus controlled-P2 vs simple-AI branching out of inline match-loop branching.
+- Added focused `RuntimeMatchInputControlSystem` coverage for P1-before-controlled-P2 ordering, mirrored opponent arguments, and P1-before-AI fallback ordering.
+- No local player input semantics, simple AI behavior, command-buffer semantics, pause/hitpause input routing, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchInputControlSystem.test.ts` -> 1 file / 2 tests.
+- Full closeout gates passed: `pnpm test` -> 122 files / 1029 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active-match P1/P2-controlled/simple-AI input dispatch order has a named, testable ownership boundary while preserving the existing `RuntimeInputControlWorld` control-intent semantics.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN input priority, command timing, input-conflict resolution, pause/hitpause command parity, helper/team/redirect command ownership, AI parity, visual/audio parity, score movement, and full input VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard/FightFX precision.
+
 ## 2026-07-02 - RuntimeMatchRoundWorld ownership extraction
 
 Changed:
