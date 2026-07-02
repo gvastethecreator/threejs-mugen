@@ -1,5 +1,27 @@
 # Build Execution Backlog
 
+## 2026-07-02 - RuntimeMatchPostFighterWorld ownership extraction
+
+Changed:
+- Added `RuntimeMatchPostFighterWorld` as the bounded normal active-match post-fighter bridge consumed by `PlayableMatchRuntime`.
+- Moved combat resolver construction plus `RuntimeMatchInteractionWorld.advanceRuntime` handoff out of inline match-loop wiring.
+- Added focused `RuntimeMatchPostFighterSystem` coverage for bridge construction before post-fighter interaction advance and forwarding through target memory, effect lifecycle, projectile clash, actor constraints, target bindings, direct/projectile/helper combat, clamps, and presentation effects.
+- No combat semantics, projectile clash semantics, target memory semantics, effect lifecycle semantics, trace artifact schema, frontend, CSS, renderer, sprites, or bundled assets changed.
+
+Evidence:
+- Focused test passed before full closeout: `pnpm exec vitest run src/tests/RuntimeMatchPostFighterSystem.test.ts` -> 1 file / 1 test.
+- Full closeout gates passed: `pnpm test` -> 123 files / 1030 tests, `pnpm typecheck`, `pnpm build` -> passed with existing Vite large-chunk warning, `pnpm check:boundaries`, `pnpm qa:trace` -> 268/268 artifacts, 245 required and 23 optional, and `git diff --check` -> passed with existing CRLF normalization warnings only.
+- `pnpm qa:smoke` is intentionally not planned because this cut does not touch frontend, renderer, CSS, sprites, bundled assets, or visible gameplay presentation.
+
+Claim allowed:
+- Current normal active-match post-fighter combat resolver construction plus match-interaction runtime handoff has a named, testable ownership boundary while preserving existing `RuntimeMatchCombatBridgeWorld` and `RuntimeMatchInteractionWorld` semantics.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN post-fighter tick order, combat priority parity, projectile/helper contact timing, helper/team/redirect ownership, target lifetime parity, visual/audio parity, score movement, and full match VM parity remain blocked.
+
+Next:
+- Continue R2 helper/effect/combat ownership or R1 KFM/Common1 recovery/guard/FightFX precision.
+
 ## 2026-07-02 - RuntimeMatchInputControlWorld ownership extraction
 
 Changed:

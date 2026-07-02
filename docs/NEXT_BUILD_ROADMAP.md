@@ -78,6 +78,11 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R2 match post-fighter ownership
+  -> RuntimeMatchPostFighterWorld now owns bounded normal active-match post-fighter bridge wiring from PlayableMatchRuntime
+  -> combat resolver construction and RuntimeMatchInteractionWorld.advanceRuntime handoff route through one named boundary
+  -> focused RuntimeMatchPostFighterSystem coverage proves target/effect/projectile-clash/constraint/binding/direct/projectile/helper-combat/clamp/presentation forwarding after resolver construction
+  -> ownership cleanup only; no exact MUGEN/IKEMEN post-fighter tick order, combat priority parity, projectile/helper contact timing, helper/team/redirect ownership, target lifetime parity, visual/audio parity, score movement, or full match VM claim
 R2 match input-control ownership
   -> RuntimeMatchInputControlWorld now owns bounded normal active-match P1/P2-controlled/simple-AI input dispatch from PlayableMatchRuntime
   -> P1 player input, controlled P2 player input, and uncontrolled P2 simple-AI fallback route through one named boundary after normal command-buffer writes

@@ -175,6 +175,11 @@ Previous R1 Helper Projectile cancel-time dynamic-id trace gate
 Latest implementation checkpoint:
 
 ```txt
+R2 match post-fighter ownership
+  -> RuntimeMatchPostFighterWorld now owns bounded normal active-match post-fighter bridge wiring from PlayableMatchRuntime
+  -> combat resolver construction and RuntimeMatchInteractionWorld.advanceRuntime handoff route through one named boundary
+  -> focused RuntimeMatchPostFighterSystem coverage proves target/effect/projectile-clash/constraint/binding/direct/projectile/helper-combat/clamp/presentation forwarding after resolver construction
+  -> ownership cleanup only; no exact post-fighter tick order, combat priority parity, projectile/helper contact timing, helper/team/redirect ownership, target lifetime parity, visual/audio parity, score movement, or full match VM claim
 R2 match input-control ownership
   -> RuntimeMatchInputControlWorld now owns bounded normal active-match P1/P2-controlled/simple-AI input dispatch from PlayableMatchRuntime
   -> P1 player input, controlled P2 player input, and uncontrolled P2 simple-AI fallback route through one named boundary after normal command-buffer writes
@@ -1223,6 +1228,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeMatchFighterAdvanceWorld` ownership extraction
 - `RuntimeMatchRoundWorld` ownership extraction
 - `RuntimeMatchInputControlWorld` ownership extraction
+- `RuntimeMatchPostFighterWorld` ownership extraction
 
 After docs-only/setup work, return to one of these evidence-producing cuts:
 

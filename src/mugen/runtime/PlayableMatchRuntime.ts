@@ -49,8 +49,8 @@ import { RuntimeGuardDistanceWorld } from "./RuntimeGuardDistanceSystem";
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { RuntimeCombatResolutionWorld } from "./RuntimeCombatResolutionSystem";
 import { RuntimeHelperCombatWorld } from "./RuntimeHelperCombatSystem";
-import { RuntimeMatchCombatBridgeWorld } from "./RuntimeMatchCombatBridgeSystem";
 import { RuntimeMatchFighterAdvanceWorld } from "./RuntimeMatchFighterAdvanceSystem";
+import { RuntimeMatchPostFighterWorld } from "./RuntimeMatchPostFighterSystem";
 import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeHelperProjectileTargetWorld } from "./RuntimeHelperProjectileTargetSystem";
@@ -68,7 +68,6 @@ import {
 } from "./RuntimeResourceSystem";
 import { RuntimeSnapshotWorld } from "./RuntimeSnapshotSystem";
 import { RuntimeOrientationWorld } from "./OrientationSystem";
-import { RuntimeMatchInteractionWorld } from "./MatchInteractionSystem";
 import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
@@ -159,8 +158,8 @@ const helperTelemetryWorld = new RuntimeHelperTelemetryWorld();
 const matchInputControlWorld = new RuntimeMatchInputControlWorld();
 const matchTickInputWorld = new RuntimeMatchTickInputWorld();
 const moveStartWorld = new RuntimeMoveStartWorld();
-const matchCombatBridgeWorld = new RuntimeMatchCombatBridgeWorld();
 const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
+const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
 
 export type MatchInput = {
@@ -223,7 +222,6 @@ export class PlayableMatchRuntime {
   private readonly directCombatWorld = new RuntimeDirectCombatWorld(this.contactWorld);
   private readonly hitOverrideWorld = new RuntimeHitOverrideWorld();
   private readonly reversalWorld = new RuntimeReversalWorld(this.contactWorld);
-  private readonly matchInteractionWorld = new RuntimeMatchInteractionWorld();
   private readonly recoveryWorld = new RuntimeRecoverySystem();
   private readonly hitEligibilityWorld = new RuntimeHitEligibilityWorld();
   private readonly assertSpecialWorld = new RuntimeAssertSpecialWorld();
@@ -460,7 +458,13 @@ export class PlayableMatchRuntime {
         applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
       isPaused: () => this.pauseWorld.current() !== undefined,
     });
-    const combatResolvers = matchCombatBridgeWorld.createResolvers({
+    matchPostFighterWorld.advanceRuntime({
+      p1: this.p1,
+      p2: this.p2,
+      stage: this.stage,
+      stageTime: this.tick,
+      actorConstraintWorld: this.actorConstraintWorld,
+      effectLifecycleWorld: this.effectLifecycleWorld,
       combatResolutionWorld: this.combatResolutionWorld,
       helperCombatWorld: this.helperCombatWorld,
       directCombatWorld: this.directCombatWorld,
@@ -470,7 +474,6 @@ export class PlayableMatchRuntime {
       getHitStateWorld: this.getHitStateWorld,
       hitStateTransitionWorld: this.hitStateTransitionWorld,
       contactPresentationWorld: this.contactPresentationWorld,
-      effectLifecycleWorld: this.effectLifecycleWorld,
       targetWorld: this.targetWorld,
       runtimeTick: this.tick,
       getHurtBoxes: getRuntimeHurtBoxes,
@@ -479,21 +482,6 @@ export class PlayableMatchRuntime {
       defaultHurtBoxes: defaultRuntimeHurtBoxes,
       rememberProjectileTarget: (source, target, projectile) =>
         this.rememberHelperProjectileTarget(source, target, projectile),
-      log: (line) => this.logs.unshift(line),
-    });
-
-    this.matchInteractionWorld.advanceRuntime({
-      p1: this.p1,
-      p2: this.p2,
-      stage: this.stage,
-      stageTime: this.tick,
-      runtimeTick: this.tick,
-      actorConstraintWorld: this.actorConstraintWorld,
-      effectLifecycleWorld: this.effectLifecycleWorld,
-      resolvePriorityClash: combatResolvers.resolvePriorityClash,
-      resolveDirectCombat: combatResolvers.resolveDirectCombat,
-      resolveProjectileCombat: combatResolvers.resolveProjectileCombat,
-      resolveHelperCombat: combatResolvers.resolveHelperCombat,
       log: (line) => this.logs.unshift(line),
     });
 
