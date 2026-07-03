@@ -5335,6 +5335,59 @@ export function officialKfmCrouchGuardSlideStopControllerSequence(): RuntimeTrac
   };
 }
 
+export function officialKfmCrouchGuardHoldCrouchReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM crouch guard hold returns to crouch control",
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 152,
+        animNo: 152,
+        stateType: "C",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 153,
+        animNo: 151,
+        stateType: "C",
+        moveType: "H",
+        physics: "C",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 131,
+        animNo: 151,
+        stateType: "C",
+        moveType: "H",
+        physics: "C",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 11,
+        animNo: 11,
+        stateType: "C",
+        moveType: "I",
+        physics: "C",
+        minFrames: 20,
+      },
+    ],
+  };
+}
+
 export function officialKfmAirGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 154/155 air guard-hit and landing controller order",

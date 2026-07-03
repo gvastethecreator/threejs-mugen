@@ -88,14 +88,22 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 optional official KFM crouch guard-hold crouch-control trace gate
+  -> kfm-official-default-crouch-guard-hold-crouch-return.json checksum d11153d0 passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM/Common1 crouch guard-hit route executes 152 -> 153 -> 131 -> 11 after direct guarded contact while holding down-back
+  -> active-command evidence requires holdback, holddown, and x
+  -> required order preserves 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
+  -> actor-frame sequence proves 152 -> 153 -> 131 -> 11 and final KFM crouch state/action 11 with control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> private-fixture confidence only; no score movement, public KFM support, required portable KFM-specific fixture coverage without private fixture, exact guard-hold duration, guard timing/proximity/effects, visual/audio parity, or full guard parity claim
 R1 synthetic crouch guard-hold crouch-control trace gate
   -> synthetic-imported-crouch-guard-hold-crouch-return.json checksum 83ecb699 is required
   -> defender-owned crouch guard-hit route executes 152 -> 153 -> 130 -> 10 after direct guarded contact while holding down-back
   -> active-command evidence requires holdback, holddown, and x
   -> required order preserves 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame sequence proves 152 -> 153 -> 130 -> 10 and final imported crouch state/action 10 with control
-  -> pnpm qa:trace passes 294/294 artifacts, 265 required and 29 optional
-  -> bounded synthetic crouch guard-hold crouch-control only; no score movement, exact KFM 131 -> 11 crouch return routing, exact guard-hold duration, guard timing/proximity/effects, visual/audio parity, or full guard parity claim
+  -> previous aggregate was 294/294 artifacts, 265 required and 29 optional before the optional KFM mirror
+  -> bounded synthetic crouch guard-hold crouch-control only; no score movement, public KFM support, exact guard-hold duration, guard timing/proximity/effects, visual/audio parity, or full guard parity claim
 R2 RuntimeActiveControllerHookSetWorld ownership
   -> RuntimeActiveControllerHookSetWorld owns bounded active-controller hook-set construction outside PlayableMatchRuntime
   -> state mutation hooks, side-effect controller hooks, and fallback runtime-controller hooks group behind one named boundary before RuntimeActiveControllerRunWorld executes
@@ -220,7 +228,7 @@ R1 Common1 ground-recovery priority trace gate
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery"
   -> required order includes positive-to-zero fall.recovertime, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> active-command evidence includes x and recovery; generic air-recovery state 5210 plus lie-down chain states are forbidden
-  -> pnpm qa:trace passes 294/294 artifacts, 265 required and 29 optional after required synthetic crouch guard-hold crouch-control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM crouch guard-hold crouch-control
   -> bounded ground-over-air recovery selection evidence only; no exact recovery threshold tables, controller-loop timing, ground/air arbitration constants, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is now required
@@ -268,8 +276,8 @@ R1 Common1 crouch guard slide-stop trace gate
   -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame evidence proves crouch guard-slide velocity before stop/control
   -> newer synthetic-imported-crouch-guard-hold-crouch-return.json checksum 83ecb699 extends this portable route through final crouch state/action 10 with control
-  -> current pnpm qa:trace passes 294/294 artifacts, 265 required and 29 optional
-  -> crouch guard slide-stop/control plus synthetic return-to-crouch-control evidence only; no exact KFM 131 -> 11 crouch return routing, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
+  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> crouch guard slide-stop/control plus synthetic return-to-crouch-control and optional private KFM 152 -> 153 -> 131 -> 11 crouch-control evidence only; no public KFM support, required portable KFM-specific fixture coverage while the private fixture is absent, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, legacy volume, volumescale, freqmul, loop, pan, and abspan now compile into typed audio:playsnd metadata
   -> static SndPan channel plus pan/abspan now compile into typed audio:sndpan metadata
@@ -350,7 +358,7 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> the observed KFM crouch route returns toward crouch/control; this does not claim crouch guard-hold timing parity
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 294/294 artifacts, 265 required and 29 optional after required synthetic crouch guard-hold crouch-control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM crouch guard-hold crouch-control
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 match active ownership
   -> RuntimeMatchActiveWorld now owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
@@ -1415,6 +1423,8 @@ Do not reselect `synthetic-imported-default-guard-slide-stop` or the bounded dir
 Do not reselect `synthetic-imported-crouch-guard-slide-stop` or the bounded direct crouch guard-hit `152 -> 153 -> 130` slide-stop/control route as fresh next work; it is now closed and required.
 
 Do not reselect `synthetic-imported-crouch-guard-hold-crouch-return` or the bounded synthetic crouch guard-hit `152 -> 153 -> 130 -> 10` return-to-crouch-control route as fresh next work; it is now closed and required.
+
+Do not reselect `kfm-official-default-crouch-guard-hold-crouch-return` or the optional private-fixture KFM crouch guard-hit `152 -> 153 -> 131 -> 11` return-to-crouch-control route as fresh next work; it is now closed when `.scratch/fixtures/kfm-official.zip` exists.
 
 Do not reselect `synthetic-imported-gethitvar-velocity`, `synthetic-imported-gethitvar-damage`, or the bounded direct-contact `GetHitVar(xvel/yvel)` / `GetHitVar(damage) = 37` normal get-hit branches as fresh next work; they are now closed and required.
 

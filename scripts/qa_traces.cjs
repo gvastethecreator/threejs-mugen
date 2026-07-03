@@ -1817,6 +1817,39 @@ async function main() {
         }),
       });
       artifacts.push({
+        name: "kfm-official-default-crouch-guard-hold-crouch-return",
+        required: false,
+        artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
+          script: presets.importedDefaultCrouchGuardStateScript(),
+          requiredExecutedStates: [200, 131, 152, 153],
+          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredControllerEventSequences: [presets.officialKfmCrouchGuardSlideStopControllerSequence()],
+          requiredActorFrames: presets.officialKfmCrouchGuardHitPhysicsFrames(),
+          requiredActorFrameSequences: [presets.officialKfmCrouchGuardHoldCrouchReturnActorFrameSequence()],
+          requiredActiveCommands: ["holdback", "holddown", "x"],
+          requiredFinalActors: [
+            {
+              actorId: "p2",
+              source: "imported",
+              actorKind: "player",
+              stateNo: 11,
+              animNo: 11,
+              life: 995,
+              ctrl: true,
+              stateType: "C",
+              moveType: "I",
+              physics: "C",
+            },
+          ],
+          targetId: "kfm-official-default-crouch-guard-hold-crouch-return-golden",
+          targetLabel: "Official KFM Common1 crouch guard-hold crouch-control route",
+          notes: [
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 returns through observable crouch guard-hold state 131 and then resumes held-down crouch state/action 11 with control, while preserving the existing slide-stop controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, exact guard timing, proximity guard behavior, guard effects, air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+          ],
+        }),
+      });
+      artifacts.push({
         name: "kfm-official-default-air-guard-state",
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
