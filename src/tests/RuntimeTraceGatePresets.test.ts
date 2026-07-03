@@ -111,6 +111,7 @@ import {
   syntheticAutoGuardStartControllerSequence,
   syntheticAutoGuardStartActorFrameSequence,
   syntheticCrouchGuardHitPhysicsFrames,
+  syntheticStandGuardHoldWalkReturnActorFrameSequence,
   syntheticStandGuardHitPhysicsFrames,
   createSyntheticImportedAutoGuardEndTraceArtifact,
   createSyntheticImportedAutoGuardStartTraceArtifact,
@@ -145,6 +146,7 @@ import {
   createSyntheticImportedHitDefGuardSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSoundTraceArtifact,
   createSyntheticImportedDefaultGuardStateTraceArtifact,
+  createSyntheticImportedDefaultGuardHoldWalkReturnTraceArtifact,
   createSyntheticImportedDefaultGuardSlideStopTraceArtifact,
   createSyntheticImportedCrouchGuardSlideStopTraceArtifact,
   createSyntheticImportedExplodBindTraceArtifact,
@@ -6601,6 +6603,97 @@ describe("RuntimeTraceGatePresets", () => {
         ],
       },
     ]);
+  });
+
+  it("creates a synthetic imported default Common1 guard-hold walk-control artifact", () => {
+    const artifact = createSyntheticImportedDefaultGuardHoldWalkReturnTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-default-guard-hold-walk-return-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-default-guard-hold-walk-return-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([130, 150, 151, 200]));
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "x"]));
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 20,
+      animNo: 20,
+      source: "imported",
+      actorKind: "player",
+      life: 995,
+      ctrl: true,
+      stateType: "S",
+      moveType: "I",
+      physics: "S",
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      syntheticStandGuardHoldWalkReturnActorFrameSequence(),
+    ]);
+    expect(syntheticStandGuardHoldWalkReturnActorFrameSequence()).toEqual({
+      label: "Synthetic stand guard hold returns to walking control",
+      allowSameTick: true,
+      steps: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 150,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 151,
+          animNo: 150,
+          stateType: "S",
+          moveType: "H",
+          physics: "S",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 130,
+          animNo: 130,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 20,
+          animNo: 20,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 20,
+          observedVelXAtLeast: 1,
+        },
+      ],
+    });
   });
 
   it("creates a synthetic imported crouch Common1 guard slide-stop artifact", () => {

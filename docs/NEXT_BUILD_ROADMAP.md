@@ -203,6 +203,7 @@ R1 optional official KFM ground-recovery priority trace gate
   -> private-fixture confidence only; no public KFM support, exact thresholds, velocity math, controller-loop tick order, visual/audio parity, or score movement
 R1 optional official KFM stand guard-hold walk-control trace gate
   -> kfm-official-default-guard-hold-walk-return.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
+  -> synthetic-imported-default-guard-hold-walk-return.json checksum 75d4db9c is required in qa:trace for portable stand guard-hold walk-control
   -> real KFM/Common1 stand guard-hit route 150 -> 151 returns through observable guard-hold state 130 and then resumes held-back walking state/action 20 with control
   -> preserves the stricter stand slide-stop controller/typed-operation order from kfm-official-default-guard-slide-stop.json
   -> private-fixture confidence only; no public KFM support, exact guard-hold duration, guard timing/proximity/effects, crouch/air guard-hold parity, visual/audio parity, or score movement
@@ -211,7 +212,7 @@ R1 Common1 ground-recovery priority trace gate
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery"
   -> required order includes positive-to-zero fall.recovertime, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> active-command evidence includes x and recovery; generic air-recovery state 5210 plus lie-down chain states are forbidden
-  -> pnpm qa:trace passes 292/292 artifacts, 263 required and 29 optional after the optional KFM guard-hold walk-control mirror
+  -> pnpm qa:trace passes 293/293 artifacts, 264 required and 29 optional after required synthetic guard-hold walk-control
   -> bounded ground-over-air recovery selection evidence only; no exact recovery threshold tables, controller-loop timing, ground/air arbitration constants, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is now required
@@ -330,6 +331,7 @@ Previous R1 Common1 stand guard slide-stop trace gate
   -> stand guard slide-stop/control evidence only; no exact guard timing, proximity guard, guard effects, crouch/air parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 Optional R1 KFM/Common1 guard hold-walk fixture gate
   -> kfm-official-default-guard-hold-walk-return.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
+  -> synthetic-imported-default-guard-hold-walk-return.json checksum 75d4db9c is required in qa:trace for portable stand guard-hold walk-control
   -> real KFM/Common1 stand guard-hit state 150 -> 151 returns through observable guard-hold state 130, then resumes held-back walk state/action 20 with control while preserving stand slide-stop order
   -> kfm-official-default-guard-hold-return.json checksum 885bb1da remains the hold-only subset
   -> this is private fixture evidence, not bundled public KFM support or exact guard-hold duration/timing/effects parity
@@ -339,7 +341,7 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> the observed KFM crouch route returns toward crouch/control; this does not claim crouch guard-hold timing parity
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> pnpm qa:trace passes 292/292 artifacts, 263 required and 29 optional
+  -> pnpm qa:trace passes 293/293 artifacts, 264 required and 29 optional
   -> private-fixture confidence only; no public KFM support, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 match active ownership
   -> RuntimeMatchActiveWorld now owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
