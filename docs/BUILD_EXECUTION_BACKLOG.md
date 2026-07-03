@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-03 - R2 RuntimeFighterAdvanceHookSetWorld ownership
+
+Changed:
+- Added `RuntimeFighterAdvanceHookSetWorld` as the bounded per-fighter advance hook-set construction seam.
+- Moved the hook-set handoff for sprite effects, hit eligibility, HitOverride ticking, contact timers, state clock, frame constraints, recovery windows, stun, move lifecycle, kinematics, animation, active controllers, recovery landing, lie-down recovery, and frozen-position preservation into one named system boundary before `RuntimeFighterAdvanceWorld` runs.
+- Preserved existing `RuntimeFighterAdvanceWorld` ordering and kept `PlayableMatchRuntime` responsible for concrete worlds, state/action callbacks, active-controller execution, stage bounds, and tick context.
+- Added focused coverage that every current fighter-advance hook route is forwarded without callback replacement.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeFighterAdvanceHookSetSystem.test.ts src/tests/RuntimeFighterAdvanceSystem.test.ts src/tests/RuntimeMatchFighterAdvanceSystem.test.ts` -> 3 files / 4 tests.
+- Test suite: `pnpm test` -> 148 files / 1117 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 295/295 artifacts, 265 required and 30 optional.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current per-fighter advance hook-set construction has a named, testable ownership boundary before `RuntimeFighterAdvanceWorld` executes.
+
+Claim blocked:
+- New player-advance semantics, exact MUGEN/IKEMEN tick order, persistent-controller timing, helper/team/redirect actor advance semantics, recovery/stun/physics arbitration, visual/audio parity, score movement, and full player VM parity remain blocked.
+
 ## 2026-07-03 - R2 RuntimeActiveExpressionContextWorld ownership
 
 Changed:

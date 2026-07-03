@@ -83,6 +83,7 @@ import { RuntimeRecoverySystem } from "./RuntimeRecoverySystem";
 import { RuntimeHitEligibilityWorld } from "./RuntimeHitEligibilitySystem";
 import { RuntimeAssertSpecialWorld } from "./RuntimeAssertSpecialSystem";
 import { RuntimeCompatibilityTelemetryWorld } from "./RuntimeCompatibilityTelemetrySystem";
+import { RuntimeFighterAdvanceHookSetWorld } from "./RuntimeFighterAdvanceHookSetSystem";
 import { RuntimeFighterAdvanceWorld } from "./RuntimeFighterAdvanceSystem";
 import { RuntimeFighterStateWorld, type FighterMatchState } from "./RuntimeFighterStateSystem";
 import { RuntimeControllerDispatchWorld } from "./RuntimeControllerDispatchSystem";
@@ -167,6 +168,7 @@ const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWor
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
 const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
+const fighterAdvanceHookSetWorld = new RuntimeFighterAdvanceHookSetWorld();
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
@@ -728,67 +730,69 @@ function advanceFighter(
   onPauseController?: PauseControllerHandler,
   onEnvColorController?: EnvColorControllerHandler,
 ): void {
+  const hooks = fighterAdvanceHookSetWorld.create<FighterMatchState>({
+    tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
+    tickHitBySlots: (actor) => hitEligibilityWorld.tickHitBySlots(actor.runtime),
+    tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
+    advanceContactTimers,
+    advanceStateClock: (actor) => stateClockWorld.advance(actor),
+    resetFrameConstraints: (actor) => actorConstraintWorld.resetFrameConstraints(actor.runtime),
+    tickHitFallRecoveryWindow: (actor) => recoveryWorld.tickHitFallRecoveryWindow(actor),
+    shouldPreserveImportedStateMoveType,
+    advanceStun: (actor, preserveImportedStateMoveType) => {
+      stunWorld.advance(actor, {
+        hasCurrentMove: Boolean(actor.currentMove),
+        preserveImportedStateMoveType,
+        suppressHitStunAction: Boolean(actor.stateOwner),
+        showHitStunAction: () => changeAction(actor, actor.definition.hitstunAction),
+      });
+    },
+    advanceMoveLifecycle: (actor) => {
+      moveLifecycleWorld.advance(actor, {
+        restoreControl: () => applyRuntimeControl(actor.runtime, true),
+        enterIdleState: () => setRuntimeStateNo(actor, actor.definition.idleAction),
+        changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+      });
+    },
+    advanceKinematics: (actor, preserveImportedStateMoveType) => {
+      kinematicsWorld.advance(actor, {
+        preserveImportedStateMoveType,
+        changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
+      });
+    },
+    advanceAnimation: (actor) => animationWorld.advance(actor),
+    runActiveStateControllers: (actor) =>
+      runActiveStateControllers(
+        actor,
+        opponent,
+        actorConstraintWorld,
+        spriteEffectWorld,
+        reversalWorld,
+        effectSpawnWorld,
+        stageBounds,
+        tick,
+        onPauseController,
+        onEnvColorController,
+      ),
+    advanceImportedGroundRecoveryLanding: (actor) => {
+      recoveryWorld.advanceImportedGroundRecoveryLanding(actor, {
+        canEnterState: (stateId) => canEnterState(actor, stateId),
+        enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
+      });
+    },
+    advanceCommon1LieDownRecovery: (actor) => {
+      recoveryWorld.advanceCommon1LieDownRecovery(actor, {
+        canEnterState: (stateId) => canEnterState(actor, stateId),
+        enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
+      });
+    },
+    preserveFrozenPosition: (actor, tickStartPos) =>
+      actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
+  });
+
   fighterAdvanceWorld.advance({
     actor: fighter,
-    hooks: {
-      tickSpriteEffects: (actor) => spriteEffectWorld.tick(actor.runtime, () => createAfterImageSample(actor)),
-      tickHitBySlots: (actor) => hitEligibilityWorld.tickHitBySlots(actor.runtime),
-      tickHitOverrideSlots: (actor) => hitOverrideWorld.tickSlots(actor.runtime),
-      advanceContactTimers,
-      advanceStateClock: (actor) => stateClockWorld.advance(actor),
-      resetFrameConstraints: (actor) => actorConstraintWorld.resetFrameConstraints(actor.runtime),
-      tickHitFallRecoveryWindow: (actor) => recoveryWorld.tickHitFallRecoveryWindow(actor),
-      shouldPreserveImportedStateMoveType,
-      advanceStun: (actor, preserveImportedStateMoveType) => {
-        stunWorld.advance(actor, {
-          hasCurrentMove: Boolean(actor.currentMove),
-          preserveImportedStateMoveType,
-          suppressHitStunAction: Boolean(actor.stateOwner),
-          showHitStunAction: () => changeAction(actor, actor.definition.hitstunAction),
-        });
-      },
-      advanceMoveLifecycle: (actor) => {
-        moveLifecycleWorld.advance(actor, {
-          restoreControl: () => applyRuntimeControl(actor.runtime, true),
-          enterIdleState: () => setRuntimeStateNo(actor, actor.definition.idleAction),
-          changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
-        });
-      },
-      advanceKinematics: (actor, preserveImportedStateMoveType) => {
-        kinematicsWorld.advance(actor, {
-          preserveImportedStateMoveType,
-          changeIdleAction: () => changeAction(actor, actor.definition.idleAction),
-        });
-      },
-      advanceAnimation: (actor) => animationWorld.advance(actor),
-      runActiveStateControllers: (actor) =>
-        runActiveStateControllers(
-          actor,
-          opponent,
-          actorConstraintWorld,
-          spriteEffectWorld,
-          reversalWorld,
-          effectSpawnWorld,
-          stageBounds,
-          tick,
-          onPauseController,
-          onEnvColorController,
-        ),
-      advanceImportedGroundRecoveryLanding: (actor) => {
-        recoveryWorld.advanceImportedGroundRecoveryLanding(actor, {
-          canEnterState: (stateId) => canEnterState(actor, stateId),
-          enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
-        });
-      },
-      advanceCommon1LieDownRecovery: (actor) => {
-        recoveryWorld.advanceCommon1LieDownRecovery(actor, {
-          canEnterState: (stateId) => canEnterState(actor, stateId),
-          enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
-        });
-      },
-      preserveFrozenPosition: (actor, tickStartPos) =>
-        actorConstraintWorld.preserveFrozenPosition(actor.runtime, tickStartPos),
-    },
+    hooks,
   });
 }
 

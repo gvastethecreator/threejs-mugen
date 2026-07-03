@@ -94,6 +94,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeFighterAdvanceHookSetWorld ownership
+  -> RuntimeFighterAdvanceHookSetWorld owns bounded per-fighter advance hook-set construction outside PlayableMatchRuntime
+  -> sprite effects, hit eligibility, HitOverride ticking, contact timers, state clock, frame constraints, recovery windows, stun, move lifecycle, kinematics, animation, active controllers, recovery landing, lie-down recovery, and frozen-position preservation are forwarded through one named seam before RuntimeFighterAdvanceWorld executes
+  -> focused RuntimeFighterAdvanceHookSetSystem, RuntimeFighterAdvanceSystem, and RuntimeMatchFighterAdvanceSystem coverage proves the handoff
+  -> ownership cleanup only; no score movement, no new player-advance semantics, no exact MUGEN/IKEMEN tick order, no persistent-controller timing, no helper/team/redirect actor advance, no recovery/stun/physics arbitration, no full player VM claim
 R2 RuntimeActiveExpressionContextWorld ownership
   -> active CNS dynamic controller-param fallback and trigger evaluation share one named expression-context factory outside PlayableMatchRuntime
   -> stage bounds/time, owner const routing, runtime RNG, animation timing callbacks, and InGuardDist are forwarded through RuntimeActiveExpressionContextWorld
@@ -1530,6 +1535,7 @@ Current closed gates that must not be reselected as "next":
 - `RuntimeHelperTargetStateWorld` ownership extraction
 - `RuntimeTargetStateEntryWorld` ownership extraction
 - `RuntimeActiveControllerScanWorld` ownership extraction
+- `RuntimeFighterAdvanceHookSetWorld` ownership extraction
 - `RuntimeActiveControllerHookSetWorld` ownership extraction
 - `RuntimeActiveControllerDispatchWorld` ownership extraction
 - `RuntimeActiveStateDispatchWorld` ownership extraction
