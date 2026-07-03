@@ -80,6 +80,7 @@ import {
   createSyntheticImportedHitstunTraceArtifact,
   officialKfmAirGuardHitControllerSequence,
   officialKfmAirGuardHitPhysicsFrames,
+  officialKfmAirGuardLandingWalkReturnActorFrameSequence,
   officialKfmAirRecoveryActorFrameSequence,
   officialKfmAirRecoveryControllerSequence,
   officialKfmAutoGuardEndControllerSequence,
@@ -7321,6 +7322,56 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 155, controller: "ChangeState" },
       { stateNo: 52, controller: "ChangeState" },
     ]);
+    expect(officialKfmAirGuardLandingWalkReturnActorFrameSequence()).toEqual({
+      label: "Official KFM air guard landing returns to walk control",
+      allowSameTick: true,
+      steps: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 154,
+          animNo: 132,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 155,
+          animNo: 152,
+          stateType: "A",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 52,
+          animNo: 47,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 20,
+          animNo: 20,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 5,
+        },
+      ],
+    });
   });
 
   it("exports official KFM auto guard-start and guard-end controller-order requirements", () => {

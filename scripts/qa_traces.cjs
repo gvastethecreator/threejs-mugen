@@ -1867,12 +1867,15 @@ async function main() {
           requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:posset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmAirGuardHitControllerSequence()],
           requiredActorFrames: presets.officialKfmAirGuardHitPhysicsFrames(),
+          requiredActorFrameSequences: [presets.officialKfmAirGuardLandingWalkReturnActorFrameSequence()],
           requiredActiveCommands: ["holdback", "x"],
           requiredFinalActors: [
             {
               actorId: "p2",
               source: "imported",
               actorKind: "player",
+              stateNo: 20,
+              animNo: 20,
               life: 995,
               ctrl: true,
               stateType: "S",
@@ -1883,7 +1886,7 @@ async function main() {
           targetId: "kfm-official-default-air-guard-state-golden",
           targetLabel: "Official KFM Common1 air guard-hit route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 air guard-hit states 154 and 155 after blocking an A-guardable HitDef while airborne and holding back, then land through state 52 with bounded controller/operation order plus actor-frame air velocity/body/landing telemetry. Exact air guard physics, landing parity, guard-distance, guard-start, guard-end, sparks, sounds, and IKEMEN parity remain future work.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that the real KFM defender can enter Common1 air guard-hit states 154 and 155 after blocking an A-guardable HitDef while airborne and holding back, land through state 52, and then resume held-back walk state/action 20 with control, using bounded controller/operation order plus actor-frame air velocity/body/landing telemetry. Exact air guard physics, landing parity, guard-distance, guard-start, guard-end, sparks, sounds, and IKEMEN parity remain future work.`,
           ],
         }),
       });

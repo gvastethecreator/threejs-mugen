@@ -94,7 +94,15 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
-R1 optional official KFM crouch guard-hold crouch-control trace gate
+R1 optional official KFM air guard landing walk-control trace tightening
+  -> kfm-official-default-air-guard-state.json checksum f4378971 passes when .scratch/fixtures/kfm-official.zip exists
+  -> real KFM/Common1 air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
+  -> active-command evidence requires holdback and x
+  -> required order preserves 154/155/52 controller/typed-operation landing order and actor-frame sequence
+  -> final KFM held-back walk state/action 20 with control is required
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> stricter private-fixture evidence only; no artifact-count/checksum change, no score movement, no public KFM support, no exact air physics/landing/state-52/sparks/sounds/full parity claim
+Previous R1 optional official KFM crouch guard-hold crouch-control trace gate
   -> kfm-official-default-crouch-guard-hold-crouch-return.json checksum d11153d0 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 crouch guard-hit route executes 152 -> 153 -> 131 -> 11 after direct guarded contact while holding down-back
   -> active-command evidence requires holdback, holddown, and x
@@ -134,7 +142,7 @@ R1 Common1 ground-recovery priority trace gate
   -> defender routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through active command = "recovery" near ground
   -> required order includes 5050 recovery countdown, Ground Recovery Input ChangeState, 5200 SelfState, 5201 recovery velocity/position/safety, and 52 landing control restore
   -> generic air-recovery state 5210 and lie-down chain states remain forbidden
-  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM crouch guard-hold crouch-control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM air guard walk-control tightening
   -> bounded ground-over-air recovery selection evidence only; no score movement or full recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde remains required in qa:trace
@@ -256,7 +264,7 @@ R1 Common1 ground-recovery priority trace gate
   -> synthetic-imported-default-fall-ground-recovery-priority.json checksum e83b2db7 is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5200 -> 5201 -> 52 -> 0 through near-ground command = "recovery" while generic air recovery state 5210 is forbidden
   -> required evidence includes positive-to-zero fall.recovertime, named ground-recovery controller/typed-operation order, final idle/control, and forbidden lie-down chain states
-  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional kfm-official-default-crouch-guard-hold-crouch-return.json checksum d11153d0
+  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional kfm-official-default-air-guard-state.json checksum f4378971
   -> bounded ground-over-air recovery selection evidence only; no score movement, exact recovery threshold tables, ground/air arbitration constants, velocity math, visual/audio parity, or full recovery parity claim
 R1 Common1 HitFall recovery-input priority trace gate
   -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is required in qa:trace
@@ -291,7 +299,7 @@ Previous R1 Common1 HitFall / CanRecover trace gate
   -> bounded HitFall true / CanRecover false trigger evidence only; no score movement, exact threshold tables, controller-loop timing, recovery arbitration, visual/audio parity, or full fall/recovery parity claim
 R1 Common1 air guard landing trace gate
   -> synthetic-imported-air-guard-landing.json checksum d6986d7f remains required in qa:trace
-  -> held-back airborne defender blocks an A-guardable direct HitDef and routes 154 -> 155 -> 52
+  -> held-back airborne defender blocks an A-guardable direct HitDef and routes 154 -> 155 -> 52; optional private KFM air guard now tightens this to 154 -> 155 -> 52 -> 20 with final held-back walk/control
   -> active-command evidence requires holdback and x
   -> bounded air guard landing handoff evidence only; no score movement, exact air guard physics/timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity claim
 R1 Common1 crouch guard slide-stop trace gate
@@ -369,7 +377,7 @@ Optional R1 KFM/Common1 guard slide-stop fixture gate
   -> the observed KFM crouch route returns toward crouch/control; this does not claim crouch guard-hold timing parity
   -> kfm-official-default-guard-slide-stop.json checksum 885bb1da passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 stand guard-hit state 151 executes HitVelSet -> kinematic:hitvelset -> VelSet -> kinematic:velset -> CtrlSet -> resource:ctrlset -> ChangeState after direct guarded contact
-  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM crouch guard-hold crouch-control
+  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM air guard walk-control tightening
   -> private-fixture confidence only; no public KFM support, no score movement, no exact guard timing/proximity/effects/crouch-air/visual/audio/full parity claim
 R2 MatchWorld active ownership
   -> RuntimeMatchActiveWorld owns normal active-match orchestration outside PlayableMatchRuntime after hitpause/pause gates
@@ -1444,6 +1452,7 @@ Current closed gates that must not be reselected as "next":
 - `synthetic-imported-crouch-guard-slide-stop.json` crouch slide-stop/control order
 - `synthetic-imported-crouch-guard-hold-crouch-return.json` crouch guard-hold return-to-crouch-control order
 - `kfm-official-default-crouch-guard-hold-crouch-return.json` optional private-fixture KFM crouch guard-hit `152 -> 153 -> 131 -> 11` route
+- `kfm-official-default-air-guard-state.json` optional private-fixture KFM air guard `154 -> 155 -> 52 -> 20` walk-control route
 - `synthetic-imported-air-guard-landing.json` air landing handoff order
 - `synthetic-imported-auto-guard-start.json` controller-order evidence
 - `synthetic-imported-auto-guard-end.json` controller-order evidence

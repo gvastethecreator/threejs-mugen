@@ -5411,6 +5411,59 @@ export function officialKfmAirGuardHitControllerSequence(): RuntimeTraceControll
   };
 }
 
+export function officialKfmAirGuardLandingWalkReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Official KFM air guard landing returns to walk control",
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 132,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 152,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 52,
+        animNo: 47,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 5,
+      },
+    ],
+  };
+}
+
 export function officialKfmAutoGuardStartControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
     label: "Official KFM 120/130 auto guard-start controller and typed operation order",
