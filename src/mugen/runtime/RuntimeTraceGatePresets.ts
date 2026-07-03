@@ -4414,6 +4414,63 @@ export function createSyntheticImportedCrouchGuardSlideStopTraceArtifact(options
   });
 }
 
+export function createSyntheticImportedCrouchGuardHoldCrouchReturnTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-hold-crouch-return",
+    displayName: "Synthetic Imported Crouch Guard Hold Crouch Return",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, crouchShakeStateNo: 152, crouchSlideStateNo: 153, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-hold-crouch-return-attacker",
+    displayName: "Synthetic Imported Crouch Guard Hold Crouch Return Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  const guardSlideFrames = syntheticCrouchGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultCrouchGuardStateScript(),
+    targetId: "synthetic-imported-crouch-guard-hold-crouch-return-golden",
+    targetLabel: "Synthetic imported Common1 crouch guard-hold crouch-control route",
+    requiredExecutedStates: [200, 152, 153, 130],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet", "CtrlSet"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "resource:ctrlset"],
+    requiredControllerEventSequences: [defaultCrouchGuardSlideStopControllerSequence()],
+    requiredActorFrames: [
+      guardSlideFrames[0]!,
+      {
+        ...guardSlideFrames[1]!,
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ],
+    requiredActorFrameSequences: [syntheticCrouchGuardHoldCrouchReturnActorFrameSequence()],
+    requiredActiveCommands: ["holdback", "holddown", "x"],
+    requiredFinalActors: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 10,
+        animNo: 10,
+        life: 995,
+        ctrl: true,
+        stateType: "C",
+        moveType: "I",
+        physics: "C",
+      },
+    ],
+    notes: [
+      "Synthetic imported crouch guard-hold crouch-control trace proves bounded Common1-style crouch guard-hit state 153 returns through observable guard-hold state 130 and then resumes held-down crouch state/action 10 with control while preserving slide-stop controller/typed-operation order. It does not claim exact KFM 131/11 routing, exact guard-hold duration, guard timing, proximity guard, guard effects, air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedGetHitVarGuardTimingTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const defender = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-gethitvar-guard-timing",
@@ -5021,6 +5078,59 @@ export function syntheticCrouchGuardHitPhysicsFrames(): RuntimeTraceActorFrameRe
       playerPush: true,
     },
   ];
+}
+
+export function syntheticCrouchGuardHoldCrouchReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Synthetic crouch guard hold returns to crouch control",
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 152,
+        animNo: 10,
+        stateType: "C",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 153,
+        animNo: 150,
+        stateType: "C",
+        moveType: "H",
+        physics: "C",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 130,
+        animNo: 130,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 10,
+        animNo: 10,
+        stateType: "C",
+        moveType: "I",
+        physics: "C",
+        minFrames: 20,
+      },
+    ],
+  };
 }
 
 export function syntheticAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {

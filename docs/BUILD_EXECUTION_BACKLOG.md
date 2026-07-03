@@ -1,5 +1,31 @@
 # Build Execution Backlog
 
+## 2026-07-03 - R1 synthetic crouch guard-hold crouch-control trace gate
+
+Changed:
+- Added required `synthetic-imported-crouch-guard-hold-crouch-return.json` runtime trace generation to make the crouch guard-hold return-to-crouch-control route portable.
+- Reused the existing imported default guard runner, crouch guard script, and `152/153` slide-stop controller sequence instead of adding a duplicate guard path.
+- Added `syntheticCrouchGuardHoldCrouchReturnActorFrameSequence()` so the required gate proves `152 -> 153 -> 130 -> 10` with final imported crouch state/action `10`, control, and held down-back input.
+- Registered the artifact in required `pnpm qa:trace` coverage.
+- Added focused preset coverage for the new required artifact, final actor state, active commands, typed velocity/control evidence, and actor-frame sequence.
+- Updated runtime support docs, QA gates, scorecard evidence, roadmap board, package ladder, next-build roadmap, workplan, progress tracker, context, and local runtime issue wording with claim-allowed / claim-blocked language.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern crouch.*guard.*return` -> 1 file / 1 test, 287 skipped.
+- Trace gate: `pnpm qa:trace` -> 294/294 artifacts, 265 required and 29 optional; `synthetic-imported-crouch-guard-hold-crouch-return.json` checksum `83ecb699`.
+- Test suite: `pnpm test` -> 146 files / 1115 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded synthetic Common1-style crouch guard-hit now preserves slide-stop controller/typed-operation order, returns through observable guard-hold state `130`, and then resumes held-down crouch state/action `10` with control.
+
+Claim blocked:
+- Exact KFM `131 -> 11` crouch guard return routing, exact guard-hold duration, exact guard timing, proximity guard, guard effects, air guard-hold parity, public bundled KFM support, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity remain blocked.
+
 ## 2026-07-02 - R1 synthetic guard-hold walk-control trace gate
 
 Changed:

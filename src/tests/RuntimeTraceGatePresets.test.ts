@@ -110,6 +110,7 @@ import {
   syntheticAutoGuardEndActorFrameSequence,
   syntheticAutoGuardStartControllerSequence,
   syntheticAutoGuardStartActorFrameSequence,
+  syntheticCrouchGuardHoldCrouchReturnActorFrameSequence,
   syntheticCrouchGuardHitPhysicsFrames,
   syntheticStandGuardHoldWalkReturnActorFrameSequence,
   syntheticStandGuardHitPhysicsFrames,
@@ -148,6 +149,7 @@ import {
   createSyntheticImportedDefaultGuardStateTraceArtifact,
   createSyntheticImportedDefaultGuardHoldWalkReturnTraceArtifact,
   createSyntheticImportedDefaultGuardSlideStopTraceArtifact,
+  createSyntheticImportedCrouchGuardHoldCrouchReturnTraceArtifact,
   createSyntheticImportedCrouchGuardSlideStopTraceArtifact,
   createSyntheticImportedExplodBindTraceArtifact,
   createSyntheticImportedExplodRemoveOnGetHitTraceArtifact,
@@ -6733,6 +6735,123 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       defaultCrouchGuardSlideStopControllerSequence(),
     ]);
+  });
+
+  it("creates a synthetic imported crouch Common1 guard-hold return artifact", () => {
+    const artifact = createSyntheticImportedCrouchGuardHoldCrouchReturnTraceArtifact({
+      generatedAt: "2026-07-02T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-crouch-guard-hold-crouch-return-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-crouch-guard-hold-crouch-return-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["holdback", "holddown", "x"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([130, 152, 153, 200]));
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 10,
+          animNo: 10,
+          stateType: "C",
+          moveType: "I",
+          physics: "C",
+        }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      actorKind: "player",
+      stateNo: 10,
+      animNo: 10,
+      life: 995,
+      ctrl: true,
+      stateType: "C",
+      moveType: "I",
+      physics: "C",
+    });
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      syntheticCrouchGuardHitPhysicsFrames()[0],
+      {
+        ...syntheticCrouchGuardHitPhysicsFrames()[1],
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
+      defaultCrouchGuardSlideStopControllerSequence(),
+    ]);
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      syntheticCrouchGuardHoldCrouchReturnActorFrameSequence(),
+    ]);
+    expect(syntheticCrouchGuardHoldCrouchReturnActorFrameSequence()).toEqual({
+      label: "Synthetic crouch guard hold returns to crouch control",
+      allowSameTick: true,
+      steps: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 152,
+          animNo: 10,
+          stateType: "C",
+          moveType: "H",
+          physics: "N",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 153,
+          animNo: 150,
+          stateType: "C",
+          moveType: "H",
+          physics: "C",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 130,
+          animNo: 130,
+          stateType: "S",
+          moveType: "I",
+          physics: "S",
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 10,
+          animNo: 10,
+          stateType: "C",
+          moveType: "I",
+          physics: "C",
+          minFrames: 20,
+        },
+      ],
+    });
   });
 
   it("creates a synthetic imported GetHitVar guard timing artifact with branch evidence", () => {
