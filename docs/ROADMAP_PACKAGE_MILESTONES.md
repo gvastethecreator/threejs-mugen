@@ -104,6 +104,13 @@ R2 RuntimeActiveExpressionContextWorld ownership
   -> stage bounds/time, owner const routing, runtime RNG, animation timing callbacks, and InGuardDist are forwarded through RuntimeActiveExpressionContextWorld
   -> focused RuntimeActiveExpressionContextSystem, RuntimeDispatchEvaluationSystem, and RuntimeTriggerEvaluationSystem coverage proves the handoff
   -> ownership cleanup only; no score movement, no new expression semantics, no exact CNS VM timing, no helper/team/redirect expansion, no exact InGuardDist/RNG stream parity, no full expression/trigger VM claim
+R1 required synthetic air guard landing walk-control trace gate
+  -> synthetic-imported-air-guard-landing.json checksum d6986d7f is required in qa:trace
+  -> bounded synthetic Common1-style air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
+  -> active-command evidence requires holdback and x
+  -> required order preserves 154/155 controller/typed-operation landing order, state-52 y = 0 evidence, and final imported walk state/action 20 with control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> portable synthetic evidence only; no score movement, no exact MUGEN/IKEMEN air physics/landing/state-52/proximity/effects/visual/full parity claim
 R1 optional official KFM air guard landing walk-control trace tightening
   -> kfm-official-default-air-guard-state.json checksum f4378971 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
@@ -309,9 +316,9 @@ Previous R1 Common1 HitFall / CanRecover trace gate
   -> bounded HitFall true / CanRecover false trigger evidence only; no score movement, exact threshold tables, controller-loop timing, recovery arbitration, visual/audio parity, or full fall/recovery parity claim
 R1 Common1 air guard landing trace gate
   -> synthetic-imported-air-guard-landing.json checksum d6986d7f remains required in qa:trace
-  -> held-back airborne defender blocks an A-guardable direct HitDef and routes 154 -> 155 -> 52; optional private KFM air guard now tightens this to 154 -> 155 -> 52 -> 20 with final held-back walk/control
+  -> held-back airborne defender blocks an A-guardable direct HitDef and routes 154 -> 155 -> 52 -> 20 with final held-back walk/control; optional private KFM air guard mirrors the same real KFM/Common1 shape when the fixture exists
   -> active-command evidence requires holdback and x
-  -> bounded air guard landing handoff evidence only; no score movement, exact air guard physics/timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity claim
+  -> bounded air guard landing walk-control evidence only; no score movement, exact air guard physics/timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity claim
 R1 Common1 crouch guard slide-stop trace gate
   -> synthetic-imported-crouch-guard-slide-stop.json checksum 2bea7311 is required in qa:trace
   -> defender-owned crouch guard-hit route executes 152 -> 153 -> 130 after direct guarded contact

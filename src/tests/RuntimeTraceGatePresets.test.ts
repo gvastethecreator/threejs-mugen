@@ -107,6 +107,7 @@ import {
   defaultAirGuardLandingControllerSequence,
   defaultCrouchGuardSlideStopControllerSequence,
   syntheticAirGuardLandingPhysicsFrames,
+  syntheticAirGuardLandingWalkReturnActorFrameSequence,
   syntheticAirGuardHitPhysicsFrames,
   syntheticAutoGuardEndControllerSequence,
   syntheticAutoGuardEndActorFrameSequence,
@@ -7789,10 +7790,32 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 20,
+      animNo: 20,
+      ctrl: true,
+      stateType: "S",
+      moveType: "I",
+      physics: "S",
+    });
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       defaultAirGuardLandingControllerSequence(),
     ]);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardLandingPhysicsFrames());
+    expect(artifact.gates[0]?.requirements.requiredActorFrameSequences).toEqual([
+      syntheticAirGuardLandingWalkReturnActorFrameSequence(),
+    ]);
+    expect(syntheticAirGuardLandingWalkReturnActorFrameSequence()).toEqual({
+      label: "Synthetic air guard landing returns to walk control",
+      allowSameTick: true,
+      steps: [
+        expect.objectContaining({ actorId: "p2", stateNo: 154, animNo: 40, stateType: "A", moveType: "H", physics: "N" }),
+        expect.objectContaining({ actorId: "p2", stateNo: 155, animNo: 150, stateType: "A", moveType: "H", physics: "N" }),
+        expect.objectContaining({ actorId: "p2", stateNo: 52, stateType: "S", moveType: "I", physics: "S" }),
+        expect.objectContaining({ actorId: "p2", stateNo: 20, animNo: 20, stateType: "S", moveType: "I", physics: "S" }),
+      ],
+    });
   });
 
   it("creates a synthetic imported InGuardDist artifact without contact", () => {

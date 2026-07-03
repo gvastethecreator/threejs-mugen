@@ -2633,6 +2633,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-assertspecial-roundnotover",
     "synthetic-imported-assertspecial-noko",
     "synthetic-imported-air-guard-state",
+    "synthetic-imported-air-guard-landing",
     "synthetic-imported-inguarddist-far",
   ];
 

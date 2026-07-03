@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-03 - Required synthetic air guard landing walk-control trace gate
+
+Changed:
+- Tightened required `synthetic-imported-air-guard-landing.json` without adding a new artifact.
+- Added `syntheticAirGuardLandingWalkReturnActorFrameSequence()` so the portable synthetic air guard landing oracle must prove ordered `154 -> 155 -> 52 -> 20` actor-frame handoff.
+- Required final imported P2 state/action `20` with `ctrl = true`, preserving existing `154`/`155` air guard controller order, landing `VelSet`/`PosSet`, typed `kinematic:*` / `resource:ctrlset` evidence, active `holdback`/`x`, and the state-`52` y = 0 landing bucket.
+- Added the artifact name to the required `qa:trace` coverage-summary contract so it cannot silently drop from required coverage.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "air guard landing"` -> 1 file / 1 test, 287 skipped.
+- Test suite: `pnpm test` -> 148 files / 1117 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 295/295 artifacts, 265 required and 30 optional; `synthetic-imported-air-guard-landing.json` checksum `d6986d7f`, final checksum `92c1ead0`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Required portable synthetic Common1-style air guard landing now proves a held-back airborne defender can block an A-guardable direct `HitDef`, route `154 -> 155 -> 52 -> 20`, execute landing typed kinematic/control operations, and resume held-back walking state/action `20` with control.
+
+Claim blocked:
+- Exact MUGEN/IKEMEN air guard physics, exact landing timing, state-`52` internal parity, guard-start/end, proximity guard, guard effects, sparks, sounds, visual/audio parity, public KFM support, score movement, and full guard parity remain blocked.
+
 ## 2026-07-03 - R2 RuntimeFighterAdvanceHookSetWorld ownership
 
 Changed:

@@ -98,6 +98,13 @@ R2 RuntimeActiveExpressionContextWorld ownership
   -> stage bounds/time, owner const routing, runtime RNG, animation timing callbacks, and InGuardDist are forwarded through RuntimeActiveExpressionContextWorld
   -> focused RuntimeActiveExpressionContextSystem, RuntimeDispatchEvaluationSystem, and RuntimeTriggerEvaluationSystem coverage proves the handoff
   -> ownership cleanup only; no score movement, no new expression semantics, no exact CNS VM timing, no helper/team/redirect expansion, no exact InGuardDist/RNG stream parity, no full expression/trigger VM claim
+R1 required synthetic air guard landing walk-control trace gate
+  -> synthetic-imported-air-guard-landing.json checksum d6986d7f is required
+  -> bounded synthetic Common1-style air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
+  -> active-command evidence requires holdback and x
+  -> required order preserves 154/155 landing controller/typed-operation evidence, state-52 y = 0 evidence, and final imported walk state/action 20 with control
+  -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> portable synthetic evidence only; no score movement, no exact air physics/landing/state-52/proximity/effects/full parity claim
 R1 optional official KFM air guard landing walk-control trace tightening
   -> kfm-official-default-air-guard-state.json checksum f4378971 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back
@@ -1444,6 +1451,8 @@ Do not reselect `synthetic-imported-crouch-guard-hold-crouch-return` or the boun
 Do not reselect `kfm-official-default-crouch-guard-hold-crouch-return` or the optional private-fixture KFM crouch guard-hit `152 -> 153 -> 131 -> 11` return-to-crouch-control route as fresh next work; it is now closed when `.scratch/fixtures/kfm-official.zip` exists.
 
 Do not reselect `kfm-official-default-air-guard-state` or the optional private-fixture KFM air guard `154 -> 155 -> 52 -> 20` walk-control route as fresh next work; it is now closed when `.scratch/fixtures/kfm-official.zip` exists.
+
+Do not reselect `synthetic-imported-air-guard-landing` or the required synthetic air guard `154 -> 155 -> 52 -> 20` walk-control route as fresh next work; it is now closed and required.
 
 Do not reselect `synthetic-imported-gethitvar-velocity`, `synthetic-imported-gethitvar-damage`, or the bounded direct-contact `GetHitVar(xvel/yvel)` / `GetHitVar(damage) = 37` normal get-hit branches as fresh next work; they are now closed and required.
 

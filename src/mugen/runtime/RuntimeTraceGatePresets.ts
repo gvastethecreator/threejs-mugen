@@ -5185,6 +5185,58 @@ export function syntheticAirGuardLandingPhysicsFrames(): RuntimeTraceActorFrameR
   ];
 }
 
+export function syntheticAirGuardLandingWalkReturnActorFrameSequence(): RuntimeTraceActorFrameSequenceRequirement {
+  return {
+    label: "Synthetic air guard landing returns to walk control",
+    allowSameTick: true,
+    steps: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 154,
+        animNo: 40,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 155,
+        animNo: 150,
+        stateType: "A",
+        moveType: "H",
+        physics: "N",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 52,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 1,
+      },
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
+        stateType: "S",
+        moveType: "I",
+        physics: "S",
+        minFrames: 5,
+      },
+    ],
+  };
+}
+
 export function assertSpecialGuardDenyControllerSequence(options: {
   label: string;
   defenderStateNo: number;
@@ -5795,12 +5847,15 @@ export function createSyntheticImportedAirGuardLandingTraceArtifact(options: Run
     requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:posset", "kinematic:velset"],
     requiredControllerEventSequences: [defaultAirGuardLandingControllerSequence()],
     requiredActorFrames: syntheticAirGuardLandingPhysicsFrames(),
+    requiredActorFrameSequences: [syntheticAirGuardLandingWalkReturnActorFrameSequence()],
     requiredActiveCommands: ["holdback", "x"],
     requiredFinalActors: [
       {
         actorId: "p2",
         source: "imported",
         actorKind: "player",
+        stateNo: 20,
+        animNo: 20,
         life: 995,
         ctrl: true,
         stateType: "S",
@@ -5811,7 +5866,7 @@ export function createSyntheticImportedAirGuardLandingTraceArtifact(options: Run
     targetId: "synthetic-imported-air-guard-landing-golden",
     targetLabel: "Synthetic imported Common1 air guard landing route",
     notes: [
-      "Synthetic imported air guard landing trace proves bounded Common1-style air guard-hit state 155 can keep airborne guard-slide gravity, regain control, execute landing VelSet/PosSet, and hand off into state 52 at y = 0 before returning to grounded control. It does not claim exact MUGEN/IKEMEN air guard physics, landing timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity.",
+      "Synthetic imported air guard landing trace proves bounded Common1-style air guard-hit state 155 can keep airborne guard-slide gravity, regain control, execute landing VelSet/PosSet, hand off into state 52 at y = 0, and resume held-back walk state/action 20 with control. It does not claim exact MUGEN/IKEMEN air guard physics, landing timing, state-52 internals, proximity guard, guard effects, visual/audio parity, or full guard parity.",
     ],
   });
 }
