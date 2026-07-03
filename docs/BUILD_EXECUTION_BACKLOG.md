@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-03 - R2 RuntimeActiveExpressionContextWorld ownership
+
+Changed:
+- Added `RuntimeActiveExpressionContextWorld` as the bounded active CNS expression-context factory used by dynamic controller-param fallback and trigger evaluation.
+- Moved repeated active expression-context wiring out of `PlayableMatchRuntime` helper paths into one named system boundary.
+- Preserved existing `RuntimeExpressionContextWorld` read semantics while centralizing active-stage inputs: stage bounds/time, owner const routing, runtime RNG source, animation timing callbacks, and `InGuardDist`.
+- Added focused coverage for active context forwarding, plus existing dispatch and trigger evaluation coverage.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeActiveExpressionContextSystem.test.ts src/tests/RuntimeDispatchEvaluationSystem.test.ts src/tests/RuntimeTriggerEvaluationSystem.test.ts` -> 3 files / 8 tests.
+- Test suite: `pnpm test` -> 147 files / 1116 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 295/295 artifacts, 265 required and 30 optional.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Current active CNS dynamic dispatch and trigger-expression context creation has a named, testable boundary before `RuntimeDispatchEvaluationWorld` and `RuntimeTriggerEvaluationWorld` evaluate expressions.
+
+Claim blocked:
+- New expression semantics, exact CNS VM timing, helper/team/redirect expansion, exact `InGuardDist` parity, deterministic MUGEN/IKEMEN RNG stream parity, visual/audio parity, score movement, and full expression/trigger VM parity remain blocked.
+
 ## 2026-07-03 - Optional official KFM air guard landing walk-control trace tightening
 
 Changed:

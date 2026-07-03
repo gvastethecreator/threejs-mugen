@@ -94,6 +94,11 @@ S1 Studio command inspector readability and smoke stability
 Latest runtime compatibility checkpoint:
 
 ```txt
+R2 RuntimeActiveExpressionContextWorld ownership
+  -> active CNS dynamic controller-param fallback and trigger evaluation share one named expression-context factory outside PlayableMatchRuntime
+  -> stage bounds/time, owner const routing, runtime RNG, animation timing callbacks, and InGuardDist are forwarded through RuntimeActiveExpressionContextWorld
+  -> focused RuntimeActiveExpressionContextSystem, RuntimeDispatchEvaluationSystem, and RuntimeTriggerEvaluationSystem coverage proves the handoff
+  -> ownership cleanup only; no score movement, no new expression semantics, no exact CNS VM timing, no helper/team/redirect expansion, no exact InGuardDist/RNG stream parity, no full expression/trigger VM claim
 R1 optional official KFM air guard landing walk-control trace tightening
   -> kfm-official-default-air-guard-state.json checksum f4378971 passes when .scratch/fixtures/kfm-official.zip exists
   -> real KFM/Common1 air guard-hit route executes 154 -> 155 -> 52 -> 20 after A-guardable contact while airborne and holding back

@@ -68,6 +68,7 @@ import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetSt
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
+import { RuntimeActiveExpressionContextWorld } from "./RuntimeActiveExpressionContextSystem";
 import { RuntimeAutoGuardStartWorld } from "./RuntimeAutoGuardStartSystem";
 import { defaultRuntimeHurtBoxes, RuntimeFrameWorld } from "./RuntimeFrameSystem";
 import { RuntimeRoundSystem } from "./RuntimeRoundSystem";
@@ -165,6 +166,7 @@ const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispa
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
 const hitDefControllerDispatchWorld = new RuntimeHitDefControllerDispatchWorld();
 const expressionContextWorld = new RuntimeExpressionContextWorld();
+const activeExpressionContextWorld = new RuntimeActiveExpressionContextWorld(expressionContextWorld);
 const fighterAdvanceWorld = new RuntimeFighterAdvanceWorld();
 const matchHelperBindingWorld = new RuntimeMatchHelperBindingWorld();
 const matchActiveWorld = new RuntimeMatchActiveWorld();
@@ -1198,6 +1200,7 @@ function resolveDispatchNumber(
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): number | undefined {
+  const createContext = activeExpressionContextFactory(stageBounds);
   return dispatchEvaluationWorld.resolveNumber({
     value,
     expression,
@@ -1206,19 +1209,7 @@ function resolveDispatchNumber(
     opponents: [opponent],
     owner,
     tick: stageTime,
-    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
-      expressionContextWorld.create({
-        actor,
-        opponent: targetOpponent,
-        opponents: targetOpponents,
-        owner: stateOwner,
-        stageBounds,
-        stageTime: tick,
-        random: () => nextRuntimeRandom(actor),
-        animTimeRemaining: getAnimTimeRemaining(actor),
-        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
-        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
-      }),
+    createContext,
   });
 }
 
@@ -1231,6 +1222,7 @@ function resolveDispatchBoolean(
   stageBounds?: MugenStageDefinition["bounds"],
   stageTime?: number,
 ): boolean | undefined {
+  const createContext = activeExpressionContextFactory(stageBounds);
   return dispatchEvaluationWorld.resolveBoolean({
     value,
     expression,
@@ -1239,19 +1231,7 @@ function resolveDispatchBoolean(
     opponents: [opponent],
     owner,
     tick: stageTime,
-    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
-      expressionContextWorld.create({
-        actor,
-        opponent: targetOpponent,
-        opponents: targetOpponents,
-        owner: stateOwner,
-        stageBounds,
-        stageTime: tick,
-        random: () => nextRuntimeRandom(actor),
-        animTimeRemaining: getAnimTimeRemaining(actor),
-        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
-        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
-      }),
+    createContext,
   });
 }
 
@@ -1263,6 +1243,7 @@ function evaluateRuntimeTrigger(
   stageTime?: number,
   stageBounds?: MugenStageDefinition["bounds"],
 ): boolean {
+  const createContext = activeExpressionContextFactory(stageBounds);
   return triggerEvaluationWorld.passes({
     trigger,
     actor: fighter,
@@ -1270,19 +1251,17 @@ function evaluateRuntimeTrigger(
     opponents: [opponent],
     owner,
     tick: stageTime,
-    createContext: ({ actor, opponent: targetOpponent, opponents: targetOpponents, owner: stateOwner, tick }) =>
-      expressionContextWorld.create({
-        actor,
-        opponent: targetOpponent,
-        opponents: targetOpponents,
-        owner: stateOwner,
-        stageBounds,
-        stageTime: tick,
-        random: () => nextRuntimeRandom(actor),
-        animTimeRemaining: getAnimTimeRemaining(actor),
-        animElemTime: (elementNumber) => getAnimElemTime(actor, elementNumber),
-        inGuardDist: () => evaluateRuntimeInGuardDist(actor, targetOpponent),
-      }),
+    createContext,
+  });
+}
+
+function activeExpressionContextFactory(stageBounds?: MugenStageDefinition["bounds"]) {
+  return activeExpressionContextWorld.createFactory<FighterMatchState>({
+    stageBounds,
+    nextRandom: nextRuntimeRandom,
+    animTimeRemaining: getAnimTimeRemaining,
+    animElemTime: getAnimElemTime,
+    inGuardDist: (actor, opponent) => evaluateRuntimeInGuardDist(actor, opponent),
   });
 }
 
