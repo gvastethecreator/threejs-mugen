@@ -348,6 +348,64 @@ describe("RuntimeSnapshotWorld", () => {
     expect(snapshot.logs[0]).toBe("log-0");
     expect(snapshot.logs[79]).toBe("log-79");
   });
+
+  it("projects AssertSpecial shadow suppression across players and supported effects", () => {
+    const world = new RuntimeSnapshotWorld();
+    const p1 = playerActor("p1", "P1", 0);
+    const p2 = playerActor("p2", "P2", 0);
+    p1.runtime.assertSpecial = { flags: ["noshadow"], globalFlags: [], noShadow: true };
+    const localSnapshot = world.match({
+      tick: 1,
+      playing: true,
+      speed: 1,
+      toggles: { showClsn1: false, showClsn2: false, showAxis: false, showGrid: false },
+      matchPause: undefined,
+      stage: { stage: trainingStage, actors: [p1, p2] },
+      round: undefined,
+      p1,
+      p2,
+      effects: {
+        p1: { explods: [effectSnapshot("p1-explod-1", "explod", "p1", { x: 8, y: 0 })], helpers: [], projectiles: [] },
+        p2: { explods: [], helpers: [], projectiles: [] },
+      },
+      compatibilitySession: undefined,
+      logs: [],
+    });
+
+    expect(localSnapshot.actors[0]?.shadowVisible).toBe(false);
+    expect(localSnapshot.actors[1]?.shadowVisible).toBeUndefined();
+    expect(localSnapshot.effects?.[0]?.shadowVisible).toBeUndefined();
+
+    p1.runtime.assertSpecial = { flags: [], globalFlags: ["globalnoshadow"], noShadow: true };
+    const p1Helper = effectSnapshot("p1-helper-1", "helper", "p1", { x: 12, y: 0 });
+    const p1Projectile = effectSnapshot("p1-projectile-1", "projectile", "p1", { x: 16, y: 0 });
+    const globalSnapshot = world.match({
+      tick: 2,
+      playing: true,
+      speed: 1,
+      toggles: { showClsn1: false, showClsn2: false, showAxis: false, showGrid: false },
+      matchPause: undefined,
+      stage: { stage: trainingStage, actors: [p1, p2] },
+      round: undefined,
+      p1,
+      p2,
+      effects: {
+        p1: {
+          explods: [effectSnapshot("p1-explod-1", "explod", "p1", { x: 8, y: 0 })],
+          helpers: [p1Helper],
+          projectiles: [p1Projectile],
+        },
+        p2: { explods: [], helpers: [], projectiles: [] },
+      },
+      compatibilitySession: undefined,
+      logs: [],
+    });
+
+    expect(globalSnapshot.actors.map((actor) => actor.shadowVisible)).toEqual([false, false]);
+    expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "explod")?.shadowVisible).toBe(false);
+    expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "helper")?.shadowVisible).toBe(false);
+    expect(globalSnapshot.effects?.find((effect) => effect.actorKind === "projectile")?.shadowVisible).toBeUndefined();
+  });
 });
 
 function actorAt(x: number, screenBound?: RuntimeSnapshotActor["runtime"]["screenBound"]): RuntimeSnapshotActor {

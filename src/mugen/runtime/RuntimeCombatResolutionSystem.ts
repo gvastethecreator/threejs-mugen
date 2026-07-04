@@ -77,6 +77,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   effectLifecycleWorld: { markGetHit: (actor: TActor) => void };
   guardWorld: RuntimeGuardWorld;
   getHitStateWorld: RuntimeGetHitStateWorld;
+  hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
   runtimeTick: number;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
@@ -104,7 +105,8 @@ export type RuntimeDirectCombatSkipReason =
   | "reversal-move"
   | "inactive"
   | "no-contact"
-  | "hitby-rejected";
+  | "hitby-rejected"
+  | "hitoverride-custom-state-miss";
 
 export class RuntimeCombatResolutionWorld {
   resolvePriorityClash<TActor extends RuntimeCombatResolutionActor>(
@@ -173,8 +175,17 @@ export class RuntimeCombatResolutionWorld {
       return { kind: "skipped", reason: "hitby-rejected" };
     }
 
-    const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA");
+    const override = findRuntimeHitOverride(defender.runtime, move.attr ?? "S,NA", move.guardFlag ?? "MA");
     if (override) {
+      if (shouldRuntimeHitOverrideMissDirect(move)) {
+        const missReason =
+          move.missOnOverride === true
+            ? "because missonoverride = 1 forces active override miss"
+            : "because active override cannot receive custom-state HitDef";
+        const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} ${missReason}`;
+        input.log(message);
+        return { kind: "skipped", reason: "hitoverride-custom-state-miss" };
+      }
       attacker.hasHit = true;
       this.rememberTarget(attacker, defender, move.targetId);
       const result = input.hitOverrideWorld.applyRedirect(attacker, defender, override, move.hitPause, {
@@ -248,7 +259,8 @@ export class RuntimeCombatResolutionWorld {
         logger(result.message);
       },
       applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
-      applyHitState: (target) => this.applyDefaultProjectileGetHitState(target, input.getHitStateWorld, input.stateHooks),
+      applyHitState: (source, target, projectile) =>
+        this.applyProjectileHitState(source, target, projectile, input.hitStateTransitionWorld, input.getHitStateWorld, input.stateHooks),
       markDefenderGotHit: (target) => input.effectLifecycleWorld.markGetHit(target),
       recordProjectileContact: (source, _target, projectile, kind) => {
         source.contactWorld.markProjectileContact(source.contact, source.runtime.stateNo, projectile.projectileId, kind);
@@ -318,11 +330,39 @@ export class RuntimeCombatResolutionWorld {
     stateHooks.enterState(defender, stateNo, { clearStateOwner: true });
   }
 
+  private applyProjectileHitState<TActor extends RuntimeCombatResolutionActor>(
+    attacker: TActor,
+    defender: TActor,
+    projectile: RuntimeProjectile,
+    hitStateTransitionWorld: RuntimeHitStateTransitionWorld,
+    getHitStateWorld: RuntimeGetHitStateWorld,
+    stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
+  ): void {
+    if (projectile.p2StateNo !== undefined) {
+      hitStateTransitionWorld.enterTargetHitState(
+        defender,
+        attacker,
+        projectile.p2StateNo,
+        projectile.p2GetP1State ?? true,
+        this.hitStateTransitionHooks(stateHooks),
+      );
+      return;
+    }
+    this.applyDefaultProjectileGetHitState(defender, getHitStateWorld, stateHooks);
+  }
+
   private hitStateTransitionHooks<TActor extends RuntimeCombatResolutionActor>(
     stateHooks: RuntimeCombatResolutionStateHooks<TActor>,
   ): RuntimeCombatResolutionStateHooks<TActor> {
     return stateHooks;
   }
+}
+
+function shouldRuntimeHitOverrideMissDirect(move: DemoMove): boolean {
+  if (move.missOnOverride !== undefined) {
+    return move.missOnOverride;
+  }
+  return move.p1StateNo !== undefined || move.p2StateNo !== undefined;
 }
 
 function runtimeMoveIsActive(move: DemoMove, tick: number): boolean {

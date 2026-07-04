@@ -306,6 +306,25 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("1 + Root,Var(5) + Parent,Vel Y", { self: helper, parent: owner, root: owner })).toBe(6002);
     expect(evaluateExpression("IfElse(Parent,StateNo = 200, Root,Var(5), 0)", { self: helper, parent: owner, root: owner })).toBe(6002);
     expect(evaluateExpression("Time = 0 && Parent,Var(3) = 7", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);
+    expect(evaluateExpression("(Parent,StateNo = 0) || 1", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);
+    expect(evaluateExpression("(Parent,StateNo = 0) + 1", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(0);
+    expect(evaluateExpression("IfElse(1, 7, Parent,StateNo)", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(7);
+    expect(evaluateExpression("IfElse(0, Parent,StateNo, 9)", { self: helper, reportUnsupported: (feature) => unsupported.push(feature) })).toBe(9);
+    const skippedIfElseUnsupported: string[] = [];
+    expect(evaluateExpression("IfElse(1, 7, Parent,StateNo)", { self: helper, reportUnsupported: (feature) => skippedIfElseUnsupported.push(feature) })).toBe(7);
+    expect(evaluateExpression("IfElse(0, Parent,StateNo, 9)", { self: helper, reportUnsupported: (feature) => skippedIfElseUnsupported.push(feature) })).toBe(9);
+    expect(skippedIfElseUnsupported).toEqual(["parent", "parent"]);
+    const selectedIfElseUnsupported: string[] = [];
+    expect(evaluateExpression("IfElse(1, Parent,StateNo, 9)", { self: helper, reportUnsupported: (feature) => selectedIfElseUnsupported.push(feature) })).toBe(0);
+    expect(selectedIfElseUnsupported).toEqual(["parent"]);
+    expect(evaluateExpression("Cond((Parent,StateNo = 200), (Root,Var(5)), 0)", { self: helper, parent: owner, root: owner })).toBe(6002);
+    const skippedCondUnsupported: string[] = [];
+    expect(evaluateExpression("Cond(0, (Parent,StateNo), 9)", { self: helper, reportUnsupported: (feature) => skippedCondUnsupported.push(feature) })).toBe(9);
+    expect(evaluateExpression("Cond(1, 7, (Parent,StateNo))", { self: helper, reportUnsupported: (feature) => skippedCondUnsupported.push(feature) })).toBe(7);
+    expect(skippedCondUnsupported).toEqual([]);
+    const selectedCondUnsupported: string[] = [];
+    expect(evaluateExpression("Cond(1, (Parent,StateNo), 9)", { self: helper, reportUnsupported: (feature) => selectedCondUnsupported.push(feature) })).toBe(0);
+    expect(selectedCondUnsupported).toEqual(["parent"]);
     expect(unsupported).toContain("parent");
   });
 
@@ -480,15 +499,20 @@ describe("StateControllerExecutor", () => {
       compileControllerIr(
         controller("PowerSet", {
           value:
-            "100 + GetHitVar(damage) + GetHitVar(animtype) + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(isbound) + GetHitVar(guarded) * 1000",
+            "100 + GetHitVar(damage) + GetHitVar(hitid) * 100 + GetHitVar(chainid) + GetHitVar(hitcount) * 100000 + GetHitVar(animtype) + GetHitVar(type) * 10000 + GetHitVar(groundtype) * 10 + GetHitVar(airtype) * 100 + GetHitVar(yaccel) * 100 + GetHitVar(isbound) + GetHitVar(guarded) * 1000 + GetHitVar(xoff) * 1000000 + GetHitVar(yoff) * 10000000 + GetHitVar(zoff) * 100000000",
         }),
       ),
       runtimeState({
         hitVars: {
           damage: 9,
+          hitId: 77,
+          chainId: 43,
+          hitCount: 3,
+          hitOffset: { x: 5, y: 2, z: 1 },
           animType: 4,
           groundType: 2,
           airType: 3,
+          yAccel: 6,
           isBound: false,
           guarded: true,
         },
@@ -496,7 +520,7 @@ describe("StateControllerExecutor", () => {
       () => undefined,
     );
 
-    expect(typedState.power).toBe(1433);
+    expect(typedState.power).toBe(125329776);
   });
 
   it("executes additional simple CNS controllers and expression params", () => {
@@ -611,7 +635,11 @@ describe("StateControllerExecutor", () => {
       unsupported.push(item),
     );
     const compiledAssertSpecial = compileControllerIr(
-      controller("AssertSpecial", { flag: "NoAutoTurn", flag2: "NoWalk, Invisible, TimerFreeze, RoundNotOver" }),
+      controller("AssertSpecial", {
+        flag: "NoAutoTurn",
+        flag2: "NoWalk, Invisible, TimerFreeze, RoundNotOver, NoKOSlow, Intro",
+        flag3: "NoGetUpFromLieDown, NoFastRecoverFromLieDown",
+      }),
     );
     state = executeControllerIr(compiledAssertSpecial, state, (item) => unsupported.push(item));
 
@@ -643,18 +671,22 @@ describe("StateControllerExecutor", () => {
     expect(state.power).toBe(1234);
     expect(state.vars.slice(2, 5)).toEqual([9, 9, 9]);
     expect(state.assertSpecial).toMatchObject({
-      flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["timerfreeze", "roundnotover"],
+      flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown"],
+      globalFlags: ["timerfreeze", "roundnotover", "nokoslow", "intro"],
       noAutoTurn: true,
       noWalk: true,
       invisible: true,
+      noKoSlow: true,
       timerFreeze: true,
       roundNotOver: true,
+      intro: true,
+      noGetUpFromLieDown: true,
+      noFastRecoverFromLieDown: true,
     });
     expect(compiledAssertSpecial.operation).toEqual({
       kind: "assertspecial",
-      flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["timerfreeze", "roundnotover"],
+      flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown"],
+      globalFlags: ["timerfreeze", "roundnotover", "nokoslow", "intro"],
     });
     expect(state.renderOpacity).toBe(0);
     expect(unsupported).toEqual([]);

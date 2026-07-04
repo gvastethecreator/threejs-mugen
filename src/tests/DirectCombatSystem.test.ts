@@ -79,7 +79,7 @@ describe("DirectCombatSystem", () => {
     )).toBeUndefined();
   });
 
-  it("applies bounded guard results behind RuntimeDirectCombatWorld", () => {
+  it("applies bounded guard results and guard.kill hit vars behind RuntimeDirectCombatWorld", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
     const attacker = actor("p1", "Attacker", { power: 18, powerMax: 24, facing: 1, stateNo: 200 });
@@ -93,8 +93,9 @@ describe("DirectCombatSystem", () => {
       stateNo: 130,
     });
     let guardHookCount = 0;
+    const guardMove = move({ kill: true, guardKill: false });
 
-    const outcome = world.applyResolvedHit(attacker, defender, move(), {
+    const outcome = world.applyResolvedHit(attacker, defender, guardMove, {
       kind: "guard",
       damage: 11,
       kill: false,
@@ -132,6 +133,7 @@ describe("DirectCombatSystem", () => {
       hitShakeTime: 4,
       hitTime: 7,
       guarded: true,
+      kill: false,
     });
     expect(defender.runtime.moveType).toBe("H");
     expect(guardHookCount).toBe(1);
@@ -146,7 +148,7 @@ describe("DirectCombatSystem", () => {
   it("applies bounded hit results, hitFall metadata, and received damage", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeDirectCombatWorld(contactWorld);
-    const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210 });
+    const attacker = actor("p1", "Attacker", { power: 20, facing: -1, stateNo: 210, pos: { x: 40, y: -10 } });
     const defender = actor("p2", "Defender", {
       life: 80,
       currentMove: move(),
@@ -158,7 +160,8 @@ describe("DirectCombatSystem", () => {
     });
     const transitions: string[] = [];
     const combatMove = move({
-      hitVars: { animType: 3, groundType: 2, airType: 4 },
+      guardKill: false,
+      hitVars: { hitId: 77, chainId: 43, hitCount: 3, hitOffset: { x: 16, y: -24 }, animType: 3, groundType: 2, airType: 4, yAccel: 0.62 },
       fall: {
         enabled: true,
         damage: 7,
@@ -196,15 +199,22 @@ describe("DirectCombatSystem", () => {
     expect(defender.runtime.guardControlTime).toBe(0);
     expect(defender.runtime.guarding).toBe(false);
     expect(defender.runtime.vel).toEqual({ x: -4, y: -2 });
+    expect(defender.runtime.pos).toEqual({ x: 24, y: -34 });
     expect(defender.runtime.hitVelocity).toEqual({ x: -4, y: -2 });
     expect(defender.runtime.hitVars).toEqual({
       damage: 30,
+      hitId: 77,
+      chainId: 43,
+      hitCount: 3,
+      hitOffset: { x: 16, y: -24 },
       animType: 3,
       groundType: 2,
       airType: 4,
+      yAccel: 0.62,
       isBound: false,
       hitShakeTime: 6,
       hitTime: 13,
+      kill: true,
     });
     expect(defender.runtime.hitFall).toMatchObject({
       falling: true,

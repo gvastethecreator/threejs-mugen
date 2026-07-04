@@ -7,6 +7,8 @@ export type ControllerCompileContext = {
 export type HitDefControllerOp = {
   kind: "hitdef";
   id?: number;
+  chainId?: number;
+  hitCount?: number;
   attr?: string;
   damage?: number;
   guardDamage?: number;
@@ -26,9 +28,12 @@ export type HitDefControllerOp = {
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
+  missOnOverride?: boolean;
+  snap?: [number, number?];
   animType?: number;
   groundType?: number;
   airType?: number;
+  yAccel?: number;
   fallAnimType?: number;
   hitSound?: string;
   guardSound?: string;
@@ -136,10 +141,15 @@ export type ProjectileControllerOp = {
   missTime: number;
   trans?: string;
   damage: number;
+  kill?: boolean;
+  guardKill?: boolean;
   attr?: string;
   hitPause: number;
   hitStun: number;
   groundVelocity?: [number, number?];
+  p2StateNo?: number;
+  p2GetP1State?: boolean;
+  missOnOverride?: boolean;
   guardDamage?: number;
   guardDistance?: number;
   guardFlag?: string;
@@ -437,6 +447,8 @@ export type HitOverrideControllerOp = {
   attr: string;
   remaining: number;
   stateNo?: number;
+  guardFlag?: string;
+  guardFlagNot?: string;
   forceAir: boolean;
   forceGuard: boolean;
   keepState: boolean;
@@ -1003,6 +1015,8 @@ function compileHitOverrideControllerOp(controller: MugenStateController): HitOv
   const slot = staticNumberParam(controller, "slot", 0);
   const remaining = staticDurationParam(controller, "time", 1);
   const stateNo = staticOptionalNumberParam(controller, "stateno", "value");
+  const guardFlag = stripMugenString(findParam(controller, "guardflag"));
+  const guardFlagNot = stripMugenString(findParam(controller, "guardflag.not"));
   const forceAir = staticOptionalBooleanParam(controller, "forceair") ?? false;
   const forceGuard = staticOptionalBooleanParam(controller, "forceguard") ?? false;
   const keepState = staticOptionalBooleanParam(controller, "keepstate") ?? false;
@@ -1015,6 +1029,8 @@ function compileHitOverrideControllerOp(controller: MugenStateController): HitOv
     attr,
     remaining,
     stateNo: stateNo === true ? undefined : Math.max(0, Math.round(stateNo)),
+    guardFlag,
+    guardFlagNot,
     forceAir,
     forceGuard,
     keepState,
@@ -1068,6 +1084,8 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
   return definedObject({
     kind: "hitdef" as const,
     id: firstNumber(findParam(controller, "id")),
+    chainId: firstNumber(findParam(controller, "chainid")),
+    hitCount: firstNumber(findParam(controller, "numhits")),
     attr: stripMugenString(findParam(controller, "attr")),
     damage: damage?.[0],
     guardDamage: damage?.[1],
@@ -1087,9 +1105,12 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     p2StateNo,
     p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
+    missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
+    snap: numberPair(findParam(controller, "snap")),
     animType: hitAnimType(findParam(controller, "animtype")),
     groundType: hitType(findParam(controller, "ground.type") ?? findParam(controller, "type")),
     airType: hitType(findParam(controller, "air.type")),
+    yAccel: firstNumber(findParam(controller, "yaccel")),
     fallAnimType: hitAnimType(findParam(controller, "fall.animtype")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
@@ -1304,10 +1325,18 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     missTime: firstNumber(findParam(controller, "projmisstime")) ?? 0,
     trans: stripMugenString(findParam(controller, "trans")),
     damage: firstNumber(findParam(controller, "damage")) ?? 30,
+    kill: booleanNumber(findParam(controller, "kill")),
+    guardKill: booleanNumber(findParam(controller, "guard.kill")),
     attr: stripMugenString(findParam(controller, "attr")),
     hitPause: firstNumber(findParam(controller, "pausetime")) ?? 6,
     hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
     groundVelocity: numberPair(findParam(controller, "ground.velocity")),
+    p2StateNo: firstNumber(findParam(controller, "p2stateno")),
+    p2GetP1State:
+      firstNumber(findParam(controller, "p2stateno")) !== undefined
+        ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0
+        : undefined,
+    missOnOverride: booleanNumber(findParam(controller, "missonoverride")),
     guardDamage: secondNumber(findParam(controller, "damage")),
     guardDistance: firstNumber(findParam(controller, "guard.dist")),
     guardFlag: stripMugenString(findParam(controller, "guardflag")),

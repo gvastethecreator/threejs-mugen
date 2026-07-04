@@ -29,6 +29,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         p1stateno: "210",
         p2stateno: "5000",
         p2getp1state: "0",
+        missonoverride: "0",
         fall: "1",
         "fall.damage": "7",
         "fall.yvelocity": "-4.5",
@@ -83,6 +84,7 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       p1StateNo: 210,
       p2StateNo: 5000,
       p2GetP1State: false,
+      missOnOverride: false,
       fall: {
         enabled: true,
         damage: 7,

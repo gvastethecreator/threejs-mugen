@@ -42,10 +42,15 @@ export type RuntimeProjectile = {
   missTimeRemaining: number;
   opacity: number;
   damage: number;
+  kill: boolean;
+  guardKill: boolean;
   attr?: string;
   targetId?: number;
   hitPause: number;
   hitStun: number;
+  p2StateNo?: number;
+  p2GetP1State?: boolean;
+  missOnOverride?: boolean;
   push: number;
   hitVelocityY?: number;
   guardDamage: number;
@@ -140,6 +145,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitSpark = operation?.hitSpark ?? stripMugenString(findControllerParam(input.controller, "sparkno"));
   const guardSpark = operation?.guardSpark ?? stripMugenString(findControllerParam(input.controller, "guard.sparkno"));
   const sparkXy = operation?.sparkXy ?? numberPair(findControllerParam(input.controller, "sparkxy"));
+  const kill = operation?.kill ?? (firstNumber(findControllerParam(input.controller, "kill")) ?? 1) !== 0;
+  const guardKill = operation?.guardKill ?? (firstNumber(findControllerParam(input.controller, "guard.kill")) ?? 1) !== 0;
   const identity = resolveActorIdentity(input);
   return {
     serialId: input.serialId,
@@ -171,10 +178,15 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     missTimeRemaining: 0,
     opacity: parseProjectileOpacity(operation?.trans ?? findControllerParam(input.controller, "trans")),
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
+    kill,
+    guardKill,
     attr: operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP",
     targetId: projectileId,
     hitPause,
     hitStun,
+    p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),
+    p2GetP1State: resolveProjectileP2GetP1State(input.controller, operation),
+    missOnOverride: operation?.missOnOverride ?? booleanNumber(findControllerParam(input.controller, "missonoverride")),
     push,
     hitVelocityY: groundVelocity?.[1],
     guardDamage,
@@ -341,6 +353,9 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           guardStun: projectile.guardStun,
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
+          p2StateNo: projectile.p2StateNo,
+          p2GetP1State: projectile.p2GetP1State,
+          missOnOverride: projectile.missOnOverride,
           removeOnHit: projectile.removeOnHit,
           hasHit: projectile.hasHit,
           removalReason: projectile.removalReason,
@@ -390,6 +405,17 @@ function resolveActorIdentity(input: RuntimeProjectileSpawnInput): Pick<
   const rootId = input.rootId ?? ownerId;
   const parentId = input.parentId ?? ownerId;
   return { actorKind: "projectile", ownerId, rootId, parentId };
+}
+
+function resolveProjectileP2GetP1State(
+  controller: MugenStateController,
+  operation?: ProjectileControllerOp,
+): boolean | undefined {
+  const p2StateNo = operation?.p2StateNo ?? firstNumber(findControllerParam(controller, "p2stateno"));
+  if (p2StateNo === undefined) {
+    return undefined;
+  }
+  return operation?.p2GetP1State ?? (firstNumber(findControllerParam(controller, "p2getp1state")) ?? 1) !== 0;
 }
 
 export function runtimeProjectileWorldBox(projectile: RuntimeProjectile, box: CollisionBox): CollisionBox {

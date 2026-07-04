@@ -61,6 +61,8 @@ describe("RuntimeHitDefenseWorld", () => {
       attr: "S,NA",
       remaining: 18,
       stateNo: 777,
+      guardFlag: "MA",
+      guardFlagNot: "A",
       forceAir: true,
       forceGuard: false,
       keepState: true,
@@ -70,8 +72,33 @@ describe("RuntimeHitDefenseWorld", () => {
 
     expect(result).toEqual({ active: true, slot: 2 });
     expect(state.hitOverrides).toEqual([
-      { slot: 2, attr: "S,NA", remaining: 18, stateNo: 777, forceAir: true, forceGuard: false, keepState: true },
+      {
+        slot: 2,
+        attr: "S,NA",
+        remaining: 18,
+        stateNo: 777,
+        guardFlag: "MA",
+        guardFlagNot: "A",
+        forceAir: true,
+        forceGuard: false,
+        keepState: true,
+      },
       { slot: 5, attr: "A,SA", remaining: 9, stateNo: 900 },
+    ]);
+  });
+
+  it("keeps raw HitOverride guardflag fallback params", () => {
+    const world = new RuntimeHitDefenseWorld();
+    const state = runtime();
+
+    const result = world.applyHitOverrideController(
+      state,
+      controller({ slot: "4", attr: "S,NA", stateno: "778", time: "8", guardflag: '"MA"', "guardflag.not": "A" }),
+    );
+
+    expect(result).toEqual({ active: true, slot: 4 });
+    expect(state.hitOverrides).toEqual([
+      { slot: 4, attr: "S,NA", remaining: 8, stateNo: 778, guardFlag: "MA", guardFlagNot: "A", forceAir: false, forceGuard: false, keepState: false },
     ]);
   });
 

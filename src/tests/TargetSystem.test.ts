@@ -268,6 +268,7 @@ describe("TargetSystem", () => {
         powerMax: 60,
         facing: -1,
         vel: { x: 1, y: 2 },
+        hitVars: { isBound: false },
       },
     });
     const operations: string[] = [];
@@ -317,6 +318,7 @@ describe("TargetSystem", () => {
     expect(target.runtime.vel).toEqual({ x: 1, y: -3 });
     expect(target.runtime.facing).toBe(1);
     expect(target.runtime.pos).toEqual({ x: 136, y: -12 });
+    expect(target.runtime.hitVars?.isBound).toBe(true);
     expect(actor.targetBindings).toMatchObject([{ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } }]);
   });
 
@@ -421,7 +423,9 @@ describe("TargetSystem", () => {
       ],
       targetBindings: [binding({ actorId: "p2", targetId: 77 }), binding({ actorId: "helper", targetId: 88 })],
     });
-    const target = targetActor("p2");
+    const target = targetActor("p2", {
+      runtime: { hitVars: { isBound: true } },
+    });
     const entered: Array<{ actorId: string; stateId: number }> = [];
 
     applyRuntimeTargetController({
@@ -441,6 +445,7 @@ describe("TargetSystem", () => {
     expect(entered).toEqual([{ actorId: "p2", stateId: 5300 }]);
     expect(actor.targets).toEqual([{ actorId: "helper", targetId: 88, age: 0 }]);
     expect(actor.targetBindings).toEqual([binding({ actorId: "helper", targetId: 88 })]);
+    expect(target.runtime.hitVars?.isBound).toBe(false);
     expect(actor.runtime.targetCount).toBe(1);
   });
 
@@ -520,18 +525,20 @@ describe("TargetSystem", () => {
       targetBindings: [binding({ actorId: "p2", targetId: 77, remaining: 4, offset: { x: 36, y: -12 } })],
     });
     const target = targetActor("p2", {
-      runtime: { pos: { x: 0, y: 0 } },
+      runtime: { pos: { x: 0, y: 0 }, hitVars: { isBound: false } },
     });
 
     const result = applyRuntimeTargetBindings(actor, [target]);
 
     expect(result).toEqual({ appliedBindings: 1 });
     expect(target.runtime.pos).toEqual({ x: 84, y: -28 });
+    expect(target.runtime.hitVars?.isBound).toBe(true);
 
     actor.targets = [];
     target.runtime.pos = { x: 0, y: 0 };
     expect(applyRuntimeTargetBindings(actor, [target])).toEqual({ appliedBindings: 0 });
     expect(target.runtime.pos).toEqual({ x: 0, y: 0 });
+    expect(target.runtime.hitVars?.isBound).toBe(false);
   });
 
   it("applies active BindToTarget positions and ignores missing targets without mutation", () => {

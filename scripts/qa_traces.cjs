@@ -316,6 +316,111 @@ async function main() {
       artifact: presets.createSyntheticImportedHitOverrideTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitoverride-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-p2stateno-miss",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideP2StateNoMissTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-p2getp1state-zero-miss",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideP2GetP1StateZeroMissTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-zero",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-zero-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideZeroGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-one",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideOneTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-p2stateno",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideP2StateNoTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-zero",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-one",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),
@@ -351,6 +456,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarFallMetadataTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-gethitvar-fallcount",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarFallCountTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-gethitvar-fall-envshake",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarFallEnvShakeTraceArtifact(),
@@ -374,6 +484,36 @@ async function main() {
       name: "synthetic-imported-gethitvar-damage",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarDamageTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarGuardKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-crouch-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarCrouchGuardKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-air-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarAirGuardKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-hitid-chainid",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-hitcount",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarHitCountTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-gethitvar-velocity",
@@ -411,6 +551,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact(),
@@ -426,6 +571,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact(),
@@ -439,6 +589,11 @@ async function main() {
       name: "synthetic-imported-gethitvar-animtype",
       required: true,
       artifact: presets.createSyntheticImportedGetHitVarAnimTypeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-gethitvar-snap",
+      required: true,
+      artifact: presets.createSyntheticImportedGetHitVarSnapTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-bounds",
@@ -459,6 +614,21 @@ async function main() {
       name: "synthetic-imported-kinematic",
       required: true,
       artifact: presets.createSyntheticImportedKinematicTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-controller-param-bottom",
+      required: true,
+      artifact: presets.createSyntheticImportedControllerParamBottomTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-controller-param-target-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedControllerParamTargetRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-controller-param-root-redirect",
+      required: true,
+      artifact: presets.createSyntheticImportedControllerParamRootRedirectTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-width",
@@ -641,6 +811,26 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialControlTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-global-telemetry",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-assertspecial-round-flow-telemetry",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialRoundFlowTelemetryTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-assertspecial-shadow-telemetry",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialShadowTelemetryTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-assertspecial-helper-explod-shadow",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-timerfreeze",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact(),
@@ -654,6 +844,21 @@ async function main() {
       name: "synthetic-imported-assertspecial-noko",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialNoKoTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-assertspecial-nogetupfromliedown",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialNoGetUpFromLieDownTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-assertspecial-nofastrecoverfromliedown",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialNoFastRecoverFromLieDownTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-default-liedown-fast-recovery",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultLieDownFastRecoveryTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-default-guard-state",
@@ -987,6 +1192,86 @@ async function main() {
       artifact: presets.createSyntheticImportedCustomStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-animtype",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarAnimTypeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-type",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarTypeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-yaccel",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarYAccelTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-snap",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarSnapTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarHitCountHitIdChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-fall",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarFallTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-fall-metadata",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarFallMetadataTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-fall-envshake",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarFallEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-down-recover",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarDownRecoverTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-velocity",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarVelocityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-guarded",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarGuardedTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarGuardKillTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-p2stateno-guard-ignored",
+      required: true,
+      artifact: presets.createSyntheticImportedP2StateNoGuardIgnoredTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-guard-timing",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarGuardTimingTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-custom-state-gethitvar-isbound",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateGetHitVarIsBoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-target-owned-custom-state",
       required: true,
       artifact: presets.createSyntheticImportedTargetOwnedCustomStateTraceArtifact(),
@@ -1005,6 +1290,21 @@ async function main() {
       name: "synthetic-imported-target-redirect",
       required: true,
       artifact: presets.createSyntheticImportedTargetRedirectTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-target-redirect-bottom",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetRedirectBottomTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-target-cond-bottom",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetCondBottomTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-target-ifelse-bottom",
+      required: true,
+      artifact: presets.createSyntheticImportedTargetIfElseBottomTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-target-dynamic-redirect",
@@ -1217,6 +1517,16 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperEnemyNearTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-parentroot",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperParentRootTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-controller-param-parentroot",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperControllerParamParentRootTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-explod",
       required: true,
       artifact: presets.createSyntheticImportedHelperExplodTraceArtifact(),
@@ -1250,6 +1560,56 @@ async function main() {
       name: "synthetic-imported-helper-projhittime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjHitTimeAnyTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-p2stateno",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideP2StateNoTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-one",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideOneTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-target",
@@ -2448,9 +2808,52 @@ function validateTraceCoverage(coverage) {
   const requiredEnvShakeEventTypes = ["EnvShake"];
   const requiredArtifactNames = [
     "synthetic-imported-custom-state",
+    "synthetic-imported-custom-state-gethitvar",
+    "synthetic-imported-custom-state-gethitvar-animtype",
+    "synthetic-imported-custom-state-gethitvar-type",
+    "synthetic-imported-custom-state-gethitvar-yaccel",
+    "synthetic-imported-custom-state-gethitvar-snap",
+    "synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid",
+    "synthetic-imported-custom-state-gethitvar-fall",
+    "synthetic-imported-custom-state-gethitvar-fall-metadata",
+    "synthetic-imported-custom-state-gethitvar-fall-envshake",
+    "synthetic-imported-custom-state-gethitvar-down-recover",
+    "synthetic-imported-custom-state-gethitvar-velocity",
+    "synthetic-imported-custom-state-gethitvar-guarded",
+    "synthetic-imported-custom-state-gethitvar-guard-kill",
+    "synthetic-imported-p2stateno-guard-ignored",
+    "synthetic-imported-hitoverride-slot-priority",
+    "synthetic-imported-hitoverride-guardflag-filter",
+    "synthetic-imported-hitoverride-forceair-forceguard-keepstate",
+    "synthetic-imported-hitoverride-p2stateno-miss",
+    "synthetic-imported-hitoverride-p2getp1state-zero-miss",
+    "synthetic-imported-hitoverride-missonoverride-zero",
+    "synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+    "synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+    "synthetic-imported-hitoverride-missonoverride-zero-slot-priority",
+    "synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter",
+    "synthetic-imported-hitoverride-missonoverride-one",
+    "synthetic-imported-projectile-hitoverride-p2stateno",
+    "synthetic-imported-projectile-hitoverride-slot-priority",
+    "synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority",
+    "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+    "synthetic-imported-projectile-hitoverride-guardflag-filter",
+    "synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate",
+    "synthetic-imported-projectile-hitoverride-missonoverride-zero",
+    "synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+    "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+    "synthetic-imported-projectile-hitoverride-missonoverride-one",
+    "synthetic-imported-custom-state-gethitvar-guard-timing",
+    "synthetic-imported-custom-state-gethitvar-isbound",
     "synthetic-imported-target-owned-custom-state",
     "synthetic-imported-targetstate-custom",
     "synthetic-imported-target-redirect",
+    "synthetic-imported-target-redirect-bottom",
+    "synthetic-imported-target-cond-bottom",
+    "synthetic-imported-target-ifelse-bottom",
+    "synthetic-imported-controller-param-bottom",
+    "synthetic-imported-controller-param-target-redirect",
+    "synthetic-imported-controller-param-root-redirect",
     "synthetic-imported-target-noko",
     "synthetic-imported-default-numtarget",
     "synthetic-imported-default-target-redirect",
@@ -2485,8 +2888,20 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projcanceltime-dynamic",
     "synthetic-imported-explod-velocity",
     "synthetic-imported-helper-ishelper",
+    "synthetic-imported-helper-parentroot",
+    "synthetic-imported-helper-controller-param-parentroot",
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projhittime-any",
+    "synthetic-imported-helper-projectile-hitoverride-p2stateno",
+    "synthetic-imported-helper-projectile-hitoverride-slot-priority",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter",
+    "synthetic-imported-helper-projectile-hitoverride-guardflag-filter",
+    "synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-one",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
     "synthetic-imported-helper-projectile-target",
     "synthetic-imported-helper-projectile-bare-target",
     "synthetic-imported-helper-projectile-target-controllers",
@@ -2523,11 +2938,18 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gethitvar-fall-defence-up",
     "synthetic-imported-gethitvar-fall-recover",
     "synthetic-imported-gethitvar-fall-metadata",
+    "synthetic-imported-gethitvar-fallcount",
     "synthetic-imported-gethitvar-fall-envshake",
     "synthetic-imported-gethitvar-down-recover",
     "synthetic-imported-gethitvar-hittime",
     "synthetic-imported-gethitvar-hitshaketime",
     "synthetic-imported-gethitvar-damage",
+    "synthetic-imported-gethitvar-kill",
+    "synthetic-imported-gethitvar-guard-kill",
+    "synthetic-imported-gethitvar-crouch-guard-kill",
+    "synthetic-imported-gethitvar-air-guard-kill",
+    "synthetic-imported-gethitvar-hitid-chainid",
+    "synthetic-imported-gethitvar-hitcount",
     "synthetic-imported-gethitvar-velocity",
     "synthetic-imported-gethitvar-guard-timing",
     "synthetic-imported-gethitvar-guard-hitshaketime",
@@ -2538,12 +2960,15 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-guard-hold-walk-return",
     "synthetic-imported-crouch-guard-hold-crouch-return",
     "synthetic-imported-projectile-gethitvar-guarded",
+    "synthetic-imported-projectile-gethitvar-guard-kill",
     "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
     "synthetic-imported-projectile-gethitvar-air-guard-hitshaketime",
     "synthetic-imported-helper-projectile-gethitvar-guarded",
+    "synthetic-imported-helper-projectile-gethitvar-guard-kill",
     "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
     "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
     "synthetic-imported-gethitvar-animtype",
+    "synthetic-imported-gethitvar-snap",
     "synthetic-imported-default-crouch-gethit",
     "synthetic-imported-default-crouch-gethit-progression",
     "synthetic-imported-default-air-gethit",
@@ -2556,6 +2981,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-fall-official-recovery-threshold",
     "synthetic-imported-default-fall-recovery-tick-order",
     "synthetic-imported-default-fall-air-recovery-velocity",
+    "synthetic-imported-default-fall-official-air-recovery",
     "synthetic-imported-default-fall-ground-recovery",
     "synthetic-imported-default-fall-official-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
@@ -2625,6 +3051,10 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-guard-effect-package",
     "synthetic-imported-assertspecial-unguardable",
     "synthetic-imported-assertspecial-control",
+    "synthetic-imported-assertspecial-global-telemetry",
+    "synthetic-imported-assertspecial-round-flow-telemetry",
+    "synthetic-imported-assertspecial-shadow-telemetry",
+    "synthetic-imported-assertspecial-helper-explod-shadow",
     "synthetic-imported-assertspecial-crouch-guarddeny",
     "synthetic-imported-assertspecial-air-guarddeny",
     "synthetic-imported-assertspecial-lifetime",
@@ -2632,6 +3062,9 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-assertspecial-timerfreeze",
     "synthetic-imported-assertspecial-roundnotover",
     "synthetic-imported-assertspecial-noko",
+    "synthetic-imported-assertspecial-nogetupfromliedown",
+    "synthetic-imported-assertspecial-nofastrecoverfromliedown",
+    "synthetic-imported-default-liedown-fast-recovery",
     "synthetic-imported-air-guard-state",
     "synthetic-imported-air-guard-landing",
     "synthetic-imported-inguarddist-far",

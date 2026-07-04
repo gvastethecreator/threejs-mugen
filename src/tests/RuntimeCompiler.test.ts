@@ -228,7 +228,8 @@ time = 20
     const compiled = compileControllerIr(
       controller(200, "AssertSpecial", [], {
         flag: "NoAutoTurn, NoWalk",
-        flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoWalk',
+        flag2: '"Invisible", GlobalNoKO, TimerFreeze, RoundNotOver, NoKOSlow, Intro, NoWalk',
+        flag3: "NoGetUpFromLieDown, NoFastRecoverFromLieDown",
       }),
     );
     const disabled = compileControllerIr(controller(200, "AssertSpecial", [], { flag: "NoWalk", value: "0" }));
@@ -236,8 +237,8 @@ time = 20
 
     expect(compiled.operation).toEqual({
       kind: "assertspecial",
-      flags: ["noautoturn", "nowalk", "invisible"],
-      globalFlags: ["globalnoko", "timerfreeze", "roundnotover"],
+      flags: ["noautoturn", "nowalk", "invisible", "nogetupfromliedown", "nofastrecoverfromliedown"],
+      globalFlags: ["globalnoko", "timerfreeze", "roundnotover", "nokoslow", "intro"],
     });
     expect(disabled.operation).toBeUndefined();
     expect(dynamic.operation).toBeUndefined();
@@ -260,6 +261,7 @@ time = 20
     const compiled = compileControllerIr(
       controller(200, "HitDef", ["AnimElem = 3"], {
         id: "7",
+        numhits: "3",
         attr: "S, NA",
         damage: "42,5",
         kill: "0",
@@ -283,6 +285,7 @@ time = 20
         p1stateno: "210",
         p2stateno: "5100",
         p2getp1state: "0",
+        missonoverride: "0",
         fall: "1",
         "fall.kill": "0",
         "fall.yvelocity": "-7",
@@ -296,6 +299,7 @@ time = 20
     expect(compiled.operation).toMatchObject({
       kind: "hitdef",
       id: 7,
+      hitCount: 3,
       attr: "S, NA",
       damage: 42,
       guardDamage: 5,
@@ -320,6 +324,7 @@ time = 20
       p1StateNo: 210,
       p2StateNo: 5100,
       p2GetP1State: false,
+      missOnOverride: false,
       fall: {
         enabled: true,
         kill: false,
@@ -720,6 +725,8 @@ time = 20
         stateno: "777",
         slot: "1",
         time: "12",
+        guardflag: "MA",
+        "guardflag.not": "A",
         forceair: "1",
         forceguard: "0",
         keepstate: "1",
@@ -748,6 +755,8 @@ time = 20
       attr: "S,NA",
       remaining: 12,
       stateNo: 777,
+      guardFlag: "MA",
+      guardFlagNot: "A",
       forceAir: true,
       forceGuard: false,
       keepState: true,
@@ -871,21 +880,31 @@ time = 20
   it("compiles HitDef get-hit anim and type metadata into typed data", () => {
     const hitDef = compileControllerIr(
       controller(200, "HitDef", [], {
+        id: "91",
+        chainID: "43",
+        numhits: "3",
         damage: "40",
         animtype: "Medium",
         "fall.animtype": "Up",
         "ground.type": "Low",
         "air.type": "Trip",
+        yaccel: ".62",
+        snap: "16,-24",
       }),
     );
 
     expect(hitDef.operation).toMatchObject({
       kind: "hitdef",
+      id: 91,
+      chainId: 43,
+      hitCount: 3,
       damage: 40,
       animType: 1,
       fallAnimType: 4,
       groundType: 2,
       airType: 3,
+      yAccel: 0.62,
+      snap: [16, -24],
     });
   });
 
@@ -942,10 +961,15 @@ time = 20
         projhits: "2",
         projmisstime: "3",
         damage: "31",
+        kill: "0",
+        "guard.kill": "0",
         attr: "S, SP",
         pausetime: "4,4",
         "ground.hittime": "13",
         "ground.velocity": "-5,-2",
+        p2stateno: "889",
+        p2getp1state: "0",
+        missonoverride: "1",
         sprpriority: "7",
         trans: "add",
         projremove: "0",
@@ -970,10 +994,15 @@ time = 20
       hitCount: 2,
       missTime: 3,
       damage: 31,
+      kill: false,
+      guardKill: false,
       attr: "S, SP",
       hitPause: 4,
       hitStun: 13,
       groundVelocity: [-5, -2],
+      p2StateNo: 889,
+      p2GetP1State: false,
+      missOnOverride: true,
       spritePriority: 7,
       trans: "add",
       removeOnHit: false,

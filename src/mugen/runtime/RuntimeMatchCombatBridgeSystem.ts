@@ -91,6 +91,7 @@ export class RuntimeMatchCombatBridgeWorld {
           effectLifecycleWorld: input.effectLifecycleWorld,
           guardWorld: input.guardWorld,
           getHitStateWorld: input.getHitStateWorld,
+          hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
           getHurtBoxes: input.getHurtBoxes,

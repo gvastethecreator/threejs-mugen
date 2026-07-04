@@ -257,6 +257,9 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
     const next = dropRuntimeTargets({ targets: options.actor.targets, bindings: options.actor.targetBindings }, excludeId, keepOne);
     options.actor.targets = next.targets;
     options.actor.targetBindings = next.bindings;
+    for (const target of options.candidateTargets) {
+      markRuntimeTargetBindingSubject(target.runtime, hasRuntimeTargetBindingSubject(options.actor, target.id));
+    }
     syncRuntimeTargetCount(options.actor);
     return { controllerType: type, matchedTargets: beforeCount, operationExecuted: Boolean(options.operation) };
   }
@@ -314,6 +317,7 @@ export function applyRuntimeTargetController<TActor extends RuntimeTargetControl
         x: options.actor.runtime.pos.x + offset[0] * options.actor.runtime.facing,
         y: options.actor.runtime.pos.y + offset[1],
       };
+      markRuntimeTargetBindingSubject(target.runtime, true);
       options.actor.targetBindings = addRuntimeTargetBinding(
         options.actor.targetBindings,
         createRuntimeTargetBinding({
@@ -378,12 +382,16 @@ export function applyRuntimeTargetBindings<TActor extends RuntimeTargetWorldActo
   candidateTargets: TActor[],
 ): RuntimeTargetBindingApplyResult {
   let appliedBindings = 0;
+  for (const target of candidateTargets) {
+    markRuntimeTargetBindingSubject(target.runtime, false);
+  }
   for (const binding of actor.targetBindings) {
     const target = findBoundRuntimeTargetActor(actor.targets, binding, candidateTargets);
     if (!target) {
       continue;
     }
     target.runtime.pos = resolveRuntimeTargetBindingPosition(actor.runtime.pos, actor.runtime.facing, binding);
+    markRuntimeTargetBindingSubject(target.runtime, true);
     appliedBindings += 1;
   }
   return { appliedBindings };
@@ -553,6 +561,16 @@ function hasRuntimeTargetBindingTarget(
   binding: Pick<RuntimeTargetBinding, "actorId" | "targetId">,
 ): boolean {
   return targets.some((target) => target.actorId === binding.actorId && target.targetId === binding.targetId);
+}
+
+function hasRuntimeTargetBindingSubject(actor: RuntimeTargetControllerActor, actorId: string): boolean {
+  return actor.targetBindings.some(
+    (binding) => binding.actorId === actorId && hasRuntimeTargetBindingTarget(actor.targets, binding),
+  );
+}
+
+function markRuntimeTargetBindingSubject(runtime: CharacterRuntimeState, isBound: boolean): void {
+  runtime.hitVars = { ...runtime.hitVars, isBound };
 }
 
 export function createRuntimeTargetBinding(input: {

@@ -51,6 +51,8 @@ export class RuntimeMatchPreFacingAssertSpecialWorld {
           context: this.contextWorld.create({
             actor,
             owner,
+            opponent: input.opponent,
+            root: actor,
             stageBounds: input.stageBounds,
             tick,
             getConst: input.getConst,

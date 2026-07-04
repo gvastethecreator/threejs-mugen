@@ -111,8 +111,21 @@ export function canRuntimeBeHitBy(defender: Pick<CharacterRuntimeState, "hitBy">
 export function findRuntimeHitOverride(
   defender: Pick<CharacterRuntimeState, "hitOverrides">,
   attackAttr: string,
+  attackGuardFlag = "MA",
 ): RuntimeHitOverrideSlot | undefined {
-  return defender.hitOverrides?.find((slot) => slot.remaining !== 0 && hitAttributeMatches(slot.attr, attackAttr));
+  return defender.hitOverrides?.reduce<RuntimeHitOverrideSlot | undefined>((best, slot) => {
+    if (
+      slot.remaining === 0 ||
+      !hitAttributeMatches(slot.attr, attackAttr) ||
+      !hitOverrideGuardFlagsMatch(slot, attackGuardFlag)
+    ) {
+      return best;
+    }
+    if (!best || slot.slot < best.slot) {
+      return slot;
+    }
+    return best;
+  }, undefined);
 }
 
 export function resolveRuntimeCombatHit(input: {
@@ -259,6 +272,35 @@ function guardFlagAllowsState(guardFlag: string, stateType: CharacterRuntimeStat
     return upper.includes("A");
   }
   return false;
+}
+
+function hitOverrideGuardFlagsMatch(slot: RuntimeHitOverrideSlot, attackGuardFlag: string): boolean {
+  if (slot.guardFlag && !guardFlagOverlaps(slot.guardFlag, attackGuardFlag)) {
+    return false;
+  }
+  if (slot.guardFlagNot && guardFlagOverlaps(slot.guardFlagNot, attackGuardFlag)) {
+    return false;
+  }
+  return true;
+}
+
+function guardFlagOverlaps(filter: string, attackGuardFlag: string): boolean {
+  const filterFlags = normalizeGuardFlagSet(filter);
+  const attackFlags = normalizeGuardFlagSet(attackGuardFlag);
+  return [...filterFlags].some((flag) => attackFlags.has(flag));
+}
+
+function normalizeGuardFlagSet(value: string): Set<"H" | "L" | "A"> {
+  const flags = new Set<"H" | "L" | "A">();
+  for (const char of value.toUpperCase()) {
+    if (char === "M") {
+      flags.add("H");
+      flags.add("L");
+    } else if (char === "H" || char === "L" || char === "A") {
+      flags.add(char);
+    }
+  }
+  return flags;
 }
 
 function guardRestrictedByAssertSpecial(

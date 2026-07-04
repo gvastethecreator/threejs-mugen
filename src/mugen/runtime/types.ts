@@ -109,6 +109,8 @@ export type RuntimeHitOverrideSlot = {
   attr: string;
   stateNo?: number;
   remaining: number;
+  guardFlag?: string;
+  guardFlagNot?: string;
   forceAir?: boolean;
   forceGuard?: boolean;
   keepState?: boolean;
@@ -123,9 +125,15 @@ export type RuntimeReversalDef = {
 
 export type RuntimeGetHitVars = {
   damage?: number;
+  kill?: boolean;
+  hitId?: number;
+  chainId?: number;
+  hitCount?: number;
+  hitOffset?: { x: number; y?: number; z?: number };
   animType?: number;
   groundType?: number;
   airType?: number;
+  yAccel?: number;
   isBound?: boolean;
   guarded?: boolean;
   hitTime?: number;
@@ -141,6 +149,8 @@ export type RuntimeCustomState = {
 export type RuntimeHitFall = {
   falling: boolean;
   damage: number;
+  fallCount?: number;
+  fallCountedGroundImpact?: boolean;
   defenceUp?: number;
   kill?: boolean;
   velocity: {
@@ -171,9 +181,12 @@ export type RuntimeAssertSpecial = {
   noAirGuard?: boolean;
   unguardable?: boolean;
   noKo?: boolean;
+  noKoSlow?: boolean;
   timerFreeze?: boolean;
   roundNotOver?: boolean;
   intro?: boolean;
+  noGetUpFromLieDown?: boolean;
+  noFastRecoverFromLieDown?: boolean;
 };
 
 export type RuntimeAfterImageSample = {
@@ -338,6 +351,9 @@ export type ActorEffectSnapshot =
       guardStun: number;
       guardDistance: number;
       guardFlag?: string;
+      p2StateNo?: number;
+      p2GetP1State?: boolean;
+      missOnOverride?: boolean;
       removeOnHit: boolean;
       hasHit: boolean;
       removalReason?: "hit" | "timeout" | "bounds" | "cancel";
@@ -356,6 +372,7 @@ export type ActorSnapshot = RuntimeActorIdentity & {
   id: string;
   label: string;
   source?: "demo" | "imported" | "effect";
+  shadowVisible?: false;
   spriteOwnerId?: string;
   spriteOwnerDefinitionId?: string;
   spriteOwnerLabel?: string;

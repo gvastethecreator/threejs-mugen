@@ -1,12 +1,22 @@
-import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
+import type { ExpressionRedirectTarget } from "./ExpressionEvaluator";
+import type { RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
+import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeControllerEvaluationActor = {
   hitPause: number;
 };
 
+export type RuntimeControllerEvaluationRedirectActor = {
+  runtime: CharacterRuntimeState;
+};
+
 export type RuntimeControllerEvaluationContextInput<TActor extends RuntimeControllerEvaluationActor, TOwner> = {
   actor: TActor;
   owner: TOwner;
+  opponent?: RuntimeControllerEvaluationRedirectActor;
+  parent?: RuntimeControllerEvaluationRedirectActor;
+  root?: RuntimeControllerEvaluationRedirectActor;
+  target?: (targetId?: number) => ExpressionRedirectTarget | undefined;
   stageBounds?: { left: number; right: number };
   tick: number;
   getConst: (owner: TOwner, name: string) => number | undefined;
@@ -23,6 +33,10 @@ export class RuntimeControllerEvaluationContextWorld {
       random: () => input.nextRandom(input.actor),
       stageBounds: input.stageBounds,
       stageTime: input.tick,
+      opponent: input.opponent?.runtime,
+      parent: input.parent?.runtime,
+      root: input.root?.runtime,
+      target: input.target,
     };
   }
 }

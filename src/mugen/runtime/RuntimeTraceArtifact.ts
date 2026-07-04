@@ -587,6 +587,8 @@ function cloneGateRequirements(gate: RuntimeTraceGate): RuntimeTraceArtifactGate
     })),
     requiredFinalActors: gate.requiredFinalActors?.map((actor) => ({
       ...actor,
+      assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
+      assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
       hitFall: actor.hitFall ? { ...actor.hitFall } : undefined,
     })),
   };
@@ -599,6 +601,8 @@ function cloneTraceActor(actor: RuntimeTraceFrame["actors"][number]): RuntimeTra
     vel: { ...actor.vel },
     bodyWidth: actor.bodyWidth ? { ...actor.bodyWidth } : undefined,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
+    assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
+    assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
     soundEvents: actor.soundEvents?.map((event) => ({ ...event })),
     hitEffectEvents: actor.hitEffectEvents?.map((event) => ({
       ...event,
@@ -655,6 +659,8 @@ function cloneTraceGateFinalActor(
 ): RuntimeTraceGateResult["evidence"]["finalActors"][number] {
   return {
     ...actor,
+    assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
+    assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
     hitFall: actor.hitFall
       ? {
           ...actor.hitFall,

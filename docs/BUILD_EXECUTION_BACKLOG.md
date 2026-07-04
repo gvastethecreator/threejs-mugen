@@ -1,5 +1,1880 @@
 # Build Execution Backlog
 
+## 2026-07-04 - Custom-state HitOverride missonoverride guardflag required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json`, `synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter.json`, and `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds direct, player-owned Projectile, and helper-parented Projectile routes where explicit `missonoverride = 0` custom-state contact must still apply `HitOverride guardflag` / `guardflag.not` filtering before suppressing the custom state.
+- `scripts/qa_traces.cjs` registers all three artifacts and required coverage-summary names.
+
+Evidence:
+
+- Official docs checked: Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned; Elecbyte `HitOverride` docs define active override slots and redirect semantics. Primary source checked: local Ikemen-GO source parses `guardflag`, `guardflag.not`, `forceair`, `keepstate`, and `forceguard`, scans HitOverride slots low-to-high, skips nonmatching guardflag slots, and only uses the default custom-state miss shortcut for non-projectile contacts when `missonoverride = -1`.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "MissOnOverride zero guardflag filter"` -> 1 file passed, 3 tests passed, 357 skipped.
+- Trace gate: `pnpm qa:trace` -> 367/367 artifacts, 337 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json` checksum `058b335f`; `synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter.json` checksum `af29f125`; `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter.json` checksum `9edbf3d0`.
+
+Claim allowed:
+
+- Bounded direct-HitDef explicit `missonoverride = 0` custom-state HitOverride guardflag filtering: `p2stateno = 888` / `p2getp1state = 1` contact with `guardflag = H` skips slot `1 -> 776` because `guardflag.not = HA`, skips slot `2 -> 778` because `guardflag = A` does not overlap, selects slot `5 -> 779`, suppresses owner-backed custom-state `888`, and ends P2 in state/action `779`, life `1000`, moveType `I`.
+- Bounded player-owned Projectile explicit `missonoverride = 0` custom-state HitOverride guardflag filtering: Projectile id `77` with `p2stateno = 889` / `p2getp1state = 1` / `guardflag = H` selects slot `5 -> 779`, suppresses projectile custom-state `889`, records target link `p1 -> p2 / 77`, consumes/removes as a hit, and ends P2 in state/action `779`.
+- Bounded helper-parented Projectile explicit `missonoverride = 0` custom-state HitOverride guardflag filtering: helper-spawned Projectile id `8881` selects slot `5 -> 779`, records owner target link `p1 -> p2 / 8881` plus helper target link `p1-helper-0 -> p2 / 8881`, records helper `targetCount = 1` and projectile `hasHit = true` / `hitsRemaining = 0`, suppresses projectile custom-state `889` and helper branch `1291`, and ends P2 in state/action `779`.
+
+Claim blocked:
+
+- Exact guard timing/guarded contact semantics, default `missonoverride = -1` guardflag breadth, forceair/forceguard/keepstate priority combinations with guardflag filters, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO round-flow behavior, throws, teams/simul, score movement, visual/audio parity, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with default `missonoverride = -1` guardflag breadth, exact guard timing/guarded contact semantics, forceair/forceguard priority combinations after guardflag filtering, helper-owned custom-state tables, exact target lifetime, or guard KO/no-KO flow. Do not reselect explicit `missonoverride = 0` direct/player/helper slot-priority or guardflag-filter routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Projectile custom-state HitOverride missonoverride slot-priority required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority.json` and `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds player-owned and helper-parented Projectile routes where `p2stateno = 889`, `p2getp1state = 1`, and explicit `missonoverride = 0` must select the defender's lowest matching active `HitOverride` slot.
+- `scripts/qa_traces.cjs` registers both artifacts and required coverage-summary names.
+
+Evidence:
+
+- Official docs checked: Elecbyte `Projectile` docs state Projectile takes all `HitDef` parameters and helper-spawned projectiles are root-owned; Elecbyte `HitOverride` docs define slot setup and redirect semantics. Primary source checked: local Ikemen-GO source parses `HitOverride slot`, scans active slots low-to-high, applies guardflag filters before selection, returns default custom-state miss only for non-projectile contacts when `missonoverride = -1`, and selects the first compatible slot for projectile contacts.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "MissOnOverride zero slot priority"` -> 1 file passed, 3 tests passed, 354 skipped.
+- Trace gate: `pnpm qa:trace` -> 364/364 artifacts, 334 required and 30 optional; `synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority.json` checksum `96b6b7de`; `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority.json` checksum `9a5a149f`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile explicit `missonoverride = 0` custom-state HitOverride slot priority: Projectile id `77` with `p2stateno = 889` / `p2getp1state = 1` selects slot `2 -> 778` over slot `5 -> 779`, records target link `p1 -> p2 / 77`, consumes/removes as a hit, suppresses projectile custom-state `889`, and ends P2 in state/action `778`.
+- Bounded helper-parented Projectile explicit `missonoverride = 0` custom-state HitOverride slot priority: helper-spawned Projectile id `8878` selects slot `2 -> 778`, records owner target link `p1 -> p2 / 8878` plus helper target link `p1-helper-0 -> p2 / 8878`, records helper `targetCount = 1` and projectile `hasHit = true` / `hitsRemaining = 0`, suppresses projectile custom-state `889` and helper `ProjHit` branch `1288`, and ends P2 in state/action `778`.
+
+Claim blocked:
+
+- Custom-state `guardflag` inheritance/timing, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state `guardflag` inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct/player/helper slot-priority or explicit/default `missonoverride` force-flag routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Helper Projectile default custom-state HitOverride missonoverride force flags required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a helper-parented owner-side Projectile route where a visual Helper spawns Projectile id `8877` with `parentId = p1-helper-0`, `p2stateno = 889` / `p2getp1state = 1`, and omitted `missonoverride`; P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte `Projectile` docs state Projectile takes all `HitDef` parameters and helper-spawned projectiles are root-owned; Elecbyte `HitOverride` docs define `forceair` and custom-state miss behavior. Primary source checked: local Ikemen-GO source parses/stores `missonoverride`, `forceair`, `forceguard`, and `keepstate`, returns default custom-state HitOverride miss only when `missonoverride = -1`, `!isProjectile`, and `p1stateno` / `p2stateno` is set, then applies `forceair` / `forceguard` / `keepstate` after a slot has not been rejected.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride plus default MissOnOverride forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 354 skipped.
+- Trace gate: `pnpm qa:trace` -> 362/362 artifacts, 332 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` checksum `fb964bfb`.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile default `missonoverride = -1` custom-state HitOverride `forceair` / `forceguard` / `keepstate`: helper-spawned Projectile id `8877` with `p2stateno = 889` / `p2getp1state = 1` and omitted `missonoverride` does not take the direct-HitDef default custom-state miss path, records owner target link `p1 -> p2 / 8877` plus helper target link `p1-helper-0 -> p2 / 8877`, consumes/removes as a hit, selects slot `3`, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, suppresses projectile custom-state `889` and helper `ProjHit` branch `1286`, and returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- Custom-state `guardflag` inheritance/timing, final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN helper Projectile HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state `guardflag` inheritance/timing, exact target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, or a broader helper/projectile custom-state slot-priority route. Do not reselect direct default `missonoverride = -1`, player-owned default `missonoverride = -1`, direct explicit `missonoverride = 0`, player-owned explicit `missonoverride = 0`, or helper-parented explicit/default `missonoverride` forceair/forceguard/keepstate routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Projectile default custom-state HitOverride missonoverride force flags required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a player-owned Projectile route where P1 declares `p2stateno = 889` / `p2getp1state = 1` while omitting `missonoverride`, and P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte `Projectile` docs state Projectile takes all `HitDef` parameters, Elecbyte `HitDef` docs define `p2stateno` / `p2getp1state` custom-state routing, and Elecbyte `HitOverride` docs define `forceair` and custom-state miss behavior. Primary source checked: local Ikemen-GO source parses/stores `missonoverride`, `forceair`, `forceguard`, and `keepstate`, returns default custom-state HitOverride miss only when `missonoverride = -1`, `!isProjectile`, and `p1stateno` / `p2stateno` is set, then applies `forceair` / `forceguard` / `keepstate` after a slot has not been rejected.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "default MissOnOverride forceair forceguard keepstate"` -> 1 file passed, 2 tests passed, 352 skipped.
+- Trace gate: `pnpm qa:trace` -> 361/361 artifacts, 331 required and 30 optional; `synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` checksum `4ce42cf3`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile default `missonoverride = -1` custom-state HitOverride `forceair` / `forceguard` / `keepstate`: a Projectile with `p2stateno = 889` / `p2getp1state = 1` and omitted `missonoverride` does not take the direct-HitDef default custom-state miss path, records target link `p1 -> p2 / 77`, consumes/removes as a hit, selects slot `3`, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, suppresses projectile custom-state `889`, and returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- Helper-parented Projectile default `missonoverride = -1` custom-state force flag breadth, custom-state `guardflag` inheritance/timing, final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with helper-parented Projectile default `missonoverride = -1` custom-state force flags, custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct default `missonoverride = -1`, direct explicit `missonoverride = 0`, player-owned explicit `missonoverride = 0`, player-owned default `missonoverride = -1`, or helper-parented explicit `missonoverride = 0` forceair/forceguard/keepstate routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Direct default custom-state HitOverride missonoverride force flags required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a direct-HitDef route where P1 declares `p2stateno = 888` / `p2getp1state = 1` while omitting `missonoverride`, and P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define `p2stateno` / `p2getp1state` custom-state routing; Elecbyte `HitOverride` docs define `forceair` and the active-HitOverride custom-state miss behavior; Elecbyte `Projectile` docs state Projectile takes HitDef parameters and helper-spawned projectiles are root-owned. Primary source checked: local Ikemen-GO source parses/stores `missonoverride`, `forceair`, `forceguard`, and `keepstate`, returns miss for default `missonoverride = -1` on direct non-projectile `p1stateno` / `p2stateno`, and only applies `forceair` / `forceguard` / `keepstate` after the slot has not been rejected.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "default MissOnOverride forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 352 skipped.
+- Trace gate: `pnpm qa:trace` -> 360/360 artifacts, 330 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` checksum `20e40425`.
+
+Claim allowed:
+
+- Bounded direct-HitDef default `missonoverride = -1` custom-state HitOverride miss with force flags present: a direct `HitDef` with `p2stateno = 888` / `p2getp1state = 1` and omitted `missonoverride` rejects against active slot `3 -> 780` before target memory, damage, guard, `forceair` / `forceguard` actor frames, `keepstate` redirect handling, override state `780`, owner-backed custom-state `888`, default get-hit state `5000`, or guard states `150` / `151`.
+
+Claim blocked:
+
+- Custom-state `guardflag` inheritance/timing, final-frame forced aerial persistence on non-rejected routes, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct non-custom, direct explicit `missonoverride = 0`, direct default `missonoverride = -1`, player-owned Projectile, or helper-parented Projectile forceair/forceguard/keepstate routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Helper Projectile custom-state HitOverride missonoverride zero forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a visual Helper route where P1 spawns helper state `1283`, the helper spawns Projectile id `8876` with `parentId = p1-helper-0`, `p2stateno = 889`, `p2getp1state = 1`, and explicit `missonoverride = 0`, while P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters and helper-spawned projectiles are root-owned; Elecbyte HitOverride docs define `forceair` and custom-state miss behavior. Primary source checked: local Ikemen-GO source parses/stores `missonoverride`, `forceair`, `forceguard`, and `keepstate`, applies default custom-state HitOverride miss only for non-projectile contacts when `missonoverride = -1`, applies `forceair` / `forceguard` after slot selection, suppresses override state entry when `keepstate = 1`, and suppresses projectile custom-state entry once an override matched.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride plus MissOnOverride zero forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 351 skipped.
+- Trace gate: `pnpm qa:trace` -> 359/359 artifacts, 329 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` checksum `e23a33af`.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile explicit `missonoverride = 0` custom-state HitOverride `forceair` / `forceguard` / `keepstate`: a Helper spawns Projectile id `8876`, owner and helper target links are recorded, the projectile consumes/removes as a hit, slot `3` is selected, helper/projectile payloads prove target and hit state, P2 becomes aerial and guarding in actor-frame evidence, P2 avoids override state `780` because `keepstate = 1`, projectile custom-state `889` and helper `ProjHit` branch `1284` are suppressed because an override matched, and P2 returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- Helper/projectile default `missonoverride = -1` custom-state force flag breadth, custom-state guardflag inheritance/timing, final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN helper Projectile HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct non-custom, direct default `missonoverride = -1`, player-owned Projectile non-custom, helper-parented Projectile non-custom, player-owned explicit `missonoverride = 0` custom-state forceair/forceguard/keepstate, or helper-parented explicit `missonoverride = 0` custom-state forceair/forceguard/keepstate routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Projectile custom-state HitOverride missonoverride zero forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a player-owned Projectile route where P1 declares `p2stateno = 889`, `p2getp1state = 1`, and explicit `missonoverride = 0` while P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters and helper-spawned projectiles are root-owned; Elecbyte HitOverride docs define `forceair` and custom-state miss behavior. Primary source checked: local Ikemen-GO source parses/stores `missonoverride`, `forceair`, `forceguard`, and `keepstate`, applies default custom-state HitOverride miss only for non-projectile contacts when `missonoverride = -1`, applies `forceair` / `forceguard` after slot selection, suppresses override state entry when `keepstate = 1`, and suppresses projectile custom-state entry once an override matched.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile HitOverride plus MissOnOverride zero forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 350 skipped.
+- Trace gate: `pnpm qa:trace` -> 358/358 artifacts, 328 required and 30 optional; `synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` checksum `15bc955b`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile explicit `missonoverride = 0` custom-state HitOverride `forceair` / `forceguard` / `keepstate`: a Projectile with `p2stateno = 889` records target link `p1 -> p2 / 77`, consumes/removes as a hit, selects slot `3`, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, suppresses projectile custom-state `889` because an override matched, and returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- At that cut, helper-parented Projectile custom-state force flags were still open; the later `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` gate covers the explicit `missonoverride = 0` helper-parented route, and the later `synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json` gate covers the direct default `missonoverride = -1` miss route. Helper/projectile default `missonoverride` breadth, custom-state guardflag inheritance/timing, final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile HitOverride/custom-state parity remain blocked.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct non-custom, direct default `missonoverride = -1`, player-owned Projectile non-custom, helper-parented Projectile non-custom, player-owned explicit `missonoverride = 0` custom-state forceair/forceguard/keepstate, or helper-parented explicit `missonoverride = 0` custom-state forceair/forceguard/keepstate routes unless expanding one blocked dimension with new evidence.
+
+## 2026-07-04 - Direct custom-state HitOverride missonoverride zero forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a direct-HitDef route where P1 declares `p2stateno = 888`, `p2getp1state = 1`, and explicit `missonoverride = 0` while P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes HitDef parameters, and Elecbyte HitOverride docs define `forceair` plus the custom-state miss behavior for `p1stateno` / `p2getp1state = 1`. Primary source checked: local Ikemen-GO source parses/stores `forceguard` and `keepstate`, treats explicit `missonoverride = 0` as the opt-out from the default direct custom-state HitOverride miss, applies `forceair` / `forceguard`, suppresses the override state change when `keepstate` is set, and suppresses `p2stateno` custom-state entry once an override matched.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "MissOnOverride zero forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 349 skipped.
+- Trace gate: `pnpm qa:trace` -> 357/357 artifacts, 327 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json` checksum `4d9043a5`.
+
+Claim allowed:
+
+- Bounded direct-HitDef explicit `missonoverride = 0` custom-state HitOverride `forceair` / `forceguard` / `keepstate`: a direct `HitDef` with `p2stateno = 888` records target link `p1 -> p2 / 77`, selects slot `3`, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, suppresses owner-backed custom-state `888` because an override matched, and returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- Default `missonoverride = -1` custom-state forceair/forceguard/keepstate breadth, helper/projectile custom-state force flag breadth, custom-state guardflag inheritance/timing, final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with default custom-state miss force-flag breadth, custom-state guardflag inheritance/timing, helper/projectile custom-state force flags, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct non-custom, player-owned Projectile, helper-parented Projectile, or explicit `missonoverride = 0` direct custom-state forceair/forceguard/keepstate routes unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a helper-parented owner-side Projectile route where P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters, and Elecbyte HitOverride docs define `forceair`. Primary source checked: local Ikemen-GO source parses/stores `forceguard` and `keepstate`, applies the same HitOverride scan when `isProjectile` is true, applies `forceair` by forcing aerial get-hit metadata/state type, turns a matched hit into a guard result for `forceguard`, and suppresses the override state change when `keepstate` is set.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 348 skipped.
+- Trace gate: `pnpm qa:trace` -> 356/356 artifacts, 326 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate.json` checksum `84dc3969`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1207 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 356/356 artifacts, 326 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile `HitOverride forceair` / `forceguard` / `keepstate`: a visual Helper spawns owner-side Projectile id `8875`, contact records owner target link `p1 -> p2 / 8875` and helper target link `p1-helper-0 -> p2 / 8875`, selects slot `3`, records projectile payload evidence with `hasHit = true` / `hitsRemaining = 0`, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, and returns to idle/control without projectile `p2stateno`, helper `ProjHit`, default get-hit, or guard states.
+
+Claim blocked:
+
+- Final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, custom-state guardflag inheritance/timing, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN helper Projectile HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, exact helper/projectile target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, or broader custom-state forceair/forceguard/keepstate routes. Do not reselect direct, player-owned Projectile, or helper-parented Projectile forceair/forceguard/keepstate routes unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a player-owned Projectile route where P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters; Elecbyte HitOverride docs define `forceair`. Primary source checked: local Ikemen-GO source parses/stores `forceguard` and `keepstate`, applies the same HitOverride scan when `isProjectile` is true, applies `forceair` by forcing aerial get-hit metadata/state type, turns a matched hit into a guard result for `forceguard`, and suppresses the override state change when `keepstate` is set.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile HitOverride forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 347 skipped.
+- Trace gate: `pnpm qa:trace` -> 355/355 artifacts, 325 required and 30 optional; `synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate.json` checksum `3806a769`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1206 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 355/355 artifacts, 325 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `HitOverride forceair` / `forceguard` / `keepstate`: a matching Projectile selects slot `3`, records target memory, records projectile hit/removal lifecycle evidence, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, and returns to idle/control without projectile `p2stateno`, default get-hit, or guard states.
+
+Claim blocked:
+
+- Final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, custom-state forceair/forceguard/keepstate breadth, custom-state guardflag inheritance/timing, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision by expanding forceair/forceguard/keepstate into helper Projectile routes, custom-state routes, guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect the direct or player-owned Projectile forceair/forceguard/keepstate routes unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride forceair forceguard keepstate required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a direct-HitDef route where P2 installs `HitOverride` slot `3 -> 780` with `forceair = 1`, `forceguard = 1`, and `keepstate = 1`.
+- `RuntimeTrace` actor-frame evidence now records `guardingFrames`, so trace gates can require guarded frames without splitting existing frame buckets or breaking historical `minFrames` requirements.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define `forceair` as a HitOverride parameter; they do not list IKEMEN-only `forceguard` or `keepstate`. Primary source checked: local Ikemen-GO source parses/stores `forceguard` and `keepstate`, applies `forceair` by forcing aerial get-hit metadata/state type, turns a matched hit into a guard result for `forceguard`, and suppresses the override state change when `keepstate` is set.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "forceair forceguard keepstate"` -> 1 file passed, 1 test passed, 346 skipped.
+- Trace gate: `pnpm qa:trace` -> 354/354 artifacts, 324 required and 30 optional; `synthetic-imported-hitoverride-forceair-forceguard-keepstate.json` checksum `19787fb2`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1205 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 354/354 artifacts, 324 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef `HitOverride forceair` / `forceguard` / `keepstate`: a matching direct hit selects slot `3`, records target memory, marks P2 aerial and guarding in actor-frame evidence, avoids entering override state `780` because `keepstate = 1`, and returns to idle/control without default get-hit or guard states.
+
+Claim blocked:
+
+- Final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, custom-state forceair/forceguard/keepstate breadth, custom-state guardflag inheritance/timing, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision by expanding forceair/forceguard/keepstate into projectile/helper/custom-state routes, or shift to custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect the direct forceair/forceguard/keepstate route unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride guardflag filter required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-guardflag-filter.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a helper-parented owner-side Projectile route with `guardflag = H`, `p2stateno = 889`, three attr-matching defender `HitOverride` slots, helper/projectile lifecycle evidence, owner/helper target-link evidence, and projectile payload evidence.
+- `helperProjHitRouteBlock` now honors route-level `guardFlag` instead of hardcoding `guardflag = MA`, preserving existing defaults while allowing helper projectile guardflag fixtures.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters and helper-spawned projectiles are owned by the root player; Elecbyte tutorial docs define `guardflag` as HitDef guard metadata. Primary source checked: local Ikemen-GO source stores `guardflag` / `guardflag_not`, checks them while scanning HitOverride slots low-to-high, and applies the same filter when `isProjectile` is true.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/ProjectileCombatSystem.test.ts --testNamePattern "Helper Projectile HitOverride guardflag|filters Projectile HitOverride"` -> 2 files passed, 2 tests passed, 354 skipped.
+- Trace gate: `pnpm qa:trace` -> 353/353 artifacts, 323 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-guardflag-filter.json` checksum `41a87267`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1204 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 353/353 artifacts, 323 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile `HitOverride guardflag` / `guardflag.not` slot filtering: a visual Helper spawns owner-side Projectile id `8874` carrying HitDef `guardflag = H`; defender slots `1 -> 776` (`guardflag.not = HA`) and `2 -> 778` (`guardflag = A`) are skipped; slot `5 -> 779` redirects before projectile `p2stateno`, helper `ProjHit`, or default get-hit routes while owner and helper target links are retained.
+
+Claim blocked:
+
+- Custom-state guardflag inheritance/timing, unguardable edge interaction breadth, forceair/forceguard/keepstate priority combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN helper Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, forceair/forceguard/keepstate combinations, helper/projectile custom-state slot priority, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect direct, player-owned Projectile, or helper-parented Projectile guardflag filtering unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride guardflag filter required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-guardflag-filter.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds a player-owned Projectile route with `guardflag = H`, `p2stateno = 889`, three attr-matching defender `HitOverride` slots, projectile lifecycle/payload evidence, and target-link evidence.
+- `ProjectileCombatSystem` now has focused coverage proving incoming Projectile guard flags filter `HitOverride` slots before slot priority.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters; Elecbyte tutorial docs define `guardflag` as the HitDef guard metadata. Primary source checked: local Ikemen-GO source stores `guardflag` / `guardflag_not` and checks them while scanning HitOverride slots low-to-high.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/ProjectileCombatSystem.test.ts --testNamePattern "Projectile HitOverride guardflag|filters Projectile"` -> 2 files passed, 2 tests passed, 353 skipped.
+- Trace gate: `pnpm qa:trace` -> 352/352 artifacts, 322 required and 30 optional; `synthetic-imported-projectile-hitoverride-guardflag-filter.json` checksum `a51e82ec`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `HitOverride guardflag` / `guardflag.not` slot filtering: a Projectile carrying HitDef `guardflag = H` skips lower attr-matching slots when incoming guard flags overlap `guardflag.not` or do not overlap `guardflag`, then redirects through a later compatible slot before projectile `p2stateno` or default get-hit routes.
+
+Claim blocked:
+
+- Custom-state guardflag inheritance/timing, unguardable edge interaction breadth, forceair/forceguard/keepstate priority combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision with custom-state guardflag inheritance/timing, forceair/forceguard/keepstate combinations, helper/projectile custom-state slot priority, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect player-owned or helper-parented Projectile guardflag filtering unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride guardflag filter required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-guardflag-filter.json` trace coverage.
+- `RuntimeHitOverrideSlot`, compiler output, typed setup, and raw setup now preserve `guardflag` and `guardflag.not` metadata.
+- Direct and projectile `findRuntimeHitOverride` callers pass incoming HitDef/Projectile `guardflag` metadata so slot scanning filters by `guardflag` / `guardflag.not` before slot priority.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define slots `0-7` and redirect semantics; HitDef guard metadata is the source compared by IKEMEN-style HitOverride `guardflag` filtering. Primary source checked: local Ikemen-GO source stores `guardflag` / `guardflag_not` and checks them while scanning HitOverride slots low-to-high.
+- Focused tests: `pnpm exec vitest run src/tests/CombatResolver.test.ts src/tests/HitDefenseSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "HitOverride guardflag|guard flags|guardflag fallback|static hit eligibility|guardflag filter"` -> 4 files passed, 4 tests passed, 396 skipped.
+- Trace gate: `pnpm qa:trace` -> 351/351 artifacts, 321 required and 30 optional; `synthetic-imported-hitoverride-guardflag-filter.json` checksum `b88a2da3`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1201 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 351/351 artifacts, 321 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef `HitOverride guardflag` / `guardflag.not` slot filtering: lower attr-matching slots can be skipped when incoming `HitDef.guardflag` overlaps `guardflag.not` or does not overlap `guardflag`, before a later compatible slot redirects.
+
+Claim blocked:
+
+- Custom-state guardflag inheritance/timing, unguardable edge interaction breadth, forceair/forceguard/keepstate priority combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride parity.
+
+Next:
+
+- Continue R1 HitOverride precision around custom-state guardflag inheritance/timing, forceair/forceguard/keepstate combinations, helper/projectile custom-state slot priority, exact target lifetime, helper-owned custom-state tables, or guard KO/no-KO flow. Do not reselect bounded direct-HitDef guardflag filtering unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride MissOnOverride zero slot priority required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-missonoverride-zero-slot-priority.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct-HitDef route where P1 declares `p2stateno = 888`, `p2getp1state = 1`, and explicit `missonoverride = 0`; P2 installs matching `HitOverride` slot `5 -> 779` and slot `2 -> 778` in high-to-low controller order; contact records target link `p1 -> p2 / 77`, selects slot `2`, redirects P2 through state `778`, keeps life `1000`, and forbids state `779`, owner-backed custom state `888`, and default get-hit/guard states.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `p2stateno` / `p2getp1state` custom-state routing, and Elecbyte HitOverride docs define up to 8 slots `0-7` plus redirect semantics. Primary source checked: local Ikemen-GO source stores `hover[slot]`, scans HitOverride slots low-to-high, selects the first matching slot, and treats explicit `missonoverride = 0` as the opt-out from the default direct `p1stateno` / `p2stateno` HitOverride miss.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "MissOnOverride zero slot priority"` -> 1 file passed, 1 test passed, 342 skipped.
+- Trace gate: `pnpm qa:trace` -> 350/350 artifacts, 320 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-zero-slot-priority.json` checksum `92fefd6a`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1198 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 350/350 artifacts, 320 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped for now: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef `missonoverride = 0` custom-state slot priority: when an owner-backed custom-state `HitDef` explicitly opts out of the default HitOverride miss and multiple active matching defender slots exist, the lowest numbered slot wins and redirects the defender before owner-backed custom-state entry.
+
+Claim blocked:
+
+- Helper/projectile custom-state slot-priority breadth, `guardflag` / `guardflag.not` edge timing, forceair/forceguard/keepstate priority combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper/projectile custom-state slot priority, `guardflag` / `guardflag.not`, forceair/forceguard/keepstate combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect bounded direct `missonoverride = 0` slot priority unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride slot priority required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-slot-priority.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a helper-parented owner-side Projectile route where a visual Helper spawns Projectile id `8873` with `parentId = p1-helper-0`, `p2stateno = 889`, and `p2getp1state = 0`; P2 installs matching `HitOverride` slot `5 -> 779` and slot `2 -> 778` in high-to-low controller order; contact records owner target link `p1 -> p2 / 8873` plus helper target link `p1-helper-0 -> p2 / 8873`, marks the projectile payload `hitsRemaining = 0` / `hasHit = true`, selects slot `2`, redirects P2 through state `778`, keeps life `1000`, and forbids state `779`, projectile custom state `889`, helper `ProjHit` branch `1278`, and default get-hit/guard states.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define up to 8 slots `0-7` and redirect semantics; Elecbyte Projectile docs define Projectile as taking HitDef parameters plus projectile parameters and note helper-spawned projectiles become root-owned. Primary source checked: local Ikemen-GO source stores `hover[slot]`, scans HitOverride slots low-to-high, selects the first matching slot, and only applies the default `p1stateno`/`p2stateno` HitOverride miss to non-projectile contacts unless `missonoverride = 1`.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride slot priority"` -> 1 file passed, 1 test passed, 341 skipped.
+- Trace gate: `pnpm qa:trace` -> 349/349 artifacts, 319 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-slot-priority.json` checksum `1d058518`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1197 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 349/349 artifacts, 319 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile HitOverride slot priority: when a helper-parented owner-side Projectile hits a defender with multiple active matching slots, the lowest numbered slot wins and redirects the defender before helper `ProjHit`, projectile custom-state, or default get-hit routes, while owner/helper target memory is retained.
+
+Claim blocked:
+
+- Custom-state slot-priority breadth, `guardflag` / `guardflag.not` edge timing, forceair/forceguard/keepstate priority combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around custom-state slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, forceair/forceguard/keepstate priority combinations, or guard KO/no-KO flow. Do not reselect bounded direct-HitDef, player-owned Projectile, or helper-parented Projectile slot priority unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride slot priority required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-slot-priority.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a player-owned Projectile route where P2 installs matching `HitOverride` slot `5 -> 779` and slot `2 -> 778` in high-to-low controller order, P1 fires Projectile id `77` with `p2stateno = 889`, contact records target link `p1 -> p2 / 77`, consumes/removes the projectile as a hit, selects slot `2`, redirects P2 through state `778`, keeps life `1000`, and forbids state `779`, projectile custom state `889`, and default get-hit/guard states.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define up to 8 slots `0-7` and redirect semantics. Primary source checked: local Ikemen-GO source stores `hover[slot]`, scans HitOverride slots low-to-high, selects the first matching slot, and only applies the default `p1stateno`/`p2stateno` HitOverride miss to non-projectile contacts unless `missonoverride = 1`.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile HitOverride slot priority"` -> 1 file passed, 1 test passed, 340 skipped.
+- Trace gate: `pnpm qa:trace` -> 348/348 artifacts, 318 required and 30 optional; `synthetic-imported-projectile-hitoverride-slot-priority.json` checksum `378d9ce8`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1196 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 348/348 artifacts, 318 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile HitOverride slot priority: when multiple active matching defender slots exist, the lowest numbered slot wins and redirects the defender before projectile custom-state/default get-hit routes.
+
+Claim blocked:
+
+- Helper-parented Projectile/custom-state slot-priority breadth, `guardflag` / `guardflag.not` edge timing, forceair/forceguard/keepstate priority combinations, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper-parented Projectile slot priority, custom-state slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect bounded direct-HitDef or player-owned Projectile slot priority unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride slot priority required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-slot-priority.json` trace coverage.
+- `CombatResolver.findRuntimeHitOverride` now chooses the lowest numbered matching active slot even when runtime storage arrives unsorted.
+- `RuntimeTraceGatePresets` now has a direct-HitDef route where P2 installs matching `HitOverride` slot `5 -> 779` and slot `2 -> 778` in high-to-low controller order, then P1 hits with `attr = S,NA`; P2 redirects through slot `2` into state `778`, keeps life `1000`, and forbids state `779` plus default get-hit/guard states.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define up to 8 slots `0-7` and redirect semantics. Primary source checked: local Ikemen-GO source stores `hover[slot]`, scans HitOverride slots low-to-high, selects the first matching slot, and then applies that slot's state/force flags.
+- Focused tests: `pnpm exec vitest run src/tests/CombatResolver.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "HitOverride slot priority|lowest matching"` -> 2 files passed, 2 tests passed, 348 skipped.
+- Trace gate: `pnpm qa:trace` -> 347/347 artifacts, 317 required and 30 optional; `synthetic-imported-hitoverride-slot-priority.json` checksum `8de62354`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1195 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 347/347 artifacts, 317 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef HitOverride slot priority: when multiple active matching slots exist, the lowest numbered slot wins and redirects the defender.
+
+Claim blocked:
+
+- Helper/projectile/custom-state slot-priority breadth, `guardflag` / `guardflag.not` edge timing, forceair/forceguard/keepstate priority combinations, exact guard KO/no-KO round-flow behavior, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, guard KO/no-KO flow, or expand slot-priority evidence into helper/projectile/custom-state routes. Do not reselect bounded direct-HitDef slot priority unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride MissOnOverride zero required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a helper-parented owner-side Projectile route where a visual Helper spawns projectile id `8872` with `parentId = p1-helper-0`, `p2stateno = 889`, `p2getp1state = 1`, and explicit `missonoverride = 0`; P2 has active matching `HitOverride` slot `777`; contact records owner target link `p1 -> p2 / 8872` plus helper target link `p1-helper-0 -> p2 / 8872`; projectile payload evidence reaches `hitsRemaining = 0` / `hasHit = true`; P2 redirects through state `777`, keeps P2 life `1000`, and forbids projectile custom-state/default get-hit states `889`, `1276`, `5000`, `150`, and `151`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `346/346` artifacts, `316` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters and that helper-spawned projectiles are root-owned. Primary source checked: local Ikemen-GO source only forces projectile HitOverride miss when `hd.missonoverride == 1`; explicit `missonoverride = 0` preserves the HitOverride redirect path.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride plus MissOnOverride zero"` -> 1 file passed, 1 test passed, 338 skipped.
+- Trace gate: `pnpm qa:trace` -> 346/346 artifacts, 316 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero.json` checksum `62d7d6b8`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1193 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 346/346 artifacts, 316 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile `missonoverride = 0` HitOverride redirect before projectile custom-state entry, with owner/helper target-link evidence and helper-parented projectile hit-consumption evidence.
+
+Claim blocked:
+
+- Broader `missonoverride` custom-state breadth, exact HitOverride slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around exact slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect player-owned or helper-parented Projectile `missonoverride = 0`, player-owned or helper-parented Projectile `missonoverride = 1`, player-owned Projectile `p2stateno`, or helper-parented Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride MissOnOverride zero required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitoverride-missonoverride-zero.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a player-owned Projectile route where P1 fires projectile id `77` with `p2stateno = 889`, `p2getp1state = 1`, and explicit `missonoverride = 0`; P2 has active matching `HitOverride` slot `777`; contact records target id `77`, consumes/removes the projectile as a hit, redirects P2 through state `777`, keeps P2 life `1000`, and forbids projectile custom-state/default get-hit states `889`, `5000`, `150`, and `151`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `345/345` artifacts, `315` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters. Primary source checked: local Ikemen-GO source only forces projectile HitOverride miss when `hd.missonoverride == 1`; explicit `missonoverride = 0` preserves the HitOverride redirect path.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile HitOverride plus MissOnOverride zero"` -> 1 file passed, 1 test passed, 337 skipped.
+- Trace gate: `pnpm qa:trace` -> 345/345 artifacts, 315 required and 30 optional; `synthetic-imported-projectile-hitoverride-missonoverride-zero.json` checksum `5c12f3cc`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1192 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 345/345 artifacts, 315 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `missonoverride = 0` HitOverride redirect before projectile custom-state entry.
+
+Claim blocked:
+
+- Helper-parented Projectile `missonoverride = 0`, exact HitOverride slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper-parented Projectile `missonoverride = 0`, exact slot priority, exact helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect player-owned Projectile `missonoverride = 0`, player-owned or helper-parented Projectile `missonoverride = 1`, player-owned Projectile `p2stateno`, or helper-parented Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride MissOnOverride one required trace gate
+
+Changed:
+
+- Added helper-local Projectile `missonoverride` fixture route support in `RuntimeTraceGatePresets`.
+- Added required `synthetic-imported-helper-projectile-hitoverride-missonoverride-one.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a helper-parented owner-side Projectile route where a visual Helper spawns projectile id `8871` with `parentId = p1-helper-0` and `missonoverride = 1`; P2 has active matching `HitOverride` slot `777`; contact rejects before owner/helper target memory, projectile contact consumption, damage, guard, normal HitOverride redirect, helper `ProjHit` branch `1275`, or projectile custom-state entry; no target id is recorded, P2 remains state `0` / life `1000` / control, the projectile remains active with `hitsRemaining = 1` / `hasHit = false`, and states `777`, `889`, `1275`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `344/344` artifacts, `314` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters and that helper-spawned projectiles are root-owned. Primary source checked: local Ikemen-GO source returns miss when `hd.missonoverride == 1` and active HitOverride matches, including projectile HitDef handling.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride plus MissOnOverride"` -> 1 file passed, 1 test passed, 336 skipped.
+- Trace gate: `pnpm qa:trace` -> 344/344 artifacts, 314 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-missonoverride-one.json` checksum `a99979bb`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1191 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 344/344 artifacts, 314 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile `missonoverride = 1` HitOverride miss before owner/helper target memory, projectile contact consumption, damage, guard, redirect, helper `ProjHit`, or projectile custom-state entry.
+
+Claim blocked:
+
+- `missonoverride = 0` projectile/custom-state breadth, exact HitOverride slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around `missonoverride = 0` projectile/custom-state breadth, exact slot priority, exact helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect player-owned or helper-parented Projectile `missonoverride = 1`, player-owned Projectile `p2stateno`, or helper-parented Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride MissOnOverride one required trace gate
+
+Changed:
+
+- Added typed Projectile `missonoverride` compilation and runtime projectile state storage.
+- Updated Projectile combat HitOverride handling so explicit `missonoverride = 1` rejects before projectile contact consumption, target memory, damage, guard, or redirect.
+- Added required `synthetic-imported-projectile-hitoverride-missonoverride-one.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a player-owned Projectile route where P1 fires projectile id `77` with `missonoverride = 1`, P2 has active matching `HitOverride` slot `777`, no target id is recorded, P2 remains state `0` / life `1000` / control, the projectile remains active with `hitsRemaining = 1`, and states `777`, `889`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `343/343` artifacts, `313` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters. Primary source checked: local Ikemen-GO source returns miss when `hd.missonoverride == 1` and active HitOverride matches, including projectile HitDef handling.
+- Focused runtime/compiler/preset tests: `pnpm exec vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/ProjectileSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 4 files passed, 396 tests passed.
+- Trace gate: `pnpm qa:trace` -> 343/343 artifacts, 313 required and 30 optional; `synthetic-imported-projectile-hitoverride-missonoverride-one.json` checksum `2dc86467`.
+- Full closeout gates passed in this round: `pnpm test` -> 151 files / 1190 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 343/343 artifacts, 313 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `missonoverride = 1` HitOverride miss before target memory, projectile contact consumption, damage, guard, redirect, or projectile custom-state entry.
+
+Claim blocked:
+
+- Helper Projectile `missonoverride` gate, `missonoverride = 0` projectile/custom-state breadth, exact HitOverride slot priority, exact projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper Projectile `missonoverride`, `missonoverride = 0` projectile/custom-state breadth, exact slot priority, exact helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect player-owned Projectile `missonoverride = 1`, player-owned Projectile `p2stateno`, or helper-parented Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Helper Projectile HitOverride p2stateno required trace gate
+
+Changed:
+
+- Added helper `Projectile` route params for `p2stateno` / `p2getp1state` in the synthetic helper projectile contact fixture builder.
+- Added required `synthetic-imported-helper-projectile-hitoverride-p2stateno.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a helper-parented owner-side Projectile route where a visual Helper spawns projectile id `8870` with `parentId = p1-helper-0`, `p2stateno = 889`, and `p2getp1state = 0`; P2 has active matching `HitOverride` slot `777`; owner target memory records `p1 -> p2 / 8870`; helper target memory records `p1-helper-0 -> p2 / 8870`; P2 redirects to state `777`; states `889`, `1273`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `342/342` artifacts, `312` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters. Primary source checked: local Ikemen-GO source excludes projectile `p2stateno` from the direct-HitDef default HitOverride custom-state miss condition.
+- Focused preset test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Projectile HitOverride plus p2stateno"` -> 1 file passed, 1 test passed, 334 skipped.
+- Typecheck probe: `pnpm exec tsc --noEmit --pretty false` -> passed.
+- Trace gate: `pnpm qa:trace` -> 342/342 artifacts, 312 required and 30 optional; `synthetic-imported-helper-projectile-hitoverride-p2stateno.json` checksum `ce4c1d9a`.
+- Full closeout gates: `pnpm test` -> 151 files / 1188 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with existing Vite chunk-size warning; `pnpm qa:trace` -> 342/342 artifacts, 312 required and 30 optional; `pnpm check:boundaries` -> passed; `git diff --check` -> no whitespace errors, CRLF normalization warnings only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented owner-side Projectile `p2stateno` HitOverride redirect before projectile custom-state entry, with owner/helper target memory and helper-parented projectile evidence.
+
+Claim blocked:
+
+- Projectile `missonoverride` breadth, exact HitOverride slot priority, exact helper-projectile target lifetime/tick order, helper-owned custom-state tables, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around projectile `missonoverride` breadth, exact slot priority, exact helper/projectile custom-state guard metadata, or guard KO/no-KO flow. Do not reselect player-owned or helper-parented Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Projectile HitOverride p2stateno required trace gate
+
+Changed:
+
+- Added typed Projectile `p2stateno` / `p2getp1state` compilation and runtime projectile state storage.
+- Routed player-owned Projectile hits with `p2stateno` through target hit-state ownership when no active HitOverride wins.
+- Kept active matching HitOverride ahead of Projectile custom-state entry so projectile contact records target memory and redirects instead of taking the direct-HitDef custom-state miss path.
+- Added required `synthetic-imported-projectile-hitoverride-p2stateno.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a player-owned Projectile route where P1 fires projectile id `77` with `p2stateno = 889` / `p2getp1state = 0`, P2 has active matching `HitOverride` slot `777`, target id `77` is recorded, P2 redirects to state `777`, and states `889`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `341/341` artifacts, `311` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs state Projectile takes all HitDef parameters plus projectile parameters. Primary source checked: local Ikemen-GO source excludes projectile `p2stateno` from the direct-HitDef default HitOverride custom-state miss condition.
+- Focused runtime/compiler/preset tests: `pnpm vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeCombatResolutionSystem.test.ts src/tests/ProjectileSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 5 files passed, 400 tests passed.
+- Typecheck: `pnpm exec tsc --noEmit --pretty false` -> passed.
+- Trace gate: `pnpm qa:trace` -> 341/341 artifacts, 311 required and 30 optional; `synthetic-imported-projectile-hitoverride-p2stateno.json` checksum `2ec0725a`.
+- Test gate: `pnpm test` -> 151 files passed, 1187 tests passed.
+- Typecheck gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Trace re-run: `pnpm qa:trace` -> 341/341 artifacts, 311 required and 30 optional; `synthetic-imported-projectile-hitoverride-p2stateno.json` checksum `2ec0725a`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `p2stateno` HitOverride redirect before projectile custom-state entry, with target memory and projectile lifecycle evidence.
+
+Claim blocked:
+
+- Helper-projectile `p2stateno`, projectile `missonoverride` breadth, exact HitOverride slot priority, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN Projectile/HitOverride parity.
+
+Next:
+
+- Continue R1 Projectile/HitOverride precision around helper-projectile `p2stateno`, projectile `missonoverride` breadth, exact slot priority, or helper/projectile custom-state guard metadata. Do not reselect player-owned Projectile `p2stateno` plus HitOverride unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride p2getp1state zero required trace gate
+
+Changed:
+
+- Updated default direct-combat HitOverride miss logic so any direct `p2stateno` misses against active matching `HitOverride` unless `missonoverride = 0` opts out.
+- Added required `synthetic-imported-hitoverride-p2getp1state-zero-miss.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct `HitDef p2stateno = 889` / `p2getp1state = 0` route where defender P2 has active matching `HitOverride` slot `777`, P2-owned state `889` data exists, no target id is recorded, P2 remains state `0` / life `1000` / control, and states `777`, `889`, `888`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `340/340` artifacts, `310` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `p2getp1state = 0` as preventing P2 from getting P1 state/animation data when `p2stateno` is used. Primary source checked: local Ikemen-GO source returns miss for direct non-projectile `p2stateno` when active HitOverride matches by default.
+- Focused combat test: `pnpm exec vitest run src/tests/RuntimeCombatResolutionSystem.test.ts -t "p2getp1state zero"` -> 1 file passed, 1 test passed, 5 skipped.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "p2getp1state zero miss"` -> 1 file passed, 1 test passed, 332 skipped.
+- Trace gate: `pnpm qa:trace` -> 340/340 artifacts, 310 required and 30 optional; `synthetic-imported-hitoverride-p2getp1state-zero-miss.json` checksum `656730c8`; previous `synthetic-imported-hitoverride-p2stateno-miss.json` checksum `6f41eeb1` unchanged.
+- Test gate: `pnpm test` -> 151 files passed, 1184 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Trace re-run: `pnpm qa:trace` -> 340/340 artifacts, 310 required and 30 optional; `synthetic-imported-hitoverride-p2getp1state-zero-miss.json` checksum `656730c8`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef target-owned `p2getp1state = 0` HitOverride miss before target memory, damage, guard, redirect, or target-owned custom-state entry.
+
+Claim blocked:
+
+- Helper/projectile `p2stateno`, exact HitOverride slot priority, helper/projectile `missonoverride` breadth, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 guard/HitOverride/custom-state precision around helper/projectile `p2stateno`, exact slot priority, helper/projectile `missonoverride` behavior, exact guard KO/no-KO flow, or helper/projectile custom-state guard metadata. Do not reselect direct-HitDef `p2getp1state = 0`, `missonoverride = 1`, or `missonoverride = 0` HitOverride behavior unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride MissOnOverride one required trace gate
+
+Changed:
+
+- Added a direct-combat reject log branch that names explicit `missonoverride = 1` HitOverride misses.
+- Added required `synthetic-imported-hitoverride-missonoverride-one.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct `HitDef missonoverride = 1` route without `p1stateno` / `p2stateno` where defender P2 has active matching `HitOverride` slot `777`, no target id is recorded, P2 remains state `0` / life `1000`, and states `777`, `888`, `5000`, `150`, and `151` are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `339/339` artifacts, `309` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Primary source checked: local Ikemen-GO returns miss when `hd.missonoverride == 1` and active HitOverride matches.
+- Focused combat test: `pnpm exec vitest run src/tests/RuntimeCombatResolutionSystem.test.ts -t "MissOnOverride one"` -> 1 file passed, 1 test passed, 4 skipped.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "MissOnOverride one"` -> 1 file passed, 1 test passed, 331 skipped.
+- Trace gate: `pnpm qa:trace` -> 339/339 artifacts, 309 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-one.json` checksum `78cfedf4`.
+- Test gate: `pnpm test` -> 151 files passed, 1182 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Trace re-run: `pnpm qa:trace` -> 339/339 artifacts, 309 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-one.json` checksum `78cfedf4`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef owner-backed `missonoverride = 1` HitOverride miss before target memory, damage, guard, redirect, or custom-state entry.
+
+Claim blocked:
+
+- Helper/projectile `p2stateno`, exact HitOverride slot priority, helper/projectile `missonoverride` breadth, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 guard/HitOverride/custom-state precision around helper/projectile `p2stateno`, exact slot priority, helper/projectile `missonoverride` behavior, or exact guard KO/no-KO flow. Do not reselect direct-HitDef `p2getp1state = 0`, `missonoverride = 1`, or `missonoverride = 0` HitOverride behavior unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride MissOnOverride zero required trace gate
+
+Changed:
+
+- Added typed `HitDef missonoverride` compilation and runtime dispatch into `DemoMove.missOnOverride`.
+- Updated direct combat HitOverride resolution so explicit `missonoverride = 0` opts out of the default custom-state HitOverride miss path.
+- Added required `synthetic-imported-hitoverride-missonoverride-zero.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct `HitDef p2stateno = 888` / `p2getp1state = 1` / `missonoverride = 0` route where defender P2 has active matching `HitOverride` slot `777`, target id `77` is recorded, P2 redirects to state `777`, and owner-backed custom state `888` plus default get-hit/guard states are forbidden.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `338/338` artifacts, `308` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs define the default custom-state miss conditions for `p1stateno` and `p2getp1state = 1`. Primary source checked: local Ikemen-GO implements `missonoverride` as the explicit opt-out from the default miss path.
+- Focused compiler test: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts -t "HitDef params"` -> 1 file passed, 1 test passed, 39 skipped.
+- Focused dispatch test: `pnpm exec vitest run src/tests/HitDefSystem.test.ts -t "typed HitDef payload"` -> 1 file passed, 1 test passed, 2 skipped.
+- Focused combat test: `pnpm exec vitest run src/tests/RuntimeCombatResolutionSystem.test.ts -t "MissOnOverride zero"` -> 1 file passed, 1 test passed, 3 skipped.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "MissOnOverride zero"` -> 1 file passed, 1 test passed, 330 skipped.
+- Trace gate: `pnpm qa:trace` -> 338/338 artifacts, 308 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-zero.json` checksum `8ffd5678`.
+- Test gate: `pnpm test` -> 151 files passed, 1180 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef owner-backed `missonoverride = 0` HitOverride redirect before custom-state entry.
+
+Claim blocked:
+
+- Helper/projectile `p2stateno`, exact HitOverride slot priority, `missonoverride = 1` breadth, exact guard KO/no-KO round-flow behavior, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 guard/HitOverride/custom-state precision around helper/projectile `p2stateno`, `missonoverride = 1`, exact slot priority, or exact guard KO/no-KO flow. Do not reselect direct-HitDef `p2getp1state = 0` or `missonoverride = 0` HitOverride redirect unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - HitOverride plus P2StateNo miss required trace gate
+
+Changed:
+
+- Added direct-combat miss handling for active `HitOverride` against direct custom-state `HitDef` routes.
+- Added required `synthetic-imported-hitoverride-p2stateno-miss.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct `HitDef p2stateno = 888` / `p2getp1state = 1` route where defender P2 has active matching `HitOverride` slot `777`, contact is rejected before target memory, damage, guard, normal HitOverride redirect, or custom-state entry, and P2 remains in state `0` / life `1000` / control.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused coverage proves executed `HitDef` and `HitOverride`, typed `hitdef` and `hitoverride`, active `x`, reject event/combat telemetry, no target links, final P2 idle/control, and forbidden states `777`, `888`, `5000`, `150`, and `151`.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `337/337` artifacts, `307` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitOverride docs exclude active HitOverride from matching custom-state HitDefs using `p1stateno` or `p2getp1state = 1`. Primary source checked: local Ikemen-GO misses direct HitDefs with `p1stateno`/`p2stateno` while an active HitOverride matches.
+- Focused combat test: `pnpm exec vitest run src/tests/RuntimeCombatResolutionSystem.test.ts -t "custom-state HitDefs before HitOverride"` -> 1 file passed, 1 test passed, 2 skipped.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "HitOverride plus p2stateno miss"` -> 1 file passed, 1 test passed, 329 skipped.
+- Trace gate: `pnpm qa:trace` -> 337/337 artifacts, 307 required and 30 optional; `synthetic-imported-hitoverride-p2stateno-miss.json` checksum `6f41eeb1`.
+- Test gate: `pnpm test` -> 151 files passed, 1178 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef owner-backed custom-state HitOverride invalidation/miss before target memory, damage, guard, redirect, or custom-state entry.
+
+Claim blocked:
+
+- Helper/projectile `p2stateno`, `p2getp1state = 0` target-owned breadth, exact slot priority, explicit `missonoverride` breadth, exact guard KO/no-KO round flow, helper/projectile custom-state guard metadata, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 guard/HitOverride/custom-state precision around helper/projectile `p2stateno`, target-owned `p2getp1state = 0` breadth, exact slot priority, explicit `missonoverride` breadth, or exact guard KO/no-KO flow. Do not reselect direct-HitDef owner-backed HitOverride plus `p2stateno` miss behavior unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - P2StateNo ignored on successful guard required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-p2stateno-guard-ignored.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a direct `HitDef` route where the attacker declares `p2stateno = 888` / `p2getp1state = 1`, the defender successfully guards, target memory for id `77` is recorded, and P2 stays in defender-owned Common1-style guard flow instead of entering attacker-owned state `888`.
+- `createImportedDefaultGuardStateTraceArtifact` now accepts `forbiddenExecutedStates` so guard-negative oracles can block accidental custom-state routing.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused coverage proves required `150 -> 151 -> 130 -> 20` actor/controller flow, `HitDef` / `HitVelSet` / `VelSet` / `CtrlSet` controller evidence, typed `hitdef` / `kinematic:hitvelset` / `kinematic:velset` / `resource:ctrlset` operation evidence, target-link id `77`, guard event/reason telemetry, final walk/control, and forbidden state `888`.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `p2stateno` as successful-hit custom-state routing. Primary source checked: local Ikemen-GO applies `p2stateno` only when `Abs(hitResult) == 1`, so successful guard does not use it.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "p2stateno guard-ignored"` -> 1 file passed, 1 test passed, 328 skipped.
+- Test gate: `pnpm test` -> 151 files passed, 1176 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the existing chunk-size warning for the main bundle.
+- Trace gate: `pnpm qa:trace` -> 336/336 artifacts, 306 required and 30 optional; `synthetic-imported-p2stateno-guard-ignored.json` checksum `76d1becd`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded successful guard against a direct `HitDef` ignores `p2stateno` and stays in defender-owned Common1-style guard-hit CNS.
+
+Claim blocked:
+
+- Exact guard KO/no-KO round-flow behavior, HitOverride interaction, helper/projectile `p2stateno` behavior, exact guard timing/proximity/effects, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue R1 guard precision around guard KO/no-KO, HitOverride and `p2stateno`, helper/projectile state-routing semantics, or exact guard timing/effects. Do not reselect successful-guard direct-HitDef `p2stateno` ignore behavior unless expanding one of those blocked dimensions with new evidence.
+
+## 2026-07-04 - Custom-state GetHitVar guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-guard-kill.json` trace coverage.
+- `RuntimeTraceGatePresets` now has an owner-backed custom-state route where guarded direct `HitDef guard.kill = 0` records target memory, owner-local `TargetState` sends P2 into P1-owned state data, and `GetHitVar(kill) = 0 && GetHitVar(guarded) = 1 && GetHitVar(hitshaketime) > 0` branches `888 -> 904` before `SelfState` returns P2 to state `0`/control.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused coverage proves `HitDef` / `TargetState` / `ChangeState` / `SelfState` controller evidence, typed `hitdef` / `target:targetstate` operation evidence, target-link id `77`, guard event/reason telemetry, attacker-owned actor-frame evidence for states `888` and `904`, final P2 control, and required controller/op families.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `335/335` artifacts, `305` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `guard.kill`; Elecbyte `TargetState` / `SelfState` docs define owner-state routing and return semantics; Elecbyte `GetHitVar(param_name)` docs define guarded hit metadata reads. Primary source checked: local Ikemen-GO exposes `GetHitVar("kill")` from `c.ghv.kill` and switches guarded hit vars to `hd.guard_kill`.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar guard kill"` -> 1 file passed, 1 test passed, 327 skipped.
+- Trace gate: `pnpm qa:trace` -> 335/335 artifacts, 305 required and 30 optional; `synthetic-imported-custom-state-gethitvar-guard-kill.json` checksum `c889a534`.
+- Test gate: `pnpm test` -> 151 files passed, 1175 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` while P2 executes attacker-owned custom-state CNS after owner-local `TargetState`, then return through `SelfState`.
+
+Claim blocked:
+
+- `p2stateno`-on-guard behavior, exact guard KO/no-KO round-flow behavior, exact guard timing/proximity/effects, helper/projectile custom-state guard kill inheritance, visual/audio parity, score movement, throws, teams/simul, and full MUGEN/IKEMEN custom-state guard parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect direct-HitDef custom-state guard `GetHitVar(kill)` unless expanding into `p2stateno`-on-guard behavior, helper/projectile custom-state inheritance, KO/round-flow, or exact lifetime/timing semantics with new evidence.
+
+## 2026-07-04 - Helper Projectile GetHitVar guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-gethitvar-guard-kill.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style guard-hit route where a helper-parented Projectile with `guard.kill = 0` sends P2 through `150 -> 151`, then `GetHitVar(kill) = 0 && GetHitVar(guarded)` branches to state/action `334`.
+- Helper-local Projectile script generation can now emit static `guard.kill` for helper-spawned guard routes.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused coverage proves helper-local `Projectile` controller/op telemetry from state `1200`, helper/projectile lifecycle evidence, owner and helper target links for target id `8857`, guard event/reason telemetry, actor-frame `334`, final P2 control, and required controller/op families.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `334/334` artifacts, `304` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs treat Projectile as a HitDef-style controller and define `guard.kill`. Primary source checked: local Ikemen-GO exposes `GetHitVar("kill")` from `c.ghv.kill`, compiles Projectile `guard.kill` into the projectile HitDef, and `ModifyProjectile` can mutate `p.hitdef.guard_kill`.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile GetHitVar guard kill"` -> 1 file passed, 1 test passed, 326 skipped.
+- Trace gate: `pnpm qa:trace` -> 334/334 artifacts, 304 required and 30 optional; `synthetic-imported-helper-projectile-gethitvar-guard-kill.json` checksum `7f9aa699`.
+- Full test suite: `pnpm test` -> 151 files passed, 1174 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded helper-parented Projectile guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` from defender-owned guard-hit CNS after a guard route reaches `150 -> 151`, with helper-local Projectile telemetry and owner/helper target-link evidence.
+
+Claim blocked:
+
+- Custom-state guard kill inheritance, exact helper Projectile guard KO/no-KO round-flow behavior, exact helper/projectile target lifetime/tick order, exact guard timing/proximity/effects, visual/audio parity, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect helper-parented or player-owned Projectile guard `GetHitVar(kill)` unless expanding into custom-state inheritance, KO/round-flow, or exact lifetime/timing semantics with new evidence.
+
+## 2026-07-04 - Projectile GetHitVar guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-guard-kill.json` trace coverage.
+- `ProjectileControllerOp` / runtime Projectile now preserve static `kill` and `guard.kill` metadata.
+- Projectile combat passes projectile `kill` / `guardKill` into the shared combat resolver and stores the resulting `hitVars.kill` for guard-hit CNS.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style guard-hit route where a player-owned Projectile with `guard.kill = 0` sends P2 through `150 -> 151`, then `GetHitVar(kill) = 0 && GetHitVar(guarded)` branches to state/action `333`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused coverage proves compiler lowering, Projectile guard nonlethal clamp and hit vars, trace sequence, guard event/reason telemetry, actor-frame `333`, final P2 control, and required controller/op families.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `333/333` artifacts, `303` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Projectile docs treat Projectile as a HitDef-style controller and define `guard.kill`. Primary source checked: local Ikemen-GO uses the projectile HitDef in guarded hit resolution, switches `ghv.kill` to `hd.guard_kill`, and `GetHitVar("kill")` reads `c.ghv.kill`.
+- Focused Projectile combat test: `pnpm exec vitest run src/tests/ProjectileCombatSystem.test.ts -t "guard.kill"` -> 1 file passed, 1 test passed, 6 skipped.
+- Focused compiler test: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts -t "Projectile controllers"` -> 1 file passed, 2 tests passed, 38 skipped.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile GetHitVar guard kill"` -> 1 file passed, 1 test passed, 325 skipped.
+- Trace gate: `pnpm qa:trace` -> 333/333 artifacts, 303 required and 30 optional; `synthetic-imported-projectile-gethitvar-guard-kill.json` checksum `3feae5a7`.
+- Full test suite: `pnpm test` -> 151 files passed, 1173 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded player-owned Projectile guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` from defender-owned guard-hit CNS after a guard route reaches `150 -> 151`.
+
+Claim blocked:
+
+- Helper-parented Projectile guard kill metadata, helper/projectile custom-state guard kill inheritance, exact guard KO/no-KO round-flow behavior, exact projectile target lifetime/tick order, exact guard timing/proximity/effects, visual/audio parity, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect player-owned Projectile guard `GetHitVar(kill)` unless expanding into helper-parented Projectile, custom-state inheritance, KO/round-flow, or exact lifetime/timing semantics with new evidence.
+
+## 2026-07-04 - GetHitVar air guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-air-guard-kill.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style air guard-hit route where direct `HitDef guard.kill = 0` sends P2 through `154 -> 155`, then `GetHitVar(kill) = 0 && GetHitVar(guarded)` branches to state/action `332`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused preset coverage now proves active `holdback` / `x` input, guard event/reason telemetry, typed `HitDef` / `HitVelSet` / `VelAdd` operation evidence, ordered `154/155` controller events, state/action `332` actor-frame evidence, and final P2 control.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `332/332` artifacts, `302` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `kill` for successful hits and `guard.kill` for guarded hits. Primary source checked: local Ikemen-GO switches `ghv.kill` from `hd.kill` to `hd.guard_kill` during correct guard before `GetHitVar("kill")` reads `c.ghv.kill`.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "air guard kill"` -> 1 file passed, 1 test passed, 324 skipped.
+- Full test suite: `pnpm test` -> 151 files passed, 1171 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Trace gate: `pnpm qa:trace` -> 332/332 artifacts, 302 required and 30 optional; `synthetic-imported-gethitvar-air-guard-kill.json` checksum `4382207e`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` from defender-owned air guard-hit CNS after an air guard route reaches `154 -> 155`.
+
+Claim blocked:
+
+- Exact guard KO/no-KO round-flow behavior, helper/projectile/custom-state inheritance, exact air guard timing/landing/proximity/effects, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect direct stand/crouch/air guard `GetHitVar(kill)` gates unless expanding into helper/projectile/custom-state inheritance, KO/round-flow, or exact lifetime/timing semantics with new evidence.
+
+## 2026-07-04 - GetHitVar crouch guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-crouch-guard-kill.json` trace coverage.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style crouch guard-hit route where direct `HitDef guard.kill = 0` sends P2 through `152 -> 153`, then `GetHitVar(kill) = 0 && GetHitVar(guarded)` branches to state/action `331`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Focused preset coverage now proves active `holddown` / `x` input, guard event/reason telemetry, typed `HitDef` / `HitVelSet` operation evidence, ordered `152/153` controller events, state/action `331` actor-frame evidence, and final P2 control.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `331/331` artifacts, `301` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `kill` for successful hits and `guard.kill` for guarded hits. Primary source checked: local Ikemen-GO switches `ghv.kill` from `hd.kill` to `hd.guard_kill` during correct guard before `GetHitVar("kill")` reads `c.ghv.kill`.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "crouch guard kill"` -> 1 file passed, 1 test passed, 323 skipped.
+- Trace gate: `pnpm qa:trace` -> 331/331 artifacts, 301 required and 30 optional; `synthetic-imported-gethitvar-crouch-guard-kill.json` checksum `2976fb8c`.
+- Full test suite: `pnpm test` -> 151 files passed, 1170 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` from defender-owned crouch guard-hit CNS after a crouch guard route reaches `152 -> 153`.
+
+Claim blocked:
+
+- Exact guard KO/no-KO round-flow behavior, air guard kill metadata routes, helper/projectile/custom-state inheritance, exact guard timing/proximity/effects, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect this direct crouch guard `GetHitVar(kill)` gate unless expanding into air guard, helper/projectile/custom-state inheritance, KO/round-flow, or exact lifetime semantics with new evidence.
+
+## 2026-07-04 - GetHitVar guard.kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-guard-kill.json` trace coverage.
+- `DirectCombatSystem` now copies `guard.kill` into defender hit vars when a direct contact is guarded, while normal hits keep using `kill`.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style guard-hit route where direct `HitDef guard.kill = 0` sends P2 through `150 -> 151`, then `GetHitVar(kill) = 0 && GetHitVar(guarded)` branches to state/action `330`.
+- Focused `DirectCombatSystem` coverage now proves guard hit vars use `guardKill: false` while a normal hit with `guardKill: false` still exposes normal `kill: true`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `330/330` artifacts, `300` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte HitDef docs define `kill` for successful hits and `guard.kill` for guarded hits. Primary source checked: local Ikemen-GO switches `ghv.kill` from `hd.kill` to `hd.guard_kill` during correct guard before `GetHitVar("kill")` reads `c.ghv.kill`.
+- Focused direct-combat test: `pnpm test -- src/tests/DirectCombatSystem.test.ts -t "guard.kill"` -> 151 files passed, 1169 tests passed.
+- Focused preset test: `pnpm test -- src/tests/RuntimeTraceGatePresets.test.ts -t "guard kill"` -> 151 files passed, 1169 tests passed.
+- Full test suite: `pnpm test` -> 151 files passed, 1169 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite emitted the known chunk-size warning for the main JS bundle.
+- Trace gate: `pnpm qa:trace` -> 330/330 artifacts, 300 required and 30 optional; `synthetic-imported-gethitvar-guard-kill.json` checksum `abb4e468`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with CRLF normalization warnings only for touched docs.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef guarded `guard.kill = 0` metadata can be read through `GetHitVar(kill)` from defender-owned guard-hit CNS after a stand guard route reaches `150 -> 151`.
+
+Claim blocked:
+
+- Exact guard KO/no-KO round-flow behavior, helper/projectile/custom-state inheritance, crouch/air guard kill metadata routes, exact guard timing/proximity/effects, visual/audio parity, score movement, and full MUGEN/IKEMEN guard parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect this direct guard `GetHitVar(kill)` gate unless expanding into crouch/air guard, helper/projectile/custom-state inheritance, KO/round-flow, or exact lifetime semantics with new evidence.
+
+## 2026-07-04 - GetHitVar kill required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-kill.json` trace coverage.
+- `RuntimeGetHitVars` now stores bounded normal-hit `kill` metadata and `RuntimeHitVarSystem` exposes it through `GetHitVar(kill)`.
+- `DirectCombatSystem` copies static direct `HitDef kill` into defender hit vars, defaulting to `true`.
+- `RuntimeTraceGatePresets` now has a defender-owned Common1-style route where direct `HitDef kill = 0` sends P2 into state `5000`, then `GetHitVar(kill) = 0 && !GetHitVar(guarded)` branches to state/action `329`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate `329/329` artifacts, `299` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Primary source checked: local Ikemen-GO source exposes `GetHitVar("kill")` from `c.ghv.kill`, and Ikemen-GO release notes record the `GetHitVar(kill)` trigger.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "GetHitVar kill"` -> passed.
+- Focused hit-var test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/RuntimeExpressionContextSystem.test.ts -t "GetHitVar kill|HitVar helpers"` -> passed.
+- Full test gate: `pnpm test` -> 151 files passed, 1168 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Trace gate: `pnpm qa:trace` -> 329/329 artifacts, 299 required and 30 optional; `synthetic-imported-gethitvar-kill.json` checksum `ef5ffabf`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed; Git reports CRLF-to-LF warnings for touched docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef normal kill metadata can be read through `GetHitVar(kill)` from defender-owned get-hit CNS after `HitDef kill = 0`.
+
+Claim blocked:
+
+- `guard.kill`, KO/round-flow behavior, helper/projectile/custom-state inheritance, exact target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN get-hit parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect this normal `GetHitVar(kill)` gate unless expanding into `guard.kill`, KO/round-flow, helper/projectile/custom-state inheritance, or exact lifetime semantics with new evidence.
+
+## 2026-07-04 - Custom-state GetHitVar fall metadata required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-fall-metadata.json` trace coverage.
+- `RuntimeTraceGatePresets` now has an owner-backed custom-state fall metadata route proving `GetHitVar(fall.damage/fall.kill/fall.xvel/fall.yvel)` while P2 executes P1-owned state data after direct fall `HitDef p2stateno = 888`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Added focused preset coverage requiring target-link evidence, ordered `888 -> 903 -> SelfState` controller/actor-frame evidence, preserved `customOwnerId = p1`, and final return to P2 state `0`/control.
+- Roadmap/support docs now record the allowed and blocked claim, current trace aggregate expectation `328/328` artifacts, `298` required and `30` optional, and anti-reselect guidance.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `fall.damage`, `fall.xvel`, `fall.yvel`, `fall.kill`, and fall envshake fields as `GetHitVar(param_name)` values; Elecbyte State Controller Reference defines `p2stateno` / `p2getp1state` owner-state behavior and `SelfState` return semantics.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar fall metadata"` -> 1 file passed, 1 test passed, 320 skipped.
+- Trace gate: `pnpm qa:trace` -> 328/328 artifacts, 298 required and 30 optional; `synthetic-imported-custom-state-gethitvar-fall-metadata.json` checksum `4a3a1c6b`.
+- Full test gate: `pnpm test` -> 151 files passed, 1167 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed; Git reports CRLF-to-LF warnings for touched docs only.
+
+Claim allowed:
+
+- Bounded direct-HitDef fall damage/kill/velocity metadata can be read through `GetHitVar(fall.damage/fall.kill/fall.xvel/fall.yvel)` while P2 executes attacker-owned custom state data, then return through `SelfState`.
+
+Claim blocked:
+
+- Exact fall metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full custom-state fall parity.
+
+Next:
+
+- Continue R1 Common1/FightFX/guard precision or a deeper R2 helper/effect/combat ownership seam. Do not reselect this custom-state fall metadata gate unless expanding into helper/projectile/throw/team inheritance or exact metadata lifetime with new evidence.
+
+## 2026-07-04 - Custom-state GetHitVar fall envshake required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-fall-envshake.json` trace coverage.
+- `RuntimeTraceGatePresets` now has an owner-backed custom-state fall envshake route proving `GetHitVar(fall.envshake.time/freq/ampl/phase)` while P2 executes P1-owned state data after direct fall `HitDef p2stateno = 888`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Added focused preset coverage requiring target-link evidence, ordered `888 -> 902 -> SelfState` controller/actor-frame evidence, preserved `customOwnerId = p1`, and final return to P2 state `0`/control.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `fall.envshake.time`, `fall.envshake.freq`, `fall.envshake.ampl`, and `fall.envshake.phase` as `GetHitVar(param_name)` values from attacker HitDef fall envshake params; Elecbyte State Controller Reference defines `TargetState` target routing and `FallEnvShake` consuming fall envshake metadata.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar fall envshake"` -> 1 file passed, 1 test passed, 319 skipped.
+- Trace gate: `pnpm qa:trace` -> 327/327 artifacts, 297 required and 30 optional; `synthetic-imported-custom-state-gethitvar-fall-envshake.json` checksum `5c9d1653`.
+- Full test gate: `pnpm test` -> 151 files passed, 1166 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for existing/touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef fall envshake metadata can be read through `GetHitVar(fall.envshake.time/freq/ampl/phase)` while P2 executes attacker-owned custom state data, then return through `SelfState`.
+
+Still blocked:
+
+- Exact camera waveform, pause/stage/layer interaction, metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state fall presentation parity.
+
+## 2026-07-04 - Custom-state GetHitVar guard timing required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-guard-timing.json` trace coverage.
+- `RuntimeTraceGatePresets` now has an owner-backed custom-state guard timing route proving `GetHitVar(guarded)`, `GetHitVar(slidetime)`, `GetHitVar(ctrltime)`, and `GetHitVar(hitshaketime)` while P2 executes P1-owned state data after guarded direct `HitDef` target memory and owner-local `TargetState`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Added focused preset coverage requiring target-link evidence, ordered guard contact -> `TargetState`, ordered `888 -> 901 -> SelfState` controller/actor-frame evidence, preserved `customOwnerId = p1`, and final return to P2 state `0`/control.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `guarded`, `hitshaketime`, `slidetime`, and `ctrltime` as valid `GetHitVar(param_name)` values and defines their guarded timing behavior. Elecbyte State Controller Reference defines `TargetState`, target ids, guarded timing inputs, and owner-state return behavior.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar guard timing"` -> 1 file passed, 1 test passed, 318 skipped.
+- Trace gate: `pnpm qa:trace` -> 326/326 artifacts, 296 required and 30 optional; `synthetic-imported-custom-state-gethitvar-guard-timing.json` checksum `ba77beec`.
+- Full test gate: `pnpm test` -> 151 files passed, 1165 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for existing/touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded guarded direct-HitDef slide/control/hitshake metadata can be read through `GetHitVar(guarded/slidetime/ctrltime/hitshaketime)` while P2 executes attacker-owned custom state data after owner-local `TargetState`, then return through `SelfState`.
+
+Still blocked:
+
+- `p2stateno`-on-guard behavior, exact guard timing/proximity/effects, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, score movement, and full MUGEN/IKEMEN custom-state/get-hit parity.
+
+## 2026-07-04 - Custom-state GetHitVar hitcount/id required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid.json` trace coverage.
+- `RuntimeTraceGatePresets` now has an owner-backed custom-state route proving `GetHitVar(hitcount)`, `GetHitVar(hitid)`, and `GetHitVar(chainid)` while P2 executes P1-owned state data after `HitDef p2stateno = 888`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+- Added focused preset coverage requiring target-link evidence, ordered `888 -> 900 -> SelfState` controller/actor-frame evidence, preserved `customOwnerId = p1`, and final return to P2 state `0`/control.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `hitcount`, `hitid`, and `chainid` as valid `GetHitVar(param_name)` values and defines hitcount/chainid behavior. Elecbyte State Controller Reference defines `p2stateno` / `p2getp1state` owner-state behavior plus HitDef `id`, `chainID`, and `numhits`.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar hitcount"` -> 1 file passed, 1 test passed, 317 skipped.
+- Trace gate: `pnpm qa:trace` -> 325/325 artifacts, 295 required and 30 optional; `synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid.json` checksum `250f77c2`.
+- Full test gate: `pnpm test` -> 151 files passed, 1164 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for existing/touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef `numhits`, `id`, and `chainID` metadata can be read through `GetHitVar(hitcount/hitid/chainid)` while P2 executes attacker-owned custom state data, then return through `SelfState`.
+
+Still blocked:
+
+- Exact combo accumulation, chain-hit eligibility arbitration, helper/projectile inheritance, exact target lifetime, teams/simul, exact controller-loop tick order, score movement, and full MUGEN/IKEMEN custom-state/get-hit parity.
+
+## 2026-07-04 - RuntimeMatch EnvShake bridge ownership cut
+
+Changed:
+
+- Added `RuntimeMatchEnvShakeBridgeWorld` as the match-level boundary for active `EnvShake` and `FallEnvShake` controller emission.
+- `PlayableMatchRuntime` now delegates `EnvShake` / `FallEnvShake` side-effect hooks through the new bridge before `RuntimeEnvShakeWorld` mutates actor shake-event history.
+- Added focused `RuntimeMatchEnvShakeBridgeSystem` coverage for typed `EnvShake` forwarding, telemetry forwarding, `FallEnvShake` hit-fall metadata emission/clearing, and no-pending-fall no-event behavior.
+- Updated roadmap, package, tracker, and local issue docs so `RuntimeMatchEnvShakeBridgeWorld` is recorded as a closed R2 ownership cut and not a fresh next-slice candidate.
+
+Evidence:
+
+- Official docs: not rechecked for new semantics because this is an ownership extraction only; existing EnvShake/FallEnvShake semantics and required `synthetic-imported-envshake.json` evidence were preserved.
+- Focused bridge test: `pnpm exec vitest run src/tests/RuntimeMatchEnvShakeBridgeSystem.test.ts` -> 1 file passed, 3 tests passed.
+- Full test gate: `pnpm test` -> 151 files passed, 1163 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Trace stability gate: `pnpm qa:trace` -> 324/324 artifacts, 294 required and 30 optional; then-latest required trace was `synthetic-imported-gethitvar-fallcount.json` checksum `c391d938`, and existing `synthetic-imported-envshake.json` remains checksum `061f17d5`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for existing/touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Current active `EnvShake` / `FallEnvShake` controller emission has a named, focused-test-covered match boundary before `RuntimeEnvShakeWorld` mutates actor event history.
+
+Still blocked:
+
+- Exact camera waveform, pause/stage/layer timing, helper/redirect ownership breadth, renderer parity, visual parity, score movement, and full MUGEN/IKEMEN presentation parity.
+
+## 2026-07-04 - GetHitVar fallcount required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-gethitvar-fallcount.json` trace coverage.
+- `RuntimeTraceGatePresets` can delay synthetic get-hit `GetHitVar` branch checks, so the fallcount route evaluates after `HitFallDamage` runs in state `5100`.
+- The synthetic route now proves `HitFallDamage` records one bounded Common1-style ground impact, consumes stored `fall.damage`, and imported CNS can branch through `GetHitVar(fallcount) = 1 && GetHitVar(fall.damage) = 0`.
+- `scripts/qa_traces.cjs` registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `fallcount` as a valid `GetHitVar(param_name)` and describes it as the number of times the player has hit the ground in the current combo.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "fallcount"` -> 1 file passed, 1 test passed, 316 skipped.
+- Trace gate: `pnpm qa:trace` -> 324/324 artifacts, 294 required and 30 optional; `synthetic-imported-gethitvar-fallcount.json` checksum `c391d938`.
+- Full test gate: `pnpm test` -> 150 files passed, 1160 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded imported owner-backed state `5100` can run `HitFallDamage`, record one stored ground-impact count, consume deferred fall damage, and route through `GetHitVar(fallcount)` on the same CNS path.
+
+Still blocked:
+
+- Multi-ground-hit combo accumulation, non-Common1 ground-impact state detection, exact MUGEN/IKEMEN fallcount lifetime/reset rules, helper/projectile/custom-state inheritance breadth, exact controller-loop tick order, score movement, and full fall/get-hit parity.
+
+## 2026-07-04 - GetHitVar fallcount focused runtime cut
+
+Changed:
+
+- `RuntimeHitFall` now carries bounded `fallCount` metadata.
+- `RuntimeHitVarSystem` exposes official `GetHitVar(fallcount)` with `0` fallback.
+- `HitFallDamage` now counts one bounded Common1-style ground impact when it runs in defender state `5100`, even if deferred fall damage is already spent, and marks the impact to avoid double-counting repeated controller execution.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `fallcount` as a valid `GetHitVar(param_name)` and describes it as the number of times the player has hit the ground in the current combo.
+- Focused tests: `pnpm exec vitest run src/tests/HitFallControllerSystem.test.ts src/tests/RuntimeExpressionContextSystem.test.ts --testNamePattern "HitFallDamage|HitVar helpers"` -> 2 files passed, 2 tests passed, 13 skipped.
+- Full test gate: `pnpm test` -> 150 files passed, 1159 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Trace stability gate: `pnpm qa:trace` -> 323/323 artifacts, 293 required and 30 optional; latest required trace remains `synthetic-imported-custom-state-gethitvar-snap.json` checksum `ce4680b9`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, CSS, or visible gameplay output changed in this cut.
+
+Claim allowed:
+
+- Bounded Common1-style state `5100` `HitFallDamage` execution increments one stored ground-impact count, and runtime expressions can read it through `GetHitVar(fallcount)`.
+
+Still blocked:
+
+- Multi-ground-hit combo accumulation, non-Common1 ground-impact state detection, exact MUGEN/IKEMEN fallcount lifetime/reset rules, helper/projectile/custom-state inheritance breadth, exact controller-loop tick order, trace artifact coverage, score movement, and full fall/get-hit parity.
+
+## 2026-07-04 - Custom-state GetHitVar snap required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-gethitvar-snap.json` trace coverage.
+- The synthetic route uses direct `HitDef snap = 16,-24` plus `p2stateno = 888` / `p2getp1state = 1`.
+- P2 now proves stored `xoff/yoff/zoff` metadata while executing attacker-owned state data, branching `888 -> 899` before `SelfState` returns to P2 state `0` / control.
+- `scripts/qa_traces.cjs` now registers the artifact and required coverage-summary name.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `GetHitVar(param_name)` values `xoff`, `yoff`, and `zoff` as snap offsets when hit; Elecbyte State Controller Reference defines HitDef `snap = x_pos, y_pos`, `p2stateno` owner-state behavior, `p2getp1state`, and `SelfState` return semantics.
+- Focused preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar snap"` -> 1 test passed, 315 skipped.
+- Trace gate: `pnpm qa:trace` -> 323/323 artifacts, 293 required and 30 optional; `synthetic-imported-custom-state-gethitvar-snap.json` checksum `ce4680b9`.
+- Full test gate: `pnpm test` -> 150 files passed, 1158 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite still warns that the built JS chunk is larger than 500 kB.
+- Trace gate repeat: `pnpm qa:trace` -> 323/323 artifacts, 293 required and 30 optional; `synthetic-imported-custom-state-gethitvar-snap.json` checksum `ce4680b9`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> exit 0; Git reported CRLF-to-LF warnings for touched roadmap docs only.
+- Visual smoke skipped: no renderer, Studio, frontend, stage, sprite, or debug UI behavior changed in this cut.
+
+Claim allowed:
+
+- Bounded direct-HitDef `snap` metadata can be read through `GetHitVar(xoff/yoff/zoff)` while P2 executes attacker-owned custom state data, then return through `SelfState`.
+
+Still blocked:
+
+- Exact throw positioning, z-axis support, guard snap behavior, helper/projectile inheritance, broader custom-state inheritance breadth, teams/simul, exact tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN throw/custom-state parity.
+
+## 2026-07-04 - GetHitVar snap offset required trace gate
+
+Changed:
+
+- Added `hitOffset` to `RuntimeGetHitVars`.
+- `RuntimeHitVarSystem` now exposes `GetHitVar(xoff)`, `GetHitVar(yoff)`, and `GetHitVar(zoff)` with `0` fallback.
+- `HitDefControllerOp`, raw/imported HitDef metadata, and direct-combat hit var copies preserve bounded static `snap` metadata for defender hit vars.
+- Direct-combat hit resolution applies bounded `snap` positioning relative to the attacker when `hitOffset` is present.
+- Added required `synthetic-imported-gethitvar-snap.json` trace coverage for owner-backed get-hit CNS branch `5100 -> 288`.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `GetHitVar(param_name)` values `xoff`, `yoff`, and `zoff` as snap offsets when hit; Elecbyte State Controller Reference defines HitDef `snap = x_pos, y_pos` as moving P2 to a specified position relative to P1 on hit.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "snap|HitVar helpers|controller params with runtime hit variables|HitDef get-hit anim|bounded hit results"` -> 5 tests passed, 387 skipped.
+- Trace gate: `pnpm qa:trace` -> 322/322 artifacts, 292 required and 30 optional; `synthetic-imported-gethitvar-snap.json` checksum `312a53fc`.
+- Full test gate: `pnpm test` -> 150 files / 1157 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate repeat: `pnpm qa:trace` -> 322/322 artifacts, 292 required and 30 optional; `synthetic-imported-gethitvar-snap.json` checksum `312a53fc`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs.
+- No `pnpm qa:smoke` run because this cut only touches runtime metadata, compiler/importer trace presets, tests, and docs, with no frontend, renderer, Studio UI, CSS, sprite, stage, or visible gameplay presentation change.
+
+Claim allowed:
+
+- Bounded direct-HitDef `snap` metadata is compiled/imported/stored on defender hit vars, can be read through `GetHitVar(xoff/yoff/zoff)` in an owner-backed get-hit route, and direct-combat hit resolution applies a simple attacker-relative snap when present.
+
+Still blocked:
+
+- Exact throw positioning, z-axis support, guard snap behavior, helper/projectile/custom-state inheritance breadth, teams/simul, exact tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN throw/get-hit parity.
+
+## 2026-07-04 - GetHitVar hitcount required trace gate
+
+Changed:
+
+- Added `hitCount` to `RuntimeGetHitVars`.
+- `RuntimeHitVarSystem` now exposes `GetHitVar(hitcount)` with `0` fallback.
+- `HitDefControllerOp`, raw/imported HitDef metadata, and direct-combat hit var copies preserve bounded static `numhits` metadata for defender hit vars.
+- Added required `synthetic-imported-gethitvar-hitcount.json` trace coverage for defender-owned normal get-hit CNS branch `5000 -> 327`.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `GetHitVar(param_name)` value `hitcount` as the number of hits taken in the current combo. Elecbyte State Controller Reference defines HitDef `numhits` as the number of hits to add to the combo counter, default `1`.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "hitcount|HitVar helpers|GetHitVar hitcount|HitDef get-hit anim|HitDef params|bounded hit results"` -> 5 tests passed, 386 skipped.
+- Focused trace preset test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "GetHitVar hitcount artifact"` -> 1 test passed, 313 skipped.
+- Full touched-test slice: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 5 files / 391 tests passed.
+- Full test gate: `pnpm test` -> 150 files / 1156 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 321/321 artifacts, 291 required and 30 optional; `synthetic-imported-gethitvar-hitcount.json` checksum `a4685842`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs.
+- No `pnpm qa:smoke` run because this cut only touches runtime metadata, compiler/importer trace presets, tests, and docs, with no frontend, renderer, Studio UI, CSS, sprite, stage, or visible gameplay presentation change.
+
+Claim allowed:
+
+- Bounded direct-HitDef `numhits` metadata is compiled/imported/stored on defender hit vars and can be read by defender-owned Common1-style get-hit CNS through `GetHitVar(hitcount)` after direct contact.
+
+Still blocked:
+
+- Exact combo accumulation, multi-hit timing, helper/projectile/custom-state inheritance breadth, teams/simul, exact target lifetime/tick order, score movement, and full MUGEN/IKEMEN get-hit parity.
+
+## 2026-07-04 - GetHitVar hitid/chainid required trace gate
+
+Changed:
+
+- Added `hitId` and `chainId` to `RuntimeGetHitVars`.
+- `RuntimeHitVarSystem` now exposes `GetHitVar(hitid)` with `0` fallback and `GetHitVar(chainid)` with `-1` fallback.
+- `HitDefControllerOp` now preserves static `chainID`; `RuntimeHitDefControllerDispatchWorld`, imported fighter HitDef metadata, and direct-combat hit var copies preserve bounded `id` / `chainID` metadata for defender hit vars.
+- Added required `synthetic-imported-gethitvar-hitid-chainid.json` trace coverage for defender-owned normal get-hit CNS branch `5000 -> 326`.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference lists `GetHitVar(param_name)` values including `hitid` and `chainid`, and defines `chainid` as player-assigned chainID for the last hit taken. Elecbyte State Controller Reference defines HitDef `id` as targetID default `0` and `chainID` as chain-move metadata default `-1`.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "GetHitVar hitid|hitid/chainid|HitDef get-hit anim"` -> 2 tests passed, 388 skipped.
+- Full touched-test slice: `pnpm exec vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 5 files / 390 tests passed.
+- Full test gate: `pnpm test` -> 150 files / 1155 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 320/320 artifacts, 290 required and 30 optional; `synthetic-imported-gethitvar-hitid-chainid.json` checksum `18df99ed`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched/pre-existing docs.
+- No `pnpm qa:smoke` run because this cut only touches runtime metadata, compiler/importer trace presets, tests, and docs, with no frontend, renderer, Studio UI, CSS, sprite, stage, or visible gameplay presentation change.
+
+Claim allowed:
+
+- Bounded direct-HitDef `id` / `chainID` metadata is compiled/imported/stored on defender hit vars and can be read by defender-owned Common1-style get-hit CNS through `GetHitVar(hitid)` / `GetHitVar(chainid)` after direct contact.
+
+Still blocked:
+
+- Exact chain-hit eligibility arbitration, helper/projectile/custom-state inheritance breadth, teams/simul, exact target lifetime/tick order, score movement, and full MUGEN/IKEMEN get-hit parity.
+
+## 2026-07-04 - RuntimeMatchEnvColorBridgeWorld ownership extraction
+
+Changed:
+
+- Added `RuntimeMatchEnvColorBridgeWorld` for bounded match-level `EnvColor` handoff outside `PlayableMatchRuntime`.
+- `PlayableMatchRuntime` now delegates the active, pause, and hitpause ignored-controller `EnvColor` callback through that bridge before `RuntimeEnvColorWorld` emits the event.
+- Added focused `RuntimeMatchEnvColorBridgeSystem` coverage for typed-operation forwarding, runtime-tick preservation, stage-flash projection, and zero-time no-event behavior.
+
+Evidence:
+
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeMatchEnvColorBridgeSystem.test.ts src/tests/EnvColorSystem.test.ts` -> 2 files / 10 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Full test gate: `pnpm test` -> 150 files / 1145 tests passed.
+- Build gate: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 310/310 artifacts, 280 required and 30 optional.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs only.
+- No `pnpm qa:smoke` run because this cut only touches runtime ownership/tests/docs, with no frontend, renderer, Studio UI, CSS, sprite, stage, or visible gameplay change.
+
+Claim allowed:
+
+- Current active/pause/hitpause match-loop `EnvColor` callback routing has a named, testable bridge that preserves controller source, optional typed `envcolor` operation data, runtime tick, and `RuntimeEnvColorWorld` emission.
+
+Still blocked:
+
+- Exact EnvColor blend math, layer/window ordering, pause layering/timing, renderer parity, screenpack ownership, score movement, and full MUGEN/IKEMEN presentation parity.
+
+## 2026-07-04 - AssertSpecial GlobalNoShadow helper/explod required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-assertspecial-helper-explod-shadow.json`.
+- Added `createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact(...)` and registered it in `pnpm qa:trace` required coverage.
+- Reused the helper-parented Explod fixture route while asserting `GlobalNoShadow` in imported state `200`.
+- Required actor-frame `shadowVisible=false` evidence for P1, P2, the spawned helper, and the spawned explod.
+- Checked official Elecbyte `AssertSpecial` docs again: `globalnoshadow` disables player, helper, and explod shadows.
+
+Evidence:
+
+- Focused trace preset: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "helper/explod shadow|AssertSpecial shadow telemetry"` -> 1 file / 2 tests passed, 299 skipped.
+- Full test gate: `pnpm test` -> 148 files / 1138 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 308/308 artifacts, 278 required and 30 optional; `synthetic-imported-assertspecial-helper-explod-shadow.json` trace checksum `83f61b48`, final checksum `a8036503`.
+- Visual smoke gate: `pnpm qa:smoke` -> passed; runtime desktop/mobile, Studio Workbench/Build/Evidence/Debug/Assets/Stage/Modules, source relink, command palette, and IKEMEN scan smoke routes stayed green.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs only.
+
+Claim allowed:
+
+- Bounded imported `AssertSpecial GlobalNoShadow` now has required trace evidence that player, helper, and explod actor frames are projected with `shadowVisible=false` while the helper/explod actors are spawned by the imported route.
+
+Still blocked:
+
+- Exact MUGEN/IKEMEN shadow skew, stage shadow parameters, projectile shadow semantics, exact global/team/helper ownership beyond the current spawned helper/explod route, pause/layer behavior, renderer visual parity for helper/explod shadows, score movement, and full shadow/global parity.
+
+## 2026-07-04 - AssertSpecial shadow snapshot and renderer suppression
+
+Changed:
+
+- Promoted `synthetic-imported-assertspecial-shadow-telemetry.json` from final-actor telemetry only into bounded presentation evidence.
+- Added `ActorSnapshot.shadowVisible=false` as the explicit suppression contract; absence still means visible.
+- `RuntimeSnapshotWorld.match()` now derives local `noshadow` and global `globalnoshadow` suppression across supported shadow actors (`player`, `helper`, `explod`) while leaving projectiles without a shadow claim.
+- `CharacterRenderer` now renders a bounded ellipse shadow for supported actors and removes it when `shadowVisible=false`.
+- Extended `RuntimeTrace` actor-frame gates with `shadowVisible`, and hardened the existing required shadow gate to require suppressed P1 and P2 actor-frame evidence.
+- Checked official Elecbyte state-controller docs again for `AssertSpecial`: flags deassert each tick; `noshadow` disables the asserting player's shadow; `globalnoshadow` disables player/helper/explod shadows.
+
+Evidence:
+
+- Focused shadow tests: `pnpm exec vitest run src/tests/CharacterRenderer.test.ts src/tests/RuntimeSnapshotSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "shadow|AssertSpecial shadow"` -> 3 files / 4 tests passed, 308 skipped.
+- Focused trace-gate regression: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "AssertSpecial shadow telemetry|AssertSpecial global telemetry"` -> 1 file / 2 tests passed, 298 skipped.
+- Architecture boundary spot-check: `pnpm exec vitest run src/tests/ArchitectureBoundaries.test.ts --testNamePattern "renderer-independent"` -> passed after an earlier full-suite timeout was isolated as non-reproducible.
+- Full test gate: `pnpm test` -> 148 files / 1137 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with existing Vite plugin-timing and large-chunk warnings.
+- Trace gate: `pnpm qa:trace` -> 307/307 artifacts, 277 required and 30 optional; `synthetic-imported-assertspecial-shadow-telemetry.json` trace checksum `2b9c8fac`, final checksum `5b5d0686`.
+- Visual smoke gate: `pnpm qa:smoke` -> passed; runtime desktop/mobile each reported 2 actors and 1 resolved player hit spark; Studio Workbench, Build, Evidence, Debug, Assets, Stage, Modules, source relink, command palette, and IKEMEN scan smoke routes stayed green.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs only.
+
+Claim allowed:
+
+- Bounded imported `AssertSpecial` local/global shadow flags now affect match snapshots and Three.js actor shadow visibility for players. Helper/explod snapshot suppression is unit-covered through `RuntimeSnapshotWorld`; projectiles intentionally do not gain a shadow claim.
+
+Still blocked:
+
+- Exact MUGEN/IKEMEN shadow skew, stage shadow parameters, helper/explod trace-fixture coverage, projectile shadow semantics, exact global/team/helper ownership, pause/layer behavior, score movement, and full renderer/global shadow parity.
+
+## 2026-07-04 - AssertSpecial shadow telemetry required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-assertspecial-shadow-telemetry.json`.
+- Added `createSyntheticImportedAssertSpecialShadowTelemetryTraceArtifact(...)`, imported script coverage, focused preset coverage, and `pnpm qa:trace` required coverage-summary registration.
+- Reused the existing final-actor trace arrays for local `assertSpecialFlags` and global `assertSpecialGlobalFlags` so official `NoShadow` / `GlobalNoShadow` spellings are normalized and gateable.
+- Checked official Elecbyte state-controller docs for `AssertSpecial` `NoShadow` and `GlobalNoShadow` before closing the slice.
+
+Evidence:
+
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "AssertSpecial shadow telemetry|AssertSpecial global telemetry"` -> 1 file / 2 tests passed, 298 skipped.
+- Trace gate: `pnpm qa:trace` -> 307/307 artifacts, 277 required and 30 optional; `synthetic-imported-assertspecial-shadow-telemetry.json` checksum `bbb37355`, final checksum `0417cf60`.
+- Full test gate: `pnpm test` -> 148 files / 1134 tests passed.
+- Type/build gates: `pnpm typecheck` passed; `pnpm build` passed with the existing Vite plugin-timing and large-chunk warnings.
+- Final trace/boundary/diff gates: repeat `pnpm qa:trace` -> 307/307 artifacts, 277 required and 30 optional; `pnpm check:boundaries` passed; `git diff --check` passed with existing CRLF normalization warnings on touched docs.
+- No `pnpm qa:smoke` run because this cut only touches runtime trace-gate plumbing and docs, with no frontend, renderer, Studio UI, CSS, sprite, stage, or visible gameplay change.
+
+Claim allowed:
+
+- Bounded imported `AssertSpecial` shadow flags can be parsed, normalized, exposed as final actor local/global arrays, and required by `pnpm qa:trace`.
+
+Still blocked:
+
+- Player/helper/explod shadow rendering suppression, exact global/team/helper ownership, pause/layer behavior, renderer parity, full shadow/global parity, score movement, and full MUGEN/IKEMEN `AssertSpecial` parity.
+
+## 2026-07-04 - AssertSpecial global telemetry required trace gate
+
+Changed:
+- Added required `synthetic-imported-assertspecial-global-telemetry.json`.
+- Added final-actor trace fields for local `assertSpecialFlags` and global `assertSpecialGlobalFlags`, plus required-final-actor subset matching for those arrays.
+- Added `createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact()` and required `scripts/qa_traces.cjs` coverage-summary entry.
+- Grouped the fixture controllers in official-style `flag` / `flag2` / `flag3` batches so each `AssertSpecial` controller stays within Elecbyte's documented three-flag shape.
+- Kept this as bounded telemetry/gate coverage. No lifebar, stage, audio, helper/team/global ownership, pause-layer, or full MUGEN/IKEMEN global flag parity claim.
+- Checked official Elecbyte docs for `AssertSpecial` flag grouping and per-tick assertion behavior.
+
+Evidence:
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "AssertSpecial global telemetry|AssertSpecial control"` -> 1 file / 2 tests passed, 297 skipped.
+- Test suite: `pnpm test` -> 148 files / 1133 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 306/306 artifacts, 276 required and 30 optional; `synthetic-imported-assertspecial-global-telemetry.json` checksum `fc793d29`, final checksum `d27fdbc4`.
+- The same trace run confirms the existing `synthetic-imported-assertspecial-control.json` checksum remains `144ac7bc`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-normalization warnings on touched docs.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded imported `AssertSpecial` global-style flags can be parsed, normalized, exposed as final-actor `assertSpecialGlobalFlags`, and required by `pnpm qa:trace` for `nobardisplay`, `nobg`, `nofg`, `nokosnd`, and `nomusic`.
+
+Claim blocked:
+- Lifebar hiding, stage BG/FG suppression, KO sound suppression, music pause, exact global/team/helper ownership, pause/layer behavior, score movement, and full MUGEN/IKEMEN global flag parity remain blocked.
+
+## 2026-07-04 - Default lie-down fast recovery required trace gate
+
+Changed:
+- Added required `synthetic-imported-default-liedown-fast-recovery.json`.
+- Added `createSyntheticImportedDefaultLieDownFastRecoveryTraceArtifact()` and required `scripts/qa_traces.cjs` coverage-summary entry.
+- Added a focused trace-preset test proving the fixture has no authored `5110` `Get Up` `ChangeState` controller while fresh `recovery` input still routes `5110 -> 5120 -> 0`.
+- Kept this as bounded synthetic recovery precision. No exact mashing threshold, public KFM, or full Common1 recovery parity claim.
+- Checked official docs: Elecbyte documents `GetHitVar(recovertime)` as the recovery timer and notes buttons make the time decrease faster, while the Ikemen-GO wiki documents `NoFastRecoverFromLieDown` as disabling that hardcoded faster lie-down recovery.
+
+Evidence:
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "lie-down fast recovery|NoFastRecoverFromLieDown"` -> 1 file / 2 tests passed, 296 skipped.
+- Trace gate: `pnpm qa:trace` -> 305/305 artifacts, 275 required and 30 optional; `synthetic-imported-default-liedown-fast-recovery.json` checksum `74bdac97`, final checksum `41f481dc`.
+- The same trace run also confirms the existing `synthetic-imported-assertspecial-nofastrecoverfromliedown.json` checksum remains `74bf5d85`, final checksum `e70201f3`.
+
+Claim allowed:
+- Bounded synthetic Common1-style lie-down state `5110` can enter `5120` through the runtime fast-recovery shortcut while `down.recovertime` is still positive and fresh `recovery` input is active, without an authored `5110` `Get Up` controller in the fixture.
+
+Claim blocked:
+- Exact input-mashing thresholds, exact Common1 controller-loop timing, public KFM proof, global/team/helper ownership, pause/hitpause layering, score movement, and full MUGEN/IKEMEN recovery parity remain blocked.
+
+## 2026-07-04 - AssertSpecial NoFastRecoverFromLieDown required trace gate
+
+Changed:
+- Added bounded IKEMEN `AssertSpecial NoFastRecoverFromLieDown` runtime recognition and trace evidence.
+- `StateControllerExecutor` now maps normalized `nofastrecoverfromliedown` flags onto `RuntimeAssertSpecial.noFastRecoverFromLieDown`.
+- `RuntimeRecoverySystem.advanceCommon1LieDownRecovery` now has a bounded hardcoded fast lie-down recovery shortcut: fresh `recovery` command input can advance Common1-style `5110` to `5120` while `down.recovertime` is positive, unless `NoFastRecoverFromLieDown` is active.
+- Added required `synthetic-imported-assertspecial-nofastrecoverfromliedown.json`.
+- Checked the official Ikemen-GO wiki: `NoFastRecoverFromLieDown` disables faster lie-down recovery from key input mashing when `StateType=L && GetHitVar(RecoverTime)>0`; `NoGetUpFromLieDown` separately disables hardcoded `5110 -> 5120` when `GetHitVar(RecoverTime)=0`.
+
+Evidence:
+- Focused recovery gate: `pnpm exec vitest run src/tests/RuntimeRecoverySystem.test.ts` -> 1 file / 9 tests passed.
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeRecoverySystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern NoFastRecoverFromLieDown` -> 2 tests passed, 366 skipped.
+- Focused AssertSpecial gate: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts --testNamePattern AssertSpecial` -> 3 tests passed, 59 skipped.
+- Test suite: `pnpm test` -> 148 files / 1131 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite kept the existing large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 304/304 artifacts, 274 required and 30 optional; `synthetic-imported-assertspecial-nofastrecoverfromliedown.json` checksum `74bf5d85`, final checksum `e70201f3`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched docs.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded synthetic IKEMEN `AssertSpecial NoFastRecoverFromLieDown` now executes as typed `assertspecial` evidence in state `5110`, keeps fresh `recovery` command input active during lie-down, suppresses the runtime fast lie-down shortcut while `down.recovertime` counts from positive to `0`, and only then allows the hardcoded `5110 -> 5120 -> 0` recovery path.
+
+Claim blocked:
+- Exact IKEMEN/MUGEN mashing thresholds, exact Common1 controller-loop timing, public KFM proof, global/team/helper ownership, pause/hitpause layering, score movement, and full MUGEN/IKEMEN recovery parity remain blocked.
+
+## 2026-07-04 - Controller parameter Root redirect required trace gate
+
+Changed:
+- Added required `synthetic-imported-controller-param-root-redirect.json`.
+- Routed the current player actor as `root` in active runtime-controller and pre-facing controller contexts, so player-owned dynamic controller params can evaluate bounded `Root,...` expressions against the current root state.
+- Required named controller order, typed seed `kinematic:velset`, and actor-frame velocity evidence in `pnpm qa:trace`.
+- Checked Elecbyte official docs: `root` redirects trigger evaluation to the root player, numeric controller params may be expressions, and bottom-valued params fall back to `0`.
+
+Evidence:
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "controller-param Root|controller-param Target|controller-param bottom"` -> 3 tests passed, 293 skipped.
+- Full test gate: `pnpm test` -> 148 files passed, 1128 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite reported the existing large-chunk warning.
+- Promotion trace gate: `pnpm qa:trace` -> 303 artifacts passed, 273 required, 30 optional; `synthetic-imported-controller-param-root-redirect.json` checksum `1d4a73f7`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed; Git printed CRLF normalization warnings for existing docs.
+
+Claim allowed:
+- Bounded current player controller execution can evaluate dynamic `VelSet` params through `Root`: `x = Root, Life - 995` and `y = Root, StateNo - 203` resolve from the current player root context and move P1 velocity from seeded `4,-2` to `5,-3`.
+
+Claim blocked:
+- Player `Parent` controller-param redirects, nested helper ancestry where root differs from parent, helper-spawned helpers, dynamic-parameter typed lowering, recursive redirect evaluation, debug warning text, broad bottom/redirect parity for every controller/parameter family, teams/simul, helper-owned custom-state target breadth, score movement, and full MUGEN/IKEMEN controller/expression parity remain blocked.
+
+## 2026-07-04 - Controller parameter Target redirect required trace gate
+
+Changed:
+- Added required `synthetic-imported-controller-param-target-redirect.json`.
+- Added `RuntimeControllerExpressionContextSystem` so runtime-controller dynamic params reuse one expression-context bridge for constants, hit vars, stage/tick data, and bounded redirects.
+- Forwarded bounded opponent/target context into active runtime-controller fallback, state-entry setup, pre-facing AssertSpecial execution, and helper runtime-controller fallback.
+- Fixed single-value controller params so redirect expressions containing commas, such as `Target(77), Life - 960`, are not truncated before evaluation.
+- Required target-link, named controller order, typed seed `kinematic:velset`, `HitDef`, and actor-frame velocity evidence in `pnpm qa:trace`.
+- Checked Elecbyte official docs: numeric controller params may be expressions; `target(ID)` redirects to the HitDef target id; invalid redirects return bottom; bottom controller params are set to `0`.
+
+Evidence:
+- Focused unit/trace gate: `pnpm exec vitest run src/tests/RuntimeControllerEvaluationContextSystem.test.ts src/tests/KinematicControllerSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "controller-param|redirect context|dynamic movement params"` -> 3 tests passed, 300 skipped.
+- Type gate: `pnpm exec tsc --noEmit --pretty false` -> passed.
+- Full test gate: `pnpm test` -> 148 files passed, 1127 tests passed.
+- Full type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite reported the existing large-chunk warning for the app bundle.
+- Trace gate: `pnpm qa:trace` -> 302/302 artifacts, 272 required and 30 optional; `synthetic-imported-controller-param-target-redirect.json` checksum `55bb7b1f`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed; Git reported CRLF-to-LF normalization warnings for touched docs only.
+- Smoke gate: not run; no renderer, Studio UI, sprite, stage, CSS, or visible gameplay surface changed in this slice.
+
+Claim allowed:
+- Bounded current controller execution can evaluate dynamic `VelSet` params through a real explicit `Target(77)` redirect: direct `HitDef` records target memory, dynamic `VelSet x = Target(77), Life - 960` / `y = Target(77), Life - 966` resolves through that target, and P1 velocity changes from seeded `4,-2` to redirected `3,-3`.
+
+Claim blocked:
+- Player `Parent`/`Root` controller-param redirects, dynamic-parameter typed lowering, recursive redirect evaluation, debug warning text, broad bottom/redirect parity for every controller/parameter family, teams/simul, helper-owned custom-state target breadth, score movement, and full MUGEN/IKEMEN controller/expression parity remain blocked.
+
+## 2026-07-04 - Controller parameter bottom required trace gate
+
+Changed:
+- Added required `synthetic-imported-controller-param-bottom.json`.
+- Extended the synthetic imported kinematic route with a two-step `VelSet` probe: a static seed velocity (`4,-2`) followed by dynamic `Parent,Vel X` / `Parent,Vel Y` parameters in a context with no parent.
+- Required named controller order plus actor-frame velocity evidence so the dynamic controller-param bottom fallback cannot silently disappear from `pnpm qa:trace`.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Checked Elecbyte official State Controller Reference bottom-parameter docs. This slice stays scoped to current controller-param execution where a dynamic parameter expression evaluates to bottom and falls back to `0`.
+
+Evidence:
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "controller-param bottom"` -> 1 file / 1 test, 293 skipped.
+- Test gate: `pnpm test` -> 148 files / 1124 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite kept the existing chunk-size warning.
+- Trace gate: `pnpm qa:trace` -> 301/301 artifacts, 271 required and 30 optional; `synthetic-imported-controller-param-bottom.json` checksum `28ef21ad`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with line-ending normalization warnings only.
+- Smoke gate: not run; no renderer, Studio UI, sprite, stage, CSS, or visible gameplay surface changed in this slice.
+
+Claim allowed:
+- Bounded current controller execution treats dynamic controller parameters that evaluate to missing-redirect bottom as `0`: the required trace observes seeded velocity `4,-2`, then the dynamic bottom `VelSet` collapses velocity back to `0,0` while named controller order and static typed `kinematic:velset` evidence remain present.
+
+Claim blocked:
+- Target/parent/root controller-param redirect support, dynamic-parameter typed lowering, recursive redirect evaluation, debug warning text, broad bottom fallback for every controller/parameter family, helper/team ownership, score movement, and full MUGEN/IKEMEN controller/expression parity remain blocked.
+
+## 2026-07-03 - Target IfElse bottom required trace gate
+
+Changed:
+- Added required `synthetic-imported-target-ifelse-bottom.json`.
+- Preserved `IfElse(...)` eager argument evaluation per Elecbyte CNS behavior while gating returned-branch bottom isolation: unused missing-target branches are still evaluated and can report warning-style unsupported diagnostics, but they do not poison a selected valid return value.
+- Extended the synthetic imported target fixture route with a selected-invalid `IfElse(0, MoveHit >= 1, (Target(999), Life = 0))` forbidden branch and an unused-invalid `IfElse(1, MoveHit >= 1, (Target(999), Life = 0))` fallback branch.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Checked Elecbyte official CNS `IfElse` / `Cond` special-form bottom docs. This slice stays scoped to bounded `IfElse(...)` returned-branch isolation in current expression/trigger evaluation.
+
+Evidence:
+- Focused unit gate: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts --testNamePattern "parent and root redirects"` -> 1 file / 1 test, 21 skipped.
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Target IfElse bottom"` -> 1 file / 1 test, 292 skipped.
+- Test gate: `pnpm test` -> 148 files / 1123 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite kept the existing chunk-size warning.
+- Trace gate: `pnpm qa:trace` -> 300/300 artifacts, 270 required and 30 optional; `synthetic-imported-target-ifelse-bottom.json` checksum `be7554d4`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with line-ending normalization warnings only.
+- Smoke gate: not run; no renderer, Studio UI, sprite, stage, or visual surface changed in this slice.
+
+Claim allowed:
+- Bounded current expression evaluation treats `IfElse(...)` as returned-branch-isolated for bottom values: unused missing-target redirects do not poison a selected valid branch, selected missing-target redirects fail closed, and a selected valid fallback can route after direct target memory exists.
+
+Claim blocked:
+- Cond-style lazy evaluation for `IfElse(...)`, recursive redirection, debug warning text, broad invalid-destination bottom parity outside the gated parser expressions, helper/projectile target selection breadth, teams/simul, target mutation through redirects, score movement, and full MUGEN/IKEMEN IfElse/bottom or redirect parity remain blocked.
+
+## 2026-07-03 - Target Cond bottom required trace gate
+
+Changed:
+- Added required `synthetic-imported-target-cond-bottom.json`.
+- Added lazy `Cond(...)` expression evaluation: the condition is evaluated first, then only the selected branch is evaluated with bottom preservation.
+- Added parser-internal bottom-preserving expression evaluation so `Cond(...)` can still fail closed when the condition or selected branch produces a missing redirect.
+- Extended the synthetic imported target fixture route with a selected-invalid `Cond(1, (Target(999), Life = 0), MoveHit >= 1)` forbidden branch and a skipped-invalid `Cond(0, (Target(999), Life = 0), MoveHit >= 1)` fallback branch.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Checked Elecbyte official CNS `IfElse` / `Cond` special-form bottom docs. This slice stays scoped to bounded `Cond(...)` branch isolation in current expression/trigger evaluation.
+
+Evidence:
+- Focused unit gate: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts --testNamePattern "parent and root redirects"` -> 1 file / 1 test, 21 skipped.
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Target Cond bottom"` -> 1 file / 1 test, 291 skipped.
+- Test gate: `pnpm test` -> 148 files / 1122 tests passed.
+- Type gate: `pnpm typecheck` -> passed.
+- Build gate: `pnpm build` -> passed; Vite kept the existing chunk-size warning.
+- Trace gate: `pnpm qa:trace` -> 299/299 artifacts, 269 required and 30 optional; `synthetic-imported-target-cond-bottom.json` checksum `e882a2bb`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Whitespace gate: `git diff --check` -> passed with line-ending normalization warnings only.
+- Smoke gate: not run; no renderer, Studio UI, sprite, stage, or visual surface changed in this slice.
+
+Claim allowed:
+- Bounded current expression evaluation treats `Cond(...)` as selected-branch-only evaluation: unused missing-target redirects are skipped, selected missing-target redirects fail closed, and a selected valid fallback can route after direct target memory exists.
+
+Claim blocked:
+- Recursive redirection, debug warning text, broad invalid-destination bottom parity outside the gated parser expressions, helper/projectile target selection breadth, teams/simul, target mutation through redirects, score movement, and full MUGEN/IKEMEN Cond/bottom or redirect parity remain blocked.
+
+## 2026-07-03 - Target invalid redirect bottom required trace gate
+
+Changed:
+- Added required `synthetic-imported-target-redirect-bottom.json`.
+- Updated `ExpressionEvaluator` so failed `Target` / `Parent` / `Root` / `EnemyNear` parser redirects propagate the bottom marker through `||`, `&&`, equality, and comparison operators instead of collapsing early to a truthy/falsy number.
+- Kept `IfElse(...)` bottom isolation for unused branches while propagating bottom through a failed condition or selected branch.
+- Extended the synthetic imported target fixture with a forbidden `Target(999)` composite branch and a valid fallback route. The required gate proves `(Target(999), Life = 0) || 1` does not route to forbidden state `396`, then falls through to state `397` after real direct `HitDef` contact.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Checked Elecbyte official CNS trigger redirection and bottom-value docs. This slice stays scoped to bounded invalid-destination redirect bottom propagation in current expression/trigger evaluation.
+
+Evidence:
+- Focused unit gate: `pnpm exec vitest run src/tests/RuntimeCnsSubset.test.ts --testNamePattern "parent and root redirects"` -> 1 file / 1 test, 21 skipped.
+- Focused trace gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Target redirect bottom"` -> 1 file / 1 test, 290 skipped.
+- Test suite: `pnpm test` -> 148 files / 1121 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 298/298 artifacts, 268 required and 30 optional; `synthetic-imported-target-redirect-bottom.json` checksum `5e50a90a`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded current expression evaluation treats missing redirected actors as bottom inside parenthesized composite expressions, including the required target-memory route where `Target(999)` cannot be rescued by `|| 1`.
+
+Claim blocked:
+- Recursive redirection, debug warning text, `Cond` isolation, broader invalid-destination bottom coverage outside the gated parser expressions, helper/projectile target selection breadth, teams/simul, target mutation through redirects, score movement, and full MUGEN/IKEMEN bottom or redirect parity remain blocked.
+
+## 2026-07-03 - Helper Parent/Root required trace gate
+
+Changed:
+- Added required `synthetic-imported-helper-parentroot.json`.
+- Extended the synthetic imported helper fixture builder with a helper-local `Parent` / `Root` redirect route that changes state from `1200` to `1400` / anim `940` only when `Parent,StateNo`, `Parent,Vel X`, and `Root,Anim` resolve from the cloned owner/root runtime state.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Updated roadmap, QA, fixture, support, progress, continuity, and scorecard docs to record the trace-gated claim.
+- Checked Elecbyte official CNS trigger-redirection docs and BindToParent/BindToRoot controller docs while keeping this cut scoped to read-only helper-local redirects.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper Parent/Root"` -> 1 file / 1 test, 289 skipped.
+- Test suite: `pnpm test` -> 148 files / 1120 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 297/297 artifacts, 267 required and 30 optional; `synthetic-imported-helper-parentroot.json` checksum `5154220c`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded first-generation visual Helpers can route helper-local CNS through read-only `Parent, ...` / `Root, ...` trigger/value redirects against cloned owner/root runtime state, now with required trace evidence.
+
+Claim blocked:
+- Invalid-destination `bottom` parity, nested helper ancestry where root differs from parent, indexed/team/helper-owned redirects beyond caller-provided `EnemyNear(index)` lists, redirect mutation, keyctrl, player-state parent/root ownership, helper-owned custom state tables, score movement, and full MUGEN/IKEMEN helper redirect parity remain blocked.
+
+## 2026-07-03 - Official air-recovery coverage contract hardening
+
+Changed:
+- Added `synthetic-imported-default-fall-official-air-recovery` to the `scripts/qa_traces.cjs` required artifact coverage contract.
+- Left the trace artifact, checksum, runtime behavior, and docs claim unchanged; this cut aligns the automatic coverage-summary gate with the already required artifact.
+
+Evidence:
+- Test suite: `pnpm test` -> 148 files / 1119 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 296/296 artifacts, 266 required and 30 optional; `synthetic-imported-default-fall-official-air-recovery.json` remains checksum `b0363be9`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- `pnpm qa:trace` must now fail if the existing required official-style synthetic air-recovery oracle disappears from required coverage summaries.
+
+Claim blocked:
+- No new recovery semantics, no exact `fall.recovertime` tables, no velocity-math parity, no public KFM proof, no score movement, and no full MUGEN/IKEMEN recovery parity are claimed.
+
+## 2026-07-03 - AssertSpecial NoGetUpFromLieDown required trace gate
+
+Changed:
+- Added required `synthetic-imported-assertspecial-nogetupfromliedown.json`.
+- Extended the default fall-recovery fixture builder so state `5110` can inject lie-down `AssertSpecial` flags and omit the authored `5110` get-up `ChangeState`, isolating the runtime hardcoded `5110 -> 5120` handoff.
+- Added a NoGetUpFromLieDown controller/typed-operation sequence requirement and trace artifact factory.
+- Required the artifact in `scripts/qa_traces.cjs` and the required coverage-summary contract.
+- Updated roadmap, QA, fixture, supported-feature, controller-registry, progress, continuity, and scorecard docs to record the trace-gated claim.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "NoGetUpFromLieDown"` -> 1 file / 1 test, 288 skipped.
+- Test suite: `pnpm test` -> 148 files / 1119 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 296/296 artifacts, 266 required and 30 optional; `synthetic-imported-assertspecial-nogetupfromliedown.json` checksum `4c3b6281`, final checksum `87533e25`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded synthetic IKEMEN `AssertSpecial NoGetUpFromLieDown` now executes as typed `assertspecial` evidence in state `5110`, counts `down.recovertime` to `0`, forbids hardcoded state `5120`, and leaves final P2 in `5110`.
+
+Claim blocked:
+- Exact input-mashing thresholds, public KFM proof, exact Common1 controller-loop tick order, global/team/helper ownership, pause/hitpause layering, score movement, and full MUGEN/IKEMEN recovery parity remain blocked.
+
+## 2026-07-03 - IKEMEN AssertSpecial NoGetUpFromLieDown focused cut
+
+Changed:
+- Added bounded runtime recognition for IKEMEN `AssertSpecial NoGetUpFromLieDown`.
+- `StateControllerExecutor` now maps normalized `nogetupfromliedown` flags onto `RuntimeAssertSpecial.noGetUpFromLieDown` while preserving typed `assertspecial` operation evidence.
+- `RuntimeRecoverySystem.advanceCommon1LieDownRecovery` now suppresses the hardcoded Common1 `5110 -> 5120` get-up transition while that flag is asserted.
+- At this promotion time, `NoFastRecoverFromLieDown` was left for a later slice; the 2026-07-04 section above supersedes that gap with bounded synthetic trace evidence.
+
+Evidence:
+- Focused gate: `pnpm exec vitest run src/tests/RuntimeRecoverySystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCnsSubset.test.ts --testNamePattern "NoGetUpFromLieDown|AssertSpecial flags|additional simple CNS"` -> 3 files / 3 tests, 66 skipped.
+- Test suite: `pnpm test` -> 148 files / 1118 tests.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 295/295 artifacts, 265 required and 30 optional.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched roadmap markdown.
+- No `pnpm qa:smoke` was required because this slice did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output.
+
+Claim allowed:
+- Bounded IKEMEN `AssertSpecial NoGetUpFromLieDown` can block the current hardcoded Common1 lie-down get-up handoff from state `5110` to `5120` while the flag is active.
+
+Claim blocked:
+- Exact input-mashing thresholds, exact Common1 controller-loop tick order, global/team/helper ownership, pause/hitpause layering, public KFM proof, score movement, and full MUGEN/IKEMEN recovery parity remain blocked.
+
 ## 2026-07-03 - Required synthetic air guard landing walk-control trace gate
 
 Changed:
@@ -9418,3 +11293,27 @@ These are future horizons, not blockers for the private usable MVP.
 305. Done RuntimeMatchActorRosterWorld ownership extraction cut: `RuntimeMatchActorRosterWorld` now owns bounded one-on-one match actor roster projection previously repeated inline in `PlayableMatchRuntime`: stable P1/P2 actor order, explicit id lookup, fail-closed opponent projection for actors outside the roster, effect-store owner ids, helper-owned `TargetState` actor lookup, imported compatibility-session actor lists, and effect-store summaries route through one named boundary. Focused coverage proves roster order, id lookup, unknown-actor rejection including same-id external objects, and match-runtime snapshot/effect compatibility preservation. Verification passed: `pnpm exec vitest run src/tests/RuntimeMatchActorRosterSystem.test.ts src/tests/PlayableMatchRuntime.test.ts` 2 files / 74 tests; `pnpm test` 142 files / 1095 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 282/282 artifacts with 257 required and 25 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: current P1/P2 match actor roster projection has a named, testable boundary without changing trace behavior. Claim blocked: real teams/simul roster ownership, helper-owned actor discovery, dynamic roster mutation, richer identity metadata, exact VM scheduling, visual/audio parity, score movement, and full actor-registry parity.
 
 306. Done bounded AssertSpecial TimerFreeze trace gate: `AssertSpecial TimerFreeze` now lowers into typed `assertspecial` operation evidence, `RuntimeAssertSpecial` exposes `timerFreeze`, and `RuntimeMatchRoundWorld` skips active round-timer ticks while any current P1/P2 actor asserts the flag through the match roster handoff. Required `synthetic-imported-assertspecial-timerfreeze.json` checksum `408528f1` proves an imported passive `TimerFreeze` route keeps a 61-frame fight timer at displayed timer `2` for 70 active frames with `state = fight`, `message = Fight`, `AssertSpecial` controller evidence, typed `assertspecial` operation evidence, and no `timeover` frame. Verification passed: focused Vitest 4 files / 343 tests; `pnpm test` 142 files / 1097 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 283/283 artifacts with 258 required and 25 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: current P1/P2 active match timer can be frozen by bounded imported `AssertSpecial TimerFreeze`. Claim blocked: exact global/team/helper ownership, pause-layer interaction, lifebar behavior, intro/round transition semantics, timer speed/display parity, score movement, and full MUGEN/IKEMEN timer parity.
+
+307. Done RuntimeControllerExpressionContextSystem ownership extraction: `RuntimeControllerExpressionContextSystem` now owns shared raw controller-number expression context construction for passive/runtime controller worlds. Dynamic fallback params in controller systems reuse one redirect-aware helper for `Target(...)`, `Parent`, `Root`, `Const`, `HitPauseTime`, `StageTime`, and `GetHitVar` reads instead of duplicating local evaluator setup. Focused `RuntimeControllerExpressionContextSystem` coverage proves redirect-aware numeric evaluation plus helper/team metadata forwarding. Verification passed: `pnpm exec vitest run src/tests/RuntimeControllerExpressionContextSystem.test.ts src/tests/RuntimeControllerEvaluationContextSystem.test.ts src/tests/KinematicControllerSystem.test.ts` 3 files / 10 tests, `pnpm test` 149 files / 1140 tests, `pnpm typecheck`, `pnpm build` with the existing Vite large-chunk warning, `pnpm qa:trace` 308/308 artifacts with 278 required and 30 optional, `pnpm check:boundaries`, and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: current passive/runtime controller numeric params have a named, testable expression-context boundary. Claim blocked: new expression language support, `ID`/player unique-id semantics, recursive redirection, broader helper/team/redirect scopes, exact CNS controller-loop timing, visual/audio parity, score movement, and full MUGEN/IKEMEN controller VM parity.
+
+308. Done helper-local controller-param Parent/Root required trace gate: `synthetic-imported-helper-controller-param-parentroot.json` checksum `9ad71f4e` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. The synthetic imported route spawns a first-generation visual Helper, executes helper-local dynamic `VelSet x = Parent,Life - 995` / `y = Root,StateNo - 203`, requires actor-frame velocity `5,-3`, and routes the helper to state/action `1401` / anim `941`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, actor-frame velocity evidence, and helper effect payload state. Verification passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper controller-param Parent/Root|Helper Parent/Root"` 1 file / 2 tests, 300 skipped; `pnpm test` 149 files / 1141 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 309/309 artifacts with 279 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded helper-local `VelSet` controller params can read current parent/root runtime state in this first-generation visual Helper route. Claim blocked: nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, dynamic-parameter typed lowering, recursive redirection, debug warning text, teams/simul, helper-owned controller breadth, visual/audio parity, score movement, and full helper/controller expression parity.
+
+309. Done AssertSpecial round-flow telemetry required trace gate: `synthetic-imported-assertspecial-round-flow-telemetry.json` checksum `10f95bdb` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte `AssertSpecial` docs were checked for `Intro` and `NoKOSlow`; the compiler lowers those static flags into typed `assertspecial` operation evidence, `StateControllerExecutor` maps normalized `nokoslow` into runtime `noKoSlow`, and the final imported actor requires `assertSpecialGlobalFlags` for `intro` and `nokoslow`. Focused coverage proves parser/compiler/runtime/trace-gate behavior. Verification passed: `pnpm test -- RuntimeAssertSpecialSystem RuntimeCompiler RuntimeCnsSubset RuntimeTraceGatePresets` ran the full suite and passed 149 files / 1143 tests; final `pnpm test` passed 149 files / 1143 tests; `pnpm typecheck`; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm qa:trace` passed 310/310 artifacts with 280 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` passed with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded parser/typed-op/runtime/final-actor telemetry for official `Intro` and `NoKOSlow` flags. Claim blocked: exact intro state ownership, KO slow-motion suppression, winpose/round transitions, helper/team/global ownership, pause/layer behavior, lifebar/screenpack behavior, visual/audio parity, score movement, and full MUGEN/IKEMEN round-flow parity.
+
+310. Done custom-state GetHitVar required trace gate: `synthetic-imported-custom-state-gethitvar.json` checksum `40705e74` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` hit-parameter reads while a player is in a get-hit state and `SelfState` returning a player from an opponent custom state to its own state data. The synthetic imported route uses direct `HitDef p2stateno = 888` with `p2getp1state = 1`, branches attacker-owned state `888 -> 890` through `GetHitVar(damage) = 37 && GetHitVar(hittime) > 0 && !GetHitVar(guarded)`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, and final actor return. Verification passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "custom-state GetHitVar"` 1 file / 1 test; `pnpm test` 150 files / 1146 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 311/311 artifacts with 281 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit `GetHitVar` metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+311. Done custom-state GetHitVar fall required trace gate: `synthetic-imported-custom-state-gethitvar-fall.json` checksum `2ccfeb43` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs remain the checked source for `GetHitVar(param_name)` hit-parameter reads while a player is in a get-hit state and `SelfState` returning a player from an opponent custom state to its own state data. The synthetic imported route uses direct fall `HitDef p2stateno = 888` with `p2getp1state = 1`, branches attacker-owned state `888 -> 891` through `GetHitVar(fall) && GetHitVar(fall.recover) = 1 && GetHitVar(fall.recovertime) > 0 && GetHitVar(fall.xvel) = 3 && GetHitVar(fall.yvel) = -6`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, and final actor return. Verification passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "custom-state GetHitVar fall"` 1 file / 1 test; `pnpm test` 150 files / 1147 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 312/312 artifacts with 282 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit fall metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, exact recovery threshold behavior, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+312. Done custom-state GetHitVar animtype required trace gate: `synthetic-imported-custom-state-gethitvar-animtype.json` checksum `bbe8777c` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` values including `animtype`, `groundtype`, and `airtype`, plus `SelfState` returning a player from an opponent custom state to its own state data. The synthetic imported route uses direct `HitDef p2stateno = 888` with `p2getp1state = 1`, stores `fall.animtype = Up`, `ground.type = Low`, and `air.type = Trip`, branches attacker-owned state `888 -> 892` through `GetHitVar(animtype) = 4 && GetHitVar(groundtype) = 2 && GetHitVar(airtype) = 3 && !GetHitVar(isbound)`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, and final actor return. Verification passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "custom-state GetHitVar animtype"` 1 file / 1 test; `pnpm test` 150 files / 1148 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 313/313 artifacts with 283 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit type metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: exact get-hit animation selection, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+313. Done custom-state GetHitVar down-recover required trace gate: `synthetic-imported-custom-state-gethitvar-down-recover.json` checksum `5bd94568` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` recovery values including `recovertime` plus fall recovery values, and for opponent custom-state return semantics through `SelfState`. The synthetic imported route uses direct fall `HitDef p2stateno = 888` with `p2getp1state = 1`, branches attacker-owned state `888 -> 893` through `GetHitVar(down.recover) = 1 && GetHitVar(down.recovertime) = 45 && GetHitVar(recovertime) = 45`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, and final actor return. Verification passed: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "custom-state GetHitVar down recover"` 1 file / 1 test; `pnpm test` 150 files / 1149 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 314/314 artifacts with 284 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit down-recovery metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: exact lie-down tables, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, exact recovery threshold behavior, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+314. Done custom-state GetHitVar velocity required trace gate: `synthetic-imported-custom-state-gethitvar-velocity.json` checksum `e9d8da9e` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` values including `xvel` / `yvel`, `HitDef` `ground.velocity`, and `p2getp1state` owner-state behavior when `p2stateno` is used. The synthetic imported route uses direct `HitDef p2stateno = 888` with `p2getp1state = 1` and `ground.velocity = 4,-2`, branches attacker-owned state `888 -> 894` through `GetHitVar(xvel) = 4 && GetHitVar(yvel) = -2 && !GetHitVar(fall) && !GetHitVar(guarded)`, preserves actor-frame `customOwnerId = p1`, observes impact velocity extrema in state `888`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, impact velocity extrema, and final actor return. Verification passed: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar velocity"` 1 file / 1 test; `pnpm test` 150 files / 1150 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 315/315 artifacts with 285 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit velocity metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: exact velocity lifetime after later physics/controllers, guard velocity metadata, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+315. Done custom-state GetHitVar guarded required trace gate: `synthetic-imported-custom-state-gethitvar-guarded.json` checksum `54f62821` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` values including `guarded`, `hitshaketime`, and `hittime`, for `TargetState` target-state routing, and for custom-state owner/return behavior through `p2stateno` / `p2getp1state` and `SelfState`. The synthetic imported route uses guarded direct `HitDef` target memory, typed owner-local `TargetState`, and attacker-owned custom state data; P2 branches `888 -> 895` through `GetHitVar(guarded) = 1 && GetHitVar(hitshaketime) > 0 && GetHitVar(hittime) > 0`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeTraceGatePresets` coverage proves artifact status, guard event/combat reason, target link `p1 -> p2` id `77`, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` and `target:targetstate` evidence, and final actor return. Verification passed: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar guarded"` 1 file / 1 test with 308 skipped; `pnpm test` 150 files / 1151 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 316/316 artifacts with 286 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded guarded direct-HitDef target memory can feed owner-local `TargetState`, preserve guarded hit metadata while P2 executes attacker-owned custom state data, and return through `SelfState`. Claim blocked: `p2stateno`-on-guard behavior, exact guard timing, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+316. Done custom-state GetHitVar isbound required trace gate: `synthetic-imported-custom-state-gethitvar-isbound.json` checksum `d25307e9` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` `isbound` semantics as subject of an attacker's `TargetBind`, and for `TargetBind` / `TargetState` target-state routing. `TargetSystem` now marks target `hitVars.isBound` when `TargetBind` applies, clears stale bound metadata when active target bindings no longer match live target memory, and clears dropped target subjects after `TargetDrop`. The synthetic imported route uses direct `HitDef` target memory, `TargetBind` before typed owner-local `TargetState`, and attacker-owned custom state data; P2 branches `888 -> 896` through `GetHitVar(isbound) = 1 && GetHitVar(hittime) > 0 && !GetHitVar(guarded)`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `TargetSystem` coverage proves immediate `TargetBind` marking, `TargetDrop` clearing, and active binding refresh/clear behavior; focused `RuntimeTraceGatePresets` coverage proves artifact status, hit event/combat reason, target link `p1 -> p2` id `77`, required controller/actor-frame sequences, executed states/controllers/typed `hitdef`, `target:targetbind`, and `target:targetstate` evidence, and final actor return. Verification passed: `pnpm vitest run src/tests/TargetSystem.test.ts` 1 file / 20 tests; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t isbound` 1 file / 1 test with 309 skipped; `pnpm test` 150 files / 1152 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 317/317 artifacts with 287 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-HitDef target memory can feed `TargetBind`, preserve bound-subject metadata while P2 executes attacker-owned custom state data, and return through `SelfState`. Claim blocked: throws, exact bind tick-order/lifetime, visual bind parity, helper/root/parent redirects, teams/simul, `p2stateno`-on-guard behavior, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+317. Done custom-state GetHitVar type required trace gate: `synthetic-imported-custom-state-gethitvar-type.json` checksum `38542874` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` values including `type`, `groundtype`, and `airtype`, and for HitDef hit-type metadata. `RuntimeHitVarSystem` now exposes bounded `GetHitVar(type)` from stored direct-hit ground type metadata, and controller-param/shared expression coverage proves the read path. The synthetic imported route uses direct `HitDef p2stateno = 888` with `p2getp1state = 1`, stores `ground.type = Low` and `air.type = Trip`, branches attacker-owned state `888 -> 897` through `GetHitVar(type) = 2 && GetHitVar(groundtype) = 2 && GetHitVar(airtype) = 3 && !GetHitVar(guarded)`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused `RuntimeExpressionContextSystem` and `RuntimeCnsSubset` coverage proves direct and controller-param `GetHitVar(type)` reads; focused `RuntimeTraceGatePresets` coverage proves artifact status, required controller/actor-frame sequences, executed states/controllers/typed `hitdef` evidence, and final actor return. Verification passed: `pnpm vitest run src/tests/RuntimeExpressionContextSystem.test.ts -t "HitVar helpers"` 1 file / 1 test with 9 skipped; `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts -t "runtime hit variables"` 1 file / 1 test with 21 skipped; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state GetHitVar type"` 1 file / 1 test with 310 skipped; `pnpm test` 150 files / 1153 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` 318/318 artifacts with 288 required and 30 optional; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit type metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: exact get-hit animation selection, air-hit arbitration, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.
+
+318. Done custom-state GetHitVar yaccel required trace gate: `synthetic-imported-custom-state-gethitvar-yaccel.json` checksum `549fe48d` is now a required `pnpm qa:trace` artifact and required coverage-summary entry. Official Elecbyte docs were checked for `GetHitVar(param_name)` `yaccel` as the y acceleration set by the hit, and for HitDef `yaccel` as the source parameter. `RuntimeGetHitVars` now carries bounded `yAccel`; compiled and raw/imported HitDef paths preserve `yaccel`; direct combat copies it into defender hit vars; and `RuntimeHitVarSystem` reads it before the existing `0.44` fallback. The synthetic imported route uses direct `HitDef p2stateno = 888` with `p2getp1state = 1`, stores `yaccel = 0.62`, branches attacker-owned state `888 -> 898` through `GetHitVar(yaccel) = .62 && GetHitVar(hittime) > 0 && !GetHitVar(guarded)`, preserves actor-frame `customOwnerId = p1`, and returns P2 to state `0`/control through `SelfState`. Focused coverage proves direct/shared expression reads, controller-param reads, compiler typed `yAccel`, direct-combat hit-var propagation, and artifact status/controller/actor-frame/final-return evidence. Verification passed: `pnpm vitest run src/tests/RuntimeExpressionContextSystem.test.ts src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/DirectCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "HitVar helpers|runtime hit variables|HitDef get-hit anim and type metadata|applies bounded hit results|custom-state GetHitVar yaccel"` 5 files / 5 tests with 384 skipped; `pnpm qa:trace` 319/319 artifacts with 289 required and 30 optional; `pnpm test` 150 files / 1154 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm check:boundaries`; and `git diff --check` with CRLF-normalization warnings only. No `pnpm qa:smoke` was run because this cut did not touch frontend, renderer, Studio UI, sprites, CSS, stage presentation, or visible gameplay output. Claim allowed: bounded direct-hit yaccel metadata can be read while P2 is executing attacker-owned custom state data and then return through `SelfState`. Claim blocked: exact physics integration, fall acceleration arbitration, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN custom-state parity.

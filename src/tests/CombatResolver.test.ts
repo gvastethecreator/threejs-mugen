@@ -83,6 +83,32 @@ describe("CombatResolver", () => {
     expect(findRuntimeHitOverride(defender, "S,SA")).toBeUndefined();
   });
 
+  it("chooses the lowest matching HitOverride slot even when storage order is unsorted", () => {
+    const defender = actor({
+      hitOverrides: [
+        { slot: 5, attr: "S,NA", stateNo: 779, remaining: 12 },
+        { slot: 2, attr: "S,NA", stateNo: 778, remaining: 12 },
+        { slot: 1, attr: "A,NA", stateNo: 777, remaining: 12 },
+      ],
+    });
+
+    expect(findRuntimeHitOverride(defender, "S,NA")).toMatchObject({ slot: 2, stateNo: 778 });
+  });
+
+  it("filters HitOverride slots by incoming HitDef guard flags before slot priority", () => {
+    const defender = actor({
+      hitOverrides: [
+        { slot: 1, attr: "S,NA", stateNo: 776, remaining: 12, guardFlagNot: "HA" },
+        { slot: 2, attr: "S,NA", stateNo: 778, remaining: 12, guardFlag: "A" },
+        { slot: 5, attr: "S,NA", stateNo: 779, remaining: 12, guardFlag: "H" },
+      ],
+    });
+
+    expect(findRuntimeHitOverride(defender, "S,NA", "H")).toMatchObject({ slot: 5, stateNo: 779 });
+    expect(findRuntimeHitOverride(defender, "S,NA", "A")).toMatchObject({ slot: 2, stateNo: 778 });
+    expect(findRuntimeHitOverride(defender, "S,NA", "L")).toMatchObject({ slot: 1, stateNo: 776 });
+  });
+
   it("resolves scaled hit and guard results", () => {
     const attacker = actor({ attackMultiplier: 1.5 });
     const defender = actor({ defenseMultiplier: 0.5, stateType: "S", moveType: "I" });

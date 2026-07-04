@@ -171,6 +171,7 @@ export class RuntimeDirectCombatWorld {
       hitTime: result.stun,
     });
     defender.runtime.hitFall = runtimeHitFallFromMove(move, attacker.runtime.facing);
+    applyHitSnap(attacker, defender, move);
     if (result.hitVelocityY !== undefined) {
       defender.runtime.vel.y = result.hitVelocityY;
     }
@@ -208,14 +209,39 @@ function runtimeGetHitVarsFromMove(
 ): CharacterRuntimeState["hitVars"] {
   return {
     damage: Math.max(0, Math.round(timing.damage)),
+    kill: timing.guarded ? (move.guardKill ?? true) : (move.kill ?? true),
+    ...(move.hitVars?.hitId !== undefined ? { hitId: move.hitVars.hitId } : {}),
+    ...(move.hitVars?.chainId !== undefined ? { chainId: move.hitVars.chainId } : {}),
+    ...(move.hitVars?.hitCount !== undefined ? { hitCount: move.hitVars.hitCount } : {}),
+    ...(move.hitVars?.hitOffset !== undefined
+      ? {
+          hitOffset: {
+            x: move.hitVars.hitOffset.x,
+            ...(move.hitVars.hitOffset.y !== undefined ? { y: move.hitVars.hitOffset.y } : {}),
+            ...(move.hitVars.hitOffset.z !== undefined ? { z: move.hitVars.hitOffset.z } : {}),
+          },
+        }
+      : {}),
     animType: move.hitVars?.animType ?? 0,
     groundType: move.hitVars?.groundType ?? 1,
     airType: move.hitVars?.airType ?? move.hitVars?.groundType ?? 1,
     isBound: false,
     hitShakeTime: timing.hitShakeTime,
     hitTime: timing.hitTime,
+    ...(move.hitVars?.yAccel !== undefined ? { yAccel: move.hitVars.yAccel } : {}),
     ...(timing.guarded ? { guarded: true } : {}),
   };
+}
+
+function applyHitSnap<TActor extends RuntimeDirectCombatActor>(attacker: TActor, defender: TActor, move: DemoMove): void {
+  const snap = move.hitVars?.hitOffset;
+  if (!snap) {
+    return;
+  }
+  defender.runtime.pos.x = attacker.runtime.pos.x + attacker.runtime.facing * snap.x;
+  if (snap.y !== undefined) {
+    defender.runtime.pos.y = attacker.runtime.pos.y + snap.y;
+  }
 }
 
 function runtimeHitFallFromMove(move: DemoMove, attackerFacing: 1 | -1): CharacterRuntimeState["hitFall"] | undefined {

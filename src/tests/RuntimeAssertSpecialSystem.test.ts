@@ -107,6 +107,37 @@ flag = NoWalk
     });
   });
 
+  it("normalizes official round-flow telemetry flags", () => {
+    const actor = actorWithProgram("imported", `
+[Statedef 0]
+type = S
+movetype = I
+physics = S
+anim = 0
+
+[State 0, Round Flow Flags]
+type = AssertSpecial
+trigger1 = 1
+flag = Intro
+flag2 = NoKOSlow
+`);
+
+    const result = new RuntimeAssertSpecialWorld().applyPreFacing({
+      actor,
+      opponent: actorWithProgram("demo", ""),
+      tick: 2,
+      triggersPass: () => true,
+      executeController: (controller, target) => executeControllerIr(controller, target.runtime, () => undefined),
+    });
+
+    expect(result).toEqual({ applied: 1, skipped: false });
+    expect(actor.runtime.assertSpecial).toMatchObject({
+      globalFlags: ["intro", "nokoslow"],
+      intro: true,
+      noKoSlow: true,
+    });
+  });
+
   it("filters non-AssertSpecial controllers and respects trigger failure", () => {
     const actor = actorWithProgram("imported", `
 [Statedef 0]

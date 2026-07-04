@@ -85,6 +85,9 @@ export type RuntimeMatchSnapshotInput = {
 
 export class RuntimeSnapshotWorld {
   match(input: RuntimeMatchSnapshotInput): MugenSnapshot {
+    const actors = [this.actor(input.p1), this.actor(input.p2)];
+    const effects = this.effects(input.effects);
+    const globalNoShadow = [...actors, ...effects].some(hasRuntimeGlobalNoShadow);
     return {
       tick: input.tick,
       selectedActionId: input.p1.runtime.animNo,
@@ -95,8 +98,8 @@ export class RuntimeSnapshotWorld {
       matchPause: input.matchPause,
       stage: this.stage(input.stage),
       round: input.round,
-      actors: [this.actor(input.p1), this.actor(input.p2)],
-      effects: this.effects(input.effects),
+      actors: actors.map((actor) => applyShadowVisibility(actor, globalNoShadow)),
+      effects: effects.map((effect) => applyShadowVisibility(effect, globalNoShadow)),
       compatibilitySession: input.compatibilitySession,
       logs: input.logs.slice(0, 80),
     };
@@ -199,4 +202,26 @@ function spriteOwnerSnapshot(actor: RuntimePlayerSnapshotActor): {
     spriteOwnerDefinitionId: owner.definition.id,
     spriteOwnerLabel: owner.label,
   };
+}
+
+function applyShadowVisibility(actor: ActorSnapshot, globalNoShadow: boolean): ActorSnapshot {
+  if (!supportsRuntimeShadow(actor)) {
+    return actor;
+  }
+  if (globalNoShadow || hasRuntimeLocalNoShadow(actor) || actor.shadowVisible === false) {
+    return { ...actor, shadowVisible: false };
+  }
+  return actor;
+}
+
+function supportsRuntimeShadow(actor: ActorSnapshot): boolean {
+  return actor.actorKind === "player" || actor.actorKind === "helper" || actor.actorKind === "explod";
+}
+
+function hasRuntimeLocalNoShadow(actor: ActorSnapshot): boolean {
+  return actor.runtime.assertSpecial?.flags.includes("noshadow") === true;
+}
+
+function hasRuntimeGlobalNoShadow(actor: ActorSnapshot): boolean {
+  return actor.runtime.assertSpecial?.globalFlags.includes("globalnoshadow") === true;
 }

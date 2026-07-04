@@ -17,6 +17,33 @@ export function runtimeHitVar(
   if (key === "damage") {
     return state.hitVars?.damage ?? 0;
   }
+  if (key === "kill") {
+    return state.hitVars?.kill ? 1 : 0;
+  }
+  if (key === "hitid") {
+    return state.hitVars?.hitId ?? 0;
+  }
+  if (key === "chainid") {
+    return state.hitVars?.chainId ?? -1;
+  }
+  if (key === "hitcount") {
+    return state.hitVars?.hitCount ?? 0;
+  }
+  if (key === "fallcount") {
+    return state.hitFall?.fallCount ?? 0;
+  }
+  if (key === "xoff") {
+    return state.hitVars?.hitOffset?.x ?? 0;
+  }
+  if (key === "yoff") {
+    return state.hitVars?.hitOffset?.y ?? 0;
+  }
+  if (key === "zoff") {
+    return state.hitVars?.hitOffset?.z ?? 0;
+  }
+  if (key === "type") {
+    return state.hitVars?.groundType ?? 0;
+  }
   if (key === "groundtype") {
     return state.hitVars?.groundType ?? 0;
   }
@@ -90,7 +117,7 @@ export function runtimeHitVar(
     return state.guardControlTime ?? 0;
   }
   if (key === "yaccel") {
-    return 0.44;
+    return state.hitVars?.yAccel ?? 0.44;
   }
   return undefined;
 }

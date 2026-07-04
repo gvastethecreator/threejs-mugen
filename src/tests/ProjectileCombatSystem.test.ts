@@ -98,6 +98,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.guarding).toBe(true);
     expect(defender.runtime.hitVars).toEqual({
       damage: 4,
+      kill: true,
       animType: 0,
       groundType: 1,
       airType: 1,
@@ -109,6 +110,34 @@ describe("ProjectileCombatSystem", () => {
     expect(attacker.runtime.power).toBe(3000);
     expect(effects).toEqual(["p1:p2:projectile-0:guard"]);
     expect(logs).toEqual(["P2 guarded P1 projectile for 4; hits remaining 0, miss 0; hit removal anim none"]);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("routes projectile guard.kill into bounded guard damage and hit vars", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, guardDamage: 11, guardKill: false })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 8 }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: true,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1);
+    expect(defender.runtime.hitVars).toMatchObject({
+      damage: 11,
+      kill: false,
+      guarded: true,
+    });
     expect(projectiles).toEqual([]);
   });
 
@@ -169,6 +198,120 @@ describe("ProjectileCombatSystem", () => {
     expect(marked).toEqual(["p2"]);
     expect(defender.runtime.moveType).toBe("H");
     expect(projectiles[0]).toMatchObject({ hasHit: true, hitsRemaining: 0 });
+  });
+
+  it("lets Projectile p2stateno route through HitOverride instead of custom-state miss", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, p2StateNo: 889, p2GetP1State: false })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      hitOverrides: [{ slot: 1, attr: "S,SP", stateNo: 777, remaining: 30 }],
+    }));
+    const logs: string[] = [];
+    const transitions: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: (_attacker, target, targetId) => transitions.push(`target:${target.id}:${targetId ?? "none"}`),
+      applyHitOverride: (_source, target, override, _hitPause, logger) => {
+        transitions.push(`override:${target.id}:${override.stateNo}`);
+        target.runtime.stateNo = override.stateNo ?? target.runtime.stateNo;
+        logger(`override:${override.slot}:${override.stateNo}`);
+      },
+      applyHitState: (_source, target, entry) => {
+        transitions.push(`custom:${target.id}:${entry.p2StateNo ?? "none"}`);
+      },
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(transitions).toEqual(["target:p2:77", "override:p2:777"]);
+    expect(defender.runtime.stateNo).toBe(777);
+    expect(defender.runtime.life).toBe(1000);
+    expect(logs).toEqual(["override:1:777"]);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("filters Projectile HitOverride slots by incoming guard flags before slot priority", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, guardFlag: "H" })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      hitOverrides: [
+        { slot: 1, attr: "S,SP", stateNo: 776, remaining: 30, guardFlagNot: "HA" },
+        { slot: 2, attr: "S,SP", stateNo: 778, remaining: 30, guardFlag: "A" },
+        { slot: 5, attr: "S,SP", stateNo: 779, remaining: 30, guardFlag: "H" },
+      ],
+    }));
+    const transitions: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: () => undefined,
+      rememberTarget: (_attacker, target, targetId) => transitions.push(`target:${target.id}:${targetId ?? "none"}`),
+      applyHitOverride: (_source, target, override) => {
+        transitions.push(`override:${target.id}:${override.stateNo}:${override.slot}`);
+        target.runtime.stateNo = override.stateNo ?? target.runtime.stateNo;
+      },
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(transitions).toEqual(["target:p2:77", "override:p2:779:5"]);
+    expect(defender.runtime.stateNo).toBe(779);
+    expect(defender.runtime.life).toBe(1000);
+    expect(projectiles).toEqual([]);
+  });
+
+  it("lets explicit Projectile missonoverride one reject before HitOverride target memory", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, missOnOverride: true })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      hitOverrides: [{ slot: 1, attr: "S,SP", stateNo: 777, remaining: 30 }],
+    }));
+    const logs: string[] = [];
+    const transitions: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      log: (line) => logs.push(line),
+      rememberTarget: (_attacker, target, targetId) => transitions.push(`target:${target.id}:${targetId ?? "none"}`),
+      applyHitOverride: () => {
+        throw new Error("unexpected hit override");
+      },
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(transitions).toEqual([]);
+    expect(defender.runtime.stateNo).toBe(0);
+    expect(defender.runtime.life).toBe(1000);
+    expect(logs).toEqual(["P2 rejected P1 projectile S,SP because missonoverride = 1 forces active override miss"]);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+    expect(projectiles[0]?.removalReason).toBeUndefined();
   });
 
   it("keeps the higher-priority projectile active while removing the lower-priority clash loser", () => {
@@ -302,12 +445,14 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     missTimeRemaining: 0,
     opacity: 1,
     damage: 31,
+    kill: true,
     attr: "S,SP",
     targetId: 77,
     hitPause: 4,
     hitStun: 13,
     push: 5,
     guardDamage: 4,
+    guardKill: true,
     guardDistance: 120,
     guardFlag: "MA",
     guardPause: 3,

@@ -307,10 +307,37 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
   const fallAnimType = hitAnimType(params["fall.animtype"]);
   const groundType = hitType(params["ground.type"] ?? params.type);
   const airType = hitType(params["air.type"]);
-  if (animType === undefined && fallAnimType === undefined && groundType === undefined && airType === undefined) {
+  const yAccel = firstNumber(params.yaccel);
+  const hitId = firstNumber(params.id);
+  const chainId = firstNumber(params.chainid);
+  const hitCount = firstNumber(params.numhits);
+  const snap = numberPair(params.snap);
+  if (
+    animType === undefined &&
+    fallAnimType === undefined &&
+    groundType === undefined &&
+    airType === undefined &&
+    yAccel === undefined &&
+    hitId === undefined &&
+    chainId === undefined &&
+    hitCount === undefined &&
+    snap === undefined
+  ) {
     return undefined;
   }
   const hitVars: NonNullable<DemoMove["hitVars"]> = {};
+  if (hitId !== undefined) {
+    hitVars.hitId = hitId;
+  }
+  if (chainId !== undefined) {
+    hitVars.chainId = chainId;
+  }
+  if (hitCount !== undefined) {
+    hitVars.hitCount = Math.max(0, Math.trunc(hitCount));
+  }
+  if (snap !== undefined) {
+    hitVars.hitOffset = { x: snap[0], ...(snap[1] !== undefined ? { y: snap[1] } : {}) };
+  }
   const resolvedAnimType = fallAnimType ?? animType;
   if (resolvedAnimType !== undefined) {
     hitVars.animType = resolvedAnimType;
@@ -320,6 +347,9 @@ function buildHitVars(params: Record<string, string>): DemoMove["hitVars"] | und
   }
   if (airType !== undefined) {
     hitVars.airType = airType;
+  }
+  if (yAccel !== undefined) {
+    hitVars.yAccel = yAccel;
   }
   return hitVars;
 }

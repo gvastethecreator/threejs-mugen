@@ -129,6 +129,33 @@ describe("RuntimeHitFallControllerWorld", () => {
     expect(state.life).toBe(1);
     expect(state.hitFall?.damage).toBe(0);
   });
+
+  it("counts Common1 ground impact once even when fall damage is already spent", () => {
+    const world = new RuntimeHitFallControllerWorld();
+    const state = runtime({
+      stateNo: 5100,
+      moveType: "H",
+      hitFall: {
+        falling: true,
+        damage: 0,
+        velocity: { y: -4 },
+      },
+    });
+
+    expect(world.applyController(state, controller("HitFallDamage"))).toEqual({
+      applied: true,
+      controllerType: "hitfalldamage",
+    });
+    expect(world.applyController(state, controller("HitFallDamage"))).toEqual({
+      applied: false,
+      controllerType: "hitfalldamage",
+    });
+    expect(state.life).toBe(1000);
+    expect(state.hitFall).toMatchObject({
+      fallCount: 1,
+      fallCountedGroundImpact: true,
+    });
+  });
 });
 
 function controller(type: string, params: Record<string, string> = {}): RuntimeHitFallControllerSource {

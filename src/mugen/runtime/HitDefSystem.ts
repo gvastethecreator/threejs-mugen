@@ -94,9 +94,18 @@ export class RuntimeHitDefControllerDispatchWorld {
       hitAnimType(findParam(source, "animtype")) ??
       existing?.hitVars?.animType ??
       0;
+    const yAccel = operation?.yAccel ?? firstNumber(findParam(source, "yaccel")) ?? existing?.hitVars?.yAccel;
+    const targetId = operation?.id ?? firstNumber(findParam(source, "id")) ?? existing?.targetId ?? 0;
+    const chainId = operation?.chainId ?? firstNumber(findParam(source, "chainid")) ?? existing?.hitVars?.chainId;
+    const hitCount = operation?.hitCount ?? firstNumber(findParam(source, "numhits")) ?? existing?.hitVars?.hitCount ?? 1;
+    const existingSnap = existing?.hitVars?.hitOffset
+      ? ([existing.hitVars.hitOffset.x, existing.hitVars.hitOffset.y] as [number, number?])
+      : undefined;
+    const snap = operation?.snap ?? numberPair(findParam(source, "snap")) ?? existingSnap;
     const p1StateNo = operation?.p1StateNo ?? firstNumber(findParam(source, "p1stateno"));
     const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno"));
     const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(source, "p2getp1state")) ?? 1) !== 0 : false);
+    const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
 
     actor.currentMove = {
@@ -110,12 +119,21 @@ export class RuntimeHitDefControllerDispatchWorld {
       priority,
       requiresHitDef: false,
       attr: operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA",
-      targetId: operation?.id ?? firstNumber(findParam(source, "id")) ?? existing?.targetId ?? 0,
+      targetId,
       hitPause,
       hitStun,
       push,
       hitVelocityY: groundVelocity?.[1] ?? existing?.hitVelocityY,
-      hitVars: { animType, groundType, airType },
+      hitVars: {
+        hitId: targetId,
+        ...(chainId !== undefined ? { chainId } : {}),
+        hitCount,
+        ...(snap ? { hitOffset: { x: snap[0], ...(snap[1] !== undefined ? { y: snap[1] } : {}) } } : {}),
+        animType,
+        groundType,
+        airType,
+        ...(yAccel !== undefined ? { yAccel } : {}),
+      },
       guardDistance,
       guardFlag: operation?.guardFlag ?? stripMugenString(findParam(source, "guardflag")) ?? existing?.guardFlag ?? "MA",
       guardDamage,
@@ -134,6 +152,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       p1StateNo,
       p2StateNo,
       p2GetP1State,
+      missOnOverride,
       fall: buildMoveFallData(source, existing, operation),
       hitbox: cloneBox(frame?.clsn1[0] ?? fallbackHitbox),
     };

@@ -13,10 +13,11 @@ import type {
   VariableControllerOp,
 } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
-import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStateController } from "../model/MugenState";
-import { evaluateExpression } from "./ExpressionEvaluator";
-import { runtimeHitVar } from "./RuntimeHitVarSystem";
+import {
+  evaluateRuntimeControllerNumber,
+  type RuntimeControllerEvaluationContext,
+} from "./RuntimeControllerExpressionContextSystem";
 import {
   applyRuntimeLifeAdd,
   applyRuntimeResourceController,
@@ -37,6 +38,8 @@ import { RuntimeAnimationControllerWorld } from "./AnimationControllerSystem";
 import { RuntimeStateTransitionControllerWorld } from "./StateTransitionControllerSystem";
 import type { CharacterRuntimeState, RuntimeAssertSpecial } from "./types";
 
+export type { RuntimeControllerEvaluationContext } from "./RuntimeControllerExpressionContextSystem";
+
 type ControllerExecutionSource = Pick<ControllerIr, "type" | "normalizedType" | "params">;
 
 const hitDefenseWorld = new RuntimeHitDefenseWorld();
@@ -47,15 +50,6 @@ const boundsControllerWorld = new RuntimeBoundsControllerWorld();
 const kinematicControllerWorld = new RuntimeKinematicControllerWorld();
 const animationControllerWorld = new RuntimeAnimationControllerWorld();
 const stateTransitionControllerWorld = new RuntimeStateTransitionControllerWorld();
-
-export type RuntimeControllerEvaluationContext = {
-  getConst?: (name: string) => number | undefined;
-  getAnimation?: (animNo: number, source: NonNullable<CharacterRuntimeState["animationSource"]>) => MugenAnimationAction | undefined;
-  hitPauseTime?: () => number;
-  random?: () => number;
-  stageBounds?: { left: number; right: number };
-  stageTime?: number;
-};
 
 export function executeStateController(
   controller: MugenStateController,
@@ -342,7 +336,7 @@ function numberParam(
     if (raw === undefined) {
       continue;
     }
-    return evaluateNumber(raw.split(",")[0]?.trim(), state, context);
+    return evaluateNumber(raw.trim(), state, context);
   }
   return undefined;
 }
@@ -511,9 +505,12 @@ function applyAssertSpecialController(
     if (flag.name === "noairguard") current.noAirGuard = true;
     if (flag.name === "unguardable") current.unguardable = true;
     if (flag.name === "noko" || flag.name === "globalnoko") current.noKo = true;
+    if (flag.name === "nokoslow") current.noKoSlow = true;
     if (flag.name === "timerfreeze") current.timerFreeze = true;
     if (flag.name === "roundnotover") current.roundNotOver = true;
     if (flag.name === "intro") current.intro = true;
+    if (flag.name === "nogetupfromliedown") current.noGetUpFromLieDown = true;
+    if (flag.name === "nofastrecoverfromliedown") current.noFastRecoverFromLieDown = true;
   }
   state.assertSpecial = current.flags.length > 0 || current.globalFlags.length > 0 ? current : undefined;
   if (state.assertSpecial?.invisible) {
@@ -562,7 +559,7 @@ function variableAssignmentParam(
     if (!match) {
       continue;
     }
-    const value = evaluateNumber(rawValue.split(",")[0]?.trim(), state, context);
+    const value = evaluateNumber(rawValue.trim(), state, context);
     if (value === undefined) {
       continue;
     }
@@ -580,22 +577,5 @@ function evaluateNumber(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): number | undefined {
-  if (!raw) {
-    return undefined;
-  }
-  const direct = Number(raw);
-  if (Number.isFinite(direct)) {
-    return direct;
-  }
-  const evaluated = evaluateExpression(raw, {
-    self: state,
-    getConst: context.getConst,
-    getHitVar: (name) => runtimeHitVar(state, name),
-    hitPauseTime: context.hitPauseTime,
-    random: context.random,
-    stageBounds: context.stageBounds,
-    stageTime: context.stageTime,
-  });
-  const value = Number(evaluated);
-  return Number.isFinite(value) ? value : undefined;
+  return evaluateRuntimeControllerNumber(raw, state, context);
 }

@@ -132,6 +132,11 @@ function evaluateExpressionFragment(expression: string, context: ExpressionConte
   return parser.parse();
 }
 
+function evaluateExpressionFragmentPreservingBottom(expression: string, context: ExpressionContext): ExpressionValue {
+  const parser = new ExpressionParser(tokenize(normalizeMugenExpression(expression)), context);
+  return parser.parsePreservingBottom();
+}
+
 function currentAnimElemTime(context: ExpressionContext, elementNumber: number): number {
   return context.animElemTime?.(elementNumber) ?? (context.self.frameIndex + 1 === elementNumber ? 0 : -1);
 }
@@ -235,17 +240,22 @@ class ExpressionParser {
   ) {}
 
   parse(): ExpressionValue {
+    const value = this.parsePreservingBottom();
+    return isFailedRedirect(value) ? 0 : value;
+  }
+
+  parsePreservingBottom(): ExpressionValue {
     if (this.tokens.length === 0) {
       return false;
     }
-    const value = this.parseOr();
-    return isFailedRedirect(value) ? 0 : value;
+    return this.parseOr();
   }
 
   private parseOr(): ExpressionValue {
     let left = this.parseAnd();
     while (this.matchOperator("||")) {
-      left = truthy(left) || truthy(this.parseAnd()) ? 1 : 0;
+      const right = this.parseAnd();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) || truthy(right) ? 1 : 0;
     }
     return left;
   }
@@ -253,7 +263,8 @@ class ExpressionParser {
   private parseAnd(): ExpressionValue {
     let left = this.parseEquality();
     while (this.matchOperator("&&")) {
-      left = truthy(left) && truthy(this.parseEquality()) ? 1 : 0;
+      const right = this.parseEquality();
+      left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : truthy(left) && truthy(right) ? 1 : 0;
     }
     return left;
   }
@@ -271,9 +282,9 @@ class ExpressionParser {
     }
   }
 
-  private compareEquality(left: ExpressionValue, right: ExpressionValue, negated: boolean): number {
+  private compareEquality(left: ExpressionValue, right: ExpressionValue, negated: boolean): ExpressionValue {
     if (isFailedRedirect(left) || isFailedRedirect(right)) {
-      return 0;
+      return failedRedirectMarker;
     }
     if (left === commandIdentifierMarker) {
       const active = typeof right === "string" && this.context.commandActive?.(right) ? 1 : 0;
@@ -292,16 +303,16 @@ class ExpressionParser {
     while (true) {
       if (this.matchOperator("<=")) {
         const right = this.parseTerm();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) <= 0 ? 1 : 0;
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : compareValues(left, right) <= 0 ? 1 : 0;
       } else if (this.matchOperator(">=")) {
         const right = this.parseTerm();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) >= 0 ? 1 : 0;
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : compareValues(left, right) >= 0 ? 1 : 0;
       } else if (this.matchOperator("<")) {
         const right = this.parseTerm();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) < 0 ? 1 : 0;
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : compareValues(left, right) < 0 ? 1 : 0;
       } else if (this.matchOperator(">")) {
         const right = this.parseTerm();
-        left = isFailedRedirect(left) || isFailedRedirect(right) ? 0 : compareValues(left, right) > 0 ? 1 : 0;
+        left = isFailedRedirect(left) || isFailedRedirect(right) ? failedRedirectMarker : compareValues(left, right) > 0 ? 1 : 0;
       } else {
         return left;
       }
@@ -731,7 +742,20 @@ class ExpressionParser {
       return this.context.getHitVar?.(String(args[0] ?? "")) ?? defaultHitVar(String(args[0] ?? ""));
     }
     if (lower === "ifelse") {
-      return truthy(args[0] ?? 0) ? args[1] ?? 0 : args[2] ?? 0;
+      if (isFailedRedirect(args[0] ?? 0)) {
+        return failedRedirectMarker;
+      }
+      const selected = truthy(args[0] ?? 0) ? args[1] ?? 0 : args[2] ?? 0;
+      return isFailedRedirect(selected) ? failedRedirectMarker : selected;
+    }
+    if (lower === "cond") {
+      const condition = evaluateExpressionFragmentPreservingBottom(String(args[0] ?? "0"), this.context);
+      if (isFailedRedirect(condition)) {
+        return failedRedirectMarker;
+      }
+      const selectedExpression = truthy(condition) ? String(args[1] ?? "0") : String(args[2] ?? "0");
+      const selected = evaluateExpressionFragmentPreservingBottom(selectedExpression, this.context);
+      return isFailedRedirect(selected) ? failedRedirectMarker : selected;
     }
     if (lower === "selfanimexist") {
       return this.context.animExists?.(numeric(args[0] ?? 0)) ? 1 : 0;
@@ -1004,7 +1028,7 @@ function tokenize(expression: string): Token[] {
   return tokens;
 }
 
-const rawArgumentFunctions = new Set(["const", "const720p", "gethitvar", "hitdefattr"]);
+const rawArgumentFunctions = new Set(["cond", "const", "const720p", "gethitvar", "hitdefattr"]);
 
 function pushRawArg(args: string[], tokens: Token[]): void {
   if (tokens.length === 0 && args.length === 0) {
@@ -1069,9 +1093,12 @@ function defaultHitVar(name: string): number {
     guarded: 0,
     isbound: 0,
     slidetime: 0,
+    xoff: 0,
     xvel: 0,
     yaccel: 0.44,
+    yoff: 0,
     yvel: 0,
+    zoff: 0,
   };
   return values[name.trim().toLowerCase()] ?? 0;
 }

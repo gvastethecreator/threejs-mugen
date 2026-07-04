@@ -57,6 +57,7 @@ export type RuntimeTraceActor = {
   pos: { x: number; y: number };
   vel: { x: number; y: number };
   renderOpacity?: number;
+  shadowVisible?: false;
   renderScale?: { x: number; y: number };
   renderAngle?: number;
   bodyWidth?: { front: number; back: number };
@@ -92,6 +93,8 @@ export type RuntimeTraceActor = {
   guardStun: number;
   guardSlideTime?: number;
   guardControlTime?: number;
+  assertSpecialFlags?: string[];
+  assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallSummary;
   targetCount: number;
   effect?: RuntimeTraceEffectSummary;
@@ -453,6 +456,8 @@ export type RuntimeTraceFinalActorRequirement = {
   moveType?: string;
   physics?: string;
   guarding?: boolean;
+  assertSpecialFlags?: string[];
+  assertSpecialGlobalFlags?: string[];
   hitFall?: RuntimeTraceHitFallRequirement;
   targetCount?: number;
 };
@@ -469,6 +474,7 @@ export type RuntimeTraceActorFrameRequirement = {
   stateType?: string;
   moveType?: string;
   physics?: string;
+  guarding?: boolean;
   clsn1Count?: number;
   clsn2Count?: number;
   minFrames?: number;
@@ -490,6 +496,7 @@ export type RuntimeTraceActorFrameRequirement = {
   observedScaleYAtMost?: number;
   observedOpacityAtLeast?: number;
   observedOpacityAtMost?: number;
+  shadowVisible?: boolean;
   observedAngleAtLeast?: number;
   observedAngleAtMost?: number;
   observedHitFallRecoverTimeAtLeast?: number;
@@ -548,6 +555,7 @@ export type RuntimeTraceGateActorFrameEvidence = {
   stateType: string;
   moveType: string;
   physics: string;
+  guardingFrames: number;
   clsn1Count: number;
   clsn2Count: number;
   minLife: number;
@@ -562,6 +570,7 @@ export type RuntimeTraceGateActorFrameEvidence = {
   maxScale: { x: number; y: number };
   minOpacity: number;
   maxOpacity: number;
+  shadowVisible?: false;
   minAngle: number;
   maxAngle: number;
   minHitFallRecoverTime?: number;
@@ -677,6 +686,8 @@ export type RuntimeTraceGateFinalActorEvidence = Pick<
   | "moveType"
   | "physics"
   | "guarding"
+  | "assertSpecialFlags"
+  | "assertSpecialGlobalFlags"
   | "hitFall"
   | "targetCount"
 >;
@@ -1196,6 +1207,14 @@ export function evaluateRuntimeTraceGate(trace: RuntimeTrace, gate: RuntimeTrace
         failures.push(...compareHitFallRequirement(actor, expected as RuntimeTraceHitFallRequirement));
         continue;
       }
+      if (field === "assertSpecialFlags" || field === "assertSpecialGlobalFlags") {
+        const actual = actor[field] ?? [];
+        const missing = (expected as string[]).filter((flag) => !actual.includes(flag));
+        if (missing.length > 0) {
+          failures.push(`Final actor ${actor.id} ${field} missing ${missing.join(",")} (actual ${actual.join(",")})`);
+        }
+        continue;
+      }
       if (actor[field] !== expected) {
         failures.push(`Final actor ${actor.id} ${field} expected ${String(expected)} (actual ${String(actor[field])})`);
       }
@@ -1517,6 +1536,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               },
               minOpacity: Math.min(existing.minOpacity, actor.renderOpacity ?? 1),
               maxOpacity: Math.max(existing.maxOpacity, actor.renderOpacity ?? 1),
+              shadowVisible: actor.shadowVisible === false ? false : existing.shadowVisible,
               minAngle: Math.min(existing.minAngle, actor.renderAngle ?? 0),
               maxAngle: Math.max(existing.maxAngle, actor.renderAngle ?? 0),
               minHitFallRecoverTime: minOptionalTraceNumber(existing.minHitFallRecoverTime, actor.hitFall?.recoverTime),
@@ -1531,6 +1551,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 frame.tick < existing.firstTick ? actor.hitFall?.downRecoverTime : existing.firstHitFallDownRecoverTime,
               lastHitFallDownRecoverTime:
                 frame.tick >= existing.lastTick ? actor.hitFall?.downRecoverTime : existing.lastHitFallDownRecoverTime,
+              guardingFrames: existing.guardingFrames + (actor.guarding ? 1 : 0),
             }
           : {
               actorId: actor.id,
@@ -1545,6 +1566,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               stateType: actor.stateType,
               moveType: actor.moveType,
               physics: actor.physics,
+              guardingFrames: actor.guarding ? 1 : 0,
               clsn1Count: actor.clsn1Count,
               clsn2Count: actor.clsn2Count,
               minLife: actor.life,
@@ -1559,6 +1581,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
               maxScale: { x: actor.renderScale?.x ?? 1, y: actor.renderScale?.y ?? 1 },
               minOpacity: actor.renderOpacity ?? 1,
               maxOpacity: actor.renderOpacity ?? 1,
+              shadowVisible: actor.shadowVisible === false ? false : undefined,
               minAngle: actor.renderAngle ?? 0,
               maxAngle: actor.renderAngle ?? 0,
               minHitFallRecoverTime: actor.hitFall?.recoverTime,
@@ -2541,6 +2564,8 @@ function summarizeFinalActorEvidence(actor: RuntimeTraceActor): RuntimeTraceGate
     moveType: actor.moveType,
     physics: actor.physics,
     guarding: actor.guarding,
+    assertSpecialFlags: actor.assertSpecialFlags ? [...actor.assertSpecialFlags] : undefined,
+    assertSpecialGlobalFlags: actor.assertSpecialGlobalFlags ? [...actor.assertSpecialGlobalFlags] : undefined,
     hitFall: actor.hitFall ? cloneTraceHitFall(actor.hitFall) : undefined,
     targetCount: actor.targetCount,
   };
@@ -2845,6 +2870,7 @@ function actorFrameEvidenceKey(actor: RuntimeTraceActor): string {
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
     actor.renderOpacity === undefined ? "op*" : `op${actor.renderOpacity}`,
+    actor.shadowVisible === false ? "sh0" : "sh1",
     actor.renderAngle === undefined ? "ang*" : `ang${actor.renderAngle}`,
     actor.paletteFx === undefined
       ? "pf*"
@@ -2882,6 +2908,7 @@ function actorFrameGateEvidenceKey(actor: RuntimeTraceGateActorFrameEvidence): s
     actor.playerPush === undefined ? "push*" : `push${actor.playerPush ? 1 : 0}`,
     actor.spritePriority === undefined ? "sp*" : `sp${actor.spritePriority}`,
     `op${actor.minOpacity}:${actor.maxOpacity}`,
+    actor.shadowVisible === false ? "sh0" : "sh1",
     `ang${actor.minAngle}:${actor.maxAngle}`,
     actor.paletteFxTime === undefined
       ? "pf*"
@@ -2908,6 +2935,8 @@ function matchesActorFrameRequirement(
   actor: RuntimeTraceGateActorFrameEvidence,
   requirement: RuntimeTraceActorFrameRequirement,
 ): boolean {
+  const matchingFrames =
+    requirement.guarding === true ? actor.guardingFrames : requirement.guarding === false ? actor.frames - actor.guardingFrames : actor.frames;
   const hitFallRecoverTimeDrop =
     actor.firstHitFallRecoverTime === undefined || actor.lastHitFallRecoverTime === undefined
       ? undefined
@@ -2928,9 +2957,10 @@ function matchesActorFrameRequirement(
     (requirement.stateType === undefined || actor.stateType === requirement.stateType) &&
     (requirement.moveType === undefined || actor.moveType === requirement.moveType) &&
     (requirement.physics === undefined || actor.physics === requirement.physics) &&
+    (requirement.guarding === undefined || matchingFrames > 0) &&
     (requirement.clsn1Count === undefined || actor.clsn1Count === requirement.clsn1Count) &&
     (requirement.clsn2Count === undefined || actor.clsn2Count === requirement.clsn2Count) &&
-    (requirement.minFrames === undefined || actor.frames >= requirement.minFrames) &&
+    (requirement.minFrames === undefined || matchingFrames >= requirement.minFrames) &&
     (requirement.observedLifeAtLeast === undefined || actor.maxLife >= requirement.observedLifeAtLeast) &&
     (requirement.observedLifeAtMost === undefined || actor.minLife <= requirement.observedLifeAtMost) &&
     (requirement.observedPowerAtLeast === undefined || actor.maxPower >= requirement.observedPowerAtLeast) &&
@@ -2949,6 +2979,7 @@ function matchesActorFrameRequirement(
     (requirement.observedScaleYAtMost === undefined || actor.minScale.y <= requirement.observedScaleYAtMost) &&
     (requirement.observedOpacityAtLeast === undefined || actor.maxOpacity >= requirement.observedOpacityAtLeast) &&
     (requirement.observedOpacityAtMost === undefined || actor.minOpacity <= requirement.observedOpacityAtMost) &&
+    (requirement.shadowVisible === undefined || (actor.shadowVisible ?? true) === requirement.shadowVisible) &&
     (requirement.observedAngleAtLeast === undefined || actor.maxAngle >= requirement.observedAngleAtLeast) &&
     (requirement.observedAngleAtMost === undefined || actor.minAngle <= requirement.observedAngleAtMost) &&
     (requirement.observedHitFallRecoverTimeAtLeast === undefined ||
@@ -3306,6 +3337,7 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
         }
       : undefined,
     renderOpacity: actor.runtime.renderOpacity === undefined ? undefined : roundTraceNumber(actor.runtime.renderOpacity),
+    shadowVisible: actor.shadowVisible === false ? false : undefined,
     renderAngle: actor.runtime.renderAngle === undefined ? undefined : roundTraceNumber(actor.runtime.renderAngle),
     bodyWidth: actor.runtime.bodyWidth
       ? {
@@ -3351,6 +3383,10 @@ function summarizeActor(actor: ActorSnapshot): RuntimeTraceActor {
     guardStun: actor.runtime.guardStun ?? 0,
     ...(actor.runtime.guardSlideTime ? { guardSlideTime: actor.runtime.guardSlideTime } : {}),
     ...(actor.runtime.guardControlTime ? { guardControlTime: actor.runtime.guardControlTime } : {}),
+    assertSpecialFlags: actor.runtime.assertSpecial?.flags?.length ? [...actor.runtime.assertSpecial.flags] : undefined,
+    assertSpecialGlobalFlags: actor.runtime.assertSpecial?.globalFlags?.length
+      ? [...actor.runtime.assertSpecial.globalFlags]
+      : undefined,
     hitFall: actor.runtime.hitFall ? cloneTraceHitFall(actor.runtime.hitFall) : undefined,
     targetCount: actor.runtime.targetCount ?? actor.runtime.targetRefs?.length ?? 0,
     effect: actor.effect ? cloneTraceEffect(actor.effect) : undefined,
@@ -3403,6 +3439,8 @@ function summarizeActorForChecksum(
   | "afterImage"
   | "posFreeze"
   | "screenBound"
+  | "assertSpecialFlags"
+  | "assertSpecialGlobalFlags"
   | "soundEvents"
   | "hitEffectEvents"
   | "envShakeEvents"
@@ -3424,6 +3462,8 @@ function summarizeActorForChecksum(
     afterImage: _afterImage,
     posFreeze: _posFreeze,
     screenBound: _screenBound,
+    assertSpecialFlags: _assertSpecialFlags,
+    assertSpecialGlobalFlags: _assertSpecialGlobalFlags,
     soundEvents: _soundEvents,
     hitEffectEvents: _hitEffectEvents,
     envShakeEvents: _envShakeEvents,

@@ -16,11 +16,7 @@ import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./
 import { scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
-import {
-  RuntimeEnvShakeControllerDispatchWorld,
-  RuntimeEnvShakeWorld,
-  RuntimeFallEnvShakeControllerDispatchWorld,
-} from "./EnvShakeSystem";
+import { RuntimeEnvShakeWorld } from "./EnvShakeSystem";
 import { RuntimeHitDefControllerDispatchWorld } from "./HitDefSystem";
 import { RuntimeHitEffectWorld } from "./HitEffectSystem";
 import { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
@@ -65,6 +61,8 @@ import { RuntimeMatchRoundWorld } from "./RuntimeMatchRoundSystem";
 import { RuntimeControllerEvaluationContextWorld } from "./RuntimeControllerEvaluationContextSystem";
 import { RuntimeMatchHelperProjectileTargetWorld } from "./RuntimeMatchHelperProjectileTargetSystem";
 import { RuntimeMatchHelperTargetStateWorld } from "./RuntimeMatchHelperTargetStateSystem";
+import { RuntimeMatchEnvColorBridgeWorld } from "./RuntimeMatchEnvColorBridgeSystem";
+import { RuntimeMatchEnvShakeBridgeWorld } from "./RuntimeMatchEnvShakeBridgeSystem";
 import { RuntimeMatchResetWorld } from "./RuntimeMatchResetSystem";
 import { RuntimeActiveControllerRunWorld } from "./RuntimeActiveControllerRunSystem";
 import { RuntimeActiveControllerTelemetryWorld } from "./RuntimeActiveControllerTelemetrySystem";
@@ -160,8 +158,6 @@ const targetControllerDispatchWorld = new RuntimeTargetControllerDispatchWorld()
 const contactControllerDispatchWorld = new RuntimeContactControllerDispatchWorld();
 const audioControllerDispatchWorld = new RuntimeAudioControllerDispatchWorld();
 const envColorControllerDispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
-const envShakeControllerDispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
-const fallEnvShakeControllerDispatchWorld = new RuntimeFallEnvShakeControllerDispatchWorld();
 const pauseControllerDispatchWorld = new RuntimePauseControllerDispatchWorld();
 const effectSpawnControllerDispatchWorld = new RuntimeEffectSpawnControllerDispatchWorld();
 const reversalControllerDispatchWorld = new RuntimeReversalControllerDispatchWorld();
@@ -185,6 +181,8 @@ const matchFighterAdvanceWorld = new RuntimeMatchFighterAdvanceWorld();
 const matchCombatStateHooksWorld = new RuntimeMatchCombatStateHooksWorld();
 const matchHelperTargetStateWorld = new RuntimeMatchHelperTargetStateWorld();
 const matchHelperProjectileTargetWorld = new RuntimeMatchHelperProjectileTargetWorld();
+const matchEnvColorBridgeWorld = new RuntimeMatchEnvColorBridgeWorld();
+const matchEnvShakeBridgeWorld = new RuntimeMatchEnvShakeBridgeWorld();
 const matchPostFighterWorld = new RuntimeMatchPostFighterWorld();
 const matchPresentationSnapshotWorld = new RuntimeMatchPresentationSnapshotWorld();
 const matchRoundWorld = new RuntimeMatchRoundWorld();
@@ -661,7 +659,12 @@ export class PlayableMatchRuntime {
   }
 
   private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
-    this.envColorWorld.emitController(controller, runtimeTick, operation);
+    matchEnvColorBridgeWorld.apply({
+      controller,
+      operation,
+      runtimeTick,
+      envColorWorld: this.envColorWorld,
+    });
   }
 
 }
@@ -784,6 +787,8 @@ function advanceFighter(
       recoveryWorld.advanceCommon1LieDownRecovery(actor, {
         canEnterState: (stateId) => canEnterState(actor, stateId),
         enterState: (stateId) => enterState(actor, stateId, undefined, { clearStateOwner: true }),
+        isFastRecoverFromLieDownRequested: () =>
+          actor.commandBuffer.isCommandActive("recovery", actor.definition.commands ?? []),
       });
     },
     preserveFrozenPosition: (actor, tickStartPos) =>
@@ -913,7 +918,7 @@ function runActiveStateControllers(
       });
     },
     fallEnvShake: ({ controller }) => {
-      fallEnvShakeControllerDispatchWorld.apply({
+      matchEnvShakeBridgeWorld.applyFallController({
         actor: fighter,
         controller,
         runtimeTick: tick,
@@ -993,7 +998,7 @@ function runActiveStateControllers(
       });
     },
     envShake: ({ controller }) => {
-      envShakeControllerDispatchWorld.apply({
+      matchEnvShakeBridgeWorld.applyController({
         actor: fighter,
         controller,
         runtimeTick: tick,
@@ -1011,7 +1016,7 @@ function runActiveStateControllers(
     },
     runtimeController: ({ dispatch, owner }) => {
       controllerDispatchWorld.apply(fighter, dispatch.controller, {
-        context: runtimeControllerContext(fighter, owner, tick, stageBounds),
+        context: runtimeControllerContext(fighter, owner, tick, stageBounds, opponent),
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1041,10 +1046,14 @@ function runtimeControllerContext(
   owner: FighterMatchState,
   tick: number,
   stageBounds: MugenStageDefinition["bounds"],
+  opponent?: FighterMatchState,
 ) {
   return controllerEvaluationContextWorld.create({
     actor: fighter,
     owner,
+    opponent,
+    root: fighter,
+    target: opponent ? (targetId) => expressionContextWorld.resolveTargetRedirect(fighter, opponent, targetId) : undefined,
     stageBounds,
     tick,
     getConst: (stateOwner, name) => runtimeDefinitionConst(stateOwner.definition, name),
@@ -1163,12 +1172,7 @@ function runStateEntrySetupControllers(
       triggersPass(controller, actor, targetOpponent, owner, activeTick, stageBounds),
     executeController: (controller, actor, stageTime) => {
       controllerDispatchWorld.apply(actor, controller, {
-        context: {
-          hitPauseTime: () => actor.hitPause,
-          random: () => nextRuntimeRandom(actor),
-          stageBounds,
-          stageTime,
-        },
+        context: runtimeControllerContext(actor, actor, stageTime, stageBounds, opponent),
         recordController: (target, recordedController) => compatibilityTelemetryWorld.recordController(target, recordedController),
       });
       return actor.runtime;

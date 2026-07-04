@@ -1,6 +1,6 @@
 # Next Build Roadmap
 
-Last updated: 2026-07-03
+Last updated: 2026-07-04
 
 This is the tactical roadmap for the next autonomous build rounds. It sits below the scorecard and above the local issue files:
 
@@ -22,6 +22,354 @@ G1 setup-project refresh
   -> roadmap health checks now tell future agents how to avoid duplicate closed gates
   -> lane checkpoint taxonomy prevents latest UI/docs work from replacing latest runtime evidence
   -> no score movement; return to R1/R2 evidence-producing work next
+```
+
+Latest runtime truth:
+
+```txt
+R1 required custom-state HitOverride missonoverride zero guardflag-filter trace gates
+  -> synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json checksum 058b335f is required in qa:trace
+  -> synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter.json checksum af29f125 is required in qa:trace
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter.json checksum 9edbf3d0 is required in qa:trace
+  -> direct HitDef p2stateno 888, player-owned Projectile id 77 p2stateno 889, and helper-parented Projectile id 8881 p2stateno 889 all use missonoverride = 0 and guardflag = H
+  -> P2 installs attr-matching HitOverride slots 1 -> 776 with guardflag.not = HA, 2 -> 778 with guardflag = A, and 5 -> 779 with guardflag = H
+  -> all three routes skip slots 1/2, select slot 5, suppress the custom state, forbid default get-hit/guard states, and end P2 in state/action 779, life 1000, moveType I
+  -> helper route also records target links p1 -> p2 / 8881 and p1-helper-0 -> p2 / 8881, helper targetCount = 1, projectile hasHit = true / hitsRemaining = 0, and suppresses helper branch 1291
+  -> pnpm qa:trace passes 367/367 artifacts, 337 required and 30 optional
+  -> no score movement; exact guard timing/guarded contact semantics, default missonoverride guardflag breadth, forceair/forceguard priority combinations, exact target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required Projectile custom-state HitOverride missonoverride zero slot-priority trace gates
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority.json checksum 9a5a149f is required in qa:trace
+  -> synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority.json checksum 96b6b7de is required in qa:trace
+  -> player-owned Projectile id 77 and helper-parented Projectile id 8878 both declare p2stateno = 889, p2getp1state = 1, and missonoverride = 0
+  -> P2 installs matching HitOverride slots 5 -> 779 and 2 -> 778
+  -> both routes select slot 2, consume/remove the projectile, emit override telemetry, suppress projectile custom state 889, and end P2 in state/action 778, life 1000, moveType I
+  -> helper route also records target links p1 -> p2 / 8878 and p1-helper-0 -> p2 / 8878, helper targetCount = 1, projectile hasHit = true / hitsRemaining = 0, and suppresses helper ProjHit branch 1288
+  -> that pnpm qa:trace pass was 364/364 artifacts, 334 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, exact guard KO/no-KO round flow, and full Projectile HitOverride/custom-state parity remain blocked
+
+Previous R1 required helper-parented Projectile default custom-state HitOverride missonoverride forceair forceguard keepstate trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json checksum fb964bfb is required in qa:trace
+  -> visual Helper spawns owner-side Projectile id 8877 with parentId = p1-helper-0, p2stateno = 889, p2getp1state = 1, and omitted missonoverride so imported default is -1
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat selects slot 3, records target links p1 -> p2 / 8877 and p1-helper-0 -> p2 / 8877, consumes/removes projectile, emits override telemetry, and keeps P2 in state/action 0 instead of entering state 780, projectile custom state 889, or helper ProjHit branch 1286
+  -> helper payload proves targetCount = 1; projectile payload proves hasHit = true and hitsRemaining = 0
+  -> actor-frame evidence observes P2 stateType = A, physics = A, and guardingFrames >= 1 while still in state/action 0
+  -> states 780, 889, 1286, 5000, 150, and 151 are forbidden; final P2 returns to state/action 0, life 1000, moveType I
+  -> pnpm qa:trace passes 362/362 artifacts, 332 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, exact guard KO/no-KO round flow, and full helper Projectile HitOverride/custom-state parity remain blocked
+
+Previous R1 required player-owned Projectile default custom-state HitOverride missonoverride forceair forceguard keepstate trace gate
+  -> synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json checksum 4ce42cf3 is required in qa:trace
+  -> P1 Projectile id 77 declares p2stateno = 889 and p2getp1state = 1 while omitting missonoverride so the imported default is -1
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat selects slot 3, records target link p1 -> p2 / 77, consumes/removes the projectile, emits override telemetry, and keeps P2 in state/action 0 instead of entering state 780 or projectile custom state 889
+  -> actor-frame evidence observes P2 stateType = A, physics = A, and guardingFrames >= 1 while still in state/action 0
+  -> states 780, 889, 5000, 150, and 151 are forbidden; final P2 returns to state/action 0, life 1000, moveType I
+  -> pnpm qa:trace passes 361/361 artifacts, 331 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, exact guard KO/no-KO round flow, and full Projectile HitOverride/custom-state parity remain blocked
+
+Previous R1 required direct default custom-state HitOverride missonoverride forceair forceguard keepstate miss trace gate
+  -> synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json checksum 20e40425 is required in qa:trace
+  -> P1 direct HitDef declares p2stateno = 888, p2getp1state = 1, and omits missonoverride so the imported default is -1
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat rejects before target memory, damage, guard, forceair/forceguard actor frames, keepstate redirect handling, override state 780, owner-backed custom state 888, default get-hit state 5000, or guard states 150/151
+  -> no target links are recorded; final P2 stays state/action 0, life 1000, ctrl true, moveType I
+  -> that pnpm qa:trace pass was 360/360 artifacts, 330 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, exact target lifetime, helper-owned custom-state tables, exact guard KO/no-KO round flow, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required helper-parented Projectile custom-state HitOverride missonoverride zero forceair forceguard keepstate trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json checksum e23a33af is required in qa:trace
+  -> visual Helper spawns owner-side Projectile id 8876 with parentId = p1-helper-0, p2stateno = 889, p2getp1state = 1, and missonoverride = 0
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat selects slot 3, records target links p1 -> p2 / 8876 and p1-helper-0 -> p2 / 8876, consumes/removes the projectile, emits override telemetry, and keeps P2 in state/action 0 instead of entering state 780, projectile custom state 889, or helper ProjHit branch 1284
+  -> helper payload proves targetCount = 1; projectile payload proves hasHit = true and hitsRemaining = 0
+  -> actor-frame evidence observes P2 stateType = A, physics = A, and guardingFrames >= 1 while still in state/action 0
+  -> states 780, 889, 1284, 5000, 150, and 151 are forbidden; final P2 returns to state/action 0, life 1000, moveType I
+  -> pnpm qa:trace passes 359/359 artifacts, 329 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, exact guarded get-hit variable/chip semantics, and full helper Projectile HitOverride/custom-state parity remain blocked
+
+Previous R1 required player-owned Projectile custom-state HitOverride missonoverride zero forceair forceguard keepstate trace gate
+  -> synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json checksum 15bc955b remains required in qa:trace
+  -> that pnpm qa:trace pass was 358/358 artifacts, 328 required and 30 optional
+
+R1 required direct custom-state HitOverride missonoverride zero forceair forceguard keepstate trace gate
+  -> synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json checksum 4d9043a5 is required in qa:trace
+  -> P1 direct HitDef declares p2stateno = 888, p2getp1state = 1, and missonoverride = 0
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat selects slot 3, records target link p1 -> p2 / 77, emits override telemetry, and keeps P2 in state/action 0 instead of entering state 780 or owner-backed custom state 888
+  -> actor-frame evidence observes P2 stateType = A, physics = A, and guardingFrames >= 1 while still in state/action 0
+  -> states 780, 888, 5000, 150, and 151 are forbidden; final P2 returns to state/action 0, life 1000, moveType I
+  -> pnpm qa:trace passes 357/357 artifacts, 327 required and 30 optional
+  -> no score movement; helper/projectile custom-state force flags, custom-state guardflag inheritance/timing, exact guarded get-hit variable/chip semantics, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required helper-parented Projectile HitOverride forceair forceguard keepstate trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate.json checksum 84dc3969 is required in qa:trace
+  -> visual Helper spawns Projectile id 8875 with parentId p1-helper-0, p2stateno = 889, and p2getp1state = 0
+  -> P2 installs HitOverride slot 3 -> 780 with time = 30, forceair = 1, forceguard = 1, and keepstate = 1
+  -> combat selects slot 3, records target links p1 -> p2 / 8875 and p1-helper-0 -> p2 / 8875, emits override telemetry, records projectile payload hasHit = true / hitsRemaining = 0, and keeps P2 in state/action 0 instead of entering state 780
+  -> actor-frame evidence observes P2 stateType = A, physics = A, and guardingFrames >= 1 while still in state/action 0
+  -> states 780, 889, helper ProjHit branch 1282, 5000, 150, and 151 are forbidden; final P2 returns to state/action 0, life 1000, moveType I
+  -> that pnpm qa:trace pass was 356/356 artifacts, 326 required and 30 optional
+  -> no score movement; final-frame forced aerial persistence, exact guarded get-hit variable/chip semantics, custom-state guardflag inheritance/timing, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full helper Projectile HitOverride parity remain blocked
+
+Previous R1 required player-owned Projectile HitOverride forceair forceguard keepstate trace gate
+  -> synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate.json checksum 3806a769 remains required in qa:trace
+  -> that pnpm qa:trace pass was 355/355 artifacts, 325 required and 30 optional
+
+Previous R1 required direct-HitDef HitOverride forceair forceguard keepstate trace gate
+  -> synthetic-imported-hitoverride-forceair-forceguard-keepstate.json checksum 19787fb2 remains required in qa:trace
+  -> that pnpm qa:trace pass was 354/354 artifacts, 324 required and 30 optional
+
+Previous R1 required helper-parented Projectile HitOverride guardflag filter trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-guardflag-filter.json checksum 41a87267 is required in qa:trace
+  -> visual Helper spawns Projectile id 8874 with parentId p1-helper-0, guardflag = H, p2stateno = 889, and p2getp1state = 0
+  -> P2 installs attr-matching HitOverride slot 1 -> 776 with guardflag.not = HA, slot 2 -> 778 with guardflag = A, and slot 5 -> 779 with guardflag = H
+  -> combat skips slots 1 and 2, selects slot 5, records owner target link p1 -> p2 / 8874 plus helper target link p1-helper-0 -> p2 / 8874, marks projectile payload hitsRemaining = 0 / hasHit = true, and redirects P2 through state 779
+  -> states 776, 778, 889, helper ProjHit branch 1280, 5000, 150, and 151 are forbidden; final P2 remains state 779, life 1000
+  -> that pnpm qa:trace pass was 353/353 artifacts, 323 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, custom-state forceair/forceguard/keepstate breadth, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full helper Projectile/HitOverride parity remain blocked
+
+Previous R1 required player-owned Projectile HitOverride guardflag filter trace gate
+  -> synthetic-imported-projectile-hitoverride-guardflag-filter.json checksum a51e82ec is required in qa:trace
+  -> P1 fires Projectile id 77 with guardflag = H and p2stateno = 889
+  -> P2 installs attr-matching HitOverride slot 1 -> 776 with guardflag.not = HA, slot 2 -> 778 with guardflag = A, and slot 5 -> 779 with guardflag = H
+  -> combat skips slots 1 and 2, selects slot 5, records target link p1 -> p2 / 77, consumes/removes the projectile as a hit, and redirects P2 through state 779
+  -> states 776, 778, 889, 5000, 150, and 151 are forbidden; final P2 remains state 779, life 1000
+  -> that pnpm qa:trace pass was 352/352 artifacts, 322 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, forceair/forceguard/keepstate combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required direct-HitDef HitOverride guardflag filter trace gate
+  -> synthetic-imported-hitoverride-guardflag-filter.json checksum b88a2da3 is required in qa:trace
+  -> P1 hits with attr = S,NA and guardflag = H
+  -> P2 installs attr-matching HitOverride slot 1 -> 776 with guardflag.not = HA, slot 2 -> 778 with guardflag = A, and slot 5 -> 779 with guardflag = H
+  -> combat skips slots 1 and 2, selects slot 5, records target link p1 -> p2 / 77, and redirects P2 through state 779
+  -> states 776, 778, 5000, 150, and 151 are forbidden; final P2 remains state 779, life 1000
+  -> that pnpm qa:trace pass was 351/351 artifacts, 321 required and 30 optional
+  -> no score movement; custom-state guardflag inheritance/timing, forceair/forceguard/keepstate combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full HitOverride parity remain blocked
+
+R1 required direct-HitDef missonoverride zero slot priority trace gate
+  -> synthetic-imported-hitoverride-missonoverride-zero-slot-priority.json checksum 92fefd6a is required in qa:trace
+  -> P1 declares p2stateno = 888, p2getp1state = 1, and missonoverride = 0
+  -> P2 installs matching HitOverride slot 5 -> 779 and slot 2 -> 778 in high-to-low controller order
+  -> contact records target link p1 -> p2 / 77
+  -> combat selects slot 2 and redirects P2 through state 778, not state 779 or owner-backed custom state 888
+  -> states 779, 888, 5000, 150, and 151 are forbidden; final P2 remains state 778, life 1000
+  -> pnpm qa:trace passes 350/350 artifacts, 320 required and 30 optional
+  -> no score movement; helper/projectile custom-state slot-priority breadth, guardflag edge timing, forceair/forceguard/keepstate combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full HitOverride parity remain blocked
+
+R1 required helper-parented Projectile HitOverride slot priority trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-slot-priority.json checksum 1d058518 is required in qa:trace
+  -> visual Helper spawns Projectile id 8873 with parentId p1-helper-0, p2stateno = 889, and p2getp1state = 0
+  -> P2 installs matching HitOverride slot 5 -> 779 and slot 2 -> 778 in high-to-low controller order
+  -> contact records owner target link p1 -> p2 / 8873 plus helper target link p1-helper-0 -> p2 / 8873 and marks projectile payload hitsRemaining = 0 / hasHit = true
+  -> combat selects slot 2 and redirects P2 through state 778, not state 779, projectile custom state 889, or helper ProjHit branch 1278
+  -> states 779, 889, 1278, 5000, 150, and 151 are forbidden; final P2 remains state 778, life 1000
+  -> pnpm qa:trace passes 349/349 artifacts, 319 required and 30 optional
+  -> no score movement; custom-state slot-priority breadth, guardflag edge timing, forceair/forceguard/keepstate combinations, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required player-owned Projectile HitOverride slot priority trace gate
+  -> synthetic-imported-projectile-hitoverride-slot-priority.json checksum 378d9ce8 is required in qa:trace
+  -> P2 installs matching HitOverride slot 5 -> 779 and slot 2 -> 778 in high-to-low controller order
+  -> P1 fires Projectile id 77 with p2stateno = 889; contact records target link p1 -> p2 / 77 and consumes/removes the projectile as a hit
+  -> combat selects slot 2 and redirects P2 through state 778, not state 779 or projectile custom state 889
+  -> states 779, 889, 5000, 150, and 151 are forbidden; final P2 remains state 778, life 1000
+  -> that pnpm qa:trace pass was 348/348 artifacts, 318 required and 30 optional
+  -> no score movement; custom-state slot-priority breadth, guardflag edge timing, forceair/forceguard/keepstate combinations, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required direct-HitDef HitOverride slot priority trace gate
+  -> synthetic-imported-hitoverride-slot-priority.json checksum 8de62354 is required in qa:trace
+  -> P2 installs matching HitOverride slot 5 -> 779 and slot 2 -> 778 in high-to-low controller order
+  -> P1 hits with attr = S,NA; combat selects slot 2 and redirects P2 through state 778, not state 779
+  -> states 779, 5000, 150, and 151 are forbidden; final P2 remains state 778, life 1000
+  -> that pnpm qa:trace pass was 347/347 artifacts, 317 required and 30 optional
+  -> no score movement; helper-parented Projectile/custom-state slot-priority breadth, guardflag edge timing, forceair/forceguard/keepstate combinations, visual/audio parity, and full HitOverride parity remain blocked
+
+Previous R1 required helper Projectile missonoverride zero HitOverride trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-zero.json checksum 62d7d6b8 is required in qa:trace
+  -> visual Helper spawns Projectile id 8872 with parentId p1-helper-0, p2stateno = 889, p2getp1state = 1, and missonoverride = 0 while P2 has active matching HitOverride slot 777
+  -> contact records owner target link p1 -> p2 / 8872 plus helper target link p1-helper-0 -> p2 / 8872, marks the projectile hit/consumed with hitsRemaining = 0 / hasHit = true, and redirects P2 through HitOverride state 777 instead of missing or entering projectile custom state 889
+  -> states 889, 1276, 5000, 150, and 151 are forbidden; final P2 remains state 777, life 1000
+  -> that pnpm qa:trace pass was 346/346 artifacts, 316 required and 30 optional
+  -> no score movement; broader missonoverride custom-state breadth, helper/projectile/custom-state slot-priority breadth, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required player-owned Projectile missonoverride zero HitOverride trace gate
+  -> synthetic-imported-projectile-hitoverride-missonoverride-zero.json checksum 5c12f3cc remains required in qa:trace
+  -> Projectile declares p2stateno = 889 / p2getp1state = 1 / missonoverride = 0 while P2 has active matching HitOverride slot 777
+  -> contact records target id 77, consumes/removes the projectile as hit, and redirects P2 through HitOverride state 777 instead of missing or entering projectile custom state 889
+  -> states 889, 5000, 150, and 151 are forbidden; final P2 remains state 777, life 1000
+  -> that pnpm qa:trace pass was 345/345 artifacts, 315 required and 30 optional
+  -> no score movement; helper-parented Projectile missonoverride = 0 is covered by a later checkpoint, while broader missonoverride custom-state breadth, helper/projectile/custom-state slot-priority breadth, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required helper Projectile missonoverride one HitOverride trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-one.json checksum a99979bb is required in qa:trace
+  -> visual Helper spawns Projectile id 8871 with parentId p1-helper-0 and missonoverride = 1 while P2 has active matching HitOverride slot 777
+  -> contact rejects before owner/helper target memory, projectile contact consumption, damage, guard, normal HitOverride redirect, helper ProjHit branch 1275, or projectile custom-state entry
+  -> states 777, 889, 1275, 5000, 150, and 151 are forbidden; final P2 remains state 0, life 1000, ctrl true; projectile remains active with hitsRemaining = 1 / hasHit = false
+  -> that pnpm qa:trace pass was 344/344 artifacts, 314 required and 30 optional
+  -> no score movement; player-owned and helper-parented Projectile missonoverride = 0 are covered by later checkpoints, while broader missonoverride custom-state breadth, exact slot priority, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required player-owned Projectile missonoverride one HitOverride trace gate
+  -> synthetic-imported-projectile-hitoverride-missonoverride-one.json checksum 2dc86467 remains required in qa:trace
+  -> Projectile declares missonoverride = 1 while P2 has active matching HitOverride slot 777
+  -> contact rejects before target memory, projectile contact consumption, damage, guard, normal HitOverride redirect, or projectile custom-state entry
+  -> states 777, 889, 5000, 150, and 151 are forbidden; final P2 remains state 0, life 1000, ctrl true; projectile remains active with hitsRemaining = 1
+  -> that pnpm qa:trace pass was 343/343 artifacts, 313 required and 30 optional
+  -> no score movement; helper-parented Projectile missonoverride = 1 and player-owned/helper-parented Projectile missonoverride = 0 are covered by later checkpoints, while broader missonoverride custom-state breadth, exact slot priority, exact projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required helper-parented Projectile p2stateno HitOverride trace gate
+  -> synthetic-imported-helper-projectile-hitoverride-p2stateno.json checksum ce4c1d9a is required in qa:trace
+  -> visual Helper spawns Projectile id 8870 with parentId p1-helper-0, p2stateno = 889, and p2getp1state = 0 while P2 has active matching HitOverride slot 777
+  -> contact records owner target link p1 -> p2 / 8870 and helper target link p1-helper-0 -> p2 / 8870
+  -> P2 redirects through HitOverride state 777 instead of projectile custom state 889, helper ProjHit branch 1273, or default get-hit/guard states 5000/150/151
+  -> that pnpm qa:trace pass was 342/342 artifacts, 312 required and 30 optional
+  -> no score movement; player-owned and helper-parented Projectile missonoverride = 1 plus player-owned/helper-parented Projectile missonoverride = 0 are covered by later checkpoints, while broader missonoverride custom-state breadth, exact slot priority, exact helper-projectile target lifetime/tick order, helper-owned custom-state tables, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required IKEMEN player-owned Projectile p2stateno HitOverride trace gate
+  -> synthetic-imported-projectile-hitoverride-p2stateno.json checksum 2ec0725a remains required in qa:trace
+  -> Projectile declares p2stateno = 889 / p2getp1state = 0 while P2 has active matching HitOverride slot 777
+  -> contact records target id 77 and redirects P2 through HitOverride state 777 instead of direct-HitDef miss logic or projectile custom state 889
+  -> states 889, 5000, 150, and 151 are forbidden; final P2 remains state 777, life 1000
+  -> that pnpm qa:trace pass was 341/341 artifacts, 311 required and 30 optional
+  -> no score movement; projectile missonoverride breadth, exact slot priority, exact guard KO/no-KO round flow, visual/audio parity, and full Projectile/HitOverride parity remain blocked
+
+Previous R1 required IKEMEN direct HitDef p2getp1state zero HitOverride miss trace gate
+  -> synthetic-imported-hitoverride-p2getp1state-zero-miss.json checksum 656730c8 is required in qa:trace
+  -> direct HitDef declares p2stateno = 889 / p2getp1state = 0 while P2 has active matching HitOverride slot 777 and P2-owned state 889 data exists
+  -> contact rejects before target memory, damage, guard, normal HitOverride redirect, or target-owned custom-state entry
+  -> states 777, 889, 888, 5000, 150, and 151 are forbidden; final P2 remains state 0, life 1000, ctrl true
+  -> that pnpm qa:trace pass was 340/340 artifacts, 310 required and 30 optional
+  -> no score movement; helper-parented Projectile p2stateno is covered by a later checkpoint, while helper/projectile/custom-state slot-priority breadth, helper/projectile missonoverride breadth, exact guard KO/no-KO round flow, visual/audio parity, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required IKEMEN HitDef missonoverride one HitOverride trace gate
+  -> synthetic-imported-hitoverride-missonoverride-one.json checksum 78cfedf4 remains required in qa:trace
+  -> direct HitDef declares missonoverride = 1 without p1stateno / p2stateno while P2 has active matching HitOverride slot 777
+  -> contact rejects before target memory, damage, guard, normal HitOverride redirect, or custom-state entry
+  -> states 777, 888, 5000, 150, and 151 are forbidden; final P2 remains state 0, life 1000, ctrl true
+  -> that pnpm qa:trace pass was 339/339 artifacts, 309 required and 30 optional
+  -> no score movement; helper/projectile p2stateno breadth beyond current covered gates, exact slot priority, helper/projectile missonoverride breadth, exact guard KO/no-KO round flow, visual/audio parity, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required IKEMEN HitDef missonoverride zero HitOverride trace gate
+  -> synthetic-imported-hitoverride-missonoverride-zero.json checksum 8ffd5678 remains required in qa:trace
+  -> direct HitDef declares p2stateno = 888 / p2getp1state = 1 / missonoverride = 0 while P2 has active matching HitOverride slot 777
+  -> contact records target id 77 and redirects P2 through HitOverride state 777 instead of default custom-state miss
+  -> states 888, 5000, 150, and 151 are forbidden; final P2 remains state 777, life 1000
+  -> that pnpm qa:trace pass was 338/338 artifacts, 308 required and 30 optional
+  -> no score movement; helper/projectile p2stateno breadth beyond current covered gates, exact slot priority, exact guard KO/no-KO round flow, visual/audio parity, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required direct HitDef HitOverride plus p2stateno miss trace gate
+  -> synthetic-imported-hitoverride-p2stateno-miss.json checksum 6f41eeb1 remains required in qa:trace
+  -> direct HitDef declares p2stateno = 888 / p2getp1state = 1 while P2 has active matching HitOverride slot 777
+  -> contact rejects before target memory, damage, guard, normal HitOverride redirect, or custom-state entry
+  -> states 777, 888, 5000, 150, and 151 are forbidden; final P2 remains state 0, life 1000, ctrl true
+  -> that pnpm qa:trace pass was 337/337 artifacts, 307 required and 30 optional
+  -> no score movement; helper/projectile p2stateno breadth beyond current covered gates, exact slot priority, helper/projectile missonoverride breadth, exact guard KO/no-KO round flow, visual/audio parity, and full HitOverride/custom-state parity remain blocked
+
+Previous R1 required direct HitDef p2stateno ignored on successful guard trace gate
+  -> synthetic-imported-p2stateno-guard-ignored.json checksum 76d1becd remains required in qa:trace
+  -> direct HitDef declares p2stateno = 888 / p2getp1state = 1 while P2 successfully guards
+  -> P2 remains in defender-owned Common1 guard flow 150 -> 151 -> 130 -> 20, target id 77 is recorded, state 888 is forbidden
+  -> that pnpm qa:trace pass was 336/336 artifacts, 306 required and 30 optional
+  -> no score movement; exact guard KO/no-KO round flow, helper/projectile p2stateno breadth beyond current covered gates, exact guard timing/proximity/effects, visual/audio parity, and full guard parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar guard.kill trace gate
+  -> synthetic-imported-custom-state-gethitvar-guard-kill.json checksum c889a534 remains required in qa:trace
+  -> direct HitDef guard.kill = 0 records target memory plus guard kill metadata
+  -> owner-local TargetState sends P2 into attacker-owned state data, then state 888 branches to state/action 904 through GetHitVar(kill) = 0 && GetHitVar(guarded) = 1 && GetHitVar(hitshaketime) > 0
+  -> that pnpm qa:trace pass was 335/335 artifacts, 305 required and 30 optional
+  -> no score movement; exact guard KO/no-KO round flow, exact guard timing/proximity/effects, helper/projectile custom-state guard kill inheritance, visual/audio parity, and full custom-state/guard parity remain blocked
+
+Previous R1 required helper-parented Projectile GetHitVar guard.kill trace gate
+  -> synthetic-imported-helper-projectile-gethitvar-guard-kill.json checksum 7f9aa699 remains required in qa:trace
+  -> helper-parented Projectile guard.kill = 0 records owner/helper target memory plus guard kill metadata
+  -> defender-owned Common1-style states 150 -> 151 branch to state/action 334 through GetHitVar(kill) = 0 && GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 334/334 artifacts, 304 required and 30 optional
+  -> no score movement; exact helper Projectile guard KO/no-KO round flow, exact helper/projectile target lifetime/tick order, exact guard timing/proximity/effects, visual/audio parity, and full guard/projectile parity remain blocked
+
+Previous R1 required player-owned Projectile GetHitVar guard.kill trace gate
+  -> synthetic-imported-projectile-gethitvar-guard-kill.json checksum 3feae5a7 remains required in qa:trace
+  -> player-owned Projectile guard.kill = 0 records projectile target memory plus guard kill metadata
+  -> defender-owned Common1-style states 150 -> 151 branch to state/action 333 through GetHitVar(kill) = 0 && GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 333/333 artifacts, 303 required and 30 optional
+  -> no score movement; helper/projectile custom-state guard kill inheritance, exact guard KO/no-KO round flow, exact projectile target lifetime/tick order, exact guard timing/proximity/effects, visual/audio parity, and full guard/projectile parity remain blocked
+
+Previous R1 required defender-owned GetHitVar air guard.kill trace gate
+  -> synthetic-imported-gethitvar-air-guard-kill.json checksum 4382207e remains required in qa:trace
+  -> direct air guard against HitDef guard.kill = 0 records target memory plus guard kill metadata
+  -> defender-owned Common1-style states 154 -> 155 branch to state/action 332 through GetHitVar(kill) = 0 && GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 332/332 artifacts, 302 required and 30 optional
+  -> no score movement; exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, exact air guard timing/landing/proximity/effects, visual/audio parity, and full guard parity remain blocked
+
+Previous R1 required defender-owned GetHitVar crouch guard.kill trace gate
+  -> synthetic-imported-gethitvar-crouch-guard-kill.json checksum 2976fb8c remains required in qa:trace
+  -> direct crouch guard against HitDef guard.kill = 0 records target memory plus guard kill metadata
+  -> defender-owned Common1-style states 152 -> 153 branch to state/action 331 through GetHitVar(kill) = 0 && GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 331/331 artifacts, 301 required and 30 optional
+  -> no score movement; exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, exact guard timing/proximity/effects, visual/audio parity, and full guard parity remain blocked
+
+Previous R1 required defender-owned GetHitVar stand guard.kill trace gate
+  -> synthetic-imported-gethitvar-guard-kill.json checksum abb4e468 remains required in qa:trace
+  -> direct stand guard against HitDef guard.kill = 0 records target memory plus guard kill metadata
+  -> defender-owned Common1-style states 150 -> 151 branch to state/action 330 through GetHitVar(kill) = 0 && GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 330/330 artifacts, 300 required and 30 optional
+  -> no score movement; exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, exact guard timing/proximity/effects, visual/audio parity, and full guard parity remain blocked
+
+Previous R1 required defender-owned GetHitVar kill trace gate
+  -> synthetic-imported-gethitvar-kill.json checksum ef5ffabf is required in qa:trace
+  -> direct normal HitDef kill = 0 records target memory plus kill = false
+  -> defender-owned Common1-style state 5000 branches to state/action 329 through GetHitVar(kill) = 0 && !GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 329/329 artifacts, 299 required and 30 optional
+  -> no score movement; KO/round-flow behavior, helper/projectile/custom-state inheritance, exact target lifetime/tick order, visual/audio parity, and full get-hit parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar fall metadata trace gate
+  -> synthetic-imported-custom-state-gethitvar-fall-metadata.json checksum 4a3a1c6b is required in qa:trace
+  -> direct fall HitDef p2stateno = 888 / p2getp1state = 1 records target memory plus fall.damage/fall.kill/fall.xvel/fall.yvel
+  -> owner-backed custom state 888 branches to state/action 903 through GetHitVar(fall) && GetHitVar(fall.damage) = 70 && GetHitVar(fall.kill) = 0 && GetHitVar(fall.xvel) = 3 && GetHitVar(fall.yvel) = -6
+  -> actor-frame evidence preserves customOwnerId = p1, target-link evidence preserves target id 77, and SelfState returns P2 to state 0/control
+  -> that pnpm qa:trace pass was 328/328 artifacts, 298 required and 30 optional
+  -> no score movement; exact metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, visual/audio parity, and full custom-state fall parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar fall envshake trace gate
+  -> synthetic-imported-custom-state-gethitvar-fall-envshake.json checksum 5c9d1653 is required in qa:trace
+  -> direct fall HitDef p2stateno = 888 / p2getp1state = 1 records target memory plus fall.envshake.time/freq/ampl/phase
+  -> owner-backed custom state 888 branches to state/action 902 through GetHitVar(fall) && GetHitVar(fall.envshake.time) = 15 && GetHitVar(fall.envshake.freq) = 178 && GetHitVar(fall.envshake.ampl) = 6 && GetHitVar(fall.envshake.phase) = 0
+  -> that pnpm qa:trace pass was 327/327 artifacts, 297 required and 30 optional
+  -> no score movement; exact camera waveform, pause/stage/layer interaction, metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, visual/audio parity, and full custom-state fall presentation parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar guard timing trace gate
+  -> synthetic-imported-custom-state-gethitvar-guard-timing.json checksum ba77beec is required in qa:trace
+  -> guarded direct HitDef target memory feeds owner-local TargetState into P1-owned state data
+  -> owner-backed custom state 888 branches to state/action 901 through GetHitVar(guarded) = 1 && GetHitVar(slidetime) = 5 && GetHitVar(ctrltime) = 7 && GetHitVar(hitshaketime) > 0
+  -> that pnpm qa:trace pass was 326/326 artifacts, 296 required and 30 optional
+  -> no score movement; direct-HitDef successful-guard p2stateno is covered by synthetic-imported-p2stateno-guard-ignored.json, while HitOverride/helper/projectile p2stateno breadth beyond current covered gates, exact guard timing, throws, helper/root/parent redirects, teams/simul, visual/audio parity, and full custom-state/get-hit parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar hitcount/id trace gate
+  -> synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid.json checksum 250f77c2 is required in qa:trace
+  -> direct HitDef id = 77, chainID = 43, numhits = 3 routes P2 through p2stateno = 888 / p2getp1state = 1 into P1-owned state data
+  -> owner-backed custom state 888 branches to state/action 900 through GetHitVar(hitcount) = 3 && GetHitVar(hitid) = 77 && GetHitVar(chainid) = 43 && GetHitVar(hittime) > 0 && !GetHitVar(guarded)
+  -> that pnpm qa:trace pass was 325/325 artifacts, 295 required and 30 optional
+  -> no score movement; exact combo accumulation, chain-hit eligibility arbitration, helper/projectile inheritance, exact target lifetime, teams/simul, visual/audio parity, and full custom-state/get-hit parity remain blocked
+
+Previous R1 required GetHitVar fallcount trace gate
+  -> RuntimeHitVarSystem reads hitFall.fallCount through GetHitVar(fallcount), defaulting to 0
+  -> HitFallDamage in owner-backed state 5100 records one bounded Common1-style ground-impact count and consumes stored fall.damage
+  -> synthetic-imported-gethitvar-fallcount.json checksum c391d938 is required in qa:trace
+  -> owner-backed get-hit state 5100 branches to state/action 328 through GetHitVar(fallcount) = 1 && GetHitVar(fall.damage) = 0
+  -> that pnpm qa:trace pass was 324/324 artifacts, 294 required and 30 optional
+  -> no score movement; exact multi-ground-hit accumulation, lifetime/reset parity, non-Common1 impact detection, helper/projectile/custom-state inheritance, and full fall/get-hit parity remain blocked
+
+R2 RuntimeMatch EnvShake bridge ownership cut
+  -> RuntimeMatchEnvShakeBridgeWorld owns bounded match-level EnvShake and FallEnvShake controller emission outside PlayableMatchRuntime
+  -> active controller routes forward controller source, typed operation data, runtime tick, telemetry hooks, and RuntimeEnvShakeWorld through one named boundary
+  -> focused RuntimeMatchEnvShakeBridgeSystem coverage proves typed EnvShake forwarding, FallEnvShake hit-fall metadata emission/clearing, telemetry forwarding, and no-pending-fall no-event behavior
+  -> no score movement or new trace checksum; exact camera waveform, pause/stage/layer timing, helper/redirect ownership breadth, renderer parity, and full presentation parity remain blocked
+
+Previous R1 required owner-backed custom-state GetHitVar snap offset trace gate
+  -> synthetic-imported-custom-state-gethitvar-snap.json checksum ce4680b9 is required in qa:trace
+  -> direct HitDef snap = 16,-24 plus p2stateno = 888 stores bounded xoff/yoff/zoff metadata while P2 executes P1-owned state data
+  -> owner-backed custom-state GetHitVar(xoff/yoff/zoff) branches state 888 -> 899, then SelfState returns P2 to 0/control
+  -> that pnpm qa:trace pass was 323/323 artifacts, 293 required and 30 optional
+  -> no score movement; no exact throw positioning, z-axis support, guard snap behavior, helper/projectile inheritance, broader custom-state inheritance breadth, teams/simul, visual/audio parity, or full throw/custom-state parity claim
 ```
 
 Latest IKEMEN scanner truth:
@@ -88,6 +436,224 @@ S1 Studio command inspector readability and smoke stability
 Latest implementation truth:
 
 ```txt
+R1 required owner-backed custom-state GetHitVar guard.kill trace gate
+  -> synthetic-imported-custom-state-gethitvar-guard-kill.json checksum c889a534 is required in qa:trace
+  -> direct HitDef guard.kill = 0 routes P2 through owner-local TargetState into attacker-owned state data with stored guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) = 1 branch routes P2 state 888 -> 904 before SelfState returns control
+  -> that pnpm qa:trace pass was 335/335 artifacts, 305 required and 30 optional
+  -> bounded direct-HitDef custom-state guard kill metadata only; direct-HitDef successful-guard p2stateno is covered separately by synthetic-imported-p2stateno-guard-ignored.json, while HitOverride/helper/projectile p2stateno breadth beyond current covered gates, exact guard KO/no-KO round flow, helper/projectile custom-state inheritance, score movement, or full custom-state/guard parity remain unclaimed
+Previous R1 required helper-parented Projectile GetHitVar guard.kill trace gate
+  -> synthetic-imported-helper-projectile-gethitvar-guard-kill.json checksum 7f9aa699 remains required in qa:trace
+  -> helper-parented Projectile guard.kill = 0 routes P2 through defender-owned Common1-style guard-hit states 150 -> 151 with guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) branch routes P2 state 151 -> 334
+  -> that pnpm qa:trace pass was 334/334 artifacts, 304 required and 30 optional
+  -> bounded helper-parented Projectile guard kill metadata only; no exact helper Projectile guard KO/no-KO round flow, exact helper/projectile target lifetime/tick order, score movement, or full guard/projectile parity claim
+Previous R1 required player-owned Projectile GetHitVar guard.kill trace gate
+  -> synthetic-imported-projectile-gethitvar-guard-kill.json checksum 3feae5a7 remains required in qa:trace
+  -> player-owned Projectile guard.kill = 0 routes P2 through defender-owned Common1-style guard-hit states 150 -> 151 with guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) branch routes P2 state 151 -> 333
+  -> that pnpm qa:trace pass was 333/333 artifacts, 303 required and 30 optional
+  -> bounded player-owned Projectile guard kill metadata only; no helper/projectile custom-state guard kill inheritance, exact guard KO/no-KO round flow, exact projectile target lifetime/tick order, score movement, or full guard/projectile parity claim
+Previous R1 required defender-owned GetHitVar air guard.kill trace gate
+  -> synthetic-imported-gethitvar-air-guard-kill.json checksum 4382207e remains required in qa:trace
+  -> direct air guard against HitDef guard.kill = 0 routes P2 through defender-owned Common1-style air guard-hit states 154 -> 155 with guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) branch routes P2 state 155 -> 332
+  -> that pnpm qa:trace pass was 332/332 artifacts, 302 required and 30 optional
+  -> bounded direct-HitDef air guard kill metadata only; no exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, exact air timing/landing, score movement, or full guard parity claim
+Previous R1 required defender-owned GetHitVar crouch guard.kill trace gate
+  -> synthetic-imported-gethitvar-crouch-guard-kill.json checksum 2976fb8c remains required in qa:trace
+  -> direct crouch guard against HitDef guard.kill = 0 routes P2 through defender-owned Common1-style crouch guard-hit states 152 -> 153 with guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) branch routes P2 state 153 -> 331
+  -> that pnpm qa:trace pass was 331/331 artifacts, 301 required and 30 optional
+  -> bounded direct-HitDef crouch guard kill metadata only; no exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, score movement, or full guard parity claim
+Previous R1 required defender-owned GetHitVar stand guard.kill trace gate
+  -> synthetic-imported-gethitvar-guard-kill.json checksum abb4e468 remains required in qa:trace
+  -> direct stand guard against HitDef guard.kill = 0 routes P2 through defender-owned Common1-style guard-hit states 150 -> 151 with guard kill metadata
+  -> GetHitVar(kill) = 0 && GetHitVar(guarded) branch routes P2 state 151 -> 330
+  -> that pnpm qa:trace pass was 330/330 artifacts, 300 required and 30 optional
+  -> bounded direct-HitDef stand guard kill metadata only; no exact guard KO/no-KO round flow, helper/projectile/custom-state inheritance, score movement, or full guard parity claim
+Previous R1 required defender-owned GetHitVar kill trace gate
+  -> synthetic-imported-gethitvar-kill.json checksum ef5ffabf is required in qa:trace
+  -> direct normal HitDef kill = 0 routes P2 into defender-owned Common1-style state 5000 with kill = false metadata
+  -> GetHitVar(kill) = 0 && !GetHitVar(guarded) branch routes P2 state 5000 -> 329
+  -> that pnpm qa:trace pass was 329/329 artifacts, 299 required and 30 optional
+  -> bounded direct-HitDef normal kill metadata only; no KO/round-flow behavior, helper/projectile/custom-state inheritance, score movement, or full get-hit parity claim
+Previous R1 required owner-backed custom-state GetHitVar fall metadata trace gate
+  -> synthetic-imported-custom-state-gethitvar-fall-metadata.json checksum 4a3a1c6b is required in qa:trace
+  -> direct fall HitDef p2stateno = 888 / p2getp1state = 1 routes P2 into P1-owned state data with fall.damage/fall.kill/fall.xvel/fall.yvel metadata
+  -> GetHitVar(fall) && GetHitVar(fall.damage/fall.kill/fall.xvel/fall.yvel) branch routes P2 state 888 -> 903 before SelfState returns to 0/control
+  -> that pnpm qa:trace pass was 328/328 artifacts, 298 required and 30 optional
+  -> bounded direct-HitDef custom-state fall metadata inheritance only; no exact metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, score movement, or full custom-state fall parity claim
+Previous R1 required owner-backed custom-state GetHitVar fall envshake trace gate
+  -> synthetic-imported-custom-state-gethitvar-fall-envshake.json checksum 5c9d1653 is required in qa:trace
+  -> direct fall HitDef p2stateno = 888 / p2getp1state = 1 routes P2 into P1-owned state data with fall.envshake metadata
+  -> GetHitVar(fall) && GetHitVar(fall.envshake.time/freq/ampl/phase) branch routes P2 state 888 -> 902 before SelfState returns to 0/control
+  -> that pnpm qa:trace pass was 327/327 artifacts, 297 required and 30 optional
+  -> bounded direct-HitDef custom-state fall envshake inheritance only; no exact camera waveform, pause/stage/layer interaction, metadata lifetime/stacking, helper/projectile inheritance, throws, teams/simul, score movement, or full custom-state fall presentation parity claim
+Previous R1 required owner-backed custom-state GetHitVar guard timing trace gate
+  -> synthetic-imported-custom-state-gethitvar-guard-timing.json checksum ba77beec is required in qa:trace
+  -> guarded direct HitDef target memory feeds owner-local TargetState into P1-owned state data
+  -> GetHitVar(guarded) = 1 && GetHitVar(slidetime) = 5 && GetHitVar(ctrltime) = 7 && GetHitVar(hitshaketime) > 0 branch routes P2 state 888 -> 901 before SelfState returns to 0/control
+  -> that pnpm qa:trace pass was 326/326 artifacts, 296 required and 30 optional
+  -> bounded guarded target-memory custom-state timing inheritance only; direct-HitDef successful-guard p2stateno is covered separately by synthetic-imported-p2stateno-guard-ignored.json, while HitOverride/helper/projectile p2stateno breadth beyond current covered gates, exact guard timing, throws, helper/root/parent redirects, teams/simul, score movement, or full custom-state/get-hit parity remain unclaimed
+Previous R1 required owner-backed custom-state GetHitVar hitcount/id trace gate
+  -> synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid.json checksum 250f77c2 is required in qa:trace
+  -> direct HitDef id = 77, chainID = 43, numhits = 3 routes P2 into P1-owned state data
+  -> GetHitVar(hitcount) = 3 && GetHitVar(hitid) = 77 && GetHitVar(chainid) = 43 && GetHitVar(hittime) > 0 && !GetHitVar(guarded) branch routes P2 state 888 -> 900 before SelfState returns to 0/control
+  -> that pnpm qa:trace pass was 325/325 artifacts, 295 required and 30 optional
+  -> bounded direct-HitDef custom-state metadata inheritance only; no exact combo accumulation, chain-hit arbitration, helper/projectile inheritance, exact target lifetime, teams/simul, score movement, or full custom-state/get-hit parity claim
+Previous R1 required GetHitVar fallcount trace gate
+  -> synthetic-imported-gethitvar-fallcount.json checksum c391d938 is required in qa:trace
+  -> fall HitDef routes P2 into owner-backed state 5100, HitFallDamage records one ground-impact count and consumes fall.damage
+  -> GetHitVar(fallcount) = 1 && GetHitVar(fall.damage) = 0 branch routes P2 state 5100 -> 328
+  -> that pnpm qa:trace pass was 324/324 artifacts, 294 required and 30 optional
+  -> bounded one-impact fallcount evidence only; no exact combo accumulation, lifetime/reset parity, non-Common1 impact detection, helper/projectile/custom-state inheritance, score movement, or full fall/get-hit parity claim
+R2 RuntimeMatch EnvShake bridge ownership cut
+  -> RuntimeMatchEnvShakeBridgeWorld now wraps active EnvShake and FallEnvShake controller emission before RuntimeEnvShakeWorld mutation
+  -> focused RuntimeMatchEnvShakeBridgeSystem test passes 3 bridge cases for EnvShake, FallEnvShake consume/clear, and no pending fall shake
+  -> ownership cleanup only; no semantic parity, score movement, or trace checksum claim
+Previous R1 required owner-backed custom-state GetHitVar snap offset trace gate
+  -> synthetic-imported-custom-state-gethitvar-snap.json checksum ce4680b9 remains required in qa:trace
+  -> direct HitDef snap = 16,-24 records bounded xoff/yoff/zoff metadata through p2stateno = 888 attacker-owned state data
+  -> owner-backed GetHitVar(xoff/yoff/zoff) branch routes P2 state 888 -> 899 before SelfState returns to state 0/control
+  -> bounded direct-HitDef snap metadata inheritance only; no exact throw positioning, z-axis support, guard snap behavior, helper/projectile inheritance, broader custom-state inheritance breadth, teams/simul, visual/audio parity, score movement, or full throw/custom-state parity claim
+Previous R1 required owner-backed get-hit GetHitVar snap offset trace gate
+  -> synthetic-imported-gethitvar-snap.json checksum 312a53fc remains required in qa:trace
+  -> direct HitDef snap = 16,-24 records bounded xoff/yoff/zoff metadata and applies simple attacker-relative contact positioning
+  -> owner-backed GetHitVar(xoff/yoff/zoff) branch routes P2 state 5100 -> 288
+  -> bounded direct-HitDef snap metadata and simple direct-contact positioning only; no exact throw positioning, z-axis support, guard snap behavior, helper/projectile/custom-state inheritance breadth, teams/simul, visual/audio parity, score movement, or full throw/get-hit parity claim
+Previous R1 required normal get-hit GetHitVar hitcount trace gate
+  -> synthetic-imported-gethitvar-hitcount.json checksum a4685842 is required in qa:trace
+  -> direct HitDef numhits = 3 records bounded defender hit-count metadata
+  -> defender-owned GetHitVar(hitcount) = 3 branch routes P2 state 5000 -> 327
+  -> pnpm qa:trace passes 321/321 artifacts, 291 required and 30 optional
+  -> bounded direct-HitDef numhits metadata only; no exact combo accumulation, multi-hit timing, helper/projectile/custom-state inheritance breadth, teams/simul, exact target lifetime/tick order, score movement, or full get-hit parity claim
+Previous R1 required normal get-hit GetHitVar hitid/chainid trace gate
+  -> synthetic-imported-gethitvar-hitid-chainid.json checksum 18df99ed remains required in qa:trace
+  -> direct HitDef id = 77 and chainID = 43 records target memory and stores bounded hit id / chain id metadata
+  -> defender-owned GetHitVar(hitid) = 77 && GetHitVar(chainid) = 43 branch routes P2 state 5000 -> 326
+  -> bounded direct-HitDef id/chainID metadata only; no exact chain-hit eligibility arbitration, helper/projectile/custom-state inheritance breadth, teams/simul, exact target lifetime/tick order, score movement, or full get-hit parity claim
+Previous R1 required custom-state GetHitVar yaccel trace gate
+  -> synthetic-imported-custom-state-gethitvar-yaccel.json checksum 549fe48d is required in qa:trace
+  -> direct HitDef p2stateno = 888 stores yaccel = 0.62, then P2 enters P1-owned state data with customOwnerId = p1
+  -> GetHitVar(yaccel) branches state 888 -> 898 before SelfState returns P2 to state 0/control
+  -> pnpm qa:trace passes 319/319 artifacts, 289 required and 30 optional
+  -> bounded direct-hit yaccel metadata inheritance only; no exact physics integration, fall acceleration arbitration, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind tick-order, score movement, or full custom-state parity claim
+Previous R1 required custom-state GetHitVar type trace gate
+  -> synthetic-imported-custom-state-gethitvar-type.json checksum 38542874 remains required in qa:trace
+  -> direct HitDef p2stateno = 888 stores ground.type = Low and air.type = Trip, then P2 enters P1-owned state data with customOwnerId = p1
+  -> GetHitVar(type/groundtype/airtype) branches state 888 -> 897 before SelfState returns P2 to state 0/control
+Previous R1 required custom-state GetHitVar isbound trace gate
+  -> synthetic-imported-custom-state-gethitvar-isbound.json checksum d25307e9 remains required in qa:trace
+  -> direct HitDef target memory feeds TargetBind before typed owner-local TargetState, then P2 enters P1-owned state data with customOwnerId = p1
+  -> GetHitVar(isbound) branches state 888 -> 896 before SelfState returns P2 to state 0/control
+Previous R1 required custom-state GetHitVar guarded trace gate
+  -> synthetic-imported-custom-state-gethitvar-guarded.json checksum 54f62821 remains required in qa:trace
+  -> guarded direct HitDef target memory feeds typed owner-local TargetState, then P2 enters P1-owned state data with customOwnerId = p1
+  -> GetHitVar(guarded/hitshaketime/hittime) branches state 888 -> 895 before SelfState returns P2 to state 0/control
+Previous R1 required custom-state GetHitVar velocity trace gate
+  -> synthetic-imported-custom-state-gethitvar-velocity.json checksum e9d8da9e remains required in qa:trace
+  -> direct HitDef p2stateno = 888 with ground.velocity = 4,-2 routes P2 into P1-owned state data and branches 888 -> 894 through GetHitVar(xvel/yvel)
+  -> bounded direct-hit velocity metadata inheritance only; no exact velocity lifetime after later physics/controllers, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, score movement, or full custom-state parity claim
+Previous R1 required custom-state GetHitVar down-recover trace gate
+  -> synthetic-imported-custom-state-gethitvar-down-recover.json checksum 5bd94568 remains required in qa:trace
+  -> direct fall HitDef p2stateno = 888 routes P2 into P1-owned state data and branches 888 -> 893 through GetHitVar(down.recover/down.recovertime/recovertime)
+  -> bounded owner-backed custom-state down-recovery metadata inheritance only; no exact lie-down tables, guard metadata inheritance, throws, helper/root/parent redirects, teams/simul, exact bind/tick order, exact recovery threshold behavior, score movement, or full custom-state parity claim
+Previous R1 required AssertSpecial round-flow telemetry trace gate
+  -> synthetic-imported-assertspecial-round-flow-telemetry.json checksum 10f95bdb is required in qa:trace
+  -> official-style AssertSpecial flags Intro and NoKOSlow lower into typed assertspecial operation evidence
+  -> runtime exposes intro/noKoSlow and final imported actor evidence requires assertSpecialGlobalFlags intro,nokoslow
+  -> pnpm qa:trace passes 310/310 artifacts, 280 required and 30 optional
+  -> bounded parser/typed-op/runtime/final-actor telemetry only; no exact intro ownership, KO slow-motion suppression, winpose/round transitions, helper/team/global ownership, pause layering, score movement, or full round-flow parity claim
+R1 required helper controller-param Parent/Root trace gate
+  -> synthetic-imported-helper-controller-param-parentroot.json checksum 9ad71f4e is required in qa:trace
+  -> first-generation visual Helper executes dynamic VelSet x = Parent,Life - 995 and y = Root,StateNo - 203
+  -> actor-frame evidence proves helper velocity 5,-3 before routing to state 1401 / anim 941
+  -> previous aggregate was 309/309 artifacts, 279 required and 30 optional
+  -> bounded helper-local VelSet controller-param Parent/Root evidence only; no nested helper ancestry where root differs from parent, no helper-spawned helpers, no player Parent controller-param redirect support, no dynamic-parameter typed lowering, no recursive redirection, no debug warning text, no teams/simul, no score movement, no full helper/controller expression parity claim
+R2 RuntimeControllerExpressionContextSystem ownership
+  -> RuntimeControllerExpressionContextSystem owns shared raw numeric controller expression contexts for passive/runtime controller worlds
+  -> dynamic fallback params reuse one redirect-aware helper for Target(...), Parent, Root, Const, HitPauseTime, StageTime, and GetHitVar reads
+  -> focused RuntimeControllerExpressionContextSystem coverage proves redirect-aware numeric evaluation plus helper/team metadata forwarding
+  -> ownership cleanup only; no score movement, no new expression language support, no ID/player unique-id semantics, no recursive redirection, no helper/team scope expansion, no full controller VM claim
+Previous R1 required AssertSpecial shadow presentation trace gate
+  -> synthetic-imported-assertspecial-helper-explod-shadow.json trace checksum 83f61b48 is required
+  -> synthetic-imported-assertspecial-shadow-telemetry.json trace checksum 2b9c8fac is required
+  -> bounded synthetic imported AssertSpecial controllers normalize noshadow into final-actor assertSpecialFlags and globalnoshadow into final-actor assertSpecialGlobalFlags
+  -> qa gates require AssertSpecial controller evidence, typed assertspecial operation evidence, final actor local/global shadow-flag telemetry, P1/P2 actor-frame shadowVisible=false evidence, and helper/explod shadowVisible=false evidence for a helper-parented Explod route
+  -> at that checkpoint pnpm qa:trace passed 308/308 artifacts, 278 required and 30 optional
+  -> closeout passed pnpm test, pnpm typecheck, pnpm build, pnpm qa:smoke, pnpm check:boundaries, and git diff --check
+  -> RuntimeSnapshotWorld projects player/helper/explod suppression and CharacterRenderer draws/removes bounded ellipse shadows
+  -> still no exact shadow skew/stage parameters, no projectile shadow semantics, no exact global/team/helper ownership beyond this spawned helper/explod route, no pause/layer parity, no score movement, no full shadow/global renderer parity claim
+Previous R1 required AssertSpecial global telemetry trace gate
+  -> synthetic-imported-assertspecial-global-telemetry.json checksum fc793d29 remains required
+  -> bounded synthetic imported AssertSpecial controllers normalize nobardisplay, nobg, nofg, nokosnd, and nomusic into final-actor assertSpecialGlobalFlags evidence
+  -> telemetry/gate evidence only; no lifebar hiding, no stage BG/FG rendering suppression, no KO sound suppression, no music pause, no exact global/team/helper ownership, no pause/layer parity, no score movement, no full global flag parity claim
+Previous R1 required default lie-down fast recovery trace gate
+  -> synthetic-imported-default-liedown-fast-recovery.json checksum 74bdac97 is required
+  -> bounded synthetic Common1-style state 5110 can fast-recover through runtime shortcut while down.recovertime is still positive
+  -> fixture omits authored 5110 Get Up ChangeState controller, keeps fresh recovery input active, and still routes 5110 -> 5120 -> 0
+  -> bounded synthetic recovery evidence only; no exact mashing thresholds, no public KFM proof, no global/team/helper ownership, no pause-layer parity, no score movement, no full recovery parity claim
+Previous R1 required AssertSpecial NoFastRecoverFromLieDown trace gate
+  -> synthetic-imported-assertspecial-nofastrecoverfromliedown.json checksum 74bf5d85 is required
+  -> bounded synthetic IKEMEN AssertSpecial NoFastRecoverFromLieDown executes as typed assertspecial evidence in Common1-style state 5110
+  -> fresh recovery input stays active during lie-down, the fast lie-down shortcut stays suppressed while down.recovertime counts from positive to 0, then 5110 -> 5120 -> 0 executes
+  -> bounded synthetic recovery evidence only; no exact mashing thresholds, no public KFM proof, no global/team/helper ownership, no pause-layer parity, no score movement, no full recovery parity claim
+Previous R1 required controller-param Root redirect trace gate
+  -> synthetic-imported-controller-param-root-redirect.json checksum 1d4a73f7 is required
+  -> static seed VelSet sets P1 velocity to 4,-2 before dynamic Root-param read
+  -> dynamic VelSet evaluates Root, Life - 995 / Root, StateNo - 203 through current player root context and moves P1 velocity to 5,-3
+  -> named controller order, static typed kinematic:velset seed, and actor-frame velocity telemetry guard the route
+  -> bounded current player VelSet controller-param Root redirect evidence only; no player Parent controller-param redirect support, no nested helper ancestry where root differs from parent, helper-spawned helpers, no dynamic-parameter typed lowering, no recursive redirect evaluation, no debug warning text, no broad bottom/redirect parity, no score movement, no full controller/expression parity claim
+Previous R1 required controller-param Target redirect trace gate
+  -> synthetic-imported-controller-param-target-redirect.json checksum 55bb7b1f is required
+  -> static seed VelSet sets P1 velocity to 4,-2 before direct HitDef target id 77 exists
+  -> dynamic VelSet evaluates Target(77), Life - 960 / Target(77), Life - 966 through target memory and moves P1 velocity to 3,-3
+  -> target-link, named controller order, static typed kinematic:velset seed, HitDef, and actor-frame velocity telemetry guard the route
+  -> pnpm qa:trace passes 302/302 artifacts, 272 required and 30 optional
+  -> bounded current VelSet controller-param Target redirect evidence only; no player Parent controller-param redirect support, no nested helper ancestry where root differs from parent, helper-spawned helpers, no dynamic-parameter typed lowering, no recursive redirect evaluation, no debug warning text, no broad bottom/redirect parity, no score movement, no full controller/expression parity claim
+R1 required controller-param bottom trace gate
+  -> synthetic-imported-controller-param-bottom.json checksum 28ef21ad is required
+  -> static seed VelSet sets P1 velocity to 4,-2
+  -> dynamic VelSet evaluates Parent,Vel X / Parent,Vel Y with no parent, treats the bottom parameter result as 0, and resets velocity to 0,0
+  -> named controller order plus static typed kinematic:velset evidence guards the route; actor-frame telemetry owns the dynamic fallback proof
+  -> previous pnpm qa:trace passed 301/301 artifacts, 271 required and 30 optional at promotion time
+  -> bounded controller-param bottom fallback only; no broad bottom parity, no score movement, no full controller/expression parity claim
+R1 required Target IfElse bottom trace gate
+  -> synthetic-imported-target-ifelse-bottom.json checksum be7554d4 is required
+  -> IfElse(0, MoveHit >= 1, (Target(999), Life = 0)) selects missing Target(999), forbids state 400, and fails closed
+  -> IfElse(1, MoveHit >= 1, (Target(999), Life = 0)) selects MoveHit, isolates the unused missing Target(999) branch from the return value, and routes to state/action 401 after direct HitDef contact
+  -> focused CNS coverage proves IfElse still eagerly evaluates unused branches and reports warning-style unsupported diagnostics, unlike Cond
+  -> previous promotion passed 300/300 artifacts, 270 required and 30 optional
+  -> bounded IfElse/bottom result-isolation evidence only; no Cond-style lazy evaluation, no recursive redirection, no debug warning text, no broad bottom parity, no score movement, no full redirect parity claim
+R1 required Target Cond bottom trace gate
+  -> synthetic-imported-target-cond-bottom.json checksum e882a2bb is required
+  -> Cond(1, (Target(999), Life = 0), MoveHit >= 1) selects missing Target(999), forbids state 398, and fails closed
+  -> Cond(0, (Target(999), Life = 0), MoveHit >= 1) skips missing Target(999), selects MoveHit, and routes to state/action 399 after direct HitDef contact
+  -> focused CNS coverage proves skipped Cond branches do not call the unsupported-redirect reporter while selected missing redirects still fail closed
+  -> previous qa:trace passed 299/299 artifacts, 269 required and 30 optional at promotion time
+  -> bounded Cond/bottom evidence only; no recursive redirection, no debug warning text, no broad bottom parity, no score movement, no full redirect parity claim
+R1 required Target invalid redirect bottom trace gate
+  -> synthetic-imported-target-redirect-bottom.json checksum 5e50a90a is required
+  -> missing Target(999) propagates bottom through `(Target(999), Life = 0) || 1`
+  -> forbidden state 396 does not execute; fallback state/action 397 executes after direct HitDef contact
+  -> focused Parent/Root unit coverage proves failed redirects propagate through composite expressions while unused IfElse branches stay isolated
+  -> bounded parser-expression bottom evidence only; no recursive redirection, no debug warning text, no broad bottom parity, no score movement, no full redirect parity claim
+R1 required Helper Parent/Root redirect trace gate
+  -> synthetic-imported-helper-parentroot.json checksum 5154220c is required
+  -> a first-generation visual Helper reads cloned owner/root runtime state through Parent,StateNo, Parent,Vel X, Root,Anim, and a redirected-value ChangeState expression
+  -> the helper routes 1200 -> 1400 / anim 940
+  -> read-only helper-local redirect evidence only; no score movement, no nested helper ancestry where root differs from parent, no team/helper-owned redirects, no redirect mutation, no keyctrl, no full helper redirect parity claim
+R1 required AssertSpecial NoGetUpFromLieDown trace gate
+  -> synthetic-imported-assertspecial-nogetupfromliedown.json checksum 4c3b6281 is required
+  -> bounded synthetic IKEMEN AssertSpecial NoGetUpFromLieDown executes as typed assertspecial evidence in Common1-style state 5110
+  -> state 5110 counts down.recovertime to 0, the hardcoded 5110 -> 5120 get-up transition stays forbidden, and final P2 remains in 5110
+  -> pnpm qa:trace passes 296/296 artifacts, 266 required and 30 optional
+  -> bounded synthetic get-up suppression evidence only; no score movement, no public KFM proof, no global/team/helper ownership, no pause-layer parity, no full recovery parity claim
+R1 official air-recovery coverage contract hardening
+  -> scripts/qa_traces.cjs now requires synthetic-imported-default-fall-official-air-recovery in coverage summaries
+  -> artifact checksum b0363be9 was already generated as required
+  -> evidence-pipeline hardening only; no behavior, checksum, score, public KFM, exact threshold, velocity, or full recovery-parity claim changed
 R2 RuntimeFighterAdvanceHookSetWorld ownership
   -> RuntimeFighterAdvanceHookSetWorld owns bounded per-fighter advance hook-set construction outside PlayableMatchRuntime
   -> sprite effects, hit eligibility, HitOverride ticking, contact timers, state clock, frame constraints, recovery windows, stun, move lifecycle, kinematics, animation, active controllers, recovery landing, lie-down recovery, and frozen-position preservation are forwarded through one named seam before RuntimeFighterAdvanceWorld executes
@@ -300,7 +866,7 @@ R1 Common1 crouch guard slide-stop trace gate
   -> required order is 152 ChangeAnim -> 152 ChangeState -> 153 HitVelSet -> kinematic:hitvelset -> 153 VelSet -> kinematic:velset -> 153 CtrlSet -> resource:ctrlset -> 153 ChangeState
   -> actor-frame evidence proves crouch guard-slide velocity before stop/control
   -> newer synthetic-imported-crouch-guard-hold-crouch-return.json checksum 83ecb699 extends this portable route through final crouch state/action 10 with control
-  -> current pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional
+  -> current pnpm qa:trace passes 296/296 artifacts, 266 required and 30 optional
   -> crouch guard slide-stop/control plus synthetic return-to-crouch-control and optional private KFM 152 -> 153 -> 131 -> 11 crouch-control evidence only; no public KFM support, required portable KFM-specific fixture coverage while the private fixture is absent, exact guard timing, proximity guard, guard effects, air slide-stop parity, controller-loop tick parity, visual/audio parity, score movement, or full guard parity claim
 R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static PlaySnd lowpriority, legacy volume, volumescale, freqmul, loop, pan, and abspan now compile into typed audio:playsnd metadata
@@ -800,6 +1366,16 @@ R1 SelfAnimExist required trace gate
   -> bounded imported State -1 routing can branch on own AIR action existence: SelfAnimExist(200) routes, missing action 9999 fails closed, and P1 enters state 290
   -> pnpm qa:trace passes 212/212 artifacts, 192 required and 20 optional
   -> this is trigger evidence only; no redirected animation-owner lookup, helper/parent/root lookup, common/FightFX namespace parity, visual parity, score movement, or full trigger parity claim
+R2 RuntimeMatchEnvShakeBridgeWorld ownership extraction
+  -> RuntimeMatchEnvShakeBridgeWorld now owns bounded match-level EnvShake and FallEnvShake controller handoff for active controller paths
+  -> PlayableMatchRuntime delegates controller source, typed operation data when available, runtime tick, telemetry hooks, and RuntimeEnvShakeWorld event emission through the named bridge
+  -> focused RuntimeMatchEnvShakeBridgeSystem coverage proves typed EnvShake forwarding, FallEnvShake hit-fall metadata emission/clearing, telemetry forwarding, and no-pending-fall no-event behavior
+  -> this is R2 ownership cleanup only; no exact camera waveform, pause/stage/layer timing, helper/redirect ownership breadth, renderer parity, visual parity, score movement, or full presentation parity claim
+R2 RuntimeMatchEnvColorBridgeWorld ownership extraction
+  -> RuntimeMatchEnvColorBridgeWorld now owns bounded match-level EnvColor controller handoff for active, pause, and hitpause ignored-controller paths
+  -> PlayableMatchRuntime delegates controller source, typed envcolor operation data when available, runtime tick, and RuntimeEnvColorWorld event emission through the named bridge
+  -> focused RuntimeMatchEnvColorBridgeSystem coverage proves typed-operation forwarding, tick preservation, stage-flash projection, and zero-time no-event behavior
+  -> this is R2 ownership cleanup only; no exact EnvColor blend math, layer/window ordering, pause layering/timing, renderer parity, visual parity, score movement, or full presentation parity claim
 R2 RuntimeFighterStateWorld ownership extraction
   -> RuntimeFighterStateWorld now owns bounded fighter runtime-state construction for resource maxima, damage multipliers, initial action/control/resource state, command buffers, contact memory, telemetry buckets, injected world references, deterministic RNG seed, and lazy runtime-program compilation
   -> PlayableMatchRuntime delegates P1/P2 construction while still supplying stage starts, actor ids, definitions, and injected match worlds
@@ -1454,9 +2030,9 @@ Do not reselect `kfm-official-default-air-guard-state` or the optional private-f
 
 Do not reselect `synthetic-imported-air-guard-landing` or the required synthetic air guard `154 -> 155 -> 52 -> 20` walk-control route as fresh next work; it is now closed and required.
 
-Do not reselect `synthetic-imported-gethitvar-velocity`, `synthetic-imported-gethitvar-damage`, or the bounded direct-contact `GetHitVar(xvel/yvel)` / `GetHitVar(damage) = 37` normal get-hit branches as fresh next work; they are now closed and required.
+Do not reselect `synthetic-imported-custom-state-gethitvar-guard-kill`, `synthetic-imported-helper-projectile-gethitvar-guard-kill`, `synthetic-imported-projectile-gethitvar-guard-kill`, `synthetic-imported-gethitvar-air-guard-kill`, `synthetic-imported-gethitvar-crouch-guard-kill`, `synthetic-imported-gethitvar-guard-kill`, `synthetic-imported-gethitvar-kill`, `synthetic-imported-custom-state-gethitvar-fall-metadata`, `synthetic-imported-custom-state-gethitvar-fall-envshake`, `synthetic-imported-custom-state-gethitvar-snap`, `synthetic-imported-gethitvar-snap`, `synthetic-imported-gethitvar-hitcount`, `synthetic-imported-gethitvar-hitid-chainid`, `synthetic-imported-gethitvar-velocity`, `synthetic-imported-gethitvar-damage`, or the bounded custom-state/direct-contact/projectile `GetHitVar(kill)` / `GetHitVar(fall.damage/fall.kill/fall.xvel/fall.yvel)` / `GetHitVar(fall.envshake.*)` / `GetHitVar(xoff/yoff/zoff)` / `GetHitVar(hitcount)` / `GetHitVar(hitid/chainid)` / `GetHitVar(xvel/yvel)` / `GetHitVar(damage) = 37` branches as fresh next work; they are now closed and required.
 
-Do not reselect `GetHitVar guard timing`, `GetHitVar down-recover`, `GetHitVar fall env-shake`, `GetHitVar fall metadata`, `TeamSide`, `Target*` final side-effect trace strengthening, `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `HitBy`, target-owned custom-state, `SelfAnimExist`, `AnimTime`, `AnimElemTime`, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, optional KFM recovery-threshold drop gate, Common1 too-early recovery-input positive-window gate, official-style synthetic recovery threshold / too-early promotion, official-style synthetic ground recovery sequence, resource actor-frame evidence, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root/opponent read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus selected-frame/multi-frame trace metadata, selected HitSpark AIR-frame offset/duration requirements, `RuntimeContactPresentationWorld`, `RuntimeCombatResolutionWorld`, `RuntimeHelperCombatWorld`, `RuntimeEffectHelperContextWorld`, `RuntimeHelperProjectileTargetWorld`, `RuntimeMatchHelperProjectileTargetWorld`, `RuntimeMatchPresentationSnapshotWorld`, `RuntimeActiveControllerTelemetryWorld`, `RuntimeMatchCombatStateHooksWorld`, `RuntimeHelperTargetStateWorld`, `RuntimeTargetStateEntryWorld`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `RuntimeAutoGuardStartWorld`, `RuntimeActiveControllerScanWorld`, `RuntimeActiveControllerDispatchWorld`, `RuntimeActiveStateDispatchWorld`, `RuntimeActiveSideEffectDispatchWorld`, `RuntimeStateEntryRouteWorld`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `RuntimeResourceWorld`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeActiveExpressionContextWorld`, `RuntimeFighterAdvanceHookSetWorld`, `RuntimeTargetWorld.resolveCandidates`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeAnimationWorld` active action-retarget ownership deepening, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveStartWorld`, `RuntimeMoveLifecycleWorld`, `RuntimeMatchFighterAdvanceWorld`, `RuntimeMatchPauseControllerWorld`, `RuntimeMatchCombatBridgeWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeBoundsControllerWorld` ownership, `RuntimeHitFallControllerWorld` ownership, `RuntimeStateTypeWorld`, `RuntimeDamageScaleWorld`, `RuntimeHitDefenseWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld` match envelope ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld`, `RuntimeFighterAdvanceWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
+Do not reselect `GetHitVar guard timing`, `GetHitVar down-recover`, `GetHitVar fall env-shake`, `GetHitVar fall metadata`, `TeamSide`, `Target*` final side-effect trace strengthening, `OwnerMetrics`, `P2Distance`, `P2StateContext`, `StateContext`, `GameTime`, `EdgeDistance`, `HitBy`, target-owned custom-state, `SelfAnimExist`, `AnimTime`, `AnimElemTime`, default stand get-hit progression controller/frame order, guard-hit actor-frame telemetry, auto guard-start/end controller-order, optional KFM recovery-threshold drop gate, Common1 too-early recovery-input positive-window gate, official-style synthetic recovery threshold / too-early promotion, official-style synthetic ground recovery sequence, resource actor-frame evidence, debug clipboard no-ops, `MakeDust`, no-op `DestroySelf`, visual-helper removal ownership, helper-local micro-VM ownership including helper-local sound-event telemetry and bounded parent/root/opponent read-only redirects, `VarRandom`, common/FightFX HitSpark source-frame plus selected-frame/multi-frame trace metadata, selected HitSpark AIR-frame offset/duration requirements, `RuntimeContactPresentationWorld`, `RuntimeCombatResolutionWorld`, `RuntimeHelperCombatWorld`, `RuntimeEffectHelperContextWorld`, `RuntimeHelperProjectileTargetWorld`, `RuntimeMatchHelperProjectileTargetWorld`, `RuntimeMatchPresentationSnapshotWorld`, `RuntimeActiveControllerTelemetryWorld`, `RuntimeMatchCombatStateHooksWorld`, `RuntimeHelperTargetStateWorld`, `RuntimeTargetStateEntryWorld`, `RuntimeControllerExpressionContextSystem`, `RuntimeControllerEvaluationContextWorld`, `RuntimeDispatchEvaluationWorld`, `RuntimeTriggerEvaluationWorld`, `RuntimeTriggerGateWorld`, `RuntimeAutoGuardStartWorld`, `RuntimeActiveControllerScanWorld`, `RuntimeActiveControllerDispatchWorld`, `RuntimeActiveStateDispatchWorld`, `RuntimeActiveSideEffectDispatchWorld`, `RuntimeStateEntryRouteWorld`, `RuntimeContactMemoryWorld`, `RuntimeRandomSystem`, `RuntimeResourceWorld`, `RuntimeControllerDispatchWorld`, `RuntimeExpressionContextWorld`, `RuntimeActiveExpressionContextWorld`, `RuntimeFighterAdvanceHookSetWorld`, `RuntimeTargetWorld.resolveCandidates`, `HitSparkAssetSystem`, `RuntimeRecoverySystem`, `RuntimeGuardDistanceWorld`, `RuntimeAnimationWorld`, `RuntimeAnimationWorld` active action-retarget ownership deepening, `RuntimeKinematicsWorld`, `RuntimeStateTransitionControllerWorld`, `RuntimeAnimationControllerWorld`, `RuntimeKinematicControllerWorld`, `RuntimeInputControlWorld`, `RuntimeMoveStartWorld`, `RuntimeMoveLifecycleWorld`, `RuntimeMatchFighterAdvanceWorld`, `RuntimeMatchPauseControllerWorld`, `RuntimeMatchEnvShakeBridgeWorld`, `RuntimeMatchEnvColorBridgeWorld`, `RuntimeMatchCombatBridgeWorld`, `BindToTarget` target-system ownership, active target-binding position ownership, `RuntimeHitEligibilityWorld` ownership, `RuntimeBoundsControllerWorld` ownership, `RuntimeHitFallControllerWorld` ownership, `RuntimeStateTypeWorld`, `RuntimeDamageScaleWorld`, `RuntimeHitDefenseWorld`, `RuntimeAssertSpecialWorld`, `RuntimeSnapshotWorld` match envelope ownership, `RuntimeSnapshotWorld` stage/camera ownership, `RuntimeSnapshotWorld` player actor/effect snapshot projection, `RuntimeCompatibilityTelemetryWorld`, `RuntimeFighterAdvanceWorld`, `RuntimeOrientationWorld`, `RuntimeGuardWorld`, `RuntimeGetHitStateWorld`, `RuntimeHitStateTransitionWorld`, `RuntimeStateAvailabilityWorld`, `RuntimeStateEntryWorld`, `RuntimeStunWorld`, `RuntimePausedMatchWorld`, or `RuntimeHitPauseWorld` ownership as fresh next work. They are already closed gates.
 
 Do not reselect `RuntimeMatchActorRosterWorld` or `RuntimeMatchRoundWorld` ownership as fresh next work; the current P1/P2 roster projection and active-match round timer/finish side-effect boundaries are now closed.
 

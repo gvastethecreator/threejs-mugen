@@ -321,11 +321,23 @@ export function runRuntimeHelperStateControllers(
         emitHelperSoundEvent(helper, controller, options.runtimeTick ?? options.stageTime ?? helper.age);
         continue;
       }
+      const expressionContext = helperExpressionContext(helper, options);
       applyRuntimeStateToHelper(
         helper,
         executeControllerIr(controller, helperRuntimeState(helper), () => undefined, {
           stageBounds: options.stageBounds,
           stageTime: options.stageTime,
+          opponent: expressionContext.opponent,
+          parent: expressionContext.parent,
+          root: expressionContext.root,
+          target: expressionContext.target,
+          teamSide: expressionContext.teamSide,
+          opponentTeamSide: expressionContext.opponentTeamSide,
+          parentTeamSide: expressionContext.parentTeamSide,
+          rootTeamSide: expressionContext.rootTeamSide,
+          isHelper: expressionContext.isHelper,
+          helperId: expressionContext.helperId,
+          stateTime: expressionContext.stateTime,
         }),
       );
       continue;

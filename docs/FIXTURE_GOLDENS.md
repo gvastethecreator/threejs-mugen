@@ -35,14 +35,78 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded recovery threshold
 - synthetic bounded recovery actor-frame tick order
 - synthetic bounded air recovery velocity
+- synthetic bounded official-style air recovery with required coverage-summary presence
 - synthetic bounded ground recovery selection/velocity
+- synthetic bounded AssertSpecial NoGetUpFromLieDown hardcoded lie-down get-up suppression
+- synthetic bounded AssertSpecial NoFastRecoverFromLieDown fast lie-down recovery suppression
+- synthetic bounded AssertSpecial global telemetry for `nobardisplay`, `nobg`, `nofg`, `nokosnd`, and `nomusic`
+- synthetic bounded AssertSpecial round-flow telemetry for official `Intro` and `NoKOSlow` through `synthetic-imported-assertspecial-round-flow-telemetry.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` metadata inheritance through `synthetic-imported-custom-state-gethitvar.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` fall metadata inheritance through `synthetic-imported-custom-state-gethitvar-fall.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(fall.damage/fall.kill/fall.xvel/fall.yvel)` metadata inheritance through `synthetic-imported-custom-state-gethitvar-fall-metadata.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` HitDef type metadata inheritance through `synthetic-imported-custom-state-gethitvar-animtype.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(type)` metadata inheritance through `synthetic-imported-custom-state-gethitvar-type.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(yaccel)` metadata inheritance through `synthetic-imported-custom-state-gethitvar-yaccel.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` guarded metadata inheritance through `synthetic-imported-custom-state-gethitvar-guarded.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` guarded timing metadata inheritance through `synthetic-imported-custom-state-gethitvar-guard-timing.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(fall.envshake.time/freq/ampl/phase)` metadata inheritance through `synthetic-imported-custom-state-gethitvar-fall-envshake.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(isbound)` TargetBind metadata inheritance through `synthetic-imported-custom-state-gethitvar-isbound.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` velocity metadata inheritance through `synthetic-imported-custom-state-gethitvar-velocity.json`
+- synthetic bounded owner-backed custom-state `GetHitVar` down-recovery metadata inheritance through `synthetic-imported-custom-state-gethitvar-down-recover.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(xoff/yoff/zoff)` snap metadata inheritance through `synthetic-imported-custom-state-gethitvar-snap.json`
+- synthetic bounded owner-backed custom-state `GetHitVar(hitcount/hitid/chainid)` metadata inheritance through `synthetic-imported-custom-state-gethitvar-hitcount-hitid-chainid.json`
+- synthetic bounded owner-backed get-hit `GetHitVar(fallcount)` post-impact metadata through `synthetic-imported-gethitvar-fallcount.json`
+- synthetic bounded owner-backed get-hit `GetHitVar(xoff/yoff/zoff)` snap metadata through `synthetic-imported-gethitvar-snap.json`
+- synthetic bounded defender-owned stand/crouch/air guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-guard-kill.json`, `synthetic-imported-gethitvar-crouch-guard-kill.json`, and `synthetic-imported-gethitvar-air-guard-kill.json`
+- synthetic bounded direct-HitDef explicit `missonoverride = 0` custom-state `HitOverride guardflag` / `guardflag.not` filtering through `synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json`
+- synthetic bounded player-owned Projectile explicit `missonoverride = 0` custom-state `HitOverride guardflag` / `guardflag.not` filtering through `synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter.json`
+- synthetic bounded helper-parented Projectile explicit `missonoverride = 0` custom-state `HitOverride guardflag` / `guardflag.not` filtering through `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-guardflag-filter.json`
+- synthetic bounded helper-parented Projectile explicit `missonoverride = 0` custom-state lowest matching HitOverride slot priority through `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority.json`
+- synthetic bounded player-owned Projectile explicit `missonoverride = 0` custom-state lowest matching HitOverride slot priority through `synthetic-imported-projectile-hitoverride-missonoverride-zero-slot-priority.json`
+- synthetic bounded helper-parented Projectile default `missonoverride = -1` custom-state `HitOverride forceair` / `forceguard` / `keepstate` frame/lifecycle/custom-state suppression evidence through `synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json`
+- synthetic bounded player-owned Projectile default `missonoverride = -1` custom-state `HitOverride forceair` / `forceguard` / `keepstate` frame/lifecycle/custom-state suppression evidence through `synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json`
+- synthetic bounded direct-HitDef default `missonoverride = -1` custom-state `HitOverride forceair` / `forceguard` / `keepstate` miss evidence through `synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate.json`
+- synthetic bounded helper-parented Projectile explicit `missonoverride = 0` custom-state `HitOverride forceair` / `forceguard` / `keepstate` frame/target-link/lifecycle-payload/custom-state suppression evidence through `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json`
+- synthetic bounded player-owned Projectile explicit `missonoverride = 0` custom-state `HitOverride forceair` / `forceguard` / `keepstate` frame/lifecycle/custom-state suppression evidence through `synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json`
+- synthetic bounded direct-HitDef explicit `missonoverride = 0` custom-state `HitOverride forceair` / `forceguard` / `keepstate` frame/custom-state suppression evidence through `synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate.json`
+- synthetic bounded helper-parented Projectile `HitOverride forceair` / `forceguard` / `keepstate` frame/target-link/lifecycle evidence through `synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate.json`
+- synthetic bounded player-owned Projectile `HitOverride forceair` / `forceguard` / `keepstate` frame/lifecycle evidence through `synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate.json`
+- synthetic bounded direct-HitDef `HitOverride forceair` / `forceguard` / `keepstate` frame evidence through `synthetic-imported-hitoverride-forceair-forceguard-keepstate.json`
+- synthetic bounded player-owned Projectile `HitOverride guardflag` / `guardflag.not` slot filtering through `synthetic-imported-projectile-hitoverride-guardflag-filter.json`
+- synthetic bounded helper-parented Projectile `HitOverride guardflag` / `guardflag.not` slot filtering through `synthetic-imported-helper-projectile-hitoverride-guardflag-filter.json`
+- synthetic bounded direct-HitDef `HitOverride guardflag` / `guardflag.not` slot filtering through `synthetic-imported-hitoverride-guardflag-filter.json`
+- synthetic bounded direct-HitDef `missonoverride = 0` custom-state lowest matching HitOverride slot priority through `synthetic-imported-hitoverride-missonoverride-zero-slot-priority.json`
+- synthetic bounded helper-parented Projectile lowest matching HitOverride slot priority through `synthetic-imported-helper-projectile-hitoverride-slot-priority.json`
+- synthetic bounded player-owned Projectile lowest matching HitOverride slot priority through `synthetic-imported-projectile-hitoverride-slot-priority.json`
+- synthetic bounded direct-HitDef lowest matching HitOverride slot priority through `synthetic-imported-hitoverride-slot-priority.json`
+- synthetic bounded helper-parented Projectile `missonoverride = 0` HitOverride redirect behavior through `synthetic-imported-helper-projectile-hitoverride-missonoverride-zero.json`
+- synthetic bounded player-owned Projectile `missonoverride = 0` HitOverride redirect behavior through `synthetic-imported-projectile-hitoverride-missonoverride-zero.json`
+- synthetic bounded helper-parented Projectile `missonoverride = 1` HitOverride miss behavior through `synthetic-imported-helper-projectile-hitoverride-missonoverride-one.json`
+- synthetic bounded helper-parented Projectile `p2stateno` HitOverride redirect behavior through `synthetic-imported-helper-projectile-hitoverride-p2stateno.json`
+- synthetic bounded player-owned Projectile `p2stateno` HitOverride redirect behavior through `synthetic-imported-projectile-hitoverride-p2stateno.json`
+- synthetic bounded player-owned Projectile `missonoverride = 1` HitOverride miss behavior through `synthetic-imported-projectile-hitoverride-missonoverride-one.json`
+- synthetic bounded IKEMEN direct-HitDef `p2getp1state = 0` HitOverride miss behavior through `synthetic-imported-hitoverride-p2getp1state-zero-miss.json`
+- synthetic bounded IKEMEN `HitDef missonoverride = 1` HitOverride miss behavior through `synthetic-imported-hitoverride-missonoverride-one.json`
+- synthetic bounded IKEMEN `HitDef missonoverride = 0` HitOverride redirect behavior through `synthetic-imported-hitoverride-missonoverride-zero.json`
+- synthetic bounded direct-HitDef HitOverride plus owner-backed `p2stateno` miss behavior through `synthetic-imported-hitoverride-p2stateno-miss.json`
+- synthetic bounded direct-HitDef `p2stateno` ignored-on-successful-guard behavior through `synthetic-imported-p2stateno-guard-ignored.json`
+- synthetic bounded owner-backed custom-state guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-custom-state-gethitvar-guard-kill.json`
+- synthetic bounded helper-parented Projectile guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-helper-projectile-gethitvar-guard-kill.json`
+- synthetic bounded player-owned Projectile guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-projectile-gethitvar-guard-kill.json`
+- synthetic bounded defender-owned normal get-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-kill.json`
+- synthetic bounded defender-owned normal get-hit `GetHitVar(hitcount)` metadata through `synthetic-imported-gethitvar-hitcount.json`
+- synthetic bounded defender-owned normal get-hit `GetHitVar(hitid)` / `GetHitVar(chainid)` metadata through `synthetic-imported-gethitvar-hitid-chainid.json`
+- synthetic bounded AssertSpecial shadow presentation evidence for local `noshadow` and global `globalnoshadow`
+- synthetic bounded AssertSpecial `GlobalNoShadow` helper/explod actor-frame evidence through `synthetic-imported-assertspecial-helper-explod-shadow.json`
+- synthetic bounded default lie-down fast recovery shortcut
 - synthetic bounded round KO/time-over snapshot evidence
 - state exit
-- Target*
+- Target*, including bounded invalid-redirect bottom propagation through `synthetic-imported-target-redirect-bottom.json`, bounded `Cond(...)` unused-branch bottom isolation through `synthetic-imported-target-cond-bottom.json`, and bounded `IfElse(...)` returned-branch bottom isolation through `synthetic-imported-target-ifelse-bottom.json`
+- Controller-param Root redirect through `synthetic-imported-controller-param-root-redirect.json`, helper-local controller-param Parent/Root redirect through `synthetic-imported-helper-controller-param-parentroot.json`, Target redirect through `synthetic-imported-controller-param-target-redirect.json`, plus controller-param bottom fallback through `synthetic-imported-controller-param-bottom.json`
 - EnemyNear indexed one-on-one redirect/fail-closed route
 - Pause/SuperPause
 - Projectile
-- Helper, including bounded helper-local direct-HitDef and helper-parented Projectile target-memory/Target-controller routes
+- Helper, including bounded helper-local Parent/Root redirects, helper-local controller-param Parent/Root redirects, direct-HitDef, and helper-parented Projectile target-memory/Target-controller routes
 - Explod
 - ModifyExplod live-mutation
 - HitDef hit/guard sound and spark routes, including parsed `[Data]` default hit/guard spark fallbacks plus combined hit sound + FightFX hit-spark and combined guard sound + FightFX guard-spark package routes with shared contact package metadata

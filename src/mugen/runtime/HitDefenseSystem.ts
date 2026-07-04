@@ -1,7 +1,6 @@
 import type { HitEligibilityControllerOp, HitOverrideControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
-import { evaluateExpression } from "./ExpressionEvaluator";
-import { runtimeHitVar } from "./RuntimeHitVarSystem";
+import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState, RuntimeHitBySlot, RuntimeHitOverrideSlot } from "./types";
 
@@ -76,6 +75,14 @@ export class RuntimeHitDefenseWorld {
       forceGuard: operation?.forceGuard ?? ((numberParam(controller, state, context, "forceguard") ?? 0) !== 0),
       keepState: operation?.keepState ?? ((numberParam(controller, state, context, "keepstate") ?? 0) !== 0),
     };
+    const guardFlag = operation?.guardFlag ?? stringParam(controller, "guardflag");
+    const guardFlagNot = operation?.guardFlagNot ?? stringParam(controller, "guardflag.not");
+    if (guardFlag) {
+      next.guardFlag = guardFlag;
+    }
+    if (guardFlagNot) {
+      next.guardFlagNot = guardFlagNot;
+    }
     const targetStateNo = operation?.stateNo ?? stateNo;
     if (targetStateNo !== undefined && targetStateNo >= 0) {
       next.stateNo = targetStateNo;
@@ -97,9 +104,18 @@ function numberParam(
     if (raw === undefined) {
       continue;
     }
-    return evaluateNumber(raw.split(",")[0]?.trim(), state, context);
+    return evaluateNumber(raw.trim(), state, context);
   }
   return undefined;
+}
+
+function stringParam(controller: RuntimeHitDefenseControllerSource, key: string): string | undefined {
+  const raw = findParam(controller, key)?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const quoted = raw.match(/^"(.*)"$/);
+  return quoted ? quoted[1] : raw;
 }
 
 function findParam(controller: RuntimeHitDefenseControllerSource, key: string): string | undefined {
@@ -124,22 +140,5 @@ function evaluateNumber(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): number | undefined {
-  if (!raw) {
-    return undefined;
-  }
-  const direct = Number(raw);
-  if (Number.isFinite(direct)) {
-    return direct;
-  }
-  const evaluated = evaluateExpression(raw, {
-    self: state,
-    getConst: context.getConst,
-    getHitVar: (name) => runtimeHitVar(state, name),
-    hitPauseTime: context.hitPauseTime,
-    random: context.random,
-    stageBounds: context.stageBounds,
-    stageTime: context.stageTime,
-  });
-  const value = Number(evaluated);
-  return Number.isFinite(value) ? value : undefined;
+  return evaluateRuntimeControllerNumber(raw, state, context);
 }

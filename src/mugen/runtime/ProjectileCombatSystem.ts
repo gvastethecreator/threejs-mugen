@@ -49,7 +49,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     log: (line: string) => void,
   ) => void;
   applyGuardHit?: (defender: TActor) => void;
-  applyHitState?: (defender: TActor) => void;
+  applyHitState?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   markDefenderGotHit?: (defender: TActor) => void;
   recordProjectileContact?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
   emitProjectileContactEffects?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
@@ -89,8 +89,12 @@ export class RuntimeProjectileCombatWorld {
         log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via HitBy/NotHitBy`);
         continue;
       }
-      const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP");
+      const override = findRuntimeHitOverride(defender.runtime, projectile.attr ?? "S,SP", projectile.guardFlag ?? "MA");
       if (override) {
+        if (projectile.missOnOverride === true) {
+          log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} because missonoverride = 1 forces active override miss`);
+          continue;
+        }
         recordRuntimeProjectileContact(projectile);
         input.rememberTarget(attacker, defender, projectile.targetId, projectile);
         input.applyHitOverride(attacker, defender, override, projectile.hitPause, log);
@@ -101,6 +105,7 @@ export class RuntimeProjectileCombatWorld {
         defender: defender.runtime,
         attack: {
           damage: projectile.damage,
+          kill: projectile.kill,
           attr: projectile.attr,
           hitPause: projectile.hitPause,
           hitStun: projectile.hitStun,
@@ -109,6 +114,7 @@ export class RuntimeProjectileCombatWorld {
           guardDistance: projectile.guardDistance,
           guardFlag: projectile.guardFlag,
           guardDamage: projectile.guardDamage,
+          guardKill: projectile.guardKill,
           guardPause: projectile.guardPause,
           guardStun: projectile.guardStun,
           guardSlideTime: projectile.guardSlideTime,
@@ -141,7 +147,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.damage, result.stun, result.pause);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.damage, result.stun, result.pause, result.kill);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -156,8 +162,8 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.damage, result.stun, result.pause);
-      input.applyHitState?.(defender);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.damage, result.stun, result.pause, result.kill);
+      input.applyHitState?.(attacker, defender, projectile);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
         `${attacker.label} projectile hit ${defender.label} for ${result.damage}; hits remaining ${projectile.hitsRemaining}, miss ${projectile.missTimeRemaining}; ${describeRuntimeProjectileRemoval(projectile)}`,
@@ -231,9 +237,11 @@ function runtimeGetHitVarsFromProjectileResult(
   damage: number,
   hitTime: number,
   hitShakeTime: number,
+  kill: boolean,
 ): CharacterRuntimeState["hitVars"] {
   return {
     damage: Math.max(0, Math.round(damage)),
+    kill,
     animType: 0,
     groundType: 1,
     airType: 1,

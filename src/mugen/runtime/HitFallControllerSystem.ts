@@ -1,10 +1,11 @@
 import type { HitFallControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import { applyRuntimeDamage, canRuntimeDamageKill } from "./CombatResolver";
-import { evaluateExpression } from "./ExpressionEvaluator";
-import { runtimeHitVar } from "./RuntimeHitVarSystem";
+import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
+
+const COMMON1_GROUND_IMPACT_STATE_NO = 5100;
 
 export type RuntimeHitFallControllerSource = Pick<ControllerIr, "params" | "type" | "normalizedType">;
 
@@ -48,14 +49,39 @@ function applyHitFallVelocity(state: CharacterRuntimeState): RuntimeHitFallContr
 }
 
 function applyHitFallDamage(state: CharacterRuntimeState): RuntimeHitFallControllerResult {
-  if (state.moveType !== "H" || !state.hitFall || state.hitFall.damage <= 0) {
+  if (state.moveType !== "H" || !state.hitFall) {
     return { applied: false, controllerType: "hitfalldamage" };
   }
-  const defenceScale = state.hitFall.defenceUp === undefined ? 1 : Math.max(0, Math.min(10, state.hitFall.defenceUp / 100));
-  const scaledDamage = Math.max(0, Math.round(state.hitFall.damage * defenceScale));
-  state.life = applyRuntimeDamage(state.life, scaledDamage, canRuntimeDamageKill(state, state.hitFall.kill ?? true));
-  state.hitFall = { ...state.hitFall, damage: 0 };
+  const { hitFall, countedGroundImpact } = countCommon1GroundImpact(state.stateNo, state.hitFall);
+  if (hitFall.damage <= 0) {
+    state.hitFall = hitFall;
+    return { applied: countedGroundImpact, controllerType: "hitfalldamage" };
+  }
+  const defenceScale = hitFall.defenceUp === undefined ? 1 : Math.max(0, Math.min(10, hitFall.defenceUp / 100));
+  const scaledDamage = Math.max(0, Math.round(hitFall.damage * defenceScale));
+  state.life = applyRuntimeDamage(state.life, scaledDamage, canRuntimeDamageKill(state, hitFall.kill ?? true));
+  state.hitFall = { ...hitFall, damage: 0 };
   return { applied: true, controllerType: "hitfalldamage", damageApplied: scaledDamage };
+}
+
+function countCommon1GroundImpact(
+  stateNo: number,
+  hitFall: NonNullable<CharacterRuntimeState["hitFall"]>,
+): {
+  hitFall: NonNullable<CharacterRuntimeState["hitFall"]>;
+  countedGroundImpact: boolean;
+} {
+  if (stateNo !== COMMON1_GROUND_IMPACT_STATE_NO || hitFall.fallCountedGroundImpact) {
+    return { hitFall, countedGroundImpact: false };
+  }
+  return {
+    hitFall: {
+      ...hitFall,
+      fallCount: (hitFall.fallCount ?? 0) + 1,
+      fallCountedGroundImpact: true,
+    },
+    countedGroundImpact: true,
+  };
 }
 
 function applyHitFallSet(
@@ -110,7 +136,7 @@ function numberParam(
     if (raw === undefined) {
       continue;
     }
-    return evaluateNumber(raw.split(",")[0]?.trim(), state, context);
+    return evaluateNumber(raw.trim(), state, context);
   }
   return undefined;
 }
@@ -126,22 +152,5 @@ function evaluateNumber(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): number | undefined {
-  if (!raw) {
-    return undefined;
-  }
-  const direct = Number(raw);
-  if (Number.isFinite(direct)) {
-    return direct;
-  }
-  const evaluated = evaluateExpression(raw, {
-    self: state,
-    getConst: context.getConst,
-    getHitVar: (name) => runtimeHitVar(state, name),
-    hitPauseTime: context.hitPauseTime,
-    random: context.random,
-    stageBounds: context.stageBounds,
-    stageTime: context.stageTime,
-  });
-  const value = Number(evaluated);
-  return Number.isFinite(value) ? value : undefined;
+  return evaluateRuntimeControllerNumber(raw, state, context);
 }

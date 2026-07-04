@@ -48,6 +48,53 @@ describe("RuntimeRecoverySystem", () => {
     expect(transition.entered).toEqual([5120]);
   });
 
+  it("blocks Common1 liedown get-up while AssertSpecial NoGetUpFromLieDown is active", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      stateNo: 5110,
+      downRecoverTime: 0,
+      stateElapsed: 1,
+      assertSpecial: { flags: ["nogetupfromliedown"], globalFlags: [], noGetUpFromLieDown: true },
+    });
+    const transition = transitions();
+
+    system.advanceCommon1LieDownRecovery(fighter, transition.api);
+
+    expect(transition.entered).toEqual([]);
+  });
+
+  it("fast-recovers Common1 liedown on recovery input while down recovery time remains positive", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({ stateNo: 5110, stateType: "L", downRecoverTime: 5, stateElapsed: 1 });
+    const transition = transitions({ isFastRecoverFromLieDownRequested: () => true });
+
+    system.advanceCommon1LieDownRecovery(fighter, transition.api);
+
+    expect(fighter.runtime.hitFall?.downRecoverTime).toBe(0);
+    expect(transition.entered).toEqual([5120]);
+  });
+
+  it("blocks Common1 liedown fast recovery while AssertSpecial NoFastRecoverFromLieDown is active", () => {
+    const system = new RuntimeRecoverySystem();
+    const fighter = actor({
+      stateNo: 5110,
+      stateType: "L",
+      downRecoverTime: 5,
+      stateElapsed: 1,
+      assertSpecial: {
+        flags: ["nofastrecoverfromliedown"],
+        globalFlags: [],
+        noFastRecoverFromLieDown: true,
+      },
+    });
+    const transition = transitions({ isFastRecoverFromLieDownRequested: () => true });
+
+    system.advanceCommon1LieDownRecovery(fighter, transition.api);
+
+    expect(fighter.runtime.hitFall?.downRecoverTime).toBe(4);
+    expect(transition.entered).toEqual([]);
+  });
+
   it("lands imported ground recovery state 5201 into state 52", () => {
     const system = new RuntimeRecoverySystem();
     const fighter = actor({ source: "imported", stateNo: 5201, physics: "A", posY: 6, velY: 4 });
@@ -79,12 +126,14 @@ function actor(options: {
   source?: "demo" | "imported";
   constants?: Record<string, number>;
   stateNo?: number;
+  stateType?: "S" | "C" | "A" | "L";
   stateElapsed?: number;
   recoverTime?: number;
   downRecoverTime?: number;
   physics?: "S" | "C" | "A" | "N";
   posY?: number;
   velY?: number;
+  assertSpecial?: RuntimeRecoveryActor["runtime"]["assertSpecial"];
 }): RuntimeRecoveryActor {
   return {
     definition: {
@@ -93,10 +142,12 @@ function actor(options: {
     },
     runtime: {
       stateNo: options.stateNo ?? 5000,
+      stateType: options.stateType ?? "S",
       life: 1000,
       physics: options.physics ?? "S",
       pos: { x: 0, y: options.posY ?? 0 },
       vel: { x: 0, y: options.velY ?? 0 },
+      assertSpecial: options.assertSpecial,
       hitFall: {
         falling: true,
         damage: 0,
@@ -110,13 +161,14 @@ function actor(options: {
   };
 }
 
-function transitions(): { api: RuntimeRecoveryTransitionApi; entered: number[] } {
+function transitions(options: Partial<RuntimeRecoveryTransitionApi> = {}): { api: RuntimeRecoveryTransitionApi; entered: number[] } {
   const entered: number[] = [];
   return {
     entered,
     api: {
       canEnterState: () => true,
       enterState: (stateId) => entered.push(stateId),
+      ...options,
     },
   };
 }

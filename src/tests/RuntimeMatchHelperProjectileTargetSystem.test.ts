@@ -84,6 +84,8 @@ function projectileActor(parentId: string, targetId?: number): RuntimeProjectile
     missTimeRemaining: 0,
     opacity: 1,
     damage: 30,
+    kill: true,
+    guardKill: true,
     targetId,
     hitPause: 0,
     hitStun: 1,

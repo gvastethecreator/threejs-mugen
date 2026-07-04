@@ -37,6 +37,22 @@ describe("RuntimeKinematicControllerWorld", () => {
     expect(state.vel).toEqual({ x: 1.5, y: 6 });
   });
 
+  it("evaluates dynamic movement params through bounded redirect context", () => {
+    const world = new RuntimeKinematicControllerWorld();
+    const state = runtimeState({ vel: { x: 1, y: 2 } });
+    const target = runtimeState({ life: 963, vel: { x: -8, y: -5 } });
+    const parent = runtimeState({ vel: { x: 4, y: 0 } });
+    const root = runtimeState({ vel: { x: 0, y: -7 } });
+
+    world.applyController(state, source("VelSet", { x: "Target(77), Life - 960", y: "Target, Vel Y" }), undefined, {
+      target: (targetId) => (targetId === 77 || targetId === undefined ? { self: target, opponent: state } : undefined),
+    });
+    expect(state.vel).toEqual({ x: 3, y: -5 });
+
+    world.applyController(state, source("VelAdd", { x: "Parent,Vel X", y: "Root,Vel Y" }), undefined, { parent, root });
+    expect(state.vel).toEqual({ x: 7, y: -12 });
+  });
+
   it("applies HitVelSet flags only when hit velocity exists", () => {
     const world = new RuntimeKinematicControllerWorld();
     const state = runtimeState({ hitVelocity: { x: -4, y: -8 }, vel: { x: 1, y: 2 } });

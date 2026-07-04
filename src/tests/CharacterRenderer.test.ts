@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { CharacterRenderer } from "../game/render/CharacterRenderer";
+import { CharacterRenderer, resolveActorShadowPresentation } from "../game/render/CharacterRenderer";
 import type { TextureStore } from "../game/render/TextureStore";
 import type { MugenSprite, SpriteLookupContext, SpriteProvider } from "../mugen/model/MugenSprite";
 import type { ActorSnapshot } from "../mugen/runtime/types";
@@ -24,6 +24,39 @@ describe("CharacterRenderer", () => {
     });
     renderer.dispose();
   });
+
+  it("renders supported actor shadows and removes them when suppressed", async () => {
+    const provider = new RecordingSpriteProvider();
+    const renderer = new CharacterRenderer(provider, fakeTextureStore());
+
+    await renderer.update([actor({ bodyWidth: { front: 18, back: 22 } })]);
+
+    const shadow = renderer.group.children.find((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.CircleGeometry) as
+      | THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>
+      | undefined;
+    expect(shadow).toBeDefined();
+    expect(shadow?.position.x).toBe(0);
+    expect(shadow?.position.y).toBe(0);
+    expect(shadow?.scale.x).toBe(40);
+    expect(shadow?.material.opacity).toBeCloseTo(0.2);
+
+    await renderer.update([actor({}, { shadowVisible: false })]);
+
+    expect(renderer.group.children.some((child) => child instanceof THREE.Mesh && child.geometry instanceof THREE.CircleGeometry)).toBe(false);
+    renderer.dispose();
+  });
+
+  it("resolves bounded shadow presentation only for player, helper, and explod actors", () => {
+    const playerShadow = resolveActorShadowPresentation(actor({}, { actorKind: "player" }));
+    const helperShadow = resolveActorShadowPresentation(actor({}, { actorKind: "helper" }));
+    expect(playerShadow?.width).toBe(36);
+    expect(playerShadow?.height).toBeCloseTo(6.48);
+    expect(helperShadow?.width).toBe(36);
+    expect(helperShadow?.height).toBeCloseTo(6.48);
+    expect(resolveActorShadowPresentation(actor({}, { actorKind: "explod" }))).toMatchObject({ width: 24, height: 6 });
+    expect(resolveActorShadowPresentation(actor({}, { actorKind: "projectile" }))).toBeUndefined();
+    expect(resolveActorShadowPresentation(actor({}, { shadowVisible: false }))).toBeUndefined();
+  });
 });
 
 class RecordingSpriteProvider implements SpriteProvider {
@@ -43,14 +76,18 @@ class RecordingSpriteProvider implements SpriteProvider {
   }
 }
 
-function actor(runtimeOverrides: Partial<ActorSnapshot["runtime"]>): ActorSnapshot {
+function actor(
+  runtimeOverrides: Partial<ActorSnapshot["runtime"]>,
+  snapshotOverrides: Partial<Pick<ActorSnapshot, "actorKind" | "shadowVisible">> = {},
+): ActorSnapshot {
   return {
     id: "p1",
     label: "P1",
-    actorKind: "player",
+    actorKind: snapshotOverrides.actorKind ?? "player",
     ownerId: "p1",
     rootId: "p1",
     parentId: "p1",
+    shadowVisible: snapshotOverrides.shadowVisible,
     runtime: {
       pos: { x: 0, y: 0 },
       vel: { x: 0, y: 0 },

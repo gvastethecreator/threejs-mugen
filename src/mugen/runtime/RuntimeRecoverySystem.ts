@@ -3,7 +3,10 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeRecoveryActor = {
   definition: Pick<DemoFighterDefinition, "source" | "constants">;
-  runtime: Pick<CharacterRuntimeState, "hitFall" | "life" | "physics" | "pos" | "stateNo" | "vel">;
+  runtime: Pick<
+    CharacterRuntimeState,
+    "assertSpecial" | "hitFall" | "life" | "physics" | "pos" | "stateNo" | "stateType" | "vel"
+  >;
   stateElapsed: number;
   stateOwner?: {
     definition: Pick<DemoFighterDefinition, "source">;
@@ -13,6 +16,7 @@ export type RuntimeRecoveryActor = {
 export type RuntimeRecoveryTransitionApi = {
   canEnterState: (stateId: number) => boolean;
   enterState: (stateId: number) => void;
+  isFastRecoverFromLieDownRequested?: () => boolean;
 };
 
 export class RuntimeRecoverySystem {
@@ -36,6 +40,19 @@ export class RuntimeRecoverySystem {
       return;
     }
     if ((hitFall.downRecoverTime ?? 0) <= 0) {
+      if (actor.runtime.assertSpecial?.noGetUpFromLieDown) {
+        return;
+      }
+      if (actor.stateElapsed >= 1 && transitions.canEnterState(5120)) {
+        transitions.enterState(5120);
+      }
+      return;
+    }
+    if (shouldFastRecoverFromLieDown(actor, transitions, hitFall)) {
+      actor.runtime.hitFall = {
+        ...hitFall,
+        downRecoverTime: 0,
+      };
       if (actor.stateElapsed >= 1 && transitions.canEnterState(5120)) {
         transitions.enterState(5120);
       }
@@ -86,4 +103,17 @@ export function ensureDownRecoveryTime(actor: RuntimeRecoveryActor): CharacterRu
 
 export function defaultDownRecoverTime(definition: Pick<DemoFighterDefinition, "constants">): number {
   return Math.max(0, Math.round(definition.constants?.["data.liedown.time"] ?? 60));
+}
+
+function shouldFastRecoverFromLieDown(
+  actor: RuntimeRecoveryActor,
+  transitions: RuntimeRecoveryTransitionApi,
+  hitFall: NonNullable<CharacterRuntimeState["hitFall"]>,
+): boolean {
+  return (
+    actor.runtime.stateType === "L" &&
+    !actor.runtime.assertSpecial?.noFastRecoverFromLieDown &&
+    (hitFall.downRecoverTime ?? 0) > 0 &&
+    transitions.isFastRecoverFromLieDownRequested?.() === true
+  );
 }

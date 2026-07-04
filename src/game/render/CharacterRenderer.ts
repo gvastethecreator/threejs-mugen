@@ -7,6 +7,7 @@ import { projectSprite } from "./projection";
 export class CharacterRenderer {
   readonly group = new THREE.Group();
   private readonly meshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
+  private readonly shadowMeshes = new Map<string, THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>>();
   private readonly afterimageMeshes = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[]>();
 
   constructor(
@@ -24,6 +25,12 @@ export class CharacterRenderer {
         this.meshes.delete(id);
       }
     }
+    for (const [id, mesh] of this.shadowMeshes) {
+      if (!activeIds.has(id)) {
+        disposeMesh(this.group, mesh);
+        this.shadowMeshes.delete(id);
+      }
+    }
     for (const [id, meshes] of this.afterimageMeshes) {
       if (!activeIds.has(id)) {
         meshes.forEach((mesh) => disposeMesh(this.group, mesh));
@@ -32,6 +39,7 @@ export class CharacterRenderer {
     }
 
     for (const actor of actors) {
+      this.updateShadow(actor);
       await this.updateAfterImages(actor);
       const ownerContext = spriteLookupContext(actor);
       const frame = actor.frame;
@@ -71,10 +79,44 @@ export class CharacterRenderer {
       disposeMesh(this.group, mesh);
     }
     this.meshes.clear();
+    for (const mesh of this.shadowMeshes.values()) {
+      disposeMesh(this.group, mesh);
+    }
+    this.shadowMeshes.clear();
     for (const meshes of this.afterimageMeshes.values()) {
       meshes.forEach((mesh) => disposeMesh(this.group, mesh));
     }
     this.afterimageMeshes.clear();
+  }
+
+  private updateShadow(actor: ActorSnapshot): void {
+    const presentation = resolveActorShadowPresentation(actor);
+    const existing = this.shadowMeshes.get(actor.id);
+    if (!presentation) {
+      if (existing) {
+        disposeMesh(this.group, existing);
+        this.shadowMeshes.delete(actor.id);
+      }
+      return;
+    }
+
+    let mesh = existing;
+    if (!mesh) {
+      mesh = new THREE.Mesh(
+        new THREE.CircleGeometry(0.5, 40),
+        new THREE.MeshBasicMaterial({
+          color: 0x05070c,
+          transparent: true,
+          opacity: presentation.opacity,
+          depthWrite: false,
+        }),
+      );
+      this.shadowMeshes.set(actor.id, mesh);
+      this.group.add(mesh);
+    }
+    mesh.material.opacity = presentation.opacity;
+    mesh.position.set(presentation.x, presentation.y, presentation.z);
+    mesh.scale.set(presentation.width, presentation.height, 1);
   }
 
   private async updateAfterImages(actor: ActorSnapshot): Promise<void> {
@@ -118,6 +160,41 @@ export class CharacterRenderer {
       mesh.scale.set(projected.width * projected.scaleX, projected.height, 1);
     }
   }
+}
+
+export type ActorShadowPresentation = {
+  x: number;
+  y: number;
+  z: number;
+  width: number;
+  height: number;
+  opacity: number;
+};
+
+export function resolveActorShadowPresentation(actor: ActorSnapshot): ActorShadowPresentation | undefined {
+  if (actor.shadowVisible === false || !supportsActorShadow(actor)) {
+    return undefined;
+  }
+  const scale = actor.runtime.renderScale ?? { x: 1, y: 1 };
+  const scaleX = Math.max(0.1, Math.abs(scale.x));
+  const scaleY = Math.max(0.1, Math.abs(scale.y));
+  const bodyWidth = actor.runtime.bodyWidth ? (actor.runtime.bodyWidth.front + actor.runtime.bodyWidth.back) * scaleX : 0;
+  const hurtBoxWidth = actor.clsn2.reduce((maxWidth, box) => Math.max(maxWidth, Math.abs(box.x2 - box.x1) * scaleX), 0);
+  const minimumWidth = actor.actorKind === "explod" ? 24 : 36;
+  const width = Math.max(minimumWidth, bodyWidth, hurtBoxWidth * 0.72);
+  const height = Math.max(6, width * 0.18 * scaleY);
+  return {
+    x: actor.runtime.pos.x,
+    y: 0,
+    z: 0.08,
+    width,
+    height,
+    opacity: actor.actorKind === "explod" ? 0.14 : 0.2,
+  };
+}
+
+function supportsActorShadow(actor: ActorSnapshot): boolean {
+  return actor.actorKind === "player" || actor.actorKind === "helper" || actor.actorKind === "explod";
 }
 
 function createAfterImageActor(
@@ -167,7 +244,7 @@ function applyAfterImageMaterial(
   material.depthWrite = false;
 }
 
-function disposeMesh(group: THREE.Group, mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>): void {
+function disposeMesh(group: THREE.Group, mesh: THREE.Mesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>): void {
   group.remove(mesh);
   mesh.geometry.dispose();
   mesh.material.dispose();

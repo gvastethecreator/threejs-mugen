@@ -1,6 +1,5 @@
 import type { ControllerIr } from "../compiler/RuntimeIr";
-import { evaluateExpression } from "./ExpressionEvaluator";
-import { runtimeHitVar } from "./RuntimeHitVarSystem";
+import { evaluateRuntimeControllerNumber } from "./RuntimeControllerExpressionContextSystem";
 import { runtimeAnimationElapsedBeforeFrame, runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import type { RuntimeControllerEvaluationContext } from "./StateControllerExecutor";
 import type { CharacterRuntimeState } from "./types";
@@ -90,7 +89,7 @@ function numberParam(
     if (raw === undefined) {
       continue;
     }
-    return evaluateNumber(raw.split(",")[0]?.trim(), state, context);
+    return evaluateNumber(raw.trim(), state, context);
   }
   return undefined;
 }
@@ -106,24 +105,7 @@ function evaluateNumber(
   state: CharacterRuntimeState,
   context: RuntimeControllerEvaluationContext = {},
 ): number | undefined {
-  if (!raw) {
-    return undefined;
-  }
-  const direct = Number(raw);
-  if (Number.isFinite(direct)) {
-    return direct;
-  }
-  const evaluated = evaluateExpression(raw, {
-    self: state,
-    getConst: context.getConst,
-    getHitVar: (name) => runtimeHitVar(state, name),
-    hitPauseTime: context.hitPauseTime,
-    random: context.random,
-    stageBounds: context.stageBounds,
-    stageTime: context.stageTime,
-  });
-  const value = Number(evaluated);
-  return Number.isFinite(value) ? value : undefined;
+  return evaluateRuntimeControllerNumber(raw, state, context);
 }
 
 function clamp(value: number, min: number, max: number): number {
