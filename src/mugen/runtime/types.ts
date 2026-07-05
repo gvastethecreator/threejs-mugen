@@ -185,6 +185,7 @@ export type RuntimeAssertSpecial = {
   timerFreeze?: boolean;
   roundNotOver?: boolean;
   intro?: boolean;
+  noJuggleCheck?: boolean;
   noGetUpFromLieDown?: boolean;
   noFastRecoverFromLieDown?: boolean;
 };

@@ -495,6 +495,7 @@ function applyAssertSpecialController(
     if (flag.name === "timerfreeze") current.timerFreeze = true;
     if (flag.name === "roundnotover") current.roundNotOver = true;
     if (flag.name === "intro") current.intro = true;
+    if (flag.name === "nojugglecheck") current.noJuggleCheck = true;
     if (flag.name === "nogetupfromliedown") current.noGetUpFromLieDown = true;
     if (flag.name === "nofastrecoverfromliedown") current.noFastRecoverFromLieDown = true;
   }

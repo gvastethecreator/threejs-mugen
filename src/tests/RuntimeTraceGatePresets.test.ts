@@ -158,6 +158,7 @@ import {
   createSyntheticImportedAssertSpecialControlTraceArtifact,
   createSyntheticImportedAssertSpecialGlobalTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialHelperExplodShadowTraceArtifact,
+  createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialRoundFlowTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialShadowTelemetryTraceArtifact,
   createSyntheticImportedAssertSpecialCrouchGuardDenyTraceArtifact,
@@ -9907,6 +9908,47 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 0,
       ctrl: true,
       assertSpecialGlobalFlags: requiredGlobalFlags,
+    });
+  });
+
+  it("creates a synthetic imported AssertSpecial NoJuggleCheck telemetry artifact", () => {
+    const artifact = createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+    const requiredFlags = ["nojugglecheck"];
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-assertspecial-juggle-telemetry-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-assertspecial-juggle-telemetry-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.assertspecial).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 0,
+        ctrl: true,
+        assertSpecialFlags: requiredFlags,
+      },
+    ]);
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 0,
+      ctrl: true,
+      assertSpecialFlags: requiredFlags,
     });
   });
 

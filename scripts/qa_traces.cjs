@@ -1006,6 +1006,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAssertSpecialRoundFlowTelemetryTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-assertspecial-juggle-telemetry",
+      required: true,
+      artifact: presets.createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-assertspecial-shadow-telemetry",
       required: true,
       artifact: presets.createSyntheticImportedAssertSpecialShadowTelemetryTraceArtifact(),

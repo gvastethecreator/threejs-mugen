@@ -5952,6 +5952,54 @@ export function createSyntheticImportedAssertSpecialRoundFlowTelemetryTraceArtif
   });
 }
 
+export function createSyntheticImportedAssertSpecialJuggleTelemetryTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? assertSpecialControlStage();
+  const script = importedAssertSpecialJuggleTelemetryScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-assertspecial-juggle-telemetry",
+    displayName: "Synthetic Imported AssertSpecial Juggle Telemetry",
+    passiveAssertSpecialFlagGroups: [["NoJuggleCheck"]],
+  });
+  const requiredFlags = ["nojugglecheck"];
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-assertspecial-juggle-telemetry-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-assertspecial-juggle-telemetry-golden",
+      label: "Synthetic imported AssertSpecial NoJuggleCheck telemetry",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AssertSpecial NoJuggleCheck trace proves bounded parsing, normalization, typed operation evidence, final-actor evidence, and runtime flag storage for the official NoJuggleCheck flag. It does not claim juggle-point accounting, juggle bypass behavior, helper/team/global ownership, pause layering, or full MUGEN/IKEMEN juggle parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-assertspecial-juggle-telemetry-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredExecutedControllers: ["AssertSpecial"],
+        requiredExecutedOperations: ["assertspecial"],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            ctrl: true,
+            assertSpecialFlags: requiredFlags,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialShadowTelemetryTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -32460,6 +32508,10 @@ export function importedAssertSpecialGlobalTelemetryScript(): RuntimeTraceInputF
 
 export function importedAssertSpecialRoundFlowTelemetryScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([{ label: "assertspecial-round-flow-telemetry-idle", frames: 6, p1: [], p2: [] }]);
+}
+
+export function importedAssertSpecialJuggleTelemetryScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([{ label: "assertspecial-juggle-telemetry-idle", frames: 6, p1: [], p2: [] }]);
 }
 
 export function importedAssertSpecialShadowTelemetryScript(): RuntimeTraceInputFrame[] {

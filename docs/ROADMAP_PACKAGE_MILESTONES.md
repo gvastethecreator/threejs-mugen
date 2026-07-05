@@ -35,6 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required AssertSpecial NoJuggleCheck telemetry trace gate
+  -> synthetic-imported-assertspecial-juggle-telemetry.json checksum 9436dfa0 is required in qa:trace
+  -> static NoJuggleCheck lowers into typed assertspecial operation evidence
+  -> runtime AssertSpecial execution stores noJuggleCheck
+  -> final imported actor evidence requires normalized assertSpecialFlags ["nojugglecheck"]
+  -> pnpm qa:trace passes 440/440 artifacts, 410 required and 30 optional
+  -> official Elecbyte AssertSpecial docs list nojugglecheck
+  -> no score movement; juggle-point accounting, actual juggle bypass behavior, helper/team/global ownership, pause layering, and full MUGEN/IKEMEN juggle parity remain blocked
+
 R2 RuntimeSpriteEffectControllerWorld RemapPal ownership cut
   -> RuntimeSpriteEffectControllerWorld owns active-state RemapPal dispatch as a sprite-effect side effect
   -> StateProgramExecutor now classifies RemapPal as side-effect "remappal", not a generic runtime-controller route
