@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjHitTime, ProjContactTime, and ProjGuardedTime multi-id arbitration required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projhittime-multi-id.json`, `synthetic-imported-projectile-projcontacttime-multi-id.json`, and `synthetic-imported-projectile-projguardedtime-multi-id.json` trace coverage for two-projectile player-owned fixed-id plus ID `0` any-id `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` arbitration.
+- `RuntimeTraceGatePresets` now adds timing-harness routes with wrong-id trap branches for ids `8909` / `8911` / `8913` and valid contact ids `8910` / `8912` / `8914`, preserving two Projectile payloads, target-link evidence, and bounded hit/guard sound/FightFX packages.
+- `scripts/qa_traces.cjs` registers all three artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `ProjHitTime`, `ProjContactTime`, and `ProjGuardedTime` as required-ID trigger reads where ID `0` skips projectile-ID filtering and no matching last contact returns `-1`; Elecbyte CNS docs list old-style `ProjHit`, `ProjContact`, and `ProjGuarded` as superseded by `ProjHitTime`, `ProjContactTime`, and `ProjGuardedTime`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Proj.*Time multi-id"` -> 1 file passed, 3 tests passed.
+- Trace gate: `pnpm qa:trace` -> 435/435 artifacts, 405 required and 30 optional; `synthetic-imported-projectile-projhittime-multi-id.json` checksum `5d897825`; `synthetic-imported-projectile-projcontacttime-multi-id.json` checksum `d9b3cecf`; `synthetic-imported-projectile-projguardedtime-multi-id.json` checksum `e52d0d01`.
+- Closeout gates: `pnpm test` -> 151 files / 1322 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm check:boundaries`; `git diff --check` with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `ProjHitTime` can distinguish wrong-id/non-contact Projectile id `8909` from valid hit Projectile id `8910`; owner route `200 -> 371 -> 372` requires fixed-id `ProjHitTime(8910) >= 1` plus ID `0` `ProjHitTime(0) >= 1`, while trap state `373` stays forbidden.
+- Bounded player-owned Projectile `ProjContactTime` can distinguish wrong-id/non-contact Projectile id `8911` from valid guarded-contact Projectile id `8912`; owner route `200 -> 374 -> 375` requires fixed-id `ProjContactTime(8912) >= 1` plus ID `0` `ProjContactTime(0) >= 1`, while trap state `376` stays forbidden.
+- Bounded player-owned Projectile `ProjGuardedTime` can distinguish wrong-id/non-contact Projectile id `8913` from valid guarded Projectile id `8914`; owner route `200 -> 377 -> 378` requires fixed-id `ProjGuardedTime(8914) >= 1` plus ID `0` `ProjGuardedTime(0) >= 1`, while trap state `379` stays forbidden.
+- All three gates prove two Projectile controller/op executions, two live Projectile payloads, owner target-link ids `8910` / `8912` / `8914`, `S5,25` / `S6,26` / `S6,27`, `F7032` / `F7033` / `F7034`, and `sparkxy = 26,-68` / `27,-69` / `28,-70`.
+
+Claim blocked:
+
+- Exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact Proj* lifetime/order, same-id selection priority, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjHit and ProjGuarded multi-id arbitration required trace gates
 
 Changed:

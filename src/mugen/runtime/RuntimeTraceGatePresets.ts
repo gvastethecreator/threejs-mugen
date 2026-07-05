@@ -22806,6 +22806,432 @@ export function createSyntheticImportedProjectileGuardedMultiIdTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileHitTimeMultiIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-projhittime-multi-id-attacker",
+    displayName: "Synthetic Imported Projectile ProjHitTime Multi ID Attacker",
+    withProjectile: true,
+    projectileId: 8910,
+    projectileOffset: [62, -45],
+    projectileVelocity: [36, 0],
+    projectileRemoveOnHit: false,
+    projectileHitSound: "S5,25",
+    projectileHitSpark: "F7032",
+    projectileSparkXy: [26, -68],
+    secondaryProjectile: {
+      id: 8909,
+      triggerTime: 3,
+      offset: [62, -220],
+      velocity: [36, 0],
+      removeOnHit: false,
+    },
+    projContactPersistRoute: {
+      entryStateNo: 371,
+      entryAnimNo: 1090,
+      finalStateNo: 372,
+      finalAnimNo: 1091,
+      contactTrigger: "ProjHit(8910) && ProjHitTime(8910) >= 1 && ProjHitTime(0) >= 1",
+      branchTriggers: ["ProjHitTime(8910) >= 1", "ProjHitTime(0) >= 1"],
+      trapTriggers: [{ stateNo: 373, trigger: "ProjHitTime(8909) >= 0", label: "Wrong ProjHitTime ID Trap" }],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7032, 8132),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-projhittime-multi-id-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-projhittime-multi-id-golden",
+      label: "Synthetic imported Projectile ProjHitTime multi-id arbitration route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ProjHitTime multi-id trace proves bounded player-owned Projectile hit-time markers can ignore a non-contact fixed ID while fixed-ID and ID 0 ProjHitTime route from a second projectile hit. This is bounded two-projectile owner-state timing evidence only; exact hit tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, redirects, teams, helper-owned custom-state targets, score movement, and full MUGEN/IKEMEN projectile timing parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-projhittime-multi-id-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 371, 372],
+        forbiddenExecutedStates: [373],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "Projectile", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", { operation: "projectile", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 25,
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7032,
+              raw: "F7032",
+              rawPrefix: "F",
+              offsetX: 26,
+              offsetY: -68,
+              assetSource: "fightfx",
+              assetActionId: 7032,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8132,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 371, animNo: 1090, moveType: "A", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 372, animNo: 1091, moveType: "I", minFrames: 1 },
+          { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+          { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8909,
+            minAge: 1,
+            minPriority: 1,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8910,
+            minAge: 1,
+            minPriority: 1,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8910 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileContactTimeMultiIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-projcontacttime-multi-id-attacker",
+    displayName: "Synthetic Imported Projectile ProjContactTime Multi ID Attacker",
+    withProjectile: true,
+    projectileId: 8912,
+    projectileOffset: [62, -45],
+    projectileVelocity: [36, 0],
+    projectileRemoveOnHit: false,
+    projectileGuardSound: "S6,26",
+    projectileGuardSpark: "F7033",
+    projectileSparkXy: [27, -69],
+    secondaryProjectile: {
+      id: 8911,
+      triggerTime: 3,
+      offset: [62, -220],
+      velocity: [36, 0],
+      removeOnHit: false,
+    },
+    projContactPersistRoute: {
+      entryStateNo: 374,
+      entryAnimNo: 1092,
+      finalStateNo: 375,
+      finalAnimNo: 1093,
+      contactTrigger: "ProjContactTime(8912) >= 1 && ProjContactTime(0) >= 1",
+      branchTriggers: ["ProjContactTime(8912) >= 1", "ProjContactTime(0) >= 1"],
+      trapTriggers: [{ stateNo: 376, trigger: "ProjContactTime(8911) >= 0", label: "Wrong ProjContactTime ID Trap" }],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7033, 8133),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-projcontacttime-multi-id-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-projcontacttime-multi-id-golden",
+      label: "Synthetic imported Projectile ProjContactTime multi-id arbitration route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ProjContactTime multi-id trace proves bounded player-owned Projectile contact-time markers can ignore a non-contact fixed ID while fixed-ID and ID 0 ProjContactTime route from a second projectile guard contact. This is bounded two-projectile owner-state timing evidence only; exact contact tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, redirects, teams, helper-owned custom-state targets, score movement, and full MUGEN/IKEMEN projectile timing parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-projcontacttime-multi-id-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 374, 375],
+        forbiddenExecutedStates: [376],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "Projectile", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", { operation: "projectile", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 26,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7033,
+              raw: "F7033",
+              rawPrefix: "F",
+              offsetX: 27,
+              offsetY: -69,
+              assetSource: "fightfx",
+              assetActionId: 7033,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8133,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 374, animNo: 1092, moveType: "A", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 375, animNo: 1093, moveType: "I", minFrames: 1 },
+          { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+          { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8911,
+            minAge: 1,
+            minPriority: 1,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8912,
+            minAge: 1,
+            minPriority: 1,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8912 }],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileGuardedTimeMultiIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-projguardedtime-multi-id-attacker",
+    displayName: "Synthetic Imported Projectile ProjGuardedTime Multi ID Attacker",
+    withProjectile: true,
+    projectileId: 8914,
+    projectileOffset: [62, -45],
+    projectileVelocity: [36, 0],
+    projectileRemoveOnHit: false,
+    projectileGuardSound: "S6,27",
+    projectileGuardSpark: "F7034",
+    projectileSparkXy: [28, -70],
+    secondaryProjectile: {
+      id: 8913,
+      triggerTime: 3,
+      offset: [62, -220],
+      velocity: [36, 0],
+      removeOnHit: false,
+    },
+    projContactPersistRoute: {
+      entryStateNo: 377,
+      entryAnimNo: 1094,
+      finalStateNo: 378,
+      finalAnimNo: 1095,
+      contactTrigger: "ProjGuarded(8914) && ProjGuardedTime(8914) >= 1 && ProjGuardedTime(0) >= 1",
+      branchTriggers: ["ProjGuardedTime(8914) >= 1", "ProjGuardedTime(0) >= 1"],
+      trapTriggers: [{ stateNo: 379, trigger: "ProjGuardedTime(8913) >= 0", label: "Wrong ProjGuardedTime ID Trap" }],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7034, 8134),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-projguardedtime-multi-id-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-projguardedtime-multi-id-golden",
+      label: "Synthetic imported Projectile ProjGuardedTime multi-id arbitration route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ProjGuardedTime multi-id trace proves bounded player-owned Projectile guarded-time markers can ignore a non-contact fixed ID while fixed-ID and ID 0 ProjGuardedTime route from a second projectile guard. This is bounded two-projectile owner-state timing evidence only; exact guard tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, redirects, teams, helper-owned custom-state targets, score movement, and full MUGEN/IKEMEN projectile timing parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-projguardedtime-multi-id-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 377, 378],
+        forbiddenExecutedStates: [379],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "Projectile", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", { operation: "projectile", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 27,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7034,
+              raw: "F7034",
+              rawPrefix: "F",
+              offsetX: 28,
+              offsetY: -70,
+              assetSource: "fightfx",
+              assetActionId: 7034,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8134,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 377, animNo: 1094, moveType: "A", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 378, animNo: 1095, moveType: "I", minFrames: 1 },
+          { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+          { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8913,
+            minAge: 1,
+            minPriority: 1,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8914,
+            minAge: 1,
+            minPriority: 1,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8914 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileHitSuffixTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

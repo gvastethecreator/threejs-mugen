@@ -27,12 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile ProjHit/ProjGuarded multi-id arbitration trace gates
-  -> synthetic-imported-projectile-projhit-multi-id.json checksum ab0f3fb3 and synthetic-imported-projectile-projguarded-multi-id.json checksum 023921e3 are required in qa:trace
-  -> player-owned wrong-id/non-contact Projectile ids 8905/8907 are isolated from valid hit/guard Projectile ids 8906/8908; owner state 200 routes 200 -> 365 -> 366 and 200 -> 368 -> 369 through fixed-id ProjHit8906 = 1, >= 1 / ProjGuarded8908 = 1, >= 1 plus any-id ProjHit = 1, >= 1 / ProjGuarded = 1, >= 1 and ID 0 ProjHit0 = 1 / ProjGuarded0 = 1, while forbidden states 367/370 prove wrong ids do not route
-  -> evidence keeps two Projectile controller/op executions per route, two Projectile payloads, owner target-link ids 8906/8908, hit sound S5,23, guard sound S6,24, FightFX F7030/F7031, and sparkxy 24,-66 / 25,-67
-  -> pnpm qa:trace passes 432/432 artifacts, 402 required and 30 optional
-  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard packages, and full Projectile parity remain blocked
+R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
+  -> synthetic-imported-projectile-projhittime-multi-id.json checksum 5d897825, synthetic-imported-projectile-projcontacttime-multi-id.json checksum d9b3cecf, and synthetic-imported-projectile-projguardedtime-multi-id.json checksum e52d0d01 are required in qa:trace
+  -> player-owned wrong-id/non-contact Projectile ids 8909/8911/8913 are isolated from valid hit/contact/guard Projectile ids 8910/8912/8914; owner state 200 routes 200 -> 371 -> 372, 200 -> 374 -> 375, and 200 -> 377 -> 378 through fixed-id ProjHitTime(8910) >= 1 / ProjContactTime(8912) >= 1 / ProjGuardedTime(8914) >= 1 plus ID 0 any-projectile reads, while forbidden states 373/376/379 prove wrong ids do not route
+  -> evidence keeps two Projectile controller/op executions per route, two Projectile payloads, owner target-link ids 8910/8912/8914, hit sound S5,25, guard sounds S6,26/S6,27, FightFX F7032/F7033/F7034, and sparkxy 26,-68 / 27,-69 / 28,-70
+  -> pnpm qa:trace passes 435/435 artifacts, 405 required and 30 optional
+  -> no score movement; exact Proj*Time tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded packages, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjHit/ProjGuarded multi-id arbitration trace gates
+  -> synthetic-imported-projectile-projhit-multi-id.json checksum ab0f3fb3 and synthetic-imported-projectile-projguarded-multi-id.json checksum 023921e3 remain required in qa:trace
+  -> pnpm qa:trace previously passed 432/432 artifacts, 402 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjContact multi-id arbitration trace gate
   -> synthetic-imported-projectile-projcontact-multi-id.json checksum e790ec3e remains required in qa:trace

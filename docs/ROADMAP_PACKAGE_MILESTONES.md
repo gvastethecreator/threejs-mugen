@@ -35,13 +35,18 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required player Projectile ProjHit/ProjGuarded multi-id arbitration trace gates
-  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhit-multi-id.json and synthetic-imported-projectile-projguarded-multi-id.json with two Projectile controller/op executions and wrong-id trap branches
-  -> player-owned wrong-id/non-contact Projectile ids 8905/8907 stay isolated while valid hit/guard Projectile ids 8906/8908 route owner states 200 -> 365 -> 366 and 200 -> 368 -> 369 through fixed-id ProjHit8906 = 1, >= 1 / ProjGuarded8908 = 1, >= 1 plus any-id ProjHit = 1, >= 1 / ProjGuarded = 1, >= 1 and ID 0 first-form ProjHit0 = 1 / ProjGuarded0 = 1
-  -> forbidden states 367/370 prove ProjHit8905 = 1 and ProjGuarded8907 = 1 do not route from wrong Projectile ids
-  -> synthetic-imported-projectile-projhit-multi-id.json checksum ab0f3fb3 and synthetic-imported-projectile-projguarded-multi-id.json checksum 023921e3 are required in qa:trace
-  -> pnpm qa:trace passes 432/432 artifacts, 402 required and 30 optional
-  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard packages, and full Projectile parity remain blocked
+R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhittime-multi-id.json, synthetic-imported-projectile-projcontacttime-multi-id.json, and synthetic-imported-projectile-projguardedtime-multi-id.json with two Projectile controller/op executions and wrong-id trap branches
+  -> player-owned wrong-id/non-contact Projectile ids 8909/8911/8913 stay isolated while valid hit/contact/guard Projectile ids 8910/8912/8914 route owner states 200 -> 371 -> 372, 200 -> 374 -> 375, and 200 -> 377 -> 378 through fixed-id ProjHitTime(8910) >= 1 / ProjContactTime(8912) >= 1 / ProjGuardedTime(8914) >= 1 plus ID 0 any-projectile reads
+  -> forbidden states 373/376/379 prove wrong-id time reads do not route from wrong Projectile ids
+  -> synthetic-imported-projectile-projhittime-multi-id.json checksum 5d897825, synthetic-imported-projectile-projcontacttime-multi-id.json checksum d9b3cecf, and synthetic-imported-projectile-projguardedtime-multi-id.json checksum e52d0d01 are required in qa:trace
+  -> pnpm qa:trace passes 435/435 artifacts, 405 required and 30 optional
+  -> no score movement; exact Proj*Time tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded packages, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjHit/ProjGuarded multi-id arbitration trace gates
+  -> synthetic-imported-projectile-projhit-multi-id.json checksum ab0f3fb3 and synthetic-imported-projectile-projguarded-multi-id.json checksum 023921e3 remain required in qa:trace
+  -> pnpm qa:trace previously passed 432/432 artifacts, 402 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjContact multi-id arbitration trace gate
   -> synthetic-imported-projectile-projcontact-multi-id.json checksum e790ec3e remains required in qa:trace

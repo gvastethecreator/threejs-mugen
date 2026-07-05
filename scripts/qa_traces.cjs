@@ -1692,6 +1692,21 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardedMultiIdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-projhittime-multi-id",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitTimeMultiIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-projcontacttime-multi-id",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileContactTimeMultiIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-projguardedtime-multi-id",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardedTimeMultiIdTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-projhit-suffix",
       required: true,
       artifact: presets.createSyntheticImportedProjectileHitSuffixTraceArtifact(),
@@ -3209,6 +3224,9 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-projcontact-multi-id",
     "synthetic-imported-projectile-projhit-multi-id",
     "synthetic-imported-projectile-projguarded-multi-id",
+    "synthetic-imported-projectile-projhittime-multi-id",
+    "synthetic-imported-projectile-projcontacttime-multi-id",
+    "synthetic-imported-projectile-projguardedtime-multi-id",
     "synthetic-imported-projectile-projhit-suffix",
     "synthetic-imported-projectile-projhit-suffix-any",
     "synthetic-imported-projectile-projguarded-suffix",
