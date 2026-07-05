@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic Angle active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-angle-dynamic.json` trace coverage for active imported `AngleSet value`, `AngleAdd value`, and `AngleDraw value/scale` expressions.
+- `ControllerOps` now preserves static `AngleDraw value/scale` typed operation data, while dynamic `value` or `scale` params intentionally fall back to runtime evaluation instead of false typed evidence.
+- `RuntimeSpriteEffectControllerWorld` now accepts a dynamic Angle resolver and forwards it into `RuntimeSpriteEffectWorld.applyAngle`; `RuntimeSpriteEffectWorld` applies bounded `renderAngle` plus one-frame `renderScale`.
+- `PlayableMatchRuntime` resolves Angle value/scale params through the active controller expression context, using `RuntimeDispatchEvaluationWorld.resolveFloat` for fractional scale values while legacy integer `resolveNumber` behavior remains intact for existing dispatch paths.
+- `RuntimeFighterAdvanceWorld` clears one-frame `renderScale` beside `renderAngle`, and `scripts/qa_traces.cjs` registers the new dynamic Angle artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `AngleSet value`, `AngleAdd value`, and `AngleDraw value/scale` as floats, and says rotation/scaling does not affect collision boxes.
+- Focused tests: `pnpm exec vitest run src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts src/tests/RuntimeFighterAdvanceSystem.test.ts src/tests/RuntimeDispatchEvaluationSystem.test.ts --testNamePattern "Angle|fighter advance|float resolver|dynamic numeric"` -> 5 files passed, 8 matching tests passed.
+- Test suite: `pnpm test` -> 151 files passed, 1356 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 447/447 artifacts, 417 required and 30 optional; `synthetic-imported-angle-dynamic.json` checksum `8f788bf8`, final checksum `6122b59e`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Smoke/visual QA: not run; this cut changed runtime/controller docs and trace evidence, not frontend, renderer assets, Studio UI, sprites, CSS, or visible layout.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AngleSet value`, `AngleAdd value`, and `AngleDraw value/scale` expression fallback can resolve through the sprite-effect boundary into render-angle/render-scale telemetry. The synthetic route seeds `var(0)=40`, `var(1)=-10`, `var(2)=35`, `var(3)=2`, and `fvar(0)=0.5`, then proves imported actor-frame/final `renderAngle = 35` plus `renderScale = 2,0.5` without typed `sprite-effect:angle*` operation evidence because the params are dynamic.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic Angle params, exact MUGEN/IKEMEN axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, score movement, and full presentation parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next raw presentation/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic AfterImageTime active-state trace gate
 
 Changed:

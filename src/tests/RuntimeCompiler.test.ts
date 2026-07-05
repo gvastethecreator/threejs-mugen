@@ -957,12 +957,23 @@ time = 20
     const angleSet = compileControllerIr(controller(200, "AngleSet", [], { value: "45" }));
     const angleAdd = compileControllerIr(controller(200, "AngleAdd", [], { value: "10" }));
     const angleDraw = compileControllerIr(controller(200, "AngleDraw", [], {}));
+    const angleDrawValueScale = compileControllerIr(controller(200, "AngleDraw", [], { value: "35", scale: "2,0.5" }));
     const dynamic = compileControllerIr(controller(200, "AngleSet", [], { value: "Const(data.life)" }));
+    const dynamicDraw = compileControllerIr(controller(200, "AngleDraw", [], { value: "var(0)", scale: "2,0.5" }));
+    const dynamicScale = compileControllerIr(controller(200, "AngleDraw", [], { value: "35", scale: "var(0),0.5" }));
 
     expect(angleSet.operation).toEqual({ kind: "sprite-effect", controllerType: "angleset", angle: 45 });
     expect(angleAdd.operation).toEqual({ kind: "sprite-effect", controllerType: "angleadd", delta: 10 });
     expect(angleDraw.operation).toEqual({ kind: "sprite-effect", controllerType: "angledraw" });
+    expect(angleDrawValueScale.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "angledraw",
+      angle: 35,
+      scale: [2, 0.5],
+    });
     expect(dynamic.operation).toBeUndefined();
+    expect(dynamicDraw.operation).toBeUndefined();
+    expect(dynamicScale.operation).toBeUndefined();
   });
 
   it("compiles EnvColor controllers into typed stage flash operations", () => {

@@ -7,7 +7,7 @@ import {
 
 describe("RuntimeFighterAdvanceWorld", () => {
   it("owns the bounded per-fighter advance order", () => {
-    const actor = advanceActor({ x: 4, y: -2 }, 45);
+    const actor = advanceActor({ x: 4, y: -2 }, 45, { x: 2, y: 0.5 });
     const calls: string[] = [];
 
     const result = new RuntimeFighterAdvanceWorld().advance({
@@ -20,7 +20,7 @@ describe("RuntimeFighterAdvanceWorld", () => {
       "hitby",
       "hitoverride",
       "contact",
-      "state-clock:cleared",
+      "state-clock:cleared/scale-cleared",
       "constraints-reset",
       "fall-recovery-tick",
       "preserve-read:8,-3",
@@ -34,6 +34,7 @@ describe("RuntimeFighterAdvanceWorld", () => {
       "preserve-frozen:8,-3",
     ]);
     expect(actor.runtime.renderAngle).toBeUndefined();
+    expect(actor.runtime.renderScale).toBeUndefined();
     expect(result).toEqual({
       tickStartPos: { x: 8, y: -3 },
       preserveImportedStateMoveType: true,
@@ -51,7 +52,12 @@ function orderedHooks(calls: string[]): RuntimeFighterAdvanceHooks<AdvanceActor>
     tickHitBySlots: () => calls.push("hitby"),
     tickHitOverrideSlots: () => calls.push("hitoverride"),
     advanceContactTimers: () => calls.push("contact"),
-    advanceStateClock: (actor) => calls.push(`state-clock:${actor.runtime.renderAngle === undefined ? "cleared" : "dirty"}`),
+    advanceStateClock: (actor) =>
+      calls.push(
+        `state-clock:${actor.runtime.renderAngle === undefined ? "cleared" : "dirty"}/scale-${
+          actor.runtime.renderScale === undefined ? "cleared" : "dirty"
+        }`,
+      ),
     resetFrameConstraints: () => calls.push("constraints-reset"),
     tickHitFallRecoveryWindow: (actor) => {
       actor.runtime.pos = { x: 8, y: -3 };
@@ -75,11 +81,12 @@ function orderedHooks(calls: string[]): RuntimeFighterAdvanceHooks<AdvanceActor>
   };
 }
 
-function advanceActor(pos: { x: number; y: number }, renderAngle?: number): AdvanceActor {
+function advanceActor(pos: { x: number; y: number }, renderAngle?: number, renderScale?: { x: number; y: number }): AdvanceActor {
   return {
     runtime: {
       pos: { ...pos },
       renderAngle,
+      renderScale,
     },
   };
 }

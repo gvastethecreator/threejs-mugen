@@ -968,6 +968,15 @@ function runActiveStateControllers(
           effect === "afterimagetime"
             ? (key) => resolveAfterImageTimeParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
             : undefined,
+        resolveAngle:
+          effect === "angle"
+            ? {
+                resolveNumber: (key) =>
+                  resolveAngleNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                resolvePair: (key) =>
+                  resolveAnglePairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              }
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1259,6 +1268,28 @@ function resolveDispatchNumber(
   });
 }
 
+function resolveDispatchFloat(
+  value: number | undefined,
+  expression: string | undefined,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState = fighter,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const createContext = activeExpressionContextFactory(stageBounds);
+  return dispatchEvaluationWorld.resolveFloat({
+    value,
+    expression,
+    actor: fighter,
+    opponent,
+    opponents: [opponent],
+    owner,
+    tick: stageTime,
+    createContext,
+  });
+}
+
 function resolveRemapPalPairParam(
   controller: ControllerIr,
   key: "source" | "dest",
@@ -1421,6 +1452,47 @@ function resolveAfterImageTripletParam(
   return values.some((value) => value === undefined)
     ? undefined
     : [values[0]!, values[1]!, values[2]!];
+}
+
+function resolveAngleNumberParam(
+  controller: ControllerIr,
+  key: "value",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveAnglePairParam(
+  controller: ControllerIr,
+  key: "scale",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const [xExpression, yExpression] = raw.split(",").map((part) => part.trim());
+  if (!xExpression || !yExpression) {
+    return undefined;
+  }
+  const x = resolveDispatchFloat(undefined, xExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const y = resolveDispatchFloat(undefined, yExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (x === undefined || y === undefined) {
+    return undefined;
+  }
+  return [x, y];
 }
 
 function resolveDispatchBoolean(

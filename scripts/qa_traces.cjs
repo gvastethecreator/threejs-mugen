@@ -871,6 +871,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAngleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-angle-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicAngleTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-envcolor",
       required: true,
       artifact: presets.createSyntheticImportedEnvColorTraceArtifact(),
@@ -3457,6 +3462,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-trans",
     "synthetic-imported-trans-dynamic",
     "synthetic-imported-angle",
+    "synthetic-imported-angle-dynamic",
     "synthetic-imported-envcolor",
     "synthetic-imported-envshake",
     "synthetic-imported-remappal",

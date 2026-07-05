@@ -54,6 +54,20 @@ describe("RuntimeDispatchEvaluationWorld", () => {
     ]);
   });
 
+  it("preserves fractional dynamic values through the float resolver", () => {
+    const world = new RuntimeDispatchEvaluationWorld();
+    const input = {
+      expression: "fvar(0)",
+      actor: actorRef("p1"),
+      opponent: actorRef("p2"),
+      owner: actorRef("p1"),
+      createContext: () => ({ self: runtimeState({ fvars: [0.5] }) }),
+    };
+
+    expect(world.resolveNumber(input)).toBe(0);
+    expect(world.resolveFloat(input)).toBe(0.5);
+  });
+
   it("resolves dynamic booleans through numeric expression truthiness", () => {
     const world = new RuntimeDispatchEvaluationWorld();
 

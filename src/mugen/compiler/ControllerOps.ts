@@ -410,6 +410,8 @@ export type SpriteEffectControllerOp =
   | {
       kind: "sprite-effect";
       controllerType: "angledraw";
+      angle?: number;
+      scale?: [number, number];
     };
 
 export type ResourceControllerOp =
@@ -568,7 +570,7 @@ export function compileControllerOp(controller: MugenStateController, context: C
     return compileAngleAddControllerOp(controller);
   }
   if (type === "angledraw") {
-    return { kind: "sprite-effect", controllerType: "angledraw" };
+    return compileAngleDrawControllerOp(controller);
   }
   if (isResourceController(type)) {
     return compileResourceControllerOp(controller, type);
@@ -891,6 +893,22 @@ function compileAngleAddControllerOp(controller: MugenStateController): SpriteEf
     controllerType: "angleadd",
     delta: clampRenderAngle(delta),
   };
+}
+
+function compileAngleDrawControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const valueParam = findParam(controller, "value");
+  const scaleParam = findParam(controller, "scale");
+  const angle = valueParam === undefined ? undefined : firstNumber(valueParam);
+  const scale = scaleParam === undefined ? undefined : strictNumberPairExact(scaleParam);
+  if ((valueParam !== undefined && angle === undefined) || (scaleParam !== undefined && !scale)) {
+    return undefined;
+  }
+  return definedObject({
+    kind: "sprite-effect" as const,
+    controllerType: "angledraw" as const,
+    angle: angle === undefined ? undefined : clampRenderAngle(angle),
+    scale: scale === undefined ? undefined : clampRenderScalePair(scale),
+  });
 }
 
 function isResourceController(type: string): type is ResourceControllerOp["controllerType"] {
@@ -1836,6 +1854,17 @@ function clampAfterImageGap(value: number): number {
 
 function clampRenderAngle(value: number): number {
   return Math.max(-720, Math.min(720, Math.round(value * 1000) / 1000));
+}
+
+function clampRenderScalePair(value: [number, number]): [number, number] {
+  return [clampRenderScale(value[0]), clampRenderScale(value[1])];
+}
+
+function clampRenderScale(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(0.05, Math.min(8, Math.abs(value)));
 }
 
 function clampHitAdd(value: number): number {

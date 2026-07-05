@@ -35,13 +35,24 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic AfterImageTime trace gate
+R1 required dynamic Angle trace gate
+  -> synthetic-imported-angle-dynamic.json checksum 8f788bf8 is required in qa:trace
+  -> imported active state seeds var(0)=40, var(1)=-10, var(2)=35, var(3)=2, and fvar(0)=0.5
+  -> active state executes AngleSet value = var(0), AngleAdd value = var(1), and AngleDraw value = var(2), scale = var(3),fvar(0)
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic Angle resolver into RuntimeSpriteEffectWorld.applyAngle
+  -> PlayableMatchRuntime resolves Angle value/scale through the active controller expression context and preserves fractional scale params
+  -> final imported actor evidence requires renderAngle 35, renderScale 2,0.5, and no typed sprite-effect:angle* operation evidence
+  -> pnpm qa:trace passes 447/447 artifacts, 417 required and 30 optional
+  -> official Elecbyte docs define AngleSet value, AngleDraw value, and AngleDraw scale as floats; rotation/scaling does not affect collision boxes
+  -> no score movement; typed-operation lowering for dynamic angle params, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic AfterImageTime trace gate
   -> synthetic-imported-afterimagetime-dynamic.json checksum 16edc106 is required in qa:trace
   -> imported active state seeds var(0)=14, then executes static AfterImage plus AfterImageTime value = var(0)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic AfterImageTime resolver into RuntimeSpriteEffectWorld.applyAfterImageTime
   -> PlayableMatchRuntime resolves AfterImageTime time/value params through the active controller expression context
   -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and no typed sprite-effect:afterimagetime operation evidence
-  -> pnpm qa:trace passes 446/446 artifacts, 416 required and 30 optional
+  -> pnpm qa:trace passed 446/446 artifacts, 416 required and 30 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImageTime time plus alternate value
   -> no score movement; typed-operation lowering for dynamic AfterImageTime params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 

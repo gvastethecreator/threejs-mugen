@@ -24,6 +24,19 @@ export class RuntimeDispatchEvaluationWorld {
   resolveNumber<TActor, TOpponent, TOwner>(
     input: RuntimeDispatchEvaluationInput<TActor, TOpponent, TOwner, number>,
   ): number | undefined {
+    const numberValue = this.evaluateNumber(input);
+    return numberValue === undefined ? undefined : Math.trunc(numberValue);
+  }
+
+  resolveFloat<TActor, TOpponent, TOwner>(
+    input: RuntimeDispatchEvaluationInput<TActor, TOpponent, TOwner, number>,
+  ): number | undefined {
+    return this.evaluateNumber(input);
+  }
+
+  private evaluateNumber<TActor, TOpponent, TOwner>(
+    input: RuntimeDispatchEvaluationInput<TActor, TOpponent, TOwner, number>,
+  ): number | undefined {
     if (input.value !== undefined) {
       return input.value;
     }
@@ -40,7 +53,7 @@ export class RuntimeDispatchEvaluationWorld {
     });
     const evaluated = evaluateExpression(input.expression, context);
     const numberValue = Number(evaluated);
-    return Number.isFinite(numberValue) ? Math.trunc(numberValue) : undefined;
+    return Number.isFinite(numberValue) ? numberValue : undefined;
   }
 
   resolveBoolean<TActor, TOpponent, TOwner>(

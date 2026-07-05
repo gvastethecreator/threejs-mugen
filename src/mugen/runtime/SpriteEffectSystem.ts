@@ -23,6 +23,10 @@ export type RuntimeAfterImageResolver = {
   resolveTriplet: (key: "paladd" | "palmul" | "add" | "mul") => [number, number, number] | undefined;
 };
 export type RuntimeAfterImageTimeResolver = (key: "time" | "value") => number | undefined;
+export type RuntimeAngleResolver = {
+  resolveNumber: (key: "value") => number | undefined;
+  resolvePair: (key: "scale") => [number, number] | undefined;
+};
 
 export type RuntimeSpriteEffectControllerEffect =
   | "sprpriority"
@@ -49,6 +53,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveAfterImage?: RuntimeAfterImageResolver;
   resolveAfterImageTime?: RuntimeAfterImageTimeResolver;
+  resolveAngle?: RuntimeAngleResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
 };
@@ -119,8 +124,9 @@ export class RuntimeSpriteEffectWorld {
     state: CharacterRuntimeState,
     controller: { type: string; params: Record<string, string> },
     operation?: RuntimeAngleSpriteEffectOp,
+    resolveAngle?: RuntimeAngleResolver,
   ): void {
-    applyRuntimeAngleController(state, controller, operation);
+    applyRuntimeAngleController(state, controller, operation, resolveAngle);
   }
 
   tick(state: CharacterRuntimeState, sampleFactory: RuntimeAfterImageSampleFactory): void {
@@ -191,6 +197,7 @@ export class RuntimeSpriteEffectControllerWorld {
           operation?.controllerType === "angledraw"
           ? operation
           : undefined,
+        input.resolveAngle,
       );
     }
 
@@ -419,24 +426,44 @@ export function applyRuntimeAngleController(
   state: CharacterRuntimeState,
   controller: { type: string; params: Record<string, string> },
   operation?: RuntimeAngleSpriteEffectOp,
+  resolveAngle?: RuntimeAngleResolver,
 ): void {
   const type = operation?.controllerType ?? controller.type.toLowerCase();
   if (type === "angleset") {
-    const angle = operation?.controllerType === "angleset" ? operation.angle : firstNumber(findControllerParam(controller, "value"));
+    const valueParam = findControllerParam(controller, "value");
+    const angle =
+      operation?.controllerType === "angleset"
+        ? operation.angle
+        : resolveAngleNumber(valueParam, resolveAngle) ?? firstNumber(valueParam);
     if (angle !== undefined) {
       state.angle = clampRenderAngle(angle);
     }
     return;
   }
   if (type === "angleadd") {
-    const delta = operation?.controllerType === "angleadd" ? operation.delta : firstNumber(findControllerParam(controller, "value"));
+    const valueParam = findControllerParam(controller, "value");
+    const delta =
+      operation?.controllerType === "angleadd"
+        ? operation.delta
+        : resolveAngleNumber(valueParam, resolveAngle) ?? firstNumber(valueParam);
     if (delta !== undefined) {
       state.angle = clampRenderAngle((state.angle ?? 0) + delta);
     }
     return;
   }
   if (type === "angledraw") {
-    state.renderAngle = clampRenderAngle(state.angle ?? 0);
+    const valueParam = findControllerParam(controller, "value");
+    const scaleParam = findControllerParam(controller, "scale");
+    const angle =
+      operation?.controllerType === "angledraw"
+        ? operation.angle
+        : resolveAngleNumber(valueParam, resolveAngle) ?? firstNumber(valueParam);
+    const scale =
+      operation?.controllerType === "angledraw"
+        ? operation.scale
+        : resolveAngleScale(scaleParam, resolveAngle) ?? numberPair(scaleParam);
+    state.renderAngle = clampRenderAngle(angle ?? state.angle ?? 0);
+    state.renderScale = scale === undefined ? undefined : pairToRenderScale(scale);
   }
 }
 
@@ -515,6 +542,20 @@ function palettePair(value: string | undefined): [number, number] | undefined {
   return [parts[0]!, parts[1]!];
 }
 
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parts = value.split(",").map((part) => Number(part.trim()));
+  if (parts.length < 2 || parts[0] === undefined || parts[1] === undefined) {
+    return undefined;
+  }
+  if (!Number.isFinite(parts[0]) || !Number.isFinite(parts[1])) {
+    return undefined;
+  }
+  return [parts[0]!, parts[1]!];
+}
+
 function normalizePalettePair(pair: [number, number]): [number, number] {
   return [Math.max(0, Math.round(pair[0])), Math.max(0, Math.round(pair[1]))];
 }
@@ -579,6 +620,32 @@ function resolveAfterImageTimeNumber(
   }
   const value = resolver?.(key);
   return value === undefined || !Number.isFinite(value) ? undefined : clampAfterImageTime(value);
+}
+
+function resolveAngleNumber(param: string | undefined, resolver: RuntimeAngleResolver | undefined): number | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+  const value = resolver?.resolveNumber("value");
+  return value === undefined || !Number.isFinite(value) ? undefined : clampRenderAngle(value);
+}
+
+function resolveAngleScale(
+  param: string | undefined,
+  resolver: RuntimeAngleResolver | undefined,
+): [number, number] | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+  const value = resolver?.resolvePair("scale");
+  return value === undefined ? undefined : [clampRenderScale(value[0]), clampRenderScale(value[1])];
+}
+
+function pairToRenderScale(value: [number, number]): { x: number; y: number } {
+  return {
+    x: clampRenderScale(value[0]),
+    y: clampRenderScale(value[1]),
+  };
 }
 
 function colorTriplet(
@@ -678,6 +745,13 @@ function normalizeTransAlpha(value: [number, number] | undefined): [number, numb
 
 function clampRenderAngle(value: number): number {
   return Math.max(-720, Math.min(720, Math.round(value * 1000) / 1000));
+}
+
+function clampRenderScale(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 1;
+  }
+  return Math.max(0.05, Math.min(8, Math.abs(value)));
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

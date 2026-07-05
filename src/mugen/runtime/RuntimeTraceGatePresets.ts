@@ -5481,6 +5481,75 @@ export function createSyntheticImportedAngleTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedDynamicAngleTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-angle-dynamic",
+    displayName: "Synthetic Imported Dynamic AngleDraw",
+    withDynamicAngle: {
+      set: "var(0)",
+      add: "var(1)",
+      drawValue: "var(2)",
+      scale: ["var(3)", "fvar(0)"],
+      vars: [
+        { index: 0, value: 40 },
+        { index: 1, value: -10 },
+        { index: 2, value: 35 },
+        { index: 3, value: 2 },
+      ],
+      fvars: [
+        { index: 0, value: 0.5 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-angle-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-angle-dynamic-golden",
+      label: "Synthetic imported dynamic AngleDraw route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic AngleDraw trace proves AngleSet, AngleAdd, and AngleDraw value/scale expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary into bounded render-angle and render-scale telemetry. It does not claim typed sprite-effect operation lowering for dynamic angle params, exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or scale parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-angle-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "AngleSet", "AngleAdd", "AngleDraw", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedAngleAtLeast: 35,
+            observedAngleAtMost: 35,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedEnvColorTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createSyntheticImportedEnvColorLayerTraceArtifact(options, {
     id: "synthetic-imported-envcolor",
@@ -33552,6 +33621,14 @@ export type SyntheticImportedTraceFighterOptions = {
     set?: number;
     add?: number;
   };
+  withDynamicAngle?: {
+    set?: string;
+    add?: string;
+    drawValue?: string;
+    scale?: [string, string];
+    vars?: Array<{ index: number; value: number }>;
+    fvars?: Array<{ index: number; value: number }>;
+  };
   withEnvShake?: {
     time?: number;
     freq?: number;
@@ -33857,6 +33934,7 @@ ${options.withDynamicPalFx === undefined ? "" : dynamicPalFxControllerBlock(opti
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
 ${options.withDynamicTrans === undefined ? "" : dynamicTransControllerBlock(options.withDynamicTrans)}
 ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
+${options.withDynamicAngle === undefined ? "" : dynamicAngleControllerBlock(options.withDynamicAngle)}
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
@@ -35201,6 +35279,53 @@ value = ${options.add ?? 0}
 type = AngleDraw
 trigger1 = Time >= 0
 `;
+}
+
+function dynamicAngleControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicAngle"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic Angle Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const fvarSeeds =
+    options.fvars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic Angle FVar ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+fv = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const drawValueLine = options.drawValue === undefined ? "" : `value = ${options.drawValue}
+`;
+  const scaleLine = options.scale === undefined ? "" : `scale = ${options.scale.join(",")}
+`;
+  return `
+${varSeeds}${fvarSeeds}
+[State 200, Dynamic AngleSet Probe]
+type = AngleSet
+trigger1 = Time >= 0
+value = ${options.set ?? 0}
+
+[State 200, Dynamic AngleAdd Probe]
+type = AngleAdd
+trigger1 = Time >= 0
+value = ${options.add ?? 0}
+
+[State 200, Dynamic AngleDraw Probe]
+type = AngleDraw
+trigger1 = Time >= 0
+${drawValueLine}${scaleLine}`;
 }
 
 function envColorControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvColor"]>): string {
