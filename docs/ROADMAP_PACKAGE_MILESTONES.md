@@ -35,6 +35,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required helper Projectile ProjTime same-id guard-then-hit trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-projtime-same-id-last-contact.json for two helper-parented owner-side Projectiles id 8918
+  -> first helper-parented Projectile contact is guarded, later same-id contact hits, and helper routes 1200 -> 1306 -> 1307 through ProjHitTime(8918) >= 1 / ProjHitTime(0) >= 1 / ProjContactTime(8918) >= 1 / ProjContactTime(0) >= 1 while ProjGuardedTime(8918) < 0 / ProjGuardedTime(0) < 0
+  -> forbidden helper state 1308 proves stale same-id guarded time does not survive after the later hit
+  -> guard package S6,34 / F7038 / sparkxy 35,-77 and hit package S5,35 / F7038 / sparkxy 36,-78 are required
+  -> synthetic-imported-helper-projtime-same-id-last-contact.json checksum 4e74aec3 is required in qa:trace
+  -> pnpm qa:trace passes 439/439 artifacts, 409 required and 30 optional
+  -> together with synthetic-imported-helper-projtime-same-id-hit-then-guard.json checksum f4c1da3b, both helper-local same-ID two-contact Proj*Time orders are required
+  -> no score movement; exact Proj*Time tick order/lifetime, helper custom-state breadth beyond these owner-side helper-local routes, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required helper Projectile ProjTime same-id hit-then-guard trace gate
   -> EffectActorSystem now resolves helper-local Proj*Time from the latest helper-parented Projectile contact for the requested fixed id or ID 0 any-id
   -> RuntimeTraceGatePresets now builds synthetic-imported-helper-projtime-same-id-hit-then-guard.json for two helper-parented owner-side Projectiles id 8917

@@ -27,6 +27,15 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required helper Projectile ProjTime same-id guard-then-hit trace gate
+  -> synthetic-imported-helper-projtime-same-id-last-contact.json checksum 4e74aec3 is required in qa:trace
+  -> helper-parented owner-side Projectiles share id 8918; guarded contact first, hit contact later; helper route 1200 -> 1306 -> 1307 through fixed-id and ID 0 hit/contact time reads while fixed-id and ID 0 guarded time reads stay inactive
+  -> forbidden helper state 1308 proves stale helper-local same-id guarded time does not survive the later same-id hit
+  -> evidence keeps two Projectile controller/op executions, helper/projectile lifecycle rows, owner/root p1, parent p1-helper-0, owner target-link id 8918, guard package S6,34 / F7038 / sparkxy 35,-77, and hit package S5,35 / F7038 / sparkxy 36,-78
+  -> pnpm qa:trace passes 439/439 artifacts, 409 required and 30 optional
+  -> together with synthetic-imported-helper-projtime-same-id-hit-then-guard.json checksum f4c1da3b, both helper-local same-ID two-contact Proj*Time orders are required
+  -> no score movement; exact Proj*Time tick order/lifetime, helper custom-state breadth beyond these owner-side routes, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required helper Projectile ProjTime same-id hit-then-guard trace gate
   -> synthetic-imported-helper-projtime-same-id-hit-then-guard.json checksum f4c1da3b is required in qa:trace
   -> helper-parented owner-side Projectiles share id 8917; hit contact first, guarded contact later; helper route 1200 -> 1303 -> 1304 through fixed-id and ID 0 guard/contact time reads while fixed-id and ID 0 hit time reads stay inactive
@@ -2287,7 +2296,7 @@ I1/R1 character FightFX prefix package expansion
   -> no full sys.ffx lifetime/refcount/cache semantics, exact channel fallback, ZSS/Lua/text rendering/removal/runtime execution claim
 ```
 
-Do not reselect `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
+Do not reselect `synthetic-imported-helper-projtime-same-id-last-contact`, `synthetic-imported-helper-projtime-same-id-hit-then-guard`, `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
 

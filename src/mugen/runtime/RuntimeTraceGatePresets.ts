@@ -29072,6 +29072,195 @@ export function createSyntheticImportedHelperProjTimeSameIdHitThenGuardTraceArti
   });
 }
 
+export function createSyntheticImportedHelperProjTimeSameIdLastContactTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileSameIdGuardThenHitScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projtime-same-id-last-contact-attacker",
+    displayName: "Synthetic Imported Helper ProjTime Same ID Last Contact Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1306,
+      waitAnimNo: 1065,
+      branchStateNo: 1307,
+      branchAnimNo: 1066,
+      branchTrigger:
+        "ProjHitTime(8918) >= 1 && ProjHitTime(0) >= 1 && ProjContactTime(8918) >= 1 && ProjContactTime(0) >= 1 && ProjGuardedTime(8918) < 0 && ProjGuardedTime(0) < 0",
+      projectileAnimNo: 1067,
+      projectileId: 8918,
+      pos: [360, -34],
+      guardSound: "S6,34",
+      guardSpark: "F7038",
+      sparkXy: [35, -77],
+      secondaryProjectile: {
+        triggerTime: 18,
+        projectileId: 8918,
+        projectileAnimNo: 1067,
+        pos: [360, -34],
+        hitSound: "S5,35",
+        hitSpark: "F7038",
+        sparkXy: [36, -78],
+      },
+      trapTriggers: [
+        {
+          stateNo: 1308,
+          trigger: "ProjHitTime(8918) >= 1 && ProjGuardedTime(8918) >= 0",
+          label: "Stale Same ID ProjGuardedTime Trap",
+        },
+      ],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7038, 8138),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projtime-same-id-last-contact-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projtime-same-id-last-contact-golden",
+      label: "Synthetic imported Helper ProjTime same-id last-contact route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ProjTime same-id last-contact trace proves bounded helper-local Projectile time triggers follow Elecbyte's last projectile contact kind when a Helper spawns two same-ID owner-side Projectiles that guard then hit. The later hit keeps ProjHitTime and ProjContactTime readable for the fixed ID and ID 0 while ProjGuardedTime stays negative. Elecbyte documents helper-created Projectiles as root-owned. This is bounded helper-parented owner-side same-ID guard-to-hit timing evidence only; exact tick order/lifetime, helper-owned custom-state targets, redirects, teams, Move* interaction breadth, score movement, and full MUGEN/IKEMEN helper Projectile parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projtime-same-id-last-contact-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        forbiddenExecutedStates: [1308],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", { type: "Projectile", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", "helper", { operation: "projectile", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard", "hit"],
+        requiredCombatReasons: ["guard", "hit"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 34,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7038,
+              raw: "F7038",
+              rawPrefix: "F",
+              offsetX: 35,
+              offsetY: -77,
+              assetSource: "fightfx",
+              assetActionId: 7038,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8138,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 35,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7038,
+              raw: "F7038",
+              rawPrefix: "F",
+              offsetX: 36,
+              offsetY: -78,
+              assetSource: "fightfx",
+              assetActionId: 7038,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8138,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1306, animNo: 1065, moveType: "I", minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1307, animNo: 1066, moveType: "I", minFrames: 1 },
+          {
+            actorId: "p1-projectile-0",
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 1067,
+            moveType: "A",
+            minFrames: 1,
+          },
+          {
+            actorId: "p1-projectile-1",
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 1067,
+            moveType: "A",
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 3, minHelpers: 1, minProjectiles: 2, minNextHelperSerial: 1, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1307, minAge: 2 },
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8918,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8918 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperHitDefTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperHitDefScript();
@@ -32079,6 +32268,14 @@ export function importedHelperProjectileSameIdHitThenGuardScript(): RuntimeTrace
     { label: "imported-helper-projtime-same-id-first-hit", frames: 14, p1: ["x"], p2: [] },
     { label: "imported-helper-projtime-same-id-later-guard", frames: 30, p1: [], p2: ["B"] },
     { label: "helper-projtime-same-id-hit-then-guard-settle", frames: 4, p1: [], p2: ["B"] },
+  ]);
+}
+
+export function importedHelperProjectileSameIdGuardThenHitScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-helper-projtime-same-id-first-guard", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "imported-helper-projtime-same-id-later-hit", frames: 30, p1: [], p2: [] },
+    { label: "helper-projtime-same-id-guard-then-hit-settle", frames: 4, p1: [], p2: [] },
   ]);
 }
 
