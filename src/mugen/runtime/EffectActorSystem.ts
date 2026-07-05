@@ -17,6 +17,7 @@ import {
   type RuntimeExplod,
   type RuntimeExplodAdvanceOptions,
   type RuntimeExplodBindAnchor,
+  type RuntimeExplodPauseKind,
   type RuntimeExplodModifyInput,
   type RuntimeExplodSpawnInput,
 } from "./ExplodSystem";
@@ -87,6 +88,32 @@ export type RuntimeEffectPresentationAdvanceOptions = RuntimeExplodAdvanceOption
   stage?: Pick<MugenStageDefinition, "bounds">;
 };
 
+export type RuntimeEffectActorActiveAdvanceInput = {
+  advanceHelpers: () => void;
+  advanceProjectiles: () => void;
+};
+
+export type RuntimeEffectActorPresentationAdvanceInput = {
+  pauseKind?: RuntimeExplodPauseKind;
+  stage?: Pick<MugenStageDefinition, "bounds">;
+  advanceHelpers: () => void;
+  advanceExplods: () => void;
+};
+
+export class RuntimeEffectActorAdvanceWorld {
+  advanceActive(input: RuntimeEffectActorActiveAdvanceInput): void {
+    input.advanceHelpers();
+    input.advanceProjectiles();
+  }
+
+  advancePresentation(input: RuntimeEffectActorPresentationAdvanceInput): void {
+    if (input.pauseKind && input.stage) {
+      input.advanceHelpers();
+    }
+    input.advanceExplods();
+  }
+}
+
 export class RuntimeEffectActorWorld {
   private readonly stores: RuntimeEffectActorStores;
   private readonly projectileCombatWorld: RuntimeProjectileCombatWorld;
@@ -94,6 +121,7 @@ export class RuntimeEffectActorWorld {
   constructor(
     stores: RuntimeEffectActorStores = createRuntimeEffectActorStores(),
     projectileCombatWorld: RuntimeProjectileCombatWorld = new RuntimeProjectileCombatWorld(),
+    private readonly advanceWorld: RuntimeEffectActorAdvanceWorld = new RuntimeEffectActorAdvanceWorld(),
   ) {
     this.stores = stores;
     this.projectileCombatWorld = projectileCombatWorld;
@@ -140,15 +168,23 @@ export class RuntimeEffectActorWorld {
   }
 
   advanceActiveEffects(ownerId: string, stage: Pick<MugenStageDefinition, "bounds">, options?: RuntimeHelperAdvanceOptions): void {
-    this.advanceHelpers(ownerId, stage, options);
-    this.advanceProjectiles(ownerId, stage);
+    this.advanceWorld.advanceActive({
+      advanceHelpers: () => this.advanceHelpers(ownerId, stage, options),
+      advanceProjectiles: () => this.advanceProjectiles(ownerId, stage),
+    });
   }
 
   advancePresentationEffects(ownerId: string, bindAnchor?: RuntimeExplodBindAnchor, options?: RuntimeEffectPresentationAdvanceOptions): void {
-    if (options?.pauseKind && options.stage) {
-      this.advanceHelpers(ownerId, options.stage, options);
-    }
-    this.advanceExplods(ownerId, bindAnchor, options);
+    this.advanceWorld.advancePresentation({
+      pauseKind: options?.pauseKind,
+      stage: options?.stage,
+      advanceHelpers: () => {
+        if (options?.stage) {
+          this.advanceHelpers(ownerId, options.stage, options);
+        }
+      },
+      advanceExplods: () => this.advanceExplods(ownerId, bindAnchor, options),
+    });
   }
 
   explodSnapshots(ownerId: string, sourceStateNo: number): ActorSnapshot[] {

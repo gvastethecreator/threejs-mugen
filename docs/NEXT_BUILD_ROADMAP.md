@@ -27,6 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R2 RuntimeEffectActorAdvanceWorld ownership cut
+  -> RuntimeEffectActorAdvanceWorld owns bounded effect-actor advance ordering inside RuntimeEffectActorWorld
+  -> active effects advance Helpers before Projectiles
+  -> paused presentation advances Helpers before Explods
+  -> normal presentation advances Explods without ticking Helpers
+  -> focused EffectActorSystem coverage proves both order contracts
+  -> ownership cleanup only; no score movement, no new runtime semantics, no exact helper pause/combat ordering, no projectile lifetime parity, no remove-trigger timing, no teams/simul roster ownership, no full Helper/Projectile VM claim
+
 R1 required helper Projectile ProjTime same-id guard-then-hit trace gate
   -> synthetic-imported-helper-projtime-same-id-last-contact.json checksum 4e74aec3 is required in qa:trace
   -> helper-parented owner-side Projectiles share id 8918; guarded contact first, hit contact later; helper route 1200 -> 1306 -> 1307 through fixed-id and ID 0 hit/contact time reads while fixed-id and ID 0 guarded time reads stay inactive
@@ -2319,6 +2327,8 @@ Do not reselect `GetHitVar guard timing`, `GetHitVar down-recover`, `GetHitVar f
 Do not reselect `RuntimeMatchActorRosterWorld` or `RuntimeMatchRoundWorld` ownership as fresh next work; the current P1/P2 roster projection and active-match round timer/finish side-effect boundaries are now closed.
 
 Do not reselect `RuntimeActiveControllerHookSetWorld` ownership as fresh next work; the active-controller hook-set boundary is now closed and focused-tested.
+
+Do not reselect `RuntimeEffectActorAdvanceWorld` ownership as fresh next work; the effect-actor active/presentation advance order boundary is now closed and focused-tested.
 
 ## Next 10 Build Slices
 

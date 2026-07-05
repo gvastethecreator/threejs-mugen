@@ -13,6 +13,7 @@ import {
   removeRuntimeExplodActors,
   removeRuntimeExplodActorsOnGetHit,
   removeRuntimeProjectilesMarkedForRemoval,
+  RuntimeEffectActorAdvanceWorld,
   RuntimeEffectActorWorld,
   runtimeHelperProjectileCancelTime,
   runtimeHelperProjectileContactTime,
@@ -1952,6 +1953,37 @@ describe("EffectActorSystem", () => {
     expect(world.countActors("p1", "projectile")).toBe(1);
     expect(world.countActors("p1", "projectile", 77)).toBe(1);
     expect(world.countActors("p1", "projectile", 78)).toBe(0);
+  });
+
+  it("owns active effect order through a helper-before-projectile boundary", () => {
+    const calls: string[] = [];
+
+    new RuntimeEffectActorAdvanceWorld().advanceActive({
+      advanceHelpers: () => calls.push("helpers"),
+      advanceProjectiles: () => calls.push("projectiles"),
+    });
+
+    expect(calls).toEqual(["helpers", "projectiles"]);
+  });
+
+  it("owns paused presentation effect order without advancing helpers during normal presentation", () => {
+    const world = new RuntimeEffectActorAdvanceWorld();
+    const normalCalls: string[] = [];
+    const pausedCalls: string[] = [];
+
+    world.advancePresentation({
+      advanceHelpers: () => normalCalls.push("helpers"),
+      advanceExplods: () => normalCalls.push("explods"),
+    });
+    world.advancePresentation({
+      pauseKind: "Pause",
+      stage: { bounds: { left: -160, right: 160 } },
+      advanceHelpers: () => pausedCalls.push("helpers"),
+      advanceExplods: () => pausedCalls.push("explods"),
+    });
+
+    expect(normalCalls).toEqual(["explods"]);
+    expect(pausedCalls).toEqual(["helpers", "explods"]);
   });
 
   it("separates active effect ticks from presentation effect ticks", () => {
