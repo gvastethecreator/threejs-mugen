@@ -11,7 +11,12 @@ import {
   runtimeHelpersToSnapshots,
   type RuntimeHelper,
 } from "../mugen/runtime/HelperSystem";
-import { createRuntimeContactMemory } from "../mugen/runtime/ContactMemorySystem";
+import {
+  createRuntimeContactMemory,
+  markRuntimeMoveContact,
+  runtimeMoveContactValue,
+  runtimeMoveHitCountValue,
+} from "../mugen/runtime/ContactMemorySystem";
 
 const stage: Pick<MugenStageDefinition, "bounds"> = {
   bounds: {
@@ -374,6 +379,49 @@ describe("HelperSystem", () => {
     expect(active.currentMoveLabel).toBeUndefined();
     expect(active.moveTick).toBe(0);
     expect(active.firedHitDefs.size).toBe(0);
+  });
+
+  it("preserves helper-local hit counters when destination state declares hitcountpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveContact(contact, 1200, "hit", "p2");
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1226" })]),
+          stateProgram(stateDef(1226, { moveType: "A", hitCountPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1226);
+    expect(runtimeMoveHitCountValue(active.contact, 1226, false)).toBe(1);
+    expect(runtimeMoveHitCountValue(active.contact, 1226, true)).toBe(1);
+    expect(runtimeMoveContactValue(active.contact, 1226, "hit")).toBe(0);
+  });
+
+  it("resets helper-local hit counters when destination state omits hitcountpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveContact(contact, 1200, "hit", "p2");
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1226" })]),
+          stateProgram(stateDef(1226, { moveType: "A" })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1226);
+    expect(runtimeMoveHitCountValue(active.contact, 1226, false)).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1226, true)).toBe(0);
   });
 
   it("projects helpers into effect actor snapshots with cloned collision boxes", () => {

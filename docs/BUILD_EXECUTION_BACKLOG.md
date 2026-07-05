@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper StateDef hitcountpersist required trace gate
+
+Changed:
+
+- Added helper `ChangeState` contact-memory reset/persistence for destination `StateDef movehitpersist` / `hitcountpersist` metadata.
+- Helper state transitions now reset helper-local contact memory by default and preserve only requested Move* or HitCount memory through `createRuntimeContactMemoryWithStatePersistence`.
+- Added required `synthetic-imported-helper-hitcountpersist.json` trace coverage for a helper-owned direct `HitDef` route `1200 -> 1226 -> 1227`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-helper-hitcountpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `hitcountpersist` as carrying hit counters from the previous state; Elecbyte Trigger Reference says `HitCount` / `UniqHitCount` reset after state change unless `hitcountpersist` is set; Elecbyte state-controller docs define helpers as another player instance.
+- Focused tests: `pnpm vitest run src/tests/HelperSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "hitcountpersist|Helper HitCountPersist|helper-local hit counters"` -> 2 files passed, 4 tests passed.
+- Tests: `pnpm test` -> 151 files passed, 1298 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Trace gate: `pnpm qa:trace` -> 418/418 artifacts, 388 required and 30 optional; `synthetic-imported-helper-hitcountpersist.json` checksum `fc9588d8`.
+
+Claim allowed:
+
+- Bounded helper-owned direct `HitDef` hit-count memory can persist across one helper `ChangeState` into a destination helper `StateDef` declaring `hitcountpersist = 1`.
+- The gate proves helper `1200 -> 1226 -> 1227`, `HitCount` / `UniqHitCount` branching with `MoveHit = 0`, helper-owned sound/FightFX contact evidence from helper state `1200`, and final P2 life `965`.
+
+Claim blocked:
+
+- Helper `movehitpersist` required trace coverage, Projectile/custom-state `hitcountpersist` breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, helper-owned custom states, visual/audio parity beyond the bounded contact package, score movement, and full MUGEN/IKEMEN helper hit-count lifetime parity.
+
+Next:
+
+- Continue R1 with helper `movehitpersist` required trace coverage, Projectile/custom-state StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper `hitcountpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Helper StateDef hitdefpersist required trace gate
 
 Changed:

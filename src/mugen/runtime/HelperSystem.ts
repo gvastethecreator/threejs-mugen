@@ -8,6 +8,7 @@ import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSyst
 import {
   advanceRuntimeContactTimers,
   createRuntimeContactMemory,
+  createRuntimeContactMemoryWithStatePersistence,
   runtimeMoveHitCountValue,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
@@ -665,6 +666,7 @@ function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?
   helper.stateNo = stateNo;
   helper.stateTime = 0;
   helper.firedHitDefs.clear();
+  resetHelperContactState(helper, stateNo, state);
   if (state?.type) {
     helper.stateType = normalizeRuntimeStateType(state.type, helper.stateType);
   }
@@ -698,6 +700,16 @@ function cancelHelperStaleMove(helper: RuntimeHelper, stateNo: number, state?: M
   helper.currentMoveLabel = undefined;
   helper.moveTick = 0;
   helper.hasHit = false;
+}
+
+function resetHelperContactState(helper: RuntimeHelper, stateNo: number, state?: MugenStateDef): void {
+  helper.contact =
+    state?.moveHitPersist || state?.hitCountPersist
+      ? createRuntimeContactMemoryWithStatePersistence(helper.contact, stateNo, {
+          moveHit: Boolean(state.moveHitPersist),
+          hitCount: Boolean(state.hitCountPersist),
+        })
+      : createRuntimeContactMemory();
 }
 
 function changeHelperAction(helper: RuntimeHelper, animNo: number): void {
