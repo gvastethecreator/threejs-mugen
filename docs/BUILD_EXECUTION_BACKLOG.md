@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjHit and ProjGuarded multi-id arbitration required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projhit-multi-id.json` and `synthetic-imported-projectile-projguarded-multi-id.json` trace coverage for two-projectile player-owned fixed-id plus any-id `ProjHit` / `ProjGuarded` arbitration.
+- `RuntimeTraceGatePresets` now mirrors the ProjContact multi-id harness for hit and guard outcomes, with wrong-id trap branches, two Projectile payloads, target-link evidence, and bounded hit/guard sound/FightFX packages.
+- `scripts/qa_traces.cjs` registers both artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines fixed `ProjHit[ID]` / `ProjGuarded[ID]` filters, omitted ID as any projectile, ID `0` as equivalent to omitted ID for the legacy forms, and second-form nonnegative tick relation syntax.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Proj(Hit|Guarded) multi-id"` -> 1 file passed, 2 tests passed.
+- Trace gate: `pnpm qa:trace` -> 432/432 artifacts, 402 required and 30 optional; `synthetic-imported-projectile-projhit-multi-id.json` checksum `ab0f3fb3`; `synthetic-imported-projectile-projguarded-multi-id.json` checksum `023921e3`.
+- Closeout gates: `pnpm test` -> 151 files / 1319 tests; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm qa:trace` -> 432/432 artifacts, 402 required and 30 optional; `pnpm check:boundaries`; `git diff --check` with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `ProjHit` can distinguish wrong-id/non-contact Projectile id `8905` from valid hit Projectile id `8906`; owner route `200 -> 365 -> 366` requires `ProjHit8906 = 1, >= 1`, `ProjHit = 1, >= 1`, and ID `0` `ProjHit0 = 1`, while trap state `367` stays forbidden.
+- Bounded player-owned Projectile `ProjGuarded` can distinguish wrong-id/non-contact Projectile id `8907` from valid guarded Projectile id `8908`; owner route `200 -> 368 -> 369` requires `ProjGuarded8908 = 1, >= 1`, `ProjGuarded = 1, >= 1`, and ID `0` `ProjGuarded0 = 1`, while trap state `370` stays forbidden.
+- Both gates prove two Projectile controller/op executions, two live Projectile payloads, owner target-link ids `8906` / `8908`, `S5,23` / `S6,24`, `F7030` / `F7031`, and `sparkxy = 24,-66` / `25,-67`.
+
+Claim blocked:
+
+- Exact `ProjHit` / `ProjGuarded` tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded hit/guard packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact Proj* lifetime/order, same-id selection, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjContact multi-id arbitration required trace gate
 
 Changed:

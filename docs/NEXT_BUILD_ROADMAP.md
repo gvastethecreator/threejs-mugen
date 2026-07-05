@@ -27,12 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile ProjContact multi-id arbitration trace gate
-  -> synthetic-imported-projectile-projcontact-multi-id.json checksum e790ec3e is required in qa:trace
-  -> player-owned wrong-id/non-contact Projectile id 8903 is isolated from valid guarded Projectile id 8904; owner state 200 routes 200 -> 362 -> 363 through fixed-id ProjContact8904 = 1, >= 1 plus any-id ProjContact = 1, >= 1 and ID 0 ProjContact0 = 1, while forbidden state 364 proves ProjContact8903 = 1 does not route
-  -> evidence keeps two Projectile controller/op executions, two Projectile payloads, owner target-link id 8904, guard sound S6,22, FightFX F7029, and sparkxy 23,-65
-  -> pnpm qa:trace passes 430/430 artifacts, 400 required and 30 optional
-  -> no score movement; exact ProjContact tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard package, and full Projectile parity remain blocked
+R1 required player Projectile ProjHit/ProjGuarded multi-id arbitration trace gates
+  -> synthetic-imported-projectile-projhit-multi-id.json checksum ab0f3fb3 and synthetic-imported-projectile-projguarded-multi-id.json checksum 023921e3 are required in qa:trace
+  -> player-owned wrong-id/non-contact Projectile ids 8905/8907 are isolated from valid hit/guard Projectile ids 8906/8908; owner state 200 routes 200 -> 365 -> 366 and 200 -> 368 -> 369 through fixed-id ProjHit8906 = 1, >= 1 / ProjGuarded8908 = 1, >= 1 plus any-id ProjHit = 1, >= 1 / ProjGuarded = 1, >= 1 and ID 0 ProjHit0 = 1 / ProjGuarded0 = 1, while forbidden states 367/370 prove wrong ids do not route
+  -> evidence keeps two Projectile controller/op executions per route, two Projectile payloads, owner target-link ids 8906/8908, hit sound S5,23, guard sound S6,24, FightFX F7030/F7031, and sparkxy 24,-66 / 25,-67
+  -> pnpm qa:trace passes 432/432 artifacts, 402 required and 30 optional
+  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard packages, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjContact multi-id arbitration trace gate
+  -> synthetic-imported-projectile-projcontact-multi-id.json checksum e790ec3e remains required in qa:trace
+  -> player-owned Projectile id 8904 routes owner 200 -> 362 -> 363 while wrong-id/non-contact Projectile id 8903 stays isolated by forbidden state 364
+  -> pnpm qa:trace previously passed 430/430 artifacts, 400 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjContact any-id suffix trace gate
   -> synthetic-imported-projectile-projcontact-suffix-any.json checksum 2fb80418 remains required in qa:trace
