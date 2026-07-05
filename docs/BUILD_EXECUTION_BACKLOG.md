@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic SprPriority active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-sprpriority-dynamic.json` trace coverage for active imported `SprPriority value` expressions.
+- `RuntimeSpriteEffectControllerWorld` now accepts an optional `resolveSpritePriority` callback and forwards it into `RuntimeSpriteEffectWorld.applySpritePriority`.
+- `PlayableMatchRuntime` resolves dynamic SprPriority params through the active controller expression context, preserving owner/opponent/tick/stage-bound evaluation.
+- `RuntimeTraceGatePresets` can build synthetic imported fighters with `VarSet`-seeded dynamic SprPriority params, and `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference says numeric state-controller params may be arithmetic expressions and defines `SprPriority value` as an int priority level.
+- Focused tests: `pnpm exec vitest run src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "SprPriority"` -> 2 files passed, 5 tests passed.
+- Test suite: `pnpm test` -> 151 files passed, 1342 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 442/442 artifacts, 412 required and 30 optional; `synthetic-imported-sprpriority-dynamic.json` checksum `b57c1bfa`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Smoke/visual QA: `pnpm qa:smoke` -> passed; runtime desktop/mobile and Studio surfaces produced screenshot evidence under `.scratch/qa/qa-smoke/`.
+- Diff hygiene: `git diff --check` -> passed with Git CRLF-to-LF normalization warnings on touched markdown docs.
+
+Claim allowed:
+
+- Bounded active imported dynamic `SprPriority value` expression fallback can resolve through the sprite-effect boundary. The synthetic route seeds `var(0) = 4`, executes `value = var(0)`, and proves imported actor-frame/final `spritePriority = 4` telemetry without typed `sprite-effect:sprpriority` operation evidence because the param is dynamic.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next dynamic sprite-effect/resource/audio fallback into a named boundary.
+
 ## 2026-07-05 - Dynamic RemapPal active-state trace gate
 
 Changed:

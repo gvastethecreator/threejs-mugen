@@ -841,6 +841,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSprPriorityTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-sprpriority-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicSprPriorityTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-palfx",
       required: true,
       artifact: presets.createSyntheticImportedPalFxTraceArtifact(),
@@ -3426,6 +3431,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-playerpush",
     "synthetic-imported-turn",
     "synthetic-imported-sprpriority",
+    "synthetic-imported-sprpriority-dynamic",
     "synthetic-imported-palfx",
     "synthetic-imported-trans",
     "synthetic-imported-angle",

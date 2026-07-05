@@ -5137,6 +5137,59 @@ export function createSyntheticImportedSprPriorityTraceArtifact(options: Runtime
   });
 }
 
+export function createSyntheticImportedDynamicSprPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-sprpriority-dynamic",
+    displayName: "Synthetic Imported Dynamic SprPriority",
+    withDynamicSprPriority: {
+      value: "var(0)",
+      vars: [{ index: 0, value: 4 }],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-sprpriority-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-sprpriority-dynamic-golden",
+      label: "Synthetic imported dynamic SprPriority route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic SprPriority trace proves value expression fallback can resolve owner-local var(...) through the active sprite-effect boundary and reaches bounded sprite-priority telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-sprpriority-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "SprPriority", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            spritePriority: 4,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedPalFxTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33199,6 +33252,10 @@ export type SyntheticImportedTraceFighterOptions = {
   withPlayerPush?: boolean;
   withTurn?: boolean;
   withSprPriority?: number;
+  withDynamicSprPriority?: {
+    value: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withPalFx?: {
     time: number;
     add?: [number, number, number];
@@ -33495,6 +33552,7 @@ ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSe
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
+${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
 ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
@@ -34726,6 +34784,30 @@ function sprPriorityControllerBlock(priority: number): string {
 type = SprPriority
 trigger1 = Time >= 0
 value = ${priority}
+`;
+}
+
+function dynamicSprPriorityControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicSprPriority"]>,
+): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic SprPriority Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic SprPriority Probe]
+type = SprPriority
+trigger1 = Time >= 0
+value = ${options.value}
 `;
 }
 

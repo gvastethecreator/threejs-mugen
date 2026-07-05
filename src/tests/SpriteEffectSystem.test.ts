@@ -33,6 +33,19 @@ describe("SpriteEffectSystem", () => {
     expect(state.spritePriority).toBe(-3);
   });
 
+  it("resolves dynamic sprite priority from SprPriority controllers", () => {
+    const state = runtimeState();
+
+    applyRuntimeSpritePriorityController(
+      state,
+      controller("SprPriority", { value: "var(0)" }),
+      undefined,
+      (key) => (key === "value" ? 7 : undefined),
+    );
+
+    expect(state.spritePriority).toBe(7);
+  });
+
   it("applies and ticks PalFX material telemetry", () => {
     const state = runtimeState();
 
@@ -386,6 +399,28 @@ describe("SpriteEffectSystem", () => {
 
     expect(ir.operation).toBeUndefined();
     expect(actor.runtime.paletteRemap).toEqual({ source: [1, 5], dest: [2, 7] });
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+  });
+
+  it("resolves dynamic SprPriority through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("SprPriority", { value: "var(0)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "sprpriority",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      resolveSpritePriority: (key) => (key === "value" ? 7 : undefined),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.spritePriority).toBe(7);
     expect(recordedOperations).toEqual([]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
   });

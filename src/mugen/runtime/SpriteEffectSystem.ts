@@ -12,6 +12,7 @@ export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
 
 export type RuntimeRemapPalPairResolver = (key: "source" | "dest") => [number, number] | undefined;
+export type RuntimeSpritePriorityResolver = (key: "value" | "priority") => number | undefined;
 
 export type RuntimeSpriteEffectControllerEffect =
   | "sprpriority"
@@ -33,6 +34,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   spriteEffectWorld: RuntimeSpriteEffectWorld;
   sampleFactory: RuntimeAfterImageSampleFactory;
   resolveRemapPalPair?: RuntimeRemapPalPairResolver;
+  resolveSpritePriority?: RuntimeSpritePriorityResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
 };
@@ -48,8 +50,9 @@ export class RuntimeSpriteEffectWorld {
     state: CharacterRuntimeState,
     controller: MugenStateController,
     operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
+    resolvePriority?: RuntimeSpritePriorityResolver,
   ): void {
-    applyRuntimeSpritePriorityController(state, controller, operation);
+    applyRuntimeSpritePriorityController(state, controller, operation, resolvePriority);
   }
 
   applyPaletteFx(
@@ -123,6 +126,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.actor.runtime,
         input.controller.source,
         operation?.controllerType === "sprpriority" ? operation : undefined,
+        input.resolveSpritePriority,
       );
     } else if (input.effect === "palfx") {
       input.spriteEffectWorld.applyPaletteFx(
@@ -192,8 +196,15 @@ export function applyRuntimeSpritePriorityController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "sprpriority" }>,
+  resolvePriority?: RuntimeSpritePriorityResolver,
 ): void {
-  const priority = operation?.priority ?? firstNumber(findControllerParam(controller, "value") ?? findControllerParam(controller, "priority"));
+  const valueParam = findControllerParam(controller, "value");
+  const priorityParam = findControllerParam(controller, "priority");
+  const priority =
+    operation?.priority ??
+    (valueParam === undefined ? undefined : resolvePriority?.("value")) ??
+    (priorityParam === undefined ? undefined : resolvePriority?.("priority")) ??
+    firstNumber(valueParam ?? priorityParam);
   if (priority === undefined) {
     return;
   }

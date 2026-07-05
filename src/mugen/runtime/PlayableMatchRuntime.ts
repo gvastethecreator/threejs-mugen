@@ -938,6 +938,10 @@ function runActiveStateControllers(
           effect === "remappal"
             ? (key) => resolveRemapPalPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
             : undefined,
+        resolveSpritePriority:
+          effect === "sprpriority"
+            ? (key) => resolveSpritePriorityParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1252,6 +1256,22 @@ function resolveRemapPalPairParam(
     return undefined;
   }
   return [group, index];
+}
+
+function resolveSpritePriorityParam(
+  controller: ControllerIr,
+  key: "value" | "priority",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
 }
 
 function resolveDispatchBoolean(
