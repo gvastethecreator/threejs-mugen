@@ -35,13 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic Trans trace gate
+R1 required dynamic AfterImage trace gate
+  -> synthetic-imported-afterimage-dynamic.json checksum 2342c3f1 is required in qa:trace
+  -> imported active state seeds var(0..7), then executes AfterImage time/length/timegap/framegap/paladd/palmul from expressions with trans = add
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic AfterImage scalar/triplet resolver into RuntimeSpriteEffectWorld.applyAfterImage
+  -> PlayableMatchRuntime resolves AfterImage params through the active controller expression context
+  -> final imported actor evidence requires afterImageTime 18, length 5, timeGap 2, frameGap 3, at least one sample, opacity 0.34, and no typed sprite-effect:afterimage operation evidence
+  -> pnpm qa:trace passes 445/445 artifacts, 415 required and 30 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define AfterImage time/length/timegap/framegap/paladd/palmul/trans
+  -> no score movement; typed-operation lowering for dynamic AfterImage params, exact trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic Trans trace gate
   -> synthetic-imported-trans-dynamic.json checksum 91a7baf9 is required in qa:trace
   -> imported active state seeds var(0)=96 and var(1)=160, then executes Trans trans = addalpha with alpha = var(0),var(1)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic alpha resolver into RuntimeSpriteEffectWorld.applyTrans
   -> PlayableMatchRuntime resolves alpha pair params through the active controller expression context
   -> final imported actor evidence requires renderOpacity 0.375 and no typed sprite-effect:trans operation evidence
-  -> pnpm qa:trace passes 444/444 artifacts, 414 required and 30 optional
+  -> pnpm qa:trace passed 444/444 artifacts, 414 required and 30 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define Trans alpha = source_alpha,dest_alpha for additive transparency
   -> no score movement; typed-operation lowering for dynamic alpha, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 

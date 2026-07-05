@@ -5807,6 +5807,79 @@ export function createSyntheticImportedAfterImageTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedDynamicAfterImageTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-afterimage-dynamic",
+    displayName: "Synthetic Imported Dynamic AfterImage",
+    withDynamicAfterImage: {
+      time: "var(0)",
+      length: "var(1)",
+      timeGap: "var(2)",
+      frameGap: "var(3)",
+      palAdd: ["var(4)", "40", "var(5)"],
+      palMul: ["var(6)", "160", "var(7)"],
+      trans: "add",
+      vars: [
+        { index: 0, value: 18 },
+        { index: 1, value: 5 },
+        { index: 2, value: 2 },
+        { index: 3, value: 3 },
+        { index: 4, value: -20 },
+        { index: 5, value: 90 },
+        { index: 6, value: 180 },
+        { index: 7, value: 280 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-afterimage-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-afterimage-dynamic-golden",
+      label: "Synthetic imported dynamic AfterImage route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic AfterImage trace proves time/length/gap/palette expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded ghost-trail telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, exact trail blending, palette math, sampling cadence, renderer parity, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-afterimage-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "AfterImage", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            afterImageTime: 18,
+            afterImageLength: 5,
+            afterImageTimeGap: 2,
+            afterImageFrameGap: 3,
+            afterImageSampleCountAtLeast: 1,
+            afterImageOpacity: 0.34,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -33441,6 +33514,16 @@ export type SyntheticImportedTraceFighterOptions = {
     palMul?: [number, number, number];
     trans?: string;
   };
+  withDynamicAfterImage?: {
+    time?: string;
+    length?: string;
+    timeGap?: string;
+    frameGap?: string;
+    palAdd?: [string, string, string];
+    palMul?: [string, string, string];
+    trans?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAfterImageTime?: number;
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
@@ -33707,6 +33790,7 @@ ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.with
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBlock(options.withDynamicRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
+${options.withDynamicAfterImage === undefined ? "" : dynamicAfterImageControllerBlock(options.withDynamicAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
 ${hitDefControllerBlock}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
@@ -35113,6 +35197,36 @@ timegap = ${options.timeGap ?? 1}
 framegap = ${options.frameGap ?? 1}
 paladd = ${(options.palAdd ?? [0, 0, 0]).join(",")}
 palmul = ${(options.palMul ?? [192, 192, 192]).join(",")}
+trans = ${options.trans ?? "trans"}
+`;
+}
+
+function dynamicAfterImageControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicAfterImage"]>,
+): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic AfterImage Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic AfterImage Probe]
+type = AfterImage
+trigger1 = Time >= 0
+time = ${options.time ?? 20}
+length = ${options.length ?? 6}
+timegap = ${options.timeGap ?? 1}
+framegap = ${options.frameGap ?? 1}
+paladd = ${(options.palAdd ?? ["0", "0", "0"]).join(",")}
+palmul = ${(options.palMul ?? ["192", "192", "192"]).join(",")}
 trans = ${options.trans ?? "trans"}
 `;
 }

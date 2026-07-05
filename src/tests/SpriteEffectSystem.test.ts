@@ -193,6 +193,41 @@ describe("SpriteEffectSystem", () => {
     expect(state.afterImage).toBeUndefined();
   });
 
+  it("resolves dynamic AfterImage params from active expressions", () => {
+    const state = runtimeState();
+
+    applyRuntimeAfterImageController(
+      state,
+      controller("AfterImage", {
+        time: "var(0)",
+        length: "var(1)",
+        timegap: "var(2)",
+        framegap: "var(3)",
+        paladd: "var(4),40,var(5)",
+        palmul: "var(6),160,var(7)",
+        trans: "add",
+      }),
+      () => sample(0),
+      undefined,
+      {
+        resolveNumber: (key) => ({ time: 18, length: 5, timegap: 2, framegap: 3 })[key],
+        resolveTriplet: (key) => (key === "paladd" ? [-20, 40, 90] : [180, 160, 280]),
+      },
+    );
+
+    expect(state.afterImage).toMatchObject({
+      remaining: 18,
+      time: 18,
+      length: 5,
+      timeGap: 2,
+      frameGap: 3,
+      palAdd: [-20, 40, 90],
+      palMul: [180, 160, 280],
+      opacity: 0.34,
+    });
+    expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
+  });
+
   it("applies AfterImageTime as a default lightweight effect and can clear it", () => {
     const state = runtimeState();
 
@@ -459,6 +494,50 @@ describe("SpriteEffectSystem", () => {
 
     expect(ir.operation).toBeUndefined();
     expect(actor.runtime.renderOpacity).toBe(0.375);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+  });
+
+  it("resolves dynamic AfterImage through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(
+      controller("AfterImage", {
+        time: "var(0)",
+        length: "var(1)",
+        timegap: "var(2)",
+        framegap: "var(3)",
+        paladd: "var(4),40,var(5)",
+        palmul: "var(6),160,var(7)",
+        trans: "add",
+      }),
+    );
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "afterimage",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => sample(7),
+      resolveAfterImage: {
+        resolveNumber: (key) => ({ time: 18, length: 5, timegap: 2, framegap: 3 })[key],
+        resolveTriplet: (key) => (key === "paladd" ? [-20, 40, 90] : [180, 160, 280]),
+      },
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.afterImage).toMatchObject({
+      remaining: 18,
+      time: 18,
+      length: 5,
+      timeGap: 2,
+      frameGap: 3,
+      palAdd: [-20, 40, 90],
+      palMul: [180, 160, 280],
+    });
+    expect(actor.runtime.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([7]);
     expect(recordedOperations).toEqual([]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
   });

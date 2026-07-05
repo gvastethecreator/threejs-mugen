@@ -355,6 +355,7 @@ import {
   createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
+  createSyntheticImportedDynamicAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -8872,6 +8873,51 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.afterImage?.length === 4 && actor.afterImage.sampleCount >= 1,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic AfterImage artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicAfterImageTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-afterimage-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-afterimage-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AfterImage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeUndefined();
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          afterImageTime: 18,
+          afterImageLength: 5,
+          afterImageTimeGap: 2,
+          afterImageFrameGap: 3,
+          afterImageSampleCount: 1,
+          afterImageOpacity: 0.34,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) => actor.id === "p1" && actor.afterImage?.time === 18 && actor.afterImage.length === 5,
       ),
     ).toBe(true);
   });
