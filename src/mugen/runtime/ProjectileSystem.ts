@@ -4,6 +4,7 @@ import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
+import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
@@ -149,12 +150,15 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     0,
     Math.round(operation?.guardPauseTime ?? firstNumber(findControllerParam(input.controller, "guard.pausetime")) ?? Math.max(1, Math.round(hitPause * 0.75))),
   );
-  const guardStun = Math.max(
-    1,
-    Math.round(operation?.guardHitTime ?? firstNumber(findControllerParam(input.controller, "guard.hittime")) ?? Math.max(1, Math.round(hitStun * 0.55))),
-  );
-  const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime"));
-  const guardControlTime = operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime"));
+  const guardTiming = resolveHitDefGuardTiming({
+    groundHitTime: hitStun,
+    guardHitTime: operation?.guardHitTime ?? firstNumber(findControllerParam(input.controller, "guard.hittime")),
+    guardSlideTime: operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime")),
+    guardControlTime: operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime")),
+  });
+  const guardStun = Math.max(1, Math.round(guardTiming.guardHitTime ?? Math.max(1, Math.round(hitStun * 0.55))));
+  const guardSlideTime = guardTiming.guardSlideTime;
+  const guardControlTime = guardTiming.guardControlTime;
   const attr = operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP";
   const cornerPush = resolveHitDefCornerPush({
     attr,

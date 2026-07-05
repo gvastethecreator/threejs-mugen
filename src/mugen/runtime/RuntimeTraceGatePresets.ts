@@ -7849,7 +7849,7 @@ export function defaultStandGuardSlideStopControllerSequence(): RuntimeTraceCont
 
 export function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
-    label: "152/153 named crouch guard-hit controller and typed operation order",
+    label: "152/153 named crouch guard-hit controller order",
     actorId: "p2",
     allowSameTick: true,
     steps: [
@@ -7857,8 +7857,6 @@ export function defaultCrouchGuardHitControllerSequence(): RuntimeTraceControlle
       { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
       { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
       { stateNo: 153, operation: "kinematic:hitvelset" },
-      { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
-      { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
     ],
   };
@@ -8375,7 +8373,7 @@ export function assertSpecialGuardDenyControllerSequence(options: {
 
 export function officialKfmStandGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
-    label: "Official KFM 150/151 guard-hit controller and typed operation order",
+    label: "Official KFM 150/151 guard-hit controller order",
     actorId: "p2",
     allowSameTick: true,
     steps: [
@@ -8383,8 +8381,6 @@ export function officialKfmStandGuardHitControllerSequence(): RuntimeTraceContro
       { stateNo: 150, controller: "ChangeState" },
       { stateNo: 151, controller: "HitVelSet" },
       { stateNo: 151, operation: "kinematic:hitvelset" },
-      { stateNo: 151, controller: "CtrlSet" },
-      { stateNo: 151, operation: "resource:ctrlset" },
       { stateNo: 151, controller: "ChangeState" },
     ],
   };
@@ -8392,7 +8388,7 @@ export function officialKfmStandGuardHitControllerSequence(): RuntimeTraceContro
 
 export function officialKfmStandGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
-    label: "Official KFM 150/151 guard slide-stop and control order",
+    label: "Official KFM 150/151 guard slide-stop and HitOver order",
     actorId: "p2",
     allowSameTick: true,
     steps: [
@@ -8402,8 +8398,6 @@ export function officialKfmStandGuardSlideStopControllerSequence(): RuntimeTrace
       { stateNo: 151, operation: "kinematic:hitvelset" },
       { stateNo: 151, controller: "VelSet" },
       { stateNo: 151, operation: "kinematic:velset" },
-      { stateNo: 151, controller: "CtrlSet" },
-      { stateNo: 151, operation: "resource:ctrlset" },
       { stateNo: 151, controller: "ChangeState" },
     ],
   };
@@ -8469,7 +8463,7 @@ export function officialKfmStandGuardHoldWalkReturnActorFrameSequence(): Runtime
 
 export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
-    label: "Official KFM 152/153 crouch guard-hit controller and typed operation order",
+    label: "Official KFM 152/153 crouch guard-hit controller order",
     actorId: "p2",
     allowSameTick: true,
     steps: [
@@ -8477,8 +8471,6 @@ export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceContr
       { stateNo: 152, controller: "ChangeState" },
       { stateNo: 153, controller: "HitVelSet" },
       { stateNo: 153, operation: "kinematic:hitvelset" },
-      { stateNo: 153, controller: "CtrlSet" },
-      { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState" },
     ],
   };
@@ -8486,7 +8478,7 @@ export function officialKfmCrouchGuardHitControllerSequence(): RuntimeTraceContr
 
 export function officialKfmCrouchGuardSlideStopControllerSequence(): RuntimeTraceControllerEventSequenceRequirement {
   return {
-    label: "Official KFM 152/153 crouch guard slide-stop and control order",
+    label: "Official KFM 152/153 crouch guard slide-stop and HitOver order",
     actorId: "p2",
     allowSameTick: true,
     steps: [
@@ -8496,8 +8488,6 @@ export function officialKfmCrouchGuardSlideStopControllerSequence(): RuntimeTrac
       { stateNo: 153, operation: "kinematic:hitvelset" },
       { stateNo: 153, controller: "VelSet" },
       { stateNo: 153, operation: "kinematic:velset" },
-      { stateNo: 153, controller: "CtrlSet" },
-      { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState" },
     ],
   };
@@ -8843,7 +8833,7 @@ export function createSyntheticImportedCrouchGuardStateTraceArtifact(options: Ru
     ...options,
     script: importedDefaultCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
-    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
     requiredActorFrames: syntheticCrouchGuardHitPhysicsFrames(),
     requiredActiveCommands: ["holddown", "x"],
@@ -8865,7 +8855,7 @@ export function createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact(opt
     ...options,
     script: importedDefaultDiagonalCrouchGuardStateScript(),
     requiredExecutedStates: [200, 152, 153],
-    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
     requiredControllerEventSequences: [defaultCrouchGuardHitControllerSequence()],
     requiredActorFrames: syntheticCrouchGuardHitPhysicsFrames(),
     requiredActiveCommands: ["holdback", "holddown", "x"],
@@ -9225,6 +9215,249 @@ export function createSyntheticImportedGuardVelocityDefaultTraceArtifact(options
     requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
     notes: [
       "Synthetic imported default guard.velocity direct HitDef trace proves omitted guard.velocity derives from ground.velocity x and is observed in Common1-style stand guard slide state 151. It does not claim exact guard timing/effects, cornerpush, wall friction, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedGuardTimingDefaultTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guard-timing-default",
+    displayName: "Synthetic Imported Guard Timing Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 331,
+      guardedBranchAnimNo: 331,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(hittime) = 9 && GetHitVar(slidetime) = 9 && GetHitVar(ctrltime) = 9",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guard-timing-default-attacker",
+    displayName: "Synthetic Imported Guard Timing Default Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    omitGuardHitTime: true,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-guard-timing-default-golden",
+    targetLabel: "Synthetic imported default guard timing direct HitDef route",
+    requiredExecutedStates: [200, 150, 151, 331],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet"],
+    requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "150/151 default guard timing GetHitVar branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      syntheticStandGuardHitPhysicsFrames()[0]!,
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 331, animNo: 331, minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    notes: [
+      "Synthetic imported default guard timing direct HitDef trace proves omitted guard.hittime, guard.slidetime, and guard.ctrltime derive through ground.hittime -> guard.hittime -> guard.slidetime -> guard.ctrltime and are readable through GetHitVar in Common1-style stand guard state 151. It does not claim exact guard tick order, effects, proximity, crouch/air timing breadth, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-guard-timing-default-grid",
+    displayName: "Trace Projectile Guard Timing Default Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-timing-default",
+    displayName: "Synthetic Imported Projectile Guard Timing Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 332,
+      guardedBranchAnimNo: 332,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(hittime) = 13 && GetHitVar(slidetime) = 13 && GetHitVar(ctrltime) = 13",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-timing-default-attacker",
+    displayName: "Synthetic Imported Projectile Guard Timing Default Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    omitProjectileGuardHitTime: true,
+    projectileOffset: [62, -45],
+    guardFlag: "MA",
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-projectile-guard-timing-default-golden",
+    targetLabel: "Synthetic imported Projectile default guard timing route",
+    requiredExecutedStates: [200, 150, 151, 332],
+    requiredExecutedControllers: ["ChangeState", "Projectile", "HitVelSet"],
+    requiredExecutedOperations: ["projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "150/151 Projectile default guard timing GetHitVar branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 332, animNo: 332, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 996, ctrl: true }],
+    notes: [
+      "Synthetic imported Projectile default guard timing trace proves omitted Projectile guard.hittime, guard.slidetime, and guard.ctrltime derive through the Projectile HitDef parameter set and are readable through GetHitVar in Common1-style stand guard state 151. It does not claim exact projectile guard tick order, effects, proximity, or full MUGEN/IKEMEN projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-guard-timing-default-grid",
+    displayName: "Trace Helper Projectile Guard Timing Default Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-timing-default",
+    displayName: "Synthetic Imported Helper Projectile Guard Timing Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      guardStateNo: 130,
+      guardedBranchStateNo: 333,
+      guardedBranchAnimNo: 333,
+      guardedBranchTrigger: "Time >= 1",
+      guardedBranchExpression: "GetHitVar(hittime) = 11 && GetHitVar(slidetime) = 11 && GetHitVar(ctrltime) = 11",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-timing-default-attacker",
+    displayName: "Synthetic Imported Helper Projectile Guard Timing Default Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1247,
+      waitAnimNo: 986,
+      branchStateNo: 1248,
+      branchAnimNo: 987,
+      projectileAnimNo: 988,
+      projectileId: 8858,
+      pos: [360, -34],
+      guardFlag: "MA",
+      omitGuardHitTime: true,
+    },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-helper-projectile-guard-timing-default-golden",
+    targetLabel: "Synthetic imported Helper Projectile default guard timing route",
+    requiredExecutedStates: [200, 150, 151, 333],
+    requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "HitVelSet"],
+    requiredExecutedOperations: ["helper", "projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "helper-local Projectile spawn telemetry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [{ stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" }],
+      },
+      {
+        label: "150/151 helper Projectile default guard timing GetHitVar branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 150, controller: "ChangeAnim", name: "Guard Shake Anim" },
+          { stateNo: 150, controller: "ChangeState", name: "Guard Shake Over" },
+          { stateNo: 151, controller: "HitVelSet", name: "Apply Guard Velocity" },
+          { stateNo: 151, operation: "kinematic:hitvelset" },
+          { stateNo: 151, controller: "ChangeState", name: "Guarded HitVar Branch" },
+        ],
+      },
+    ],
+    requiredActorFrames: [
+      { actorId: "p2", source: "imported", actorKind: "player", stateNo: 333, animNo: 333, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1247, animNo: 986, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1248, animNo: 987, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 988, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1248, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8858,
+        minAge: 1,
+        minPriority: 2,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8858 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8858 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
+    notes: [
+      "Synthetic imported Helper Projectile default guard timing trace proves omitted helper-parented Projectile guard.hittime, guard.slidetime, and guard.ctrltime derive through the helper-local Projectile HitDef parameter set and are readable through GetHitVar in Common1-style stand guard state 151. It does not claim helper-owned custom states, exact helper Projectile guard tick order, effects, proximity, or full MUGEN/IKEMEN helper projectile parity.",
     ],
   });
 }
@@ -18611,7 +18844,7 @@ export function createImportedDefaultGuardStateTraceArtifact(
         requiredExecutedStates: options.requiredExecutedStates ?? [200, 150, 151],
         forbiddenExecutedStates: options.forbiddenExecutedStates,
         requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef", "HitVelSet"],
-        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "resource:ctrlset"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef", "kinematic:hitvelset"],
         requiredControllerEventSequences: options.requiredControllerEventSequences,
         requiredActorFrames: options.requiredActorFrames,
         requiredActorFrameSequences: options.requiredActorFrameSequences,
@@ -27827,6 +28060,8 @@ export type SyntheticImportedTraceFighterOptions = {
   guardKill?: boolean;
   guardFlag?: string;
   guardDistance?: number;
+  guardHitTime?: number;
+  omitGuardHitTime?: boolean;
   guardSlideTime?: number;
   guardControlTime?: number;
   guardVelocity?: [number, number?];
@@ -28001,6 +28236,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileGuardSpark?: string;
   projectileSparkXy?: [number, number];
   projectileGuardHitTime?: number;
+  omitProjectileGuardHitTime?: boolean;
   projContactStateNo?: number;
   projHitStateNo?: number;
   projHitTimeStateNo?: number;
@@ -28182,6 +28418,7 @@ export type SyntheticImportedTraceFighterOptions = {
     guardSlideTime?: number;
     guardControlTime?: number;
     guardHitTime?: number;
+    omitGuardHitTime?: boolean;
     groundVelocity?: [number, number?];
     guardVelocity?: [number, number?];
     omitGuardVelocity?: boolean;
@@ -28430,10 +28667,13 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
     options.guardCornerPush !== undefined ||
     options.airGuardCornerPush !== undefined;
   const guardVelocityLine = options.omitGuardVelocity ? "" : `guard.velocity = ${(options.guardVelocity ?? [-2]).join(",")}`;
+  const guardHitTimeLine = options.omitGuardHitTime ? "" : `guard.hittime = ${options.guardHitTime ?? 9}`;
   const guardLine =
     options.guardDamage === undefined &&
     options.guardFlag === undefined &&
     options.guardKill === undefined &&
+    options.guardHitTime === undefined &&
+    !options.omitGuardHitTime &&
     options.guardSlideTime === undefined &&
     options.guardControlTime === undefined &&
     options.guardVelocity === undefined &&
@@ -28445,7 +28685,7 @@ ${options.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = 
 guardflag = ${options.guardFlag ?? "MA"}
 ${options.guardKill === undefined ? "" : `guard.kill = ${options.guardKill ? 1 : 0}`}
 guard.pausetime = 4,4
-guard.hittime = 9
+${guardHitTimeLine}
 ${options.guardSlideTime === undefined ? "" : `guard.slidetime = ${options.guardSlideTime}`}
 ${options.guardControlTime === undefined ? "" : `guard.ctrltime = ${options.guardControlTime}`}
 ${guardVelocityLine}
@@ -28611,7 +28851,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -31058,6 +31298,7 @@ function projectileControllerBlock(
   airGuardCornerPush?: number,
   guardVelocity?: [number, number?],
   omitGuardVelocity = false,
+  omitGuardHitTime = false,
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
@@ -31073,7 +31314,7 @@ function projectileControllerBlock(
   const projectileIdLine = omitProjectileId ? "" : `projid = ${projectileId}`;
   const guardSlideTimeLine = guardSlideTime === undefined ? "" : `guard.slidetime = ${guardSlideTime}`;
   const guardControlTimeLine = guardControlTime === undefined ? "" : `guard.ctrltime = ${guardControlTime}`;
-  const guardHitTimeLine = `guard.hittime = ${guardHitTime ?? 8}`;
+  const guardHitTimeLine = omitGuardHitTime ? "" : `guard.hittime = ${guardHitTime ?? 8}`;
   const guardVelocityLine = omitGuardVelocity ? "" : `guard.velocity = ${(guardVelocity ?? [-2]).join(",")}`;
   const killLine = kill === undefined ? "" : `kill = ${kill ? 1 : 0}`;
   const guardKillLine = guardKill === undefined ? "" : `guard.kill = ${guardKill ? 1 : 0}`;
@@ -32494,7 +32735,7 @@ ${route.downCornerPush === undefined ? "" : `down.cornerpush.veloff = ${route.do
 ${route.guardCornerPush === undefined ? "" : `guard.cornerpush.veloff = ${route.guardCornerPush}`}
 ${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${route.airGuardCornerPush}`}
 `;
-  const guardHitTime = route.guardHitTime ?? 7;
+  const guardHitTimeLine = route.omitGuardHitTime ? "" : `guard.hittime = ${route.guardHitTime ?? 7}`;
   const guardFlag = route.guardFlag ?? "MA";
   const branchTrigger = route.branchTrigger ?? `ProjGuarded(${projectileId}) && ProjGuardedTime(${projectileId}) >= 1`;
   return `
@@ -32530,7 +32771,7 @@ ground.velocity = ${groundVelocity.join(",")}
 ${airVelocityLine}
 guardflag = ${guardFlag}
 guard.pausetime = 2,2
-guard.hittime = ${guardHitTime}
+${guardHitTimeLine}
 ${guardSlideTimeLine}
 ${guardControlTimeLine}
 ${guardVelocityLine}

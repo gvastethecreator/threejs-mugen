@@ -4,6 +4,7 @@ import type { MugenCharacter } from "../model/MugenCharacter";
 import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
+import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 
 type FrameWindow = {
@@ -134,6 +135,13 @@ function buildStateMoves(
     const guardVelocity = numberPair(hitDef.params["guard.velocity"]);
     const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
     const airGuardVelocity = numberPair(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberPair(hitDef.params["air.velocity"]));
+    const groundHitTime = firstNumber(hitDef.params["ground.hittime"]);
+    const guardTiming = resolveHitDefGuardTiming({
+      groundHitTime,
+      guardHitTime: firstNumber(hitDef.params["guard.hittime"]),
+      guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]),
+      guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]),
+    });
     const cornerPush = resolveHitDefCornerPush({
       attr: hitDef.params.attr,
       guardVelocityX,
@@ -150,7 +158,7 @@ function buildStateMoves(
         kill: boolParam(hitDef.params.kill),
         targetId: firstNumber(hitDef.params.id) ?? undefined,
         hitPause: firstNumber(hitDef.params.pausetime) ?? undefined,
-        hitStun: firstNumber(hitDef.params["ground.hittime"]) ?? undefined,
+        hitStun: groundHitTime ?? undefined,
         push: Math.abs(groundVelocity?.[0] ?? 20),
         hitVelocityY: groundVelocity?.[1] ?? undefined,
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
@@ -158,9 +166,9 @@ function buildStateMoves(
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
         guardKill: boolParam(hitDef.params["guard.kill"]),
         guardPause: firstNumber(hitDef.params["guard.pausetime"]) ?? undefined,
-        guardStun: firstNumber(hitDef.params["guard.hittime"]) ?? undefined,
-        guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]) ?? undefined,
-        guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
+        guardStun: guardTiming.guardHitTime,
+        guardSlideTime: guardTiming.guardSlideTime,
+        guardControlTime: guardTiming.guardControlTime,
         guardPush: Math.abs(guardVelocityX ?? 0) || undefined,
         guardVelocityY: guardVelocity?.[1] ?? undefined,
         airGuardPush: Math.abs(airGuardVelocity?.[0] ?? 0) || undefined,

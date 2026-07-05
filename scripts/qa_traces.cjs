@@ -601,6 +601,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-guard-timing-default",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-air-guard-cornerpush",
       required: true,
       artifact: presets.createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact(),
@@ -664,6 +669,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-guard-timing-default",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-air-guard-cornerpush",
@@ -1024,6 +1034,11 @@ async function main() {
       name: "synthetic-imported-guard-velocity-default",
       required: true,
       artifact: presets.createSyntheticImportedGuardVelocityDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-guard-timing-default",
+      required: true,
+      artifact: presets.createSyntheticImportedGuardTimingDefaultTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-air-guard-cornerpush",
@@ -2171,7 +2186,7 @@ async function main() {
         name: "kfm-official-default-guard-state",
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
           requiredControllerEventSequences: [presets.officialKfmStandGuardHitControllerSequence()],
           requiredActorFrames: presets.officialKfmStandGuardHitPhysicsFrames(),
           requiredFinalActors: [
@@ -2198,8 +2213,8 @@ async function main() {
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           requiredExecutedStates: [200, 150, 151, 130],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmStandGuardSlideStopControllerSequence()],
           requiredActorFrames: presets.officialKfmStandGuardHitPhysicsFrames(),
           requiredFinalActors: [
@@ -2217,7 +2232,7 @@ async function main() {
           targetId: "kfm-official-default-guard-slide-stop-golden",
           targetLabel: "Official KFM Common1 guard slide-stop route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 executes HitVelSet, VelSet, CtrlSet, and final ChangeState in order after direct guarded contact, with bounded actor-frame state/physics/body telemetry. This does not prove public KFM support, exact guard timing, proximity guard, guard effects, crouch/air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 executes HitVelSet, VelSet, and final ChangeState in order after direct guarded contact, with bounded actor-frame state/physics/body telemetry. This does not prove public KFM support, exact guard control timing, proximity guard, guard effects, crouch/air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
           ],
         }),
       });
@@ -2226,8 +2241,8 @@ async function main() {
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           requiredExecutedStates: [200, 150, 151, 130],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmStandGuardSlideStopControllerSequence()],
           requiredActorFrames: presets.officialKfmStandGuardHitPhysicsFrames(),
           requiredActorFrameSequences: [presets.officialKfmStandGuardHoldReturnActorFrameSequence()],
@@ -2246,7 +2261,7 @@ async function main() {
           targetId: "kfm-official-default-guard-hold-return-golden",
           targetLabel: "Official KFM Common1 guard-hold return route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 returns through an observable guard-hold state 130 actor-frame bucket before walking/control resumes, while preserving the existing slide-stop controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, proximity guard timing, guard effects, crouch/air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 returns through an observable guard-hold state 130 actor-frame bucket before walking/control resumes, while preserving the existing slide-stop and HitOver controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, proximity guard control timing, guard effects, crouch/air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
           ],
         }),
       });
@@ -2255,8 +2270,8 @@ async function main() {
         required: false,
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           requiredExecutedStates: [200, 150, 151, 130],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmStandGuardSlideStopControllerSequence()],
           requiredActorFrames: presets.officialKfmStandGuardHitPhysicsFrames(),
           requiredActorFrameSequences: [presets.officialKfmStandGuardHoldWalkReturnActorFrameSequence()],
@@ -2278,7 +2293,7 @@ async function main() {
           targetId: "kfm-official-default-guard-hold-walk-return-golden",
           targetLabel: "Official KFM Common1 guard-hold walk-control route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 returns through observable guard-hold state 130 and then resumes held-back walking state/action 20 with control, while preserving the existing slide-stop controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, exact guard timing, proximity guard behavior, guard effects, crouch/air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 stand guard-hit state 151 returns through observable guard-hold state 130 and then resumes held-back walking state/action 20 with control, while preserving the existing slide-stop and HitOver controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, exact guard control timing, proximity guard behavior, guard effects, crouch/air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
           ],
         }),
       });
@@ -2288,7 +2303,7 @@ async function main() {
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           script: presets.importedDefaultCrouchGuardStateScript(),
           requiredExecutedStates: [200, 153],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset"],
           requiredControllerEventSequences: [presets.officialKfmCrouchGuardHitControllerSequence()],
           requiredActorFrames: presets.officialKfmCrouchGuardHitPhysicsFrames(),
           requiredActiveCommands: ["holddown", "x"],
@@ -2317,8 +2332,8 @@ async function main() {
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           script: presets.importedDefaultCrouchGuardStateScript(),
           requiredExecutedStates: [200, 152, 153],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmCrouchGuardSlideStopControllerSequence()],
           requiredActorFrames: presets.officialKfmCrouchGuardHitPhysicsFrames(),
           requiredActiveCommands: ["holddown", "x"],
@@ -2337,7 +2352,7 @@ async function main() {
           targetId: "kfm-official-default-crouch-guard-slide-stop-golden",
           targetLabel: "Official KFM Common1 crouch guard slide-stop route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 executes HitVelSet, VelSet, CtrlSet, and final ChangeState in order after direct guarded contact while holding down-back, with bounded actor-frame crouch state/physics/body telemetry. The observed KFM route returns toward crouch/control rather than being claimed as a public 130 guard-hold route. This does not prove public KFM support, exact guard timing, proximity guard, guard effects, air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 executes HitVelSet, VelSet, and final ChangeState in order after direct guarded contact while holding down-back, with bounded actor-frame crouch state/physics/body telemetry. The observed KFM route returns toward crouch/control rather than being claimed as a public 130 guard-hold route. This does not prove public KFM support, exact guard control timing, proximity guard, guard effects, air parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
           ],
         }),
       });
@@ -2347,8 +2362,8 @@ async function main() {
         artifact: presets.createImportedDefaultGuardStateTraceArtifact(imported, {
           script: presets.importedDefaultCrouchGuardStateScript(),
           requiredExecutedStates: [200, 131, 152, 153],
-          requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelSet"],
-          requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+          requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelSet"],
+          requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset"],
           requiredControllerEventSequences: [presets.officialKfmCrouchGuardSlideStopControllerSequence()],
           requiredActorFrames: presets.officialKfmCrouchGuardHitPhysicsFrames(),
           requiredActorFrameSequences: [presets.officialKfmCrouchGuardHoldCrouchReturnActorFrameSequence()],
@@ -2370,7 +2385,7 @@ async function main() {
           targetId: "kfm-official-default-crouch-guard-hold-crouch-return-golden",
           targetLabel: "Official KFM Common1 crouch guard-hold crouch-control route",
           notes: [
-            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 returns through observable crouch guard-hold state 131 and then resumes held-down crouch state/action 11 with control, while preserving the existing slide-stop controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, exact guard timing, proximity guard behavior, guard effects, air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
+            `Optional local fixture trace from ${path.relative(process.cwd(), kfmFixturePath)}. Requires private fixture presence and verifies that real KFM/Common1 crouch guard-hit state 153 returns through observable crouch guard-hold state 131 and then resumes held-down crouch state/action 11 with control, while preserving the existing slide-stop and HitOver controller/typed-operation order. This is private-fixture confidence only; it does not prove public KFM support, exact guard-hold duration, exact guard control timing, proximity guard behavior, guard effects, air guard parity, visual/audio parity, or full MUGEN/IKEMEN guard parity.`,
           ],
         }),
       });
@@ -3134,6 +3149,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-guard-velocity",
     "synthetic-imported-projectile-air-guard-velocity-default",
     "synthetic-imported-projectile-guard-velocity-default",
+    "synthetic-imported-projectile-guard-timing-default",
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-guard-cornerpush-default",
@@ -3147,6 +3163,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-air-guard-velocity",
     "synthetic-imported-helper-projectile-air-guard-velocity-default",
     "synthetic-imported-helper-projectile-guard-velocity-default",
+    "synthetic-imported-helper-projectile-guard-timing-default",
     "synthetic-imported-helper-projectile-air-guard-cornerpush",
     "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
     "synthetic-imported-helper-projectile-guard-cornerpush-default",
@@ -3255,6 +3272,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-air-guard-velocity",
     "synthetic-imported-air-guard-velocity-default",
     "synthetic-imported-guard-velocity-default",
+    "synthetic-imported-guard-timing-default",
     "synthetic-imported-air-guard-cornerpush",
     "synthetic-imported-air-guard-cornerpush-default",
     "synthetic-imported-guard-cornerpush-default",

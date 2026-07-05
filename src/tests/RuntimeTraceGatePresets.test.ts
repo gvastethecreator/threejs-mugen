@@ -174,6 +174,7 @@ import {
   createSyntheticImportedAirGuardLandingTraceArtifact,
   createSyntheticImportedAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedGuardCornerPushDefaultTraceArtifact,
+  createSyntheticImportedGuardTimingDefaultTraceArtifact,
   createSyntheticImportedGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedAirGuardCornerPushTraceArtifact,
@@ -249,6 +250,7 @@ import {
   createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileGuardCornerPushDefaultTraceArtifact,
+  createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardCornerPushDefaultTraceArtifact,
@@ -375,6 +377,7 @@ import {
   createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileGuardCornerPushDefaultTraceArtifact,
+  createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact,
   createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardCornerPushDefaultTraceArtifact,
@@ -9363,10 +9366,10 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
-      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet", "CtrlSet"]),
+      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet"]),
     );
     expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(
-      expect.arrayContaining(["kinematic:hitvelset", "resource:ctrlset"]),
+      expect.arrayContaining(["kinematic:hitvelset"]),
     );
     expect(evidence?.eventCategories).toContain("guard");
     expect(evidence?.combatReasons).toContain("guard");
@@ -10150,7 +10153,7 @@ describe("RuntimeTraceGatePresets", () => {
     });
     expect(artifact.gates[0]?.evidence.executedStates).toEqual(expect.arrayContaining([150, 151]));
     expect(artifact.gates[0]?.evidence.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
-    expect(artifact.gates[0]?.evidence.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.evidence.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
   });
 
   it("keeps guard-hit actor-frame sequence requirements configurable for fixture mirrors", () => {
@@ -10205,7 +10208,7 @@ describe("RuntimeTraceGatePresets", () => {
 
   it("exports official KFM guard controller-order requirements for optional fixture QA", () => {
     expect(officialKfmStandGuardHitControllerSequence()).toMatchObject({
-      label: "Official KFM 150/151 guard-hit controller and typed operation order",
+      label: "Official KFM 150/151 guard-hit controller order",
       actorId: "p2",
       allowSameTick: true,
       steps: [
@@ -10213,13 +10216,11 @@ describe("RuntimeTraceGatePresets", () => {
         { stateNo: 150, controller: "ChangeState" },
         { stateNo: 151, controller: "HitVelSet" },
         { stateNo: 151, operation: "kinematic:hitvelset" },
-        { stateNo: 151, controller: "CtrlSet" },
-        { stateNo: 151, operation: "resource:ctrlset" },
         { stateNo: 151, controller: "ChangeState" },
       ],
     });
     expect(officialKfmStandGuardSlideStopControllerSequence()).toMatchObject({
-      label: "Official KFM 150/151 guard slide-stop and control order",
+      label: "Official KFM 150/151 guard slide-stop and HitOver order",
       actorId: "p2",
       allowSameTick: true,
       steps: [
@@ -10229,8 +10230,6 @@ describe("RuntimeTraceGatePresets", () => {
         { stateNo: 151, operation: "kinematic:hitvelset" },
         { stateNo: 151, controller: "VelSet" },
         { stateNo: 151, operation: "kinematic:velset" },
-        { stateNo: 151, controller: "CtrlSet" },
-        { stateNo: 151, operation: "resource:ctrlset" },
         { stateNo: 151, controller: "ChangeState" },
       ],
     });
@@ -10291,8 +10290,6 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 152, controller: "ChangeState" },
       { stateNo: 153, controller: "HitVelSet" },
       { stateNo: 153, operation: "kinematic:hitvelset" },
-      { stateNo: 153, controller: "CtrlSet" },
-      { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState" },
     ]);
     expect(officialKfmCrouchGuardSlideStopControllerSequence().steps).toEqual([
@@ -10302,8 +10299,6 @@ describe("RuntimeTraceGatePresets", () => {
       { stateNo: 153, operation: "kinematic:hitvelset" },
       { stateNo: 153, controller: "VelSet" },
       { stateNo: 153, operation: "kinematic:velset" },
-      { stateNo: 153, controller: "CtrlSet" },
-      { stateNo: 153, operation: "resource:ctrlset" },
       { stateNo: 153, controller: "ChangeState" },
     ]);
     expect(officialKfmCrouchGuardHoldCrouchReturnActorFrameSequence()).toEqual({
@@ -10674,15 +10669,13 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.controllerEvents.map((event) => event.controller)).toEqual(
-      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet", "CtrlSet"]),
+      expect.arrayContaining(["ChangeAnim", "ChangeState", "HitVelSet"]),
     );
-    expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(
-      expect.arrayContaining(["kinematic:hitvelset", "resource:ctrlset"]),
-    );
+    expect(evidence?.controllerEvents.map((event) => event.operation).filter(Boolean)).toEqual(expect.arrayContaining(["kinematic:hitvelset"]));
     expect(evidence?.eventCategories).toContain("guard");
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       {
-        label: "152/153 named crouch guard-hit controller and typed operation order",
+        label: "152/153 named crouch guard-hit controller order",
         actorId: "p2",
         allowSameTick: true,
         steps: [
@@ -10690,8 +10683,6 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
           { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
           { stateNo: 153, operation: "kinematic:hitvelset" },
-          { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
-          { stateNo: 153, operation: "resource:ctrlset" },
           { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
         ],
       },
@@ -10725,7 +10716,7 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventCategories).toContain("guard");
     expect(artifact.gates[0]?.requirements.requiredControllerEventSequences).toEqual([
       {
-        label: "152/153 named crouch guard-hit controller and typed operation order",
+        label: "152/153 named crouch guard-hit controller order",
         actorId: "p2",
         allowSameTick: true,
         steps: [
@@ -10733,8 +10724,6 @@ describe("RuntimeTraceGatePresets", () => {
           { stateNo: 152, controller: "ChangeState", name: "Guard Shake Over" },
           { stateNo: 153, controller: "HitVelSet", name: "Apply Crouch Guard Velocity" },
           { stateNo: 153, operation: "kinematic:hitvelset" },
-          { stateNo: 153, controller: "CtrlSet", name: "Regain Crouch Guard Control" },
-          { stateNo: 153, operation: "resource:ctrlset" },
           { stateNo: 153, controller: "ChangeState", name: "Crouch Guard Hit Over" },
         ],
       },
@@ -10925,6 +10914,30 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticStandGuardVelocityPhysicsFrames());
   });
 
+  it("creates a synthetic imported default guard timing direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedGuardTimingDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-guard-timing-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-guard-timing-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([150, 151, 331]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 331, animNo: 331 })]),
+    );
+  });
+
   it("creates a synthetic imported Projectile default guard.velocity artifact", () => {
     const artifact = createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
@@ -10951,6 +10964,31 @@ describe("RuntimeTraceGatePresets", () => {
         ...syntheticStandGuardVelocityPhysicsFrames(5.5, 1),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile default guard timing artifact", () => {
+    const artifact = createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-guard-timing-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-guard-timing-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([150, 151, 332]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 332, animNo: 332 })]),
     );
   });
 
@@ -10989,6 +11027,38 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 983 }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 985 }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile default guard timing artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-guard-timing-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-guard-timing-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([150, 151, 333]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8858 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8858 }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 333, animNo: 333 })]),
     );
   });
 

@@ -177,6 +177,83 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.guardVelocityY).toBeUndefined();
   });
 
+  it("derives missing guard timing from ground hittime", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        damage: "20,3",
+        guardflag: "MA",
+        "ground.hittime": "15",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardStun: 15,
+      guardSlideTime: 15,
+      guardControlTime: 15,
+    });
+  });
+
+  it("derives missing guard slide and control timing from guard hittime", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        damage: "20,3",
+        guardflag: "MA",
+        "ground.hittime": "15",
+        "guard.hittime": "9",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardStun: 9,
+      guardSlideTime: 9,
+      guardControlTime: 9,
+    });
+  });
+
+  it("derives missing guard control timing from guard slidetime", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        damage: "20,3",
+        guardflag: "MA",
+        "ground.hittime": "15",
+        "guard.slidetime": "6",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardStun: 15,
+      guardSlideTime: 6,
+      guardControlTime: 6,
+    });
+  });
+
   it("derives official cornerpush defaults from guard velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

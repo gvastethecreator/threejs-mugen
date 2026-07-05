@@ -246,6 +246,83 @@ describe("ProjectileSystem", () => {
     expect(projectile.guardVelocityY).toBeUndefined();
   });
 
+  it("derives missing Projectile guard timing from ground hittime", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-guard-timing-default",
+      controller: controller({
+        projanim: "1005",
+        damage: "24,2",
+        guardflag: "MA",
+        "ground.hittime": "17",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile).toMatchObject({
+      guardStun: 17,
+      guardSlideTime: 17,
+      guardControlTime: 17,
+    });
+  });
+
+  it("derives missing Projectile guard slide and control timing from guard hittime", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-guard-hit-timing-default",
+      controller: controller({
+        projanim: "1005",
+        damage: "24,2",
+        guardflag: "MA",
+        "ground.hittime": "17",
+        "guard.hittime": "8",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile).toMatchObject({
+      guardStun: 8,
+      guardSlideTime: 8,
+      guardControlTime: 8,
+    });
+  });
+
+  it("derives missing Projectile guard control timing from guard slidetime", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-guard-slide-timing-default",
+      controller: controller({
+        projanim: "1005",
+        damage: "24,2",
+        guardflag: "MA",
+        "ground.hittime": "17",
+        "guard.slidetime": "6",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile).toMatchObject({
+      guardStun: 17,
+      guardSlideTime: 6,
+      guardControlTime: 6,
+    });
+  });
+
   it("prefers typed projectile operations over raw controller params", () => {
     const operation: ProjectileControllerOp = {
       kind: "projectile",

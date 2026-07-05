@@ -6,6 +6,7 @@ import type { MugenStateController } from "../model/MugenState";
 import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
 import { resolveHitDefCornerPush } from "./HitDefCornerPush";
+import { resolveHitDefGuardTiming } from "./HitDefTiming";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
@@ -79,10 +80,15 @@ export class RuntimeHitDefControllerDispatchWorld {
     const push = Math.abs(groundVelocity?.[0] ?? existing?.push ?? (damage >= 60 ? 30 : 20));
     const guardPause =
       operation?.guardPauseTime ?? firstNumber(findParam(source, "guard.pausetime")) ?? existing?.guardPause ?? Math.max(1, Math.round(hitPause * 0.75));
-    const guardStun =
-      operation?.guardHitTime ?? firstNumber(findParam(source, "guard.hittime")) ?? existing?.guardStun ?? Math.max(1, Math.round(hitStun * 0.55));
-    const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findParam(source, "guard.slidetime")) ?? existing?.guardSlideTime;
-    const guardControlTime = operation?.guardControlTime ?? firstNumber(findParam(source, "guard.ctrltime")) ?? existing?.guardControlTime;
+    const guardTiming = resolveHitDefGuardTiming({
+      groundHitTime: hitStun,
+      guardHitTime: operation?.guardHitTime ?? firstNumber(findParam(source, "guard.hittime")),
+      guardSlideTime: operation?.guardSlideTime ?? firstNumber(findParam(source, "guard.slidetime")),
+      guardControlTime: operation?.guardControlTime ?? firstNumber(findParam(source, "guard.ctrltime")),
+    });
+    const guardStun = guardTiming.guardHitTime ?? existing?.guardStun ?? Math.max(1, Math.round(hitStun * 0.55));
+    const guardSlideTime = guardTiming.guardSlideTime ?? existing?.guardSlideTime;
+    const guardControlTime = guardTiming.guardControlTime ?? existing?.guardControlTime;
     const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(source, "guard.velocity"));
     const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
     const airGuardVelocity =

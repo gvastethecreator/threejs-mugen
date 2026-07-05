@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Default guard timing required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-guard-timing-default.json`, `synthetic-imported-projectile-guard-timing-default.json`, and `synthetic-imported-helper-projectile-guard-timing-default.json` trace coverage.
+- Added `HitDefTiming.resolveHitDefGuardTiming` so direct `HitDef`, player-owned `Projectile`, helper-parented `Projectile`, and imported static move construction derive omitted `guard.hittime`, `guard.slidetime`, and `guard.ctrltime` through the official chain `ground.hittime -> guard.hittime -> guard.slidetime -> guard.ctrltime`.
+- `RuntimeTraceGatePresets` can now omit guard timing params in direct, Projectile, and helper Projectile scripts while proving `GetHitVar(hittime)`, `GetHitVar(slidetime)`, and `GetHitVar(ctrltime)` from Common1-style stand guard state `151`.
+- Existing guard-state QA expectations no longer require `CtrlSet` where `HitOver` can close before `guard.ctrltime`; exact guard control tick order remains blocked.
+- `scripts/qa_traces.cjs` registers all three timing artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define `guard.hittime` defaulting from `ground.hittime`, `guard.slidetime` defaulting from `guard.hittime`, and `guard.ctrltime` defaulting from `guard.slidetime`.
+- Focused tests: `pnpm exec vitest run src/tests/HitDefSystem.test.ts src/tests/ProjectileSystem.test.ts --testNamePattern "guard timing|guard slide|guard.velocity"` -> 2 files passed, 12 tests passed, 15 skipped; `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "default guard timing|official KFM guard controller-order|crouch guard-state"` -> 1 file passed, 6 tests passed, 390 skipped.
+- Trace gate: `pnpm qa:trace` -> 403/403 artifacts, 373 required and 30 optional; `synthetic-imported-guard-timing-default.json` trace checksum `859cb873`, final checksum `bae55cbc`; `synthetic-imported-projectile-guard-timing-default.json` trace checksum `21dc44c4`, final checksum `1c3d9c20`; `synthetic-imported-helper-projectile-guard-timing-default.json` trace checksum `d421498c`, final checksum `1733494a`.
+- Closeout gates: `pnpm test` -> 151 files passed, 1272 tests passed; `pnpm qa:trace` -> 403/403 artifacts, 373 required and 30 optional; `pnpm typecheck` passed; `pnpm build` passed with existing Vite large-chunk warning; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF normalization warnings only.
+
+Claim allowed:
+
+- Bounded direct-HitDef default stand-guard timing derivation: omitted `guard.hittime`, `guard.slidetime`, and `guard.ctrltime` derive from `ground.hittime`, then survive into stand guard `GetHitVar` reads.
+- Bounded player-owned Projectile default stand-guard timing derivation: Projectile HitDef params use the same default chain and expose the derived guard timing through `GetHitVar` plus projectile target/lifecycle evidence.
+- Bounded helper-parented Projectile default stand-guard timing derivation: helper-spawned Projectile uses the same default chain and keeps owner/helper target links plus helper/projectile lifecycle evidence.
+
+Claim blocked:
+
+- Exact guard control tick order, HitOver vs CtrlSet parity, proximity guard, guard effects, guard velocity decay/friction, guard pushboxes, throws, teams/simul, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 with exact guard control timing, guard velocity/corner-push decay, Common1 recovery/fall precision, helper/projectile custom-state breadth, or another official-doc-backed route that expands blocked behavior with new required trace evidence. Do not reselect bounded default guard timing derivation unless adding one blocked dimension.
+
 ## 2026-07-05 - Default guard velocity required trace gates
 
 Changed:
