@@ -27,13 +27,21 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required player Projectile ProjTime same-id hit-then-guard trace gate
+  -> synthetic-imported-projectile-projtime-same-id-hit-then-guard.json checksum d49ee334 is required in qa:trace
+  -> two player Projectiles share id 8916; hit contact first, guarded contact later; owner state 200 routes 200 -> 383 -> 384 through fixed-id and ID 0 guard/contact time reads while fixed-id and ID 0 hit time reads stay inactive
+  -> forbidden state 385 proves stale same-id hit time does not survive the later same-id guard
+  -> evidence keeps two Projectile controller/op executions, two Projectile payloads/lifecycle rows, owner target-link id 8916, hit package S5,30 / F7036 / sparkxy 31,-73, and guard package S6,31 / F7036 / sparkxy 32,-74
+  -> pnpm qa:trace passes 437/437 artifacts, 407 required and 30 optional
+  -> no score movement; exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required player Projectile ProjTime same-id last-contact trace gate
   -> synthetic-imported-projectile-projtime-same-id-last-contact.json checksum fb4c2450 is required in qa:trace
   -> two player Projectiles share id 8915; guarded contact first, later hit second; owner state 200 routes 200 -> 380 -> 381 through fixed-id and ID 0 hit/contact time reads while fixed-id and ID 0 guarded time reads stay inactive
   -> forbidden state 382 proves stale same-id guarded time does not survive the later same-id hit
   -> evidence keeps two Projectile controller/op executions, two Projectile payloads/lifecycle rows, owner target-link id 8915, guard package S6,28 / F7035 / sparkxy 29,-71, and hit package S5,29 / F7035 / sparkxy 30,-72
   -> pnpm qa:trace passes 436/436 artifacts, 406 required and 30 optional
-  -> no score movement; inverse same-id ordering, exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+  -> no score movement; hit-then-guard counterpart now covered by checksum d49ee334; exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
 
 R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
   -> synthetic-imported-projectile-projhittime-multi-id.json checksum 5d897825, synthetic-imported-projectile-projcontacttime-multi-id.json checksum d9b3cecf, and synthetic-imported-projectile-projguardedtime-multi-id.json checksum e52d0d01 are required in qa:trace

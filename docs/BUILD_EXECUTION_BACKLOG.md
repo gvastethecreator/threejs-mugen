@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjTime same-id hit-then-guard required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projtime-same-id-hit-then-guard.json` trace coverage for the inverse player-owned same-ID `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` last-contact-kind route.
+- `RuntimeTraceGatePresets` now builds a hit-then-guard same-id route: two Projectiles share id `8916`, the first contact hits, the second contact is guarded, and owner state `200 -> 383 -> 384` only routes when guarded/contact time reads are active and hit time reads are inactive.
+- `scripts/qa_traces.cjs` registers the artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `ProjContactTime`, `ProjGuardedTime`, and `ProjHitTime` as last-projectile-contact reads with required nonnegative ID, ID `0` skipping projectile-ID filtering, and `-1` when no matching last contact exists; Elecbyte CNS docs list old-style `ProjHit`, `ProjContact`, and `ProjGuarded` as superseded by `Proj*Time`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "hit-then-guard"` -> 1 file passed, 1 test passed.
+- Trace gate: `pnpm qa:trace` -> 437/437 artifacts, 407 required and 30 optional; `synthetic-imported-projectile-projtime-same-id-hit-then-guard.json` checksum `d49ee334`.
+
+Claim allowed:
+
+- Bounded player-owned same-ID Projectile `Proj*Time` last-contact-kind arbitration for hit-then-guard ordering. `ProjGuardedTime(8916)`, `ProjGuardedTime(0)`, `ProjContactTime(8916)`, and `ProjContactTime(0)` route after the later guard, while `ProjHitTime(8916)` and `ProjHitTime(0)` stay `-1`.
+- Together with `synthetic-imported-projectile-projtime-same-id-last-contact.json` checksum `fb4c2450`, both guard-then-hit and hit-then-guard two-contact same-ID player Projectile orders are trace-gated.
+
+Claim blocked:
+
+- Exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with helper Projectile/custom-state Proj*Time breadth, exact projectile lifetime/order, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjTime same-id last-contact required trace gate
 
 Changed:
@@ -22,11 +49,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Inverse hit-to-guard same-id ordering, exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+- Hit-then-guard counterpart now covered by `synthetic-imported-projectile-projtime-same-id-hit-then-guard.json` checksum `d49ee334`; exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
 
 Next:
 
-- Continue R1 with inverse same-id ordering, helper Projectile/custom-state Proj*Time breadth, exact projectile lifetime/order, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+- Continue R1 with helper Projectile/custom-state Proj*Time breadth, exact projectile lifetime/order, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
 
 ## 2026-07-05 - Player Projectile ProjHitTime, ProjContactTime, and ProjGuardedTime multi-id arbitration required trace gates
 

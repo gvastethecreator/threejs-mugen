@@ -1712,6 +1712,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileTimeSameIdLastContactTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-projtime-same-id-hit-then-guard",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileTimeSameIdHitThenGuardTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-projhit-suffix",
       required: true,
       artifact: presets.createSyntheticImportedProjectileHitSuffixTraceArtifact(),
@@ -3233,6 +3238,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-projcontacttime-multi-id",
     "synthetic-imported-projectile-projguardedtime-multi-id",
     "synthetic-imported-projectile-projtime-same-id-last-contact",
+    "synthetic-imported-projectile-projtime-same-id-hit-then-guard",
     "synthetic-imported-projectile-projhit-suffix",
     "synthetic-imported-projectile-projhit-suffix-any",
     "synthetic-imported-projectile-projguarded-suffix",

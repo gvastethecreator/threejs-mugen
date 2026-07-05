@@ -35,6 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required player Projectile ProjTime same-id hit-then-guard trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projtime-same-id-hit-then-guard.json for two same-id Projectiles id 8916
+  -> first contact hits, later contact is guarded, and owner routes 200 -> 383 -> 384 through ProjGuardedTime(8916) >= 1 / ProjGuardedTime(0) >= 1 / ProjContactTime(8916) >= 1 / ProjContactTime(0) >= 1 while ProjHitTime(8916) < 0 / ProjHitTime(0) < 0
+  -> forbidden state 385 proves stale same-id hit time does not survive after the later guard
+  -> hit package S5,30 / F7036 / sparkxy 31,-73 and guard package S6,31 / F7036 / sparkxy 32,-74 are required
+  -> synthetic-imported-projectile-projtime-same-id-hit-then-guard.json checksum d49ee334 is required in qa:trace
+  -> pnpm qa:trace passes 437/437 artifacts, 407 required and 30 optional
+  -> no score movement; exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required player Projectile ProjTime same-id last-contact trace gate
   -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projtime-same-id-last-contact.json for two same-id Projectiles id 8915
   -> first contact is guarded, later contact hits, and owner routes 200 -> 380 -> 381 through ProjHitTime(8915) >= 1 / ProjHitTime(0) >= 1 / ProjContactTime(8915) >= 1 / ProjContactTime(0) >= 1 while ProjGuardedTime(8915) < 0 / ProjGuardedTime(0) < 0
@@ -42,7 +51,7 @@ R1 required player Projectile ProjTime same-id last-contact trace gate
   -> guard package S6,28 / F7035 / sparkxy 29,-71 and hit package S5,29 / F7035 / sparkxy 30,-72 are required
   -> synthetic-imported-projectile-projtime-same-id-last-contact.json checksum fb4c2450 is required in qa:trace
   -> pnpm qa:trace passes 436/436 artifacts, 406 required and 30 optional
-  -> no score movement; inverse same-id ordering, exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+  -> no score movement; hit-then-guard counterpart now covered by checksum d49ee334; exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
 
 R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
   -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhittime-multi-id.json, synthetic-imported-projectile-projcontacttime-multi-id.json, and synthetic-imported-projectile-projguardedtime-multi-id.json with two Projectile controller/op executions and wrong-id trap branches
