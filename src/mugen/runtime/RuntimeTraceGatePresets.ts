@@ -2829,6 +2829,76 @@ export function createSyntheticImportedHitOverrideMissOnOverrideOneTraceArtifact
   });
 }
 
+export function createSyntheticImportedHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-attacker",
+    displayName: "Synthetic Imported Override Default MissOnOverride GuardFlag Filter Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "H",
+    customStateRoute: {
+      startStateNo: 888,
+      selfStateAfter: 4,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-defender",
+    displayName: "Synthetic Imported Override Default MissOnOverride GuardFlag Filter Defender",
+    passiveHitOverrides: [
+      { attr: "S,NA", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,NA", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      { attr: "S,NA", stateNo: 779, slot: 5, time: 30, guardFlag: "H" },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden",
+      label: "Synthetic imported HitOverride default MissOnOverride guardflag filter miss",
+      source: "imported",
+      notes: [
+        "Synthetic imported HitOverride default MissOnOverride guardflag filter trace proves an omitted IKEMEN missonoverride direct HitDef with p2stateno still rejects before target memory, guardflag-filtered HitOverride state entry, owner-backed p2stateno custom-state entry, default get-hit, or guard states. It does not claim projectile/helper default custom-state guardflag breadth, exact guard timing, guard KO/no-KO flow, throws, teams/simul, or full MUGEN/IKEMEN HitOverride parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        forbiddenExecutedStates: [776, 778, 779, 888, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["hitdef", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reject"],
+        requiredEventSubstrings: ["custom-state HitDef"],
+        requiredCombatReasons: ["reject"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            life: 1000,
+            ctrl: true,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileHitOverrideP2StateNoTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -3100,6 +3170,85 @@ export function createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroGu
     gates: [
       {
         label: "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 779],
+        forbiddenExecutedStates: [776, 778, 889, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Projectile", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["projectile", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 5"],
+        requiredCombatReasons: ["override"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 779,
+            animNo: 779,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-attacker",
+    displayName: "Synthetic Imported Projectile Override Default MissOnOverride GuardFlag Filter Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    guardFlag: "H",
+    projectileP2StateNo: 889,
+    projectileP2GetP1State: true,
+    projectileHitAnim: 911,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-defender",
+    displayName: "Synthetic Imported Projectile Override Default MissOnOverride GuardFlag Filter Defender",
+    passiveHitOverrides: [
+      { attr: "S,SP", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,SP", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      { attr: "S,SP", stateNo: 779, slot: 5, time: 30, guardFlag: "H" },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+      label: "Synthetic imported Projectile HitOverride default MissOnOverride guardflag filter route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile HitOverride default MissOnOverride guardflag filter trace proves a player-owned Projectile with p2stateno, p2getp1state = 1, omitted missonoverride, and guardflag = H does not take the direct-HitDef default custom-state miss path: it skips lower attr-matching slots by guardflag.not overlap and guardflag mismatch, then redirects through a later compatible slot before projectile custom-state entry. It does not claim helper default custom-state guardflag breadth, exact target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO flow, throws, teams/simul, or full MUGEN/IKEMEN Projectile HitOverride/custom-state parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
         requiredEffectKinds: ["projectile"],
@@ -20882,6 +21031,113 @@ export function createSyntheticImportedHelperProjectileHitOverrideMissOnOverride
         requiredTargetLinks: [
           { ownerId: "p1", actorId: "p2", targetId: 8881 },
           { ownerId: "p1-helper-0", actorId: "p2", targetId: 8881, hasBinding: false, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 779,
+            animNo: 779,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "helper-projectile-hitoverride-missonoverride-default-guardflag-filter-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-attacker",
+    displayName: "Synthetic Imported Helper Projectile Override Default MissOnOverride GuardFlag Filter Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1292,
+      waitAnimNo: 1050,
+      branchStateNo: 1293,
+      branchAnimNo: 1051,
+      projectileAnimNo: 1052,
+      projectileId: 8882,
+      pos: [360, -34],
+      p2StateNo: 889,
+      p2GetP1State: true,
+      guardFlag: "H",
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-defender",
+    displayName: "Synthetic Imported Helper Projectile Override Default MissOnOverride GuardFlag Filter Defender",
+    passiveHitOverrides: [
+      { attr: "S,SP", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,SP", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      { attr: "S,SP", stateNo: 779, slot: 5, time: 30, guardFlag: "H" },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+      label: "Synthetic imported helper Projectile HitOverride default MissOnOverride guardflag filter route",
+      source: "imported",
+      notes: [
+        "Synthetic imported helper Projectile HitOverride default MissOnOverride guardflag filter trace proves a helper-parented owner-side Projectile with p2stateno, p2getp1state = 1, omitted missonoverride, and guardflag = H does not take the direct-HitDef default custom-state miss path: it feeds owner/helper target memory, skips lower attr-matching slots by guardflag.not overlap and guardflag mismatch, then redirects through a later compatible slot before projectile custom-state 889, helper ProjHit branch 1293, or default Common1 get-hit entry. It does not claim exact custom-state guard timing, exact target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO flow, throws, teams/simul, or full MUGEN/IKEMEN helper Projectile HitOverride/custom-state parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 779],
+        forbiddenExecutedStates: [776, 778, 889, 1293, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["helper", "projectile", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 5"],
+        requiredCombatReasons: ["override"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1292, animNo: 1050, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1052, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1292, minAge: 1, targetCount: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8882,
+            hasHit: true,
+            maxHitsRemaining: 0,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8882 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8882, hasBinding: false, minFrames: 1 },
         ],
         requiredFinalActors: [
           {

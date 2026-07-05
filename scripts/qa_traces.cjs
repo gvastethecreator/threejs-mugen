@@ -356,6 +356,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitoverride-missonoverride-zero-slot-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact(),
@@ -414,6 +419,11 @@ async function main() {
       name: "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
       required: true,
       artifact: presets.createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-hitoverride-missonoverride-one",
@@ -1610,6 +1620,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-target",
@@ -2830,6 +2845,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitoverride-missonoverride-zero",
     "synthetic-imported-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
     "synthetic-imported-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+    "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter",
     "synthetic-imported-hitoverride-missonoverride-zero-slot-priority",
     "synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter",
     "synthetic-imported-hitoverride-missonoverride-one",
@@ -2842,6 +2858,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-hitoverride-missonoverride-zero",
     "synthetic-imported-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
     "synthetic-imported-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+    "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter",
     "synthetic-imported-projectile-hitoverride-missonoverride-one",
     "synthetic-imported-custom-state-gethitvar-guard-timing",
     "synthetic-imported-custom-state-gethitvar-isbound",
@@ -2902,6 +2919,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero",
     "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-forceair-forceguard-keepstate",
     "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-forceair-forceguard-keepstate",
+    "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter",
     "synthetic-imported-helper-projectile-target",
     "synthetic-imported-helper-projectile-bare-target",
     "synthetic-imported-helper-projectile-target-controllers",

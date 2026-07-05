@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-04 - Default custom-state HitOverride missonoverride guardflag required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-missonoverride-default-guardflag-filter.json`, `synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter.json`, and `synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter.json` trace coverage.
+- `RuntimeTraceGatePresets` now separates direct default `missonoverride = -1` custom-state reject behavior from player-owned and helper-parented Projectile default custom-state `HitOverride guardflag` / `guardflag.not` filtering.
+- `scripts/qa_traces.cjs` registers all three artifacts and required coverage-summary names.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define `p2stateno` / `p2getp1state`, Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned, and Elecbyte `HitOverride` docs define active override slots and redirect semantics. Primary source checked: local Ikemen-GO source parses `missonoverride`, `guardflag`, and `guardflag.not`, scans active `HitOverride` slots low-to-high, applies guardflag filters before selection, and only uses the default custom-state miss shortcut for non-projectile contacts when `missonoverride = -1`.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "default MissOnOverride guardflag filter"` -> 1 file passed, 3 tests passed, 360 skipped.
+- Trace gate: `pnpm qa:trace` -> 370/370 artifacts, 340 required and 30 optional; `synthetic-imported-hitoverride-missonoverride-default-guardflag-filter.json` checksum `05725ecb`; `synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter.json` checksum `c1402d31`; `synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter.json` checksum `889d77c1`.
+
+Claim allowed:
+
+- Bounded direct-HitDef default `missonoverride = -1` custom-state guardflag route: a direct `HitDef` with `p2stateno = 888`, `p2getp1state = 1`, omitted `missonoverride`, and `guardflag = H` rejects before target memory, `HitOverride` state entry, owner-backed custom-state `888`, default get-hit, or guard states. P2 remains idle/control with life `1000`; slots `1 -> 776`, `2 -> 778`, and `5 -> 779` never become executed states.
+- Bounded player-owned Projectile default `missonoverride = -1` custom-state guardflag route: Projectile id `77` with `p2stateno = 889`, `p2getp1state = 1`, omitted `missonoverride`, and `guardflag = H` does not take the direct-HitDef default miss path; it skips the `guardflag.not = HA` and `guardflag = A` slots, selects slot `5 -> 779`, suppresses projectile custom-state `889`, records target link `p1 -> p2 / 77`, consumes/removes as a hit, and ends P2 in state/action `779`.
+- Bounded helper-parented Projectile default `missonoverride = -1` custom-state guardflag route: helper-spawned Projectile id `8882` selects slot `5 -> 779`, records owner target link `p1 -> p2 / 8882` plus helper target link `p1-helper-0 -> p2 / 8882`, records helper `targetCount = 1` and projectile `hasHit = true` / `hitsRemaining = 0`, suppresses projectile custom-state `889` and helper branch `1293`, and ends P2 in state/action `779`.
+
+Claim blocked:
+
+- Exact guard timing/guarded contact semantics, forceair/forceguard/keepstate priority combinations with guardflag filters, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO round-flow behavior, throws, teams/simul, score movement, visual/audio parity, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+
+Next:
+
+- Continue R1 HitOverride precision with forceair/forceguard priority combinations after guardflag filtering, exact guarded-contact semantics, helper-owned custom-state tables, exact target lifetime, or guard KO/no-KO flow. Do not reselect direct/player/helper explicit/default custom-state guardflag-filter routes unless expanding one blocked dimension with new evidence.
+
 ## 2026-07-04 - Custom-state HitOverride missonoverride guardflag required trace gates
 
 Changed:
@@ -22,11 +50,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact guard timing/guarded contact semantics, default `missonoverride = -1` guardflag breadth, forceair/forceguard/keepstate priority combinations with guardflag filters, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO round-flow behavior, throws, teams/simul, score movement, visual/audio parity, and full MUGEN/IKEMEN HitOverride/custom-state parity.
+- Exact guard timing/guarded contact semantics, forceair/forceguard/keepstate priority combinations with guardflag filters, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO round-flow behavior, throws, teams/simul, score movement, visual/audio parity, and full MUGEN/IKEMEN HitOverride/custom-state parity.
 
 Next:
 
-- Continue R1 HitOverride precision with default `missonoverride = -1` guardflag breadth, exact guard timing/guarded contact semantics, forceair/forceguard priority combinations after guardflag filtering, helper-owned custom-state tables, exact target lifetime, or guard KO/no-KO flow. Do not reselect explicit `missonoverride = 0` direct/player/helper slot-priority or guardflag-filter routes unless expanding one blocked dimension with new evidence.
+- Continue R1 HitOverride precision with exact guard timing/guarded contact semantics, forceair/forceguard priority combinations after guardflag filtering, helper-owned custom-state tables, exact target lifetime, or guard KO/no-KO flow. Do not reselect explicit `missonoverride = 0` or default `missonoverride = -1` direct/player/helper guardflag-filter routes unless expanding one blocked dimension with new evidence.
 
 ## 2026-07-04 - Projectile custom-state HitOverride missonoverride slot-priority required trace gates
 

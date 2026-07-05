@@ -27,6 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required default custom-state HitOverride missonoverride guardflag-filter trace gates
+  -> synthetic-imported-hitoverride-missonoverride-default-guardflag-filter.json checksum 05725ecb is required in qa:trace
+  -> synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter.json checksum c1402d31 is required in qa:trace
+  -> synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter.json checksum 889d77c1 is required in qa:trace
+  -> direct HitDef p2stateno 888 omits missonoverride, uses guardflag = H, rejects before target memory, override state entry, owner-backed custom-state 888, default get-hit, or guard states, and leaves P2 idle/control with life 1000
+  -> player-owned Projectile id 77 and helper-parented Projectile id 8882 omit missonoverride, use p2stateno = 889 / p2getp1state = 1 / guardflag = H, skip the guardflag.not = HA and guardflag = A slots, select slot 5 -> 779, suppress projectile custom-state 889, and end P2 in state/action 779
+  -> helper route also records target links p1 -> p2 / 8882 and p1-helper-0 -> p2 / 8882, helper targetCount = 1, projectile hasHit = true / hitsRemaining = 0, and suppresses helper branch 1293
+  -> pnpm qa:trace passes 370/370 artifacts, 340 required and 30 optional
+  -> no score movement; exact guard timing/guarded contact semantics, forceair/forceguard priority combinations, exact target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, and full HitOverride/custom-state parity remain blocked
+
 R1 required custom-state HitOverride missonoverride zero guardflag-filter trace gates
   -> synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json checksum 058b335f is required in qa:trace
   -> synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter.json checksum af29f125 is required in qa:trace

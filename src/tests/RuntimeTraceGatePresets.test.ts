@@ -252,6 +252,7 @@ import {
   createSyntheticImportedHelperSuperMoveTimeTraceArtifact,
   createSyntheticImportedHelperVelocityTraceArtifact,
   createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact,
+  createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact,
   createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact,
   createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroGuardFlagFilterTraceArtifact,
   createSyntheticImportedHelperProjectileHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact,
@@ -265,6 +266,7 @@ import {
   createSyntheticImportedHitOverrideMissOnOverrideZeroTraceArtifact,
   createSyntheticImportedHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact,
   createSyntheticImportedHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact,
+  createSyntheticImportedHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact,
   createSyntheticImportedHitOverrideMissOnOverrideZeroSlotPriorityTraceArtifact,
   createSyntheticImportedHitOverrideMissOnOverrideZeroGuardFlagFilterTraceArtifact,
   createSyntheticImportedHitOverrideMissOnOverrideOneTraceArtifact,
@@ -277,6 +279,7 @@ import {
   createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroTraceArtifact,
   createSyntheticImportedProjectileHitOverrideMissOnOverrideZeroForceAirGuardKeepStateTraceArtifact,
   createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact,
+  createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact,
   createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
   createSyntheticImportedHitByRejectTraceArtifact,
@@ -3003,6 +3006,81 @@ describe("RuntimeTraceGatePresets", () => {
           ownerId: "p1",
           parentId: "p1-helper-0",
           effect: expect.objectContaining({ kind: "projectile", id: 8881, hasHit: true }),
+        }),
+      ]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 1"))).toBe(false);
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 2"))).toBe(false);
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 5"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 779,
+      animNo: 779,
+      life: 1000,
+      moveType: "I",
+    });
+  });
+
+  it("creates a synthetic imported Helper Projectile HitOverride default MissOnOverride guardflag filter artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact({
+      generatedAt: "2026-07-04T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 779]);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([776, 778, 889, 1293, 5000, 150, 151]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual([
+      "ChangeState",
+      "Helper",
+      "Projectile",
+      { type: "HitOverride", minCount: 3 },
+    ]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["helper", "projectile", { operation: "hitoverride", minCount: 3 }]);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([
+      { ownerId: "p1", actorId: "p2", targetId: 8882 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8882, hasBinding: false, minFrames: 1 },
+    ]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 779]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([776, 778, 889, 1293, 5000, 150, 151]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitOverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitoverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.eventCategories).toContain("override");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "reject"]));
+    expect(evidence?.combatReasons).toContain("override");
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8882 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8882, hasBinding: false }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          effect: expect.objectContaining({ kind: "helper", id: 42, stateNo: 1292, targetCount: 1 }),
+        }),
+        expect.objectContaining({
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8882, hasHit: true }),
         }),
       ]),
     );
@@ -5748,6 +5826,52 @@ describe("RuntimeTraceGatePresets", () => {
     });
   });
 
+  it("creates a synthetic imported HitOverride default MissOnOverride guardflag filter miss artifact", () => {
+    const artifact = createSyntheticImportedHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact({
+      generatedAt: "2026-07-04T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitoverride-missonoverride-default-guardflag-filter-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200]);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([776, 778, 779, 888, 5000, 150, 151]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", { type: "HitOverride", minCount: 3 }]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", { operation: "hitoverride", minCount: 3 }]);
+    expect(evidence?.executedStates).toContain(200);
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([776, 778, 779, 888, 5000, 150, 151]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitOverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitoverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.eventCategories).toContain("reject");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "override"]));
+    expect(evidence?.combatReasons).toContain("reject");
+    expect(evidence?.targetLinks ?? []).toHaveLength(0);
+    expect(artifact.trace.events.some((event) => event.category === "reject" && event.line.includes("custom-state HitDef"))).toBe(true);
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot"))).toBe(false);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 0,
+      animNo: 0,
+      life: 1000,
+      ctrl: true,
+      moveType: "I",
+    });
+  });
+
   it("creates a synthetic imported HitOverride plus MissOnOverride one artifact", () => {
     const artifact = createSyntheticImportedHitOverrideMissOnOverrideOneTraceArtifact({ generatedAt: "2026-07-04T00:00:00.000Z" });
 
@@ -5977,6 +6101,61 @@ describe("RuntimeTraceGatePresets", () => {
       gates: [
         {
           label: "synthetic-imported-projectile-hitoverride-missonoverride-zero-guardflag-filter-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 779]);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([776, 778, 889, 5000, 150, 151]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "Projectile", { type: "HitOverride", minCount: 3 }]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["projectile", { operation: "hitoverride", minCount: 3 }]);
+    expect(gate?.requirements.requiredTargetLinks).toEqual([{ ownerId: "p1", actorId: "p2", targetId: 77 }]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 779]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([776, 778, 889, 5000, 150, 151]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitOverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitoverride).toBeGreaterThanOrEqual(3);
+    expect(evidence?.eventCategories).toContain("override");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "reject"]));
+    expect(evidence?.combatReasons).toContain("override");
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          effect: expect.objectContaining({ kind: "projectile", id: 77, hasHit: true }),
+        }),
+      ]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 1"))).toBe(false);
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 2"))).toBe(false);
+    expect(artifact.trace.events.some((event) => event.category === "override" && event.line.includes("HitOverride slot 5"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 779,
+      animNo: 779,
+      life: 1000,
+      moveType: "I",
+    });
+  });
+
+  it("creates a synthetic imported Projectile HitOverride default MissOnOverride guardflag filter artifact", () => {
+    const artifact = createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact({
+      generatedAt: "2026-07-04T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter-golden",
           passed: true,
           failures: [],
         },
