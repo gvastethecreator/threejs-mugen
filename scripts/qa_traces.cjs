@@ -581,6 +581,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-hitcount",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitCountTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-guarded",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact(),
@@ -689,6 +694,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-gethitvar-hitcount",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitcount",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitCountTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-air-guard-velocity",
@@ -3086,6 +3096,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-projectile-target-redirect",
+    "synthetic-imported-projectile-hitcount",
     "synthetic-imported-hitdef-projectile-target-mix",
     "synthetic-imported-projectile-target-controllers",
     "synthetic-imported-projectile-default-target-controllers",
@@ -3114,6 +3125,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-controller-param-parentroot",
     "synthetic-imported-helper-projhit",
     "synthetic-imported-helper-projhittime-any",
+    "synthetic-imported-helper-projectile-hitcount",
     "synthetic-imported-helper-projectile-hitoverride-p2stateno",
     "synthetic-imported-helper-projectile-hitoverride-slot-priority",
     "synthetic-imported-helper-projectile-hitoverride-missonoverride-zero-slot-priority",

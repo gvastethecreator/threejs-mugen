@@ -4,6 +4,7 @@ import {
   createRuntimeContactMemory,
   RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
+  runtimeMoveHitCountValue,
   runtimeReceivedDamageValue,
 } from "../mugen/runtime/ContactMemorySystem";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
@@ -291,6 +292,8 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(calls).toEqual(["owner:p1", "projectile-target:p1-projectile-0"]);
     expect(attacker.targets).toEqual([{ actorId: "p2", targetId: 88, age: 0 }]);
     expect(contactWorld.hasProjectileContact(attacker.contact, 300, "hit", 88)).toBe(true);
+    expect(runtimeMoveHitCountValue(attacker.contact, 300, false)).toBe(1);
+    expect(runtimeMoveHitCountValue(attacker.contact, 300, true)).toBe(1);
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(12);
     expect(attacker.soundEvents[0]).toMatchObject({ type: "PlaySnd", group: 6, index: 0, contactKind: "hit" });
     expect(attacker.hitEffectEvents[0]).toMatchObject({ type: "HitSpark", kind: "hit", sparkNo: 7001, contactKind: "hit" });
@@ -388,6 +391,7 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
       resolveProjectileCombat: (ownerId, input) => {
         options.projectileResolver?.(ownerId, input);
       },
+      helpers: () => [],
     },
   };
 }

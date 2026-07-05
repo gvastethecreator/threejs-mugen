@@ -87,8 +87,9 @@ export class RuntimeContactMemoryWorld {
     stateNo: number,
     projectileId: number | undefined,
     kind: Extract<RuntimeContactKind, "hit" | "guard">,
+    targetActorId?: string,
   ): void {
-    markRuntimeProjectileContact(memory, stateNo, projectileId, kind);
+    markRuntimeProjectileContact(memory, stateNo, projectileId, kind, targetActorId);
   }
 
   markProjectileCancel(memory: RuntimeContactMemory, stateNo: number, projectileId: number | undefined): void {
@@ -252,10 +253,12 @@ export function markRuntimeProjectileContact(
   stateNo: number,
   projectileId: number | undefined,
   kind: Extract<RuntimeContactKind, "hit" | "guard">,
+  targetActorId?: string,
 ): void {
   memory.projectileContactState = stateNo;
   memory.projectileId = projectileId;
   memory.projectileContactTime = 0;
+  markRuntimeMoveContact(memory, stateNo, kind, targetActorId);
   if (kind === "hit") {
     memory.projectileHitState = stateNo;
     memory.projectileHitTime = 0;

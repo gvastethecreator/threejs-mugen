@@ -27,15 +27,20 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
-  -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum fa445b05 / final checksum 0c2197f7 is required in qa:trace
-  -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum ded0c9b3 / final checksum bba71972 is required in qa:trace
-  -> player-owned Projectile effect id 77 keeps projhits = 1 as Projectile lifetime and HitDef numhits = 3 as GetHitVar(hitcount) metadata, routes P2 through defender-owned Common1-style 5000 -> 339, and proves GetHitVar(hitcount) = 3 and !GetHitVar(guarded)
-  -> helper-parented/root-owned Projectile effect id 8892 keeps projhits = 1 as Projectile lifetime and HitDef numhits = 4 as GetHitVar(hitcount) metadata, routes P2 through 5000 -> 340, and proves GetHitVar(hitcount) = 4 and !GetHitVar(guarded)
-  -> player route keeps projectile lifecycle plus target link p1 -> p2 / 77
-  -> helper route keeps owner/helper target links p1 -> p2 / 8892 and p1-helper-0 -> p2 / 8892 plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 411/411 artifacts, 381 required and 30 optional
-  -> no score movement; exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+R1 required Projectile/helper normal-hit HitCount trace gates
+  -> synthetic-imported-projectile-hitcount.json checksum 97a1b671 is required in qa:trace
+  -> synthetic-imported-helper-projectile-hitcount.json checksum 19d1c22c is required in qa:trace
+  -> player-owned Projectile contact feeds owner MoveContact / MoveHit / HitCount, routes P1 to state 341 through HitCount >= 1 && UniqHitCount >= 1, and keeps projectile lifecycle plus target link p1 -> p2 / 77
+  -> helper-parented/root-owned Projectile contact mirrors hit-count memory into the visual helper, exposes helper-local HitCount / UniqHitCount, routes helper 1257 -> 1258, and keeps target links p1 -> p2 / 8893 and p1-helper-0 -> p2 / 8893 plus helper/projectile lifecycle payload evidence
+  -> pnpm qa:trace passes 413/413 artifacts, 383 required and 30 optional
+  -> no score movement; exact combo accumulation, hitcountpersist lifetime, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/HitCount parity remain blocked
+
+Previous R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
+  -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum fa445b05 / final checksum 0c2197f7 remains required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitcount.json trace checksum ded0c9b3 / final checksum bba71972 remains required in qa:trace
+  -> player/helper routes preserve HitDef numhits separately from Projectile projhits and prove GetHitVar(hitcount) from defender-owned Common1-style states 339/340
+  -> pnpm qa:trace passed 411/411 artifacts, 381 required and 30 optional
+  -> remains required; exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit GetHitVar hitid/chainid trace gates
   -> synthetic-imported-projectile-gethitvar-hitid-chainid.json trace checksum 80392a85 / final checksum 514a6803 is required in qa:trace

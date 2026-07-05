@@ -249,6 +249,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTraceArtifact,
+  createSyntheticImportedHelperProjectileHitCountTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileGuardCornerPushDefaultTraceArtifact,
@@ -377,6 +378,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileHitCountTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact,
@@ -12993,6 +12995,65 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Helper Projectile HitCount artifact with helper-local branch evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileHitCountTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-hitcount-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-hitcount-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1257, animNo: 1011 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1258, animNo: 1012 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1013 }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8893 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8893 }),
+      ]),
+    );
+    expect(evidence?.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, operation: "projectile" }),
+      ]),
+    );
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "helper-local Projectile HitCount spawn telemetry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      },
+    ]);
+  });
+
   it("creates a synthetic imported Helper Projectile GetHitVar guard kill artifact with defender branch evidence", () => {
     const artifact = createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact({
       generatedAt: "2026-07-04T00:00:00.000Z",
@@ -18215,6 +18276,48 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks).toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
+  });
+
+  it("creates a synthetic imported Projectile HitCount artifact with owner branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileHitCountTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-hitcount-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-hitcount-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 341]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 77, hasHit: true }) }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 341,
+    });
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 341]);
   });
 
   it("creates a synthetic imported Projectile Target redirect artifact with owner target-memory branch evidence", () => {

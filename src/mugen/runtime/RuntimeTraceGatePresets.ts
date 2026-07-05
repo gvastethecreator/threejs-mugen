@@ -12251,6 +12251,84 @@ export function createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileHitCountTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-projectile-hitcount-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-hitcount-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-hitcount-attacker",
+    displayName: "Synthetic Imported Projectile HitCount Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 911,
+    projectileHits: 1,
+    projectileGroundVelocity: [4, -2],
+    hitCountStateNo: 341,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-hitcount-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-hitcount-golden",
+      label: "Synthetic imported Projectile HitCount route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile HitCount trace proves bounded player-owned Projectile normal-hit contact can feed owner-state HitCount and UniqHitCount after the Projectile records target id 77. This is grounded in Projectile HitDef params plus HitCount current-attack docs, but still does not claim exact combo accumulation, chain-hit arbitration, multi-target/team counting, helper custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-hitcount-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 341],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 77,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 341,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -13293,6 +13371,108 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArt
             stateNo: 340,
             moveType: "H",
           },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileHitCountTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-hitcount-attacker",
+    displayName: "Synthetic Imported Helper Projectile HitCount Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1257,
+      waitAnimNo: 1011,
+      branchStateNo: 1258,
+      branchAnimNo: 1012,
+      branchTrigger: "HitCount >= 1 && UniqHitCount >= 1",
+      projectileAnimNo: 1013,
+      projectileId: 8893,
+      pos: [360, -34],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [4, -2],
+    },
+  });
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-hitcount-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-hitcount-settle", frames: 28, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-hitcount-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-hitcount-golden",
+      label: "Synthetic imported Helper Projectile HitCount route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile HitCount trace proves bounded helper-local micro-VM HitCount and UniqHitCount can branch after a helper-parented/root-owned Projectile normal hit records owner and helper target links. This is grounded in Projectile HitDef params plus HitCount current-attack docs, but still does not claim exact combo accumulation, target lifetime/tick order, helper-owned custom-state tables, teams/simul, or full MUGEN/IKEMEN helper Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-hitcount-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+        requiredExecutedOperations: ["helper", "projectile"],
+        requiredControllerEventSequences: [
+          {
+            label: "helper-local Projectile HitCount spawn telemetry",
+            actorId: "p1",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+              { stateNo: 1200, operation: "projectile" },
+            ],
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1257, animNo: 1011, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1258, animNo: 1012, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1013, moveType: "A", minFrames: 1 },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1258, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8893,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8893 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8893 },
         ],
       },
     ],

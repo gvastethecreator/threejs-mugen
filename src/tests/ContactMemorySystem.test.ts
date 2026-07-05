@@ -60,6 +60,21 @@ describe("ContactMemorySystem", () => {
     expect(hasRuntimeProjectileContact(memory, 200, "guard", 99)).toBe(false);
     expect(runtimeProjectileContactTime(memory, 200, "guard", 77)).toBe(2);
     expect(runtimeProjectileContactTime(memory, 200, "guard", 99)).toBe(-1);
+    expect(runtimeMoveContactValue(memory, 200, "guard")).toBe(2);
+    expect(runtimeMoveHitCountValue(memory, 200, false)).toBe(0);
+  });
+
+  it("feeds projectile hits into move hit counts with unique targets", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeProjectileContact(memory, 200, 77, "hit", "p2");
+    markRuntimeProjectileContact(memory, 200, 77, "hit", "p2");
+    markRuntimeProjectileContact(memory, 200, 77, "hit", "p3");
+
+    expect(hasRuntimeProjectileContact(memory, 200, "hit", 77)).toBe(true);
+    expect(runtimeMoveContactValue(memory, 200, "hit")).toBe(0);
+    expect(runtimeMoveHitCountValue(memory, 200, false)).toBe(3);
+    expect(runtimeMoveHitCountValue(memory, 200, true)).toBe(2);
   });
 
   it("tracks projectile cancel ids and timers separately from contact", () => {

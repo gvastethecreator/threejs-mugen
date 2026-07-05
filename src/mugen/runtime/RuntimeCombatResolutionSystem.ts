@@ -47,7 +47,7 @@ export type RuntimeCombatResolutionActor = RuntimeHitStateTransitionActor &
     targetWorld: Pick<RuntimeTargetWorld, "remember">;
     targets: RuntimeTarget[];
     targetBindings: RuntimeTargetBinding[];
-    effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit" | "resolveProjectileCombat">;
+    effectActorWorld: Pick<RuntimeEffectActorWorld, "removeExplodsOnGetHit" | "resolveProjectileCombat" | "helpers">;
   };
 
 export type RuntimeCombatResolutionStateHooks<TActor extends RuntimeCombatResolutionActor> = {
@@ -265,8 +265,14 @@ export class RuntimeCombatResolutionWorld {
       applyHitState: (source, target, projectile) =>
         this.applyProjectileHitState(source, target, projectile, input.hitStateTransitionWorld, input.getHitStateWorld, input.stateHooks),
       markDefenderGotHit: (target) => input.effectLifecycleWorld.markGetHit(target),
-      recordProjectileContact: (source, _target, projectile, kind) => {
-        source.contactWorld.markProjectileContact(source.contact, source.runtime.stateNo, projectile.projectileId, kind);
+      recordProjectileContact: (source, target, projectile, kind) => {
+        source.contactWorld.markProjectileContact(source.contact, source.runtime.stateNo, projectile.projectileId, kind, target.id);
+        if (projectile.parentId !== source.id) {
+          const helper = source.effectActorWorld.helpers(source.id).find((candidate) => candidate.serialId === projectile.parentId);
+          if (helper) {
+            source.contactWorld.markProjectileContact(helper.contact, helper.stateNo ?? 0, projectile.projectileId, kind, target.id);
+          }
+        }
       },
       emitProjectileContactEffects: (source, _target, projectile, kind) => {
         input.contactPresentationWorld.emitProjectileContact({ actor: source, projectile, kind, runtimeTick: input.runtimeTick });

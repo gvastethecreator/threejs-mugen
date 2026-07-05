@@ -8,6 +8,7 @@ import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSyst
 import {
   advanceRuntimeContactTimers,
   createRuntimeContactMemory,
+  runtimeMoveHitCountValue,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
@@ -797,6 +798,8 @@ function helperExpressionContext(
     projHitTime: (projectileId?: number) => options.projectileContactTime?.(helper, "hit", projectileId) ?? -1,
     projGuardedTime: (projectileId?: number) => options.projectileContactTime?.(helper, "guard", projectileId) ?? -1,
     projCancelTime: (projectileId?: number) => options.projectileCancelTime?.(helper, projectileId) ?? -1,
+    hitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, false),
+    uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,
     stateExists: (stateNo: number) => helper.runtimeProgram?.states.some((candidate) => candidate.id === stateNo) ?? false,
   };

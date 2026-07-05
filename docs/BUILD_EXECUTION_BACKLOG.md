@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile HitCount required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-hitcount.json` and `synthetic-imported-helper-projectile-hitcount.json` trace coverage.
+- Projectile contact memory now feeds current-attack `MoveContact`, `MoveHit`, `MoveGuarded`, `HitCount`, and `UniqHitCount` counters while preserving Projectile-specific `ProjHit` / `ProjGuarded` markers.
+- Helper expression contexts now expose helper-local `HitCount` / `UniqHitCount`, and Projectile contact mirroring marks helper contact memory when a helper-parented/root-owned Projectile hits.
+- `RuntimeTraceGatePresets` now gates player-owned Projectile owner-state branch `HitCount >= 1 && UniqHitCount >= 1` through state `341`.
+- `RuntimeTraceGatePresets` now gates helper-parented Projectile helper-local branch `HitCount >= 1 && UniqHitCount >= 1` through helper state `1257 -> 1258`, with owner/helper target links and helper/projectile lifecycle evidence.
+- `scripts/qa_traces.cjs` registers both artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `HitCount` / `UniqHitCount` as current attack-move counters; Elecbyte State Controller Reference documents `Projectile` as taking `HitDef` parameters and helper-created Projectiles becoming root-owned.
+- Focused unit: `pnpm exec vitest run src/tests/ContactMemorySystem.test.ts src/tests/RuntimeCombatResolutionSystem.test.ts --testNamePattern "projectile|Projectile|contact memory|callbacks"` -> 2 files passed, 7 tests passed, 9 skipped.
+- Focused trace: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile HitCount"` -> 1 file passed, 2 tests passed, 404 skipped.
+- Trace gate: `pnpm qa:trace` -> 413/413 artifacts, 383 required and 30 optional; `synthetic-imported-projectile-hitcount.json` checksum `97a1b671`; `synthetic-imported-helper-projectile-hitcount.json` checksum `19d1c22c`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile normal-hit contact can feed owner-state `HitCount >= 1 && UniqHitCount >= 1`, branch P1 to state `341`, preserve projectile lifecycle, and record `p1 -> p2 / 77`.
+- Bounded helper-parented/root-owned Projectile normal-hit contact can mirror hit-count memory to the visual helper, branch helper `1257 -> 1258`, preserve helper/projectile lifecycle payload evidence, and record `p1 -> p2 / 8893` plus `p1-helper-0 -> p2 / 8893`.
+
+Claim blocked:
+
+- Exact combo accumulation, hitcountpersist/state-transition lifetime, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause and target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/HitCount parity.
+
+Next:
+
+- Continue R1 with exact combo/chain accumulation, hitcountpersist lifetime, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 gap. Do not reselect this Projectile HitCount gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Projectile GetHitVar hitcount required trace gates
 
 Changed:
