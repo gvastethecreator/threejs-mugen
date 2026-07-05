@@ -5250,6 +5250,80 @@ export function createSyntheticImportedPalFxTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedDynamicPalFxTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-palfx-dynamic",
+    displayName: "Synthetic Imported Dynamic PalFX",
+    withDynamicPalFx: {
+      time: "var(0)",
+      add: ["var(1)", "var(2)", "var(3)"],
+      mul: ["var(4)", "var(5)", "256"],
+      color: "var(6)",
+      invertAll: "var(7)",
+      vars: [
+        { index: 0, value: 12 },
+        { index: 1, value: 64 },
+        { index: 2, value: -16 },
+        { index: 3, value: 300 },
+        { index: 4, value: 224 },
+        { index: 5, value: 144 },
+        { index: 6, value: 200 },
+        { index: 7, value: 1 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-palfx-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-palfx-dynamic-golden",
+      label: "Synthetic imported dynamic PalFX route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic PalFX trace proves time/add/mul/color/invertall expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded material telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, sinadd, exact palette math, RemapPal interaction, renderer parity, helper/redirect ownership, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-palfx-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "PalFX", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            paletteFxTime: 12,
+            paletteFxAddR: 64,
+            paletteFxAddG: -16,
+            paletteFxAddB: 255,
+            paletteFxMulR: 224,
+            paletteFxMulG: 144,
+            paletteFxMulB: 256,
+            paletteFxColor: 200,
+            paletteFxInvert: true,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedTransTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33263,6 +33337,14 @@ export type SyntheticImportedTraceFighterOptions = {
     color?: number;
     invert?: boolean;
   };
+  withDynamicPalFx?: {
+    time: string;
+    add?: [string, string, string];
+    mul?: [string, string, string];
+    color?: string;
+    invertAll?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withTrans?: string;
   withAngle?: {
     set?: number;
@@ -33554,6 +33636,7 @@ ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
+${options.withDynamicPalFx === undefined ? "" : dynamicPalFxControllerBlock(options.withDynamicPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
 ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
@@ -34821,6 +34904,32 @@ add = ${(options.add ?? [0, 0, 0]).join(",")}
 mul = ${(options.mul ?? [256, 256, 256]).join(",")}
 color = ${options.color ?? 256}
 invertall = ${options.invert ? 1 : 0}
+`;
+}
+
+function dynamicPalFxControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicPalFx"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic PalFX Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic PalFX Probe]
+type = PalFX
+trigger1 = Time >= 0
+time = ${options.time}
+add = ${(options.add ?? ["0", "0", "0"]).join(",")}
+mul = ${(options.mul ?? ["256", "256", "256"]).join(",")}
+color = ${options.color ?? "256"}
+invertall = ${options.invertAll ?? "0"}
 `;
 }
 

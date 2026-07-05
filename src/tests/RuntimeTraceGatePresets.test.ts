@@ -344,6 +344,7 @@ import {
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedDynamicSprPriorityTraceArtifact,
   createSyntheticImportedPalFxTraceArtifact,
+  createSyntheticImportedDynamicPalFxTraceArtifact,
   createSyntheticImportedTransTraceArtifact,
   createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
@@ -8390,6 +8391,60 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.paletteFx?.time === 18 && actor.paletteFx.add[2] === 255 && actor.paletteFx.invert,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic PalFX artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicPalFxTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-palfx-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-palfx-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PalFX).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:palfx"]).toBeUndefined();
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          paletteFxTime: 12,
+          paletteFxAddR: 64,
+          paletteFxAddG: -16,
+          paletteFxAddB: 255,
+          paletteFxMulR: 224,
+          paletteFxMulG: 144,
+          paletteFxMulB: 256,
+          paletteFxColor: 200,
+          paletteFxInvert: true,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) =>
+          actor.id === "p1" &&
+          actor.paletteFx?.time === 12 &&
+          actor.paletteFx.add[2] === 255 &&
+          actor.paletteFx.mul[1] === 144 &&
+          actor.paletteFx.color === 200 &&
+          actor.paletteFx.invert,
       ),
     ).toBe(true);
   });

@@ -35,13 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic SprPriority trace gate
+R1 required dynamic PalFX trace gate
+  -> synthetic-imported-palfx-dynamic.json checksum c56e955a is required in qa:trace
+  -> imported active state seeds var(0..7), then executes PalFX time/add/mul/color/invertall from expressions
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic palette resolver into RuntimeSpriteEffectWorld.applyPaletteFx
+  -> PlayableMatchRuntime resolves scalar and triplet params through the active controller expression context
+  -> final imported actor evidence requires paletteFx time 12, add [64,-16,255], mul [224,144,256], color 200, invert true and no typed sprite-effect:palfx operation evidence
+  -> pnpm qa:trace passes 443/443 artifacts, 413 required and 30 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define PalFX time/add/mul/invertall/color
+  -> no score movement; typed-operation lowering for dynamic params, sinadd, exact palette math/blend/remap order, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic SprPriority trace gate
   -> synthetic-imported-sprpriority-dynamic.json checksum b57c1bfa is required in qa:trace
   -> imported active state seeds var(0)=4, then executes SprPriority value = var(0)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic priority resolver into RuntimeSpriteEffectWorld.applySpritePriority
   -> PlayableMatchRuntime resolves value expressions through the active controller expression context
   -> final imported actor evidence requires spritePriority = 4 and no typed sprite-effect:sprpriority operation evidence
-  -> pnpm qa:trace passes 442/442 artifacts, 412 required and 30 optional
+  -> pnpm qa:trace passed 442/442 artifacts, 412 required and 30 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define SprPriority value as an int priority level
   -> no score movement; typed-operation lowering for dynamic params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 

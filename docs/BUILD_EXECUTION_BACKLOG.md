@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic PalFX active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-palfx-dynamic.json` trace coverage for active imported `PalFX time/add/mul/color/invertall` expressions.
+- `RuntimeSpriteEffectControllerWorld` now accepts an optional `resolvePaletteFx` callback set and forwards it into `RuntimeSpriteEffectWorld.applyPaletteFx`.
+- `PlayableMatchRuntime` resolves dynamic PalFX scalar and triplet params through the active controller expression context, preserving owner/opponent/tick/stage-bound evaluation.
+- `RuntimeTraceGatePresets` can build synthetic imported fighters with `VarSet`-seeded dynamic PalFX params, and `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference says numeric state-controller params may be arithmetic expressions and defines `PalFX` `time`, `add`, `mul`, `invertall`, and `color`.
+- Focused tests: `pnpm exec vitest run src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "PalFX"` -> 2 files passed, 7 tests passed.
+- Test suite: `pnpm test` -> 151 files passed, 1345 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 443/443 artifacts, 413 required and 30 optional; `synthetic-imported-palfx-dynamic.json` checksum `c56e955a`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Smoke/visual QA: `pnpm qa:smoke` -> passed; runtime desktop/mobile and Studio surfaces produced screenshot evidence under `.scratch/qa/qa-smoke/`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `PalFX time/add/mul/color/invertall` expression fallback can resolve through the sprite-effect boundary. The synthetic route seeds owner-local `var(0..7)`, executes dynamic material params, and proves imported actor-frame/final `paletteFx.time = 12`, `add [64,-16,255]`, `mul [224,144,256]`, `color = 200`, and `invert = true` telemetry without typed `sprite-effect:palfx` operation evidence because the params are dynamic.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic params, `sinadd`, exact palette math/blend/remap order, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next dynamic sprite-effect/resource/audio fallback into a named boundary.
+
 ## 2026-07-05 - Dynamic SprPriority active-state trace gate
 
 Changed:

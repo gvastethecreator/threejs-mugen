@@ -92,6 +92,36 @@ describe("SpriteEffectSystem", () => {
     });
   });
 
+  it("resolves dynamic PalFX material params from active expressions", () => {
+    const state = runtimeState();
+
+    applyRuntimePaletteFxController(
+      state,
+      controller("PalFX", {
+        time: "var(0)",
+        add: "var(1),-16,var(2)",
+        mul: "var(3),var(4),256",
+        color: "var(5)",
+        invertall: "var(6)",
+      }),
+      undefined,
+      {
+        resolveNumber: (key) =>
+          ({ time: 6, color: 200, invertall: 1, invert: undefined })[key],
+        resolveTriplet: (key) => (key === "add" ? [64, -16, 300] : [224, 144, 256]),
+      },
+    );
+
+    expect(state.paletteFx).toMatchObject({
+      remaining: 6,
+      time: 6,
+      add: [64, -16, 255],
+      mul: [224, 144, 256],
+      color: 200,
+      invert: true,
+    });
+  });
+
   it("clears PalFX when the controller time is zero", () => {
     const state = runtimeState();
     state.paletteFx = {
@@ -339,6 +369,47 @@ describe("SpriteEffectSystem", () => {
     expect(recordedControllers).toEqual(["PalFX"]);
     expect(recordedOperations).toEqual(["sprite-effect:palfx"]);
     expect(result).toEqual({ applied: true, recordedController: true, recordedOperation: true });
+  });
+
+  it("resolves dynamic PalFX through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(
+      controller("PalFX", {
+        time: "var(0)",
+        add: "var(1),-16,var(2)",
+        mul: "var(3),var(4),256",
+        color: "var(5)",
+        invertall: "var(6)",
+      }),
+    );
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "palfx",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      resolvePaletteFx: {
+        resolveNumber: (key) =>
+          ({ time: 6, color: 200, invertall: 1, invert: undefined })[key],
+        resolveTriplet: (key) => (key === "add" ? [64, -16, 300] : [224, 144, 256]),
+      },
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.paletteFx).toMatchObject({
+      remaining: 6,
+      time: 6,
+      add: [64, -16, 255],
+      mul: [224, 144, 256],
+      color: 200,
+      invert: true,
+    });
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
   });
 
   it("dispatches Trans controllers through the active-state sprite boundary", () => {

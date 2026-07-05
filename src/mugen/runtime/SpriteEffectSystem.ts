@@ -13,6 +13,10 @@ export type RuntimeAngleSpriteEffectOp =
 
 export type RuntimeRemapPalPairResolver = (key: "source" | "dest") => [number, number] | undefined;
 export type RuntimeSpritePriorityResolver = (key: "value" | "priority") => number | undefined;
+export type RuntimePaletteFxResolver = {
+  resolveNumber: (key: "time" | "color" | "invertall" | "invert") => number | undefined;
+  resolveTriplet: (key: "add" | "mul") => [number, number, number] | undefined;
+};
 
 export type RuntimeSpriteEffectControllerEffect =
   | "sprpriority"
@@ -35,6 +39,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   sampleFactory: RuntimeAfterImageSampleFactory;
   resolveRemapPalPair?: RuntimeRemapPalPairResolver;
   resolveSpritePriority?: RuntimeSpritePriorityResolver;
+  resolvePaletteFx?: RuntimePaletteFxResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
 };
@@ -59,8 +64,9 @@ export class RuntimeSpriteEffectWorld {
     state: CharacterRuntimeState,
     controller: MugenStateController,
     operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
+    resolvePaletteFx?: RuntimePaletteFxResolver,
   ): void {
-    applyRuntimePaletteFxController(state, controller, operation);
+    applyRuntimePaletteFxController(state, controller, operation, resolvePaletteFx);
   }
 
   applyRemapPal(
@@ -133,6 +139,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.actor.runtime,
         input.controller.source,
         operation?.controllerType === "palfx" ? operation : undefined,
+        input.resolvePaletteFx,
       );
     } else if (input.effect === "remappal") {
       input.spriteEffectWorld.applyRemapPal(
@@ -215,8 +222,18 @@ export function applyRuntimePaletteFxController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
+  resolvePaletteFx?: RuntimePaletteFxResolver,
 ): void {
-  const time = operation?.time ?? clampFxTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
+  const timeParam = findControllerParam(controller, "time");
+  const addParam = findControllerParam(controller, "add");
+  const mulParam = findControllerParam(controller, "mul");
+  const colorParam = findControllerParam(controller, "color");
+  const invertAllParam = findControllerParam(controller, "invertall");
+  const invertParam = findControllerParam(controller, "invert");
+  const time =
+    operation?.time ??
+    resolvePaletteFxNumber(timeParam, "time", resolvePaletteFx, clampFxTime) ??
+    clampFxTime(firstNumber(timeParam) ?? 0);
   if (time <= 0) {
     state.paletteFx = undefined;
     return;
@@ -224,13 +241,23 @@ export function applyRuntimePaletteFxController(
   state.paletteFx = {
     remaining: time,
     time,
-    add: operation?.add ?? colorTriplet(findControllerParam(controller, "add"), [0, 0, 0], -255, 255),
-    mul: operation?.mul ?? colorTriplet(findControllerParam(controller, "mul"), [256, 256, 256], 0, 512),
-    color: operation?.color ?? clampColorLevel(firstNumber(findControllerParam(controller, "color")) ?? 256),
+    add:
+      operation?.add ??
+      clampColorTriplet(addParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("add"), -255, 255) ??
+      colorTriplet(addParam, [0, 0, 0], -255, 255),
+    mul:
+      operation?.mul ??
+      clampColorTriplet(mulParam === undefined ? undefined : resolvePaletteFx?.resolveTriplet("mul"), 0, 512) ??
+      colorTriplet(mulParam, [256, 256, 256], 0, 512),
+    color:
+      operation?.color ??
+      resolvePaletteFxNumber(colorParam, "color", resolvePaletteFx, clampColorLevel) ??
+      clampColorLevel(firstNumber(colorParam) ?? 256),
     invert:
       operation?.invert ??
-      (firstNumber(findControllerParam(controller, "invertall")) ??
-        firstNumber(findControllerParam(controller, "invert"))) === 1,
+      (invertAllParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invertall"))) ??
+      (invertParam === undefined ? undefined : legacyBoolean(resolvePaletteFx?.resolveNumber("invert"))) ??
+      (firstNumber(invertAllParam) ?? firstNumber(invertParam)) === 1,
   };
 }
 
@@ -454,6 +481,23 @@ function clampColorLevel(value: number): number {
   return Math.max(0, Math.min(256, Math.round(value)));
 }
 
+function resolvePaletteFxNumber(
+  param: string | undefined,
+  key: "time" | "color" | "invertall" | "invert",
+  resolver: RuntimePaletteFxResolver | undefined,
+  clamp: (value: number) => number,
+): number | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+  const value = resolver?.resolveNumber(key);
+  return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function legacyBoolean(value: number | undefined): boolean | undefined {
+  return value === undefined || !Number.isFinite(value) ? undefined : value === 1;
+}
+
 function clampAfterImageTime(value: number): number {
   return Math.max(0, Math.min(600, Math.round(value)));
 }
@@ -483,6 +527,21 @@ function colorTriplet(
     clampNumber(numbers[0]!, min, max),
     clampNumber(numbers[1]!, min, max),
     clampNumber(numbers[2]!, min, max),
+  ];
+}
+
+function clampColorTriplet(
+  value: [number, number, number] | undefined,
+  min: number,
+  max: number,
+): [number, number, number] | undefined {
+  if (!value || value.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
+  }
+  return [
+    clampNumber(value[0], min, max),
+    clampNumber(value[1], min, max),
+    clampNumber(value[2], min, max),
   ];
 }
 

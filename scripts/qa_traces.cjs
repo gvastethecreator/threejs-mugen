@@ -851,6 +851,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPalFxTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-palfx-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicPalFxTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-trans",
       required: true,
       artifact: presets.createSyntheticImportedTransTraceArtifact(),
@@ -3433,6 +3438,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-sprpriority",
     "synthetic-imported-sprpriority-dynamic",
     "synthetic-imported-palfx",
+    "synthetic-imported-palfx-dynamic",
     "synthetic-imported-trans",
     "synthetic-imported-angle",
     "synthetic-imported-envcolor",

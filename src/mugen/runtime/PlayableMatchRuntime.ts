@@ -942,6 +942,15 @@ function runActiveStateControllers(
           effect === "sprpriority"
             ? (key) => resolveSpritePriorityParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
             : undefined,
+        resolvePaletteFx:
+          effect === "palfx"
+            ? {
+                resolveNumber: (key) =>
+                  resolvePaletteFxNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+                resolveTriplet: (key) =>
+                  resolvePaletteFxTripletParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              }
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1272,6 +1281,47 @@ function resolveSpritePriorityParam(
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolvePaletteFxNumberParam(
+  controller: ControllerIr,
+  key: "time" | "color" | "invertall" | "invert",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolvePaletteFxTripletParam(
+  controller: ControllerIr,
+  key: "add" | "mul",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const parts = raw.split(",").map((part) => part.trim());
+  if (parts.length < 3 || !parts[0] || !parts[1] || !parts[2]) {
+    return undefined;
+  }
+  const values = parts
+    .slice(0, 3)
+    .map((part) => resolveDispatchNumber(undefined, part, fighter, opponent, owner, stageBounds, stageTime));
+  return values.some((value) => value === undefined)
+    ? undefined
+    : [values[0]!, values[1]!, values[2]!];
 }
 
 function resolveDispatchBoolean(
