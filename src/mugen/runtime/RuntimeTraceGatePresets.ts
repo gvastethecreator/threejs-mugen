@@ -7042,7 +7042,7 @@ export function createSyntheticImportedDefaultGuardHoldWalkReturnTraceArtifact(
     requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "resource:ctrlset"],
     requiredControllerEventSequences: [defaultStandGuardSlideStopControllerSequence()],
     requiredActorFrames: [
-      guardSlideFrames[0]!,
+      { ...guardSlideFrames[0]!, minFrames: 1 },
       {
         ...guardSlideFrames[1]!,
         observedVelXAtLeast: 2,
@@ -9458,6 +9458,174 @@ export function createSyntheticImportedHelperProjectileGuardTimingDefaultTraceAr
     requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
     notes: [
       "Synthetic imported Helper Projectile default guard timing trace proves omitted helper-parented Projectile guard.hittime, guard.slidetime, and guard.ctrltime derive through the helper-local Projectile HitDef parameter set and are readable through GetHitVar in Common1-style stand guard state 151. It does not claim helper-owned custom states, exact helper Projectile guard tick order, effects, proximity, or full MUGEN/IKEMEN helper projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileGuardSlideStopTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-guard-slide-stop-grid",
+    displayName: "Trace Projectile Guard Slide Stop Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-slide-stop",
+    displayName: "Synthetic Imported Projectile Guard Slide Stop",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-slide-stop-attacker",
+    displayName: "Synthetic Imported Projectile Guard Slide Stop Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-6],
+    guardFlag: "MA",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  const guardSlideFrames = syntheticStandGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-projectile-guard-slide-stop-golden",
+    targetLabel: "Synthetic imported Projectile guard slide-stop route",
+    requiredExecutedStates: [200, 150, 151, 130],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "Projectile", "HitVelSet", "VelSet"],
+    requiredExecutedOperations: ["projectile", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+    requiredControllerEventSequences: [defaultStandGuardSlideStopControllerSequence()],
+    requiredActorFrames: [
+      { ...guardSlideFrames[0]!, minFrames: 1 },
+      {
+        ...guardSlideFrames[1]!,
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 996, ctrl: true }],
+    notes: [
+      "Synthetic imported Projectile guard slide-stop trace proves a player-owned Projectile can drive Common1-style stand guard state 151 through HitVelSet, VelSet from GetHitVar(slidetime), CtrlSet from GetHitVar(ctrltime), and guard-state return while retaining projectile target/lifecycle evidence. It does not claim exact projectile guard tick order, velocity decay/friction, effects, proximity, or full MUGEN/IKEMEN projectile guard parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileGuardSlideStopTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-guard-slide-stop-grid",
+    displayName: "Trace Helper Projectile Guard Slide Stop Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-slide-stop",
+    displayName: "Synthetic Imported Helper Projectile Guard Slide Stop",
+    defaultGuardHit: { shakeStateNo: 150, slideStateNo: 151, guardStateNo: 130 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-slide-stop-attacker",
+    displayName: "Synthetic Imported Helper Projectile Guard Slide Stop Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1249,
+      waitAnimNo: 989,
+      branchStateNo: 1250,
+      branchAnimNo: 990,
+      projectileAnimNo: 991,
+      projectileId: 8859,
+      pos: [360, -34],
+      guardFlag: "MA",
+      guardHitTime: 18,
+      guardSlideTime: 5,
+      guardControlTime: 7,
+      groundVelocity: [-6],
+    },
+  });
+  const guardSlideFrames = syntheticStandGuardHitPhysicsFrames();
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultGuardStateScript(),
+    targetId: "synthetic-imported-helper-projectile-guard-slide-stop-golden",
+    targetLabel: "Synthetic imported Helper Projectile guard slide-stop route",
+    requiredExecutedStates: [200, 150, 151, 130],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "Helper", "Projectile", "HitVelSet", "VelSet"],
+    requiredExecutedOperations: ["helper", "projectile", "resource:ctrlset", "kinematic:hitvelset", "kinematic:velset"],
+    requiredControllerEventSequences: [
+      {
+        label: "helper-local Projectile spawn telemetry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      },
+      defaultStandGuardSlideStopControllerSequence(),
+    ],
+    requiredActorFrames: [
+      { ...guardSlideFrames[0]!, minFrames: 1 },
+      {
+        ...guardSlideFrames[1]!,
+        observedVelXAtLeast: 2,
+        observedVelXAtMost: 0,
+      },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1249, animNo: 989, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1250, animNo: 990, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 991, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1250, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8859,
+        minAge: 1,
+        minPriority: 2,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8859 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8859 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
+    notes: [
+      "Synthetic imported Helper Projectile guard slide-stop trace proves a helper-parented owner-side Projectile can drive Common1-style stand guard state 151 through HitVelSet, VelSet from GetHitVar(slidetime), CtrlSet from GetHitVar(ctrltime), and guard-state return while retaining owner/helper target links plus helper/projectile lifecycle payload evidence. It does not claim helper-owned custom states, exact helper Projectile guard tick order, velocity decay/friction, effects, proximity, or full MUGEN/IKEMEN helper projectile guard parity.",
     ],
   });
 }

@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile guard slide-stop required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-guard-slide-stop.json` and `synthetic-imported-helper-projectile-guard-slide-stop.json` trace coverage.
+- Extended the existing direct `synthetic-imported-default-guard-slide-stop.json` guard-control proof to player-owned Projectile and helper-parented Projectile guard routes.
+- `RuntimeTraceGatePresets` now gates explicit `guard.slidetime = 5` / `guard.ctrltime = 7` Projectile guard hits through Common1-style `150 -> 151 -> 130`.
+- The new gates require ordered `HitVelSet`, `VelSet`, `CtrlSet`, and final `ChangeState` evidence in state `151`, plus typed `kinematic:hitvelset`, `kinematic:velset`, and `resource:ctrlset` operations.
+- Helper Projectile coverage keeps owner/helper target links plus helper/projectile lifecycle payload evidence for Projectile id `8859`.
+- `scripts/qa_traces.cjs` registers both Projectile guard slide-stop artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `GetHitVar(slidetime)` and `GetHitVar(ctrltime)` for guard state timing, and Elecbyte State Controller Reference documents Projectile HitDef-parameter behavior plus helper-created Projectiles becoming root-owned.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "guard slide-stop"` -> 1 file passed, 4 tests passed, 394 skipped.
+- Trace gate: `pnpm qa:trace` -> 405/405 artifacts, 375 required and 30 optional; `synthetic-imported-projectile-guard-slide-stop.json` trace checksum `965c2d12`, final checksum `0973a73c`; `synthetic-imported-helper-projectile-guard-slide-stop.json` trace checksum `6c42a378`, final checksum `df8b7a42`.
+- Closeout gates run before docs update: `pnpm test` -> 151 files passed, 1274 tests passed; `pnpm typecheck` passed; `pnpm build` passed with existing Vite large-chunk warning; `pnpm check:boundaries` passed.
+
+Claim allowed:
+
+- Bounded player-owned Projectile stand guard slide-stop/control: Projectile guard contact routes P2 through `150 -> 151 -> 130`, executes `HitVelSet`, `VelSet`, `CtrlSet`, and final `ChangeState` in order, and preserves Projectile target/lifecycle evidence.
+- Bounded helper-parented Projectile stand guard slide-stop/control: helper-spawned Projectile guard contact routes P2 through the same `150 -> 151 -> 130` guard slide-stop/control path while preserving owner/helper target links plus helper/projectile payload evidence.
+
+Claim blocked:
+
+- Exact guard control tick order, HitOver vs CtrlSet parity, guard velocity decay/friction, proximity guard, guard effects, guard pushbox details, helper-owned custom states, throws, teams/simul, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 with guard velocity/corner-push decay, exact guard control tick order against a stronger oracle, Common1 recovery/fall precision, helper/projectile custom-state breadth, or another official-doc-backed route that expands a blocked behavior with required trace evidence.
+
 ## 2026-07-05 - Default guard timing required trace gates
 
 Changed:

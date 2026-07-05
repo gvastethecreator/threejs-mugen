@@ -27,7 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required default guard timing derivation trace gates
+R1 required Projectile/helper guard slide-stop trace gates
+  -> synthetic-imported-projectile-guard-slide-stop.json trace checksum 965c2d12 / final checksum 0973a73c is required in qa:trace
+  -> synthetic-imported-helper-projectile-guard-slide-stop.json trace checksum 6c42a378 / final checksum df8b7a42 is required in qa:trace
+  -> the gates extend the existing direct synthetic-imported-default-guard-slide-stop.json proof to player-owned Projectile and helper-parented Projectile stand-guard routes
+  -> both routes author explicit guard.slidetime = 5 and guard.ctrltime = 7, keep P2 in Common1-style 150 -> 151 -> 130, and require ordered HitVelSet, VelSet, CtrlSet, final ChangeState, kinematic:hitvelset, kinematic:velset, and resource:ctrlset evidence
+  -> player-owned Projectile route keeps projectile lifecycle plus target link p1 -> p2 / 77
+  -> helper Projectile route keeps owner/helper target links plus helper/projectile lifecycle payload evidence for Projectile id 8859
+  -> pnpm qa:trace passes 405/405 artifacts, 375 required and 30 optional
+  -> no score movement; exact guard control tick order, HitOver vs CtrlSet parity, guard velocity decay/friction, guard effects, helper-owned custom states, throws, teams/simul, and full guard/projectile parity remain blocked
+
+Previous R1 required default guard timing derivation trace gates
   -> synthetic-imported-guard-timing-default.json trace checksum 859cb873 / final checksum bae55cbc is required in qa:trace
   -> synthetic-imported-projectile-guard-timing-default.json trace checksum 21dc44c4 / final checksum 1c3d9c20 is required in qa:trace
   -> synthetic-imported-helper-projectile-guard-timing-default.json trace checksum d421498c / final checksum 1733494a is required in qa:trace

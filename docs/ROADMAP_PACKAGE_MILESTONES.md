@@ -35,7 +35,18 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required default guard timing derivation trace gates
+R1 required Projectile/helper guard slide-stop trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-guard-slide-stop.json and synthetic-imported-helper-projectile-guard-slide-stop.json
+  -> the gates extend the existing direct synthetic-imported-default-guard-slide-stop.json stand-guard proof to player-owned Projectile and helper-parented Projectile routes
+  -> both routes author explicit guard.slidetime = 5 and guard.ctrltime = 7, keep P2 in Common1-style 150 -> 151 -> 130, and require ordered HitVelSet, VelSet, CtrlSet, final ChangeState, kinematic:hitvelset, kinematic:velset, and resource:ctrlset evidence
+  -> player-owned Projectile route keeps projectile lifecycle plus target link p1 -> p2 / 77
+  -> helper Projectile route records owner/helper target links p1 -> p2 / 8859 and p1-helper-0 -> p2 / 8859 plus helper/projectile lifecycle payload evidence
+  -> synthetic-imported-projectile-guard-slide-stop.json trace checksum 965c2d12 / final checksum 0973a73c is required in qa:trace
+  -> synthetic-imported-helper-projectile-guard-slide-stop.json trace checksum 6c42a378 / final checksum df8b7a42 is required in qa:trace
+  -> pnpm qa:trace passes 405/405 artifacts, 375 required and 30 optional
+  -> no score movement; exact guard control tick order, HitOver vs CtrlSet parity, guard velocity decay/friction, guard effects, helper-owned custom states, throws, teams/simul, and full guard/projectile parity remain blocked
+
+Previous R1 required default guard timing derivation trace gates
   -> RuntimeTraceGatePresets now builds synthetic-imported-guard-timing-default.json, synthetic-imported-projectile-guard-timing-default.json, and synthetic-imported-helper-projectile-guard-timing-default.json
   -> HitDefSystem, ProjectileSystem, and imported fighter move construction derive omitted guard.hittime, guard.slidetime, and guard.ctrltime through ground.hittime -> guard.hittime -> guard.slidetime -> guard.ctrltime
   -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit guard timing params and keep P2 in stand guard states 150 -> 151

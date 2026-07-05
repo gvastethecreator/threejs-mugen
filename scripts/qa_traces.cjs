@@ -606,6 +606,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-guard-slide-stop",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardSlideStopTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-air-guard-cornerpush",
       required: true,
       artifact: presets.createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact(),
@@ -674,6 +679,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-guard-timing-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-guard-slide-stop",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGuardSlideStopTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-air-guard-cornerpush",
@@ -3150,6 +3160,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-guard-velocity-default",
     "synthetic-imported-projectile-guard-velocity-default",
     "synthetic-imported-projectile-guard-timing-default",
+    "synthetic-imported-projectile-guard-slide-stop",
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-guard-cornerpush-default",
@@ -3164,6 +3175,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-air-guard-velocity-default",
     "synthetic-imported-helper-projectile-guard-velocity-default",
     "synthetic-imported-helper-projectile-guard-timing-default",
+    "synthetic-imported-helper-projectile-guard-slide-stop",
     "synthetic-imported-helper-projectile-air-guard-cornerpush",
     "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
     "synthetic-imported-helper-projectile-guard-cornerpush-default",

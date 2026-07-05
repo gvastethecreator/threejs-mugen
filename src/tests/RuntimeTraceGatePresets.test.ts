@@ -250,6 +250,7 @@ import {
   createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileGuardCornerPushDefaultTraceArtifact,
+  createSyntheticImportedHelperProjectileGuardSlideStopTraceArtifact,
   createSyntheticImportedHelperProjectileGuardTimingDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact,
@@ -377,6 +378,7 @@ import {
   createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileGuardCornerPushDefaultTraceArtifact,
+  createSyntheticImportedProjectileGuardSlideStopTraceArtifact,
   createSyntheticImportedProjectileGuardTimingDefaultTraceArtifact,
   createSyntheticImportedProjectileGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact,
@@ -10992,6 +10994,38 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Projectile guard slide-stop artifact", () => {
+    const artifact = createSyntheticImportedProjectileGuardSlideStopTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-guard-slide-stop-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-guard-slide-stop-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const guardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 151);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([150, 151, 130]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(guardFrame?.maxVel.x).toBeGreaterThanOrEqual(2);
+    expect(guardFrame?.minVel.x).toBeLessThanOrEqual(0);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(
+      expect.arrayContaining(["projectile", "kinematic:hitvelset", "kinematic:velset", "resource:ctrlset"]),
+    );
+  });
+
   it("creates a synthetic imported Helper Projectile default guard.velocity artifact", () => {
     const artifact = createSyntheticImportedHelperProjectileGuardVelocityDefaultTraceArtifact({
       generatedAt: "2026-07-05T00:00:00.000Z",
@@ -11059,6 +11093,48 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 333, animNo: 333 })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile guard slide-stop artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileGuardSlideStopTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-guard-slide-stop-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-guard-slide-stop-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const guardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 151);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([150, 151, 130]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.CtrlSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:ctrlset"]).toBeGreaterThanOrEqual(1);
+    expect(guardFrame?.maxVel.x).toBeGreaterThanOrEqual(2);
+    expect(guardFrame?.minVel.x).toBeLessThanOrEqual(0);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8859 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8859 }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ kind: "helper", helperStateNo: 1250 }),
+        expect.objectContaining({ kind: "projectile", effectId: 8859, hasHit: true }),
+      ]),
     );
   });
 
