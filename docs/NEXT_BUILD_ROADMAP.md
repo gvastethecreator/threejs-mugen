@@ -27,15 +27,22 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required default down.cornerpush.veloff derivation trace gates
+R1 required default guard.cornerpush.veloff derivation trace gates
+  -> synthetic-imported-guard-cornerpush-default.json checksum 95293bc4 is required in qa:trace
+  -> synthetic-imported-projectile-guard-cornerpush-default.json checksum 58798e7a is required in qa:trace
+  -> synthetic-imported-helper-projectile-guard-cornerpush-default.json checksum 292b2015 is required in qa:trace
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit guard.cornerpush.veloff, set ground.cornerpush.veloff = 6 and air.cornerpush.veloff = 1, and keep P2 in stand guard states 150 -> 151 at the stage edge
+  -> all three routes require stand-guard actor-frame evidence and attacker/owner X velocity evidence proving fallback to ground.cornerpush.veloff
+  -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> pnpm qa:trace passes 397/397 artifacts, 367 required and 30 optional
+  -> no score movement; exact guard timing/effects, corner-push timing/decay, wall friction, throws, teams/simul, and full guard/projectile parity remain blocked
+
+Previous R1 required default down.cornerpush.veloff derivation trace gates
   -> synthetic-imported-down-hit-cornerpush-default.json checksum 04557813 is required in qa:trace
   -> synthetic-imported-projectile-down-hit-cornerpush-default.json checksum b302e3b9 is required in qa:trace
   -> synthetic-imported-helper-projectile-down-hit-cornerpush-default.json checksum fe0c3ff1 is required in qa:trace
-  -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit down.cornerpush.veloff, set ground.cornerpush.veloff = 6 and air.cornerpush.veloff = 1, and force P2 into a passive imported StateTypeSet liedown setup before contact
-  -> all three routes hit at the stage edge, require P2 stateType = L actor-frame evidence, and require attacker/owner X velocity evidence proving fallback to ground.cornerpush.veloff
-  -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 394/394 artifacts, 364 required and 30 optional
-  -> no score movement; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact down-hit physics, throws, teams/simul, and full Common1/projectile parity remain blocked
+  -> pnpm qa:trace passed 394/394 artifacts, 364 required and 30 optional
+  -> remains required; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact down-hit physics, and full Common1/projectile parity remain blocked
 
 Previous R1 required explicit down.cornerpush.veloff runtime-selection trace gates
   -> synthetic-imported-down-hit-cornerpush.json checksum b372c07b is required in qa:trace

@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Default guard cornerpush required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-guard-cornerpush-default.json`, `synthetic-imported-projectile-guard-cornerpush-default.json`, and `synthetic-imported-helper-projectile-guard-cornerpush-default.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds direct-HitDef, player-owned Projectile, and helper-parented Projectile stand-guard routes that omit `guard.cornerpush.veloff`, set `ground.cornerpush.veloff = 6` and `air.cornerpush.veloff = 1`, keep P2 in stand guard states `150 -> 151`, and require attacker/owner X velocity evidence from the ground fallback.
+- `scripts/qa_traces.cjs` registers all three default-guard artifacts as required coverage and also names the default-down artifacts in manual coverage assertions.
+- Roadmap, support, scorecard, QA, workplan, and issue docs now name the default-guard trio as the latest R1 runtime checkpoint while keeping the default/explicit down-cornerpush trios as required previous evidence.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define omitted `guard.cornerpush.veloff` as defaulting from `ground.cornerpush.veloff`; Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "guard.cornerpush"` -> 1 file passed, 9 tests passed, 381 skipped.
+- Trace gate: `pnpm qa:trace` -> 397/397 artifacts, 367 required and 30 optional; `synthetic-imported-guard-cornerpush-default.json` checksum `95293bc4`; `synthetic-imported-projectile-guard-cornerpush-default.json` checksum `58798e7a`; `synthetic-imported-helper-projectile-guard-cornerpush-default.json` checksum `292b2015`.
+- Closeout gates: `pnpm test` -> 151 files passed, 1258 tests passed; `pnpm typecheck` passed; `pnpm build` passed with existing Vite large-chunk warning; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF normalization warnings only.
+
+Claim allowed:
+
+- Bounded direct-HitDef default stand-guard corner-push derivation: P2 guards at the stage edge, `guard.cornerpush.veloff` is omitted, and P1 attacker X velocity proves guard corner push fell back to explicit `ground.cornerpush.veloff`.
+- Bounded player-owned Projectile default stand-guard corner-push derivation: Projectile guard contact omits projectile `guard.cornerpush.veloff`, records projectile target/lifecycle evidence, and proves owner X velocity from the ground corner-push fallback.
+- Bounded helper-parented Projectile default stand-guard corner-push derivation: helper-spawned Projectile guard contact omits `guard.cornerpush.veloff`, records owner/helper target links, helper payload, projectile payload, and owner X velocity evidence from the ground fallback.
+
+Claim blocked:
+
+- Exact guard timing/effects, corner-push timing/decay, wall friction, visual/audio guard parity, throws, teams/simul, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 with exact Common1 guard/fall/recovery timing, corner-push decay/friction, helper/projectile custom-state breadth, or another official-doc-backed route that expands blocked behavior with new required trace evidence. Do not reselect bounded default-guard corner-push derivation unless adding one blocked dimension.
+
 ## 2026-07-05 - Default down cornerpush required trace gates
 
 Changed:
