@@ -1667,6 +1667,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSuperPauseSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-superpause-p2defmul",
+      required: true,
+      artifact: presets.createSyntheticImportedSuperPauseP2DefMulTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-superpause-projectile-freeze",
       required: true,
       artifact: presets.createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(),

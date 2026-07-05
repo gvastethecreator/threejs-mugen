@@ -446,6 +446,7 @@ import {
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedProjectileTargetStateTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
+  createSyntheticImportedSuperPauseP2DefMulTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseSoundTraceArtifact,
   createSyntheticImportedSuperPauseTraceArtifact,
@@ -19561,6 +19562,39 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported SuperPause p2defmul artifact with target damage-scale evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseP2DefMulTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-p2defmul-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-p2defmul-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "SuperPause", "TargetLifeAdd"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "pause:superpause", "target:targetlifeadd"]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", life: 953 }),
+    ]);
+    expect(gate?.requirements.requiredMatchPauseFreezes).toEqual([{ type: "SuperPause", actorId: "p2", minFrozenFrames: 5 }]);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.TargetLifeAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["target:targetlifeadd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.finalActors).toEqual(expect.arrayContaining([expect.objectContaining({ id: "p2", life: 953 })]));
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")?.life).toBe(953);
   });
 
   it("creates a synthetic imported SuperPause artifact that proves projectile freeze evidence", () => {

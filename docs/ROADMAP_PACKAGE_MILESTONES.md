@@ -35,14 +35,24 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required SuperPause sound trace gate
+R1 required SuperPause p2defmul trace gate
+  -> synthetic-imported-superpause-p2defmul.json checksum e69e5c84 / final checksum c02dce91 is required in qa:trace
+  -> imported active state starts SuperPause after direct target memory exists
+  -> SuperPause executes p2defmul = 2
+  -> runtime maps positive defence multiplier to temporary current-target damage multiplier 0.5
+  -> source-movetime TargetLifeAdd -20 applies as -10 after the initial hit leaves P2 at 963
+  -> final P2 life 953, match-pause/freeze evidence, and target-link evidence remain required
+  -> pnpm qa:trace passes 459/459 artifacts, 429 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable, SuperPause p2defmul, and TargetLifeAdd defense scaling
+  -> no score movement; p2defmul = 0 / Super.TargetDefenceMul, exact recovery lifetime, stacking, helper/redirect/multi-target ownership, and full super damage-scaling parity remain blocked
+
+Previous R1 required SuperPause sound trace gate
   -> synthetic-imported-superpause-sound.json checksum 1547deff / final checksum 6e227fe6 is required in qa:trace
   -> imported active state seeds var(0)=10 and var(1)=0
   -> SuperPause executes sound = Svar(0),var(1)
   -> dynamic SuperPause sound group/index resolves through runtime expression fallback at pause start
   -> sound-event evidence requires attacker PlaySnd group 10 index 0 raw Svar(0),var(1)
-  -> match-pause/freeze evidence remains required
-  -> pnpm qa:trace passes 458/458 artifacts, 428 required and 30 optional
+  -> that checkpoint passed 458/458 artifacts, 428 required and 30 optional
   -> official Elecbyte docs define SuperPause sound = snd_grp, snd_no and numeric controller params as expression-capable
   -> no score movement; exact common/player SND archive lookup/channel priority/timing/mixing, super-background audio, helper/redirect ownership, and full audio parity remain blocked
 

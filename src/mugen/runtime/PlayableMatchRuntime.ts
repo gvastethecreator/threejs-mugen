@@ -233,6 +233,7 @@ type PauseControllerHandler = (
   controller: MugenStateController,
   operation?: PauseControllerOp,
   resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
+  resolveP2DefMul?: () => number | undefined,
 ) => MatchPauseControllerResult | undefined;
 type EnvColorControllerHandler = (
   controller: MugenStateController,
@@ -242,6 +243,12 @@ type EnvColorControllerHandler = (
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
+type SuperPauseTargetDefenseOverride = {
+  actor: FighterMatchState;
+  previousMultiplier?: number;
+  pauseActorId: string;
+  pauseStartedAt: number;
+};
 
 export class PlayableMatchRuntime {
   private tick = 0;
@@ -290,6 +297,7 @@ export class PlayableMatchRuntime {
   private readonly pausedMatchWorld = new RuntimePausedMatchWorld();
   private readonly snapshotWorld = new RuntimeSnapshotWorld();
   private readonly matchResetWorld = new RuntimeMatchResetWorld();
+  private superPauseTargetDefenseOverrides: SuperPauseTargetDefenseOverride[] = [];
   private toggles = {
     showClsn1: true,
     showClsn2: true,
@@ -441,8 +449,8 @@ export class PlayableMatchRuntime {
               this.effectSpawnWorld,
               this.stage.bounds,
               this.tick,
-              (target, controller, operation, resolveSoundValue) =>
-                this.applyMatchPauseController(target, controller, operation, resolveSoundValue),
+              (target, controller, operation, resolveSoundValue, resolveP2DefMul) =>
+                this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveP2DefMul),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
         });
@@ -452,6 +460,7 @@ export class PlayableMatchRuntime {
       advancePaused: () => this.advancePausedMatch(input, p1Input, p2Input),
       advanceActive: () => this.advanceActiveMatch(input, p1Input, p2Input),
     });
+    this.restoreExpiredSuperPauseTargetDefense();
   }
 
   private advanceActiveMatch(input: MatchInput, p1Input: Set<string>, p2Input: Set<string>): void {
@@ -491,8 +500,8 @@ export class PlayableMatchRuntime {
               this.stunWorld,
               this.stage.bounds,
               this.tick,
-              (pauseActor, controller, operation, resolveSoundValue) =>
-                this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue),
+              (pauseActor, controller, operation, resolveSoundValue, resolveP2DefMul) =>
+                this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveP2DefMul),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
           applyAutoGuardStart: (defender, attacker) =>
@@ -578,8 +587,8 @@ export class PlayableMatchRuntime {
           this.stunWorld,
           this.stage.bounds,
           this.tick,
-          (fighter, controller, operation, resolveSoundValue) =>
-            this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue),
+          (fighter, controller, operation, resolveSoundValue, resolveP2DefMul) =>
+            this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveP2DefMul),
           (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
         ),
     });
@@ -590,6 +599,7 @@ export class PlayableMatchRuntime {
     controller: MugenStateController,
     operation?: PauseControllerOp,
     resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
+    resolveP2DefMul?: () => number | undefined,
   ): MatchPauseControllerResult {
     return this.matchPauseControllerWorld.apply({
       actor: fighter,
@@ -598,11 +608,66 @@ export class PlayableMatchRuntime {
       runtimeTick: this.tick,
       pauseWorld: this.pauseWorld,
       applyPowerDelta: (actor, powerDelta) => applyRuntimePowerDelta(actor.runtime, powerDelta, actor.definition.constants),
+      applyTargetDefenseMultiplier: (actor, multiplier) => this.applyTargetDefenseMultiplier(actor, multiplier),
       emitSound: (actor, sound, runtimeTick, resolvedSound) =>
         actor.audioWorld.emitSuperPauseSound(actor, sound, runtimeTick, resolvedSound),
       resolveSoundValue,
+      resolveP2DefMul,
       log: (message) => this.logs.unshift(message),
     });
+  }
+
+  private applyTargetDefenseMultiplier(fighter: FighterMatchState, multiplier: number): number {
+    this.restoreExpiredSuperPauseTargetDefense();
+    const pause = this.pauseWorld.current();
+    if (pause?.type !== "SuperPause") {
+      return 0;
+    }
+    const opponent = fighter.id === this.p1.id ? this.p2 : this.p1;
+    const targets = fighter.targetWorld.resolveCandidates(fighter, [opponent]);
+    for (const target of targets) {
+      this.superPauseTargetDefenseOverrides = this.superPauseTargetDefenseOverrides.filter((override) => {
+        if (override.actor !== target) {
+          return true;
+        }
+        this.restoreDefenseMultiplier(override.actor, override.previousMultiplier);
+        return false;
+      });
+      this.superPauseTargetDefenseOverrides.push({
+        actor: target,
+        previousMultiplier: target.runtime.defenseMultiplier,
+        pauseActorId: pause.actorId,
+        pauseStartedAt: pause.startedAt,
+      });
+      target.runtime.defenseMultiplier = multiplier;
+    }
+    return targets.length;
+  }
+
+  private restoreExpiredSuperPauseTargetDefense(force = false): void {
+    const pause = this.pauseWorld.current();
+    const active: SuperPauseTargetDefenseOverride[] = [];
+    for (const override of this.superPauseTargetDefenseOverrides) {
+      const stillActive =
+        !force &&
+        pause?.type === "SuperPause" &&
+        pause.actorId === override.pauseActorId &&
+        pause.startedAt === override.pauseStartedAt;
+      if (stillActive) {
+        active.push(override);
+        continue;
+      }
+      this.restoreDefenseMultiplier(override.actor, override.previousMultiplier);
+    }
+    this.superPauseTargetDefenseOverrides = active;
+  }
+
+  private restoreDefenseMultiplier(fighter: FighterMatchState, multiplier: number | undefined): void {
+    if (multiplier === undefined) {
+      delete fighter.runtime.defenseMultiplier;
+      return;
+    }
+    fighter.runtime.defenseMultiplier = multiplier;
   }
 
   private applyPreFacingAssertSpecial(fighter: FighterMatchState, opponent: FighterMatchState): void {
@@ -650,6 +715,7 @@ export class PlayableMatchRuntime {
   }
 
   reset(): void {
+    this.restoreExpiredSuperPauseTargetDefense(true);
     const resetState = this.matchResetWorld.reset({
       p1: this.p1,
       p2: this.p2,
@@ -1055,8 +1121,12 @@ function runActiveStateControllers(
         actor: fighter,
         controller,
         applyController: (activeActor, source, operation) =>
-          onPauseController?.(activeActor, source, operation, () =>
-            resolveAudioSoundValueParam(source, "sound", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          onPauseController?.(
+            activeActor,
+            source,
+            operation,
+            () => resolveAudioSoundValueParam(source, "sound", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+            () => resolvePauseNumberParam(source, "p2defmul", actor, targetOpponent, stateOwner, stageBounds, activeTick),
           ),
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -1650,6 +1720,22 @@ function resolveEnvColorTripletParam(
     return undefined;
   }
   return [r, g, b];
+}
+
+function resolvePauseNumberParam(
+  controller: MugenStateController,
+  key: "p2defmul",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findControllerParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw.trim(), fighter, opponent, owner, stageBounds, stageTime);
 }
 
 function resolveAudioNumberParam(

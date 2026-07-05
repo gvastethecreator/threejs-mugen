@@ -21865,6 +21865,74 @@ export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseP2DefMulTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-p2defmul-attacker",
+    displayName: "Synthetic Imported SuperPause P2DefMul Attacker",
+    withSuperPause: true,
+    superPauseP2DefMul: 2,
+    withTargetControllers: true,
+    targetControllerTriggerTime: 3,
+    targetLifeAddValue: -20,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-p2defmul-defender",
+    displayName: "Synthetic Imported SuperPause P2DefMul Defender",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage: options.stage ?? closeCombatStage() }), script, {
+    label: "synthetic-imported-superpause-p2defmul-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-p2defmul-golden",
+      label: "Synthetic imported SuperPause p2defmul route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause p2defmul trace proves a bounded positive p2defmul value can apply reduced incoming damage scaling to current targets before a source-movetime TargetLifeAdd route. It does not claim Super.TargetDefenceMul config handling for p2defmul = 0, exact lifetime until recovery, stacking, helper/redirect targets, or full MUGEN/IKEMEN super damage-scaling parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-p2defmul-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause", "TargetLifeAdd"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause", "target:targetlifeadd"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit", "pause"],
+        requiredCombatReasons: ["hit"],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 5 }],
+        requiredMatchPauseAdvances: [{ type: "SuperPause", actorId: "p1", minAdvancedFrames: 1, minPreviousMoveTime: 1 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            life: 953,
+          },
+        ],
+        requiredTargetLinks: [
+          {
+            ownerId: "p1",
+            actorId: "p2",
+            targetId: 77,
+            minFrames: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33637,6 +33705,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withDelayedSuperPause?: boolean;
   superPauseSound?: string;
   superPauseSoundVarSeed?: { group: number; index: number };
+  superPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
   withSuperPause?: boolean;
@@ -34459,7 +34528,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound) : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
@@ -37258,7 +37327,7 @@ time = 4
 `;
 }
 
-function superPauseControllerBlock(sound?: string): string {
+function superPauseControllerBlock(sound?: string, p2DefMul?: number): string {
   return `
 [State 200, Super Pause]
 type = SuperPause
@@ -37267,6 +37336,7 @@ time = 7
 movetime = 1
 darken = 1
 poweradd = 100
+${p2DefMul === undefined ? "" : `p2defmul = ${p2DefMul}`}
 ${sound === undefined ? "" : `sound = ${sound}`}
 `;
 }

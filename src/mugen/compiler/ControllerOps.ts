@@ -92,6 +92,7 @@ export type PauseControllerOp = {
   moveTime: number;
   darken: boolean;
   powerAdd: number;
+  p2DefMul?: number;
   sound?: string;
 };
 
@@ -1309,6 +1310,7 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
     moveTime: firstNumber(findParam(controller, "movetime")) ?? 0,
     darken: type === "superpause" ? (firstNumber(findParam(controller, "darken")) ?? 1) !== 0 : false,
     powerAdd: type === "superpause" ? firstNumber(findParam(controller, "poweradd")) ?? 0 : 0,
+    p2DefMul: type === "superpause" ? firstNumber(findParam(controller, "p2defmul")) : undefined,
     sound: type === "superpause" ? staticSoundValueParam(controller, "sound") : undefined,
   });
 }

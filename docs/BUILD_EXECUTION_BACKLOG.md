@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause p2defmul trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-p2defmul.json` trace coverage for imported `SuperPause p2defmul = 2` target damage scaling.
+- `PauseControllerOp` preserves static `p2defmul`; `RuntimeMatchPauseControllerWorld` can resolve dynamic raw `p2defmul` through the active controller expression fallback.
+- `PlayableMatchRuntime` now applies and restores a temporary target `defenseMultiplier` override for current SuperPause target memory.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-superpause-p2defmul` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified, `SuperPause p2defmul` as a temporary target defence multiplier, and `TargetLifeAdd` damage as defense-multiplier-scaled unless `absolute = 1`.
+- Focused test: `pnpm vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts src/tests/PlayableMatchRuntime.test.ts -t "p2defmul|Pause and SuperPause|restores temporary SuperPause"` -> 4 files passed, 4 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 459/459 artifacts, 429 required and 30 optional; `synthetic-imported-superpause-p2defmul.json` checksum `e69e5c84`, final checksum `c02dce91`.
+
+Claim allowed:
+
+- Bounded imported positive `SuperPause p2defmul` can temporarily scale incoming non-absolute target damage for current direct-hit targets. The synthetic route proves `p2defmul = 2` maps to runtime damage multiplier `0.5`, so an initial direct hit leaves P2 at `963` and the later source-movetime `TargetLifeAdd -20` applies as `-10`, ending P2 at `953`.
+
+Claim blocked:
+
+- `p2defmul = 0` / `Super.TargetDefenceMul` config default, exact recovery lifetime beyond the active SuperPause restore boundary, stacking with other damage-scale systems, helper/redirect/multi-target ownership, exact rounding, and full MUGEN/IKEMEN super damage-scaling parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 459/459 artifacts, 429 required and 30 optional. Latest runtime evidence is SuperPause `p2defmul` target damage scaling; previous SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed Common1/FightFX/runtime oracle, or continue R2 by moving another mutable behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause sound trace gate
 
 Changed:

@@ -1435,6 +1435,34 @@ describe("PlayableMatchRuntime", () => {
     expect(snapshot.actors[1]!.runtime.animTime).toBe(p2AnimTimeBefore);
   });
 
+  it("restores temporary SuperPause p2defmul after pause expiry", () => {
+    const runtime = new PlayableMatchRuntime(
+      createImportedFixture({ withStateMove: false, withDelayedSuperPause: true, superPauseP2DefMul: 2 }),
+      createImportedFixture({ withStateMove: false }),
+      {
+        ...trainingStage,
+        playerStart: {
+          p1: { x: -20, y: 0, facing: 1 as const },
+          p2: { x: 35, y: 0, facing: -1 as const },
+        },
+      },
+    );
+
+    let snapshot = runtime.step({ p1: new Set(["x"]), p2: new Set() });
+    for (let frame = 0; frame < 12 && !snapshot.matchPause; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+    expect(snapshot.matchPause?.type).toBe("SuperPause");
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBe(0.5);
+
+    for (let frame = 0; frame < 7; frame += 1) {
+      snapshot = runtime.step({ p1: new Set(), p2: new Set() });
+    }
+
+    expect(snapshot.matchPause).toBeUndefined();
+    expect(snapshot.actors[1]?.runtime.defenseMultiplier).toBeUndefined();
+  });
+
   it("advances imported Explods with supermovetime during SuperPause after source movetime expires", () => {
     const imported = createImportedFixture({ withStateMove: false, withSuperPause: true, withPauseExplods: true });
     const runtime = new PlayableMatchRuntime(imported, demoFighters[1]!, {
@@ -1993,6 +2021,7 @@ function createImportedFixture(
     withPrePauseTargetBind?: boolean;
     withPause?: boolean;
     withSuperPause?: boolean;
+    superPauseP2DefMul?: number;
     withDelayedSuperPause?: boolean;
     pauseMovePosAdd?: { x: number; y: number; time?: number };
     withPauseExplods?: boolean;
@@ -2483,6 +2512,7 @@ time = 7
 movetime = 1
 darken = 1
 poweradd = 100
+${options.superPauseP2DefMul === undefined ? "" : `p2defmul = ${options.superPauseP2DefMul}`}
 `
       : "",
     options.withDelayedSuperPause
@@ -2494,6 +2524,7 @@ time = 7
 movetime = 1
 darken = 1
 poweradd = 100
+${options.superPauseP2DefMul === undefined ? "" : `p2defmul = ${options.superPauseP2DefMul}`}
 `
       : "",
   ].join("");

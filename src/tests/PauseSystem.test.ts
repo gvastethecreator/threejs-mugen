@@ -241,6 +241,38 @@ describe("PauseSystem", () => {
     ]);
   });
 
+  it("applies bounded SuperPause p2defmul damage scaling to current targets", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const calls: string[] = [];
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: controller("SuperPause", { time: "7", movetime: "1", p2defmul: "var(0)" }),
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation) => {
+          calls.push(`apply:${activeActor.id}:${activeController.type}:${tick}:${operation?.controllerType ?? "raw"}`);
+          return createMatchPauseFromController(activeActor, activeController, tick, operation);
+        },
+      },
+      applyPowerDelta: () => calls.push("power"),
+      resolveP2DefMul: () => 2,
+      applyTargetDefenseMultiplier: (_activeActor, multiplier) => {
+        calls.push(`def:${multiplier}`);
+        return 1;
+      },
+      log: (message) => calls.push(`log:${message}`),
+    });
+
+    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 7, moveTime: 1 });
+    expect(result.targetDefenseMultiplier).toBe(0.5);
+    expect(result.targetDefenseTargets).toBe(1);
+    expect(calls).toEqual([
+      "apply:p1:SuperPause:44:raw",
+      "def:0.5",
+      "log:P1 triggered SuperPause for 7f (1f movetime)",
+    ]);
+  });
+
   it("dispatches active Pause controllers with telemetry hooks", () => {
     const dispatchWorld = new RuntimePauseControllerDispatchWorld();
     const source = controller("SuperPause", { time: "9", movetime: "3", darken: "0", poweradd: "75" });

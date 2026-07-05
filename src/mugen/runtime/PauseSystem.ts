@@ -17,6 +17,8 @@ export type MatchPauseControllerResult = {
   pause?: RuntimeMatchPause;
   powerDelta: number;
   soundEvent?: RuntimeSoundEvent;
+  targetDefenseMultiplier?: number;
+  targetDefenseTargets?: number;
 };
 
 export type MatchPauseActor = {
@@ -120,6 +122,8 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
     resolvedSound?: RuntimeResolvedSoundRef,
   ) => RuntimeSoundEvent | undefined;
   resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
+  resolveP2DefMul?: () => number | undefined;
+  applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number) => number;
   log: (message: string) => void;
 };
 
@@ -172,6 +176,15 @@ export class RuntimeMatchPauseControllerWorld {
     if (result.powerDelta !== 0) {
       input.applyPowerDelta(input.actor, result.powerDelta);
     }
+    const targetDefenseMultiplier = superPauseTargetDefenseMultiplierParam(
+      input.controller,
+      input.operation,
+      input.resolveP2DefMul,
+    );
+    const targetDefenseTargets =
+      result.pause.type === "SuperPause" && targetDefenseMultiplier !== undefined
+        ? input.applyTargetDefenseMultiplier?.(input.actor, targetDefenseMultiplier) ?? 0
+        : 0;
     const sound = superPauseSoundParam(input.controller, input.operation);
     const soundEvent =
       result.pause.type === "SuperPause" && sound
@@ -180,7 +193,11 @@ export class RuntimeMatchPauseControllerWorld {
     input.log(
       `${input.actor.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
-    return soundEvent ? { ...result, soundEvent } : result;
+    return {
+      ...result,
+      ...(soundEvent ? { soundEvent } : {}),
+      ...(targetDefenseTargets > 0 ? { targetDefenseMultiplier, targetDefenseTargets } : {}),
+    };
   }
 }
 
@@ -374,6 +391,22 @@ function superPauseSoundParam(controller: MugenStateController, operation?: Paus
     return undefined;
   }
   return sound;
+}
+
+function superPauseTargetDefenseMultiplierParam(
+  controller: MugenStateController,
+  operation: PauseControllerOp | undefined,
+  resolveP2DefMul: (() => number | undefined) | undefined,
+): number | undefined {
+  const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
+  if (controllerType !== "superpause") {
+    return undefined;
+  }
+  const p2DefMul = operation?.p2DefMul ?? resolveP2DefMul?.() ?? firstNumber(findControllerParam(controller, "p2defmul"));
+  if (p2DefMul === undefined || p2DefMul <= 0) {
+    return undefined;
+  }
+  return Math.max(0, Math.min(10, 1 / p2DefMul));
 }
 
 function stripMugenString(value: string | undefined): string | undefined {
