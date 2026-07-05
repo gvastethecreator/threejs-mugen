@@ -1992,6 +1992,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjContactPersistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projtime-same-id-hit-then-guard",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjTimeSameIdHitThenGuardTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projcanceltime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjCancelTimeAnyTraceArtifact(),
@@ -3254,6 +3259,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-canceltime-any",
     "synthetic-imported-projectile-canceltime-dynamic",
     "synthetic-imported-projectile-canceltime-var",
+    "synthetic-imported-helper-projtime-same-id-hit-then-guard",
     "synthetic-imported-helper-projcanceltime-any",
     "synthetic-imported-helper-projcanceltime-id",
     "synthetic-imported-helper-projcanceltime-dynamic",

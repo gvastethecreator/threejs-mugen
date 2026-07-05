@@ -36,7 +36,6 @@ import {
   hasRuntimeProjectileContact,
   modifyRuntimeProjectiles,
   runtimeProjectileCancelTime,
-  runtimeProjectileContactTime,
   runtimeProjectilesToSnapshots,
   shouldKeepRuntimeProjectileAfterRemoval,
   type RuntimeProjectile,
@@ -594,11 +593,36 @@ export function runtimeHelperProjectileContactTime(
   kind: RuntimeProjectileContactKind,
   projectileId?: number,
 ): number {
-  const times = store.projectiles
-    .filter((projectile) => projectile.parentId === helper.serialId)
-    .map((projectile) => runtimeProjectileContactTime(projectile, kind, projectileId))
-    .filter((time) => time >= 0);
-  return times.length === 0 ? -1 : Math.min(...times);
+  const latestContact = latestRuntimeHelperProjectileContact(store, helper, projectileId);
+  if (!latestContact) {
+    return -1;
+  }
+  if (kind === "contact") {
+    return latestContact.lastContactTime ?? -1;
+  }
+  return latestContact.lastContactKind === kind ? latestContact.lastContactTime ?? 0 : -1;
+}
+
+function latestRuntimeHelperProjectileContact(
+  store: RuntimeEffectActorStore,
+  helper: RuntimeHelper,
+  projectileId?: number,
+): RuntimeProjectile | undefined {
+  return store.projectiles
+    .filter((projectile) => {
+      return (
+        projectile.parentId === helper.serialId &&
+        projectile.lastContactTime !== undefined &&
+        (projectileId === undefined || projectile.projectileId === projectileId)
+      );
+    })
+    .sort((a, b) => {
+      const byTime = (a.lastContactTime ?? Number.POSITIVE_INFINITY) - (b.lastContactTime ?? Number.POSITIVE_INFINITY);
+      if (byTime !== 0) {
+        return byTime;
+      }
+      return b.serialId.localeCompare(a.serialId);
+    })[0];
 }
 
 export function runtimeHelperProjectileCancelTime(

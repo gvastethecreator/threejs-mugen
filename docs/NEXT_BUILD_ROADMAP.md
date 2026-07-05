@@ -27,6 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required helper Projectile ProjTime same-id hit-then-guard trace gate
+  -> synthetic-imported-helper-projtime-same-id-hit-then-guard.json checksum f4c1da3b is required in qa:trace
+  -> helper-parented owner-side Projectiles share id 8917; hit contact first, guarded contact later; helper route 1200 -> 1303 -> 1304 through fixed-id and ID 0 guard/contact time reads while fixed-id and ID 0 hit time reads stay inactive
+  -> forbidden helper state 1305 proves stale helper-local same-id hit time does not survive the later same-id guard
+  -> evidence keeps two Projectile controller/op executions, helper/projectile lifecycle rows, owner/root p1, parent p1-helper-0, owner target-link id 8917, hit package S5,32 / F7037 / sparkxy 33,-75, and guard package S6,33 / F7037 / sparkxy 34,-76
+  -> pnpm qa:trace passes 438/438 artifacts, 408 required and 30 optional
+  -> no score movement; exact Proj*Time tick order/lifetime, helper custom-state breadth beyond this owner-side route, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required player Projectile ProjTime same-id hit-then-guard trace gate
   -> synthetic-imported-projectile-projtime-same-id-hit-then-guard.json checksum d49ee334 is required in qa:trace
   -> two player Projectiles share id 8916; hit contact first, guarded contact later; owner state 200 routes 200 -> 383 -> 384 through fixed-id and ID 0 guard/contact time reads while fixed-id and ID 0 hit time reads stay inactive

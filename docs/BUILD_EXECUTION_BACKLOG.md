@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper Projectile ProjTime same-id hit-then-guard required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projtime-same-id-hit-then-guard.json` trace coverage for helper-local same-ID `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` hit-then-guard last-contact-kind routing.
+- `EffectActorSystem.runtimeHelperProjectileContactTime` now resolves the latest helper-parented Projectile contact for the requested fixed id or ID `0`/any-id before checking hit vs guard kind, preventing stale same-id hit times from surviving a later same-id guard.
+- `RuntimeTraceGatePresets` extends the helper Projectile hit route fixture with a bounded secondary Projectile spawn and trap state support. The new route spawns two owner-side Projectiles from a visual Helper with id `8917`, `ownerId/rootId = p1`, and `parentId = p1-helper-0`.
+- `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `ProjContactTime`, `ProjGuardedTime`, and `ProjHitTime` as last-projectile-contact reads with required nonnegative ID, ID `0` skipping projectile-ID filtering, and `-1` when no matching last contact exists; Elecbyte Projectile docs state all projectiles created by helpers immediately become owned by the root.
+- Focused tests: `pnpm vitest run src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "latest same-id helper-parented|Helper ProjTime same-id hit-then-guard"` -> 2 files passed, 2 tests passed.
+- Trace gate: `pnpm qa:trace` -> 438/438 artifacts, 408 required and 30 optional; `synthetic-imported-helper-projtime-same-id-hit-then-guard.json` checksum `f4c1da3b`.
+
+Claim allowed:
+
+- Bounded helper-local same-ID helper-parented owner-side Projectile `Proj*Time` last-contact-kind arbitration for hit-then-guard ordering. `ProjGuardedTime(8917)`, `ProjGuardedTime(0)`, `ProjContactTime(8917)`, and `ProjContactTime(0)` route after the later guard, while `ProjHitTime(8917)` and `ProjHitTime(0)` stay `-1`.
+- The gate proves two Projectile controller/op executions, two helper-parented Projectile lifecycle rows, root owner target-link id `8917`, helper route `1200 -> 1303 -> 1304`, forbidden helper trap state `1305`, hit package `S5,32` / `F7037` / `sparkxy = 33,-75`, and guard package `S6,33` / `F7037` / `sparkxy = 34,-76`.
+
+Claim blocked:
+
+- Exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, helper custom-state breadth beyond this owner-side helper-local route, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, broader same-id/multi-target arbitration, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with the guard-then-hit helper same-ID counterpart, helper Projectile/custom-state `Proj*Time` breadth, exact projectile lifetime/order, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjTime same-id hit-then-guard required trace gate
 
 Changed:

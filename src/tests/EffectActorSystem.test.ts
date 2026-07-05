@@ -1795,6 +1795,34 @@ describe("EffectActorSystem", () => {
     });
   });
 
+  it("uses the latest same-id helper-parented Projectile contact kind for Proj*Time reads", () => {
+    const store = createRuntimeEffectActorStore();
+    const helper = spawnRuntimeHelperActor(store, "p1", helperInput({ id: "42", anim: "900" }));
+    const firstProjectile = spawnRuntimeProjectileActor(store, "p1", {
+      ...projectileInput({ projid: "8873", projanim: "930", projremove: "0" }),
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+    const secondProjectile = spawnRuntimeProjectileActor(store, "p1", {
+      ...projectileInput({ projid: "8873", projanim: "930", projremove: "0" }),
+      rootId: "p1",
+      parentId: helper.serialId,
+    });
+
+    recordRuntimeProjectileContact(firstProjectile, "hit");
+    advanceRuntimeProjectiles([firstProjectile], { bounds: { left: -160, right: 160 } });
+    advanceRuntimeProjectiles([firstProjectile], { bounds: { left: -160, right: 160 } });
+    recordRuntimeProjectileContact(secondProjectile, "guard");
+    advanceRuntimeProjectiles([secondProjectile], { bounds: { left: -160, right: 160 } });
+
+    expect(runtimeHelperProjectileContactTime(store, helper, "contact", 8873)).toBe(1);
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard", 8873)).toBe(1);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit", 8873)).toBe(-1);
+    expect(runtimeHelperProjectileContactTime(store, helper, "contact")).toBe(1);
+    expect(runtimeHelperProjectileContactTime(store, helper, "guard")).toBe(1);
+    expect(runtimeHelperProjectileContactTime(store, helper, "hit")).toBe(-1);
+  });
+
   it("evaluates helper-local NumProj against only helper-parented Projectile actors", () => {
     const store = createRuntimeEffectActorStore();
     spawnRuntimeProjectileActor(store, "p1", projectileInput({ projid: "8850", projanim: "930" }));
