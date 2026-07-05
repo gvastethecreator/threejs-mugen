@@ -434,7 +434,9 @@ time = 20
 
   it("compiles Pause and SuperPause controllers into typed pause operations", () => {
     const pause = compileControllerIr(controller(200, "Pause", [], { time: "8", movetime: "2", poweradd: "999" }));
-    const superPause = compileControllerIr(controller(200, "SuperPause", [], { time: "12", movetime: "4", darken: "0", poweradd: "100" }));
+    const superPause = compileControllerIr(
+      controller(200, "SuperPause", [], { time: "12", movetime: "4", darken: "0", poweradd: "100", sound: "S10,0" }),
+    );
 
     expect(pause.operation).toMatchObject({
       kind: "pause",
@@ -451,6 +453,7 @@ time = 20
       moveTime: 4,
       darken: false,
       powerAdd: 100,
+      sound: "S10,0",
     });
   });
 

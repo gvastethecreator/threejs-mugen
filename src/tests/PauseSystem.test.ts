@@ -210,6 +210,37 @@ describe("PauseSystem", () => {
     expect(calls).toEqual(["apply:p1:Pause:4:raw"]);
   });
 
+  it("emits SuperPause sound telemetry when a sound ref is present", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const calls: string[] = [];
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: controller("SuperPause", { time: "7", movetime: "1", sound: "Svar(0),var(1)" }),
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation) => {
+          calls.push(`apply:${activeActor.id}:${activeController.type}:${tick}:${operation?.controllerType ?? "raw"}`);
+          return createMatchPauseFromController(activeActor, activeController, tick, operation);
+        },
+      },
+      applyPowerDelta: () => calls.push("power"),
+      emitSound: (_activeActor, sound, runtimeTick, resolvedSound) => {
+        calls.push(`sound:${sound}:${resolvedSound?.group}:${resolvedSound?.index}:${runtimeTick}`);
+        return { type: "PlaySnd", group: resolvedSound?.group, index: resolvedSound?.index, raw: sound, stateNo: 3000, tick: 0, runtimeTick };
+      },
+      resolveSoundValue: () => ({ rawPrefix: "S", group: 10, index: 0 }),
+      log: (message) => calls.push(`log:${message}`),
+    });
+
+    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 7, moveTime: 1 });
+    expect(result.soundEvent).toMatchObject({ type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)" });
+    expect(calls).toEqual([
+      "apply:p1:SuperPause:44:raw",
+      "sound:Svar(0),var(1):10:0:44",
+      "log:P1 triggered SuperPause for 7f (1f movetime)",
+    ]);
+  });
+
   it("dispatches active Pause controllers with telemetry hooks", () => {
     const dispatchWorld = new RuntimePauseControllerDispatchWorld();
     const source = controller("SuperPause", { time: "9", movetime: "3", darken: "0", poweradd: "75" });

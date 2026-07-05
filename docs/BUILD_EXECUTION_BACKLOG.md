@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause sound trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-sound.json` trace coverage for imported `SuperPause sound = Svar(0),var(1)`.
+- `PauseControllerOp` preserves static `sound` refs and `RuntimeMatchPauseControllerWorld` can emit bounded pause-start sound telemetry through `RuntimeAudioWorld`.
+- `PlayableMatchRuntime` now passes a dynamic sound resolver through all pause-controller callback bridges, including active, paused-match, and hitpause-ignored routes.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-superpause-sound` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `SuperPause sound = snd_grp, snd_no` and numeric controller params as expression-capable unless otherwise specified.
+- Focused test: `pnpm vitest run src/tests/AudioEventSystem.test.ts src/tests/PauseSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t SuperPause` -> 4 files passed, 9 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 458/458 artifacts, 428 required and 30 optional; `synthetic-imported-superpause-sound.json` checksum `1547deff`, final checksum `6e227fe6`.
+
+Claim allowed:
+
+- Bounded imported `SuperPause` sound group/index params can resolve through active controller expression fallback at pause start and emit attacker-side `PlaySnd` telemetry. The synthetic route proves `sound = Svar(0),var(1)` with `var(0)=10` and `var(1)=0` without typed `audio:*` operation evidence.
+
+Claim blocked:
+
+- Exact common/player SND archive lookup, channel priority/timing/mixing, super-background audio, helper/redirect ownership, score movement, and full MUGEN/IKEMEN audio parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 458/458 artifacts, 428 required and 30 optional. Latest runtime evidence is dynamic SuperPause sound fallback; previous dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed Common1/FightFX runtime oracle, or continue R2 by moving another mutable behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - Dynamic HitDef guardsound trace gate
 
 Changed:

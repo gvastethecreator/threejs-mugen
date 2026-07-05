@@ -92,6 +92,7 @@ export type PauseControllerOp = {
   moveTime: number;
   darken: boolean;
   powerAdd: number;
+  sound?: string;
 };
 
 export type AudioControllerOp = {
@@ -1301,14 +1302,15 @@ function compileBindToTargetControllerOp(controller: MugenStateController): Bind
 }
 
 function compilePauseControllerOp(controller: MugenStateController, type: "pause" | "superpause"): PauseControllerOp {
-  return {
+  return definedObject({
     kind: "pause",
     controllerType: type,
     time: firstNumber(findParam(controller, "time")) ?? 0,
     moveTime: firstNumber(findParam(controller, "movetime")) ?? 0,
     darken: type === "superpause" ? (firstNumber(findParam(controller, "darken")) ?? 1) !== 0 : false,
     powerAdd: type === "superpause" ? firstNumber(findParam(controller, "poweradd")) ?? 0 : 0,
-  };
+    sound: type === "superpause" ? staticSoundValueParam(controller, "sound") : undefined,
+  });
 }
 
 function compileAudioControllerOp(controller: MugenStateController, type: AudioControllerOp["controllerType"]): AudioControllerOp | undefined {

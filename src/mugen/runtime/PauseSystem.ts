@@ -7,7 +7,7 @@ import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from ".
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
-import type { RuntimeMatchPauseSnapshot } from "./types";
+import type { RuntimeMatchPauseSnapshot, RuntimeResolvedSoundRef, RuntimeSoundEvent } from "./types";
 
 export type RuntimeMatchPause = RuntimeMatchPauseSnapshot & {
   startedAt: number;
@@ -16,6 +16,7 @@ export type RuntimeMatchPause = RuntimeMatchPauseSnapshot & {
 export type MatchPauseControllerResult = {
   pause?: RuntimeMatchPause;
   powerDelta: number;
+  soundEvent?: RuntimeSoundEvent;
 };
 
 export type MatchPauseActor = {
@@ -112,6 +113,13 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
   runtimeTick: number;
   pauseWorld: Pick<RuntimePauseWorld, "applyController">;
   applyPowerDelta: (actor: TActor, powerDelta: number) => void;
+  emitSound?: (
+    actor: TActor,
+    sound: string | undefined,
+    runtimeTick: number,
+    resolvedSound?: RuntimeResolvedSoundRef,
+  ) => RuntimeSoundEvent | undefined;
+  resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
   log: (message: string) => void;
 };
 
@@ -164,10 +172,15 @@ export class RuntimeMatchPauseControllerWorld {
     if (result.powerDelta !== 0) {
       input.applyPowerDelta(input.actor, result.powerDelta);
     }
+    const sound = superPauseSoundParam(input.controller, input.operation);
+    const soundEvent =
+      result.pause.type === "SuperPause" && sound
+        ? input.emitSound?.(input.actor, sound, input.runtimeTick, input.resolveSoundValue?.())
+        : undefined;
     input.log(
       `${input.actor.label} triggered ${result.pause.type} for ${result.pause.remaining}f (${result.pause.moveTime}f movetime)`,
     );
-    return result;
+    return soundEvent ? { ...result, soundEvent } : result;
   }
 }
 
@@ -348,4 +361,30 @@ function firstNumber(value: string | undefined): number | undefined {
 
 function clampPauseTime(value: number): number {
   return Math.max(0, Math.min(600, Math.round(value)));
+}
+
+function superPauseSoundParam(controller: MugenStateController, operation?: PauseControllerOp): string | undefined {
+  const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
+  if (controllerType !== "superpause") {
+    return undefined;
+  }
+  const raw = operation?.sound ?? findControllerParam(controller, "sound");
+  const sound = stripMugenString(raw);
+  if (!sound || sound === "-1") {
+    return undefined;
+  }
+  return sound;
+}
+
+function stripMugenString(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  if ((first === `"` && last === `"`) || (first === "'" && last === "'")) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
 }

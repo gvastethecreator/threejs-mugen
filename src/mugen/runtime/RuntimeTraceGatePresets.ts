@@ -21818,6 +21818,53 @@ export function createSyntheticImportedSuperPauseTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedSuperPauseSoundTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-sound-attacker",
+    displayName: "Synthetic Imported SuperPause Sound Attacker",
+    withSuperPause: true,
+    superPauseSound: "Svar(0),var(1)",
+    superPauseSoundVarSeed: { group: 10, index: 0 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-sound-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-sound-golden",
+      label: "Synthetic imported SuperPause sound route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause sound trace proves a dynamic S-prefixed SuperPause sound ref resolves through the active expression context into bounded PlaySnd telemetry when the pause starts. It does not claim exact common.snd/player SND archive lookup, channel priority, timing, mixing, super-background audio, or full MUGEN/IKEMEN audio parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-sound-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredMatchPauses: [{ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, minFrames: 2, minRemaining: 7, minMoveTime: 1 }],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+        requiredSoundEvents: [
+          { actorId: "p1", type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33588,6 +33635,8 @@ export type SyntheticImportedTraceFighterOptions = {
   withPrePauseTargetBind?: boolean;
   withPause?: boolean;
   withDelayedSuperPause?: boolean;
+  superPauseSound?: string;
+  superPauseSoundVarSeed?: { group: number; index: number };
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
   withSuperPause?: boolean;
@@ -34381,6 +34430,7 @@ ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.hitDefDynamicSoundVarSeed === undefined ? "" : dynamicHitDefSoundSeedBlock(options.hitDefDynamicSoundVarSeed)}
+${options.superPauseSoundVarSeed === undefined ? "" : superPauseSoundVarSeedBlock(options.superPauseSoundVarSeed)}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
@@ -34409,7 +34459,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock() : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
@@ -37208,7 +37258,7 @@ time = 4
 `;
 }
 
-function superPauseControllerBlock(): string {
+function superPauseControllerBlock(sound?: string): string {
   return `
 [State 200, Super Pause]
 type = SuperPause
@@ -37217,6 +37267,7 @@ time = 7
 movetime = 1
 darken = 1
 poweradd = 100
+${sound === undefined ? "" : `sound = ${sound}`}
 `;
 }
 
@@ -37915,6 +37966,22 @@ v = 0
 value = ${seed.group}
 
 [State 200, Dynamic HitDef Sound Index Var]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = ${seed.index}
+`;
+}
+
+function superPauseSoundVarSeedBlock(seed: NonNullable<SyntheticImportedTraceFighterOptions["superPauseSoundVarSeed"]>): string {
+  return `
+[State 200, Dynamic SuperPause Sound Group Var]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = ${seed.group}
+
+[State 200, Dynamic SuperPause Sound Index Var]
 type = VarSet
 trigger1 = Time = 0
 v = 1

@@ -447,6 +447,7 @@ import {
   createSyntheticImportedProjectileTargetStateTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
+  createSyntheticImportedSuperPauseSoundTraceArtifact,
   createSyntheticImportedSuperPauseTraceArtifact,
   createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedBindToTargetHeadTraceArtifact,
@@ -19521,6 +19522,45 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(evidence?.matchPauseFreezes.find((freeze) => freeze.actorId === "p2")?.frozenFrames).toBeGreaterThanOrEqual(6);
+  });
+
+  it("creates a synthetic imported SuperPause sound artifact with dynamic sound evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseSoundTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-sound-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-sound-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredSoundEvents).toEqual([
+      { actorId: "p1", type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported SuperPause artifact that proves projectile freeze evidence", () => {

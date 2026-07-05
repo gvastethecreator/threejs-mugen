@@ -35,15 +35,26 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic HitDef guardsound trace gate
+R1 required SuperPause sound trace gate
+  -> synthetic-imported-superpause-sound.json checksum 1547deff / final checksum 6e227fe6 is required in qa:trace
+  -> imported active state seeds var(0)=10 and var(1)=0
+  -> SuperPause executes sound = Svar(0),var(1)
+  -> dynamic SuperPause sound group/index resolves through runtime expression fallback at pause start
+  -> sound-event evidence requires attacker PlaySnd group 10 index 0 raw Svar(0),var(1)
+  -> match-pause/freeze evidence remains required
+  -> pnpm qa:trace passes 458/458 artifacts, 428 required and 30 optional
+  -> official Elecbyte docs define SuperPause sound = snd_grp, snd_no and numeric controller params as expression-capable
+  -> no score movement; exact common/player SND archive lookup/channel priority/timing/mixing, super-background audio, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic HitDef guardsound trace gate
   -> synthetic-imported-hitdef-dynamic-guardsound.json checksum cb061b1c / final checksum 8d25e54e is required in qa:trace
   -> imported active state seeds var(0)=6 and var(1)=4
   -> guarded direct HitDef executes guardsound = Fvar(0),var(1)
   -> dynamic HitDef guardsound group/index resolves through runtime expression fallback at HitDef activation
   -> sound-event evidence requires attacker guard-contact PlaySnd group 6 index 4 raw Fvar(0),var(1), contactKind guard, and soundPrefix kfm
-  -> pnpm qa:trace passes 457/457 artifacts, 427 required and 30 optional
+  -> that checkpoint passed 457/457 artifacts, 427 required and 30 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
 Previous R1 required dynamic HitDef hitsound trace gate
   -> synthetic-imported-hitdef-dynamic-hitsound.json checksum c891e888 / final checksum a0d1bbfc remains required in qa:trace

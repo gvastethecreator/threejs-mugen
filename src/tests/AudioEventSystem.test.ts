@@ -295,6 +295,24 @@ describe("AudioEventSystem", () => {
     expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
   });
 
+  it("wraps SuperPause sound telemetry behind RuntimeAudioWorld", () => {
+    const world = new RuntimeAudioWorld();
+    const fighter = { ...actor(3000, 2), soundEvents: [] as RuntimeSoundEvent[] };
+
+    const event = world.emitSuperPauseSound(fighter, "Svar(0),var(1)", 44, { rawPrefix: "S", group: 10, index: 0 });
+
+    expect(event).toMatchObject({
+      type: "PlaySnd",
+      group: 10,
+      index: 0,
+      raw: "Svar(0),var(1)",
+      stateNo: 3000,
+      tick: 2,
+      runtimeTick: 44,
+    });
+    expect(fighter.soundEvents).toEqual([event]);
+  });
+
   it("wraps direct HitDef sound telemetry behind RuntimeAudioWorld", () => {
     const world = new RuntimeAudioWorld();
     const fighter = { ...actor(200, 6), soundEvents: [] as RuntimeSoundEvent[] };

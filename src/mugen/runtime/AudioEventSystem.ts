@@ -120,6 +120,30 @@ export class RuntimeAudioWorld {
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;
   }
+
+  emitSuperPauseSound(
+    actor: RuntimeAudioWorldActor,
+    sound: string | undefined,
+    runtimeTick: number,
+    resolvedSound?: RuntimeResolvedSoundRef,
+  ): RuntimeSoundEvent | undefined {
+    if (!sound && !resolvedSound) {
+      return undefined;
+    }
+    const parsed = parseMugenSoundRef(sound) ?? resolvedSound;
+    const event: RuntimeSoundEvent = {
+      type: "PlaySnd",
+      group: parsed?.group,
+      index: parsed?.index,
+      raw: sound,
+      ...soundPrefixMetadata(actor, parsed?.rawPrefix),
+      stateNo: actor.runtime.stateNo,
+      tick: actor.stateElapsed,
+      runtimeTick,
+    };
+    pushRuntimeSoundEvent(actor.soundEvents, event);
+    return event;
+  }
 }
 
 export class RuntimeAudioControllerDispatchWorld {

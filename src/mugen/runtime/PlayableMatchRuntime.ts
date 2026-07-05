@@ -232,6 +232,7 @@ type PauseControllerHandler = (
   fighter: FighterMatchState,
   controller: MugenStateController,
   operation?: PauseControllerOp,
+  resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
 ) => MatchPauseControllerResult | undefined;
 type EnvColorControllerHandler = (
   controller: MugenStateController,
@@ -440,7 +441,8 @@ export class PlayableMatchRuntime {
               this.effectSpawnWorld,
               this.stage.bounds,
               this.tick,
-              (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
+              (target, controller, operation, resolveSoundValue) =>
+                this.applyMatchPauseController(target, controller, operation, resolveSoundValue),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
         });
@@ -489,7 +491,8 @@ export class PlayableMatchRuntime {
               this.stunWorld,
               this.stage.bounds,
               this.tick,
-              (pauseActor, controller, operation) => this.applyMatchPauseController(pauseActor, controller, operation),
+              (pauseActor, controller, operation, resolveSoundValue) =>
+                this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
           applyAutoGuardStart: (defender, attacker) =>
@@ -575,7 +578,8 @@ export class PlayableMatchRuntime {
           this.stunWorld,
           this.stage.bounds,
           this.tick,
-          (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
+          (fighter, controller, operation, resolveSoundValue) =>
+            this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue),
           (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
         ),
     });
@@ -585,6 +589,7 @@ export class PlayableMatchRuntime {
     fighter: FighterMatchState,
     controller: MugenStateController,
     operation?: PauseControllerOp,
+    resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
   ): MatchPauseControllerResult {
     return this.matchPauseControllerWorld.apply({
       actor: fighter,
@@ -593,6 +598,9 @@ export class PlayableMatchRuntime {
       runtimeTick: this.tick,
       pauseWorld: this.pauseWorld,
       applyPowerDelta: (actor, powerDelta) => applyRuntimePowerDelta(actor.runtime, powerDelta, actor.definition.constants),
+      emitSound: (actor, sound, runtimeTick, resolvedSound) =>
+        actor.audioWorld.emitSuperPauseSound(actor, sound, runtimeTick, resolvedSound),
+      resolveSoundValue,
       log: (message) => this.logs.unshift(message),
     });
   }
@@ -1042,11 +1050,14 @@ function runActiveStateControllers(
         getTargetConst: (target, name) => runtimeDefinitionConst(target.definition, name),
       });
     },
-    pause: ({ controller }) => {
+    pause: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       pauseControllerDispatchWorld.apply({
         actor: fighter,
         controller,
-        applyController: (actor, source, operation) => onPauseController?.(actor, source, operation),
+        applyController: (activeActor, source, operation) =>
+          onPauseController?.(activeActor, source, operation, () =>
+            resolveAudioSoundValueParam(source, "sound", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          ),
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1658,8 +1669,8 @@ function resolveAudioNumberParam(
 }
 
 function resolveAudioSoundValueParam(
-  controller: ControllerIr,
-  key: "value" | "hitsound" | "guardsound",
+  controller: { params: Record<string, string> },
+  key: "value" | "hitsound" | "guardsound" | "sound",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,
