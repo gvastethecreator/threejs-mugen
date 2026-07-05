@@ -1677,6 +1677,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSuperPauseAnimPosTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-superpause-dynamic-anim-pos",
+      required: true,
+      artifact: presets.createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-superpause-p2defmul",
       required: true,
       artifact: presets.createSyntheticImportedSuperPauseP2DefMulTraceArtifact(),
@@ -3337,6 +3342,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-sound",
     "synthetic-imported-superpause-dynamic-params",
     "synthetic-imported-superpause-anim-pos",
+    "synthetic-imported-superpause-dynamic-anim-pos",
     "synthetic-imported-superpause-p2defmul",
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",

@@ -352,6 +352,48 @@ describe("PauseSystem", () => {
     ]);
   });
 
+  it("resolves dynamic SuperPause anim and pos through active controller context", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const source = controller("SuperPause", {
+      time: "7",
+      movetime: "1",
+      anim: "var(6)",
+      pos: "var(7),var(8)",
+    });
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: source,
+      operation: {
+        kind: "pause",
+        controllerType: "superpause",
+        time: 7,
+        moveTime: 1,
+        darken: true,
+        powerAdd: 0,
+        anim: "var(6)",
+      },
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation, resolveParams) =>
+          createMatchPauseFromController(activeActor, activeController, tick, operation, resolveParams),
+      },
+      applyPowerDelta: () => undefined,
+      resolveParams: {
+        animActionNo: () => 7001,
+        posX: () => 18,
+        posY: () => -36,
+      },
+      log: () => undefined,
+    });
+
+    expect(result.pause?.superAnim).toEqual({
+      raw: "var(6)",
+      source: "fightfx",
+      actionNo: 7001,
+      offset: { x: 18, y: -36 },
+    });
+  });
+
   it("dispatches active Pause controllers with telemetry hooks", () => {
     const dispatchWorld = new RuntimePauseControllerDispatchWorld();
     const source = controller("SuperPause", { time: "9", movetime: "3", darken: "0", poweradd: "75" });

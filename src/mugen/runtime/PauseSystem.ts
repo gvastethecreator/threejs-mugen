@@ -134,6 +134,9 @@ export type RuntimePauseControllerParamResolvers = {
   darken?: () => number | undefined;
   powerAdd?: () => number | undefined;
   p2DefMul?: () => number | undefined;
+  animActionNo?: () => number | undefined;
+  posX?: () => number | undefined;
+  posY?: () => number | undefined;
 };
 
 export class RuntimePauseWorld {
@@ -350,7 +353,7 @@ export function createMatchPauseFromController(
   }
   const darken = resolveParams?.darken?.();
   const powerAdd = resolveParams?.powerAdd?.();
-  const superAnim = type === "SuperPause" ? superPauseAnimParam(controller, operation) : undefined;
+  const superAnim = type === "SuperPause" ? superPauseAnimParam(controller, operation, resolveParams) : undefined;
 
   return {
     pause: {
@@ -449,16 +452,17 @@ function superPauseTargetDefenseMultiplierParam(
 function superPauseAnimParam(
   controller: MugenStateController,
   operation?: PauseControllerOp,
+  resolveParams?: RuntimePauseControllerParamResolvers,
 ): RuntimeSuperPauseAnimSnapshot | undefined {
   const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
   if (controllerType !== "superpause") {
     return undefined;
   }
-  const parsed = parseSuperPauseAnimParam(operation?.anim ?? findControllerParam(controller, "anim"));
+  const parsed = parseSuperPauseAnimParam(operation?.anim ?? findControllerParam(controller, "anim"), resolveParams?.animActionNo?.());
   if (!parsed) {
     return undefined;
   }
-  const pos = operation?.pos ?? numberPair(findControllerParam(controller, "pos")) ?? [0, 0];
+  const pos = superPauseAnimOffsetParam(controller, operation, resolveParams);
   return {
     ...parsed,
     offset: { x: pos[0], y: pos[1] },
@@ -467,6 +471,7 @@ function superPauseAnimParam(
 
 function parseSuperPauseAnimParam(
   value: string | undefined,
+  resolvedActionNo?: number,
 ): Omit<RuntimeSuperPauseAnimSnapshot, "offset"> | undefined {
   const raw = stripMugenString(value);
   if (!raw || raw === "-1") {
@@ -475,10 +480,27 @@ function parseSuperPauseAnimParam(
   const source = raw.toUpperCase().startsWith("S") ? "player" : "fightfx";
   const actionRaw = source === "player" ? raw.slice(1).trim() : raw.trim();
   const actionNo = Number(actionRaw);
-  if (!Number.isInteger(actionNo) || actionNo < 0) {
+  const resolvedNo = Number.isInteger(actionNo) ? actionNo : resolvedActionNo;
+  if (resolvedNo === undefined || !Number.isInteger(resolvedNo) || resolvedNo < 0) {
     return undefined;
   }
-  return { raw, source, actionNo };
+  return { raw, source, actionNo: resolvedNo };
+}
+
+function superPauseAnimOffsetParam(
+  controller: MugenStateController,
+  operation?: PauseControllerOp,
+  resolveParams?: RuntimePauseControllerParamResolvers,
+): [number, number] {
+  if (operation?.pos) {
+    return operation.pos;
+  }
+  const x = resolveParams?.posX?.();
+  const y = resolveParams?.posY?.();
+  if (x !== undefined || y !== undefined) {
+    return [x ?? 0, y ?? 0];
+  }
+  return numberPair(findControllerParam(controller, "pos")) ?? [0, 0];
 }
 
 function numberPair(value: string | undefined): [number, number] | undefined {

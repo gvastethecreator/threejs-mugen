@@ -111,7 +111,7 @@ Required artifacts should prove engine plumbing without private assets:
 - Target*, including bounded invalid-redirect bottom propagation through `synthetic-imported-target-redirect-bottom.json`, bounded `Cond(...)` unused-branch bottom isolation through `synthetic-imported-target-cond-bottom.json`, and bounded `IfElse(...)` returned-branch bottom isolation through `synthetic-imported-target-ifelse-bottom.json`
 - Controller-param Root redirect through `synthetic-imported-controller-param-root-redirect.json`, helper-local controller-param Parent/Root redirect through `synthetic-imported-helper-controller-param-parentroot.json`, Target redirect through `synthetic-imported-controller-param-target-redirect.json`, plus controller-param bottom fallback through `synthetic-imported-controller-param-bottom.json`
 - EnemyNear indexed one-on-one redirect/fail-closed route
-- Pause/SuperPause
+- Pause/SuperPause, including required explicit `synthetic-imported-superpause-anim-pos.json` and dynamic `synthetic-imported-superpause-dynamic-anim-pos.json` metadata gates
 - Projectile
 - Helper, including bounded helper-local Parent/Root redirects, helper-local controller-param Parent/Root redirects, direct-HitDef, and helper-parented Projectile target-memory/Target-controller routes
 - Explod

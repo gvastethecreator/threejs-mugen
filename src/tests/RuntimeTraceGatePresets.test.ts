@@ -446,6 +446,7 @@ import {
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedProjectileTargetStateTraceArtifact,
   createSyntheticImportedSuperPauseAnimPosTraceArtifact,
+  createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseDynamicParamsTraceArtifact,
   createSyntheticImportedSuperPauseP2DefMulTraceArtifact,
@@ -19674,6 +19675,66 @@ describe("RuntimeTraceGatePresets", () => {
             source: "player",
             actionNo: 200,
             offset: { x: 24, y: -48 },
+          },
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported SuperPause artifact with dynamic anim/pos evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-dynamic-anim-pos-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-dynamic-anim-pos-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      {
+        type: "SuperPause",
+        actorId: "p1",
+        sourceStateNo: 200,
+        darken: true,
+        minFrames: 2,
+        minRemaining: 7,
+        minMoveTime: 1,
+        superAnimRaw: "var(6)",
+        superAnimSource: "fightfx",
+        superAnimActionNo: 7001,
+        superAnimOffsetX: 18,
+        superAnimOffsetY: -36,
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(3);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.matchPauses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorId: "p1",
+          sourceStateNo: 200,
+          darken: true,
+          maxRemaining: 7,
+          maxMoveTime: 1,
+          superAnim: {
+            raw: "var(6)",
+            source: "fightfx",
+            actionNo: 7001,
+            offset: { x: 18, y: -36 },
           },
         }),
       ]),

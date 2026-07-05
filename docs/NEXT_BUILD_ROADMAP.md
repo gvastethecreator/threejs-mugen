@@ -27,14 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause anim/pos trace gate
+R1 required SuperPause dynamic anim/pos trace gate
+  -> synthetic-imported-superpause-dynamic-anim-pos.json checksum e6bfbf75 / final checksum eb49d9db is required in qa:trace
+  -> imported active state seeds var(6)=7001, var(7)=18, and var(8)=-36
+  -> SuperPause executes anim = var(6) and pos = var(7),var(8)
+  -> RuntimePauseControllerParamResolvers resolves dynamic anim/pos through active expression fallback before RuntimePauseWorld snapshots optional superAnim metadata
+  -> match-pause evidence requires raw var(6), source fightfx, actionNo 7001, offset 18,-36, and P2 freeze
+  -> pnpm qa:trace passes 462/462 artifacts, 432 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable, SuperPause anim, S player-AIR prefix behavior, anim = -1, and pos offset
+  -> no score movement; default anim 30, anim = -1 renderer suppression, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+
+Previous R1 required SuperPause anim/pos trace gate
   -> synthetic-imported-superpause-anim-pos.json checksum f7dcdc9d / final checksum 7bd4afe8 is required in qa:trace
   -> imported active state executes anim = S200 and pos = 24,-48
   -> PauseControllerOp preserves static anim/pos, RuntimePauseWorld snapshots optional superAnim metadata, and RuntimeTraceGate can require it
   -> match-pause evidence requires raw S200, source player, actionNo 200, offset 24,-48, and P2 freeze
-  -> pnpm qa:trace passes 461/461 artifacts, 431 required and 30 optional
-  -> official Elecbyte docs define SuperPause anim, S player-AIR prefix behavior, anim = -1, and pos offset
-  -> no score movement; default anim 30, anim = -1 renderer suppression, FightFX/common asset lookup, dynamic anim/pos, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+  -> that checkpoint passed 461/461 artifacts, 431 required and 30 optional
+  -> no score movement; default anim 30, anim = -1 renderer suppression, FightFX/common asset lookup/rendering, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause dynamic params trace gate
   -> synthetic-imported-superpause-dynamic-params.json checksum 9547ac9f / final checksum aecfdc8b is required in qa:trace
@@ -2543,6 +2552,8 @@ I1/R1 character FightFX prefix package expansion
 ```
 
 Do not reselect `synthetic-imported-helper-projtime-same-id-last-contact`, `synthetic-imported-helper-projtime-same-id-hit-then-guard`, `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
+
+Do not reselect `synthetic-imported-superpause-dynamic-anim-pos` or `synthetic-imported-superpause-anim-pos` as fresh next work; they are now closed and required. Remaining SuperPause work should target a different unsupported surface such as default `anim = 30`, actual FightFX/common asset lookup/rendering, `pausebg`, or `unhittable`.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
 

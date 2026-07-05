@@ -1136,6 +1136,10 @@ function runActiveStateControllers(
                 resolvePauseNumberParam(source, "poweradd", actor, targetOpponent, stateOwner, stageBounds, activeTick),
               p2DefMul: () =>
                 resolvePauseNumberParam(source, "p2defmul", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              animActionNo: () =>
+                resolvePauseAnimActionNoParam(source, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              posX: () => resolvePausePosParam(source, 0, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              posY: () => resolvePausePosParam(source, 1, actor, targetOpponent, stateOwner, stageBounds, activeTick),
             },
           ),
         ...runtimeActiveControllerTelemetryHooks,
@@ -1746,6 +1750,58 @@ function resolvePauseNumberParam(
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw.trim(), fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolvePauseAnimActionNoParam(
+  controller: MugenStateController,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = stripMugenString(findControllerParam(controller, "anim"));
+  if (!raw || raw === "-1") {
+    return undefined;
+  }
+  const expression = raw.toUpperCase().startsWith("S") ? raw.slice(1).trim() : raw;
+  if (!expression) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, expression, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolvePausePosParam(
+  controller: MugenStateController,
+  index: 0 | 1,
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findControllerParam(controller, "pos");
+  if (!raw) {
+    return undefined;
+  }
+  const expression = raw.split(",")[index]?.trim();
+  if (!expression) {
+    return undefined;
+  }
+  return resolveDispatchFloat(undefined, expression, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function stripMugenString(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  const first = trimmed[0];
+  const last = trimmed[trimmed.length - 1];
+  if ((first === `"` && last === `"`) || (first === "'" && last === "'")) {
+    return trimmed.slice(1, -1).trim();
+  }
+  return trimmed;
 }
 
 function resolveAudioNumberParam(
