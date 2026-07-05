@@ -336,6 +336,30 @@ export function createSyntheticImportedHitCountTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedHitCountPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-hitcountpersist",
+      displayName: "Synthetic Imported HitCountPersist",
+      action200Duration: 30,
+      hitCountPersistRoute: { entryStateNo: 342, finalStateNo: 343 },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-hitcountpersist-golden",
+      targetLabel: "Synthetic imported hitcountpersist route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 342, 343],
+      requiredExecutedControllers: ["ChangeState", "HitDef"],
+      requiredExecutedOperations: ["hitdef"],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 343, animNo: 343 }],
+      notes: [
+        "Synthetic imported hitcountpersist trace proves direct HitDef HitCount and UniqHitCount can persist into the next StateDef when hitcountpersist = 1 while MoveHit remains reset. Exact movehitpersist, hitdefpersist, combo UI, helper/projectile/team counting, and full MUGEN/IKEMEN hit-count lifetime parity remain future work.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedHitAddTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -29399,6 +29423,7 @@ export type SyntheticImportedTraceFighterOptions = {
   moveHitCounterStateNo?: number;
   withMoveHitReset?: boolean;
   hitCountStateNo?: number;
+  hitCountPersistRoute?: { entryStateNo: number; finalStateNo: number };
   withHitAdd?: number;
   hitAddStateNo?: number;
   withControlOps?: boolean;
@@ -30031,6 +30056,7 @@ ${options.moveHitStateNo === undefined ? "" : contactBranchBlock("MoveHit", opti
 ${options.withMoveHitReset ? moveHitResetControllerBlock() : ""}
 ${options.moveHitCounterStateNo === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.moveHitCounterStateNo, "MoveHit Counter Branch")}
 ${options.hitCountStateNo === undefined ? "" : contactBranchBlock("HitCount >= 1 && UniqHitCount >= 1", options.hitCountStateNo, "HitCount Branch")}
+${options.hitCountPersistRoute === undefined ? "" : contactBranchBlock("MoveHit >= 1", options.hitCountPersistRoute.entryStateNo, "HitCountPersist Entry")}
 ${options.hitAddStateNo === undefined ? "" : contactBranchBlock("HitCount >= 3 && UniqHitCount = 1", options.hitAddStateNo, "HitAdd Branch")}
 ${options.withAnimationOps ? animationControllerBlock() : ""}
 ${options.changeAnim2ElemProbe === undefined ? "" : changeAnim2ElemControllerBlock(options.changeAnim2ElemProbe)}
@@ -30082,6 +30108,7 @@ ${options.withScaledExplod ? scaledExplodControllerBlock() : ""}
 ${options.withRemoveExplod ? removeExplodControllerBlock() : ""}
 ${options.numExplodStateNo === undefined ? "" : contactBranchBlock("NumExplod(9000) > 0", options.numExplodStateNo, "NumExplod Branch")}
 
+${options.hitCountPersistRoute ? hitCountPersistRouteBlock(options.hitCountPersistRoute) : ""}
 ${options.getHitState ? getHitStateBlock(options.getHitState, options.fallDefenceUpBranchStateNo, options.getHitVarBranch) : ""}
 ${options.customStateRoute ? customStateRouteBlock(options.customStateRoute) : ""}
 ${options.targetStateRoute ? customStateRouteBlock(options.targetStateRoute) : ""}
@@ -30249,6 +30276,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.moveHitStateNo === undefined ? [] : ([[options.moveHitStateNo, traceAction(options.moveHitStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.moveHitCounterStateNo === undefined ? [] : ([[options.moveHitCounterStateNo, traceAction(options.moveHitCounterStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitCountStateNo === undefined ? [] : ([[options.hitCountStateNo, traceAction(options.hitCountStateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.hitCountPersistRoute === undefined
+        ? []
+        : ([
+            [options.hitCountPersistRoute.entryStateNo, traceAction(options.hitCountPersistRoute.entryStateNo)],
+            [options.hitCountPersistRoute.finalStateNo, traceAction(options.hitCountPersistRoute.finalStateNo)],
+          ] as Array<[number, MugenAnimationAction]>)),
       ...(options.hitAddStateNo === undefined ? [] : ([[options.hitAddStateNo, traceAction(options.hitAddStateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withAnimationOps ? ([[205, traceAction(205)], [206, traceAction(206)]] as Array<[number, MugenAnimationAction]>) : []),
       ...(options.changeAnim2ElemProbe === undefined
@@ -32577,6 +32610,33 @@ function contactBranchBlock(trigger: string, stateNo: number, label: string): st
 type = ChangeState
 trigger1 = ${trigger}
 value = ${stateNo}
+ctrl = 0
+`;
+}
+
+function hitCountPersistRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["hitCountPersistRoute"]>): string {
+  return `
+[Statedef ${route.entryStateNo}]
+type = S
+movetype = A
+physics = S
+anim = ${route.entryStateNo}
+ctrl = 0
+hitcountpersist = 1
+
+[State ${route.entryStateNo}, Persisted HitCount Branch]
+type = ChangeState
+trigger1 = HitCount >= 1
+trigger1 = UniqHitCount >= 1
+trigger1 = MoveHit = 0
+value = ${route.finalStateNo}
+ctrl = 0
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = A
+physics = S
+anim = ${route.finalStateNo}
 ctrl = 0
 `;
 }

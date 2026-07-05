@@ -27,13 +27,19 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile/helper normal-hit HitCount trace gates
-  -> synthetic-imported-projectile-hitcount.json checksum 97a1b671 is required in qa:trace
-  -> synthetic-imported-helper-projectile-hitcount.json checksum 19d1c22c is required in qa:trace
+R1 required StateDef hitcountpersist trace gate
+  -> synthetic-imported-hitcountpersist.json checksum 6f032088 is required in qa:trace
+  -> direct HitDef contact routes P1 200 -> 342 -> 343, proving HitCount >= 1 && UniqHitCount >= 1 persists into state 342 with hitcountpersist = 1 while MoveHit = 0
+  -> pnpm qa:trace passes 414/414 artifacts, 384 required and 30 optional
+  -> no score movement; movehitpersist, hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full hit-count lifetime parity remain blocked
+
+Previous R1 required Projectile/helper normal-hit HitCount trace gates
+  -> synthetic-imported-projectile-hitcount.json checksum 97a1b671 remains required in qa:trace
+  -> synthetic-imported-helper-projectile-hitcount.json checksum 19d1c22c remains required in qa:trace
   -> player-owned Projectile contact feeds owner MoveContact / MoveHit / HitCount, routes P1 to state 341 through HitCount >= 1 && UniqHitCount >= 1, and keeps projectile lifecycle plus target link p1 -> p2 / 77
   -> helper-parented/root-owned Projectile contact mirrors hit-count memory into the visual helper, exposes helper-local HitCount / UniqHitCount, routes helper 1257 -> 1258, and keeps target links p1 -> p2 / 8893 and p1-helper-0 -> p2 / 8893 plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 413/413 artifacts, 383 required and 30 optional
-  -> no score movement; exact combo accumulation, hitcountpersist lifetime, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/HitCount parity remain blocked
+  -> pnpm qa:trace passed 413/413 artifacts, 383 required and 30 optional
+  -> remains required; exact combo accumulation, Projectile/helper hitcountpersist breadth, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/HitCount parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit GetHitVar hitcount trace gates
   -> synthetic-imported-projectile-gethitvar-hitcount.json trace checksum fa445b05 / final checksum 0c2197f7 remains required in qa:trace

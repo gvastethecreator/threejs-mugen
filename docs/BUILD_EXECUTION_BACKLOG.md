@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - StateDef hitcountpersist required trace gate
+
+Changed:
+
+- Added parser/model support for `StateDef hitcountpersist`.
+- Split attacker-side `HitCount` / `UniqHitCount` state ownership from `MoveHit` timer ownership in `RuntimeContactMemory`, so hit counters can be carried without making `MoveHit` true in the next state.
+- `RuntimeStateEntryWorld` now passes destination `StateDef` metadata to the contact-reset hook, and `PlayableMatchRuntime` preserves only hit-count memory when the destination state declares `hitcountpersist = 1`.
+- Added required `synthetic-imported-hitcountpersist.json` trace coverage for a direct `HitDef` route `200 -> 342 -> 343`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-hitcountpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `hitcountpersist` as carrying the hit counter from the previous state while `movehitpersist` is separate; Elecbyte Trigger Reference says `HitCount` resets after a state change unless the destination `StateDef` sets `hitcountpersist`.
+- Focused tests: `pnpm vitest run src/tests/ContactMemorySystem.test.ts src/tests/RuntimeStateEntrySystem.test.ts src/tests/CmdCnsParser.test.ts src/tests/RuntimeExpressionContextSystem.test.ts` -> 4 files passed, 35 tests passed.
+- Focused trace test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "hitcountpersist"` -> 1 file passed, 1 test passed, 406 skipped.
+- Trace gate: `pnpm qa:trace` -> 414/414 artifacts, 384 required and 30 optional; `synthetic-imported-hitcountpersist.json` checksum `6f032088`.
+
+Claim allowed:
+
+- Bounded direct `HitDef` attacker-side `HitCount` / `UniqHitCount` can persist across one state transition into a destination `StateDef` declaring `hitcountpersist = 1`.
+- The same gate proves `MoveHit` is reset in the destination state while the hit counters remain readable, routing P1 `200 -> 342 -> 343`.
+
+Claim blocked:
+
+- `movehitpersist`, `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN hit-count lifetime parity.
+
+Next:
+
+- Continue R1 with `movehitpersist` / `hitdefpersist`, helper/projectile hitcountpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitcountpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Projectile HitCount required trace gates
 
 Changed:
@@ -25,11 +55,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact combo accumulation, hitcountpersist/state-transition lifetime, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause and target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/HitCount parity.
+- Exact combo accumulation, Projectile/helper hitcountpersist breadth, chain-hit eligibility arbitration, multi-hit/multi-target/team counting, exact hitpause and target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/HitCount parity.
 
 Next:
 
-- Continue R1 with exact combo/chain accumulation, hitcountpersist lifetime, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 gap. Do not reselect this Projectile HitCount gate unless adding one blocked dimension.
+- Continue R1 with exact combo/chain accumulation, Projectile/helper hitcountpersist breadth, `movehitpersist`, `hitdefpersist`, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 gap. Do not reselect this Projectile HitCount gate unless adding one blocked dimension.
 
 ## 2026-07-05 - Projectile GetHitVar hitcount required trace gates
 

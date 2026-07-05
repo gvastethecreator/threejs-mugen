@@ -23,6 +23,7 @@ export type MugenStateDef = {
   anim?: number;
   ctrl?: number;
   velSet?: [number, number];
+  hitCountPersist?: boolean;
   rawParams: Record<string, string>;
   controllers: MugenStateController[];
   line: number;

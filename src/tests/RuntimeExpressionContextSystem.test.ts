@@ -357,6 +357,7 @@ function contactMemory(): RuntimeContactMemory {
     moveContactTime: 7,
     moveHitState: 200,
     moveHitTime: 7,
+    moveHitCountState: 200,
     moveHitCount: 5,
     moveUniqueHitCount: 3,
     moveReversedState: 200,

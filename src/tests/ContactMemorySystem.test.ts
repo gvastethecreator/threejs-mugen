@@ -4,6 +4,7 @@ import {
   advanceRuntimeContactTimers,
   applyRuntimeHitAdd,
   createRuntimeContactMemory,
+  createRuntimeContactMemoryWithPersistedHitCount,
   hasRuntimeProjectileContact,
   markRuntimeMoveContact,
   markRuntimeProjectileContact,
@@ -77,6 +78,21 @@ describe("ContactMemorySystem", () => {
     expect(runtimeMoveHitCountValue(memory, 200, true)).toBe(2);
   });
 
+  it("persists only hit counts into a new state for hitcountpersist", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeProjectileContact(memory, 200, 77, "hit", "p2");
+    advanceRuntimeContactTimers(memory);
+
+    const persisted = createRuntimeContactMemoryWithPersistedHitCount(memory, 342);
+
+    expect(runtimeMoveHitCountValue(persisted, 342, false)).toBe(1);
+    expect(runtimeMoveHitCountValue(persisted, 342, true)).toBe(1);
+    expect(runtimeMoveContactValue(persisted, 342, "hit")).toBe(0);
+    expect(runtimeMoveContactValue(persisted, 342, "contact")).toBe(0);
+    expect(hasRuntimeProjectileContact(persisted, 342, "hit", 77)).toBe(false);
+  });
+
   it("tracks projectile cancel ids and timers separately from contact", () => {
     const memory = createRuntimeContactMemory();
 
@@ -129,6 +145,18 @@ describe("ContactMemorySystem", () => {
 
     expect(world.moveHitCountValue(memory, 200, false)).toBe(0);
     expect(world.hasProjectileContact(memory, 200, "guard", 77)).toBe(true);
+  });
+
+  it("wraps hitcountpersist count cloning behind RuntimeContactMemoryWorld", () => {
+    const world = new RuntimeContactMemoryWorld();
+    const memory = world.create();
+
+    world.markMoveContact(memory, 200, "hit", "p2");
+
+    const persisted = world.createWithPersistedHitCount(memory, 342);
+
+    expect(world.moveHitCountValue(persisted, 342, false)).toBe(1);
+    expect(world.moveContactValue(persisted, 342, "hit")).toBe(0);
   });
 
   it("dispatches active HitAdd controllers with telemetry hooks", () => {

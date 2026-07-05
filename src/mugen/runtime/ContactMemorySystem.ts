@@ -9,6 +9,7 @@ export type RuntimeContactMemory = {
   moveContactTime?: number;
   moveHitTime?: number;
   moveGuardTime?: number;
+  moveHitCountState?: number;
   moveHitCount?: number;
   moveUniqueHitCount?: number;
   moveHitTargetIds?: Set<string>;
@@ -55,6 +56,10 @@ export type RuntimeContactControllerDispatchResult = {
 export class RuntimeContactMemoryWorld {
   create(): RuntimeContactMemory {
     return createRuntimeContactMemory();
+  }
+
+  createWithPersistedHitCount(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
+    return createRuntimeContactMemoryWithPersistedHitCount(memory, stateNo);
   }
 
   resetMoveContact(memory: RuntimeContactMemory): void {
@@ -187,6 +192,24 @@ export function createRuntimeContactMemory(): RuntimeContactMemory {
   return {};
 }
 
+export function createRuntimeContactMemoryWithPersistedHitCount(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
+  const hitCount = memory.moveHitCount ?? 0;
+  const uniqueHitCount = memory.moveUniqueHitCount ?? 0;
+  const targetIds = memory.moveHitTargetIds;
+  if (memory.moveHitCountState === undefined || (hitCount <= 0 && uniqueHitCount <= 0 && (!targetIds || targetIds.size === 0))) {
+    return {};
+  }
+  const persisted: RuntimeContactMemory = {
+    moveHitCountState: stateNo,
+    moveHitCount: hitCount,
+    moveUniqueHitCount: uniqueHitCount,
+  };
+  if (targetIds) {
+    persisted.moveHitTargetIds = new Set(targetIds);
+  }
+  return persisted;
+}
+
 export function resetRuntimeMoveContact(memory: RuntimeContactMemory): void {
   delete memory.moveContactState;
   delete memory.moveHitState;
@@ -194,6 +217,7 @@ export function resetRuntimeMoveContact(memory: RuntimeContactMemory): void {
   delete memory.moveContactTime;
   delete memory.moveHitTime;
   delete memory.moveGuardTime;
+  delete memory.moveHitCountState;
   delete memory.moveHitCount;
   delete memory.moveUniqueHitCount;
   delete memory.moveHitTargetIds;
@@ -202,9 +226,8 @@ export function resetRuntimeMoveContact(memory: RuntimeContactMemory): void {
 }
 
 export function applyRuntimeHitAdd(memory: RuntimeContactMemory, stateNo: number, value: number): void {
-  const current = memory.moveHitState === stateNo ? memory.moveHitCount ?? 0 : 0;
-  memory.moveHitState = stateNo;
-  memory.moveHitTime = memory.moveHitTime ?? 0;
+  const current = memory.moveHitCountState === stateNo ? memory.moveHitCount ?? 0 : 0;
+  memory.moveHitCountState = stateNo;
   memory.moveHitCount = clampHitCount(current + value);
 }
 
@@ -219,6 +242,7 @@ export function markRuntimeMoveContact(
   if (kind === "hit") {
     memory.moveHitState = stateNo;
     memory.moveHitTime = 0;
+    memory.moveHitCountState = stateNo;
     memory.moveHitCount = clampHitCount((memory.moveHitCount ?? 0) + 1);
     if (targetActorId) {
       const targetIds = memory.moveHitTargetIds ?? new Set<string>();
@@ -300,7 +324,7 @@ export function runtimeMoveContactValue(memory: RuntimeContactMemory, stateNo: n
 }
 
 export function runtimeMoveHitCountValue(memory: RuntimeContactMemory, stateNo: number, unique: boolean): number {
-  if (memory.moveHitState !== stateNo) {
+  if (memory.moveHitCountState !== stateNo) {
     return 0;
   }
   return unique ? memory.moveUniqueHitCount ?? 0 : memory.moveHitCount ?? 0;

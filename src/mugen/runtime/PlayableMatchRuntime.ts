@@ -5,7 +5,7 @@ import type {
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { MugenStateController } from "../model/MugenState";
+import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import { RuntimeActorConstraintControllerDispatchWorld, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
 import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
 import {
@@ -1078,8 +1078,10 @@ const {
   enterState: (target, stateNo, options) => enterState(target, stateNo, undefined, options),
 });
 
-function resetContactState(fighter: FighterMatchState): void {
-  fighter.contact = fighter.contactWorld.create();
+function resetContactState(fighter: FighterMatchState, state?: MugenStateDef): void {
+  fighter.contact = state?.hitCountPersist
+    ? fighter.contactWorld.createWithPersistedHitCount(fighter.contact, fighter.runtime.stateNo)
+    : fighter.contactWorld.create();
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {

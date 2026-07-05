@@ -57,6 +57,7 @@ import {
   createSyntheticImportedGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedGetHitVarHitIdChainIdTraceArtifact,
   createSyntheticImportedGetHitVarHitCountTraceArtifact,
+  createSyntheticImportedHitCountPersistTraceArtifact,
   createSyntheticImportedGetHitVarSnapTraceArtifact,
   createSyntheticImportedGetHitVarHitShakeTimeTraceArtifact,
   createSyntheticImportedGetHitVarHitTimeTraceArtifact,
@@ -843,6 +844,36 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 264]);
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
+  });
+
+  it("creates a synthetic imported hitcountpersist artifact with state-entry persistence evidence", () => {
+    const artifact = createSyntheticImportedHitCountPersistTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitcountpersist-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 342, 343]));
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 343,
+      animNo: 343,
+    });
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 342, 343]);
   });
 
   it("creates a synthetic imported HitAdd artifact with bounded hit-count evidence", () => {

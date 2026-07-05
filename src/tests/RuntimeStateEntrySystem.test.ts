@@ -13,17 +13,17 @@ import type { CharacterRuntimeState } from "../mugen/runtime/types";
 describe("RuntimeStateEntrySystem", () => {
   it("owns state entry metadata, action selection, contact reset, and telemetry hooks", () => {
     const world = new RuntimeStateEntryWorld();
+    const state200 = state(200, {
+      type: "A",
+      moveType: "A",
+      physics: "A",
+      anim: 205,
+      ctrl: 0,
+      velSet: [3, -6],
+      hitCountPersist: true,
+    });
     const actor = entryActor({
-      states: [
-        state(200, {
-          type: "A",
-          moveType: "A",
-          physics: "A",
-          anim: 205,
-          ctrl: 0,
-          velSet: [3, -6],
-        }),
-      ],
+      states: [state200],
       animations: [205],
       runtime: { stateNo: 0, animNo: 0, ctrl: true, stateType: "S", moveType: "I", physics: "S" },
     });
@@ -56,7 +56,7 @@ describe("RuntimeStateEntrySystem", () => {
     expect(actor.hasHit).toBe(false);
     expect(actor.runtime.reversal).toBeUndefined();
     expect(recordStateExecution).toHaveBeenCalledWith(actor, 200, actor);
-    expect(resetContactState).toHaveBeenCalledWith(actor);
+    expect(resetContactState).toHaveBeenCalledWith(actor, state200);
     expect(changeAction).toHaveBeenCalledWith(actor, 205, "self", actor, undefined);
   });
 

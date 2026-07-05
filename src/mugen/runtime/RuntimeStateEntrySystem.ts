@@ -46,7 +46,7 @@ export type RuntimeStateEntryOptions<TActor extends RuntimeStateEntryActor> = {
 
 export type RuntimeStateEntryHooks<TActor extends RuntimeStateEntryActor> = {
   recordStateExecution?: (actor: TActor, stateId: number, owner: TActor) => void;
-  resetContactState?: (actor: TActor) => void;
+  resetContactState?: (actor: TActor, state?: MugenStateDef) => void;
   changeAction?: (
     actor: TActor,
     actionId: number,
@@ -121,7 +121,7 @@ export class RuntimeStateEntryWorld {
     this.applyStateOwner(actor, owner, stateId);
     this.setStateNo(actor, stateId, { resetElapsed: true });
     actor.firedHitDefs.clear();
-    hooks.resetContactState?.(actor);
+    hooks.resetContactState?.(actor, state);
     this.applyStateDefMetadata(actor.runtime, state);
 
     const animationChanged =
