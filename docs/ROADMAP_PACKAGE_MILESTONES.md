@@ -35,13 +35,20 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper guarded StateDef movehitpersist trace gate
-  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-moveguardedpersist.json
-  -> helper HitDef route generation carries guard sound/spark evidence and branches through persisted MoveGuarded
+R1 required helper reversed StateDef movehitpersist trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-movereversedpersist.json
+  -> helper direct combat can be countered by defender-side ReversalDef before normal hit/guard resolution
+  -> helper-local direct HitDef is reversed in 1200, persists MoveReversed into 1232 while MoveContact, MoveHit, MoveGuarded, HitCount, and UniqHitCount reset, and routes helper 1200 -> 1232 -> 1233 with P2 reversal state 779 evidence
+  -> synthetic-imported-helper-movereversedpersist.json checksum ef8ffdf5 is required in qa:trace
+  -> pnpm qa:trace passes 421/421 artifacts, 391 required and 30 optional
+  -> no score movement; helper Projectile/custom-state movehitpersist breadth, exact reversal priority/target-state semantics, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded reversal route, and full helper Move* lifetime parity remain blocked
+
+Previous R1 required helper guarded StateDef movehitpersist trace gate
+  -> RuntimeTraceGatePresets builds synthetic-imported-helper-moveguardedpersist.json
   -> helper-local guarded HitDef contact activates in 1200, persists MoveContact / MoveGuarded into 1230 while MoveHit, HitCount, and UniqHitCount reset, and routes helper 1200 -> 1230 -> 1231 with helper-owned guard sound/FightFX evidence
   -> synthetic-imported-helper-moveguardedpersist.json checksum d5ce7897 is required in qa:trace
-  -> pnpm qa:trace passes 420/420 artifacts, 390 required and 30 optional
-  -> no score movement; helper MoveReversed breadth, helper Projectile/custom-state movehitpersist breadth, exact guard chip/KO/no-KO flow, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded guard contact package, and full helper Move* lifetime parity remain blocked
+  -> pnpm qa:trace passed 420/420 artifacts, 390 required and 30 optional
+  -> remains required
 
 Previous R1 required helper StateDef movehitpersist trace gate
   -> RuntimeTraceGatePresets builds synthetic-imported-helper-movehitpersist.json
@@ -49,7 +56,7 @@ Previous R1 required helper StateDef movehitpersist trace gate
   -> helper-local HitDef contact activates in 1200, persists MoveContact / MoveHit into 1228 while HitCount and UniqHitCount reset, and routes helper 1200 -> 1228 -> 1229 with helper-owned sound/FightFX evidence
   -> synthetic-imported-helper-movehitpersist.json checksum 2354ef95 is required in qa:trace
   -> pnpm qa:trace passed 419/419 artifacts, 389 required and 30 optional
-  -> remains required; helper MoveReversed breadth, helper Projectile/custom-state movehitpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper Move* lifetime parity remain blocked
+  -> remains required; helper MoveReversed breadth beyond the bounded direct ReversalDef route, helper Projectile/custom-state movehitpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper Move* lifetime parity remain blocked
 
 Previous R1 required helper StateDef hitcountpersist trace gate
   -> RuntimeTraceGatePresets builds synthetic-imported-helper-hitcountpersist.json

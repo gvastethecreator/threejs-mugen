@@ -6,6 +6,7 @@ import {
   createRuntimeContactMemory,
   RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
+  runtimeMoveReversedValue,
 } from "../mugen/runtime/ContactMemorySystem";
 import type { DemoMove } from "../mugen/runtime/demoFighters";
 import { RuntimeDirectCombatWorld } from "../mugen/runtime/DirectCombatSystem";
@@ -20,6 +21,7 @@ import {
   type RuntimeHelperCombatOwner,
   type RuntimeHelperCombatStateHooks,
 } from "../mugen/runtime/RuntimeHelperCombatSystem";
+import { RuntimeReversalWorld } from "../mugen/runtime/ReversalSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
 
@@ -43,6 +45,7 @@ describe("RuntimeHelperCombatSystem", () => {
       owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
       guardWorld: new RuntimeGuardWorld(),
       getHitStateWorld: new RuntimeGetHitStateWorld(),
       contactPresentationWorld: new RuntimeContactPresentationWorld(),
@@ -103,6 +106,7 @@ describe("RuntimeHelperCombatSystem", () => {
       owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
       guardWorld: new RuntimeGuardWorld(),
       getHitStateWorld: new RuntimeGetHitStateWorld(),
       contactPresentationWorld: new RuntimeContactPresentationWorld(),
@@ -142,6 +146,7 @@ describe("RuntimeHelperCombatSystem", () => {
       owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
       defender,
       directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
       guardWorld: new RuntimeGuardWorld(),
       getHitStateWorld: new RuntimeGetHitStateWorld(),
       contactPresentationWorld: new RuntimeContactPresentationWorld(),
@@ -158,6 +163,58 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(helper.soundEvents).toEqual([]);
     expect(helper.hitEffectEvents).toEqual([]);
     expect(defender.runtime.life).toBe(100);
+  });
+
+  it("lets defender ReversalDef counter helper direct HitDef and mark helper MoveReversed", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "45", name: '"Countered"' }));
+    helper.stateNo = 6200;
+    helper.currentMove = move({ attr: "S,NA" });
+    helper.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 0, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "SA,AA",
+      hitbox: { x1: -24, y1: -40, x2: 24, y2: 0 },
+      hitPause: 5,
+      p1StateNo: 777,
+    });
+    const logs: string[] = [];
+    const stateEntries: string[] = [];
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld,
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld: new RuntimeTargetWorld(),
+      runtimeTick: 66,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      stateHooks: stateHooks(stateEntries, [777]),
+      log: (line) => logs.push(line),
+    });
+
+    expect(logs).toEqual(["P2 reversed Helper Countered p1->777"]);
+    expect(helper.hasHit).toBe(true);
+    expect(helper.currentMove).toBeUndefined();
+    expect(helper.moveType).toBe("H");
+    expect(runtimeMoveReversedValue(helper.contact, 6200)).toBe(0);
+    expect(helper.contact).toMatchObject({ moveReversedState: 6200, moveReversedTime: 0 });
+    expect(helper.targets).toEqual([]);
+    expect(helper.soundEvents).toEqual([]);
+    expect(helper.hitEffectEvents).toEqual([]);
+    expect(defender.runtime.stateNo).toBe(777);
+    expect(defender.hitPause).toBe(5);
+    expect(defender.runtime.power).toBe(25);
+    expect(defender.runtime.life).toBe(100);
+    expect(stateEntries).toEqual(["p2:777:state-owner"]);
   });
 });
 

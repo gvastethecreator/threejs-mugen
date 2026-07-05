@@ -109,6 +109,7 @@ export class RuntimeMatchCombatBridgeWorld {
           owner: attacker,
           defender,
           directCombatWorld: input.directCombatWorld,
+          reversalWorld: input.reversalWorld,
           guardWorld: input.guardWorld,
           getHitStateWorld: input.getHitStateWorld,
           contactPresentationWorld: input.contactPresentationWorld,

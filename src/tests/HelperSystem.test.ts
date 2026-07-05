@@ -14,8 +14,10 @@ import {
 import {
   createRuntimeContactMemory,
   markRuntimeMoveContact,
+  markRuntimeMoveReversed,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
+  runtimeMoveReversedValue,
 } from "../mugen/runtime/ContactMemorySystem";
 
 const stage: Pick<MugenStageDefinition, "bounds"> = {
@@ -426,6 +428,31 @@ describe("HelperSystem", () => {
     expect(runtimeMoveContactValue(active.contact, 1230, "hit")).toBe(0);
     expect(runtimeMoveHitCountValue(active.contact, 1230, false)).toBe(0);
     expect(runtimeMoveHitCountValue(active.contact, 1230, true)).toBe(0);
+  });
+
+  it("preserves helper-local MoveReversed when destination state declares movehitpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveReversed(contact, 1200);
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1232" })]),
+          stateProgram(stateDef(1232, { moveType: "A", moveHitPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1232);
+    expect(runtimeMoveReversedValue(active.contact, 1232)).toBe(1);
+    expect(runtimeMoveContactValue(active.contact, 1232, "contact")).toBe(0);
+    expect(runtimeMoveContactValue(active.contact, 1232, "hit")).toBe(0);
+    expect(runtimeMoveContactValue(active.contact, 1232, "guard")).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1232, false)).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1232, true)).toBe(0);
   });
 
   it("resets helper-local MoveContact and MoveHit when destination state omits movehitpersist", () => {

@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper StateDef movehitpersist reversed required trace gate
+
+Changed:
+
+- Added helper direct-combat reversal resolution so defender-side `ReversalDef` can counter a helper-owned direct `HitDef` before normal hit/guard resolution.
+- Generalized `RuntimeReversalWorld.apply` so the reverser and attacker can be different runtime actor shapes, covering player defender vs helper attacker without unsafe casts.
+- Added helper `movehitpersist` route support for a custom base trigger so reversed Move* routes can branch on `MoveReversed >= 1` without requiring `MoveContact`.
+- Added required `synthetic-imported-helper-movereversedpersist.json` trace coverage for a helper-owned reversed route `1200 -> 1232 -> 1233`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-helper-movereversedpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `movehitpersist` as carrying Move* trigger info from the previous state; Elecbyte Trigger Reference defines `MoveReversed` for attacks reversed by P2 and says MoveContact, MoveGuarded, MoveHit, and MoveReversed reset after state transition unless `movehitpersist` overrides this behavior; Elecbyte ReversalDef docs define defender-side reversal matching.
+- Focused tests: `pnpm vitest run src/tests/HelperSystem.test.ts src/tests/RuntimeHelperCombatSystem.test.ts src/tests/RuntimeMatchCombatBridgeSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "MoveReversed|ReversalDef counter|combat bridge|MoveGuardedPersist|MoveHitPersist"` -> 3 files passed, 1 skipped, 5 tests passed.
+- Tests: `pnpm test` -> 151 files passed, 1306 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Trace gate: `pnpm qa:trace` -> 421/421 artifacts, 391 required and 30 optional; `synthetic-imported-helper-movereversedpersist.json` checksum `ef8ffdf5`.
+
+Claim allowed:
+
+- Bounded helper-owned direct `HitDef` can be countered by defender-side `ReversalDef`, record helper-local `MoveReversed`, and persist that Move* memory across one helper `ChangeState` into a destination helper `StateDef` declaring `movehitpersist = 1`.
+- The gate proves helper `1200 -> 1232 -> 1233`, P2 reversal state `779`, `MoveReversed` branching with `MoveContact = 0`, `MoveHit = 0`, `MoveGuarded = 0`, `HitCount = 0`, and `UniqHitCount = 0`, and final P2 life `1000`.
+
+Claim blocked:
+
+- Helper Projectile/custom-state `movehitpersist` breadth, exact reversal priority and target-state semantics, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, helper-owned custom states, visual/audio parity beyond the bounded reversal route, score movement, and full MUGEN/IKEMEN helper Move* lifetime parity.
+
+Next:
+
+- Continue R1 with helper Projectile/custom-state StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper reversed `movehitpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Helper StateDef movehitpersist guarded required trace gate
 
 Changed:

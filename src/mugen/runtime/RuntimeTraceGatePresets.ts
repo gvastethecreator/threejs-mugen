@@ -27459,6 +27459,85 @@ export function createSyntheticImportedHelperMoveGuardedPersistTraceArtifact(opt
   });
 }
 
+export function createSyntheticImportedHelperMoveReversedPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperHitDefScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-movereversedpersist-attacker",
+    displayName: "Synthetic Imported Helper MoveReversedPersist Attacker",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [30, 0],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1233,
+      branchAnimNo: 972,
+      damage: 26,
+      branchTrigger: "MoveReversed >= 1",
+      moveHitPersistRoute: {
+        entryStateNo: 1232,
+        entryAnimNo: 971,
+        finalStateNo: 1233,
+        finalAnimNo: 972,
+        contactTrigger: "MoveReversed >= 1",
+        branchTriggers: ["MoveReversed >= 1", "MoveContact = 0", "MoveHit = 0", "MoveGuarded = 0", "HitCount = 0", "UniqHitCount = 0"],
+      },
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-movereversedpersist-defender",
+    displayName: "Synthetic Imported Helper MoveReversedPersist Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 779, hitPause: 3 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-movereversedpersist-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-movereversedpersist-golden",
+      label: "Synthetic imported helper-owned reversed movehitpersist route",
+      source: "imported",
+      notes: [
+        "Synthetic imported helper-owned reversed movehitpersist trace proves a helper-local HitDef can be reversed by a defender-side ReversalDef, then carry helper-local MoveReversed into the next helper StateDef when movehitpersist = 1 while MoveContact, MoveHit, MoveGuarded, HitCount, and UniqHitCount remain reset. Exact reversal priority, helper projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-movereversedpersist-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 779],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "helper", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1232, animNo: 971, moveType: "A", minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 972, moveType: "I", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", stateNo: 779, animNo: 779, moveType: "H", minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", stateNo: 779, life: 1000 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1233, minAge: 3 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedOneShotXScript();
@@ -30310,6 +30389,7 @@ export type SyntheticImportedTraceFighterOptions = {
       entryAnimNo?: number;
       finalStateNo: number;
       finalAnimNo?: number;
+      contactTrigger?: string;
       branchTriggers?: string[];
     };
     hitCountPersistRoute?: {
@@ -35087,6 +35167,7 @@ function helperMoveHitPersistRouteBlock(
 ): string {
   const branchTriggers = route.branchTriggers ?? ["MoveHit >= 1", "HitCount = 0", "UniqHitCount = 0"];
   const branchTriggerLines = branchTriggers.map((trigger) => `trigger1 = ${trigger}`).join("\n");
+  const contactTrigger = route.contactTrigger ?? "MoveContact >= 1";
   return `
 [State 1200, Helper MoveHitPersist Entry]
 type = ChangeState
@@ -35105,7 +35186,7 @@ movehitpersist = 1
 
 [State ${route.entryStateNo}, Persisted Helper MoveHit Branch]
 type = ChangeState
-trigger1 = MoveContact >= 1
+trigger1 = ${contactTrigger}
 ${branchTriggerLines}
 value = ${route.finalStateNo}
 ctrl = 0

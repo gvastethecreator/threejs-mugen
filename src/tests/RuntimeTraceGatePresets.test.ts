@@ -272,6 +272,7 @@ import {
   createSyntheticImportedHelperHitCountPersistTraceArtifact,
   createSyntheticImportedHelperMoveHitPersistTraceArtifact,
   createSyntheticImportedHelperMoveGuardedPersistTraceArtifact,
+  createSyntheticImportedHelperMoveReversedPersistTraceArtifact,
   createSyntheticImportedHelperTargetTraceArtifact,
   createSyntheticImportedHelperDefaultTargetTraceArtifact,
   createSyntheticImportedHelperBareTargetTraceArtifact,
@@ -5023,6 +5024,45 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1231, minAge: 3 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper MoveReversedPersist artifact with persisted helper MoveReversed evidence", () => {
+    const artifact = createSyntheticImportedHelperMoveReversedPersistTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-movereversedpersist-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-movereversedpersist-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1232, animNo: 971 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1233, animNo: 972 }),
+        expect.objectContaining({ actorId: "p2", actorKind: "player", stateNo: 779, animNo: 779, moveType: "H" }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", stateNo: 779, life: 1000 })]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed Helper"))).toBe(true);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1233, minAge: 3 },
     ]);
   });
 

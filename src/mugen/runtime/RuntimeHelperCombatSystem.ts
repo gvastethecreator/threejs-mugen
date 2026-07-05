@@ -19,10 +19,13 @@ import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
+  collisionBoxesIntersect,
   hasRuntimeBoxContact,
+  hitAttributeMatches,
   resolveRuntimeCombatHit,
   runtimeWorldBox,
 } from "./CombatResolver";
+import type { RuntimeReversalWorld } from "./ReversalSystem";
 
 type RuntimeHelperCombatDefinition = Pick<
   DemoFighterDefinition,
@@ -56,6 +59,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   owner: RuntimeHelperCombatOwner;
   defender: TDefender;
   directCombatWorld: RuntimeDirectCombatWorld;
+  reversalWorld: RuntimeReversalWorld;
   guardWorld: RuntimeGuardWorld;
   getHitStateWorld: RuntimeGetHitStateWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
@@ -90,6 +94,25 @@ export class RuntimeHelperCombatWorld {
         continue;
       }
       const attackBox = runtimeWorldBox(attacker.runtime, move.hitbox);
+      const reversal = input.reversalWorld.findActive(input.defender, move, attackBox, {
+        isMoveActive: runtimeHelperMoveIsActive,
+        worldBox: runtimeWorldBox,
+        boxesIntersect: collisionBoxesIntersect,
+        attrMatches: hitAttributeMatches,
+      });
+      if (reversal) {
+        const outcome = input.reversalWorld.apply(input.defender, attacker, reversal, {
+          rememberTarget: () => undefined,
+          canEnterState: input.stateHooks.canEnterState,
+          enterState: (target, stateNo) => input.stateHooks.enterState(target, stateNo),
+          enterTargetHitState: (target, _owner, stateNo) => {
+            target.runtime.stateNo = stateNo;
+          },
+        });
+        syncHelperFromDirectCombatActor(helper, attacker);
+        input.log?.(outcome.message);
+        continue;
+      }
       const hurtBoxes = input.getHurtBoxes(input.defender) ?? input.defaultHurtBoxes ?? defaultHelperCombatHurtBoxes;
       if (!hasRuntimeBoxContact(attackBox, input.defender.runtime, hurtBoxes)) {
         continue;

@@ -49,7 +49,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       helperCombatWorld: {
         resolveDirect: (input) => {
           calls.push(
-            `helper:${input.owner.id}:${input.defender.id}:${tagOf(input.targetWorld)}:${tagOf(input.stateHooks)}:${input.defaultHurtBoxes?.length ?? 0}`,
+            `helper:${input.owner.id}:${input.defender.id}:${tagOf(input.targetWorld)}:${tagOf(input.reversalWorld)}:${tagOf(input.stateHooks)}:${input.defaultHurtBoxes?.length ?? 0}`,
           );
           input.getHurtBoxes(input.defender);
           input.log?.("helper-log");
@@ -89,7 +89,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       "projectile:p1:p2:effect-lifecycle",
       "remember:p1:p2:proj-1",
       "log:projectile-log",
-      "helper:p1:p2:target-world:helper-hooks:1",
+      "helper:p1:p2:target-world:reversal:helper-hooks:1",
       "hurt:p2",
       "log:helper-log",
     ]);

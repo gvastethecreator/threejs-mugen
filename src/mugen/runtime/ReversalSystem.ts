@@ -46,6 +46,16 @@ export type RuntimeReversalHooks<TActor extends RuntimeReversalActor = RuntimeRe
   enterTargetHitState: (target: TActor, owner: TActor, stateNo: number, getP1State: boolean) => void;
 };
 
+export type RuntimeReversalApplyHooks<
+  TReverser extends RuntimeReversalActor = RuntimeReversalActor,
+  TAttacker extends RuntimeReversalActor = TReverser,
+> = {
+  rememberTarget: (reverser: TReverser, attacker: TAttacker, targetId: number | undefined) => void;
+  canEnterState: (actor: TReverser, stateNo: number) => boolean;
+  enterState: (actor: TReverser, stateNo: number) => void;
+  enterTargetHitState: (target: TAttacker, owner: TReverser, stateNo: number, getP1State: boolean) => void;
+};
+
 export type RuntimeReversalOutcome = {
   p1StateNo?: number;
   p2StateNo?: number;
@@ -163,11 +173,11 @@ export class RuntimeReversalWorld {
     return hooks.boxesIntersect(reversalBox, incomingAttackBox) ? reversal : undefined;
   }
 
-  apply<TActor extends RuntimeReversalActor>(
-    reverser: TActor,
-    attacker: TActor,
+  apply<TReverser extends RuntimeReversalActor, TAttacker extends RuntimeReversalActor>(
+    reverser: TReverser,
+    attacker: TAttacker,
     reversal: DemoMove,
-    hooks: Pick<RuntimeReversalHooks<TActor>, "rememberTarget" | "canEnterState" | "enterState" | "enterTargetHitState">,
+    hooks: RuntimeReversalApplyHooks<TReverser, TAttacker>,
   ): RuntimeReversalOutcome {
     reverser.hasHit = true;
     attacker.hasHit = true;
