@@ -1,5 +1,41 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic AngleMul trace gate
+
+Changed:
+
+- Added required `synthetic-imported-anglemul-dynamic.json` trace coverage for active imported dynamic `AngleMul value` fallback.
+- `RuntimeTraceGatePresets` now builds a dynamic AngleMul route that seeds `var(0)=30` and `fvar(0)=1.5`, executes `AngleSet value = var(0)`, `AngleMul value = fvar(0)`, and static `AngleDraw`, and requires imported actor-frame `renderAngle = 45`.
+- The dynamic Angle fixture helper can now emit optional `AngleMul` blocks without changing the existing dynamic `AngleSet` / `AngleAdd` / `AngleDraw value/scale` artifact.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-anglemul-dynamic` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `AngleMul value` as an `angle_multiplier` float that multiplies the drawing angle used by `AngleDraw`.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "dynamic AngleMul|dynamic AngleDraw|AngleMul"` -> 1 file passed, 3 matching tests passed.
+- Trace gate: `pnpm qa:trace` -> 449/449 artifacts, 419 required and 30 optional; `synthetic-imported-anglemul-dynamic.json` checksum `418ed880`, final checksum `4a6a3045`.
+- Full test suite: `pnpm test` -> 151 files passed, 1358 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite chunk-size warning.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Smoke/visual QA: not run; this cut changed runtime/controller docs and trace evidence, not frontend, renderer assets, Studio UI, sprites, CSS, or visible layout.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AngleMul value` can resolve through sprite-effect expression fallback and multiply current sprite rotation state into trace-gated render-angle telemetry. The synthetic route proves `AngleSet value = var(0)`, `AngleMul value = fvar(0)`, and static `AngleDraw` reach imported actor-frame `renderAngle = 45` without typed `sprite-effect:anglemul` evidence.
+
+Claim blocked:
+
+- Dynamic typed-operation lowering for `AngleMul`, exact MUGEN/IKEMEN axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, score movement, and full presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 449/449 artifacts, 419 required and 30 optional. Latest runtime evidence is dynamic `AngleMul`; previous static AngleMul, dynamic Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX precision from the next-10 queue, or continue R2 by moving the next raw presentation/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Static AngleMul trace gate
 
 Changed:

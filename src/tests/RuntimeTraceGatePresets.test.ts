@@ -349,6 +349,7 @@ import {
   createSyntheticImportedDynamicTransTraceArtifact,
   createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedAngleMulTraceArtifact,
+  createSyntheticImportedDynamicAngleMulTraceArtifact,
   createSyntheticImportedDynamicAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
@@ -8614,6 +8615,57 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+  });
+
+  it("creates a synthetic imported dynamic AngleMul artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicAngleMulTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-anglemul-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-anglemul-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AngleSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AngleMul).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AngleDraw).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:angleset"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:anglemul"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:angledraw"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          minAngle: 45,
+          maxAngle: 45,
+        }),
+      ]),
+    );
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        animNo: 200,
+        observedAngleAtLeast: 45,
+        observedAngleAtMost: 45,
+        minFrames: 1,
+      },
+    ]);
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.renderAngle === 45)).toBe(true);
   });
 
   it("creates a synthetic imported dynamic AngleDraw artifact with expression fallback evidence", () => {

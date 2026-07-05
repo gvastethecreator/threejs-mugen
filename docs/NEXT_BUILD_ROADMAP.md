@@ -27,14 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required static AngleMul trace gate
+R1 required dynamic AngleMul trace gate
+  -> synthetic-imported-anglemul-dynamic.json checksum 418ed880 / final checksum 4a6a3045 is required in qa:trace
+  -> imported active state seeds var(0)=30 and fvar(0)=1.5
+  -> active state executes AngleSet value = var(0), AngleMul value = fvar(0), and static AngleDraw
+  -> dynamic AngleMul resolves through sprite-effect fallback instead of typed sprite-effect:anglemul evidence
+  -> final imported actor-frame evidence requires renderAngle 45 while static sprite-effect:angledraw evidence remains present
+  -> pnpm qa:trace passes 449/449 artifacts, 419 required and 30 optional
+  -> official Elecbyte docs define AngleMul value as an angle_multiplier float that multiplies the drawing angle used by AngleDraw
+  -> no score movement; dynamic typed-operation lowering for AngleMul, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required static AngleMul trace gate
   -> synthetic-imported-anglemul.json checksum e0dae072 / final checksum 5048aa5c is required in qa:trace
   -> imported active state executes AngleSet value = 30, AngleMul value = 1.5, and AngleDraw
   -> static AngleMul lowers into typed sprite-effect:anglemul operation evidence
   -> final imported actor-frame evidence requires renderAngle 45
-  -> pnpm qa:trace passes 448/448 artifacts, 418 required and 30 optional
-  -> official Elecbyte docs define AngleMul value as an angle_multiplier float that multiplies the drawing angle used by AngleDraw
-  -> no score movement; dynamic typed-operation lowering for AngleMul, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> pnpm qa:trace passed 448/448 artifacts, 418 required and 30 optional
+  -> no score movement; exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
 Previous R1 required dynamic Angle trace gate
   -> synthetic-imported-angle-dynamic.json checksum 8f788bf8 is required in qa:trace
