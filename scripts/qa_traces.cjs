@@ -1677,9 +1677,19 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileHitSuffixTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-projhit-suffix-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitSuffixAnyTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-projguarded-suffix",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGuardedSuffixTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-projguarded-suffix-any",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardedSuffixAnyTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-guardedtime-any",
@@ -3176,7 +3186,9 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-projcontactpersist",
     "synthetic-imported-projectile-projcontact-suffix",
     "synthetic-imported-projectile-projhit-suffix",
+    "synthetic-imported-projectile-projhit-suffix-any",
     "synthetic-imported-projectile-projguarded-suffix",
+    "synthetic-imported-projectile-projguarded-suffix-any",
     "synthetic-imported-projectile-guardedtime-any",
     "synthetic-imported-projectile-guardedtime-id",
     "synthetic-imported-projectile-motion",

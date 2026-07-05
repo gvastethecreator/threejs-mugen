@@ -27,12 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile ProjHit/ProjGuarded suffix second-form trace gates
-  -> synthetic-imported-projectile-projhit-suffix.json checksum dd3db5ee and synthetic-imported-projectile-projguarded-suffix.json checksum 80bbe439 are required in qa:trace
-  -> player-owned Projectile id 8898 hits, owner state 200 routes on ProjHit8898 = 1, >= 1, then branches 352 -> 353 through fixed-id first-form suffix syntax with active projectile payload, owner target-link, hit sound, and FightFX spark package evidence
-  -> player-owned Projectile id 8899 is guarded, owner state 200 routes on ProjGuarded8899 = 1, >= 1, then branches 354 -> 355 through fixed-id first-form suffix syntax with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
-  -> pnpm qa:trace passes 426/426 artifacts, 396 required and 30 optional
-  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard contact packages, and full Projectile parity remain blocked
+R1 required player Projectile ProjHit/ProjGuarded any-id suffix trace gates
+  -> synthetic-imported-projectile-projhit-suffix-any.json checksum 35ffd57d and synthetic-imported-projectile-projguarded-suffix-any.json checksum 4000bc4f are required in qa:trace
+  -> player-owned Projectile id 8900 hits, owner state 200 routes on omitted-ID ProjHit = 1, >= 1, then branches 356 -> 357 through ID 0 ProjHit0 = 1 with active projectile payload, owner target-link, hit sound, and FightFX spark package evidence
+  -> player-owned Projectile id 8901 is guarded, owner state 200 routes on omitted-ID ProjGuarded = 1, >= 1, then branches 358 -> 359 through ID 0 ProjGuarded0 = 1 with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
+  -> pnpm qa:trace passes 428/428 artifacts, 398 required and 30 optional
+  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, multi-projectile selection beyond one matching any-id route, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard contact packages, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjHit/ProjGuarded fixed-id suffix trace gates
+  -> synthetic-imported-projectile-projhit-suffix.json checksum dd3db5ee and synthetic-imported-projectile-projguarded-suffix.json checksum 80bbe439 remain required in qa:trace
+  -> player-owned Projectile ids 8898/8899 route owner states 200 -> 352 -> 353 and 200 -> 354 -> 355 through fixed-id second-form suffix syntax
+  -> pnpm qa:trace previously passed 426/426 artifacts, 396 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjContact suffix second-form trace gate
   -> synthetic-imported-projectile-projcontact-suffix.json checksum c904ded7 remains required in qa:trace

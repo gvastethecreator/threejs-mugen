@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjHit and ProjGuarded any-id suffix required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projhit-suffix-any.json` and `synthetic-imported-projectile-projguarded-suffix-any.json` trace coverage for Elecbyte omitted-ID / ID `0` any-projectile hit/guard suffix syntax.
+- `scripts/qa_traces.cjs` registers both artifacts as required coverage.
+- Fixed `ExpressionCompiler` function metadata scanning so a later function occurrence such as `ProjGuarded()` is not hidden by an earlier sibling identifier such as `ProjGuardedTime`.
+- Extended compiler/evaluator coverage for omitted-ID and ID `0` `ProjHit` / `ProjGuarded` suffix forms.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines omitted ID as any projectile and ID `0` as equivalent to omitted ID for `ProjHit` and `ProjGuarded`, including second-form tick relations.
+- Focused tests: `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "legacy projectile|supported and unsupported|Proj(Contact|Hit|Guarded) suffix"` -> 3 files passed, 5 tests passed.
+- Focused new-preset tests: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Proj(Hit|Guarded) any-id suffix"` -> 1 file passed, 2 tests passed.
+- Trace gate: `pnpm qa:trace` -> 428/428 artifacts, 398 required and 30 optional; `synthetic-imported-projectile-projhit-suffix-any.json` checksum `35ffd57d`; `synthetic-imported-projectile-projguarded-suffix-any.json` checksum `4000bc4f`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile omitted-ID and ID `0` legacy `ProjHit` / `ProjGuarded` suffix syntax can drive owner CNS routing after hit/guard Projectile contact.
+- Hit gate proves `200 -> 356 -> 357`, Projectile id `8900`, omitted-ID `ProjHit = 1, >= 1`, ID `0` `ProjHit0 = 1`, active projectile payload, target link, `S5,19`, `F7026`, `sparkxy = 20,-62`.
+- Guard gate proves `200 -> 358 -> 359`, Projectile id `8901`, omitted-ID `ProjGuarded = 1, >= 1`, ID `0` `ProjGuarded0 = 1`, active projectile payload, target link, `S6,20`, `F7027`, `sparkxy = 21,-63`.
+
+Claim blocked:
+
+- Exact `ProjHit` / `ProjGuarded` one-tick lifetime/order, multi-projectile selection beyond one matching any-id route, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded hit/guard packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact Proj* lifetime/order, multi-projectile id arbitration, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjHit and ProjGuarded suffix required trace gates
 
 Changed:

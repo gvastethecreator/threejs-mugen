@@ -130,11 +130,11 @@ describe("ExpressionEvaluator", () => {
     const context = {
       self: state,
       projContact: (id?: number) => id === 8897 || id === undefined,
-      projHit: (id?: number) => id === 8898,
-      projGuarded: (id?: number) => id === 8899,
+      projHit: (id?: number) => id === 8898 || id === undefined,
+      projGuarded: (id?: number) => id === 8899 || id === undefined,
       projContactTime: (id?: number) => (id === 8897 || id === undefined ? 2 : -1),
-      projHitTime: (id?: number) => (id === 8898 ? 4 : -1),
-      projGuardedTime: (id?: number) => (id === 8899 ? 0 : -1),
+      projHitTime: (id?: number) => (id === 8898 ? 4 : id === undefined ? 2 : -1),
+      projGuardedTime: (id?: number) => (id === 8899 ? 0 : id === undefined ? 1 : -1),
     };
 
     expect(evaluateExpression("ProjContact8897 = 1", context)).toBe(1);
@@ -146,6 +146,10 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("ProjContact1234 = 0, < 15", context)).toBe(1);
     expect(evaluateExpression("ProjContact0 = 1", context)).toBe(1);
     expect(evaluateExpression("ProjContact = 1, >= 1", context)).toBe(1);
+    expect(evaluateExpression("ProjHit0 = 1", context)).toBe(1);
+    expect(evaluateExpression("ProjHit = 1, >= 1", context)).toBe(1);
+    expect(evaluateExpression("ProjGuarded0 = 1", context)).toBe(1);
+    expect(evaluateExpression("ProjGuarded = 1, >= 1", context)).toBe(1);
   });
 
   it("evaluates common MUGEN axis, range, const, and hitvar trigger syntax", () => {

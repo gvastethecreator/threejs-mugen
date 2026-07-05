@@ -58,12 +58,13 @@ export function compileExpression(expression: string): ExpressionIr {
     unsupportedFeatures.add("range syntax");
   }
 
-  for (const identifier of withoutStrings.match(/[A-Za-z_][A-Za-z0-9_.]*/g) ?? []) {
+  for (const match of withoutStrings.matchAll(/[A-Za-z_][A-Za-z0-9_.]*/g)) {
+    const identifier = match[0];
     const lower = identifier.toLowerCase();
     if (supportedExpressionLiterals.has(lower)) {
       continue;
     }
-    if (isFunctionCall(withoutStrings, identifier)) {
+    if (isFunctionCall(withoutStrings, identifier, match.index)) {
       functions.add(identifier);
       if (!supportedExpressionFunctions.has(lower)) {
         unsupportedFeatures.add(identifier);
@@ -305,10 +306,6 @@ const supportedExpressionFunctions = new Set([
 
 const supportedExpressionLiterals = new Set(["a", "c", "h", "i", "l", "n", "s", "sc", "na", "sa", "ha"]);
 
-function isFunctionCall(expression: string, identifier: string): boolean {
-  const index = expression.toLowerCase().indexOf(identifier.toLowerCase());
-  if (index < 0) {
-    return false;
-  }
+function isFunctionCall(expression: string, identifier: string, index: number): boolean {
   return expression.slice(index + identifier.length).trimStart()[0] === "(";
 }

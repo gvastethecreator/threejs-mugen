@@ -363,7 +363,9 @@ import {
   createSyntheticImportedProjectileContactPersistTraceArtifact,
   createSyntheticImportedProjectileContactSuffixTraceArtifact,
   createSyntheticImportedProjectileHitSuffixTraceArtifact,
+  createSyntheticImportedProjectileHitSuffixAnyTraceArtifact,
   createSyntheticImportedProjectileGuardedSuffixTraceArtifact,
+  createSyntheticImportedProjectileGuardedSuffixAnyTraceArtifact,
   createSyntheticImportedProjectileContactTimeTraceArtifact,
   createSyntheticImportedProjectileContactTimeAnyTraceArtifact,
   createSyntheticImportedProjectileGuardedTimeTraceArtifact,
@@ -19519,6 +19521,77 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Projectile ProjHit any-id suffix artifact with omitted and zero-id evidence", () => {
+    const artifact = createSyntheticImportedProjectileHitSuffixAnyTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-projhit-suffix-any-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-projhit-suffix-any-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 356, 357]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 356, animNo: 1078, moveType: "A" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 357, animNo: 1079, moveType: "I" }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: 8900,
+        minAge: 1,
+        minPriority: 1,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8900 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 19, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7026,
+            raw: "F7026",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7026,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 20, y: -62 },
+          }),
+        }),
+      ]),
+    );
+  });
+
   it("creates a synthetic imported Projectile ProjGuarded suffix artifact with second-form trigger evidence", () => {
     const artifact = createSyntheticImportedProjectileGuardedSuffixTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
     const gate = artifact.gates[0];
@@ -19582,6 +19655,77 @@ describe("RuntimeTraceGatePresets", () => {
             assetFrameCount: 2,
             assetTotalDuration: 11,
             offset: { x: 19, y: -61 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile ProjGuarded any-id suffix artifact with omitted and zero-id evidence", () => {
+    const artifact = createSyntheticImportedProjectileGuardedSuffixAnyTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-projguarded-suffix-any-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-projguarded-suffix-any-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 358, 359]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 358, animNo: 1080, moveType: "A" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 359, animNo: 1081, moveType: "I" }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: 8901,
+        minAge: 1,
+        minPriority: 1,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8901 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 20, contactKind: "guard" }),
+          hitEffect: expect.objectContaining({
+            kind: "guard",
+            sparkNo: 7027,
+            raw: "F7027",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7027,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 21, y: -63 },
           }),
         }),
       ]),
