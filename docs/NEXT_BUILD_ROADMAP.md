@@ -27,11 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile ProjContact any-id suffix trace gate
-  -> synthetic-imported-projectile-projcontact-suffix-any.json checksum 2fb80418 is required in qa:trace
-  -> player-owned Projectile id 8902 is guarded, owner state 200 routes on omitted-ID ProjContact = 1, >= 1, then branches 360 -> 361 through ID 0 ProjContact0 = 1 with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
-  -> pnpm qa:trace passes 429/429 artifacts, 399 required and 30 optional
-  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection beyond one matching any-id route, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+R1 required player Projectile ProjContact multi-id arbitration trace gate
+  -> synthetic-imported-projectile-projcontact-multi-id.json checksum e790ec3e is required in qa:trace
+  -> player-owned wrong-id/non-contact Projectile id 8903 is isolated from valid guarded Projectile id 8904; owner state 200 routes 200 -> 362 -> 363 through fixed-id ProjContact8904 = 1, >= 1 plus any-id ProjContact = 1, >= 1 and ID 0 ProjContact0 = 1, while forbidden state 364 proves ProjContact8903 = 1 does not route
+  -> evidence keeps two Projectile controller/op executions, two Projectile payloads, owner target-link id 8904, guard sound S6,22, FightFX F7029, and sparkxy 23,-65
+  -> pnpm qa:trace passes 430/430 artifacts, 400 required and 30 optional
+  -> no score movement; exact ProjContact tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard package, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjContact any-id suffix trace gate
+  -> synthetic-imported-projectile-projcontact-suffix-any.json checksum 2fb80418 remains required in qa:trace
+  -> player-owned Projectile id 8902 routes owner 200 -> 360 -> 361 through omitted-ID ProjContact = 1, >= 1 and ID 0 ProjContact0 = 1
+  -> pnpm qa:trace previously passed 429/429 artifacts, 399 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjHit/ProjGuarded any-id suffix trace gates
   -> synthetic-imported-projectile-projhit-suffix-any.json checksum 35ffd57d and synthetic-imported-projectile-projguarded-suffix-any.json checksum 4000bc4f are required in qa:trace

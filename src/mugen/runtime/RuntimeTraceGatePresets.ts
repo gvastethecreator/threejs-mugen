@@ -22380,6 +22380,148 @@ export function createSyntheticImportedProjectileContactSuffixAnyTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileContactMultiIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-projcontact-multi-id-attacker",
+    displayName: "Synthetic Imported Projectile ProjContact Multi ID Attacker",
+    withProjectile: true,
+    projectileId: 8904,
+    projectileOffset: [62, -45],
+    projectileVelocity: [36, 0],
+    projectileRemoveOnHit: false,
+    projectileGuardSound: "S6,22",
+    projectileGuardSpark: "F7029",
+    projectileSparkXy: [23, -65],
+    secondaryProjectile: {
+      id: 8903,
+      triggerTime: 3,
+      offset: [62, -220],
+      velocity: [36, 0],
+      removeOnHit: false,
+    },
+    projContactPersistRoute: {
+      entryStateNo: 362,
+      entryAnimNo: 1084,
+      finalStateNo: 363,
+      finalAnimNo: 1085,
+      contactTrigger: "ProjContact8904 = 1, >= 1 && ProjContact = 1, >= 1",
+      branchTriggers: ["ProjContact8904 = 1", "ProjContact0 = 1"],
+      trapTriggers: [{ stateNo: 364, trigger: "ProjContact8903 = 1", label: "Wrong ProjContact ID Trap" }],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7029, 8129),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-projcontact-multi-id-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-projcontact-multi-id-golden",
+      label: "Synthetic imported Projectile ProjContact multi-id arbitration route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ProjContact multi-id trace proves bounded player-owned Projectile contact markers can ignore a non-contact fixed ID while fixed-ID and any-ID ProjContact syntax route from a second projectile contact. This is bounded two-projectile owner-state arbitration evidence only; exact ProjContact tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, redirects, teams, helper-owned custom-state targets, score movement, and full MUGEN/IKEMEN projectile parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-projcontact-multi-id-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 362, 363],
+        forbiddenExecutedStates: [364],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "Projectile", minCount: 2 }],
+        requiredExecutedOperations: ["hitdef", { operation: "projectile", minCount: 2 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 22,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7029,
+              raw: "F7029",
+              rawPrefix: "F",
+              offsetX: 23,
+              offsetY: -65,
+              assetSource: "fightfx",
+              assetActionId: 7029,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8129,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 362, animNo: 1084, moveType: "A", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 363, animNo: 1085, moveType: "I", minFrames: 1 },
+          { actorId: "p1-projectile-0", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+          { actorId: "p1-projectile-1", source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-0", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", id: "p1-projectile-1", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minProjectiles: 2, minNextProjectileSerial: 2 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-1",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8903,
+            minAge: 1,
+            minPriority: 1,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8904,
+            minAge: 1,
+            minPriority: 1,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8904 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileHitSuffixTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -31028,6 +31170,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withSuperPause?: boolean;
   withProjectile?: boolean;
   omitProjectileId?: boolean;
+  projectileTriggerTime?: number;
   projectileId?: number;
   projectileTargetId?: number;
   projectileChainId?: number;
@@ -31074,6 +31217,22 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileSparkXy?: [number, number];
   projectileGuardHitTime?: number;
   omitProjectileGuardHitTime?: boolean;
+  secondaryProjectile?: {
+    triggerTime?: number;
+    id: number;
+    offset?: [number, number];
+    velocity?: [number, number];
+    groundVelocity?: [number, number?];
+    hits?: number;
+    missTime?: number;
+    removeOnHit?: boolean;
+    hitSound?: string;
+    guardSound?: string;
+    hitSpark?: string;
+    guardSpark?: string;
+    sparkXy?: [number, number];
+    guardFlag?: string;
+  };
   projContactStateNo?: number;
   projHitStateNo?: number;
   projHitTimeStateNo?: number;
@@ -31088,6 +31247,7 @@ export type SyntheticImportedTraceFighterOptions = {
     finalAnimNo?: number;
     contactTrigger?: string;
     branchTriggers?: string[];
+    trapTriggers?: Array<{ stateNo: number; trigger: string; label?: string }>;
   };
   projGuardedTimeAnyStateNo?: number;
   projCancelTimeStateNo?: number;
@@ -31734,7 +31894,8 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
+${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -34293,6 +34454,8 @@ function projectileControllerBlock(
   omitGuardVelocity = false,
   omitGuardHitTime = false,
   hitDefHitCount?: number,
+  triggerTime = 2,
+  label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
   const removeAnimLine = removeAnim === undefined ? "" : `projremanim = ${removeAnim}`;
@@ -34329,9 +34492,9 @@ ${guardCornerPush === undefined ? "" : `guard.cornerpush.veloff = ${guardCornerP
 ${airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${airGuardCornerPush}`}
 `;
   return `
-[State 200, Fast Projectile]
+[State 200, ${label}]
 type = Projectile
-trigger1 = Time = 2
+trigger1 = Time = ${triggerTime}
 ${projectileIdLine}
 ${targetIdLine}
 ${chainIdLine}
@@ -34373,6 +34536,47 @@ ${guardControlTimeLine}
 ${guardVelocityLine}
 ${airGuardVelocityLine}
 ${cornerPushLines}
+guard.dist = 120
+sprpriority = 7
+`;
+}
+
+function secondaryProjectileControllerBlock(projectile: NonNullable<SyntheticImportedTraceFighterOptions["secondaryProjectile"]>): string {
+  const offset = projectile.offset ?? [62, -45];
+  const velocity = projectile.velocity ?? [36, 0];
+  const groundVelocity = projectile.groundVelocity ?? [-5];
+  const removeOnHitLine = projectile.removeOnHit === undefined ? "" : `projremove = ${projectile.removeOnHit ? 1 : 0}`;
+  const hitSoundLine = projectile.hitSound === undefined ? "" : `hitsound = ${projectile.hitSound}`;
+  const guardSoundLine = projectile.guardSound === undefined ? "" : `guardsound = ${projectile.guardSound}`;
+  const hitSparkLine = projectile.hitSpark === undefined ? "" : `sparkno = ${projectile.hitSpark}`;
+  const guardSparkLine = projectile.guardSpark === undefined ? "" : `guard.sparkno = ${projectile.guardSpark}`;
+  const sparkXyLine = projectile.sparkXy === undefined ? "" : `sparkxy = ${projectile.sparkXy[0]},${projectile.sparkXy[1]}`;
+  return `
+[State 200, Secondary Projectile]
+type = Projectile
+trigger1 = Time = ${projectile.triggerTime ?? 2}
+projid = ${projectile.id}
+projpriority = 1
+projhits = ${projectile.hits ?? 1}
+projmisstime = ${projectile.missTime ?? 0}
+${removeOnHitLine}
+projanim = 910
+offset = ${offset[0]},${offset[1]}
+velocity = ${velocity[0]},${velocity[1]}
+projremovetime = 24
+damage = 31,4
+pausetime = 4,4
+ground.hittime = 13
+ground.velocity = ${groundVelocity.join(",")}
+${hitSoundLine}
+${guardSoundLine}
+${hitSparkLine}
+${guardSparkLine}
+${sparkXyLine}
+guardflag = ${projectile.guardFlag ?? "MA"}
+guard.pausetime = 3,3
+guard.hittime = 8
+guard.velocity = -2
 guard.dist = 120
 sprpriority = 7
 `;
@@ -34429,7 +34633,11 @@ function projContactPersistEntryBlock(
   projectileId: number,
 ): string {
   const contactTrigger = route.contactTrigger ?? `ProjContactTime(${projectileId}) >= 1`;
-  return contactBranchBlock(`ProjContact(${projectileId}) && ${contactTrigger}`, route.entryStateNo, "ProjContactPersist Entry");
+  const trapBlocks =
+    route.trapTriggers
+      ?.map((trap) => contactBranchBlock(trap.trigger, trap.stateNo, trap.label ?? "ProjContact Trap"))
+      .join("") ?? "";
+  return `${trapBlocks}${contactBranchBlock(`ProjContact(${projectileId}) && ${contactTrigger}`, route.entryStateNo, "ProjContactPersist Entry")}`;
 }
 
 function projContactPersistRouteBlock(
@@ -34442,6 +34650,7 @@ function projContactPersistRouteBlock(
   const branchTriggerLines = (route.branchTriggers ?? [`ProjContact(${projectileId})`])
     .map((trigger) => `trigger1 = ${trigger}`)
     .join("\n");
+  const trapStates = route.trapTriggers?.map((trap) => simpleStateBlock(trap.stateNo, "I")).join("") ?? "";
   return `
 [Statedef ${route.entryStateNo}]
 type = S
@@ -34463,6 +34672,7 @@ movetype = I
 physics = S
 anim = ${finalAnimNo}
 ctrl = 0
+${trapStates}
 `;
 }
 

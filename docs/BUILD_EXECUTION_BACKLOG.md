@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjContact multi-id arbitration required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projcontact-multi-id.json` trace coverage for two-projectile player-owned `ProjContact` fixed-id plus any-id arbitration.
+- `RuntimeTraceGatePresets` can now spawn a secondary synthetic Projectile and author forbidden trap branches for `ProjContact` routes.
+- `scripts/qa_traces.cjs` registers the artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines fixed `ProjContact[ID]` filters, omitted ID as any projectile, ID `0` as equivalent to omitted ID, and first/second-form `ProjContact` tick relation syntax.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ProjContact multi-id"` -> 1 file passed, 1 test passed.
+- Trace gate: `pnpm qa:trace` -> 430/430 artifacts, 400 required and 30 optional; `synthetic-imported-projectile-projcontact-multi-id.json` checksum `e790ec3e`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile `ProjContact` can distinguish a non-contact fixed ID from a later guarded fixed ID while any-id forms still observe the valid contact.
+- Contact gate proves two Projectile controller/op executions, two live Projectile payloads, wrong-id trap state `364` forbidden, owner route `200 -> 362 -> 363`, fixed-id `ProjContact8904 = 1, >= 1`, any-id `ProjContact = 1, >= 1`, ID `0` `ProjContact0 = 1`, target link id `8904`, `S6,22`, `F7029`, and `sparkxy = 23,-65`.
+
+Claim blocked:
+
+- Exact `ProjContact` tick order/lifetime, same-ID selection priority, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded guard package, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact Proj* lifetime/order, same-id selection, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjContact any-id suffix required trace gate
 
 Changed:
