@@ -138,6 +138,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
   const push = Math.abs(groundVelocity?.[0] ?? 18);
   const guardVelocity = normalizeOptionalVelocityPair(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
   const airVelocity = normalizeOptionalVelocityPair(operation?.airVelocity) ?? velocityPair(findControllerParam(input.controller, "air.velocity"));
   const airGuardVelocity =
     normalizeOptionalVelocityPair(operation?.airGuardVelocity) ??
@@ -157,7 +158,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const attr = operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP";
   const cornerPush = resolveHitDefCornerPush({
     attr,
-    guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0],
+    guardVelocityX,
     groundCornerPush: operation?.groundCornerPush ?? firstNumber(findControllerParam(input.controller, "ground.cornerpush.veloff")),
     airCornerPush: operation?.airCornerPush ?? firstNumber(findControllerParam(input.controller, "air.cornerpush.veloff")),
     downCornerPush: operation?.downCornerPush ?? firstNumber(findControllerParam(input.controller, "down.cornerpush.veloff")),
@@ -220,7 +221,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardStun,
     guardSlideTime,
     guardControlTime,
-    guardPush: Math.abs(guardVelocity?.[0] ?? Math.max(1, Math.round(push * 0.55))),
+    guardPush: Math.abs(guardVelocityX ?? Math.max(1, Math.round(push * 0.55))),
     guardVelocityY: guardVelocity?.[1],
     airGuardPush: airGuardVelocity ? Math.abs(airGuardVelocity[0]) : undefined,
     airGuardVelocityY: airGuardVelocity?.[1],

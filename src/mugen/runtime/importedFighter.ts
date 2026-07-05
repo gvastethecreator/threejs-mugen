@@ -132,10 +132,11 @@ function buildStateMoves(
     const fallbackHitbox = { x1: 14, y1: -72, x2: 78, y2: -38 };
     const groundVelocity = numberPair(hitDef.params["ground.velocity"]);
     const guardVelocity = numberPair(hitDef.params["guard.velocity"]);
+    const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
     const airGuardVelocity = numberPair(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberPair(hitDef.params["air.velocity"]));
     const cornerPush = resolveHitDefCornerPush({
       attr: hitDef.params.attr,
-      guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0],
+      guardVelocityX,
       groundCornerPush: firstNumber(hitDef.params["ground.cornerpush.veloff"]) ?? undefined,
       airCornerPush: firstNumber(hitDef.params["air.cornerpush.veloff"]) ?? undefined,
       downCornerPush: firstNumber(hitDef.params["down.cornerpush.veloff"]) ?? undefined,
@@ -160,7 +161,7 @@ function buildStateMoves(
         guardStun: firstNumber(hitDef.params["guard.hittime"]) ?? undefined,
         guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]) ?? undefined,
         guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
-        guardPush: Math.abs(guardVelocity?.[0] ?? 0) || undefined,
+        guardPush: Math.abs(guardVelocityX ?? 0) || undefined,
         guardVelocityY: guardVelocity?.[1] ?? undefined,
         airGuardPush: Math.abs(airGuardVelocity?.[0] ?? 0) || undefined,
         airGuardVelocityY: airGuardVelocity?.[1] ?? undefined,

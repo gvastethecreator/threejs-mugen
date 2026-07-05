@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Default guard velocity required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-guard-velocity-default.json`, `synthetic-imported-projectile-guard-velocity-default.json`, and `synthetic-imported-helper-projectile-guard-velocity-default.json` trace coverage.
+- `HitDefSystem`, `ProjectileSystem`, and imported fighter move construction now derive omitted `guard.velocity` from `ground.velocity.x` before older fallback/default values.
+- `RuntimeTraceGatePresets` can omit `guard.velocity` in direct `HitDef`, player-owned `Projectile`, and helper-parented `Projectile` scripts while keeping explicit `ground.velocity = -6`.
+- `scripts/qa_traces.cjs` registers all three default-guard-velocity artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define omitted `guard.velocity` as defaulting to the `x_velocity` value of `ground.velocity`; Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned.
+- Focused tests: `pnpm exec vitest run src/tests/HitDefSystem.test.ts src/tests/ProjectileSystem.test.ts --testNamePattern "guard.velocity"` -> 2 files passed, 6 tests passed, 15 skipped; `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "guard.velocity"` -> 1 file passed, 9 tests passed, 384 skipped.
+- Trace gate: `pnpm qa:trace` -> 400/400 artifacts, 370 required and 30 optional; `synthetic-imported-guard-velocity-default.json` checksum `e6bd9b40`; `synthetic-imported-projectile-guard-velocity-default.json` checksum `b72451a4`; `synthetic-imported-helper-projectile-guard-velocity-default.json` checksum `2067ba99`.
+- Closeout gates: `pnpm test` -> 151 files passed, 1263 tests passed; `pnpm typecheck` passed; `pnpm build` passed with existing Vite large-chunk warning; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF normalization warnings only.
+
+Claim allowed:
+
+- Bounded direct-HitDef default stand-guard velocity derivation: omitted `guard.velocity` falls back to `ground.velocity.x = -6` and P2 stand guard slide state `151` observes X velocity at least `5.5`.
+- Bounded player-owned Projectile default stand-guard velocity derivation: omitted Projectile `guard.velocity` falls back through the Projectile HitDef parameter set to `ground.velocity.x = -6`, with projectile target/lifecycle evidence.
+- Bounded helper-parented Projectile default stand-guard velocity derivation: omitted helper-local Projectile `guard.velocity` falls back to `ground.velocity.x = -6`, with owner/helper target links plus helper/projectile payload evidence.
+
+Claim blocked:
+
+- Exact guard timing/effects, guard velocity decay/friction, guard pushbox details, corner-push timing/decay, visual/audio guard parity, throws, teams/simul, score movement, and full MUGEN/IKEMEN guard/projectile parity.
+
+Next:
+
+- Continue R1 with exact Common1 guard/fall/recovery timing, guard velocity decay/friction, corner-push decay/friction, helper/projectile custom-state breadth, or another official-doc-backed route that expands blocked behavior with new required trace evidence. Do not reselect bounded default-guard-velocity derivation unless adding one blocked dimension.
+
 ## 2026-07-05 - Default guard cornerpush required trace gates
 
 Changed:

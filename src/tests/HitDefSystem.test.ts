@@ -151,6 +151,32 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     });
   });
 
+  it("derives missing guard.velocity from ground.velocity x", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        damage: "20,3",
+        guardflag: "MA",
+        "ground.velocity": "-6,-2",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardDamage: 3,
+      guardFlag: "MA",
+      guardPush: 6,
+    });
+    expect(actor.currentMove?.guardVelocityY).toBeUndefined();
+  });
+
   it("derives official cornerpush defaults from guard velocity", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

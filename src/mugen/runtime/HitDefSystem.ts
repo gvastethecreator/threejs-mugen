@@ -87,14 +87,15 @@ export class RuntimeHitDefControllerDispatchWorld {
     const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
     const airGuardVelocity =
       operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity")) ?? deriveDefaultAirGuardVelocity(airVelocity);
+    const guardVelocityX = guardVelocity?.[0] ?? groundVelocity?.[0];
     const guardDistance =
       operation?.guardDistance ?? firstNumber(findParam(source, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
-    const guardPush = Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
+    const guardPush = Math.abs(guardVelocityX ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
     const airGuardPush = airGuardVelocity ? Math.abs(airGuardVelocity[0]) : existing?.airGuardPush;
     const attr = operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA";
     const cornerPush = resolveHitDefCornerPush({
       attr,
-      guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0] ?? existing?.guardPush,
+      guardVelocityX: guardVelocityX ?? existing?.guardPush,
       groundCornerPush: operation?.groundCornerPush ?? firstNumber(findParam(source, "ground.cornerpush.veloff")) ?? existing?.cornerPush,
       airCornerPush: operation?.airCornerPush ?? firstNumber(findParam(source, "air.cornerpush.veloff")) ?? existing?.airCornerPush,
       downCornerPush: operation?.downCornerPush ?? firstNumber(findParam(source, "down.cornerpush.veloff")) ?? existing?.downCornerPush,
