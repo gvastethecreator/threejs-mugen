@@ -6,6 +6,7 @@ import {
   applyRuntimeAfterImageTimeController,
   applyRuntimeAngleController,
   applyRuntimePaletteFxController,
+  applyRuntimeRemapPalController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
   RuntimeSpriteEffectControllerWorld,
@@ -92,6 +93,21 @@ describe("SpriteEffectSystem", () => {
     applyRuntimePaletteFxController(state, controller("PalFX", { time: "0" }));
 
     expect(state.paletteFx).toBeUndefined();
+  });
+
+  it("applies bounded RemapPal palette telemetry from raw and typed params", () => {
+    const state = runtimeState();
+
+    applyRuntimeRemapPalController(state, controller("RemapPal", { source: "-1,1.4", dest: "2,3" }));
+    expect(state.paletteRemap).toEqual({ source: [0, 1], dest: [2, 3] });
+
+    applyRuntimeRemapPalController(state, controller("RemapPal", { source: "1,1", dest: "1,2" }), {
+      kind: "sprite-effect",
+      controllerType: "remappal",
+      source: [3, 4],
+      dest: [5, 6],
+    });
+    expect(state.paletteRemap).toEqual({ source: [3, 4], dest: [5, 6] });
   });
 
   it("applies AfterImage and captures bounded sprite samples", () => {
@@ -252,6 +268,7 @@ describe("SpriteEffectSystem", () => {
       priority: 4,
     });
     world.applyPaletteFx(state, controller("PalFX", { time: "2", add: "10,20,30" }));
+    world.applyRemapPal(state, controller("RemapPal", { source: "1,0", dest: "2,4" }));
     world.applyAfterImage(
       state,
       controller("AfterImage", { time: "3", length: "2", timegap: "1", framegap: "1" }),
@@ -263,6 +280,7 @@ describe("SpriteEffectSystem", () => {
 
     expect(state.spritePriority).toBe(4);
     expect(state.paletteFx).toMatchObject({ remaining: 2, time: 2, add: [10, 20, 30] });
+    expect(state.paletteRemap).toEqual({ source: [1, 0], dest: [2, 4] });
     expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
     expect(state.renderOpacity).toBe(0.5);
     expect(state.renderAngle).toBe(35);
@@ -327,6 +345,26 @@ describe("SpriteEffectSystem", () => {
 
     expect(actor.runtime.renderOpacity).toBe(0.5);
     expect(recordedOperations).toEqual(["sprite-effect:trans"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
+  });
+
+  it("dispatches RemapPal controllers through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("RemapPal", { source: "1,0", dest: "2,4" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "remappal",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(actor.runtime.paletteRemap).toEqual({ source: [1, 0], dest: [2, 4] });
+    expect(recordedOperations).toEqual(["sprite-effect:remappal"]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 

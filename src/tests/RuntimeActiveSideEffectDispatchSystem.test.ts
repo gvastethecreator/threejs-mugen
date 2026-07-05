@@ -16,6 +16,7 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
     ["fallenvshake", "fallenvshake", "fallEnvShake"],
     ["sprpriority", "sprite-effect", "spriteEffect"],
     ["palfx", "sprite-effect", "spriteEffect"],
+    ["remappal", "sprite-effect", "spriteEffect"],
     ["afterimage", "sprite-effect", "spriteEffect"],
     ["afterimagetime", "sprite-effect", "spriteEffect"],
     ["trans", "sprite-effect", "spriteEffect"],

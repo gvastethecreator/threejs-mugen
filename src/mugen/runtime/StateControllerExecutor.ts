@@ -27,7 +27,7 @@ import {
 } from "./RuntimeResourceSystem";
 import { clampRuntimeRandomUnit, fallbackRuntimeRandomUnit } from "./RuntimeRandomSystem";
 import { applyRuntimeTurn } from "./OrientationSystem";
-import { applyRuntimeAngleController, applyRuntimeTransController } from "./SpriteEffectSystem";
+import { applyRuntimeAngleController, applyRuntimeRemapPalController, applyRuntimeTransController } from "./SpriteEffectSystem";
 import { RuntimeHitDefenseWorld } from "./HitDefenseSystem";
 import { RuntimeDamageScaleWorld } from "./DamageScaleSystem";
 import { RuntimeStateTypeWorld } from "./StateTypeSystem";
@@ -166,7 +166,9 @@ export function executeControllerIr(
         : undefined;
     damageScaleWorld.applyController(next, controller, "attackmulset", operation, context);
   } else if (type === "remappal") {
-    applyRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"));
+    applyRuntimeRemapPalController(next, controller, spriteEffectOperation(controller, "remappal"), (key) =>
+      pairParam(controller, next, context, key),
+    );
   } else if (type === "trans") {
     applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"));
   } else if (type === "angleset" || type === "angleadd" || type === "angledraw") {
@@ -305,22 +307,6 @@ function spriteEffectOperation<T extends SpriteEffectControllerOp["controllerTyp
 
 function assertSpecialOperation(controller: ControllerIr): AssertSpecialControllerOp | undefined {
   return controller.operation?.kind === "assertspecial" ? controller.operation : undefined;
-}
-
-function applyRemapPalController(
-  state: CharacterRuntimeState,
-  controller: ControllerExecutionSource,
-  operation?: Extract<SpriteEffectControllerOp, { controllerType: "remappal" }>,
-): void {
-  const source = operation?.source ?? pairParam(controller, state, "source");
-  const dest = operation?.dest ?? pairParam(controller, state, "dest");
-  if (!source || !dest) {
-    return;
-  }
-  state.paletteRemap = {
-    source: [Math.max(0, Math.round(source[0])), Math.max(0, Math.round(source[1]))],
-    dest: [Math.max(0, Math.round(dest[0])), Math.max(0, Math.round(dest[1]))],
-  };
 }
 
 function numberParam(

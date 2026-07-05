@@ -11,9 +11,12 @@ export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
 
+export type RuntimeRemapPalPairResolver = (key: "source" | "dest") => [number, number] | undefined;
+
 export type RuntimeSpriteEffectControllerEffect =
   | "sprpriority"
   | "palfx"
+  | "remappal"
   | "afterimage"
   | "afterimagetime"
   | "trans"
@@ -54,6 +57,15 @@ export class RuntimeSpriteEffectWorld {
     operation?: Extract<SpriteEffectControllerOp, { controllerType: "palfx" }>,
   ): void {
     applyRuntimePaletteFxController(state, controller, operation);
+  }
+
+  applyRemapPal(
+    state: CharacterRuntimeState,
+    controller: { params: Record<string, string> },
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "remappal" }>,
+    resolvePair?: RuntimeRemapPalPairResolver,
+  ): void {
+    applyRuntimeRemapPalController(state, controller, operation, resolvePair);
   }
 
   applyAfterImage(
@@ -117,6 +129,12 @@ export class RuntimeSpriteEffectControllerWorld {
         input.controller.source,
         operation?.controllerType === "palfx" ? operation : undefined,
       );
+    } else if (input.effect === "remappal") {
+      input.spriteEffectWorld.applyRemapPal(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "remappal" ? operation : undefined,
+      );
     } else if (input.effect === "afterimage") {
       input.spriteEffectWorld.applyAfterImage(
         input.actor.runtime,
@@ -160,6 +178,7 @@ export function isRuntimeSpriteEffectControllerEffect(effect: string): effect is
   return (
     effect === "sprpriority" ||
     effect === "palfx" ||
+    effect === "remappal" ||
     effect === "afterimage" ||
     effect === "afterimagetime" ||
     effect === "trans" ||
@@ -199,6 +218,23 @@ export function applyRuntimePaletteFxController(
       operation?.invert ??
       (firstNumber(findControllerParam(controller, "invertall")) ??
         firstNumber(findControllerParam(controller, "invert"))) === 1,
+  };
+}
+
+export function applyRuntimeRemapPalController(
+  state: CharacterRuntimeState,
+  controller: { params: Record<string, string> },
+  operation?: Extract<SpriteEffectControllerOp, { controllerType: "remappal" }>,
+  resolvePair?: RuntimeRemapPalPairResolver,
+): void {
+  const source = operation?.source ?? resolvePair?.("source") ?? palettePair(findControllerParam(controller, "source"));
+  const dest = operation?.dest ?? resolvePair?.("dest") ?? palettePair(findControllerParam(controller, "dest"));
+  if (!source || !dest) {
+    return;
+  }
+  state.paletteRemap = {
+    source: normalizePalettePair(source),
+    dest: normalizePalettePair(dest),
   };
 }
 
@@ -377,6 +413,24 @@ function firstNumber(value: string | undefined): number | undefined {
   }
   const numberValue = Number(raw);
   return Number.isFinite(numberValue) ? numberValue : undefined;
+}
+
+function palettePair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parts = value.split(",").map((part) => Number(part.trim()));
+  if (parts.length < 2 || parts[0] === undefined || parts[1] === undefined) {
+    return undefined;
+  }
+  if (!Number.isFinite(parts[0]) || !Number.isFinite(parts[1])) {
+    return undefined;
+  }
+  return [parts[0]!, parts[1]!];
+}
+
+function normalizePalettePair(pair: [number, number]): [number, number] {
+  return [Math.max(0, Math.round(pair[0])), Math.max(0, Math.round(pair[1]))];
 }
 
 function clampFxTime(value: number): number {

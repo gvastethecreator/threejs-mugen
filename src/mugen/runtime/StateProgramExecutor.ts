@@ -7,6 +7,7 @@ export type StateProgramSideEffect =
   | "fallenvshake"
   | "sprpriority"
   | "palfx"
+  | "remappal"
   | "afterimage"
   | "afterimagetime"
   | "trans"
@@ -69,6 +70,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   fallenvshake: "fallenvshake",
   sprpriority: "sprpriority",
   palfx: "palfx",
+  remappal: "remappal",
   afterimage: "afterimage",
   afterimagetime: "afterimagetime",
   trans: "trans",
@@ -121,7 +123,6 @@ const runtimeControllers = new Set([
   "hitoverride",
   "defencemulset",
   "attackmulset",
-  "remappal",
   "posfreeze",
   "screenbound",
   "forcefeedback",

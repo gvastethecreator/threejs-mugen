@@ -164,6 +164,7 @@ function isActiveSpriteEffect(effect: StateProgramSideEffect): effect is Runtime
   return (
     effect === "sprpriority" ||
     effect === "palfx" ||
+    effect === "remappal" ||
     effect === "afterimage" ||
     effect === "afterimagetime" ||
     effect === "trans" ||

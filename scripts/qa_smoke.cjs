@@ -1189,7 +1189,7 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebug?.selectedActorId === "p1");
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-debug.png"), fullPage: true });
-  await page.locator('[data-debug-execution-evidence="p1"]').scrollIntoViewIfNeeded();
+  await scrollLiveSelectorIntoView(page, '[data-debug-execution-evidence="p1"]');
   await page.waitForTimeout(100);
   await page.screenshot({ path: path.join(outDir, "studio-debug-evidence.png"), fullPage: true });
   const p1Probe = await readStudioDebugBridge(page);
@@ -1207,11 +1207,11 @@ async function captureStudioDebug(page, baseUrl, outDir, importedFixturePath) {
   await page.locator('[data-debug-filter="overview"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.studioDebugFilter === "overview");
   await page.setViewportSize({ width: 390, height: 920 });
-  await page.locator('[data-debug-execution-evidence="p1"]').scrollIntoViewIfNeeded();
+  await scrollLiveSelectorIntoView(page, '[data-debug-execution-evidence="p1"]');
   await page.waitForTimeout(150);
   await page.screenshot({ path: path.join(outDir, "studio-debug-evidence-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.locator('[data-debug-execution-evidence="p1"]').scrollIntoViewIfNeeded();
+  await scrollLiveSelectorIntoView(page, '[data-debug-execution-evidence="p1"]');
   await page.waitForTimeout(100);
   await page.locator('[data-debug-controller-filter="hitdef"]').first().click();
   await page.waitForFunction(() => window.__MUGEN_WEB_SANDBOX__?.mode === "inspect");
@@ -1382,6 +1382,25 @@ async function readStudioDebugBridge(page) {
 
 async function waitForBridge(page) {
   await page.waitForFunction(() => Boolean(window.__MUGEN_WEB_SANDBOX__?.renderer), null, { timeout: 15000 });
+}
+
+async function scrollLiveSelectorIntoView(page, selector) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await page.waitForSelector(selector, { state: "attached", timeout: 5000 });
+    const scrolled = await page.evaluate((targetSelector) => {
+      const target = document.querySelector(targetSelector);
+      if (!(target instanceof HTMLElement)) {
+        return false;
+      }
+      target.scrollIntoView({ block: "center", inline: "nearest" });
+      return true;
+    }, selector);
+    if (scrolled) {
+      return;
+    }
+    await page.waitForTimeout(100);
+  }
+  await page.locator(selector).first().scrollIntoViewIfNeeded();
 }
 
 async function getCanvasPixelStats(page, canvasPng) {

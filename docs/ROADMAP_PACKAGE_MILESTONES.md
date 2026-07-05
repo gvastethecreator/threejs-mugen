@@ -35,13 +35,22 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R2 RuntimeSpriteEffectControllerWorld RemapPal ownership cut
+  -> RuntimeSpriteEffectControllerWorld owns active-state RemapPal dispatch as a sprite-effect side effect
+  -> StateProgramExecutor now classifies RemapPal as side-effect "remappal", not a generic runtime-controller route
+  -> RuntimeActiveSideEffectDispatchWorld routes RemapPal through spriteEffect hooks
+  -> RuntimeSpriteEffectWorld applies bounded paletteRemap mutation through typed sprite-effect:remappal operations or raw fallback params
+  -> StateControllerExecutor keeps dynamic raw fallback through a resolver
+  -> focused SpriteEffectSystem, RuntimeActiveSideEffectDispatchSystem, StateProgramExecutor, and RuntimeCnsSubset coverage proves classification, route, telemetry, mutation, and fallback preservation
+  -> official Elecbyte 1.1 State Controller Reference was checked for RemapPal source/dest semantics
+  -> no score movement; exact source-bank/default/removal semantics, truecolor/PNG remap, helper/redirect ownership, exact PalFX order, and full palette parity remain blocked
+
 R2 RuntimeSpriteEffectControllerWorld Trans ownership cut
   -> RuntimeSpriteEffectControllerWorld owns active-state Trans dispatch as a sprite-effect side effect
-  -> StateProgramExecutor now classifies Trans as side-effect "trans", not a generic runtime-controller route
+  -> StateProgramExecutor classifies Trans as side-effect "trans", not a generic runtime-controller route
   -> RuntimeActiveSideEffectDispatchWorld routes Trans through spriteEffect hooks
   -> RuntimeSpriteEffectWorld applies bounded renderOpacity mutation through typed sprite-effect:trans operations or raw fallback params
-  -> focused SpriteEffectSystem, RuntimeActiveSideEffectDispatchSystem, and StateProgramExecutor coverage proves classification, route, telemetry, and renderOpacity mutation
-  -> pnpm qa:trace stays stable at 439/439 artifacts, 409 required and 30 optional; pnpm qa:smoke passed because presentation-state routing was touched
+  -> previous pnpm qa:trace stayed stable at 439/439 artifacts, 409 required and 30 optional; pnpm qa:smoke passed because presentation-state routing was touched
   -> no score movement; exact visual tick-order, blend/material parity, helper/redirect ownership, renderer parity, and full presentation parity remain blocked
 
 R1 required helper Projectile ProjTime same-id guard-then-hit trace gate

@@ -59,6 +59,7 @@ describe("StateProgramExecutor dispatch", () => {
     const reset = dispatchStateProgramController(compileControllerIr(controller("MoveHitReset", {})));
     const hitAdd = dispatchStateProgramController(compileControllerIr(controller("HitAdd", { value: "2" })));
     const trans = dispatchStateProgramController(compileControllerIr(controller("Trans", { trans: "addalpha,128,128" })));
+    const remap = dispatchStateProgramController(compileControllerIr(controller("RemapPal", { source: "1,0", dest: "2,3" })));
 
     expect(vel.kind).toBe("runtime-controller");
     expect(isStateEntrySetupDispatch(vel)).toBe(false);
@@ -67,6 +68,7 @@ describe("StateProgramExecutor dispatch", () => {
     expect(reset).toMatchObject({ kind: "side-effect", effect: "contact" });
     expect(hitAdd).toMatchObject({ kind: "side-effect", effect: "contact" });
     expect(trans).toMatchObject({ kind: "side-effect", effect: "trans" });
+    expect(remap).toMatchObject({ kind: "side-effect", effect: "remappal" });
   });
 
   it("marks State -1 setup controllers explicitly", () => {
