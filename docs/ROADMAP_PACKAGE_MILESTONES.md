@@ -35,15 +35,22 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required explicit airguard.cornerpush.veloff trace gates
-  -> RuntimeTraceGatePresets now builds synthetic-imported-air-guard-cornerpush.json, synthetic-imported-projectile-air-guard-cornerpush.json, and synthetic-imported-helper-projectile-air-guard-cornerpush.json
-  -> direct HitDef, player-owned Projectile, and helper-parented Projectile parse/preserve ground/air/down/guard/airguard cornerpush params
-  -> all three routes guard an airborne defender at the stage edge, keep the defender in Common1-style state 155, and require attacker/owner X velocity evidence from corner pushback
+R1 required default airguard.cornerpush.veloff derivation trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-air-guard-cornerpush-default.json, synthetic-imported-projectile-air-guard-cornerpush-default.json, and synthetic-imported-helper-projectile-air-guard-cornerpush-default.json
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit corner-push params and derive air-guard cornerpush through guard.cornerpush.veloff -> ground.cornerpush.veloff -> 1.3 * guard.velocity
+  -> all three routes guard an airborne defender at the stage edge, keep the defender in Common1-style state 155, and require attacker/owner X velocity evidence from derived corner pushback
   -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> synthetic-imported-air-guard-cornerpush-default.json checksum c32781ad is required in qa:trace
+  -> synthetic-imported-projectile-air-guard-cornerpush-default.json checksum 90f5e385 is required in qa:trace
+  -> synthetic-imported-helper-projectile-air-guard-cornerpush-default.json checksum 0271a2b9 is required in qa:trace
+  -> pnpm qa:trace passes 385/385 artifacts, 355 required and 30 optional
+  -> no score movement; exact corner-push timing/decay, wall friction, exact air guard physics/landing/timing, guard effects, throws, teams/simul, and full guard parity remain blocked
+
+Previous R1 required explicit airguard.cornerpush.veloff trace gates
   -> synthetic-imported-air-guard-cornerpush.json checksum 9fdb8a81 is required in qa:trace
   -> synthetic-imported-projectile-air-guard-cornerpush.json checksum 15f26082 is required in qa:trace
   -> synthetic-imported-helper-projectile-air-guard-cornerpush.json checksum 35d7148b is required in qa:trace
-  -> pnpm qa:trace passes 382/382 artifacts, 352 required and 30 optional
+  -> pnpm qa:trace passed 382/382 artifacts, 352 required and 30 optional
   -> no score movement; exact corner-push timing/decay, wall friction, exact air guard physics/landing/timing, guard effects, throws, teams/simul, and full guard parity remain blocked
 
 Previous R1 required default airguard.velocity derivation trace gates

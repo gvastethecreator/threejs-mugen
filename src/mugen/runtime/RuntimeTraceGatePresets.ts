@@ -9051,6 +9051,60 @@ export function createSyntheticImportedAirGuardCornerPushTraceArtifact(options: 
   });
 }
 
+export function createSyntheticImportedAirGuardCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-air-guard-cornerpush-default-grid",
+    displayName: "Trace Air Guard Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 240, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-cornerpush-default",
+    displayName: "Synthetic Imported Air Guard Cornerpush Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Air Guard Cornerpush Default Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airGuardVelocity: [-8, -4],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
+    requiredActorFrames: syntheticAirGuardCornerPushPhysicsFrames(-2.5),
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 995, ctrl: true }],
+    targetId: "synthetic-imported-air-guard-cornerpush-default-golden",
+    targetLabel: "Synthetic imported default airguard.cornerpush.veloff direct HitDef route",
+    notes: [
+      "Synthetic imported default airguard.cornerpush.veloff direct HitDef trace proves omitted air-guard cornerpush derives through guard.cornerpush.veloff and ground.cornerpush.veloff from guard.velocity, then pushes the attacking player away when the guarded airborne defender reaches the stage corner. It does not claim exact MUGEN/IKEMEN cornerpush timing/decay, wall friction, effects, or full guard parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileAirGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -9228,6 +9282,66 @@ export function createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact
     targetLabel: "Synthetic imported Projectile airguard.cornerpush.veloff route",
     notes: [
       "Synthetic imported Projectile airguard.cornerpush.veloff trace proves explicit Projectile air-guard cornerpush is parsed through the Projectile HitDef parameter set and pushes the owning player away when the guarded airborne defender reaches the stage corner. It does not claim exact projectile ownership/timing/effects, cornerpush decay, or full MUGEN/IKEMEN projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileAirGuardCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-air-guard-cornerpush-default-grid",
+    displayName: "Trace Projectile Air Guard Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-guard-cornerpush-default",
+    displayName: "Synthetic Imported Projectile Air Guard Cornerpush Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-guard-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Projectile Air Guard Cornerpush Default Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -120],
+    projectileAirGuardVelocity: [-8, -4],
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
+    requiredActorFrames: [
+      ...syntheticAirGuardCornerPushPhysicsFrames(-2.5),
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 996, ctrl: true }],
+    targetId: "synthetic-imported-projectile-air-guard-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Projectile default airguard.cornerpush.veloff route",
+    notes: [
+      "Synthetic imported Projectile default airguard.cornerpush.veloff trace proves omitted Projectile air-guard cornerpush derives through the Projectile HitDef parameter set from guard.velocity and pushes the owning player away when the guarded airborne defender reaches the stage corner. It does not claim exact projectile ownership/timing/effects, cornerpush decay, or full MUGEN/IKEMEN projectile parity.",
     ],
   });
 }
@@ -9529,6 +9643,112 @@ export function createSyntheticImportedHelperProjectileAirGuardCornerPushTraceAr
     requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
     notes: [
       "Synthetic imported Helper Projectile airguard.cornerpush.veloff trace proves explicit helper-parented Projectile air-guard cornerpush is parsed through the helper-local Projectile HitDef param set and pushes the owning player away when the guarded airborne defender reaches the stage corner. It does not claim helper-owned custom states, exact helper Projectile timing/effects, cornerpush decay, or full MUGEN/IKEMEN helper projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileAirGuardCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-air-guard-cornerpush-default-grid",
+    displayName: "Trace Helper Projectile Air Guard Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
+    displayName: "Synthetic Imported Helper Projectile Air Guard Cornerpush Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-guard-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Helper Projectile Air Guard Cornerpush Default Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1243,
+      waitAnimNo: 980,
+      branchStateNo: 1244,
+      branchAnimNo: 981,
+      projectileAnimNo: 982,
+      projectileId: 8856,
+      pos: [360, -92],
+      guardFlag: "A",
+      guardHitTime: 18,
+      guardSlideTime: 5,
+      guardControlTime: 7,
+      airGuardVelocity: [-8, -4],
+    },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-helper-projectile-air-guard-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Helper Projectile default airguard.cornerpush.veloff route",
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["helper", "projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "helper-local Projectile spawn telemetry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      },
+      defaultAirGuardHitControllerSequence(),
+    ],
+    requiredActorFrames: [
+      ...syntheticAirGuardCornerPushPhysicsFrames(-2.5),
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1244, animNo: 981, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1244, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8856,
+        minAge: 1,
+        minPriority: 2,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8856 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8856 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
+    notes: [
+      "Synthetic imported Helper Projectile default airguard.cornerpush.veloff trace proves omitted helper-parented Projectile air-guard cornerpush derives through the helper-local Projectile HitDef parameter set from guard.velocity and pushes the owning player away when the guarded airborne defender reaches the stage corner. It does not claim helper-owned custom states, exact helper Projectile timing/effects, cornerpush decay, or full MUGEN/IKEMEN helper projectile parity.",
     ],
   });
 }
