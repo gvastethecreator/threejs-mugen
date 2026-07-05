@@ -381,6 +381,50 @@ describe("HelperSystem", () => {
     expect(active.firedHitDefs.size).toBe(0);
   });
 
+  it("preserves helper-local MoveContact and MoveHit when destination state declares movehitpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveContact(contact, 1200, "hit", "p2");
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1228" })]),
+          stateProgram(stateDef(1228, { moveType: "A", moveHitPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1228);
+    expect(runtimeMoveContactValue(active.contact, 1228, "contact")).toBe(1);
+    expect(runtimeMoveContactValue(active.contact, 1228, "hit")).toBe(1);
+    expect(runtimeMoveHitCountValue(active.contact, 1228, false)).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1228, true)).toBe(0);
+  });
+
+  it("resets helper-local MoveContact and MoveHit when destination state omits movehitpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveContact(contact, 1200, "hit", "p2");
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1228" })]),
+          stateProgram(stateDef(1228, { moveType: "A" })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1228);
+    expect(runtimeMoveContactValue(active.contact, 1228, "contact")).toBe(0);
+    expect(runtimeMoveContactValue(active.contact, 1228, "hit")).toBe(0);
+  });
+
   it("preserves helper-local hit counters when destination state declares hitcountpersist", () => {
     const contact = createRuntimeContactMemory();
     markRuntimeMoveContact(contact, 1200, "hit", "p2");

@@ -9,7 +9,9 @@ import {
   advanceRuntimeContactTimers,
   createRuntimeContactMemory,
   createRuntimeContactMemoryWithStatePersistence,
+  runtimeMoveContactValue,
   runtimeMoveHitCountValue,
+  runtimeMoveReversedValue,
   type RuntimeContactMemory,
 } from "./ContactMemorySystem";
 import type { DemoMove } from "./demoFighters";
@@ -824,6 +826,10 @@ function helperExpressionContext(
     projHitTime: (projectileId?: number) => options.projectileContactTime?.(helper, "hit", projectileId) ?? -1,
     projGuardedTime: (projectileId?: number) => options.projectileContactTime?.(helper, "guard", projectileId) ?? -1,
     projCancelTime: (projectileId?: number) => options.projectileCancelTime?.(helper, projectileId) ?? -1,
+    moveContact: () => runtimeMoveContactValue(helper.contact, helper.stateNo ?? 0, "contact"),
+    moveHit: () => runtimeMoveContactValue(helper.contact, helper.stateNo ?? 0, "hit"),
+    moveGuarded: () => runtimeMoveContactValue(helper.contact, helper.stateNo ?? 0, "guard"),
+    moveReversed: () => runtimeMoveReversedValue(helper.contact, helper.stateNo ?? 0),
     hitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, false),
     uniqueHitCount: () => runtimeMoveHitCountValue(helper.contact, helper.stateNo ?? 0, true),
     animExists: (animationId: number) => helper.animations?.has(animationId) ?? false,

@@ -35,13 +35,21 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper StateDef hitcountpersist trace gate
-  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-hitcountpersist.json
+R1 required helper StateDef movehitpersist trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-movehitpersist.json
+  -> helper expression context exposes helper-local MoveContact / MoveHit / MoveGuarded / MoveReversed
+  -> helper-local HitDef contact activates in 1200, persists MoveContact / MoveHit into 1228 while HitCount and UniqHitCount reset, and routes helper 1200 -> 1228 -> 1229 with helper-owned sound/FightFX evidence
+  -> synthetic-imported-helper-movehitpersist.json checksum 2354ef95 is required in qa:trace
+  -> pnpm qa:trace passes 419/419 artifacts, 389 required and 30 optional
+  -> no score movement; guarded/reversed helper Move* breadth, helper Projectile/custom-state movehitpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper Move* lifetime parity remain blocked
+
+Previous R1 required helper StateDef hitcountpersist trace gate
+  -> RuntimeTraceGatePresets builds synthetic-imported-helper-hitcountpersist.json
   -> helper ChangeState preserves helper-local HitCount / UniqHitCount when the destination helper StateDef declares hitcountpersist = 1
   -> helper-local HitDef contact activates in 1200, persists hit counts into 1226 while MoveHit resets, and routes helper 1200 -> 1226 -> 1227 with helper-owned sound/FightFX evidence
   -> synthetic-imported-helper-hitcountpersist.json checksum fc9588d8 is required in qa:trace
-  -> pnpm qa:trace passes 418/418 artifacts, 388 required and 30 optional
-  -> no score movement; helper movehitpersist, Projectile/custom-state hitcountpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper HitCount lifetime parity remain blocked
+  -> pnpm qa:trace passed 418/418 artifacts, 388 required and 30 optional
+  -> remains required; Projectile/custom-state hitcountpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper HitCount lifetime parity remain blocked
 
 Previous R1 required helper StateDef hitdefpersist trace gate
   -> RuntimeTraceGatePresets now builds synthetic-imported-helper-hitdefpersist.json

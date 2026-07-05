@@ -27159,6 +27159,155 @@ export function createSyntheticImportedHelperHitCountPersistTraceArtifact(option
   });
 }
 
+export function createSyntheticImportedHelperMoveHitPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperHitDefScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-movehitpersist-attacker",
+    displayName: "Synthetic Imported Helper MoveHitPersist Attacker",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1229,
+      branchAnimNo: 968,
+      damage: 36,
+      hitSound: "S5,3",
+      hitSpark: "F7008",
+      sparkXy: [14, -50],
+      moveHitPersistRoute: {
+        entryStateNo: 1228,
+        entryAnimNo: 967,
+        finalStateNo: 1229,
+        finalAnimNo: 968,
+      },
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7008, 8108),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-movehitpersist-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-movehitpersist-golden",
+      label: "Synthetic imported helper-owned movehitpersist route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported helper-owned movehitpersist trace proves helper-local MoveContact and MoveHit can persist into the next helper StateDef when movehitpersist = 1 while HitCount and UniqHitCount remain reset. Exact guarded/reversed helper breadth, projectile/custom-state breadth, target lifetime, teams, and full MUGEN/IKEMEN helper Move* lifetime parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-movehitpersist-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredSoundEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            type: "PlaySnd",
+            group: 5,
+            index: 3,
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredHitEffectEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            kind: "hit",
+            sparkNo: 7008,
+            raw: "F7008",
+            rawPrefix: "F",
+            offsetX: 14,
+            offsetY: -50,
+            assetSource: "fightfx",
+            assetActionId: 7008,
+            assetFrameIndex: 0,
+            ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+            assetSpriteGroup: 8108,
+            assetSpriteIndex: 0,
+            minAssetFrameCount: 2,
+            minAssetTotalDuration: 11,
+            requiredAssetFrameIndices: [0, 1],
+            stateNo: 1200,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 3,
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7008,
+              raw: "F7008",
+              rawPrefix: "F",
+              offsetX: 14,
+              offsetY: -50,
+              assetSource: "fightfx",
+              assetActionId: 7008,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8108,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 1200,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1228, animNo: 967, moveType: "A", minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1229, animNo: 968, moveType: "I", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 964, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 964 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1229, minAge: 3 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedOneShotXScript();
@@ -30003,6 +30152,12 @@ export type SyntheticImportedTraceFighterOptions = {
       finalStateNo: number;
       finalAnimNo?: number;
     };
+    moveHitPersistRoute?: {
+      entryStateNo: number;
+      entryAnimNo?: number;
+      finalStateNo: number;
+      finalAnimNo?: number;
+    };
     hitCountPersistRoute?: {
       entryStateNo: number;
       entryAnimNo?: number;
@@ -30972,8 +31127,27 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                           options.helperHitDefRoute.hitDefPersistRoute.finalAnimNo ??
                             options.helperHitDefRoute.hitDefPersistRoute.finalStateNo,
                         ),
-                      ],
-                    ]
+                        ],
+                      ]
+                  : options.helperHitDefRoute.moveHitPersistRoute
+                    ? [
+                        [
+                          options.helperHitDefRoute.moveHitPersistRoute.entryAnimNo ??
+                            options.helperHitDefRoute.moveHitPersistRoute.entryStateNo,
+                          helperTraceAction(
+                            options.helperHitDefRoute.moveHitPersistRoute.entryAnimNo ??
+                              options.helperHitDefRoute.moveHitPersistRoute.entryStateNo,
+                          ),
+                        ],
+                        [
+                          options.helperHitDefRoute.moveHitPersistRoute.finalAnimNo ??
+                            options.helperHitDefRoute.moveHitPersistRoute.finalStateNo,
+                          helperTraceAction(
+                            options.helperHitDefRoute.moveHitPersistRoute.finalAnimNo ??
+                              options.helperHitDefRoute.moveHitPersistRoute.finalStateNo,
+                          ),
+                        ],
+                      ]
                   : options.helperHitDefRoute.hitCountPersistRoute
                     ? [
                         [
@@ -34667,6 +34841,8 @@ function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighter
   const branchLines =
     route.hitDefPersistRoute !== undefined
       ? helperHitDefPersistRouteBlock(route.hitDefPersistRoute, branchTrigger)
+      : route.moveHitPersistRoute !== undefined
+        ? helperMoveHitPersistRouteBlock(route.moveHitPersistRoute, branchTrigger)
       : route.hitCountPersistRoute !== undefined
         ? helperHitCountPersistRouteBlock(route.hitCountPersistRoute, branchTrigger)
         : `
@@ -34735,6 +34911,44 @@ hitdefpersist = 1
 type = ChangeState
 trigger1 = Time >= 1
 trigger1 = ${branchTrigger}
+value = ${route.finalStateNo}
+ctrl = 0
+
+[Statedef ${route.finalStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${route.finalAnimNo ?? route.finalStateNo}
+ctrl = 0
+`;
+}
+
+function helperMoveHitPersistRouteBlock(
+  route: NonNullable<NonNullable<SyntheticImportedTraceFighterOptions["helperHitDefRoute"]>["moveHitPersistRoute"]>,
+  branchTrigger: string,
+): string {
+  return `
+[State 1200, Helper MoveHitPersist Entry]
+type = ChangeState
+trigger1 = Time >= 1
+trigger1 = ${branchTrigger}
+value = ${route.entryStateNo}
+ctrl = 0
+
+[Statedef ${route.entryStateNo}]
+type = S
+movetype = A
+physics = N
+anim = ${route.entryAnimNo ?? route.entryStateNo}
+ctrl = 0
+movehitpersist = 1
+
+[State ${route.entryStateNo}, Persisted Helper MoveHit Branch]
+type = ChangeState
+trigger1 = MoveContact >= 1
+trigger1 = MoveHit >= 1
+trigger1 = HitCount = 0
+trigger1 = UniqHitCount = 0
 value = ${route.finalStateNo}
 ctrl = 0
 
