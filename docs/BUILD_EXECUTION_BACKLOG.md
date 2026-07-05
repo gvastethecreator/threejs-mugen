@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjHit and ProjGuarded suffix required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projhit-suffix.json` and `synthetic-imported-projectile-projguarded-suffix.json` trace coverage for player-owned Projectile hit/guard suffix second-form syntax.
+- `scripts/qa_traces.cjs` registers both artifacts as required coverage.
+- Compiler metadata coverage now explicitly normalizes sibling `ProjHit[ID]` and `ProjGuarded[ID]` second-form suffix triggers through `ProjHitTime` / `ProjGuardedTime`.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `ProjHit[ID] = value`, `ProjHit[ID] = value, [oper] value2`, `ProjGuarded[ID] = value`, `ProjGuarded[ID] = value, [oper] value2`, second-form nonnegative tick relations, and ID `0` as equivalent to omitted ID.
+- Focused tests: `pnpm vitest run src/tests/RuntimeCnsSubset.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "legacy projectile|supported and unsupported|Proj(Contact|Hit|Guarded) suffix"` -> 3 files passed, 5 tests passed.
+- Trace gate: `pnpm qa:trace` -> 426/426 artifacts, 396 required and 30 optional; `synthetic-imported-projectile-projhit-suffix.json` checksum `dd3db5ee`; `synthetic-imported-projectile-projguarded-suffix.json` checksum `80bbe439`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile legacy `ProjHit[ID] = value, [oper] value2` and `ProjGuarded[ID] = value, [oper] value2` syntax can drive owner CNS routing after hit/guard Projectile contact.
+- Hit gate proves `200 -> 352 -> 353`, Projectile id `8898`, `ProjHit8898 = 1, >= 1`, first-form suffix branch, active projectile payload, target link, `S5,17`, `F7024`, `sparkxy = 18,-60`.
+- Guard gate proves `200 -> 354 -> 355`, Projectile id `8899`, `ProjGuarded8899 = 1, >= 1`, first-form suffix branch, active projectile payload, target link, `S6,18`, `F7025`, `sparkxy = 19,-61`.
+
+Claim blocked:
+
+- Exact `ProjHit` / `ProjGuarded` one-tick lifetime/order, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded hit/guard packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact Proj* lifetime/order, multi-projectile selection, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjContact suffix second-form required trace gate
 
 Changed:

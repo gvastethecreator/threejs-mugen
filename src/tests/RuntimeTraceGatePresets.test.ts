@@ -362,6 +362,8 @@ import {
   createSyntheticImportedProjectileHitTimeAnyTraceArtifact,
   createSyntheticImportedProjectileContactPersistTraceArtifact,
   createSyntheticImportedProjectileContactSuffixTraceArtifact,
+  createSyntheticImportedProjectileHitSuffixTraceArtifact,
+  createSyntheticImportedProjectileGuardedSuffixTraceArtifact,
   createSyntheticImportedProjectileContactTimeTraceArtifact,
   createSyntheticImportedProjectileContactTimeAnyTraceArtifact,
   createSyntheticImportedProjectileGuardedTimeTraceArtifact,
@@ -19442,6 +19444,144 @@ describe("RuntimeTraceGatePresets", () => {
             assetFrameCount: 2,
             assetTotalDuration: 11,
             offset: { x: 17, y: -59 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile ProjHit suffix artifact with second-form trigger evidence", () => {
+    const artifact = createSyntheticImportedProjectileHitSuffixTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-projhit-suffix-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-projhit-suffix-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 352, 353]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 352, animNo: 1074, moveType: "A" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 353, animNo: 1075, moveType: "I" }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: 8898,
+        minAge: 1,
+        minPriority: 1,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8898 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 17, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7024,
+            raw: "F7024",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7024,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 18, y: -60 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile ProjGuarded suffix artifact with second-form trigger evidence", () => {
+    const artifact = createSyntheticImportedProjectileGuardedSuffixTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-projguarded-suffix-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-projguarded-suffix-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 354, 355]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 354, animNo: 1076, moveType: "A" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 355, animNo: 1077, moveType: "I" }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1",
+        effectId: 8899,
+        minAge: 1,
+        minPriority: 1,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ]);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8899 })]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          contactKind: "guard",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 6, index: 18, contactKind: "guard" }),
+          hitEffect: expect.objectContaining({
+            kind: "guard",
+            sparkNo: 7025,
+            raw: "F7025",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7025,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 19, y: -61 },
           }),
         }),
       ]),

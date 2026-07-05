@@ -35,13 +35,20 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required player Projectile ProjContact suffix second-form trace gate
-  -> ExpressionCompiler/ExpressionEvaluator now normalize Elecbyte legacy ProjContact/ProjHit/ProjGuarded suffix forms, including second-form timing relations
-  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projcontact-suffix.json
+R1 required player Projectile ProjHit/ProjGuarded suffix second-form trace gates
+  -> ExpressionCompiler/ExpressionEvaluator normalize Elecbyte legacy ProjContact/ProjHit/ProjGuarded suffix forms, including second-form timing relations
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhit-suffix.json and synthetic-imported-projectile-projguarded-suffix.json
+  -> player-owned Projectile id 8898 hits, owner state 200 routes on ProjHit8898 = 1, >= 1, then branches 352 -> 353 through fixed-id first-form suffix syntax with active projectile payload, owner target-link, hit sound, and FightFX spark package evidence
+  -> player-owned Projectile id 8899 is guarded, owner state 200 routes on ProjGuarded8899 = 1, >= 1, then branches 354 -> 355 through fixed-id first-form suffix syntax with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
+  -> synthetic-imported-projectile-projhit-suffix.json checksum dd3db5ee and synthetic-imported-projectile-projguarded-suffix.json checksum 80bbe439 are required in qa:trace
+  -> pnpm qa:trace passes 426/426 artifacts, 396 required and 30 optional
+  -> no score movement; exact ProjHit/ProjGuarded tick order/lifetime, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded hit/guard contact packages, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjContact suffix second-form trace gate
+  -> synthetic-imported-projectile-projcontact-suffix.json checksum c904ded7 remains required in qa:trace
   -> player-owned Projectile id 8897 is guarded, owner state 200 routes on ProjContact8897 = 1, >= 1, transitions into 350, then branches to 351 from that later owner StateDef through fixed-id first-form suffix syntax with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
-  -> synthetic-imported-projectile-projcontact-suffix.json checksum c904ded7 is required in qa:trace
-  -> pnpm qa:trace passes 424/424 artifacts, 394 required and 30 optional
-  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+  -> pnpm qa:trace previously passed 424/424 artifacts, 394 required and 30 optional
+  -> remains required
 
 Previous R1 required player Projectile ProjContact state-transition trace gate
   -> synthetic-imported-projectile-projcontactpersist.json checksum 8e678b1b remains required in qa:trace
