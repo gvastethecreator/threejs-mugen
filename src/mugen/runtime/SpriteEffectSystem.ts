@@ -9,6 +9,7 @@ export type RuntimeAfterImageSampleFactory = () => RuntimeAfterImageSample | und
 export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angleset" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
+  | Extract<SpriteEffectControllerOp, { controllerType: "anglemul" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
 
 export type RuntimeRemapPalPairResolver = (key: "source" | "dest") => [number, number] | undefined;
@@ -194,6 +195,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.controller.source,
         operation?.controllerType === "angleset" ||
           operation?.controllerType === "angleadd" ||
+          operation?.controllerType === "anglemul" ||
           operation?.controllerType === "angledraw"
           ? operation
           : undefined,
@@ -451,6 +453,17 @@ export function applyRuntimeAngleController(
     }
     return;
   }
+  if (type === "anglemul") {
+    const valueParam = findControllerParam(controller, "value");
+    const multiplier =
+      operation?.controllerType === "anglemul"
+        ? operation.multiplier
+        : resolveAngleNumber(valueParam, resolveAngle) ?? firstNumber(valueParam);
+    if (multiplier !== undefined && Number.isFinite(multiplier)) {
+      state.angle = clampRenderAngle((state.angle ?? 0) * multiplier);
+    }
+    return;
+  }
   if (type === "angledraw") {
     const valueParam = findControllerParam(controller, "value");
     const scaleParam = findControllerParam(controller, "scale");
@@ -512,6 +525,7 @@ function spriteEffectOperationFor(
   if (effect === "angle") {
     return operation.controllerType === "angleset" ||
       operation.controllerType === "angleadd" ||
+      operation.controllerType === "anglemul" ||
       operation.controllerType === "angledraw"
       ? operation
       : undefined;
@@ -627,7 +641,7 @@ function resolveAngleNumber(param: string | undefined, resolver: RuntimeAngleRes
     return undefined;
   }
   const value = resolver?.resolveNumber("value");
-  return value === undefined || !Number.isFinite(value) ? undefined : clampRenderAngle(value);
+  return value === undefined || !Number.isFinite(value) ? undefined : value;
 }
 
 function resolveAngleScale(

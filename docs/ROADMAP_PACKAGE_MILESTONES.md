@@ -35,14 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic Angle trace gate
+R1 required static AngleMul trace gate
+  -> synthetic-imported-anglemul.json checksum e0dae072 / final checksum 5048aa5c is required in qa:trace
+  -> imported active state executes AngleSet value = 30, AngleMul value = 1.5, and AngleDraw
+  -> static AngleMul lowers into typed sprite-effect:anglemul operation evidence
+  -> final imported actor-frame evidence requires renderAngle 45
+  -> pnpm qa:trace passes 448/448 artifacts, 418 required and 30 optional
+  -> official Elecbyte docs define AngleMul value as an angle_multiplier float that multiplies the drawing angle used by AngleDraw
+  -> no score movement; dynamic typed-operation lowering for AngleMul, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic Angle trace gate
   -> synthetic-imported-angle-dynamic.json checksum 8f788bf8 is required in qa:trace
   -> imported active state seeds var(0)=40, var(1)=-10, var(2)=35, var(3)=2, and fvar(0)=0.5
   -> active state executes AngleSet value = var(0), AngleAdd value = var(1), and AngleDraw value = var(2), scale = var(3),fvar(0)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic Angle resolver into RuntimeSpriteEffectWorld.applyAngle
   -> PlayableMatchRuntime resolves Angle value/scale through the active controller expression context and preserves fractional scale params
   -> final imported actor evidence requires renderAngle 35, renderScale 2,0.5, and no typed sprite-effect:angle* operation evidence
-  -> pnpm qa:trace passes 447/447 artifacts, 417 required and 30 optional
+  -> pnpm qa:trace passed 447/447 artifacts, 417 required and 30 optional
   -> official Elecbyte docs define AngleSet value, AngleDraw value, and AngleDraw scale as floats; rotation/scaling does not affect collision boxes
   -> no score movement; typed-operation lowering for dynamic angle params, exact axis pivot, collision rotation/scale, draw-order interaction, palette interaction, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 

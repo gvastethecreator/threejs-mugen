@@ -5481,6 +5481,58 @@ export function createSyntheticImportedAngleTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedAngleMulTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-anglemul",
+    displayName: "Synthetic Imported AngleMul",
+    withAngle: {
+      set: 30,
+      mul: 1.5,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-anglemul-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-anglemul-golden",
+      label: "Synthetic imported AngleMul route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported AngleMul trace proves static AngleMul value lowers into typed sprite-effect operation evidence and multiplies bounded AngleDraw render-angle telemetry. It does not claim exact MUGEN/IKEMEN axis pivot, collision rotation, draw-order interaction, or dynamic typed-operation lowering.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-anglemul-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "AngleSet", "AngleMul", "AngleDraw", "HitDef"],
+        requiredExecutedOperations: ["sprite-effect:angleset", "sprite-effect:anglemul", "sprite-effect:angledraw", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedAngleAtLeast: 45,
+            observedAngleAtMost: 45,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDynamicAngleTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33620,6 +33672,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withAngle?: {
     set?: number;
     add?: number;
+    mul?: number;
   };
   withDynamicAngle?: {
     set?: string;
@@ -35264,17 +35317,30 @@ alpha = ${options.alpha.join(",")}
 }
 
 function angleControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withAngle"]>): string {
+  const addBlock =
+    options.add === undefined
+      ? ""
+      : `
+[State 200, AngleAdd Probe]
+type = AngleAdd
+trigger1 = Time >= 0
+value = ${options.add}
+`;
+  const mulBlock =
+    options.mul === undefined
+      ? ""
+      : `
+[State 200, AngleMul Probe]
+type = AngleMul
+trigger1 = Time >= 0
+value = ${options.mul}
+`;
   return `
 [State 200, AngleSet Probe]
 type = AngleSet
 trigger1 = Time >= 0
 value = ${options.set ?? 0}
-
-[State 200, AngleAdd Probe]
-type = AngleAdd
-trigger1 = Time >= 0
-value = ${options.add ?? 0}
-
+${addBlock}${mulBlock}
 [State 200, AngleDraw Probe]
 type = AngleDraw
 trigger1 = Time >= 0

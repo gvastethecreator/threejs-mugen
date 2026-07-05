@@ -871,6 +871,11 @@ async function main() {
       artifact: presets.createSyntheticImportedAngleTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-anglemul",
+      required: true,
+      artifact: presets.createSyntheticImportedAngleMulTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-angle-dynamic",
       required: true,
       artifact: presets.createSyntheticImportedDynamicAngleTraceArtifact(),
@@ -3160,6 +3165,7 @@ function validateTraceCoverage(coverage) {
     "sprite-effect:trans",
     "sprite-effect:angleset",
     "sprite-effect:angleadd",
+    "sprite-effect:anglemul",
     "sprite-effect:angledraw",
     "envcolor",
     "sprite-effect:remappal",
@@ -3462,6 +3468,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-trans",
     "synthetic-imported-trans-dynamic",
     "synthetic-imported-angle",
+    "synthetic-imported-anglemul",
     "synthetic-imported-angle-dynamic",
     "synthetic-imported-envcolor",
     "synthetic-imported-envshake",

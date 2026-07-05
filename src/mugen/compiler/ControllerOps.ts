@@ -409,6 +409,11 @@ export type SpriteEffectControllerOp =
     }
   | {
       kind: "sprite-effect";
+      controllerType: "anglemul";
+      multiplier: number;
+    }
+  | {
+      kind: "sprite-effect";
       controllerType: "angledraw";
       angle?: number;
       scale?: [number, number];
@@ -568,6 +573,9 @@ export function compileControllerOp(controller: MugenStateController, context: C
   }
   if (type === "angleadd") {
     return compileAngleAddControllerOp(controller);
+  }
+  if (type === "anglemul") {
+    return compileAngleMulControllerOp(controller);
   }
   if (type === "angledraw") {
     return compileAngleDrawControllerOp(controller);
@@ -892,6 +900,18 @@ function compileAngleAddControllerOp(controller: MugenStateController): SpriteEf
     kind: "sprite-effect",
     controllerType: "angleadd",
     delta: clampRenderAngle(delta),
+  };
+}
+
+function compileAngleMulControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
+  const multiplier = firstNumber(findParam(controller, "value"));
+  if (multiplier === undefined) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "anglemul",
+    multiplier,
   };
 }
 

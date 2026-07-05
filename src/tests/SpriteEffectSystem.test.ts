@@ -304,8 +304,11 @@ describe("SpriteEffectSystem", () => {
     applyRuntimeAngleController(state, controller("AngleAdd", { value: "10" }));
     expect(state.angle).toBe(55);
 
+    applyRuntimeAngleController(state, controller("AngleMul", { value: "2" }));
+    expect(state.angle).toBe(110);
+
     applyRuntimeAngleController(state, controller("AngleDraw", {}));
-    expect(state.renderAngle).toBe(55);
+    expect(state.renderAngle).toBe(110);
     expect(state.renderScale).toBeUndefined();
 
     applyRuntimeAngleController(state, controller("AngleDraw", { value: "-15", scale: "2,0.5" }));
@@ -317,13 +320,18 @@ describe("SpriteEffectSystem", () => {
       controllerType: "angleset",
       angle: -30,
     });
+    applyRuntimeAngleController(state, controller("AngleMul", { value: "9999" }), {
+      kind: "sprite-effect",
+      controllerType: "anglemul",
+      multiplier: -0.5,
+    });
     applyRuntimeAngleController(state, controller("AngleDraw", {}), {
       kind: "sprite-effect",
       controllerType: "angledraw",
       angle: 25,
       scale: [1.5, 0.75],
     });
-    expect(state.angle).toBe(-30);
+    expect(state.angle).toBe(15);
     expect(state.renderAngle).toBe(25);
     expect(state.renderScale).toEqual({ x: 1.5, y: 0.75 });
   });
@@ -359,7 +367,17 @@ describe("SpriteEffectSystem", () => {
       },
     );
 
-    expect(state.angle).toBe(30);
+    applyRuntimeAngleController(
+      state,
+      controller("AngleMul", { value: "fvar(0)" }),
+      undefined,
+      {
+        resolveNumber: () => 2,
+        resolvePair: () => undefined,
+      },
+    );
+
+    expect(state.angle).toBe(60);
     expect(state.renderAngle).toBe(35);
     expect(state.renderScale).toEqual({ x: 2, y: 0.5 });
   });
@@ -431,6 +449,7 @@ describe("SpriteEffectSystem", () => {
     );
     world.applyTrans(state, controller("Trans", { trans: "addalpha,128,128" }));
     world.applyAngle(state, controller("AngleSet", { value: "35" }));
+    world.applyAngle(state, controller("AngleMul", { value: "2" }));
     world.applyAngle(state, controller("AngleDraw", { scale: "2,0.5" }));
 
     expect(state.spritePriority).toBe(4);
@@ -438,7 +457,7 @@ describe("SpriteEffectSystem", () => {
     expect(state.paletteRemap).toEqual({ source: [1, 0], dest: [2, 4] });
     expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
     expect(state.renderOpacity).toBe(0.5);
-    expect(state.renderAngle).toBe(35);
+    expect(state.renderAngle).toBe(70);
     expect(state.renderScale).toEqual({ x: 2, y: 0.5 });
 
     world.tick(state, () => sample(serial++));

@@ -76,6 +76,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   trans: "trans",
   angleset: "angle",
   angleadd: "angle",
+  anglemul: "angle",
   angledraw: "angle",
   explod: "explod",
   removeexplod: "removeexplod",

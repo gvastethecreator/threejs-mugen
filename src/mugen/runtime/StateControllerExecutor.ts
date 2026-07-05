@@ -173,7 +173,7 @@ export function executeControllerIr(
     applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"), (key) =>
       pairParam(controller, next, context, key),
     );
-  } else if (type === "angleset" || type === "angleadd" || type === "angledraw") {
+  } else if (type === "angleset" || type === "angleadd" || type === "anglemul" || type === "angledraw") {
     applyRuntimeAngleController(next, controller, spriteEffectOperation(controller, type));
   } else if (type === "posfreeze") {
     boundsControllerWorld.applyPosFreezeController(next, controller, boundsOperation(controller, "posfreeze"), context);
@@ -200,6 +200,7 @@ export function executeControllerIr(
     type === "afterimagetime" ||
     type === "angleset" ||
     type === "angleadd" ||
+    type === "anglemul" ||
     type === "angledraw" ||
     type === "explod" ||
     type === "removeexplod" ||

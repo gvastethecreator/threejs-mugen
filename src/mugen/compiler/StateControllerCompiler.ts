@@ -83,6 +83,7 @@ const controllerSupport: Record<string, ControllerSupport> = {
   trans: partial("sprite transparency"),
   angleset: partial("sprite rotation"),
   angleadd: partial("sprite rotation"),
+  anglemul: partial("sprite rotation"),
   angledraw: partial("sprite rotation"),
   forcefeedback: noop("browser no-op"),
   displaytoclipboard: noop("debug clipboard no-op"),
