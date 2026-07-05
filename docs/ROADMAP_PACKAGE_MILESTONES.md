@@ -35,16 +35,25 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required SuperPause dynamic params trace gate
+R1 required SuperPause anim/pos trace gate
+  -> synthetic-imported-superpause-anim-pos.json checksum f7dcdc9d / final checksum 7bd4afe8 is required in qa:trace
+  -> imported active state executes anim = S200 and pos = 24,-48
+  -> runtime stores optional superAnim metadata on the match-pause snapshot
+  -> trace evidence requires raw S200, source player, actionNo 200, and offset 24,-48
+  -> pnpm qa:trace passes 461/461 artifacts, 431 required and 30 optional
+  -> official Elecbyte docs define SuperPause anim, S player-AIR prefix behavior, anim = -1, and pos offset
+  -> no score movement; default anim 30, anim = -1 renderer suppression, FightFX/common asset lookup, dynamic anim/pos, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+
+Previous R1 required SuperPause dynamic params trace gate
   -> synthetic-imported-superpause-dynamic-params.json checksum 9547ac9f / final checksum aecfdc8b is required in qa:trace
   -> imported active state seeds var(2)=9, var(3)=2, var(4)=0, and var(5)=75
   -> SuperPause executes time = var(2), movetime = var(3), darken = var(4), and poweradd = var(5)
   -> runtime resolves those raw params through active expression fallback before applying the pause
   -> match-pause evidence requires max remaining 9, max movetime 2, darken false, P1 source-movetime advance, and P2 freeze
   -> final P1 power 75 proves dynamic poweradd reached resource mutation
-  -> pnpm qa:trace passes 460/460 artifacts, 430 required and 30 optional
+  -> that checkpoint passed 460/460 artifacts, 430 required and 30 optional
   -> official Elecbyte docs define numeric controller params as expression-capable, Pause movetime, and SuperPause time/darken/poweradd
-  -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, pausebg, anim/pos, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
+  -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
 
 Previous R1 required SuperPause p2defmul trace gate
   -> synthetic-imported-superpause-p2defmul.json checksum e69e5c84 / final checksum c02dce91 is required in qa:trace

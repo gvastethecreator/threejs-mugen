@@ -21920,6 +21920,65 @@ export function createSyntheticImportedSuperPauseDynamicParamsTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseAnimPosTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-anim-pos-attacker",
+    displayName: "Synthetic Imported SuperPause Anim Pos Attacker",
+    withSuperPause: true,
+    superPauseAnim: { anim: "S200", pos: [24, -48] },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-anim-pos-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-anim-pos-golden",
+      label: "Synthetic imported SuperPause anim/pos route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause anim/pos trace proves explicit player-AIR SuperPause animation metadata and axis offset survive CNS compile, pause-world snapshotting, and trace-gate evidence. It does not claim default anim 30, anim = -1 renderer suppression, FightFX/common asset lookup, dynamic anim/pos expressions, super-background rendering, pausebg, or full MUGEN/IKEMEN super presentation parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-anim-pos-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredMatchPauses: [
+          {
+            type: "SuperPause",
+            actorId: "p1",
+            sourceStateNo: 200,
+            darken: true,
+            minFrames: 2,
+            minRemaining: 7,
+            minMoveTime: 1,
+            superAnimRaw: "S200",
+            superAnimSource: "player",
+            superAnimActionNo: 200,
+            superAnimOffsetX: 24,
+            superAnimOffsetY: -48,
+          },
+        ],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseP2DefMulTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33761,6 +33820,7 @@ export type SyntheticImportedTraceFighterOptions = {
   superPauseSound?: string;
   superPauseSoundVarSeed?: { group: number; index: number };
   superPauseDynamicParams?: { time: number; moveTime: number; darken: number; powerAdd: number };
+  superPauseAnim?: { anim: string; pos?: [number, number] };
   superPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
@@ -34585,7 +34645,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams) : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
@@ -37388,6 +37448,7 @@ function superPauseControllerBlock(
   sound?: string,
   p2DefMul?: number,
   dynamicParams?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicParams"]>,
+  superAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseAnim"]>,
 ): string {
   return `
 [State 200, Super Pause]
@@ -37399,6 +37460,8 @@ darken = ${dynamicParams === undefined ? "1" : "var(4)"}
 poweradd = ${dynamicParams === undefined ? "100" : "var(5)"}
 ${p2DefMul === undefined ? "" : `p2defmul = ${p2DefMul}`}
 ${sound === undefined ? "" : `sound = ${sound}`}
+${superAnim === undefined ? "" : `anim = ${superAnim.anim}`}
+${superAnim?.pos === undefined ? "" : `pos = ${superAnim.pos[0]},${superAnim.pos[1]}`}
 `;
 }
 

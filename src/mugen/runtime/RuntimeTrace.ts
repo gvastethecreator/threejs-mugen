@@ -363,6 +363,11 @@ export type RuntimeTraceMatchPauseRequirement = {
   minFrames?: number;
   minRemaining?: number;
   minMoveTime?: number;
+  superAnimRaw?: string;
+  superAnimSource?: NonNullable<RuntimeMatchPauseSnapshot["superAnim"]>["source"];
+  superAnimActionNo?: number;
+  superAnimOffsetX?: number;
+  superAnimOffsetY?: number;
 };
 
 export type RuntimeTraceMatchPauseFreezeRequirement = {
@@ -401,6 +406,7 @@ export type RuntimeTraceGateMatchPauseEvidence = {
   frames: number;
   maxRemaining: number;
   maxMoveTime: number;
+  superAnim?: NonNullable<RuntimeMatchPauseSnapshot["superAnim"]>;
 };
 
 export type RuntimeTraceGateMatchPauseFreezeEvidence = {
@@ -1420,6 +1426,14 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 frames: 1,
                 maxRemaining: pause.remaining,
                 maxMoveTime: pause.moveTime,
+                ...(pause.superAnim
+                  ? {
+                      superAnim: {
+                        ...pause.superAnim,
+                        offset: { ...pause.superAnim.offset },
+                      },
+                    }
+                  : {}),
               },
         );
       }
@@ -1989,11 +2003,18 @@ function matchPauseOccurrenceKey(frame: Omit<RuntimeTraceFrame, "input" | "event
 }
 
 function matchPauseEvidenceKey(pause: RuntimeMatchPauseSnapshot): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
 }
 
 function matchPauseGateEvidenceKey(pause: RuntimeTraceGateMatchPauseEvidence): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
+}
+
+function matchPauseSuperAnimKey(superAnim: RuntimeTraceGateMatchPauseEvidence["superAnim"]): string {
+  if (!superAnim) {
+    return "*";
+  }
+  return `${superAnim.source}:${superAnim.actionNo}:${superAnim.raw}:${superAnim.offset.x}:${superAnim.offset.y}`;
 }
 
 function matchesMatchPauseRequirement(
@@ -2007,7 +2028,12 @@ function matchesMatchPauseRequirement(
     (requirement.darken === undefined || pause.darken === requirement.darken) &&
     (requirement.minFrames === undefined || pause.frames >= requirement.minFrames) &&
     (requirement.minRemaining === undefined || pause.maxRemaining >= requirement.minRemaining) &&
-    (requirement.minMoveTime === undefined || pause.maxMoveTime >= requirement.minMoveTime)
+    (requirement.minMoveTime === undefined || pause.maxMoveTime >= requirement.minMoveTime) &&
+    (requirement.superAnimRaw === undefined || pause.superAnim?.raw === requirement.superAnimRaw) &&
+    (requirement.superAnimSource === undefined || pause.superAnim?.source === requirement.superAnimSource) &&
+    (requirement.superAnimActionNo === undefined || pause.superAnim?.actionNo === requirement.superAnimActionNo) &&
+    (requirement.superAnimOffsetX === undefined || pause.superAnim?.offset.x === requirement.superAnimOffsetX) &&
+    (requirement.superAnimOffsetY === undefined || pause.superAnim?.offset.y === requirement.superAnimOffsetY)
   );
 }
 

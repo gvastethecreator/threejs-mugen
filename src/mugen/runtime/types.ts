@@ -457,6 +457,13 @@ export type RoundSnapshot = {
   message: string;
 };
 
+export type RuntimeSuperPauseAnimSnapshot = {
+  raw: string;
+  source: "fightfx" | "player";
+  actionNo: number;
+  offset: { x: number; y: number };
+};
+
 export type RuntimeMatchPauseSnapshot = {
   type: "Pause" | "SuperPause";
   remaining: number;
@@ -464,6 +471,7 @@ export type RuntimeMatchPauseSnapshot = {
   actorId: string;
   darken: boolean;
   sourceStateNo: number;
+  superAnim?: RuntimeSuperPauseAnimSnapshot;
 };
 
 export type MugenSnapshot = {

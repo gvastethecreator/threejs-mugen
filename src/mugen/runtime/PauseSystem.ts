@@ -7,7 +7,7 @@ import type { RuntimeEffectLifecycleActor, RuntimeEffectLifecycleWorld } from ".
 import { RuntimeMatchOpponentContextWorld } from "./RuntimeMatchOpponentContextSystem";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { RuntimeTargetWorld, RuntimeTargetWorldActor } from "./TargetSystem";
-import type { RuntimeMatchPauseSnapshot, RuntimeResolvedSoundRef, RuntimeSoundEvent } from "./types";
+import type { RuntimeMatchPauseSnapshot, RuntimeResolvedSoundRef, RuntimeSoundEvent, RuntimeSuperPauseAnimSnapshot } from "./types";
 
 export type RuntimeMatchPause = RuntimeMatchPauseSnapshot & {
   startedAt: number;
@@ -350,6 +350,7 @@ export function createMatchPauseFromController(
   }
   const darken = resolveParams?.darken?.();
   const powerAdd = resolveParams?.powerAdd?.();
+  const superAnim = type === "SuperPause" ? superPauseAnimParam(controller, operation) : undefined;
 
   return {
     pause: {
@@ -365,6 +366,7 @@ export function createMatchPauseFromController(
           : false,
       sourceStateNo: actor.runtime.stateNo,
       startedAt: tick,
+      ...(superAnim ? { superAnim } : {}),
     },
     powerDelta: type === "SuperPause" ? powerAdd ?? operation?.powerAdd ?? (firstNumber(findControllerParam(controller, "poweradd")) ?? 0) : 0,
   };
@@ -391,6 +393,14 @@ export function toMatchPauseSnapshot(pause: RuntimeMatchPause): RuntimeMatchPaus
     actorId: pause.actorId,
     darken: pause.darken,
     sourceStateNo: pause.sourceStateNo,
+    ...(pause.superAnim
+      ? {
+          superAnim: {
+            ...pause.superAnim,
+            offset: { ...pause.superAnim.offset },
+          },
+        }
+      : {}),
   };
 }
 
@@ -434,6 +444,54 @@ function superPauseTargetDefenseMultiplierParam(
     return undefined;
   }
   return Math.max(0, Math.min(10, 1 / p2DefMul));
+}
+
+function superPauseAnimParam(
+  controller: MugenStateController,
+  operation?: PauseControllerOp,
+): RuntimeSuperPauseAnimSnapshot | undefined {
+  const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
+  if (controllerType !== "superpause") {
+    return undefined;
+  }
+  const parsed = parseSuperPauseAnimParam(operation?.anim ?? findControllerParam(controller, "anim"));
+  if (!parsed) {
+    return undefined;
+  }
+  const pos = operation?.pos ?? numberPair(findControllerParam(controller, "pos")) ?? [0, 0];
+  return {
+    ...parsed,
+    offset: { x: pos[0], y: pos[1] },
+  };
+}
+
+function parseSuperPauseAnimParam(
+  value: string | undefined,
+): Omit<RuntimeSuperPauseAnimSnapshot, "offset"> | undefined {
+  const raw = stripMugenString(value);
+  if (!raw || raw === "-1") {
+    return undefined;
+  }
+  const source = raw.toUpperCase().startsWith("S") ? "player" : "fightfx";
+  const actionRaw = source === "player" ? raw.slice(1).trim() : raw.trim();
+  const actionNo = Number(actionRaw);
+  if (!Number.isInteger(actionNo) || actionNo < 0) {
+    return undefined;
+  }
+  return { raw, source, actionNo };
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const [xRaw, yRaw] = value.split(",").map((part) => part.trim());
+  const x = Number(xRaw);
+  if (!Number.isFinite(x)) {
+    return undefined;
+  }
+  const y = Number(yRaw);
+  return [x, Number.isFinite(y) ? y : 0];
 }
 
 function stripMugenString(value: string | undefined): string | undefined {

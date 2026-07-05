@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause anim/pos trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-anim-pos.json` trace coverage for imported explicit `SuperPause anim = S200` and `pos = 24,-48` metadata.
+- `PauseControllerOp` now preserves static `SuperPause anim` and `pos`; `RuntimePauseWorld` snapshots optional `superAnim` metadata for trace/debug consumers.
+- `RuntimeTraceGate.requiredMatchPauses` can now require `superAnimRaw`, `superAnimSource`, `superAnimActionNo`, `superAnimOffsetX`, and `superAnimOffsetY`.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-superpause-anim-pos` as required coverage and includes the existing `synthetic-imported-superpause-p2defmul` route in the manual required coverage list.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `SuperPause anim`, player-AIR `S` prefix behavior, `anim = -1` suppression, and `pos` as the offset from the player's axis.
+- Focused test: `pnpm vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "SuperPause|Pause and SuperPause"` -> 3 files passed, 15 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 461/461 artifacts, 431 required and 30 optional; `synthetic-imported-superpause-anim-pos.json` checksum `f7dcdc9d`, final checksum `7bd4afe8`.
+
+Claim allowed:
+
+- Bounded explicit imported `SuperPause anim/pos` metadata survives CNS compile, pause-world snapshotting, and trace-gate evidence. The synthetic route proves `anim = S200` is classified as player AIR action `200` with offset `24,-48`.
+
+Claim blocked:
+
+- Default `anim = 30`, `anim = -1` renderer suppression, FightFX/common asset lookup, dynamic `anim/pos` expressions, `pausebg`, `unhittable`, super-background rendering, exact sound/spark timing, helper/team/redirect ownership, score movement, and full MUGEN/IKEMEN super presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 461/461 artifacts, 431 required and 30 optional. Latest runtime evidence is SuperPause explicit `anim/pos` telemetry; previous SuperPause dynamic params, SuperPause `p2defmul`, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed Common1/FightFX/runtime oracle, especially SuperPause default `anim = 30` / FightFX asset lookup, `pausebg`, or `unhittable`, or continue R2 by moving another mutable behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause dynamic params trace gate
 
 Changed:

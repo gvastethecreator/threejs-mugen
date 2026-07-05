@@ -94,6 +94,8 @@ export type PauseControllerOp = {
   powerAdd: number;
   p2DefMul?: number;
   sound?: string;
+  anim?: string;
+  pos?: [number, number];
 };
 
 export type AudioControllerOp = {
@@ -1312,6 +1314,8 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
     powerAdd: type === "superpause" ? firstNumber(findParam(controller, "poweradd")) ?? 0 : 0,
     p2DefMul: type === "superpause" ? firstNumber(findParam(controller, "p2defmul")) : undefined,
     sound: type === "superpause" ? staticSoundValueParam(controller, "sound") : undefined,
+    anim: type === "superpause" ? stripMugenString(findParam(controller, "anim")) : undefined,
+    pos: type === "superpause" ? pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))) : undefined,
   });
 }
 

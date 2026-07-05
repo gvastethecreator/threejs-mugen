@@ -442,6 +442,8 @@ time = 20
         poweradd: "100",
         p2defmul: "2",
         sound: "S10,0",
+        anim: "S200",
+        pos: "24,-48",
       }),
     );
 
@@ -462,6 +464,8 @@ time = 20
       powerAdd: 100,
       p2DefMul: 2,
       sound: "S10,0",
+      anim: "S200",
+      pos: [24, -48],
     });
   });
 

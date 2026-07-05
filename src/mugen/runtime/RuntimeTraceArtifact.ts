@@ -165,7 +165,17 @@ export function createRuntimeTraceArtifact(input: CreateRuntimeTraceArtifactInpu
           ...payload,
           effect: cloneTraceEffect(payload.effect),
         })),
-        matchPauses: gate.evidence.matchPauses.map((pause) => ({ ...pause })),
+        matchPauses: gate.evidence.matchPauses.map((pause) => ({
+          ...pause,
+          ...(pause.superAnim
+            ? {
+                superAnim: {
+                  ...pause.superAnim,
+                  offset: { ...pause.superAnim.offset },
+                },
+              }
+            : {}),
+        })),
         matchPauseFreezes: gate.evidence.matchPauseFreezes.map((freeze) => ({
           ...freeze,
           comparedFields: [...freeze.comparedFields],

@@ -59,6 +59,39 @@ describe("PauseSystem", () => {
     });
   });
 
+  it("captures explicit SuperPause player animation metadata and offset", () => {
+    const result = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1", anim: "S200", pos: "24,-48" }),
+      10,
+    );
+
+    expect(result.pause?.superAnim).toEqual({
+      raw: "S200",
+      source: "player",
+      actionNo: 200,
+      offset: { x: 24, y: -48 },
+    });
+    expect(toMatchPauseSnapshot(result.pause!)).toMatchObject({
+      superAnim: {
+        raw: "S200",
+        source: "player",
+        actionNo: 200,
+        offset: { x: 24, y: -48 },
+      },
+    });
+  });
+
+  it("omits SuperPause animation metadata when anim disables the route", () => {
+    const result = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1", anim: "-1", pos: "24,-48" }),
+      10,
+    );
+
+    expect(result.pause?.superAnim).toBeUndefined();
+  });
+
   it("prefers typed pause operations over raw controller params", () => {
     const result = createMatchPauseFromController(
       actor("p1", 400),
