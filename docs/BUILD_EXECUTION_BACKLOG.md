@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper Projectile ProjContact state-transition required trace gate
+
+Changed:
+
+- Added optional helper `ProjContact` state-transition route generation for synthetic imported traces.
+- Added required `synthetic-imported-helper-projcontactpersist.json` trace coverage for helper `1200 -> 1300 -> 1302 -> 1301` after a helper-parented owner-side Projectile guard contact.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-helper-projcontactpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `Projectile` as taking `HitDef` parameters and notes helper-created projectiles become root-owned; Elecbyte Trigger Reference defines `ProjContact` / `ProjContactTime` around the player's last projectile contact and tick window semantics.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "ProjContactPersist"` -> 1 file passed, 1 test passed.
+- Tests: `pnpm test` -> 151 files passed, 1307 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Trace gate: `pnpm qa:trace` -> 422/422 artifacts, 392 required and 30 optional; `synthetic-imported-helper-projcontactpersist.json` checksum `65639428`.
+
+Claim allowed:
+
+- Bounded helper-parented owner-side Projectile contact markers can be read by the helper-local micro-VM from a later helper `StateDef` through `ProjContact` / `ProjContactTime`.
+- The gate proves helper `1200 -> 1300 -> 1302 -> 1301`, Projectile id `8895`, projectile anim `1060`, owner target link `p1 -> p2 / 8895`, helper/projectile lifecycle and payload evidence, and shared guard sound/FightFX package telemetry.
+
+Claim blocked:
+
+- Exact `ProjContact` tick order/lifetime, multi-projectile selection, player-side projectile state-transition persistence, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, score movement, and full MUGEN/IKEMEN helper Projectile parity.
+
+Next:
+
+- Continue R1 with player-side Projectile contact persistence breadth, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper `ProjContact` state-transition gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Helper StateDef movehitpersist reversed required trace gate
 
 Changed:

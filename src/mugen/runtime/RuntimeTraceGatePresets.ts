@@ -26719,6 +26719,131 @@ export function createSyntheticImportedHelperProjContactTimeAnyTraceArtifact(opt
   });
 }
 
+export function createSyntheticImportedHelperProjContactPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileContactScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projcontactpersist-attacker",
+    displayName: "Synthetic Imported Helper ProjContactPersist Attacker",
+    withHelper: true,
+    helperProjContactRoute: {
+      waitStateNo: 1300,
+      waitAnimNo: 1058,
+      branchStateNo: 1301,
+      branchAnimNo: 1059,
+      branchTrigger: "ProjContact(8895) && ProjContactTime(8895) >= 1",
+      projectileAnimNo: 1060,
+      projectileId: 8895,
+      pos: [360, -34],
+      guardSound: "S6,14",
+      guardSpark: "F7021",
+      sparkXy: [18, -57],
+      contactPersistRoute: {
+        entryStateNo: 1302,
+        entryAnimNo: 1061,
+        contactTrigger: "ProjContactTime(8895) >= 1",
+        branchTriggers: ["ProjContact(8895)"],
+      },
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7021, 8121),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projcontactpersist-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projcontactpersist-golden",
+      label: "Synthetic imported Helper ProjContact state transition route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ProjContact state-transition trace proves a helper-parented owner-side Projectile contact marker can be read from a later helper StateDef through ProjContact/ProjContactTime. Elecbyte documents Projectile as a HitDef-backed controller whose helper-created projectiles become root-owned, and documents Move* persistence separately through StateDef movehitpersist. Exact ProjContact tick order/lifetime, multi-projectile selection, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, and full MUGEN/IKEMEN helper projectile parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projcontactpersist-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 14,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7021,
+              raw: "F7021",
+              rawPrefix: "F",
+              offsetX: 18,
+              offsetY: -57,
+              assetSource: "fightfx",
+              assetActionId: 7021,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8121,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1300, animNo: 1058, moveType: "I", minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1302, animNo: 1061, moveType: "A", minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1301, animNo: 1059, moveType: "I", minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1060, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1301, minAge: 3 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8895,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8895 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperHitDefTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperHitDefScript();
@@ -30353,6 +30478,12 @@ export type SyntheticImportedTraceFighterOptions = {
     hitSpark?: string;
     guardSpark?: string;
     sparkXy?: [number, number];
+    contactPersistRoute?: {
+      entryStateNo: number;
+      entryAnimNo?: number;
+      contactTrigger?: string;
+      branchTriggers?: string[];
+    };
   };
   helperProjCancelRoute?: {
     waitStateNo: number;
@@ -31326,6 +31457,18 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     options.helperProjContactRoute.branchAnimNo ?? options.helperProjContactRoute.branchStateNo,
                     helperTraceAction(options.helperProjContactRoute.branchAnimNo ?? options.helperProjContactRoute.branchStateNo),
                   ],
+                  ...(options.helperProjContactRoute.contactPersistRoute === undefined
+                    ? []
+                    : ([
+                        [
+                          options.helperProjContactRoute.contactPersistRoute.entryAnimNo ??
+                            options.helperProjContactRoute.contactPersistRoute.entryStateNo,
+                          helperTraceAction(
+                            options.helperProjContactRoute.contactPersistRoute.entryAnimNo ??
+                              options.helperProjContactRoute.contactPersistRoute.entryStateNo,
+                          ),
+                        ],
+                      ] as Array<[number, MugenAnimationAction]>)),
                   [options.helperProjContactRoute.projectileAnimNo, projectileTraceAction(options.helperProjContactRoute.projectileAnimNo)],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperProjCancelRoute === undefined
@@ -34924,6 +35067,23 @@ function helperProjContactRouteBlock(route: NonNullable<SyntheticImportedTraceFi
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
   const branchTrigger = route.branchTrigger ?? `ProjContact(${projectileId}) && ProjContactTime(${projectileId}) >= 1`;
+  const branchStateBlock =
+    route.contactPersistRoute === undefined
+      ? `
+[State ${route.waitStateNo}, Helper ProjContact Branch]
+type = ChangeState
+trigger1 = ${branchTrigger}
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+`
+      : helperProjContactPersistRouteBlock(route, projectileId, branchTrigger);
   return `
 [Statedef 1200]
 type = S
@@ -34972,10 +35132,44 @@ movetype = I
 physics = N
 anim = ${waitAnimNo}
 ctrl = 0
+${branchStateBlock}
+`;
+}
 
-[State ${route.waitStateNo}, Helper ProjContact Branch]
+function helperProjContactPersistRouteBlock(
+  route: NonNullable<SyntheticImportedTraceFighterOptions["helperProjContactRoute"]>,
+  projectileId: number,
+  branchTrigger: string,
+): string {
+  const persist = route.contactPersistRoute;
+  if (persist === undefined) {
+    return "";
+  }
+  const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
+  const entryAnimNo = persist.entryAnimNo ?? persist.entryStateNo;
+  const contactTrigger = persist.contactTrigger ?? `ProjContactTime(${projectileId}) >= 1`;
+  const branchTriggerLines = (persist.branchTriggers ?? [`ProjContact(${projectileId})`])
+    .map((trigger) => `trigger1 = ${trigger}`)
+    .join("\n");
+  return `
+[State ${route.waitStateNo}, Helper ProjContactPersist Entry]
 type = ChangeState
 trigger1 = ${branchTrigger}
+value = ${persist.entryStateNo}
+ctrl = 0
+
+[Statedef ${persist.entryStateNo}]
+type = S
+movetype = A
+physics = N
+anim = ${entryAnimNo}
+ctrl = 0
+movehitpersist = 1
+
+[State ${persist.entryStateNo}, Persisted Helper ProjContact Branch]
+type = ChangeState
+trigger1 = ${contactTrigger}
+${branchTriggerLines}
 value = ${route.branchStateNo}
 ctrl = 0
 

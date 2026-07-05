@@ -35,12 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper reversed StateDef movehitpersist trace gate
+R1 required helper Projectile ProjContact state-transition trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-projcontactpersist.json
+  -> helper-parented owner-side Projectile id 8895 is guarded, helper state 1300 observes ProjContact/ProjContactTime, transitions into 1302, then branches to 1301 from that later helper StateDef with helper/projectile lifecycle and owner target-link evidence
+  -> synthetic-imported-helper-projcontactpersist.json checksum 65639428 is required in qa:trace
+  -> pnpm qa:trace passes 422/422 artifacts, 392 required and 30 optional
+  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection, player-side projectile state-transition persistence, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full helper Projectile parity remain blocked
+
+Previous R1 required helper reversed StateDef movehitpersist trace gate
   -> RuntimeTraceGatePresets now builds synthetic-imported-helper-movereversedpersist.json
   -> helper direct combat can be countered by defender-side ReversalDef before normal hit/guard resolution
   -> helper-local direct HitDef is reversed in 1200, persists MoveReversed into 1232 while MoveContact, MoveHit, MoveGuarded, HitCount, and UniqHitCount reset, and routes helper 1200 -> 1232 -> 1233 with P2 reversal state 779 evidence
   -> synthetic-imported-helper-movereversedpersist.json checksum ef8ffdf5 is required in qa:trace
-  -> pnpm qa:trace passes 421/421 artifacts, 391 required and 30 optional
+  -> pnpm qa:trace passed 421/421 artifacts, 391 required and 30 optional
   -> no score movement; helper Projectile/custom-state movehitpersist breadth, exact reversal priority/target-state semantics, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded reversal route, and full helper Move* lifetime parity remain blocked
 
 Previous R1 required helper guarded StateDef movehitpersist trace gate
@@ -1384,7 +1391,7 @@ Previous R1 Projectile cancel-time owner-state required trace gate
   -> P2 routes into state/action 283 with clash/cancel runtime-event evidence, loser projcancelanim terminal playback, projectile lifecycle, effect-store, and payload evidence
   -> owner-state cancel-time trigger evidence only; no exact cancel tick-order/lifetime, exact priority classes, multi-projectile any-id arbitration beyond the gated any-id route, redirects, teams/simul, visual/audio parity, score movement, or full Projectile cancel parity claim
 Previous R1 Helper Projectile guard/contact-time any required trace gates
-  -> synthetic-imported-helper-projguardedtime-any.json checksum bd64e9db and synthetic-imported-helper-projcontacttime-any.json checksum 5c6a4e11 are now required in qa:trace
+  -> synthetic-imported-helper-projguardedtime-any.json checksum 1f1a38e4 and synthetic-imported-helper-projcontacttime-any.json checksum 0d9f7829 are now required in qa:trace
   -> bounded helper-local ProjGuardedTime(0) and ProjContactTime(0) can branch after helper-parented Projectile guard/contact markers
   -> Helper routes into state/actions 1263 and 1265 with guard event/reason, helper/projectile lifecycle, effect-store, target-link, and sound/FightFX package evidence
   -> helper-local guard/contact-time trigger evidence only; no exact contact/guard tick-order/lifetime, multi-projectile any-id selection, helper-owned custom-state targets, redirects, teams/simul, visual/audio parity, score movement, or full Helper/Projectile parity claim
@@ -1723,12 +1730,12 @@ R1 official-style ground recovery sequence gate
   -> synthetic-imported-default-fall-official-ground-recovery.json checksum 74b72495 remains required
   -> official-style synthetic Common1 ground recovery routes 5050 -> 5200 -> 5201 -> 52 -> 0 after command = "recovery" near ground
 R2 helper-local ProjContactTime trace gate
-  -> synthetic-imported-helper-projcontact.json checksum 67ed6c2d is now required
+  -> synthetic-imported-helper-projcontact.json checksum 4dcbdd25 is now required
   -> helper-local ProjContact(8855) and ProjContactTime(8855) >= 1 branch after helper-parented owner-side Projectile generic contact
   -> visual Helper route 1200 -> 1220 -> 1221 / anims 949 and 950 follows owner-side Projectile anim 951 with parentId p1-helper-0
   -> focused EffectActorSystem coverage proves same-id player-owned Projectile contact stays ignored while helper-parented Projectile contact triggers the helper branch after contact age advances
   -> that checkpoint passed qa:trace at 185/185 artifacts, 165 required and 20 optional
-  -> previous helper-local ProjGuarded checksum 1c2c18a5, ProjHit checksum 2d9a281e, ModifyProjectile checksum 09d3f7e4, and NumProj checksum 3312a554 remain required helper-projectile proofs
+  -> previous helper-local ProjGuarded checksum d2e2f20d, ProjHit checksum 2d9a281e, ModifyProjectile checksum 09d3f7e4, and NumProj checksum 3312a554 remain required helper-projectile proofs
   -> no helper-owned Projectile combat/contact presentation, helper TargetState breadth/multi-target parity beyond the owner-backed direct-HitDef gate, exact ProjContact/ProjHit/ProjGuarded tick order or lifetime, exact projectile namespaces/scopes, dynamic ids/params, teams, visual parity, score movement, or full Helper/Projectile parity claim
 R1 official-style recovery trace promotion
   -> synthetic-imported-default-fall-official-recovery-threshold.json checksum 86804271 is now required

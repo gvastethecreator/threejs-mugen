@@ -1912,6 +1912,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjContactTimeAnyTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projcontactpersist",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjContactPersistTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projcanceltime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjCancelTimeAnyTraceArtifact(),
@@ -3189,6 +3194,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-default-target",
     "synthetic-imported-helper-projguard",
     "synthetic-imported-helper-projcontact",
+    "synthetic-imported-helper-projcontactpersist",
     "synthetic-imported-helper-hitdef",
     "synthetic-imported-helper-hitdefpersist",
     "synthetic-imported-helper-hitcountpersist",
