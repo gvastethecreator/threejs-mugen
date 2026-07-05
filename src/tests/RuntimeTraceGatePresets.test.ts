@@ -199,6 +199,7 @@ import {
   createSyntheticImportedHitDefHitEffectPackageTraceArtifact,
   createSyntheticImportedHitDefGuardEffectPackageTraceArtifact,
   createSyntheticImportedHitDefHitSoundTraceArtifact,
+  createSyntheticImportedHitDefDynamicHitSoundTraceArtifact,
   createSyntheticImportedHitDefHitSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSparkTraceArtifact,
   createSyntheticImportedHitDefGuardSoundTraceArtifact,
@@ -9566,6 +9567,60 @@ describe("RuntimeTraceGatePresets", () => {
           group: 5,
           index: 0,
           raw: "S5,0",
+          stateNo: 200,
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef dynamic hitsound artifact", () => {
+    const artifact = createSyntheticImportedHitDefDynamicHitSoundTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-dynamic-hitsound-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["audio:playsnd"]).toBeUndefined();
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          type: "PlaySnd",
+          group: 5,
+          index: 4,
+          raw: "Fvar(0),var(1)",
+          soundPrefix: "kfm",
+          stateNo: 200,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "PlaySnd",
+          group: 5,
+          index: 4,
+          raw: "Fvar(0),var(1)",
+          soundPrefix: "kfm",
+          contactKind: "hit",
           stateNo: 200,
         }),
       ]),

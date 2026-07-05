@@ -11,7 +11,7 @@ import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { CharacterRuntimeState } from "./types";
+import type { CharacterRuntimeState, RuntimeResolvedSoundRef } from "./types";
 
 export type RuntimeHitDefControllerDispatchActor = {
   runtime: CharacterRuntimeState;
@@ -27,6 +27,7 @@ export type RuntimeHitDefControllerDispatchOptions<TActor extends RuntimeHitDefC
   actor: TActor;
   controller: ControllerIr;
   frame?: MugenAnimationFrame;
+  resolveSoundValue?: (key: "hitsound" | "guardsound") => RuntimeResolvedSoundRef | undefined;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: HitDefControllerOp) => void;
 };
@@ -45,6 +46,7 @@ export class RuntimeHitDefControllerDispatchWorld {
     actor,
     controller,
     frame,
+    resolveSoundValue,
     recordController,
     recordOperation,
   }: RuntimeHitDefControllerDispatchOptions<TActor>): RuntimeHitDefControllerDispatchResult {
@@ -130,6 +132,8 @@ export class RuntimeHitDefControllerDispatchWorld {
     const p2StateNo = operation?.p2StateNo ?? firstNumber(findParam(source, "p2stateno"));
     const p2GetP1State = operation?.p2GetP1State ?? (p2StateNo !== undefined ? (firstNumber(findParam(source, "p2getp1state")) ?? 1) !== 0 : false);
     const missOnOverride = operation?.missOnOverride ?? booleanHitDefParam(source, "missonoverride") ?? existing?.missOnOverride;
+    const hitSound = operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound;
+    const guardSound = operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound;
     const fallbackHitbox = existing?.hitbox ?? { x1: 14, y1: -72, x2: 78, y2: -38 };
 
     actor.currentMove = {
@@ -175,8 +179,10 @@ export class RuntimeHitDefControllerDispatchWorld {
       downCornerPush: cornerPush.downCornerPush,
       guardCornerPush: cornerPush.guardCornerPush,
       airGuardCornerPush: cornerPush.airGuardCornerPush,
-      hitSound: operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound,
-      guardSound: operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound,
+      hitSound,
+      guardSound,
+      hitSoundValue: resolveSoundValue?.("hitsound") ?? existing?.hitSoundValue,
+      guardSoundValue: resolveSoundValue?.("guardsound") ?? existing?.guardSoundValue,
       hitSpark: operation?.hitSpark ?? stripMugenString(findParam(source, "sparkno")) ?? existing?.hitSpark,
       guardSpark: operation?.guardSpark ?? stripMugenString(findParam(source, "guard.sparkno")) ?? existing?.guardSpark,
       sparkXy: operation?.sparkXy ? normalizeSparkOffset(operation.sparkXy) : numberPair(findParam(source, "sparkxy")) ?? existing?.sparkXy,

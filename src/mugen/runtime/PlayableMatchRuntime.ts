@@ -916,11 +916,12 @@ function runActiveStateControllers(
     applyControl: (actor, ctrl) => applyRuntimeControl(actor.runtime, ctrl),
     changeAction: (actor, actionId, source, actionOwner, elementOptions) =>
       changeAction(actor, actionId, source, actionOwner.definition, elementOptions),
-    hitDef: ({ controller }) => {
+    hitDef: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       hitDefControllerDispatchWorld.apply({
-        actor: fighter,
+        actor,
         controller,
-        frame: getCurrentFrame(fighter),
+        frame: getCurrentFrame(actor),
+        resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1658,7 +1659,7 @@ function resolveAudioNumberParam(
 
 function resolveAudioSoundValueParam(
   controller: ControllerIr,
-  key: "value",
+  key: "value" | "hitsound" | "guardsound",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,

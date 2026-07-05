@@ -3,7 +3,7 @@ import type { RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenCommand } from "../model/MugenCommand";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
-import type { RuntimeGetHitVars } from "./types";
+import type { RuntimeGetHitVars, RuntimeResolvedSoundRef } from "./types";
 
 export type HitSparkLibrarySource = "common" | "fightfx";
 
@@ -55,6 +55,8 @@ export type DemoMove = {
   airGuardCornerPush?: number;
   hitSound?: string;
   guardSound?: string;
+  hitSoundValue?: RuntimeResolvedSoundRef;
+  guardSoundValue?: RuntimeResolvedSoundRef;
   hitSpark?: string;
   guardSpark?: string;
   sparkXy?: [number, number];

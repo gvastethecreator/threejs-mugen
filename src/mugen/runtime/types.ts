@@ -211,6 +211,12 @@ export type RuntimeHitDefContactMetadata = {
   contactKind: RuntimeHitDefContactKind;
 };
 
+export type RuntimeResolvedSoundRef = {
+  rawPrefix?: "F" | "S";
+  group: number;
+  index: number;
+};
+
 export type RuntimeSoundEvent = {
   type: "PlaySnd" | "StopSnd" | "SndPan";
   group?: number;

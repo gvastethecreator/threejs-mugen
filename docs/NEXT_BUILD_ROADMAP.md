@@ -27,15 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic sound-value trace gate
-  -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd is required in qa:trace
+R1 required dynamic HitDef hitsound trace gate
+  -> synthetic-imported-hitdef-dynamic-hitsound.json checksum c891e888 / final checksum a0d1bbfc is required in qa:trace
+  -> imported active state seeds var(0)=5 and var(1)=4
+  -> direct HitDef executes hitsound = Fvar(0),var(1)
+  -> dynamic HitDef hitsound group/index resolves through runtime expression fallback at HitDef activation
+  -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1) with soundPrefix kfm
+  -> pnpm qa:trace passes 456/456 artifacts, 426 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
+  -> no score movement; dynamic guardsound, SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic sound-value trace gate
+  -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd remains required in qa:trace
   -> imported active state seeds var(0)=5 and var(1)=3
   -> active state executes PlaySnd value = Fvar(0),var(1), channel = 4
   -> dynamic PlaySnd value group/index resolves through runtime expression fallback instead of typed audio:* evidence
   -> sound-event evidence requires PlaySnd group 5 index 3 channel 4 with soundPrefix kfm
-  -> pnpm qa:trace passes 455/455 artifacts, 425 required and 30 optional
+  -> that checkpoint passed 455/455 artifacts, 425 required and 30 optional
   -> official Elecbyte docs define PlaySnd value = group_no, sound_no, F-prefixed common/fight sound refs, and numeric controller params as expression-capable
-  -> no score movement; dynamic HitDef/SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-pan trace gate
   -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 remains required in qa:trace

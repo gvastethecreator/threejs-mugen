@@ -2,7 +2,7 @@ import type { AudioControllerOp } from "../compiler/ControllerOps";
 import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenStateController } from "../model/MugenState";
 import { findControllerParam } from "./StateProgramExecutor";
-import type { RuntimeHitDefContactMetadata, RuntimeSoundEvent } from "./types";
+import type { RuntimeHitDefContactMetadata, RuntimeResolvedSoundRef, RuntimeSoundEvent } from "./types";
 
 export type RuntimeSoundActor = {
   runtime: {
@@ -33,7 +33,7 @@ export type RuntimeAudioParamResolver = {
   resolveSoundValue?: (key: "value") => RuntimeResolvedSoundValue | undefined;
 };
 
-export type RuntimeResolvedSoundValue = { rawPrefix?: "F" | "S"; group: number; index: number };
+export type RuntimeResolvedSoundValue = RuntimeResolvedSoundRef;
 
 export type RuntimeAudioControllerDispatchResult = {
   event: RuntimeSoundEvent;
@@ -100,11 +100,12 @@ export class RuntimeAudioWorld {
     sound: string | undefined,
     runtimeTick: number,
     contact?: RuntimeHitDefContactMetadata,
+    resolvedSound?: RuntimeResolvedSoundRef,
   ): RuntimeSoundEvent | undefined {
-    if (!sound) {
+    if (!sound && !resolvedSound) {
       return undefined;
     }
-    const parsed = parseMugenSoundRef(sound);
+    const parsed = parseMugenSoundRef(sound) ?? resolvedSound;
     const event: RuntimeSoundEvent = {
       type: "PlaySnd",
       group: parsed?.group,

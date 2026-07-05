@@ -7015,6 +7015,41 @@ export function createSyntheticImportedHitDefHitSoundTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedHitDefDynamicHitSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-hit-sound-attacker",
+    displayName: "Synthetic Imported HitDef Dynamic Hit Sound Attacker",
+    fightFxPrefix: "kfm",
+    hitSound: "Fvar(0),var(1)",
+    hitDefDynamicSoundVarSeed: { group: 5, index: 4 },
+  });
+  return createImportedXTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-dynamic-hitsound-golden",
+    targetLabel: "Synthetic imported HitDef dynamic hitsound route",
+    requireHitEvent: true,
+    requiredExecutedStates: [200],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+    requiredExecutedOperations: ["variable:varset", "hitdef"],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 5,
+        index: 4,
+        raw: "Fvar(0),var(1)",
+        soundPrefix: "kfm",
+        stateNo: 200,
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef dynamic hitsound trace proves direct-contact HitDef hitsound group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, when the HitDef activates. It does not claim dynamic guardsound refs, SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN hit-effect audio parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefHitSparkTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-hit-spark-attacker",
@@ -33398,6 +33433,7 @@ export type SyntheticImportedTraceFighterOptions = {
   airGuardCornerPush?: number;
   hitSound?: string;
   guardSound?: string;
+  hitDefDynamicSoundVarSeed?: { group: number; index: number };
   hitSpark?: string;
   guardSpark?: string;
   sparkXy?: [number, number];
@@ -34304,6 +34340,7 @@ ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSe
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
+${options.hitDefDynamicSoundVarSeed === undefined ? "" : dynamicHitDefSoundSeedBlock(options.hitDefDynamicSoundVarSeed)}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
@@ -37826,6 +37863,22 @@ type = PlaySnd
 trigger1 = Time = 1
 value = Fvar(0),var(1)
 channel = 4
+`;
+}
+
+function dynamicHitDefSoundSeedBlock(seed: NonNullable<SyntheticImportedTraceFighterOptions["hitDefDynamicSoundVarSeed"]>): string {
+  return `
+[State 200, Dynamic HitDef Sound Group Var]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = ${seed.group}
+
+[State 200, Dynamic HitDef Sound Index Var]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = ${seed.index}
 `;
 }
 
