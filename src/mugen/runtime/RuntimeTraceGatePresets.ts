@@ -5129,6 +5129,42 @@ export function createSyntheticImportedPlayerPushTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedDynamicPlayerPushTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-playerpush-dynamic",
+      displayName: "Synthetic Imported Dynamic PlayerPush",
+      withDynamicPlayerPush: {
+        value: "var(0)",
+        vars: [{ index: 0, value: 0 }],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-playerpush-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic PlayerPush route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "PlayerPush", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          playerPush: false,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic PlayerPush trace proves active PlayerPush value can resolve through expression fallback and disable bounded body-push telemetry without typed collision:playerpush evidence. It does not claim dynamic typed-operation lowering, exact push overlap, helper/team ownership, or tick-order parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedTurnTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33858,6 +33894,10 @@ export type SyntheticImportedTraceFighterOptions = {
   };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
+  withDynamicPlayerPush?: {
+    value: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withTurn?: boolean;
   withSprPriority?: number;
   withDynamicSprPriority?: {
@@ -34205,6 +34245,7 @@ ${options.withWidthController ? widthControllerBlock(options.withWidthController
 ${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
+${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushControllerBlock(options.withDynamicPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
@@ -35451,6 +35492,27 @@ function playerPushControllerBlock(enabled: boolean): string {
 type = PlayerPush
 trigger1 = Time >= 0
 value = ${enabled ? 1 : 0}
+`;
+}
+
+function dynamicPlayerPushControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicPlayerPush"]>): string {
+  const vars =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic PlayerPush Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${vars}
+[State 200, Dynamic PlayerPush Probe]
+type = PlayerPush
+trigger1 = Time >= 0
+value = ${options.value}
 `;
 }
 

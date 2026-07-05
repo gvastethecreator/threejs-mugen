@@ -25,6 +25,15 @@ describe("BoundsControllerSystem", () => {
     expect(state.playerPush).toBe(false);
   });
 
+  it("applies PlayerPush raw expression fallback", () => {
+    const world = new RuntimeBoundsControllerWorld();
+    const state = runtimeState({ playerPush: true, vars: [0] });
+
+    world.applyPlayerPushController(state, source("PlayerPush", { value: "var(0)" }));
+
+    expect(state.playerPush).toBe(false);
+  });
+
   it("applies PosFreeze typed operations and raw axis fallback", () => {
     const world = new RuntimeBoundsControllerWorld();
     const state = runtimeState();

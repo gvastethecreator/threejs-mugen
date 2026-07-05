@@ -836,6 +836,11 @@ async function main() {
       artifact: presets.createSyntheticImportedPlayerPushTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-playerpush-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicPlayerPushTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-turn",
       required: true,
       artifact: presets.createSyntheticImportedTurnTraceArtifact(),
@@ -3481,6 +3486,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-width-dynamic",
     "synthetic-imported-statetypeset",
     "synthetic-imported-playerpush",
+    "synthetic-imported-playerpush-dynamic",
     "synthetic-imported-turn",
     "synthetic-imported-sprpriority",
     "synthetic-imported-sprpriority-dynamic",

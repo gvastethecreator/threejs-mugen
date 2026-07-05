@@ -341,6 +341,7 @@ import {
   createSyntheticImportedDynamicWidthTraceArtifact,
   createSyntheticImportedStateTypeSetTraceArtifact,
   createSyntheticImportedPlayerPushTraceArtifact,
+  createSyntheticImportedDynamicPlayerPushTraceArtifact,
   createSyntheticImportedTurnTraceArtifact,
   createSyntheticImportedSprPriorityTraceArtifact,
   createSyntheticImportedDynamicSprPriorityTraceArtifact,
@@ -8282,6 +8283,41 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.PlayerPush).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedOperations["collision:playerpush"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          playerPush: false,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.playerPush === false)).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic PlayerPush artifact without typed collision evidence", () => {
+    const artifact = createSyntheticImportedDynamicPlayerPushTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-playerpush-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PlayerPush).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["collision:playerpush"]).toBeUndefined();
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

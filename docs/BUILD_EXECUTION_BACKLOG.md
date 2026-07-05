@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic PlayerPush trace gate
+
+Changed:
+
+- Added required `synthetic-imported-playerpush-dynamic.json` trace coverage for active imported dynamic `PlayerPush value` params.
+- `RuntimeTraceGatePresets` now builds a dynamic PlayerPush route that seeds `var(0)=0`, then executes `PlayerPush value = var(0)`.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-playerpush-dynamic` as required coverage.
+- Focused `BoundsControllerSystem` coverage now proves `PlayerPush` raw expression fallback can read owner-local vars without a typed `collision:playerpush` operation.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `PlayerPush value` as a boolean push-checking flag for one tick and states numeric controller params are expression-capable unless otherwise specified.
+- Focused tests: `pnpm exec vitest run src/tests/BoundsControllerSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "PlayerPush"` -> 2 files passed, 4 matching tests passed.
+- Trace gate: `pnpm qa:trace` -> 453/453 artifacts, 423 required and 30 optional; `synthetic-imported-playerpush-dynamic.json` checksum `13c5f954`, final checksum `0627d0e5`.
+- Full closeout: `pnpm typecheck` passed; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF normalization warnings only; `pnpm test` passed 151 files / 1367 tests; `pnpm build` passed with the existing Vite large-chunk warning.
+- Smoke: not run for this runtime/controller/docs-only slice; no UI/render/CSS/assets surface changed.
+
+Claim allowed:
+
+- Bounded active imported dynamic `PlayerPush value` params can resolve through runtime expression fallback and emit trace-gated `playerPush = false` telemetry. The synthetic route proves `value = var(0)` with `var(0)=0` without typed `collision:playerpush` operation evidence.
+
+Claim blocked:
+
+- Dynamic typed-operation lowering for `PlayerPush`, exact overlap resolution, team/helper ownership, exact tick order, score movement, and full MUGEN/IKEMEN constraint parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 453/453 artifacts, 423 required and 30 optional. Latest runtime evidence is dynamic `PlayerPush`; previous dynamic Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX precision from the next-10 queue, or continue R2 by moving the next raw constraint/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic Width trace gate
 
 Changed:

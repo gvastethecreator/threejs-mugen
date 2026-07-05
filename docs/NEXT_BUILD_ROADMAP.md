@@ -27,13 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic Width trace gate
-  -> synthetic-imported-width-dynamic.json checksum 79baa5de / final checksum 395b0b1a is required in qa:trace
+R1 required dynamic PlayerPush trace gate
+  -> synthetic-imported-playerpush-dynamic.json checksum 13c5f954 / final checksum 0627d0e5 is required in qa:trace
+  -> imported active state seeds var(0)=0
+  -> active state executes PlayerPush value = var(0)
+  -> dynamic PlayerPush resolves through runtime expression fallback instead of typed collision:playerpush evidence
+  -> actor-frame/final evidence requires playerPush = false
+  -> pnpm qa:trace passes 453/453 artifacts, 423 required and 30 optional
+  -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
+  -> no score movement; dynamic typed-operation lowering for PlayerPush, exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
+
+Previous R1 required dynamic Width trace gate
+  -> synthetic-imported-width-dynamic.json checksum 79baa5de / final checksum 395b0b1a remains required in qa:trace
   -> imported active state seeds var(0)=21 and var(1)=43
   -> active state executes Width player = var(0),var(1)
   -> dynamic Width resolves through active controller expression fallback instead of typed collision:width evidence
   -> actor-frame/final evidence requires bodyWidth front 21 and back 43
-  -> pnpm qa:trace passes 452/452 artifacts, 422 required and 30 optional
+  -> that checkpoint passed 452/452 artifacts, 422 required and 30 optional
   -> official Elecbyte docs define Width as a temporary width-bar change with player/value params and numeric controller params as expression-capable
   -> no score movement; dynamic typed-operation lowering for Width, edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
