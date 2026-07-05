@@ -566,6 +566,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGetHitVarGuardedTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-hit-metadata",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-guarded",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact(),
@@ -659,6 +664,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-gethitvar-air-guard-hitshaketime",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-air-guard-velocity",
@@ -3152,6 +3162,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-guard-slide-stop",
     "synthetic-imported-default-guard-hold-walk-return",
     "synthetic-imported-crouch-guard-hold-crouch-return",
+    "synthetic-imported-projectile-gethitvar-hit-metadata",
     "synthetic-imported-projectile-gethitvar-guarded",
     "synthetic-imported-projectile-gethitvar-guard-kill",
     "synthetic-imported-projectile-gethitvar-guard-hitshaketime",
@@ -3167,6 +3178,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-hit-cornerpush-default",
     "synthetic-imported-projectile-down-hit-cornerpush",
     "synthetic-imported-projectile-down-hit-cornerpush-default",
+    "synthetic-imported-helper-projectile-gethitvar-hit-metadata",
     "synthetic-imported-helper-projectile-gethitvar-guarded",
     "synthetic-imported-helper-projectile-gethitvar-guard-kill",
     "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",

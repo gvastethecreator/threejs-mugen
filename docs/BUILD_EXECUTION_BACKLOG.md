@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile GetHitVar normal-hit metadata required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-hit-metadata.json` and `synthetic-imported-helper-projectile-gethitvar-hit-metadata.json` trace coverage.
+- `RuntimeTraceGatePresets` now gates player-owned Projectile normal-hit `GetHitVar(damage)`, `GetHitVar(hittime)`, `GetHitVar(xvel)`, and `GetHitVar(yvel)` evidence through defender-owned Common1-style state `5000 -> 335`.
+- `RuntimeTraceGatePresets` now gates helper-parented/root-owned Projectile normal-hit metadata through defender-owned `5000 -> 336`, including owner/helper target links and helper/projectile lifecycle payload evidence for Projectile id `8890`.
+- `helperProjHitRoute` fixtures can author route-specific `damage`, `hitPause`, `hitTime`, and `groundVelocity` values instead of using one hardcoded helper Projectile contact shape.
+- `scripts/qa_traces.cjs` registers both Projectile normal-hit metadata artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference documents `Projectile` as taking `HitDef` parameters and helper-created Projectiles becoming root-owned; Elecbyte Trigger Reference documents `GetHitVar` params including `damage`, `hittime`, `xvel`, and `yvel`.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "GetHitVar hit metadata"` -> 1 file passed, 2 tests passed, 398 skipped.
+- Trace gate: `pnpm qa:trace` -> 407/407 artifacts, 377 required and 30 optional; `synthetic-imported-projectile-gethitvar-hit-metadata.json` trace checksum `6b7ad6e5`, initial checksum `27f7d087`, final checksum `36365083`; `synthetic-imported-helper-projectile-gethitvar-hit-metadata.json` trace checksum `4a65158a`, initial checksum `8ffd2b71`, final checksum `dfbc9fe9`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile normal-hit metadata: Projectile id `77` hits P2, records target link `p1 -> p2 / 77`, consumes/removes the projectile, routes P2 through defender-owned state `5000 -> 335`, and proves `damage = 31`, `hittime = 13`, `xvel = 4`, `yvel = -2`, plus `!GetHitVar(guarded)`.
+- Bounded helper-parented/root-owned Projectile normal-hit metadata: helper-spawned Projectile id `8890` hits P2, records target links `p1 -> p2 / 8890` and `p1-helper-0 -> p2 / 8890`, preserves helper/projectile lifecycle payload evidence, routes P2 through `5000 -> 336`, and proves `damage = 37`, `hittime = 14`, `xvel = 4`, `yvel = -2`, plus `!GetHitVar(guarded)`.
+
+Claim blocked:
+
+- Exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, combo/chain/id breadth for Projectile normal hits, custom-state inheritance, throws, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/GetHitVar parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed Projectile/Common1 metadata gap, exact hitpause/target lifetime ordering, helper Projectile custom-state breadth, or deeper R2 helper/effect/combat ownership. Do not reselect this player/helper Projectile normal-hit metadata gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Projectile guard slide-stop required trace gates
 
 Changed:

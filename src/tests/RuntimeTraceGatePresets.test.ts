@@ -375,6 +375,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileGuardCornerPushDefaultTraceArtifact,
@@ -386,6 +387,7 @@ import {
   createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
+  createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
@@ -12230,6 +12232,63 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["projectile", "kinematic:hitvelset", "resource:ctrlset"]);
   });
 
+  it("creates a synthetic imported Projectile GetHitVar hit metadata artifact with normal get-hit branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-gethitvar-hit-metadata-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-gethitvar-hit-metadata-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 335]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 335, animNo: 335 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I" }),
+      ]),
+    );
+    const shakeFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5000);
+    expect(shakeFrame?.maxVel.x).toBe(4);
+    expect(shakeFrame?.minVel.y).toBeLessThanOrEqual(-2);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 335,
+      moveType: "H",
+    });
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5000 Projectile normal hit GetHitVar metadata branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+      },
+    ]);
+  });
+
   it("creates a synthetic imported Projectile GetHitVar guard kill artifact with defender branch evidence", () => {
     const artifact = createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact({
       generatedAt: "2026-07-04T00:00:00.000Z",
@@ -12586,6 +12645,87 @@ describe("RuntimeTraceGatePresets", () => {
             { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
             { stateNo: 1200, operation: "projectile" },
           ],
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile GetHitVar hit metadata artifact with normal get-hit branch evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileGetHitVarHitMetadataTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-gethitvar-hit-metadata-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 336]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 336, animNo: 336 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1251, animNo: 1002 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1252, animNo: 1003 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1004 }),
+      ]),
+    );
+    const shakeFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5000);
+    expect(shakeFrame?.maxVel.x).toBe(4);
+    expect(shakeFrame?.minVel.y).toBeLessThanOrEqual(-2);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8890 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8890 }),
+      ]),
+    );
+    expect(evidence?.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, operation: "projectile" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 336,
+      moveType: "H",
+    });
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "helper-local Projectile spawn telemetry",
+          actorId: "p1",
+          steps: [
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1200, operation: "projectile" },
+          ],
+        }),
+        expect.objectContaining({
+          label: "5000 helper Projectile normal hit GetHitVar metadata branch order",
+          actorId: "p2",
         }),
       ]),
     );
