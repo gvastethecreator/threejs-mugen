@@ -363,6 +363,7 @@ export type RuntimeTraceMatchPauseRequirement = {
   minFrames?: number;
   minRemaining?: number;
   minMoveTime?: number;
+  superAnimAbsent?: boolean;
   superAnimRaw?: string;
   superAnimSource?: NonNullable<RuntimeMatchPauseSnapshot["superAnim"]>["source"];
   superAnimActionNo?: number;
@@ -2029,6 +2030,8 @@ function matchesMatchPauseRequirement(
     (requirement.minFrames === undefined || pause.frames >= requirement.minFrames) &&
     (requirement.minRemaining === undefined || pause.maxRemaining >= requirement.minRemaining) &&
     (requirement.minMoveTime === undefined || pause.maxMoveTime >= requirement.minMoveTime) &&
+    (requirement.superAnimAbsent === undefined ||
+      (requirement.superAnimAbsent ? pause.superAnim === undefined : pause.superAnim !== undefined)) &&
     (requirement.superAnimRaw === undefined || pause.superAnim?.raw === requirement.superAnimRaw) &&
     (requirement.superAnimSource === undefined || pause.superAnim?.source === requirement.superAnimSource) &&
     (requirement.superAnimActionNo === undefined || pause.superAnim?.actionNo === requirement.superAnimActionNo) &&

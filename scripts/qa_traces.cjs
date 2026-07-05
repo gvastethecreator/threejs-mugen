@@ -1667,6 +1667,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSuperPauseDefaultAnimTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-superpause-anim-disabled",
+      required: true,
+      artifact: presets.createSyntheticImportedSuperPauseAnimDisabledTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-superpause-sound",
       required: true,
       artifact: presets.createSyntheticImportedSuperPauseSoundTraceArtifact(),
@@ -3345,6 +3350,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-bindtotarget-mid",
     "synthetic-imported-targetbind-pause",
     "synthetic-imported-superpause-default-anim",
+    "synthetic-imported-superpause-anim-disabled",
     "synthetic-imported-superpause-sound",
     "synthetic-imported-superpause-dynamic-params",
     "synthetic-imported-superpause-anim-pos",

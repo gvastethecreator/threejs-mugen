@@ -445,6 +445,7 @@ import {
   createSyntheticImportedProjectileTargetControllersTraceArtifact,
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedProjectileTargetStateTraceArtifact,
+  createSyntheticImportedSuperPauseAnimDisabledTraceArtifact,
   createSyntheticImportedSuperPauseAnimPosTraceArtifact,
   createSyntheticImportedSuperPauseDefaultAnimTraceArtifact,
   createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact,
@@ -19586,6 +19587,50 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported SuperPause artifact with disabled anim evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseAnimDisabledTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-anim-disabled-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-anim-disabled-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      {
+        type: "SuperPause",
+        actorId: "p1",
+        sourceStateNo: 200,
+        darken: true,
+        minFrames: 2,
+        minRemaining: 7,
+        minMoveTime: 1,
+        superAnimAbsent: true,
+      },
+    ]);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    const disabledPause = evidence?.matchPauses.find(
+      (pause) => pause.type === "SuperPause" && pause.actorId === "p1" && pause.sourceStateNo === 200,
+    );
+    expect(disabledPause).toEqual(expect.objectContaining({ darken: true, maxRemaining: 7, maxMoveTime: 1 }));
+    expect(disabledPause?.superAnim).toBeUndefined();
   });
 
   it("creates a synthetic imported SuperPause sound artifact with dynamic sound evidence", () => {

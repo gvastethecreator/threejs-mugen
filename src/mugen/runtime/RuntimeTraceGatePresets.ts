@@ -21876,6 +21876,61 @@ export function createSyntheticImportedSuperPauseDefaultAnimTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseAnimDisabledTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-anim-disabled-attacker",
+    displayName: "Synthetic Imported SuperPause Anim Disabled Attacker",
+    withSuperPause: true,
+    superPauseAnim: { anim: "-1" },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-anim-disabled-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-anim-disabled-golden",
+      label: "Synthetic imported SuperPause anim disabled route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause anim disabled trace proves anim = -1 suppresses optional superAnim snapshot metadata. It does not claim renderer visual suppression/playback parity, FightFX/common asset lookup, pausebg, unhittable, super backgrounds, or full MUGEN/IKEMEN super presentation parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-anim-disabled-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredMatchPauses: [
+          {
+            type: "SuperPause",
+            actorId: "p1",
+            sourceStateNo: 200,
+            darken: true,
+            minFrames: 2,
+            minRemaining: 7,
+            minMoveTime: 1,
+            superAnimAbsent: true,
+          },
+        ],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

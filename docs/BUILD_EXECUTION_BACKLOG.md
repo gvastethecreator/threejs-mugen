@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause anim-disabled trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-anim-disabled.json` trace coverage for imported `SuperPause anim = -1`.
+- `RuntimeTraceGate` can now require absent optional SuperPause animation metadata through `requiredMatchPauses[].superAnimAbsent`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-superpause-anim-disabled` as required coverage and includes it in the manual required coverage list.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `SuperPause anim = -1` as no SuperPause animation.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts src/tests/PauseSystem.test.ts -t "SuperPause"` -> 2 files passed, 19 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 464/464 artifacts, 434 required and 30 optional; `synthetic-imported-superpause-anim-disabled.json` checksum `fc7a2ca4`, final checksum `5be3ca6c`.
+
+Claim allowed:
+
+- Bounded imported SuperPause `anim = -1` suppresses optional `superAnim` snapshot metadata before trace evidence.
+
+Claim blocked:
+
+- Renderer visual suppression/playback parity, actual FightFX/common asset lookup or rendering, dynamic `S` player-AIR prefix breadth, `pausebg`, `unhittable`, super-background rendering, exact sound/spark timing, helper/team/redirect ownership, score movement, and full MUGEN/IKEMEN super presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 464/464 artifacts, 434 required and 30 optional. Latest runtime evidence is SuperPause `anim = -1` metadata suppression. Previous default/dynamic/explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with actual FightFX/common SuperPause lookup/rendering, renderer visual suppression/playback parity, `pausebg`, or `unhittable`, or continue R2 by moving another mutable helper/effect/combat behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause default anim trace gate
 
 Changed:
@@ -25,7 +55,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 463/463 artifacts, 433 required and 30 optional. Latest runtime evidence is SuperPause omitted-`anim` default FightFX metadata. Previous dynamic and explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At this checkpoint runtime/port was at `pnpm qa:trace` 463/463 artifacts, 433 required and 30 optional. That checkpoint's runtime evidence was SuperPause omitted-`anim` default FightFX metadata. Previous dynamic and explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 
