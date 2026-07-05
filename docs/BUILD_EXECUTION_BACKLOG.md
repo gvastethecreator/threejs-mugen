@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic AfterImageTime active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-afterimagetime-dynamic.json` trace coverage for active imported `AfterImageTime value/time` expressions.
+- `RuntimeSpriteEffectControllerWorld` now accepts an optional `resolveAfterImageTime` callback and forwards it into `RuntimeSpriteEffectWorld.applyAfterImageTime`.
+- `PlayableMatchRuntime` resolves dynamic `AfterImageTime time/value` params through the active controller expression context, preserving owner/opponent/tick/stage-bound evaluation.
+- `RuntimeTraceGatePresets` can build synthetic imported fighters with `VarSet`-seeded dynamic AfterImageTime params, and `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference says numeric state-controller params may be arithmetic expressions and defines `AfterImageTime` `time` plus alternate `value`.
+- Focused tests: `pnpm test src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 2 files passed, 463 tests passed.
+- Test suite: `pnpm test` -> 151 files passed, 1353 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Trace gate: `pnpm qa:trace` -> 446/446 artifacts, 416 required and 30 optional; `synthetic-imported-afterimagetime-dynamic.json` checksum `16edc106`.
+- Boundary gate: `pnpm check:boundaries` -> passed.
+- Smoke/visual QA: `pnpm qa:smoke` -> passed; runtime desktop/mobile and Studio Evidence/Debug screenshots inspected under `.scratch/qa/qa-smoke/`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `AfterImageTime value/time` expression fallback can resolve through the sprite-effect boundary. The synthetic route seeds `var(0) = 14`, executes static `AfterImage` plus `AfterImageTime value = var(0)`, and proves imported actor-frame/final `afterImageTime = 14`, `afterImageLength = 4`, `afterImageTimeGap = 1`, `afterImageFrameGap = 1`, at least one ghost-trail sample, and opacity `0.34` without typed `sprite-effect:afterimagetime` operation evidence because the duration param is dynamic.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic AfterImageTime params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next dynamic sprite-effect/resource/audio fallback into a named boundary.
+
 ## 2026-07-05 - Dynamic Trans active-state trace gate
 
 Changed:

@@ -22,6 +22,7 @@ export type RuntimeAfterImageResolver = {
   resolveNumber: (key: "time" | "length" | "timegap" | "framegap") => number | undefined;
   resolveTriplet: (key: "paladd" | "palmul" | "add" | "mul") => [number, number, number] | undefined;
 };
+export type RuntimeAfterImageTimeResolver = (key: "time" | "value") => number | undefined;
 
 export type RuntimeSpriteEffectControllerEffect =
   | "sprpriority"
@@ -47,6 +48,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   resolveTransAlpha?: RuntimeTransAlphaResolver;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   resolveAfterImage?: RuntimeAfterImageResolver;
+  resolveAfterImageTime?: RuntimeAfterImageTimeResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
 };
@@ -99,8 +101,9 @@ export class RuntimeSpriteEffectWorld {
     state: CharacterRuntimeState,
     controller: MugenStateController,
     operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
+    resolveAfterImageTime?: RuntimeAfterImageTimeResolver,
   ): void {
-    applyRuntimeAfterImageTimeController(state, controller, operation);
+    applyRuntimeAfterImageTimeController(state, controller, operation, resolveAfterImageTime);
   }
 
   applyTrans(
@@ -170,6 +173,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.actor.runtime,
         input.controller.source,
         operation?.controllerType === "afterimagetime" ? operation : undefined,
+        input.resolveAfterImageTime,
       );
     } else if (input.effect === "trans") {
       input.spriteEffectWorld.applyTrans(
@@ -366,12 +370,18 @@ export function applyRuntimeAfterImageTimeController(
   state: CharacterRuntimeState,
   controller: MugenStateController,
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "afterimagetime" }>,
+  resolveAfterImageTime?: RuntimeAfterImageTimeResolver,
 ): void {
+  const timeParam = findControllerParam(controller, "time");
+  const valueParam = findControllerParam(controller, "value");
   const time =
     operation?.time ??
-    clampAfterImageTime(
-      firstNumber(findControllerParam(controller, "time")) ?? firstNumber(findControllerParam(controller, "value")) ?? 0,
-    );
+    resolveAfterImageTimeNumber(
+      timeParam === undefined ? valueParam : timeParam,
+      timeParam === undefined ? "value" : "time",
+      resolveAfterImageTime,
+    ) ??
+    clampAfterImageTime(firstNumber(timeParam) ?? firstNumber(valueParam) ?? 0);
   if (time <= 0) {
     state.afterImage = undefined;
     return;
@@ -557,6 +567,18 @@ function resolveAfterImageNumber(
   }
   const value = resolver?.resolveNumber(key);
   return value === undefined || !Number.isFinite(value) ? undefined : clamp(value);
+}
+
+function resolveAfterImageTimeNumber(
+  param: string | undefined,
+  key: "time" | "value",
+  resolver: RuntimeAfterImageTimeResolver | undefined,
+): number | undefined {
+  if (param === undefined) {
+    return undefined;
+  }
+  const value = resolver?.(key);
+  return value === undefined || !Number.isFinite(value) ? undefined : clampAfterImageTime(value);
 }
 
 function colorTriplet(

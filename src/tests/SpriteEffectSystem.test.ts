@@ -243,6 +243,30 @@ describe("SpriteEffectSystem", () => {
     expect(state.afterImage).toBeUndefined();
   });
 
+  it("resolves dynamic AfterImageTime params from active expressions", () => {
+    const state = runtimeState();
+
+    applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { value: "var(0)" }), undefined, (key) =>
+      key === "value" ? 14 : undefined,
+    );
+
+    expect(state.afterImage).toMatchObject({
+      remaining: 14,
+      time: 14,
+      length: 6,
+      opacity: 0.42,
+    });
+
+    applyRuntimeAfterImageTimeController(state, controller("AfterImageTime", { time: "var(1)" }), undefined, (key) =>
+      key === "time" ? 3 : undefined,
+    );
+
+    expect(state.afterImage).toMatchObject({
+      remaining: 3,
+      time: 14,
+    });
+  });
+
   it("applies bounded Trans opacity from raw and typed params", () => {
     const state = runtimeState();
 
@@ -538,6 +562,31 @@ describe("SpriteEffectSystem", () => {
       palMul: [180, 160, 280],
     });
     expect(actor.runtime.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([7]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+  });
+
+  it("resolves dynamic AfterImageTime through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("AfterImageTime", { value: "var(0)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "afterimagetime",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      resolveAfterImageTime: (key) => (key === "value" ? 14 : undefined),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.afterImage).toMatchObject({
+      remaining: 14,
+      time: 14,
+    });
     expect(recordedOperations).toEqual([]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
   });

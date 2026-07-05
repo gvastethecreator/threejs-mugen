@@ -964,6 +964,10 @@ function runActiveStateControllers(
                   resolveAfterImageTripletParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
               }
             : undefined,
+        resolveAfterImageTime:
+          effect === "afterimagetime"
+            ? (key) => resolveAfterImageTimeParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1365,6 +1369,22 @@ function resolvePaletteFxTripletParam(
 function resolveAfterImageNumberParam(
   controller: ControllerIr,
   key: "time" | "length" | "timegap" | "framegap",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveAfterImageTimeParam(
+  controller: ControllerIr,
+  key: "time" | "value",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,

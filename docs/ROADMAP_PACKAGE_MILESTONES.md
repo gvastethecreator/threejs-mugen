@@ -35,13 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic AfterImage trace gate
+R1 required dynamic AfterImageTime trace gate
+  -> synthetic-imported-afterimagetime-dynamic.json checksum 16edc106 is required in qa:trace
+  -> imported active state seeds var(0)=14, then executes static AfterImage plus AfterImageTime value = var(0)
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic AfterImageTime resolver into RuntimeSpriteEffectWorld.applyAfterImageTime
+  -> PlayableMatchRuntime resolves AfterImageTime time/value params through the active controller expression context
+  -> final imported actor evidence requires afterImageTime 14, length 4, timeGap 1, frameGap 1, at least one sample, opacity 0.34, and no typed sprite-effect:afterimagetime operation evidence
+  -> pnpm qa:trace passes 446/446 artifacts, 416 required and 30 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define AfterImageTime time plus alternate value
+  -> no score movement; typed-operation lowering for dynamic AfterImageTime params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic AfterImage trace gate
   -> synthetic-imported-afterimage-dynamic.json checksum 2342c3f1 is required in qa:trace
   -> imported active state seeds var(0..7), then executes AfterImage time/length/timegap/framegap/paladd/palmul from expressions with trans = add
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic AfterImage scalar/triplet resolver into RuntimeSpriteEffectWorld.applyAfterImage
   -> PlayableMatchRuntime resolves AfterImage params through the active controller expression context
   -> final imported actor evidence requires afterImageTime 18, length 5, timeGap 2, frameGap 3, at least one sample, opacity 0.34, and no typed sprite-effect:afterimage operation evidence
-  -> pnpm qa:trace passes 445/445 artifacts, 415 required and 30 optional
+  -> pnpm qa:trace passed 445/445 artifacts, 415 required and 30 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImage time/length/timegap/framegap/paladd/palmul/trans
   -> no score movement; typed-operation lowering for dynamic AfterImage params, exact trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 

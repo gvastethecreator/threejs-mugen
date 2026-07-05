@@ -911,6 +911,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicAfterImageTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-afterimagetime-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicAfterImageTimeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-priority",
       required: true,
       artifact: presets.createSyntheticImportedHitDefPriorityTraceArtifact(),
@@ -3459,6 +3464,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-palfx-remappal",
     "synthetic-imported-afterimage",
     "synthetic-imported-afterimage-dynamic",
+    "synthetic-imported-afterimagetime-dynamic",
     "synthetic-imported-movehitreset",
     "synthetic-imported-hitadd",
     "synthetic-imported-variable",

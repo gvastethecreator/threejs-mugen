@@ -356,6 +356,7 @@ import {
   createSyntheticImportedPalFxRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedDynamicAfterImageTraceArtifact,
+  createSyntheticImportedDynamicAfterImageTimeTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
@@ -8918,6 +8919,53 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.afterImage?.time === 18 && actor.afterImage.length === 5,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic AfterImageTime artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicAfterImageTimeTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-afterimagetime-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-afterimagetime-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AfterImage).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.AfterImageTime).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:afterimage"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:afterimagetime"]).toBeUndefined();
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          afterImageTime: 14,
+          afterImageLength: 4,
+          afterImageTimeGap: 1,
+          afterImageFrameGap: 1,
+          afterImageSampleCount: 1,
+          afterImageOpacity: 0.34,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) => actor.id === "p1" && actor.afterImage?.time === 14 && actor.afterImage.length === 4,
       ),
     ).toBe(true);
   });

@@ -5880,6 +5880,73 @@ export function createSyntheticImportedDynamicAfterImageTraceArtifact(
   });
 }
 
+export function createSyntheticImportedDynamicAfterImageTimeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-afterimagetime-dynamic",
+    displayName: "Synthetic Imported Dynamic AfterImageTime",
+    withAfterImage: {
+      time: 8,
+      length: 4,
+      timeGap: 1,
+      frameGap: 1,
+      palAdd: [0, 40, 90],
+      palMul: [160, 160, 256],
+      trans: "add",
+    },
+    withDynamicAfterImageTime: {
+      value: "var(0)",
+      vars: [{ index: 0, value: 14 }],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-afterimagetime-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-afterimagetime-dynamic-golden",
+      label: "Synthetic imported dynamic AfterImageTime route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic AfterImageTime trace proves value/time expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and extend bounded ghost-trail duration telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, exact no-active-afterimage behavior, trail blending, palette math, sampling cadence, renderer parity, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-afterimagetime-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "AfterImage", "AfterImageTime", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:afterimage", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            afterImageTime: 14,
+            afterImageLength: 4,
+            afterImageTimeGap: 1,
+            afterImageFrameGap: 1,
+            afterImageSampleCountAtLeast: 1,
+            afterImageOpacity: 0.34,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefPriorityTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefPriorityScript();
@@ -33525,6 +33592,11 @@ export type SyntheticImportedTraceFighterOptions = {
     vars?: Array<{ index: number; value: number }>;
   };
   withAfterImageTime?: number;
+  withDynamicAfterImageTime?: {
+    time?: string;
+    value?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   assertSpecialFlags?: string[];
   passiveAssertSpecialFlags?: string[];
   passiveAssertSpecialFlagGroups?: string[][];
@@ -33792,6 +33864,7 @@ ${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBloc
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
 ${options.withDynamicAfterImage === undefined ? "" : dynamicAfterImageControllerBlock(options.withDynamicAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
+${options.withDynamicAfterImageTime === undefined ? "" : dynamicAfterImageTimeControllerBlock(options.withDynamicAfterImageTime)}
 ${hitDefControllerBlock}
 ${options.prevStateRoute === undefined ? "" : prevStateEntryBlock(options.prevStateRoute.intermediateStateNo)}
 ${options.prevAnimRoute === undefined ? "" : prevAnimEntryBlock(options.prevAnimRoute)}
@@ -35238,6 +35311,35 @@ type = AfterImageTime
 trigger1 = Time >= 0
 time = ${time}
 `;
+}
+
+function dynamicAfterImageTimeControllerBlock(
+  options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicAfterImageTime"]>,
+): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic AfterImageTime Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  const valueLine =
+    options.value === undefined ? "" : `value = ${options.value}
+`;
+  const timeLine =
+    options.time === undefined ? "" : `time = ${options.time}
+`;
+  return `
+${varSeeds}
+[State 200, Dynamic AfterImageTime Probe]
+type = AfterImageTime
+trigger1 = Time >= 0
+${timeLine}${valueLine}`;
 }
 
 function targetControllerBlock(targetId: number, lifeAddValue = -20, triggerTime = 2): string {
