@@ -5,15 +5,18 @@ import {
   applyRuntimeHitAdd,
   createRuntimeContactMemory,
   createRuntimeContactMemoryWithPersistedHitCount,
+  createRuntimeContactMemoryWithPersistedMoveHit,
   hasRuntimeProjectileContact,
   markRuntimeMoveContact,
   markRuntimeProjectileContact,
   markRuntimeReceivedDamage,
+  markRuntimeMoveReversed,
   resetRuntimeMoveContact,
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
+  runtimeMoveReversedValue,
   markRuntimeProjectileCancel,
   runtimeProjectileCancelTime,
   runtimeProjectileContactTime,
@@ -93,6 +96,23 @@ describe("ContactMemorySystem", () => {
     expect(hasRuntimeProjectileContact(persisted, 342, "hit", 77)).toBe(false);
   });
 
+  it("persists only Move* trigger memory into a new state for movehitpersist", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeProjectileContact(memory, 200, 77, "hit", "p2");
+    markRuntimeMoveReversed(memory, 200);
+    advanceRuntimeContactTimers(memory);
+
+    const persisted = createRuntimeContactMemoryWithPersistedMoveHit(memory, 344);
+
+    expect(runtimeMoveContactValue(persisted, 344, "contact")).toBe(1);
+    expect(runtimeMoveContactValue(persisted, 344, "hit")).toBe(1);
+    expect(runtimeMoveReversedValue(persisted, 344)).toBe(1);
+    expect(runtimeMoveHitCountValue(persisted, 344, false)).toBe(0);
+    expect(runtimeMoveHitCountValue(persisted, 344, true)).toBe(0);
+    expect(hasRuntimeProjectileContact(persisted, 344, "hit", 77)).toBe(false);
+  });
+
   it("tracks projectile cancel ids and timers separately from contact", () => {
     const memory = createRuntimeContactMemory();
 
@@ -157,6 +177,19 @@ describe("ContactMemorySystem", () => {
 
     expect(world.moveHitCountValue(persisted, 342, false)).toBe(1);
     expect(world.moveContactValue(persisted, 342, "hit")).toBe(0);
+  });
+
+  it("wraps combined StateDef contact persistence behind RuntimeContactMemoryWorld", () => {
+    const world = new RuntimeContactMemoryWorld();
+    const memory = world.create();
+
+    world.markMoveContact(memory, 200, "hit", "p2");
+    world.advance(memory);
+
+    const persisted = world.createWithStatePersistence(memory, 344, { moveHit: true, hitCount: true });
+
+    expect(world.moveContactValue(persisted, 344, "hit")).toBe(1);
+    expect(world.moveHitCountValue(persisted, 344, false)).toBe(1);
   });
 
   it("dispatches active HitAdd controllers with telemetry hooks", () => {

@@ -125,7 +125,8 @@
 ## CNS/ST
 
 - `[Statedef N]`.
-- `StateDef hitcountpersist = 1` is recognized and executed for bounded direct attacker-side hit-count memory. Required `synthetic-imported-hitcountpersist.json` checksum `6f032088` proves direct `HitDef` contact can carry `HitCount` / `UniqHitCount` into one destination state while `MoveHit` resets. `movehitpersist`, `hitdefpersist`, helper/projectile/custom-state breadth, combo UI accumulation, multi-target/team counting, and full hit-count lifetime parity remain unsupported.
+- `StateDef movehitpersist = 1` is recognized and executed for bounded direct attacker-side Move* memory. Required `synthetic-imported-movehitpersist.json` checksum `5c1ef583` proves direct `HitDef` contact can carry `MoveContact` / `MoveHit` into one destination state while `HitCount` / `UniqHitCount` reset. Guarded/reversed breadth, `hitdefpersist`, helper/projectile/custom-state breadth, combo UI accumulation, multi-target/team counting, and full Move* lifetime parity remain unsupported.
+- `StateDef hitcountpersist = 1` is recognized and executed for bounded direct attacker-side hit-count memory. Required `synthetic-imported-hitcountpersist.json` checksum `6f032088` proves direct `HitDef` contact can carry `HitCount` / `UniqHitCount` into one destination state while `MoveHit` resets. `hitdefpersist`, helper/projectile/custom-state breadth, combo UI accumulation, multi-target/team counting, and full hit-count lifetime parity remain unsupported.
 - `[State N, Name]`.
 - `[State -1, Name]` state-entry controllers inside `.cmd` are parsed through the CNS parser.
 - `triggerall` is preserved with index `0` so command/state-entry logic can separate always-conditions from numbered trigger groups.

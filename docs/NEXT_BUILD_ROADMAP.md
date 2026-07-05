@@ -27,11 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required StateDef hitcountpersist trace gate
-  -> synthetic-imported-hitcountpersist.json checksum 6f032088 is required in qa:trace
+R1 required StateDef movehitpersist trace gate
+  -> synthetic-imported-movehitpersist.json checksum 5c1ef583 is required in qa:trace
+  -> direct HitDef contact routes P1 200 -> 344 -> 345, proving MoveContact >= 1 && MoveHit >= 1 persists into state 344 with movehitpersist = 1 while HitCount = 0 && UniqHitCount = 0
+  -> pnpm qa:trace passes 415/415 artifacts, 385 required and 30 optional
+  -> no score movement; guarded/reversed breadth, hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full Move* lifetime parity remain blocked
+
+Previous R1 required StateDef hitcountpersist trace gate
+  -> synthetic-imported-hitcountpersist.json checksum 6f032088 remains required in qa:trace
   -> direct HitDef contact routes P1 200 -> 342 -> 343, proving HitCount >= 1 && UniqHitCount >= 1 persists into state 342 with hitcountpersist = 1 while MoveHit = 0
-  -> pnpm qa:trace passes 414/414 artifacts, 384 required and 30 optional
-  -> no score movement; movehitpersist, hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full hit-count lifetime parity remain blocked
+  -> pnpm qa:trace passed 414/414 artifacts, 384 required and 30 optional
+  -> remains required; hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full hit-count lifetime parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit HitCount trace gates
   -> synthetic-imported-projectile-hitcount.json checksum 97a1b671 remains required in qa:trace

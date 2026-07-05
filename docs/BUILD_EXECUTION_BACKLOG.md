@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - StateDef movehitpersist required trace gate
+
+Changed:
+
+- Added parser/model support for `StateDef movehitpersist`.
+- Added `RuntimeContactMemory` persistence helpers that can carry Move* trigger memory and hit-count memory independently into a destination state.
+- `PlayableMatchRuntime` now preserves MoveContact/MoveHit/MoveGuarded/MoveReversed memory only when the destination state declares `movehitpersist = 1`, and still preserves HitCount/UniqHitCount only when `hitcountpersist = 1`.
+- Added required `synthetic-imported-movehitpersist.json` trace coverage for a direct `HitDef` route `200 -> 344 -> 345`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-movehitpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `movehitpersist` as carrying Move* trigger info from the previous state; Elecbyte Trigger Reference says MoveContact, MoveGuarded, MoveHit, and MoveReversed reset after state transition unless `movehitpersist` overrides this behavior.
+- Focused tests: `pnpm vitest run src/tests/ContactMemorySystem.test.ts src/tests/CmdCnsParser.test.ts src/tests/RuntimeStateEntrySystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "movehitpersist|Move\\*|indexes statedefs|state entry"` -> 4 files passed, 4 tests passed, 431 skipped.
+- Typecheck: `pnpm typecheck` -> passed.
+- Trace gate: `pnpm qa:trace` -> 415/415 artifacts, 385 required and 30 optional; `synthetic-imported-movehitpersist.json` checksum `5c1ef583`.
+
+Claim allowed:
+
+- Bounded direct `HitDef` attacker-side `MoveContact` / `MoveHit` memory can persist across one state transition into a destination `StateDef` declaring `movehitpersist = 1`.
+- The same gate proves hit counters are still reset without `hitcountpersist`, routing P1 `200 -> 344 -> 345` through `MoveContact >= 1 && MoveHit >= 1 && HitCount = 0 && UniqHitCount = 0`.
+
+Claim blocked:
+
+- Guarded/reversed route breadth, `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN Move* lifetime parity.
+
+Next:
+
+- Continue R1 with `hitdefpersist`, guarded/reversed movehitpersist breadth, helper/projectile movehitpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `movehitpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - StateDef hitcountpersist required trace gate
 
 Changed:
@@ -24,11 +54,11 @@ Claim allowed:
 
 Claim blocked:
 
-- `movehitpersist`, `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN hit-count lifetime parity.
+- `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN hit-count lifetime parity.
 
 Next:
 
-- Continue R1 with `movehitpersist` / `hitdefpersist`, helper/projectile hitcountpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitcountpersist` gate unless adding one blocked dimension.
+- Continue R1 with `hitdefpersist`, helper/projectile hitcountpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitcountpersist` gate unless adding one blocked dimension.
 
 ## 2026-07-05 - Projectile HitCount required trace gates
 

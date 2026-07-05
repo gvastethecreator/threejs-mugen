@@ -31,6 +31,11 @@ export type RuntimeContactMemory = {
   projectileCancelTime?: number;
 };
 
+export type RuntimeContactPersistenceOptions = {
+  moveHit?: boolean;
+  hitCount?: boolean;
+};
+
 export type RuntimeContactKind = "contact" | "hit" | "guard";
 
 export type RuntimeContactControllerActor = {
@@ -60,6 +65,18 @@ export class RuntimeContactMemoryWorld {
 
   createWithPersistedHitCount(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
     return createRuntimeContactMemoryWithPersistedHitCount(memory, stateNo);
+  }
+
+  createWithPersistedMoveHit(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
+    return createRuntimeContactMemoryWithPersistedMoveHit(memory, stateNo);
+  }
+
+  createWithStatePersistence(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    options: RuntimeContactPersistenceOptions,
+  ): RuntimeContactMemory {
+    return createRuntimeContactMemoryWithStatePersistence(memory, stateNo, options);
   }
 
   resetMoveContact(memory: RuntimeContactMemory): void {
@@ -192,22 +209,61 @@ export function createRuntimeContactMemory(): RuntimeContactMemory {
   return {};
 }
 
+export function createRuntimeContactMemoryWithStatePersistence(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  options: RuntimeContactPersistenceOptions,
+): RuntimeContactMemory {
+  const persisted: RuntimeContactMemory = {};
+  if (options.moveHit) {
+    copyMoveContactPersistence(memory, persisted, stateNo);
+  }
+  if (options.hitCount) {
+    copyHitCountPersistence(memory, persisted, stateNo);
+  }
+  return persisted;
+}
+
+export function createRuntimeContactMemoryWithPersistedMoveHit(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
+  return createRuntimeContactMemoryWithStatePersistence(memory, stateNo, { moveHit: true });
+}
+
 export function createRuntimeContactMemoryWithPersistedHitCount(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
+  return createRuntimeContactMemoryWithStatePersistence(memory, stateNo, { hitCount: true });
+}
+
+function copyMoveContactPersistence(memory: RuntimeContactMemory, persisted: RuntimeContactMemory, stateNo: number): void {
+  if (memory.moveContactState !== undefined && memory.moveContactTime !== undefined) {
+    persisted.moveContactState = stateNo;
+    persisted.moveContactTime = memory.moveContactTime;
+  }
+  if (memory.moveHitState !== undefined && memory.moveHitTime !== undefined) {
+    persisted.moveHitState = stateNo;
+    persisted.moveHitTime = memory.moveHitTime;
+  }
+  if (memory.moveGuardState !== undefined && memory.moveGuardTime !== undefined) {
+    persisted.moveGuardState = stateNo;
+    persisted.moveGuardTime = memory.moveGuardTime;
+  }
+  if (memory.moveReversedState !== undefined && memory.moveReversedTime !== undefined) {
+    persisted.moveReversedState = stateNo;
+    persisted.moveReversedTime = memory.moveReversedTime;
+  }
+}
+
+function copyHitCountPersistence(memory: RuntimeContactMemory, persisted: RuntimeContactMemory, stateNo: number): void {
   const hitCount = memory.moveHitCount ?? 0;
   const uniqueHitCount = memory.moveUniqueHitCount ?? 0;
   const targetIds = memory.moveHitTargetIds;
   if (memory.moveHitCountState === undefined || (hitCount <= 0 && uniqueHitCount <= 0 && (!targetIds || targetIds.size === 0))) {
-    return {};
+    return;
   }
-  const persisted: RuntimeContactMemory = {
-    moveHitCountState: stateNo,
-    moveHitCount: hitCount,
-    moveUniqueHitCount: uniqueHitCount,
-  };
+  persisted.moveHitCountState = stateNo;
+  persisted.moveHitCount = hitCount;
+  persisted.moveUniqueHitCount = uniqueHitCount;
   if (targetIds) {
     persisted.moveHitTargetIds = new Set(targetIds);
   }
-  return persisted;
 }
 
 export function resetRuntimeMoveContact(memory: RuntimeContactMemory): void {

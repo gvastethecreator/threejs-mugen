@@ -20,6 +20,7 @@ describe("RuntimeStateEntrySystem", () => {
       anim: 205,
       ctrl: 0,
       velSet: [3, -6],
+      moveHitPersist: true,
       hitCountPersist: true,
     });
     const actor = entryActor({
