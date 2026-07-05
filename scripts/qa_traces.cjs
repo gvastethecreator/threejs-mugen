@@ -996,6 +996,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefDynamicHitSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-dynamic-guardsound",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefDynamicGuardSoundTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitdef-hit-spark",
       required: true,
       artifact: presets.createSyntheticImportedHitDefHitSparkTraceArtifact(),
@@ -3558,6 +3563,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-hitdef-guard-sound",
     "synthetic-imported-hitdef-hit-sound",
     "synthetic-imported-hitdef-dynamic-hitsound",
+    "synthetic-imported-hitdef-dynamic-guardsound",
     "synthetic-imported-hitdef-hit-spark",
     "synthetic-imported-hitdef-data-spark",
     "synthetic-imported-hitdef-common-spark",

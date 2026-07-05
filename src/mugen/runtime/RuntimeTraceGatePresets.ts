@@ -6986,6 +6986,44 @@ export function createSyntheticImportedHitDefGuardSoundTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHitDefDynamicGuardSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-dynamic-guard-sound-attacker",
+    displayName: "Synthetic Imported HitDef Dynamic Guard Sound Attacker",
+    fightFxPrefix: "kfm",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardSound: "Fvar(0),var(1)",
+    hitDefDynamicSoundVarSeed: { group: 6, index: 4 },
+    moveGuardStateNo: 260,
+  });
+  return createImportedGuardTraceArtifact(attacker, {
+    ...options,
+    targetId: "synthetic-imported-hitdef-dynamic-guardsound-golden",
+    targetLabel: "Synthetic imported HitDef dynamic guardsound route",
+    requiredExecutedStates: [200, 260],
+    requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef"],
+    requiredExecutedOperations: ["variable:varset", "hitdef"],
+    requiredSoundEvents: [
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        type: "PlaySnd",
+        group: 6,
+        index: 4,
+        raw: "Fvar(0),var(1)",
+        soundPrefix: "kfm",
+        stateNo: 200,
+        contactKind: "guard",
+      },
+    ],
+    notes: [
+      "Synthetic imported HitDef dynamic guardsound trace proves guarded direct-contact HitDef guardsound group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, when the HitDef activates. It does not claim SuperPause sound refs, exact SND playback, channel priority, timing/mixing parity, helper/redirect ownership, or full MUGEN/IKEMEN guard-effect audio parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedHitDefHitSoundTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-hitdef-hit-sound-attacker",
@@ -20183,6 +20221,8 @@ export function createImportedGuardTraceArtifact(
     targetLabel?: string;
     notes?: string[];
     requiredExecutedStates?: number[];
+    requiredExecutedControllers?: RuntimeTraceGate["requiredExecutedControllers"];
+    requiredExecutedOperations?: RuntimeTraceGate["requiredExecutedOperations"];
     requiredSoundEvents?: RuntimeTraceSoundEventRequirement[];
     requiredHitEffectEvents?: RuntimeTraceHitEffectEventRequirement[];
     requiredContactEffectPackages?: RuntimeTraceGate["requiredContactEffectPackages"];
@@ -20212,8 +20252,8 @@ export function createImportedGuardTraceArtifact(
         requiredActorKinds: ["player"],
         requiredRoutedStates: [200],
         requiredExecutedStates: options.requiredExecutedStates ?? [200],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["guard"],
         requiredCombatReasons: ["guard"],

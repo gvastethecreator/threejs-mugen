@@ -27,15 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic HitDef hitsound trace gate
-  -> synthetic-imported-hitdef-dynamic-hitsound.json checksum c891e888 / final checksum a0d1bbfc is required in qa:trace
+R1 required dynamic HitDef guardsound trace gate
+  -> synthetic-imported-hitdef-dynamic-guardsound.json checksum cb061b1c / final checksum 8d25e54e is required in qa:trace
+  -> imported active state seeds var(0)=6 and var(1)=4
+  -> guarded direct HitDef executes guardsound = Fvar(0),var(1)
+  -> dynamic HitDef guardsound group/index resolves through runtime expression fallback at HitDef activation
+  -> sound-event evidence requires attacker guard-contact PlaySnd group 6 index 4 raw Fvar(0),var(1), contactKind guard, and soundPrefix kfm
+  -> pnpm qa:trace passes 457/457 artifacts, 427 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
+  -> no score movement; SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic HitDef hitsound trace gate
+  -> synthetic-imported-hitdef-dynamic-hitsound.json checksum c891e888 / final checksum a0d1bbfc remains required in qa:trace
   -> imported active state seeds var(0)=5 and var(1)=4
   -> direct HitDef executes hitsound = Fvar(0),var(1)
   -> dynamic HitDef hitsound group/index resolves through runtime expression fallback at HitDef activation
   -> sound-event evidence requires attacker contact PlaySnd group 5 index 4 raw Fvar(0),var(1) with soundPrefix kfm
-  -> pnpm qa:trace passes 456/456 artifacts, 426 required and 30 optional
+  -> that checkpoint passed 456/456 artifacts, 426 required and 30 optional
   -> official Elecbyte docs define numeric controller params as expression-capable and HitDef hitsound/guardsound as sound group/index params
-  -> no score movement; dynamic guardsound, SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; SuperPause sound refs, exact SND playback/archive lookup/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
 Previous R1 required dynamic sound-value trace gate
   -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd remains required in qa:trace
