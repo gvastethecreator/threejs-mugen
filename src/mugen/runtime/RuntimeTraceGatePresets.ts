@@ -4993,6 +4993,44 @@ export function createSyntheticImportedWidthTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedDynamicWidthTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-width-dynamic",
+      displayName: "Synthetic Imported Dynamic Width",
+      withDynamicWidth: {
+        player: "var(0),var(1)",
+        vars: [
+          { index: 0, value: 21 },
+          { index: 1, value: 43 },
+        ],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-width-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic Width route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "Width", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          animNo: 200,
+          bodyWidthFront: 21,
+          bodyWidthBack: 43,
+          minFrames: 1,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic Width trace proves active Width player params can resolve through expression fallback and update bounded body-width telemetry without typed collision:width evidence. It does not claim dynamic typed-operation lowering, edge width parity, exact push overlap, helper/team ownership, or tick-order parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateTypeSetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33813,6 +33851,11 @@ export type SyntheticImportedTraceFighterOptions = {
     dynamicControllerName?: string;
   };
   withWidthController?: [number, number?];
+  withDynamicWidth?: {
+    player?: string;
+    value?: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withStateTypeSet?: { stateType?: "S" | "C" | "A" | "L"; moveType?: "I" | "A" | "H"; physics?: "S" | "C" | "A" | "N" };
   withPlayerPush?: boolean;
   withTurn?: boolean;
@@ -34159,6 +34202,7 @@ ${options.withGravity ? gravityControllerBlock() : ""}
 ${options.withKinematicControllers ? kinematicControllerBlock() : ""}
 ${options.bottomParamVelSetRoute ? bottomParamVelSetControllerBlock(options.bottomParamVelSetRoute) : ""}
 ${options.withWidthController ? widthControllerBlock(options.withWidthController) : ""}
+${options.withDynamicWidth === undefined ? "" : dynamicWidthControllerBlock(options.withDynamicWidth)}
 ${options.withStateTypeSet ? stateTypeSetControllerBlock(options.withStateTypeSet) : ""}
 ${options.withPlayerPush === undefined ? "" : playerPushControllerBlock(options.withPlayerPush)}
 ${options.withTurn ? turnControllerBlock() : ""}
@@ -35304,6 +35348,29 @@ function widthControllerBlock(width: [number, number?]): string {
 type = Width
 trigger1 = Time >= 0
 player = ${width[0]},${width[1] ?? width[0]}
+`;
+}
+
+function dynamicWidthControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicWidth"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic Width Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  const param = options.player !== undefined ? `player = ${options.player}` : `value = ${options.value ?? "var(0),var(1)"}`;
+  return `
+${varSeeds}
+[State 200, Dynamic Width Probe]
+type = Width
+trigger1 = Time >= 0
+${param}
 `;
 }
 

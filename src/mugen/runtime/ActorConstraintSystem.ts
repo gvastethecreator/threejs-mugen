@@ -14,8 +14,13 @@ export type RuntimeActorConstraintControllerDispatchOptions<TActor extends { run
   actor: TActor;
   controller: ControllerIr;
   actorConstraintWorld: RuntimeActorConstraintWorld;
+  resolveWidth?: RuntimeWidthResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: Extract<CollisionControllerOp, { controllerType: "width" }>) => void;
+};
+
+export type RuntimeWidthResolver = {
+  resolvePair(key: "player" | "value"): [number, number?] | undefined;
 };
 
 export type RuntimeActorConstraintControllerDispatchResult = {
@@ -34,8 +39,13 @@ export class RuntimeActorConstraintWorld {
     state: RuntimeActorConstraintState,
     controller: MugenStateController,
     operation?: Extract<CollisionControllerOp, { controllerType: "width" }>,
+    resolveWidth?: RuntimeWidthResolver,
   ): void {
-    const pair = operation ? undefined : numberPair(findControllerParam(controller, "player") ?? findControllerParam(controller, "value"));
+    const pair = operation
+      ? undefined
+      : resolveWidth?.resolvePair("player") ??
+        resolveWidth?.resolvePair("value") ??
+        numberPair(findControllerParam(controller, "player") ?? findControllerParam(controller, "value"));
     const front = operation?.front ?? pair?.[0];
     if (front === undefined) {
       return;
@@ -92,7 +102,7 @@ export class RuntimeActorConstraintControllerDispatchWorld {
     if (operation) {
       options.recordOperation?.(options.actor, operation);
     }
-    options.actorConstraintWorld.applyWidth(options.actor.runtime, options.controller.source, operation);
+    options.actorConstraintWorld.applyWidth(options.actor.runtime, options.controller.source, operation, options.resolveWidth);
     return {
       recordedController: Boolean(options.recordController),
       recordedOperation: Boolean(operation && options.recordOperation),
@@ -111,10 +121,10 @@ function numberPair(value: string | undefined): [number, number] | undefined {
     return undefined;
   }
   const numbers = value.split(",").map((part) => Number(part.trim()));
-  if (numbers.length < 2 || numbers.some((numberValue) => !Number.isFinite(numberValue))) {
+  if (numbers.length === 0 || numbers.some((numberValue) => !Number.isFinite(numberValue)) || numbers[0] === undefined) {
     return undefined;
   }
-  return [numbers[0]!, numbers[1]!];
+  return numbers.length > 1 ? [numbers[0], numbers[1]!] : [numbers[0], numbers[0]];
 }
 
 function clampBodyWidth(value: number): number {

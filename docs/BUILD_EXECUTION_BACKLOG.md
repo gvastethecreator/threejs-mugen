@@ -1,5 +1,43 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic Width trace gate
+
+Changed:
+
+- Added required `synthetic-imported-width-dynamic.json` trace coverage for active imported dynamic `Width player` body-width params.
+- `RuntimeActorConstraintWorld` and `RuntimeActorConstraintControllerDispatchWorld` now accept a bounded dynamic `Width` resolver when no typed `collision:width` operation exists.
+- `PlayableMatchRuntime` resolves dynamic `Width player/value` params through the active controller expression context, preserving owner/opponent/stage-time evaluation.
+- `RuntimeTraceGatePresets` now builds a dynamic Width route that seeds `var(0)=21` and `var(1)=43`, then executes `player = var(0),var(1)`.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-width-dynamic` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `Width` as a temporary 1-tick width-bar change for pushing and screen-edge behavior, documents `player = front,back` and alternate `value = front,back`, and states numeric controller params are expression-capable unless otherwise specified.
+- Focused tests: `pnpm exec vitest run src/tests/ActorConstraintSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Width|static Width"` -> 3 files passed, 6 matching tests passed.
+- Trace gate: `pnpm qa:trace` -> 452/452 artifacts, 422 required and 30 optional; `synthetic-imported-width-dynamic.json` checksum `79baa5de`, final checksum `395b0b1a`.
+- Typecheck: `pnpm typecheck` -> passed.
+- Full tests: `pnpm test` -> 151 files passed, 1365 tests passed.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Diff check: `git diff --check` -> passed with CRLF normalization warnings only on touched markdown docs.
+- Build: `pnpm build` -> passed with existing Vite large-chunk warning.
+- Smoke: not run for this runtime/controller/docs-only slice; no UI/render/CSS/assets surface changed.
+
+Claim allowed:
+
+- Bounded active imported dynamic `Width player` params can resolve through active controller expression fallback and emit trace-gated body-width telemetry. The synthetic route proves `player = 21,43` without typed `collision:width` operation evidence.
+
+Claim blocked:
+
+- Dynamic typed-operation lowering for `Width`, edge width parity, exact push overlap, team/helper ownership, exact tick order, score movement, and full MUGEN/IKEMEN constraint parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 452/452 artifacts, 422 required and 30 optional. Latest runtime evidence is dynamic `Width`; previous dynamic EnvColor, dynamic EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX precision from the next-10 queue, or continue R2 by moving the next raw constraint/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic EnvColor trace gate
 
 Changed:

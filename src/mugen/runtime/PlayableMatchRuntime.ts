@@ -6,7 +6,11 @@ import type { ControllerIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationFrame } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController, MugenStateDef } from "../model/MugenState";
-import { RuntimeActorConstraintControllerDispatchWorld, RuntimeActorConstraintWorld } from "./ActorConstraintSystem";
+import {
+  RuntimeActorConstraintControllerDispatchWorld,
+  RuntimeActorConstraintWorld,
+  type RuntimeWidthResolver,
+} from "./ActorConstraintSystem";
 import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
 import {
   RuntimeContactControllerDispatchWorld,
@@ -924,11 +928,14 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    width: ({ controller }) => {
+    width: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       actorConstraintControllerDispatchWorld.apply({
         actor: fighter,
         controller,
         actorConstraintWorld,
+        resolveWidth: {
+          resolvePair: (key) => resolveWidthPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1312,6 +1319,37 @@ function resolveDispatchFloat(
     tick: stageTime,
     createContext,
   });
+}
+
+function resolveWidthPairParam(
+  controller: ControllerIr,
+  key: Parameters<RuntimeWidthResolver["resolvePair"]>[0],
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): ReturnType<RuntimeWidthResolver["resolvePair"]> {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const [frontExpression, backExpression] = raw.split(",").map((part) => part.trim());
+  if (!frontExpression) {
+    return undefined;
+  }
+  const front = resolveDispatchNumber(undefined, frontExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (front === undefined) {
+    return undefined;
+  }
+  if (!backExpression) {
+    return [front];
+  }
+  const back = resolveDispatchNumber(undefined, backExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (back === undefined) {
+    return undefined;
+  }
+  return [front, back];
 }
 
 function resolveRemapPalPairParam(

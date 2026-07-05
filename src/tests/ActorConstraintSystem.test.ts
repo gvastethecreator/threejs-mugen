@@ -45,6 +45,31 @@ describe("ActorConstraintSystem", () => {
     expect(result).toEqual({ recordedController: true, recordedOperation: true });
   });
 
+  it("dispatches dynamic active Width params through resolver fallback without typed operation telemetry", () => {
+    const dispatchWorld = new RuntimeActorConstraintControllerDispatchWorld();
+    const actor = { runtime: actorState() };
+    const ir = compileControllerIr(controller("Width", { player: "var(0),var(1)" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor,
+      controller: ir,
+      actorConstraintWorld: new RuntimeActorConstraintWorld(),
+      resolveWidth: {
+        resolvePair: (key) => (key === "player" ? [21, 43] : undefined),
+      },
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.bodyWidth).toEqual({ front: 21, back: 43 });
+    expect(recordedControllers).toEqual(["Width"]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ recordedController: true, recordedOperation: false });
+  });
+
   it("resets one-frame constraints and preserves frozen position axes", () => {
     const world = new RuntimeActorConstraintWorld();
     const state = actorState({

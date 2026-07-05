@@ -27,13 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic EnvColor trace gate
+R1 required dynamic Width trace gate
+  -> synthetic-imported-width-dynamic.json checksum 79baa5de / final checksum 395b0b1a is required in qa:trace
+  -> imported active state seeds var(0)=21 and var(1)=43
+  -> active state executes Width player = var(0),var(1)
+  -> dynamic Width resolves through active controller expression fallback instead of typed collision:width evidence
+  -> actor-frame/final evidence requires bodyWidth front 21 and back 43
+  -> pnpm qa:trace passes 452/452 artifacts, 422 required and 30 optional
+  -> official Elecbyte docs define Width as a temporary width-bar change with player/value params and numeric controller params as expression-capable
+  -> no score movement; dynamic typed-operation lowering for Width, edge width parity, exact push overlap, team/helper ownership, exact tick order, and full constraint parity remain blocked
+
+Previous R1 required dynamic EnvColor trace gate
   -> synthetic-imported-envcolor-dynamic.json checksum dbe548a7 / final checksum 2ff8dd42 is required in qa:trace
   -> imported active state seeds var(0)=32, var(1)=128, var(2)=240, var(3)=14, and var(4)=1
   -> active state executes EnvColor value = var(0),var(1),var(2), time = var(3), and under = var(4)
   -> dynamic EnvColor resolves through active controller expression fallback instead of typed envcolor evidence
   -> stage-frame evidence requires envColor 32,128,240 with under = true
-  -> pnpm qa:trace passes 451/451 artifacts, 421 required and 30 optional
+  -> pnpm qa:trace passed 451/451 artifacts, 421 required and 30 optional
   -> official Elecbyte docs define EnvColor value/time/under and numeric controller params as expression-capable
   -> no score movement; dynamic typed-operation lowering for EnvColor, exact blend math, layer/window behavior, pause timing, renderer parity, and full presentation parity remain blocked
 
