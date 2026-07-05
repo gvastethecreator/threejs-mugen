@@ -11,7 +11,12 @@ import {
   RuntimeActorConstraintWorld,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
-import { RuntimeAudioControllerDispatchWorld, type RuntimeAudioParamResolver, RuntimeAudioWorld } from "./AudioEventSystem";
+import {
+  RuntimeAudioControllerDispatchWorld,
+  type RuntimeAudioParamResolver,
+  type RuntimeResolvedSoundValue,
+  RuntimeAudioWorld,
+} from "./AudioEventSystem";
 import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
@@ -1052,6 +1057,7 @@ function runActiveStateControllers(
         audioWorld: fighter.audioWorld,
         resolveAudio: {
           resolveNumber: (key) => resolveAudioNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          resolveSoundValue: (key) => resolveAudioSoundValueParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
         },
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -1648,6 +1654,58 @@ function resolveAudioNumberParam(
     return undefined;
   }
   return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveAudioSoundValueParam(
+  controller: ControllerIr,
+  key: "value",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): RuntimeResolvedSoundValue | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const valueExpressions = splitAudioSoundValueExpressions(raw);
+  if (!valueExpressions) {
+    return undefined;
+  }
+  const [groupExpressionWithPrefix, indexExpression] = valueExpressions;
+  if (!groupExpressionWithPrefix || !indexExpression) {
+    return undefined;
+  }
+  const prefixMatch = /^([FS])\s*(.+)$/.exec(groupExpressionWithPrefix);
+  const rawPrefix = prefixMatch?.[1]?.toUpperCase() as "F" | "S" | undefined;
+  const groupExpression = prefixMatch?.[2]?.trim() ?? groupExpressionWithPrefix;
+  if (!groupExpression) {
+    return undefined;
+  }
+  const group = resolveDispatchNumber(undefined, groupExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const index = resolveDispatchNumber(undefined, indexExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (group === undefined || index === undefined) {
+    return undefined;
+  }
+  return { ...(rawPrefix ? { rawPrefix } : {}), group, index };
+}
+
+function splitAudioSoundValueExpressions(raw: string): [string, string] | undefined {
+  let depth = 0;
+  for (let index = 0; index < raw.length; index += 1) {
+    const char = raw[index];
+    if (char === "(") {
+      depth += 1;
+    } else if (char === ")") {
+      depth = Math.max(0, depth - 1);
+    } else if (char === "," && depth === 0) {
+      const groupExpression = raw.slice(0, index).trim();
+      const indexExpression = raw.slice(index + 1).trim();
+      return groupExpression && indexExpression ? [groupExpression, indexExpression] : undefined;
+    }
+  }
+  return undefined;
 }
 
 function resolveDispatchBoolean(

@@ -785,6 +785,33 @@ export function createSyntheticImportedDynamicSoundPanTraceArtifact(options: Run
   );
 }
 
+export function createSyntheticImportedDynamicSoundValueTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-sound-dynamic-value",
+      displayName: "Synthetic Imported Dynamic Sound Value",
+      action200Duration: 30,
+      fightFxPrefix: "kfm",
+      withDynamicSoundValueControllers: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-sound-dynamic-value-golden",
+      targetLabel: "Synthetic imported dynamic PlaySnd value route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "PlaySnd"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredSoundEvents: [
+        { actorId: "p1", type: "PlaySnd", group: 5, index: 3, channel: 4, soundPrefix: "kfm", stateNo: 200 },
+      ],
+      notes: [
+        "Synthetic imported dynamic sound-value trace proves active PlaySnd value group/index params can resolve through expression fallback, including F-prefixed FightFX sound metadata, without typed audio operation evidence. It does not claim exact Web Audio archive lookup, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -33604,6 +33631,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withResourceOps?: { stateNo: number };
   withSoundControllers?: boolean;
   withDynamicSoundControllers?: boolean;
+  withDynamicSoundValueControllers?: boolean;
   withNoOpControllers?: boolean;
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
@@ -34353,6 +34381,7 @@ ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.w
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
 ${options.withDynamicSoundControllers ? dynamicSoundControllerBlock() : ""}
+${options.withDynamicSoundValueControllers ? dynamicSoundValueControllerBlock() : ""}
 ${options.withNoOpControllers ? noOpControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
@@ -37775,6 +37804,28 @@ abspan = var(2)
 type = StopSnd
 trigger1 = Time = 3
 channel = var(1)
+`;
+}
+
+function dynamicSoundValueControllerBlock(): string {
+  return `
+[State 200, Dynamic Sound Value Group Var]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = 5
+
+[State 200, Dynamic Sound Value Index Var]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 3
+
+[State 200, Dynamic Play Sound Value Probe]
+type = PlaySnd
+trigger1 = Time = 1
+value = Fvar(0),var(1)
+channel = 4
 `;
 }
 

@@ -30,7 +30,10 @@ export type RuntimeAudioControllerDispatchOptions<TActor extends RuntimeAudioWor
 
 export type RuntimeAudioParamResolver = {
   resolveNumber: (key: "channel" | "lowpriority" | "volumescale" | "volume" | "freqmul" | "loop" | "pan" | "abspan") => number | undefined;
+  resolveSoundValue?: (key: "value") => RuntimeResolvedSoundValue | undefined;
 };
+
+export type RuntimeResolvedSoundValue = { rawPrefix?: "F" | "S"; group: number; index: number };
 
 export type RuntimeAudioControllerDispatchResult = {
   event: RuntimeSoundEvent;
@@ -46,7 +49,7 @@ export function createRuntimeSoundEvent(
   resolveAudio?: RuntimeAudioParamResolver,
 ): RuntimeSoundEvent {
   const rawValue = operation?.value ?? findControllerParam(controller, "value");
-  const parsed = parseMugenSoundRef(rawValue);
+  const parsed = parseMugenSoundRef(rawValue) ?? resolveAudio?.resolveSoundValue?.("value");
   const lowPriority = operation?.lowPriority ?? booleanParam(controller, resolveAudio, "lowpriority");
   const volumeScale = operation?.volumeScale ?? numberParam(controller, resolveAudio, "volumescale");
   const legacyVolume = operation?.legacyVolume ?? numberParam(controller, resolveAudio, "volume");

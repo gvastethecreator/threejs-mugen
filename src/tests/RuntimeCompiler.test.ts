@@ -461,6 +461,7 @@ time = 20
     const absoluteChannelPan = compileControllerIr(controller(200, "SndPan", [], { channel: "3", abspan: "96" }));
     const stop = compileControllerIr(controller(200, "StopSnd", [], { channel: "2" }));
     const dynamic = compileControllerIr(controller(200, "PlaySnd", [], { value: "var(0),1" }));
+    const dynamicValue = compileControllerIr(controller(200, "PlaySnd", [], { value: "Fvar(0),var(1)" }));
     const dynamicPan = compileControllerIr(controller(200, "PlaySnd", [], { value: "S5,0", pan: "var(0)" }));
     const dynamicSndPan = compileControllerIr(controller(200, "SndPan", [], { channel: "2", pan: "var(0)" }));
     const invalidPan = compileControllerIr(controller(200, "SndPan", [], { pan: "-48" }));
@@ -501,6 +502,7 @@ time = 20
       channel: 2,
     });
     expect(dynamic.operation).toBeUndefined();
+    expect(dynamicValue.operation).toBeUndefined();
     expect(dynamicPan.operation).toBeUndefined();
     expect(dynamicSndPan.operation).toBeUndefined();
     expect(invalidPan.operation).toBeUndefined();

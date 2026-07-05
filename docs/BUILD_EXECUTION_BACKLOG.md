@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic sound value trace gate
+
+Changed:
+
+- Added required `synthetic-imported-sound-dynamic-value.json` trace coverage for active imported dynamic `PlaySnd value` group/index params.
+- `RuntimeAudioControllerDispatchWorld` / `RuntimeAudioWorld` now accept a bounded dynamic sound-value resolver when typed `audio:*` operation evidence is unavailable.
+- `PlayableMatchRuntime` resolves raw `PlaySnd value` group/index params through the active controller expression context, preserving `F` / `S` prefix metadata.
+- `ControllerOps` keeps dynamic `PlaySnd value` params off typed `audio:playsnd` operations so trace evidence does not claim static lowering.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-sound-dynamic-value` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference documents numeric state-controller params as expression-capable unless otherwise specified, defines `PlaySnd value = group_no, sound_no`, and documents the `F` prefix for common/fight sound refs.
+- Focused tests: `pnpm exec vitest run src/tests/AudioEventSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 3 files passed, 506 tests passed.
+- Trace gate: `pnpm qa:trace` -> 455/455 artifacts, 425 required and 30 optional; `synthetic-imported-sound-dynamic-value.json` checksum `cd0bf458`, final checksum `0ded35cd`.
+- Full closeout: `pnpm typecheck` passed; `pnpm check:boundaries` passed; `git diff --check` passed with CRLF normalization warnings only; `pnpm test` passed 151 files / 1373 tests; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm qa:trace` passed 455/455 artifacts, 425 required and 30 optional.
+- Smoke: not run for this runtime/audio/docs-only slice; no UI/render/CSS/assets surface changed.
+
+Claim allowed:
+
+- Bounded active imported dynamic `PlaySnd value` group/index params can resolve through runtime expression fallback and emit trace-gated sound-event telemetry, including F-prefixed `soundPrefix = kfm`. The synthetic route proves `value = Fvar(0),var(1)` with `var(0)=5` and `var(1)=3` without typed `audio:*` operation evidence.
+
+Claim blocked:
+
+- Dynamic HitDef/SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup, panning, channel priority/timing/mixing, helper/redirect ownership, score movement, and full MUGEN/IKEMEN audio parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 455/455 artifacts, 425 required and 30 optional. Latest runtime evidence is dynamic sound-value fallback; previous dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX/audio exactness from the next-10 queue, or continue R2 by moving the next raw fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic sound pan trace gate
 
 Changed:
@@ -28,7 +62,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 454/454 artifacts, 424 required and 30 optional. Latest runtime evidence is dynamic sound numeric fallback; previous dynamic PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+- Runtime/port was at `pnpm qa:trace` 454/454 artifacts, 424 required and 30 optional for this checkpoint. This checkpoint evidence is dynamic sound numeric fallback; previous dynamic PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
 
 Next:
 
@@ -4301,7 +4335,7 @@ Claim allowed:
 - Static imported `PlaySnd pan = 32` survives compiler/runtime/trace handoff; static `PlaySnd abspan = -64` survives compiler/runtime focused tests; the browser audio adapter applies bounded actor/camera-aware stereo panning for decodable SND playback.
 
 Claim blocked:
-- Exact MUGEN/IKEMEN audio parity, dynamic sound refs, exact panning over non-640 localcoord/view widths, legacy `volume`, exact channel priority classes, global channel fallback, timing/mixing, sample start/end behavior, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
+- Exact MUGEN/IKEMEN audio parity, dynamic HitDef/SuperPause sound refs, exact panning over non-640 localcoord/view widths, legacy `volume`, exact channel priority classes, global channel fallback, timing/mixing, sample start/end behavior, pause/superpause audio rules, helper/team/redirect ownership, screenpack/motif ownership, and score movement remain blocked.
 
 Next:
 - Return to R1 Common1 guard/recovery precision or R2 MatchWorld ownership. Further audio work should target `SndPan` only if it can land as a separate typed controller with trace/runtime evidence.
@@ -8874,7 +8908,7 @@ Claim blocked:
 Changed:
 
 - Added `AudioControllerOp` for static `PlaySnd` / `StopSnd` lowering into `audio:playsnd` and `audio:stopsnd` operation evidence.
-- Routed typed audio operations through `RuntimeAudioWorld`, `AudioEventSystem`, `PlayableMatchRuntime`, and helper-local sound emission while preserving raw controller fallback for unsupported/dynamic sound refs.
+- Routed typed audio operations through `RuntimeAudioWorld`, `AudioEventSystem`, `PlayableMatchRuntime`, and helper-local sound emission while preserving raw controller fallback for unsupported/dynamic audio refs.
 - Strengthened the required `synthetic-imported-sound.json` gate so it now requires `hitdef`, `audio:playsnd`, and `audio:stopsnd` operation evidence next to bounded sound-event telemetry.
 - Updated support docs so audio remains `compiled, executed-partial`, not playback/channel parity.
 

@@ -94,6 +94,31 @@ describe("AudioEventSystem", () => {
     });
   });
 
+  it("resolves raw dynamic PlaySnd value refs through fallback telemetry", () => {
+    const event = createRuntimeSoundEvent(
+      { ...actor(200, 5), definition: { fightFxPrefix: "kfm" } },
+      controller("PlaySnd", { value: "Fvar(0),var(1)", channel: "2" }),
+      122,
+      undefined,
+      {
+        resolveNumber: () => undefined,
+        resolveSoundValue: () => ({ rawPrefix: "F", group: 5, index: 3 }),
+      },
+    );
+
+    expect(event).toMatchObject({
+      type: "PlaySnd",
+      group: 5,
+      index: 3,
+      channel: 2,
+      raw: "Fvar(0),var(1)",
+      soundPrefix: "kfm",
+      stateNo: 200,
+      tick: 5,
+      runtimeTick: 122,
+    });
+  });
+
   it("preserves invalid raw values as debug telemetry instead of dropping the event", () => {
     const event = createRuntimeSoundEvent(actor(1000, 1), controller("PlaySnd", { value: "fightfx.fail" }), 2);
 
@@ -238,6 +263,34 @@ describe("AudioEventSystem", () => {
     expect(result.event).toMatchObject({ type: "SndPan", channel: 2, pan: -36, stateNo: 200, runtimeTick: 120 });
     expect(fighter.soundEvents).toEqual([result.event]);
     expect(recordedControllers).toEqual(["SndPan"]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+  });
+
+  it("dispatches dynamic PlaySnd value refs without typed operation telemetry", () => {
+    const dispatchWorld = new RuntimeAudioControllerDispatchWorld();
+    const audioWorld = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
+    const ir = compileControllerIr(controller("PlaySnd", { value: "var(0),var(1)", channel: "2" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      runtimeTick: 120,
+      audioWorld,
+      resolveAudio: {
+        resolveNumber: () => undefined,
+        resolveSoundValue: () => ({ group: 5, index: 4 }),
+      },
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(result.event).toMatchObject({ type: "PlaySnd", group: 5, index: 4, channel: 2, stateNo: 200, runtimeTick: 120 });
+    expect(fighter.soundEvents).toEqual([result.event]);
+    expect(recordedControllers).toEqual(["PlaySnd"]);
     expect(recordedOperations).toEqual([]);
     expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
   });

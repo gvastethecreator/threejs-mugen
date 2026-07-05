@@ -27,15 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic sound-pan trace gate
-  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 is required in qa:trace
+R1 required dynamic sound-value trace gate
+  -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd is required in qa:trace
+  -> imported active state seeds var(0)=5 and var(1)=3
+  -> active state executes PlaySnd value = Fvar(0),var(1), channel = 4
+  -> dynamic PlaySnd value group/index resolves through runtime expression fallback instead of typed audio:* evidence
+  -> sound-event evidence requires PlaySnd group 5 index 3 channel 4 with soundPrefix kfm
+  -> pnpm qa:trace passes 455/455 artifacts, 425 required and 30 optional
+  -> official Elecbyte docs define PlaySnd value = group_no, sound_no, F-prefixed common/fight sound refs, and numeric controller params as expression-capable
+  -> no score movement; dynamic HitDef/SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic sound-pan trace gate
+  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 remains required in qa:trace
   -> imported active state seeds var(0)=-24, var(1)=2, and var(2)=64
   -> active state executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); StopSnd channel = var(1)
   -> dynamic audio numeric params resolve through runtime expression fallback instead of typed audio:* evidence
   -> sound-event evidence requires PlaySnd channel 2 pan -24, SndPan channel 2 absPan 64, and StopSnd channel 2
-  -> pnpm qa:trace passes 454/454 artifacts, 424 required and 30 optional
+  -> that checkpoint passed 454/454 artifacts, 424 required and 30 optional
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
-  -> no score movement; dynamic sound refs, typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
 Previous R1 required dynamic PlayerPush trace gate
   -> synthetic-imported-playerpush-dynamic.json checksum 13c5f954 / final checksum 0627d0e5 is required in qa:trace
@@ -1329,10 +1339,12 @@ R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static SndPan channel plus pan/abspan now compile into typed audio:sndpan metadata
   -> RuntimeSoundEvent and RuntimeTrace sound-event evidence carry lowPriority, volumeScale, legacyVolume, freqMul, loop, pan, absPan, and SndPan event type
   -> required synthetic-imported-sound.json is now checksum cc9c8c49 and gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, volume = -8, freqmul = 0.5, loop = 1, pan = 32, PlaySnd channel 3 abspan = -64, SndPan channel 2 / pan = -48, and StopSnd channel 2
+  -> required synthetic-imported-sound-dynamic-value.json is checksum cd0bf458 and gates PlaySnd value = Fvar(0),var(1) group/index fallback with soundPrefix = kfm and no typed audio:* evidence
+  -> required synthetic-imported-sound-dynamic-pan.json remains checksum 24c0cce2 and gates dynamic numeric channel/pan/abspan fallback telemetry
   -> MugenAudioSystem resolves explicit-channel audio actions through a pure channel-action boundary: normal PlaySnd replaces, low-priority PlaySnd skips, StopSnd channel -1 / omitted channel stops all tracked channels
   -> MugenAudioSystem applies volumescale as bounded Web Audio gain scaling while preserving default gain when omitted; legacy volume is kept as diagnostics and ignored by modern playback
   -> MugenAudioSystem applies freqmul as bounded Web Audio playback-rate scaling, maps loop to source looping, tracks unchannelled sources for stop-all cleanup, resolves pan/abspan through a bounded stereo-pan boundary, and lets SndPan update active explicit channel panners
-  -> bounded channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, SndPan, and dynamic numeric event telemetry only; no exact priority classes, pre-RC8 volume gain semantics, dynamic sound refs, exact panning semantics, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
+  -> bounded channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, SndPan, dynamic sound-value, and dynamic numeric event telemetry only; no exact priority classes, pre-RC8 volume gain semantics, dynamic HitDef/SuperPause sound refs, exact panning semantics, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets

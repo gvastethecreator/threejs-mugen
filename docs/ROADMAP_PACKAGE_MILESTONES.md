@@ -35,15 +35,25 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic sound-pan trace gate
-  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 is required in qa:trace
+R1 required dynamic sound-value trace gate
+  -> synthetic-imported-sound-dynamic-value.json checksum cd0bf458 / final checksum 0ded35cd is required in qa:trace
+  -> imported active state seeds var(0)=5 and var(1)=3
+  -> active state executes PlaySnd value = Fvar(0),var(1), channel = 4
+  -> dynamic PlaySnd value group/index resolves through runtime expression fallback instead of typed audio:* evidence
+  -> sound-event evidence requires PlaySnd group 5 index 3 channel 4 with soundPrefix kfm
+  -> pnpm qa:trace passes 455/455 artifacts, 425 required and 30 optional
+  -> official Elecbyte docs define PlaySnd value = group_no, sound_no, F-prefixed common/fight sound refs, and numeric controller params as expression-capable
+  -> no score movement; dynamic HitDef/SuperPause sound refs, typed-operation lowering for dynamic audio params, exact Web Audio archive lookup/panning/channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic sound-pan trace gate
+  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 remains required in qa:trace
   -> imported active state seeds var(0)=-24, var(1)=2, and var(2)=64
   -> active state executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); StopSnd channel = var(1)
   -> dynamic audio numeric params resolve through runtime expression fallback instead of typed audio:* evidence
   -> sound-event evidence requires PlaySnd channel 2 pan -24, SndPan channel 2 absPan 64, and StopSnd channel 2
-  -> pnpm qa:trace passes 454/454 artifacts, 424 required and 30 optional
+  -> that checkpoint passed 454/454 artifacts, 424 required and 30 optional
   -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
-  -> no score movement; dynamic sound refs, typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+  -> no score movement; typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
 
 Previous R1 required dynamic PlayerPush trace gate
   -> synthetic-imported-playerpush-dynamic.json checksum 13c5f954 / final checksum 0627d0e5 is required in qa:trace
@@ -1334,11 +1344,13 @@ R1 PlaySnd/SndPan/StopSnd panning handoff
   -> static SndPan channel plus pan/abspan lower into typed audio:sndpan metadata and RuntimeSoundEvent pan / absPan telemetry
   -> RuntimeTrace requiredSoundEvents can require lowPriority, volumeScale, legacyVolume, freqMul, loop, pan, absPan, and SndPan event telemetry
   -> synthetic-imported-sound.json is now checksum cc9c8c49 and gates PlaySnd channel 2 plus lowpriority = 1, volumescale = 50, volume = -8, freqmul = 0.5, loop = 1, pan = 32, PlaySnd channel 3 abspan = -64, SndPan channel 2 / pan = -48, and StopSnd channel 2
+  -> synthetic-imported-sound-dynamic-value.json is checksum cd0bf458 and gates PlaySnd value = Fvar(0),var(1) group/index fallback with soundPrefix = kfm and no typed audio:* evidence
+  -> synthetic-imported-sound-dynamic-pan.json remains checksum 24c0cce2 and gates dynamic numeric channel/pan/abspan fallback telemetry
   -> MugenAudioSystem routes explicit-channel actions through resolveRuntimeAudioEventAction: normal PlaySnd replaces, low-priority PlaySnd skips active channels, StopSnd channel -1 / omitted channel stops all tracked channels
   -> MugenAudioSystem routes volumeScale through resolveRuntimeSoundGain as bounded Web Audio gain scaling and deliberately ignores legacy volume during modern playback while preserving diagnostics
   -> MugenAudioSystem routes freqMul through resolveRuntimeSoundPlaybackRate as bounded Web Audio playback-rate scaling and maps loop to source looping; unchannelled sources are now tracked for stop-all cleanup
   -> MugenAudioSystem routes pan/abspan through resolveRuntimeSoundStereoPan as bounded Web Audio stereo panning; SndPan updates active explicit channel panners; required trace and focused tests prove static abspan lowering/event projection
-  -> bounded Web Audio channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, SndPan, and dynamic numeric event telemetry only; no exact priority classes, pre-RC8 volume gain semantics, dynamic sound refs, exact panning semantics, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
+  -> bounded Web Audio channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, SndPan, dynamic sound-value, and dynamic numeric event telemetry only; no exact priority classes, pre-RC8 volume gain semantics, dynamic HitDef/SuperPause sound refs, exact panning semantics, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets
   -> imported DEF [Info] fightfx.prefix selects the matching prefixed package for runtime F spark frames and F sound refs before global data/fightfx.* fallback
@@ -1346,7 +1358,7 @@ R1 FightFX prefix package selection
   -> decoded prefixed SND archives register through the existing Web Audio route by soundPrefix
   -> required synthetic-imported-hitdef-fightfx-spark.json remains checksum 11537b56 and still gates fightFxPrefix = kfm metadata
   -> required synthetic-imported-hitdef-hit-effect-package.json remains checksum 46aa5ce1 and now gates hitsound F5,0 plus soundPrefix = kfm beside FightFX spark metadata
-  -> bounded package-selection and prefixed-SND lookup support only; no exact sys.ffx lifetime/refcount/cache semantics, global channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, score movement, or full hit-effect parity claim
+  -> bounded package-selection, prefixed-SND lookup, and dynamic PlaySnd value prefix telemetry support only; no exact sys.ffx lifetime/refcount/cache semantics, dynamic HitDef/SuperPause sound refs, global channel fallback, motif/screenpack ownership, renderer/audio timing/layer/scale/palette/mixing parity, score movement, or full hit-effect parity claim
 R2 RuntimeMatchHelperTargetStateWorld actor-resolution ownership
   -> RuntimeMatchHelperTargetStateWorld owns match-roster target resolution for helper-owned TargetState entry outside PlayableMatchRuntime
   -> RuntimeHelperTargetStateWorld still owns helper owner validation and no-op result semantics
