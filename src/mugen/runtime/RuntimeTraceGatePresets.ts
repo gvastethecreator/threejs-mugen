@@ -2272,6 +2272,94 @@ export function createSyntheticImportedHitOverrideForceAirGuardKeepStateTraceArt
   });
 }
 
+export function createSyntheticImportedHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-attacker",
+    displayName: "Synthetic Imported HitOverride GuardFlag ForceAir ForceGuard KeepState Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "H",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-defender",
+    displayName: "Synthetic Imported HitOverride GuardFlag ForceAir ForceGuard KeepState Defender",
+    passiveHitOverrides: [
+      { attr: "S,NA", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,NA", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      {
+        attr: "S,NA",
+        stateNo: 779,
+        slot: 5,
+        time: 30,
+        guardFlag: "H",
+        forceAir: true,
+        forceGuard: true,
+        keepState: true,
+      },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+      label: "Synthetic imported HitOverride guardflag forceair forceguard keepstate route",
+      source: "imported",
+      notes: [
+        "Synthetic imported HitOverride guardflag plus forceair/forceguard/keepstate trace proves lower-numbered attr-matching slots can be skipped by guardflag.not overlap and guardflag mismatch before a later compatible slot applies aerial guarded override frames, retains target memory, and avoids entering the override stateno when keepstate is set. It does not claim exact guarded get-hit variable parity, forceguard damage/chip semantics, final-frame forced aerial persistence, projectile/helper breadth, custom-state guardflag inheritance, or full MUGEN/IKEMEN HitOverride parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        forbiddenExecutedStates: [776, 778, 779, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "HitDef", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["hitdef", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 5"],
+        requiredCombatReasons: ["override"],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            stateType: "A",
+            physics: "A",
+            guarding: true,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHitOverrideP2StateNoMissTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -3421,6 +3509,107 @@ export function createSyntheticImportedProjectileHitOverrideForceAirGuardKeepSta
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["override"],
         requiredEventSubstrings: ["HitOverride slot 3"],
+        requiredCombatReasons: ["override"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: true, removalReason: "hit", terminalReason: "hit" },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            stateType: "A",
+            physics: "A",
+            guarding: true,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-attacker",
+    displayName: "Synthetic Imported Projectile Override GuardFlag ForceAir ForceGuard KeepState Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    guardFlag: "H",
+    projectileP2StateNo: 889,
+    projectileP2GetP1State: false,
+    projectileHitAnim: 911,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-defender",
+    displayName: "Synthetic Imported Projectile Override GuardFlag ForceAir ForceGuard KeepState Defender",
+    passiveHitOverrides: [
+      { attr: "S,SP", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,SP", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      {
+        attr: "S,SP",
+        stateNo: 779,
+        slot: 5,
+        time: 30,
+        guardFlag: "H",
+        forceAir: true,
+        forceGuard: true,
+        keepState: true,
+      },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+      label: "Synthetic imported Projectile HitOverride guardflag forceair forceguard keepstate route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile HitOverride guardflag plus forceair/forceguard/keepstate trace proves a player-owned Projectile can carry its HitDef guardflag through defender HitOverride filtering, skip lower attr-matching slots, apply aerial guarded override frames, retain target memory and projectile hit lifecycle evidence, and avoid the override stateno when keepstate is set. It does not claim exact guarded get-hit variable parity, forceguard damage/chip semantics, final-frame forced aerial persistence, helper breadth, custom-state guardflag inheritance, exact target lifetime/tick order, or full MUGEN/IKEMEN Projectile HitOverride parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        forbiddenExecutedStates: [776, 778, 779, 889, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Projectile", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["projectile", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 5"],
         requiredCombatReasons: ["override"],
         requiredWorldLifecycleEvents: [
           { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
@@ -21487,6 +21676,133 @@ export function createSyntheticImportedHelperProjectileHitOverrideForceAirGuardK
         requiredTargetLinks: [
           { ownerId: "p1", actorId: "p2", targetId: 8875 },
           { ownerId: "p1-helper-0", actorId: "p2", targetId: 8875, hasBinding: false, minFrames: 1 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            life: 1000,
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-attacker",
+    displayName: "Synthetic Imported Helper Projectile Override GuardFlag ForceAir ForceGuard KeepState Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1296,
+      waitAnimNo: 1053,
+      branchStateNo: 1297,
+      branchAnimNo: 1054,
+      projectileAnimNo: 1055,
+      projectileId: 8884,
+      pos: [360, -34],
+      p2StateNo: 889,
+      p2GetP1State: false,
+      guardFlag: "H",
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-defender",
+    displayName: "Synthetic Imported Helper Projectile Override GuardFlag ForceAir ForceGuard KeepState Defender",
+    passiveHitOverrides: [
+      { attr: "S,SP", stateNo: 776, slot: 1, time: 30, guardFlagNot: "HA" },
+      { attr: "S,SP", stateNo: 778, slot: 2, time: 30, guardFlag: "A" },
+      {
+        attr: "S,SP",
+        stateNo: 779,
+        slot: 5,
+        time: 30,
+        guardFlag: "H",
+        forceAir: true,
+        forceGuard: true,
+        keepState: true,
+      },
+    ],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+      label: "Synthetic imported helper Projectile HitOverride guardflag forceair forceguard keepstate route",
+      source: "imported",
+      notes: [
+        "Synthetic imported helper Projectile HitOverride guardflag plus forceair/forceguard/keepstate trace proves a helper-parented owner-side Projectile can carry its HitDef guardflag through defender HitOverride filtering, skip lower attr-matching slots, apply aerial guarded override frames, retain owner/helper target memory and projectile hit lifecycle evidence, and avoid the override stateno when keepstate is set. It does not claim exact guarded get-hit variable parity, forceguard damage/chip semantics, final-frame forced aerial persistence, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, custom-state guardflag inheritance, or full MUGEN/IKEMEN helper Projectile HitOverride parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        forbiddenExecutedStates: [776, 778, 779, 889, 1297, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", { type: "HitOverride", minCount: 3 }],
+        requiredExecutedOperations: ["helper", "projectile", { operation: "hitoverride", minCount: 3 }],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["override"],
+        requiredEventSubstrings: ["HitOverride slot 5"],
+        requiredCombatReasons: ["override"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1296, animNo: 1053, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1055, moveType: "A", minFrames: 1 },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 0,
+            animNo: 0,
+            stateType: "A",
+            physics: "A",
+            guarding: true,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1296, minAge: 1, targetCount: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8884,
+            hasHit: true,
+            maxHitsRemaining: 0,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8884 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8884, hasBinding: false, minFrames: 1 },
         ],
         requiredFinalActors: [
           {

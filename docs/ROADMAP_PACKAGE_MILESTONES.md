@@ -35,6 +35,18 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required HitOverride guardflag plus forceair/forceguard/keepstate trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json, synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json, and synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json
+  -> direct HitDef, player-owned Projectile id 77, and helper-parented Projectile id 8884 all use incoming guardflag = H
+  -> P2 installs attr-matching slots 1 -> 776 with guardflag.not = HA, 2 -> 778 with guardflag = A, and 5 -> 779 with guardflag = H plus forceair/forceguard/keepstate
+  -> all three routes skip slots 1/2, select slot 5, avoid state 779 because keepstate is set, keep P2 in state/action 0, and require actor-frame evidence with stateType = A, physics = A, and guardingFrames >= 1
+  -> direct/player routes retain target link p1 -> p2 / 77; helper route records target links p1 -> p2 / 8884 and p1-helper-0 -> p2 / 8884, helper targetCount = 1, projectile hasHit = true / hitsRemaining = 0, and suppresses helper branch 1297
+  -> synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 35fa8224 is required in qa:trace
+  -> synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 1fd6c321 is required in qa:trace
+  -> synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 7efa40bb is required in qa:trace
+  -> pnpm qa:trace passes 373/373 artifacts, 343 required and 30 optional
+  -> no score movement; exact guard timing/guarded get-hit variables, forceguard chip/damage semantics, final-frame forced aerial persistence, exact target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, and full HitOverride parity remain blocked
+
 R1 required default custom-state HitOverride missonoverride guardflag-filter trace gates
   -> RuntimeTraceGatePresets now builds synthetic-imported-hitoverride-missonoverride-default-guardflag-filter.json, synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter.json, and synthetic-imported-helper-projectile-hitoverride-missonoverride-default-guardflag-filter.json
   -> direct HitDef p2stateno 888 omits missonoverride, uses guardflag = H, rejects before target memory, override state entry, owner-backed custom-state 888, default get-hit, or guard states, and leaves P2 idle/control with life 1000

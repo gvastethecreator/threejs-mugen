@@ -331,6 +331,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitOverrideForceAirGuardKeepStateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitoverride-p2stateno-miss",
       required: true,
       artifact: presets.createSyntheticImportedHitOverrideP2StateNoMissTraceArtifact(),
@@ -404,6 +409,11 @@ async function main() {
       name: "synthetic-imported-projectile-hitoverride-forceair-forceguard-keepstate",
       required: true,
       artifact: presets.createSyntheticImportedProjectileHitOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-projectile-hitoverride-missonoverride-zero",
@@ -1600,6 +1610,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-hitoverride-forceair-forceguard-keepstate",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileHitOverrideForceAirGuardKeepStateTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileHitOverrideGuardFlagForceAirGuardKeepStateTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-hitoverride-missonoverride-one",

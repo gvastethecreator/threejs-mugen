@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-04 - HitOverride guardflag force flags required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json`, `synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json`, and `synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds direct-HitDef, player-owned Projectile, and helper-parented Projectile routes where `guardflag` / `guardflag.not` filters must skip lower matching attr slots before the selected slot applies `forceair`, `forceguard`, and `keepstate`.
+- `scripts/qa_traces.cjs` registers all three artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned; Elecbyte `HitOverride` docs define active override slots and redirect semantics. Primary source checked: local Ikemen-GO source parses `forceair`, `forceguard`, `keepstate`, `guardflag`, and `guardflag.not`; runtime source checks guardflag filters while scanning slots, then applies force flags after slot selection.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "guardflag forceair forceguard keepstate"` -> 1 file passed, 3 tests passed, 363 skipped.
+- Trace gate: `pnpm qa:trace` -> 373/373 artifacts, 343 required and 30 optional; `synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json` checksum `35fa8224`; `synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json` checksum `1fd6c321`; `synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json` checksum `7efa40bb`.
+
+Claim allowed:
+
+- Bounded direct-HitDef HitOverride guardflag-plus-force route: incoming `guardflag = H` skips slot `1 -> 776` because `guardflag.not = HA`, skips slot `2 -> 778` because `guardflag = A` does not overlap, selects slot `5 -> 779`, applies `forceair = 1` / `forceguard = 1`, keeps P2 in state/action `0` because `keepstate = 1`, records target link `p1 -> p2 / 77`, and observes P2 as aerial/guarding.
+- Bounded player-owned Projectile HitOverride guardflag-plus-force route: Projectile id `77` follows the same slot filtering, records projectile lifecycle payload, suppresses projectile custom-state `889`, keeps P2 in state/action `0`, and observes aerial/guarding actor-frame evidence.
+- Bounded helper-parented Projectile HitOverride guardflag-plus-force route: helper-spawned Projectile id `8884` follows the same slot filtering, records owner/helper target links, records helper `targetCount = 1` and projectile `hasHit = true` / `hitsRemaining = 0`, suppresses projectile custom-state `889` and helper branch `1297`, keeps P2 in state/action `0`, and observes aerial/guarding actor-frame evidence.
+
+Claim blocked:
+
+- Exact guard timing/guarded get-hit variable inheritance, forceguard chip/damage semantics, final-frame forced aerial persistence, exact helper/projectile target lifetime/tick order, helper-owned custom-state tables, guard KO/no-KO round-flow behavior, throws, teams/simul, score movement, visual/audio parity, and full MUGEN/IKEMEN HitOverride parity.
+
+Next:
+
+- Continue R1 with exact guarded get-hit/chip semantics, guard KO/no-KO flow, helper-owned custom-state tables, exact target lifetime, or Common1 guard/fall/recovery oracle work. Do not reselect bounded guardflag-plus-force route unless expanding one blocked dimension with new evidence.
+
 ## 2026-07-04 - Default custom-state HitOverride missonoverride guardflag required trace gates
 
 Changed:

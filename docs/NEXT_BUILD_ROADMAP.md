@@ -27,6 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required HitOverride guardflag plus forceair/forceguard/keepstate trace gates
+  -> synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 35fa8224 is required in qa:trace
+  -> synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 1fd6c321 is required in qa:trace
+  -> synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 7efa40bb is required in qa:trace
+  -> direct HitDef, player-owned Projectile id 77, and helper-parented Projectile id 8884 all use incoming guardflag = H
+  -> P2 slots 1 -> 776 with guardflag.not = HA and 2 -> 778 with guardflag = A are skipped before slot 5 -> 779 is selected
+  -> selected slot 5 carries forceair = 1, forceguard = 1, and keepstate = 1, so P2 stays in state/action 0 while actor-frame evidence observes stateType = A, physics = A, and guardingFrames >= 1
+  -> direct/player routes retain target link p1 -> p2 / 77; helper route records target links p1 -> p2 / 8884 and p1-helper-0 -> p2 / 8884, helper targetCount = 1, projectile hasHit = true / hitsRemaining = 0, and suppresses helper branch 1297
+  -> states 776, 778, 779, 5000, 150, 151, plus projectile custom-state 889 where applicable, are forbidden
+  -> pnpm qa:trace passes 373/373 artifacts, 343 required and 30 optional
+  -> no score movement; exact guard timing/guarded get-hit variables, forceguard chip/damage semantics, final-frame forced aerial persistence, exact target lifetime, helper-owned custom-state tables, guard KO/no-KO flow, and full HitOverride parity remain blocked
+
 R1 required default custom-state HitOverride missonoverride guardflag-filter trace gates
   -> synthetic-imported-hitoverride-missonoverride-default-guardflag-filter.json checksum 05725ecb is required in qa:trace
   -> synthetic-imported-projectile-hitoverride-missonoverride-default-guardflag-filter.json checksum c1402d31 is required in qa:trace
