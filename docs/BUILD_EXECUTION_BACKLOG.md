@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Default down cornerpush required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-down-hit-cornerpush-default.json`, `synthetic-imported-projectile-down-hit-cornerpush-default.json`, and `synthetic-imported-helper-projectile-down-hit-cornerpush-default.json` trace coverage.
+- `RuntimeTraceGatePresets` now builds direct-HitDef, player-owned Projectile, and helper-parented Projectile liedown-hit routes that omit `down.cornerpush.veloff`, set `ground.cornerpush.veloff = 6` and `air.cornerpush.veloff = 1`, and force P2 into passive imported `StateTypeSet` state type `L` before contact.
+- `scripts/qa_traces.cjs` registers all three default-down artifacts as required coverage.
+- Roadmap, support, scorecard, QA, workplan, and issue docs now name the default-down trio as the latest R1 runtime checkpoint while keeping the explicit-down trio as required previous evidence.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define omitted `down.cornerpush.veloff` as defaulting from `ground.cornerpush.veloff`; Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "down.cornerpush"` -> 1 file passed, 6 tests passed, 381 skipped.
+- Trace gate: `pnpm qa:trace` -> 394/394 artifacts, 364 required and 30 optional; `synthetic-imported-down-hit-cornerpush-default.json` checksum `04557813`; `synthetic-imported-projectile-down-hit-cornerpush-default.json` checksum `b302e3b9`; `synthetic-imported-helper-projectile-down-hit-cornerpush-default.json` checksum `fe0c3ff1`.
+- Closeout gates: `pnpm test` -> 151 files passed, 1255 tests passed; `pnpm typecheck`; `pnpm build` with the existing Vite large-chunk warning; `pnpm check:boundaries`; `git diff --check` with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded direct-HitDef default down-hit corner-push derivation: P2 is forced into passive liedown state type `L`, a direct `HitDef` at the stage edge omits `down.cornerpush.veloff`, and P1 attacker X velocity proves down corner push fell back to explicit `ground.cornerpush.veloff`.
+- Bounded player-owned Projectile default down-hit corner-push derivation: Projectile contact against state type `L` omits projectile `down.cornerpush.veloff`, records projectile lifecycle payload evidence, and proves owner X velocity from the ground corner-push fallback.
+- Bounded helper-parented Projectile default down-hit corner-push derivation: helper-spawned Projectile contact against state type `L` omits `down.cornerpush.veloff`, records owner/helper target links, helper payload, projectile payload, and owner X velocity evidence from the ground fallback.
+
+Claim blocked:
+
+- Exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact Common1 down-hit physics, hit effects, throws, teams/simul, score movement, and full MUGEN/IKEMEN Common1/projectile parity.
+
+Next:
+
+- Continue R1 with exact Common1 guard/fall/recovery timing, corner-push decay/friction, helper/projectile custom-state breadth, or another official-doc-backed route that expands blocked behavior with new required trace evidence. Do not reselect bounded default-down corner-push derivation unless adding one blocked dimension.
+
 ## 2026-07-05 - Down cornerpush runtime-selection required trace gates
 
 Changed:

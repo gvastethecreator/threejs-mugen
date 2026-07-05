@@ -13657,6 +13657,204 @@ export function createSyntheticImportedHelperProjectileDownHitCornerPushTraceArt
   });
 }
 
+export function createSyntheticImportedDownHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-down-hit-cornerpush-default-grid",
+    displayName: "Trace Down Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 240, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "down-hit-cornerpush-default-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "down-hit-cornerpush-default-x", frames: 4, p1: ["x"], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-down-hit-cornerpush-default",
+    displayName: "Synthetic Imported Down Hit Cornerpush Default",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitState: { stateNo: 5000, animNo: 5000 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-down-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Down Hit Cornerpush Default Attacker",
+    groundVelocity: [-3],
+    groundCornerPush: 6,
+    airCornerPush: 1,
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script,
+    targetId: "synthetic-imported-down-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported default down.cornerpush.veloff direct HitDef route",
+    gateLabel: "synthetic-imported-down-hit-cornerpush-default-golden",
+    getHitStateNo: 5000,
+    requiredExecutedStates: [200, 5000],
+    requiredExecutedControllers: ["ChangeState", "HitDef", "StateTypeSet"],
+    requiredExecutedOperations: ["hitdef", "metadata:statetypeset"],
+    requiredActorFrames: syntheticDownHitCornerPushPhysicsFrames(-5.5),
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", life: 963 }],
+    notes: [
+      "Synthetic imported default down.cornerpush.veloff direct HitDef trace proves omitted down-hit cornerpush falls back to ground.cornerpush.veloff while the defender is already in StateType L, then pushes the attacking player away at the stage corner. It does not claim exact MUGEN/IKEMEN lie-down tables, recovery timing, cornerpush decay, wall friction, or full Common1 parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-down-hit-cornerpush-default-grid",
+    displayName: "Trace Projectile Down Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-down-hit-cornerpush-default-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "projectile-down-hit-cornerpush-default-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-down-hit-cornerpush-default-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-down-hit-cornerpush-default",
+    displayName: "Synthetic Imported Projectile Down Hit Cornerpush Default",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitState: { stateNo: 5000, animNo: 5000 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-down-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Projectile Down Hit Cornerpush Default Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileOffset: [62, -45],
+    projectileGroundVelocity: [-3],
+    projectileAirVelocity: [-4, -3],
+    projectileGroundCornerPush: 6,
+    projectileAirCornerPush: 1,
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script,
+    targetId: "synthetic-imported-projectile-down-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Projectile default down.cornerpush.veloff route",
+    gateLabel: "synthetic-imported-projectile-down-hit-cornerpush-default-golden",
+    getHitStateNo: 5000,
+    requiredEffectKinds: ["projectile"],
+    requiredExecutedStates: [200, 5000],
+    requiredExecutedControllers: ["ChangeState", "Projectile", "StateTypeSet"],
+    requiredExecutedOperations: ["projectile", "metadata:statetypeset"],
+    requiredActorFrames: [
+      ...syntheticDownHitCornerPushPhysicsFrames(-5.5),
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", life: 969 }],
+    notes: [
+      "Synthetic imported Projectile default down.cornerpush.veloff trace proves omitted Projectile down-hit cornerpush falls back to ground.cornerpush.veloff through the Projectile HitDef parameter set while the defender is already in StateType L, then pushes the owning player away at the stage corner. It does not claim exact projectile timing/effects, cornerpush decay, lie-down tables, or full MUGEN/IKEMEN projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-down-hit-cornerpush-default-grid",
+    displayName: "Trace Helper Projectile Down Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-projectile-down-hit-cornerpush-default-defender-liedown", frames: 2, p1: [], p2: ["x"] },
+    { label: "helper-projectile-down-hit-cornerpush-default-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-down-hit-cornerpush-default-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-down-hit-cornerpush-default",
+    displayName: "Synthetic Imported Helper Projectile Down Hit Cornerpush Default",
+    withHitDef: false,
+    withStateTypeSet: { stateType: "L", moveType: "I", physics: "N" },
+    defaultGetHitState: { stateNo: 5000, animNo: 5000 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-down-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Helper Projectile Down Hit Cornerpush Default Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1245,
+      waitAnimNo: 984,
+      branchStateNo: 1246,
+      branchAnimNo: 985,
+      projectileAnimNo: 983,
+      projectileId: 8857,
+      pos: [360, -34],
+      airVelocity: [-4, -3],
+      groundCornerPush: 6,
+      airCornerPush: 1,
+    },
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script,
+    targetId: "synthetic-imported-helper-projectile-down-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Helper Projectile default down.cornerpush.veloff route",
+    gateLabel: "synthetic-imported-helper-projectile-down-hit-cornerpush-default-golden",
+    getHitStateNo: 5000,
+    requiredEffectKinds: ["helper", "projectile"],
+    requiredExecutedStates: [200, 5000],
+    requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "StateTypeSet"],
+    requiredExecutedOperations: ["helper", "projectile", "metadata:statetypeset"],
+    requiredActorFrames: [
+      ...syntheticDownHitCornerPushPhysicsFrames(-5.5),
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 984, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1246, animNo: 985, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 983, moveType: "A", minFrames: 1 },
+    ],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1246, minAge: 2 },
+      { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: 8857, minAge: 1, minPriority: 2, maxHitsRemaining: 0, hasHit: true },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8857 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8857 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5000, moveType: "H", life: 982 }],
+    notes: [
+      "Synthetic imported Helper Projectile default down.cornerpush.veloff trace proves omitted helper-parented Projectile down-hit cornerpush falls back to ground.cornerpush.veloff through the helper-local Projectile HitDef parameter set while the defender is already in StateType L, then pushes the owning player away at the stage corner. It does not claim helper-owned custom states, exact helper Projectile timing/effects, cornerpush decay, lie-down tables, or full MUGEN/IKEMEN helper projectile parity.",
+    ],
+  });
+}
+
 export function createImportedDefaultGetHitProgressionTraceArtifact(
   imported: DemoFighterDefinition,
   options: RuntimeTraceGatePresetOptions & {

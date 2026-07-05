@@ -616,6 +616,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDownHitCornerPushTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-down-hit-cornerpush-default",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDownHitCornerPushDefaultTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-guarded",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(),
@@ -664,6 +669,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-down-hit-cornerpush",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-down-hit-cornerpush-default",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-gethitvar-animtype",
@@ -1009,6 +1019,11 @@ async function main() {
       name: "synthetic-imported-down-hit-cornerpush",
       required: true,
       artifact: presets.createSyntheticImportedDownHitCornerPushTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-down-hit-cornerpush-default",
+      required: true,
+      artifact: presets.createSyntheticImportedDownHitCornerPushDefaultTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-air-guard-landing",

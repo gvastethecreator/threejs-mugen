@@ -35,17 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required explicit down.cornerpush.veloff runtime-selection trace gates
-  -> CombatResolver now selects downCornerPush when defender StateType = L before ground/air fallback
-  -> RuntimeTraceGatePresets now builds synthetic-imported-down-hit-cornerpush.json, synthetic-imported-projectile-down-hit-cornerpush.json, and synthetic-imported-helper-projectile-down-hit-cornerpush.json
-  -> direct HitDef, player-owned Projectile, and helper-parented Projectile force P2 into a passive imported StateTypeSet liedown setup before contact
-  -> all three routes hit at the stage edge, require P2 stateType = L actor-frame evidence, and require attacker/owner X velocity evidence from explicit down.cornerpush.veloff = 7
+R1 required default down.cornerpush.veloff derivation trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-down-hit-cornerpush-default.json, synthetic-imported-projectile-down-hit-cornerpush-default.json, and synthetic-imported-helper-projectile-down-hit-cornerpush-default.json
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit down.cornerpush.veloff, set ground.cornerpush.veloff = 6 and air.cornerpush.veloff = 1, and force P2 into a passive imported StateTypeSet liedown setup before contact
+  -> all three routes hit at the stage edge, require P2 stateType = L actor-frame evidence, and require attacker/owner X velocity evidence proving default down.cornerpush.veloff fell back to ground.cornerpush.veloff
   -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> synthetic-imported-down-hit-cornerpush-default.json checksum 04557813 is required in qa:trace
+  -> synthetic-imported-projectile-down-hit-cornerpush-default.json checksum b302e3b9 is required in qa:trace
+  -> synthetic-imported-helper-projectile-down-hit-cornerpush-default.json checksum fe0c3ff1 is required in qa:trace
+  -> pnpm qa:trace passes 394/394 artifacts, 364 required and 30 optional
+  -> no score movement; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact down-hit physics, throws, teams/simul, and full Common1/projectile parity remain blocked
+
+Previous R1 required explicit down.cornerpush.veloff runtime-selection trace gates
   -> synthetic-imported-down-hit-cornerpush.json checksum b372c07b is required in qa:trace
   -> synthetic-imported-projectile-down-hit-cornerpush.json checksum 5f2a653f is required in qa:trace
   -> synthetic-imported-helper-projectile-down-hit-cornerpush.json checksum 5231ad5c is required in qa:trace
-  -> pnpm qa:trace passes 391/391 artifacts, 361 required and 30 optional
-  -> no score movement; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact down-hit physics, throws, teams/simul, and full Common1/projectile parity remain blocked
+  -> pnpm qa:trace passed 391/391 artifacts, 361 required and 30 optional
+  -> remains required; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, and full Common1/projectile parity remain blocked
 
 Previous R1 required default air.cornerpush.veloff derivation trace gates
   -> synthetic-imported-air-hit-cornerpush-default.json checksum 73129a04 is required in qa:trace
