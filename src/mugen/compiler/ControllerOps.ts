@@ -851,13 +851,21 @@ function compileAfterImageTimeControllerOp(controller: MugenStateController): Sp
   };
 }
 
-function compileTransControllerOp(controller: MugenStateController): SpriteEffectControllerOp {
+function compileTransControllerOp(controller: MugenStateController): SpriteEffectControllerOp | undefined {
   const trans = stripMugenString(findParam(controller, "trans") ?? findParam(controller, "value")) ?? "default";
+  const alphaParam = findParam(controller, "alpha");
+  const alpha = strictNumberPairExact(alphaParam);
+  if (alphaParam !== undefined && !alpha) {
+    return undefined;
+  }
+  if (!alpha && hasInvalidInlineTransAlpha(trans)) {
+    return undefined;
+  }
   return {
     kind: "sprite-effect",
     controllerType: "trans",
     trans,
-    opacity: normalizeTransOpacity(trans),
+    opacity: normalizeTransOpacity(trans, alpha),
   };
 }
 
@@ -1848,7 +1856,7 @@ function normalizeAfterImageOpacity(value: string | undefined): number {
   return 0.42;
 }
 
-function normalizeTransOpacity(value: string): number {
+function normalizeTransOpacity(value: string, alpha?: [number, number]): number {
   const normalized = value.trim().toLowerCase();
   if (!normalized || normalized === "default") {
     return 1;
@@ -1857,12 +1865,8 @@ function normalizeTransOpacity(value: string): number {
     return 1;
   }
   if (normalized.includes("addalpha") || normalized.includes("alpha")) {
-    const numbers = normalized
-      .split(/[^0-9.-]+/)
-      .filter((part) => part.length > 0)
-      .map((part) => Number(part))
-      .filter(Number.isFinite);
-    const source = numbers[0];
+    const alphaSource = alpha?.[0];
+    const source = alphaSource ?? transInlineAlphaSource(normalized);
     return source === undefined ? 0.5 : Math.max(0, Math.min(1, source / 256));
   }
   if (normalized.includes("add")) {
@@ -1872,6 +1876,24 @@ function normalizeTransOpacity(value: string): number {
     return 0.65;
   }
   return 1;
+}
+
+function hasInvalidInlineTransAlpha(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized.includes("addalpha") && !normalized.includes("alpha")) {
+    return false;
+  }
+  const [, ...alphaParts] = normalized.split(",");
+  return alphaParts.some((part) => {
+    const trimmed = part.trim();
+    return trimmed.length > 0 && !Number.isFinite(Number(trimmed));
+  });
+}
+
+function transInlineAlphaSource(value: string): number | undefined {
+  const [, sourceRaw] = value.split(",");
+  const source = Number(sourceRaw?.trim());
+  return Number.isFinite(source) ? source : undefined;
 }
 
 function normalizePaletteNumber(value: number): number {

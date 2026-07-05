@@ -170,7 +170,9 @@ export function executeControllerIr(
       pairParam(controller, next, context, key),
     );
   } else if (type === "trans") {
-    applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"));
+    applyRuntimeTransController(next, controller, spriteEffectOperation(controller, "trans"), (key) =>
+      pairParam(controller, next, context, key),
+    );
   } else if (type === "angleset" || type === "angleadd" || type === "angledraw") {
     applyRuntimeAngleController(next, controller, spriteEffectOperation(controller, type));
   } else if (type === "posfreeze") {

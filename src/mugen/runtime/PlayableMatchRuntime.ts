@@ -942,6 +942,10 @@ function runActiveStateControllers(
           effect === "sprpriority"
             ? (key) => resolveSpritePriorityParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
             : undefined,
+        resolveTransAlpha:
+          effect === "trans"
+            ? (key) => resolveTransAlphaParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
         resolvePaletteFx:
           effect === "palfx"
             ? {
@@ -1281,6 +1285,31 @@ function resolveSpritePriorityParam(
     return undefined;
   }
   return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveTransAlphaParam(
+  controller: ControllerIr,
+  key: "alpha",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const [sourceExpression, destExpression] = raw.split(",").map((part) => part.trim());
+  if (!sourceExpression || !destExpression) {
+    return undefined;
+  }
+  const source = resolveDispatchNumber(undefined, sourceExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const dest = resolveDispatchNumber(undefined, destExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (source === undefined || dest === undefined) {
+    return undefined;
+  }
+  return [source, dest];
 }
 
 function resolvePaletteFxNumberParam(

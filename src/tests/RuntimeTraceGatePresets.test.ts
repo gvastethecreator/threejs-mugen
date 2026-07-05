@@ -346,6 +346,7 @@ import {
   createSyntheticImportedPalFxTraceArtifact,
   createSyntheticImportedDynamicPalFxTraceArtifact,
   createSyntheticImportedTransTraceArtifact,
+  createSyntheticImportedDynamicTransTraceArtifact,
   createSyntheticImportedAngleTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
@@ -8479,6 +8480,42 @@ describe("RuntimeTraceGatePresets", () => {
         minFrames: 1,
       },
     ]);
+  });
+
+  it("creates a synthetic imported dynamic Trans artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicTransTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-trans-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-trans-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Trans).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:trans"]).toBeUndefined();
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          maxOpacity: 0.375,
+        }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.renderOpacity === 0.375)).toBe(true);
   });
 
   it("creates a synthetic imported AngleDraw artifact with typed sprite rotation evidence", () => {

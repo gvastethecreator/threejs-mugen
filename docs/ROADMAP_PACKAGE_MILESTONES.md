@@ -35,7 +35,17 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic PalFX trace gate
+R1 required dynamic Trans trace gate
+  -> synthetic-imported-trans-dynamic.json checksum 91a7baf9 is required in qa:trace
+  -> imported active state seeds var(0)=96 and var(1)=160, then executes Trans trans = addalpha with alpha = var(0),var(1)
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic alpha resolver into RuntimeSpriteEffectWorld.applyTrans
+  -> PlayableMatchRuntime resolves alpha pair params through the active controller expression context
+  -> final imported actor evidence requires renderOpacity 0.375 and no typed sprite-effect:trans operation evidence
+  -> pnpm qa:trace passes 444/444 artifacts, 414 required and 30 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define Trans alpha = source_alpha,dest_alpha for additive transparency
+  -> no score movement; typed-operation lowering for dynamic alpha, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic PalFX trace gate
   -> synthetic-imported-palfx-dynamic.json checksum c56e955a is required in qa:trace
   -> imported active state seeds var(0..7), then executes PalFX time/add/mul/color/invertall from expressions
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic palette resolver into RuntimeSpriteEffectWorld.applyPaletteFx

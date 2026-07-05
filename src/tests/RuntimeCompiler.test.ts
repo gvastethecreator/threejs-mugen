@@ -933,6 +933,9 @@ time = 20
 
   it("compiles Trans controllers into typed sprite opacity operations", () => {
     const trans = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha,128,128" }));
+    const alpha = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha", alpha: "96,160" }));
+    const dynamic = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha", alpha: "var(0),var(1)" }));
+    const inlineDynamic = compileControllerIr(controller(200, "Trans", [], { trans: "addalpha,var(0),var(1)" }));
 
     expect(trans.operation).toEqual({
       kind: "sprite-effect",
@@ -940,6 +943,14 @@ time = 20
       trans: "addalpha,128,128",
       opacity: 0.5,
     });
+    expect(alpha.operation).toEqual({
+      kind: "sprite-effect",
+      controllerType: "trans",
+      trans: "addalpha",
+      opacity: 0.375,
+    });
+    expect(dynamic.operation).toBeUndefined();
+    expect(inlineDynamic.operation).toBeUndefined();
   });
 
   it("compiles static Angle controllers into typed sprite rotation operations", () => {

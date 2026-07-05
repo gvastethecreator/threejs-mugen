@@ -13,6 +13,7 @@ export type RuntimeAngleSpriteEffectOp =
 
 export type RuntimeRemapPalPairResolver = (key: "source" | "dest") => [number, number] | undefined;
 export type RuntimeSpritePriorityResolver = (key: "value" | "priority") => number | undefined;
+export type RuntimeTransAlphaResolver = (key: "alpha") => [number, number] | undefined;
 export type RuntimePaletteFxResolver = {
   resolveNumber: (key: "time" | "color" | "invertall" | "invert") => number | undefined;
   resolveTriplet: (key: "add" | "mul") => [number, number, number] | undefined;
@@ -39,6 +40,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   sampleFactory: RuntimeAfterImageSampleFactory;
   resolveRemapPalPair?: RuntimeRemapPalPairResolver;
   resolveSpritePriority?: RuntimeSpritePriorityResolver;
+  resolveTransAlpha?: RuntimeTransAlphaResolver;
   resolvePaletteFx?: RuntimePaletteFxResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
@@ -99,8 +101,9 @@ export class RuntimeSpriteEffectWorld {
     state: CharacterRuntimeState,
     controller: { params: Record<string, string> },
     operation?: Extract<SpriteEffectControllerOp, { controllerType: "trans" }>,
+    resolveAlpha?: RuntimeTransAlphaResolver,
   ): void {
-    applyRuntimeTransController(state, controller, operation);
+    applyRuntimeTransController(state, controller, operation, resolveAlpha);
   }
 
   applyAngle(
@@ -166,6 +169,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.actor.runtime,
         input.controller.source,
         operation?.controllerType === "trans" ? operation : undefined,
+        input.resolveTransAlpha,
       );
     } else {
       input.spriteEffectWorld.applyAngle(
@@ -364,9 +368,11 @@ export function applyRuntimeTransController(
   state: CharacterRuntimeState,
   controller: { params: Record<string, string> },
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "trans" }>,
+  resolveAlpha?: RuntimeTransAlphaResolver,
 ): void {
   const trans = operation?.trans ?? stripMugenString(findControllerParam(controller, "trans") ?? findControllerParam(controller, "value")) ?? "default";
-  state.renderOpacity = operation?.opacity ?? parseTransOpacity(trans);
+  state.renderOpacity =
+    operation?.opacity ?? parseTransOpacity(trans, findControllerParam(controller, "alpha"), resolveAlpha);
 }
 
 export function applyRuntimeAngleController(
@@ -559,18 +565,19 @@ function parseAfterImageOpacity(value: string | undefined): number {
   return 0.42;
 }
 
-function parseTransOpacity(value: string): number {
+function parseTransOpacity(
+  value: string,
+  alphaValue?: string,
+  resolveAlpha?: RuntimeTransAlphaResolver,
+): number {
   const normalized = value.trim().toLowerCase();
   if (!normalized || normalized === "default" || normalized === "none") {
     return 1;
   }
   if (normalized.includes("addalpha") || normalized.includes("alpha")) {
-    const numbers = normalized
-      .split(/[^0-9.-]+/)
-      .filter((part) => part.length > 0)
-      .map((part) => Number(part))
-      .filter(Number.isFinite);
-    const source = numbers[0];
+    const resolvedAlpha = alphaValue === undefined ? undefined : normalizeTransAlpha(resolveAlpha?.("alpha"));
+    const sourceFromAlpha = resolvedAlpha?.[0] ?? transAlphaSource(alphaValue);
+    const source = sourceFromAlpha ?? transInlineAlphaSource(normalized);
     return source === undefined ? 0.5 : clampNumber(source / 256, 0, 1);
   }
   if (normalized.includes("add")) {
@@ -580,6 +587,28 @@ function parseTransOpacity(value: string): number {
     return 0.65;
   }
   return 1;
+}
+
+function transAlphaSource(value: string | undefined): number | undefined {
+  const raw = value?.split(",")[0]?.trim();
+  if (!raw) {
+    return undefined;
+  }
+  const source = Number(raw);
+  return Number.isFinite(source) ? source : undefined;
+}
+
+function transInlineAlphaSource(value: string): number | undefined {
+  const [, sourceRaw] = value.split(",");
+  const source = Number(sourceRaw?.trim());
+  return Number.isFinite(source) ? source : undefined;
+}
+
+function normalizeTransAlpha(value: [number, number] | undefined): [number, number] | undefined {
+  if (!value || value.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
+  }
+  return [Math.round(value[0]), Math.round(value[1])];
 }
 
 function clampRenderAngle(value: number): number {

@@ -5372,6 +5372,63 @@ export function createSyntheticImportedTransTraceArtifact(options: RuntimeTraceG
   });
 }
 
+export function createSyntheticImportedDynamicTransTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-trans-dynamic",
+    displayName: "Synthetic Imported Dynamic Trans",
+    withDynamicTrans: {
+      trans: "addalpha",
+      alpha: ["var(0)", "var(1)"],
+      vars: [
+        { index: 0, value: 96 },
+        { index: 1, value: 160 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-trans-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-trans-dynamic-golden",
+      label: "Synthetic imported dynamic Trans route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic Trans trace proves alpha expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded render opacity telemetry. It does not claim typed sprite-effect operation lowering for dynamic alpha, exact add/sub alpha math, palette interaction, draw-order parity, renderer parity, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-trans-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "Trans", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            observedOpacityAtMost: 0.375,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAngleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33346,6 +33403,11 @@ export type SyntheticImportedTraceFighterOptions = {
     vars?: Array<{ index: number; value: number }>;
   };
   withTrans?: string;
+  withDynamicTrans?: {
+    trans: string;
+    alpha: [string, string];
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAngle?: {
     set?: number;
     add?: number;
@@ -33638,6 +33700,7 @@ ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControll
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
 ${options.withDynamicPalFx === undefined ? "" : dynamicPalFxControllerBlock(options.withDynamicPalFx)}
 ${options.withTrans === undefined ? "" : transControllerBlock(options.withTrans)}
+${options.withDynamicTrans === undefined ? "" : dynamicTransControllerBlock(options.withDynamicTrans)}
 ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)}
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
@@ -34939,6 +35002,29 @@ function transControllerBlock(trans: string): string {
 type = Trans
 trigger1 = Time >= 0
 trans = ${trans}
+`;
+}
+
+function dynamicTransControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicTrans"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic Trans Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic Trans Probe]
+type = Trans
+trigger1 = Time >= 0
+trans = ${options.trans}
+alpha = ${options.alpha.join(",")}
 `;
 }
 

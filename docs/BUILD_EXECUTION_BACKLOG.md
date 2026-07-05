@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic Trans active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-trans-dynamic.json` trace coverage for active imported `Trans alpha` expressions.
+- `RuntimeSpriteEffectControllerWorld` now accepts an optional `resolveTransAlpha` callback and forwards it into `RuntimeSpriteEffectWorld.applyTrans`.
+- `PlayableMatchRuntime` resolves dynamic Trans alpha pairs through the active controller expression context, preserving owner/opponent/tick/stage-bound evaluation.
+- `ControllerOps` now refuses typed `sprite-effect:trans` operations when `alpha` or inline addalpha values are non-static, so dynamic alpha routes do not emit misleading typed-operation evidence.
+- `RuntimeTraceGatePresets` can build synthetic imported fighters with `VarSet`-seeded dynamic Trans alpha params, and `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference says numeric state-controller params may be arithmetic expressions and defines `Trans` `alpha = source_alpha, dest_alpha` for additive transparency.
+- Focused tests: `pnpm exec vitest run src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 3 files passed, 497 tests passed.
+- Trace gate: `pnpm qa:trace` -> 444/444 artifacts, 414 required and 30 optional; `synthetic-imported-trans-dynamic.json` checksum `91a7baf9`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `Trans alpha` expression fallback can resolve through the sprite-effect boundary. The synthetic route seeds `var(0) = 96` and `var(1) = 160`, executes `trans = addalpha` with `alpha = var(0),var(1)`, and proves imported actor-frame/final `renderOpacity = 0.375` telemetry without typed `sprite-effect:trans` operation evidence because alpha is dynamic.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic alpha, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next dynamic sprite-effect/resource/audio fallback into a named boundary.
+
 ## 2026-07-05 - Dynamic PalFX active-state trace gate
 
 Changed:

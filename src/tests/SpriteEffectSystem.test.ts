@@ -214,6 +214,15 @@ describe("SpriteEffectSystem", () => {
     applyRuntimeTransController(state, controller("Trans", { trans: "addalpha,128,128" }));
     expect(state.renderOpacity).toBe(0.5);
 
+    applyRuntimeTransController(state, controller("Trans", { trans: "addalpha", alpha: "96,160" }));
+    expect(state.renderOpacity).toBe(0.375);
+
+    applyRuntimeTransController(state, controller("Trans", { trans: "addalpha", alpha: "var(0),var(1)" }), undefined, () => [
+      64,
+      192,
+    ]);
+    expect(state.renderOpacity).toBe(0.25);
+
     applyRuntimeTransController(state, controller("Trans", { value: "add" }));
     expect(state.renderOpacity).toBe(0.78);
 
@@ -430,6 +439,28 @@ describe("SpriteEffectSystem", () => {
     expect(actor.runtime.renderOpacity).toBe(0.5);
     expect(recordedOperations).toEqual(["sprite-effect:trans"]);
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
+  });
+
+  it("resolves dynamic Trans alpha through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("Trans", { trans: "addalpha", alpha: "var(0),var(1)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "trans",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      resolveTransAlpha: () => [96, 160],
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.renderOpacity).toBe(0.375);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
   });
 
   it("dispatches RemapPal controllers through the active-state sprite boundary", () => {
