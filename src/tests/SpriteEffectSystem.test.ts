@@ -368,6 +368,28 @@ describe("SpriteEffectSystem", () => {
     expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
+  it("resolves dynamic RemapPal pairs through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("RemapPal", { source: "1,var(0)", dest: "2,var(1)" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "remappal",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      resolveRemapPalPair: (key) => (key === "source" ? [1, 5] : [2, 7]),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(actor.runtime.paletteRemap).toEqual({ source: [1, 5], dest: [2, 7] });
+    expect(recordedOperations).toEqual([]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+  });
+
   it("dispatches AfterImage controllers through the active-state sprite boundary", () => {
     const world = new RuntimeSpriteEffectControllerWorld();
     const actor = { runtime: runtimeState() };

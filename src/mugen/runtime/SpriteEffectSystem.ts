@@ -32,6 +32,7 @@ export type RuntimeSpriteEffectControllerApplyInput<TActor extends RuntimeSprite
   effect: RuntimeSpriteEffectControllerEffect;
   spriteEffectWorld: RuntimeSpriteEffectWorld;
   sampleFactory: RuntimeAfterImageSampleFactory;
+  resolveRemapPalPair?: RuntimeRemapPalPairResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: SpriteEffectControllerOp) => void;
 };
@@ -134,6 +135,7 @@ export class RuntimeSpriteEffectControllerWorld {
         input.actor.runtime,
         input.controller.source,
         operation?.controllerType === "remappal" ? operation : undefined,
+        input.resolveRemapPalPair,
       );
     } else if (input.effect === "afterimage") {
       input.spriteEffectWorld.applyAfterImage(

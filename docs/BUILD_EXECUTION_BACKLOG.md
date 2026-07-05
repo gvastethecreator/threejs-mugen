@@ -1,5 +1,32 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic RemapPal active-state trace gate
+
+Changed:
+
+- Added required `synthetic-imported-remappal-dynamic.json` trace coverage for active imported `RemapPal source/dest` expressions.
+- `RuntimeSpriteEffectControllerWorld` now accepts an optional `resolveRemapPalPair` callback and forwards it into `RuntimeSpriteEffectWorld.applyRemapPal`.
+- `PlayableMatchRuntime` resolves dynamic RemapPal pair params through the active controller expression context, preserving owner/opponent/tick/stage-bound evaluation.
+- `RuntimeTraceGatePresets` can build synthetic imported fighters with `VarSet`-seeded dynamic RemapPal params, and `scripts/qa_traces.cjs` registers the new artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference says numeric state-controller params may be arithmetic expressions and defines `RemapPal source/dest`.
+- Focused tests: `pnpm exec vitest run src/tests/SpriteEffectSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern RemapPal` -> 2 files passed, 6 tests passed.
+- Trace gate: `pnpm qa:trace` -> 441/441 artifacts, 411 required and 30 optional; `synthetic-imported-remappal-dynamic.json` checksum `a44ec542`.
+
+Claim allowed:
+
+- Bounded active imported dynamic `RemapPal` source/dest expression fallback can resolve through the sprite-effect boundary. The synthetic route seeds `var(0) = 5` and `var(1) = 7`, executes `source = 1,var(0)` and `dest = 2,var(1)`, and proves final imported actor `paletteRemap` telemetry `source [1,5] -> dest [2,7]`.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic params, exact source-bank/default/removal semantics, ACT/SFF pixel parity, truecolor/PNG remap, helper/redirect ownership, exact PalFX order/math, renderer parity, score movement, and full MUGEN/IKEMEN palette parity.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, or continue R2 by moving the next dynamic sprite-effect/resource/audio fallback into a named boundary.
+
 ## 2026-07-05 - Helper Projectile ProjTime same-id guard-then-hit required trace gate
 
 Changed:

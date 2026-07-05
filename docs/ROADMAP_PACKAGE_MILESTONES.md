@@ -35,6 +35,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required dynamic RemapPal trace gate
+  -> synthetic-imported-remappal-dynamic.json checksum a44ec542 is required in qa:trace
+  -> imported active state seeds var(0)=5 and var(1)=7, then executes RemapPal source = 1,var(0) and dest = 2,var(1)
+  -> RuntimeSpriteEffectControllerWorld forwards a dynamic pair resolver into RuntimeSpriteEffectWorld.applyRemapPal
+  -> PlayableMatchRuntime resolves source/dest pair expressions through the active controller expression context
+  -> final imported actor evidence requires paletteRemap source [1,5] -> dest [2,7]
+  -> pnpm qa:trace passes 441/441 artifacts, 411 required and 30 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define RemapPal source/dest
+  -> no score movement; typed-operation lowering for dynamic params, exact source-bank/default/removal semantics, ACT/SFF pixel parity, truecolor/PNG remap, helper/redirect ownership, exact PalFX order/math, renderer parity, and full palette parity remain blocked
+
 R1 required AssertSpecial NoJuggleCheck telemetry trace gate
   -> synthetic-imported-assertspecial-juggle-telemetry.json checksum 9436dfa0 is required in qa:trace
   -> static NoJuggleCheck lowers into typed assertspecial operation evidence

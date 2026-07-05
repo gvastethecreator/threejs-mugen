@@ -5433,6 +5433,66 @@ export function createSyntheticImportedRemapPalTraceArtifact(options: RuntimeTra
   });
 }
 
+export function createSyntheticImportedDynamicRemapPalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-remappal-dynamic",
+    displayName: "Synthetic Imported Dynamic RemapPal",
+    withDynamicRemapPal: {
+      source: ["1", "var(0)"],
+      dest: ["2", "var(1)"],
+      vars: [
+        { index: 0, value: 5 },
+        { index: 1, value: 7 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-remappal-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-remappal-dynamic-golden",
+      label: "Synthetic imported dynamic RemapPal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic RemapPal trace proves source/dest expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded palette-remap telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, ACT/SFF pixel remapping, palette application, PalFX interaction, helper/redirect ownership, or timing parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-remappal-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "RemapPal", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            animNo: 200,
+            paletteRemapSourceGroup: 1,
+            paletteRemapSourceIndex: 5,
+            paletteRemapDestGroup: 2,
+            paletteRemapDestIndex: 7,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedPalFxRemapPalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -33166,6 +33226,11 @@ export type SyntheticImportedTraceFighterOptions = {
     source: [number, number];
     dest: [number, number];
   };
+  withDynamicRemapPal?: {
+    source: [string, string];
+    dest: [string, string];
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAfterImage?: {
     time?: number;
     length?: number;
@@ -33436,6 +33501,7 @@ ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
+${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBlock(options.withDynamicRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
 ${options.withAfterImageTime === undefined ? "" : afterImageTimeControllerBlock(options.withAfterImageTime)}
 ${hitDefControllerBlock}
@@ -34729,6 +34795,29 @@ phase = ${options.phase ?? 0.5}
 function remapPalControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withRemapPal"]>): string {
   return `
 [State 200, RemapPal Probe]
+type = RemapPal
+trigger1 = Time >= 0
+source = ${options.source.join(",")}
+dest = ${options.dest.join(",")}
+`;
+}
+
+function dynamicRemapPalControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicRemapPal"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (item) => `
+[State 200, Dynamic RemapPal Var ${item.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${item.index}
+value = ${item.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic RemapPal Probe]
 type = RemapPal
 trigger1 = Time >= 0
 source = ${options.source.join(",")}

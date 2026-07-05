@@ -927,13 +927,17 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    spriteEffect: ({ controller, effect }) => {
+    spriteEffect: ({ controller, effect, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       spriteEffectControllerWorld.apply({
         actor: fighter,
         controller,
         effect,
         spriteEffectWorld,
         sampleFactory: () => createAfterImageSample(fighter),
+        resolveRemapPalPair:
+          effect === "remappal"
+            ? (key) => resolveRemapPalPairParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick)
+            : undefined,
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1223,6 +1227,31 @@ function resolveDispatchNumber(
     tick: stageTime,
     createContext,
   });
+}
+
+function resolveRemapPalPairParam(
+  controller: ControllerIr,
+  key: "source" | "dest",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const [groupExpression, indexExpression] = raw.split(",").map((part) => part.trim());
+  if (!groupExpression || !indexExpression) {
+    return undefined;
+  }
+  const group = resolveDispatchNumber(undefined, groupExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const index = resolveDispatchNumber(undefined, indexExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (group === undefined || index === undefined) {
+    return undefined;
+  }
+  return [group, index];
 }
 
 function resolveDispatchBoolean(

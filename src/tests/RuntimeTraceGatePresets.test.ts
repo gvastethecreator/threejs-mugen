@@ -349,6 +349,7 @@ import {
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
+  createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
   createSyntheticImportedAfterImageTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
@@ -8602,6 +8603,47 @@ describe("RuntimeTraceGatePresets", () => {
     expect(
       artifact.trace.finalActors.some(
         (actor) => actor.id === "p1" && actor.paletteRemap?.source[0] === 1 && actor.paletteRemap.dest[1] === 3,
+      ),
+    ).toBe(true);
+  });
+
+  it("creates a synthetic imported dynamic RemapPal artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicRemapPalTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-remappal-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-remappal-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedControllers.RemapPal).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["sprite-effect:remappal"]).toBeUndefined();
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          animNo: 200,
+          paletteRemapSourceGroup: 1,
+          paletteRemapSourceIndex: 5,
+          paletteRemapDestGroup: 2,
+          paletteRemapDestIndex: 7,
+        }),
+      ]),
+    );
+    expect(
+      artifact.trace.finalActors.some(
+        (actor) => actor.id === "p1" && actor.paletteRemap?.source[1] === 5 && actor.paletteRemap.dest[1] === 7,
       ),
     ).toBe(true);
   });
