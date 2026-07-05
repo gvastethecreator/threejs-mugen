@@ -22146,6 +22146,123 @@ export function createSyntheticImportedProjectileContactPersistTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileContactSuffixTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-projcontact-suffix-attacker",
+    displayName: "Synthetic Imported Projectile ProjContact Suffix Attacker",
+    withProjectile: true,
+    projectileId: 8897,
+    projectileRemoveOnHit: false,
+    projectileGuardSound: "S6,16",
+    projectileGuardSpark: "F7023",
+    projectileSparkXy: [17, -59],
+    projContactPersistRoute: {
+      entryStateNo: 350,
+      entryAnimNo: 1072,
+      finalStateNo: 351,
+      finalAnimNo: 1073,
+      contactTrigger: "ProjContact8897 = 1, >= 1",
+      branchTriggers: ["ProjContact8897 = 1"],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7023, 8123),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-projcontact-suffix-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-projcontact-suffix-golden",
+      label: "Synthetic imported Projectile ProjContact suffix second-form route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile ProjContact suffix trace proves bounded player-owned Projectile contact markers can route through Elecbyte's legacy ProjContactID = value, operator ticks syntax and fixed-id first-form suffix syntax. This is syntax and bounded owner-state evidence only; exact ProjContact tick order/lifetime, multi-projectile selection, redirects, teams, helper-owned custom-state targets, score movement, and full MUGEN/IKEMEN projectile parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-projcontact-suffix-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 350, 351],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            contactKind: "guard",
+            sound: {
+              type: "PlaySnd",
+              group: 6,
+              index: 16,
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "guard",
+              sparkNo: 7023,
+              raw: "F7023",
+              rawPrefix: "F",
+              offsetX: 17,
+              offsetY: -59,
+              assetSource: "fightfx",
+              assetActionId: 7023,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8123,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 200,
+              contactKind: "guard",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 350, animNo: 1072, moveType: "A", minFrames: 1 },
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 351, animNo: 1073, moveType: "I", minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 8897,
+            minAge: 1,
+            minPriority: 1,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 8897 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileGuardedTimeAnyTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

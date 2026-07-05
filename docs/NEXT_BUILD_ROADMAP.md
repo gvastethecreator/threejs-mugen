@@ -27,11 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile ProjContact state-transition trace gate
-  -> synthetic-imported-projectile-projcontactpersist.json checksum 8e678b1b is required in qa:trace
+R1 required player Projectile ProjContact suffix second-form trace gate
+  -> synthetic-imported-projectile-projcontact-suffix.json checksum c904ded7 is required in qa:trace
+  -> player-owned Projectile id 8897 is guarded, owner state 200 routes on ProjContact8897 = 1, >= 1, transitions into 350, then branches to 351 from that later owner StateDef through fixed-id first-form suffix syntax with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
+  -> pnpm qa:trace passes 424/424 artifacts, 394 required and 30 optional
+  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjContact state-transition trace gate
+  -> synthetic-imported-projectile-projcontactpersist.json checksum 8e678b1b remains required in qa:trace
   -> player-owned Projectile id 8896 is guarded, owner state 200 observes ProjContact/ProjContactTime, transitions into 348, then branches to 349 from that later owner StateDef with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
-  -> pnpm qa:trace passes 423/423 artifacts, 393 required and 30 optional
-  -> no score movement; exact ProjContact tick order/lifetime, second-form suffix syntax parity, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+  -> pnpm qa:trace previously passed 423/423 artifacts, 393 required and 30 optional
+  -> remains required
 
 Previous R1 required helper Projectile ProjContact state-transition trace gate
   -> synthetic-imported-helper-projcontactpersist.json checksum 65639428 is required in qa:trace

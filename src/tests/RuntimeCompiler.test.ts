@@ -40,6 +40,7 @@ time = 20
     const contact = compileExpression(
       "MoveGuarded || MoveReversed || ProjHit(77) || ProjGuarded(77) || ProjContactTime(0) >= 0 || ProjHitTime(0) >= 0 || ProjHitTime(77) >= 0 || ProjGuardedTime(0) >= 0 || ProjCancelTime(0) >= 0 || NumTarget(77) > 0 || HitCount >= 1 || UniqHitCount >= 1 || ReceivedDamage > 0 || ReceivedHits >= 1 || HitPauseTime > 0",
     );
+    const legacyProjectileContact = compileExpression("ProjContact8897 = 1, >= 1 && ProjHit8898 = 1 && ProjGuarded0 = 0, < 15");
     const actorCounts = compileExpression("NumExplod(9000) || NumHelper(42) > 0 || NumProj || NumProjID(77)");
     const helperIdentity = compileExpression("IsHelper && IsHelper(42)");
     const helperIdentityFunction = compileExpression("IsHelper(42)");
@@ -85,6 +86,12 @@ time = 20
       "ReceivedHits",
       "UniqHitCount",
     ]);
+    expect(legacyProjectileContact.supportLevel).toBe("executable");
+    expect(legacyProjectileContact.normalized).toBe(
+      "((ProjContactTime(8897) >= 0) && (ProjContactTime(8897) >= 1)) && ProjHit(8898) = 1 && (!((ProjGuardedTime() >= 0) && (ProjGuardedTime() < 15)))",
+    );
+    expect(legacyProjectileContact.functions).toEqual(["ProjContactTime", "ProjGuardedTime", "ProjHit"]);
+    expect(legacyProjectileContact.identifiers).toEqual([]);
     expect(actorCounts.supportLevel).toBe("executable");
     expect(actorCounts.functions).toEqual(["NumExplod", "NumHelper", "NumProjID"]);
     expect(actorCounts.identifiers).toEqual(["NumProj"]);

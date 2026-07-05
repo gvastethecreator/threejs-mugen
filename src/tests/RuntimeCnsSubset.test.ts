@@ -125,6 +125,29 @@ describe("ExpressionEvaluator", () => {
     expect(evaluateExpression("NumProjID(77) = 1", { self: state, numProj: (id) => (id === 77 ? 1 : 0) })).toBe(1);
   });
 
+  it("evaluates legacy projectile trigger suffix and second-form timing syntax", () => {
+    const state = runtimeState();
+    const context = {
+      self: state,
+      projContact: (id?: number) => id === 8897 || id === undefined,
+      projHit: (id?: number) => id === 8898,
+      projGuarded: (id?: number) => id === 8899,
+      projContactTime: (id?: number) => (id === 8897 || id === undefined ? 2 : -1),
+      projHitTime: (id?: number) => (id === 8898 ? 4 : -1),
+      projGuardedTime: (id?: number) => (id === 8899 ? 0 : -1),
+    };
+
+    expect(evaluateExpression("ProjContact8897 = 1", context)).toBe(1);
+    expect(evaluateExpression("ProjHit8898 = 1 && ProjGuarded8899 = 1", context)).toBe(1);
+    expect(evaluateExpression("ProjContact8897 = 1, >= 1", context)).toBe(1);
+    expect(evaluateExpression("ProjHit8898 = 1, < 4", context)).toBe(0);
+    expect(evaluateExpression("ProjGuarded8899 = 1, = 0", context)).toBe(1);
+    expect(evaluateExpression("ProjContact8897 = 0, < 15", context)).toBe(0);
+    expect(evaluateExpression("ProjContact1234 = 0, < 15", context)).toBe(1);
+    expect(evaluateExpression("ProjContact0 = 1", context)).toBe(1);
+    expect(evaluateExpression("ProjContact = 1, >= 1", context)).toBe(1);
+  });
+
   it("evaluates common MUGEN axis, range, const, and hitvar trigger syntax", () => {
     const state = runtimeState({ pos: { x: 20, y: -12 }, vel: { x: 0.02, y: 4 }, animNo: 42 });
     const opponent = runtimeState({ pos: { x: 108, y: -4 }, stateType: "A", moveType: "H" });

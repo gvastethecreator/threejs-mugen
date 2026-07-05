@@ -1127,7 +1127,8 @@ function contactTriggerValue(value: boolean | number | undefined): number {
 }
 
 function optionalProjectileId(value: ExpressionValue | undefined): number | undefined {
-  return optionalPositiveInteger(value);
+  const id = optionalPositiveInteger(value);
+  return id === 0 ? undefined : id;
 }
 
 function optionalProjectileTimeId(value: ExpressionValue | undefined): number | undefined {

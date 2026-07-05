@@ -14,7 +14,33 @@ export function normalizeMugenExpression(expression: string): string {
       return `((${left} >= ${min}) && (${left} <= ${max}))`;
     },
   );
+  normalized = normalizeLegacyProjectileContactTriggers(normalized);
   return normalized;
+}
+
+function normalizeLegacyProjectileContactTriggers(expression: string): string {
+  const numericFragment = "-?\\d+(?:\\.\\d+)?|\\.\\d+";
+  const secondForm = new RegExp(
+    `\\b(ProjContact|ProjHit|ProjGuarded)(\\d*)\\b\\s*=\\s*([01])\\s*,\\s*(<=|>=|!=|=|<|>)\\s*(${numericFragment})`,
+    "gi",
+  );
+  const firstForm = /\b(ProjContact|ProjHit|ProjGuarded)(\d*)\b\s*(!=|=)\s*([01])\b/gi;
+  return expression
+    .replace(secondForm, (_match, trigger: string, rawId: string, expected: string, operator: string, ticks: string) => {
+      const timeFunction = `${trigger}Time(${legacyProjectileIdArgument(rawId)})`;
+      const matchExpression = `((${timeFunction} >= 0) && (${timeFunction} ${operator} ${ticks}))`;
+      return expected === "1" ? matchExpression : `(!${matchExpression})`;
+    })
+    .replace(firstForm, (_match, trigger: string, rawId: string, operator: string, expected: string) => {
+      return `${trigger}(${legacyProjectileIdArgument(rawId)}) ${operator} ${expected}`;
+    });
+}
+
+function legacyProjectileIdArgument(rawId: string): string {
+  if (!rawId || Number(rawId) === 0) {
+    return "";
+  }
+  return String(Math.max(0, Math.trunc(Number(rawId))));
 }
 
 export function compileExpression(expression: string): ExpressionIr {
