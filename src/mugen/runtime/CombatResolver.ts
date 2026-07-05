@@ -177,6 +177,7 @@ export function resolveRuntimeCombatHit(input: {
   }
 
   const isAirHit = input.defender.stateType === "A";
+  const isDownHit = input.defender.stateType === "L";
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
@@ -185,7 +186,10 @@ export function resolveRuntimeCombatHit(input: {
     stun: input.attack.hitStun,
     push: input.attack.push,
     hitVelocityY: input.attack.hitVelocityY,
-    cornerPush: (isAirHit ? input.attack.airCornerPush : undefined) ?? input.attack.cornerPush,
+    cornerPush:
+      (isDownHit ? input.attack.downCornerPush : undefined) ??
+      (isAirHit ? input.attack.airCornerPush : undefined) ??
+      input.attack.cornerPush,
     powerGain: 35,
   };
 }

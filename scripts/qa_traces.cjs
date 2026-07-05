@@ -611,6 +611,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-down-hit-cornerpush",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileDownHitCornerPushTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projectile-gethitvar-guarded",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(),
@@ -654,6 +659,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-air-hit-cornerpush-default",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-down-hit-cornerpush",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-gethitvar-animtype",
@@ -994,6 +1004,11 @@ async function main() {
       name: "synthetic-imported-air-hit-cornerpush-default",
       required: true,
       artifact: presets.createSyntheticImportedAirHitCornerPushDefaultTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-down-hit-cornerpush",
+      required: true,
+      artifact: presets.createSyntheticImportedDownHitCornerPushTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-air-guard-landing",
@@ -3076,6 +3091,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-air-hit-cornerpush-default",
+    "synthetic-imported-projectile-down-hit-cornerpush",
     "synthetic-imported-helper-projectile-gethitvar-guarded",
     "synthetic-imported-helper-projectile-gethitvar-guard-kill",
     "synthetic-imported-helper-projectile-gethitvar-guard-hitshaketime",
@@ -3085,6 +3101,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-air-guard-cornerpush",
     "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
     "synthetic-imported-helper-projectile-air-hit-cornerpush-default",
+    "synthetic-imported-helper-projectile-down-hit-cornerpush",
     "synthetic-imported-gethitvar-animtype",
     "synthetic-imported-gethitvar-snap",
     "synthetic-imported-default-crouch-gethit",
@@ -3189,6 +3206,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-air-guard-cornerpush",
     "synthetic-imported-air-guard-cornerpush-default",
     "synthetic-imported-air-hit-cornerpush-default",
+    "synthetic-imported-down-hit-cornerpush",
     "synthetic-imported-air-guard-landing",
     "synthetic-imported-inguarddist-far",
   ];

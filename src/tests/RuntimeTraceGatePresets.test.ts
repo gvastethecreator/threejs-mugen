@@ -140,6 +140,7 @@ import {
   syntheticAirGuardLandingWalkReturnActorFrameSequence,
   syntheticAirGuardHitPhysicsFrames,
   syntheticAirGuardVelocityPhysicsFrames,
+  syntheticDownHitCornerPushPhysicsFrames,
   syntheticAutoGuardEndControllerSequence,
   syntheticAutoGuardEndActorFrameSequence,
   syntheticAutoGuardStartControllerSequence,
@@ -160,6 +161,7 @@ import {
   createSyntheticImportedAssertSpecialGuardDenyTraceArtifact,
   createSyntheticImportedAssertSpecialLifetimeTraceArtifact,
   createSyntheticImportedDefaultLieDownFastRecoveryTraceArtifact,
+  createSyntheticImportedDownHitCornerPushTraceArtifact,
   createSyntheticImportedAssertSpecialNoFastRecoverFromLieDownTraceArtifact,
   createSyntheticImportedAssertSpecialNoGetUpFromLieDownTraceArtifact,
   createSyntheticImportedAssertSpecialUnguardableTraceArtifact,
@@ -239,6 +241,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact,
@@ -361,6 +364,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact,
@@ -10967,6 +10971,98 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredActorFrames).toEqual(
       expect.arrayContaining([
         ...syntheticAirHitCornerPushPhysicsFrames(-2.5),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 984 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 983 }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported down.cornerpush.veloff direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedDownHitCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-down-hit-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-down-hit-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    const downSetupFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 200);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(downSetupFrame?.stateType).toBe("L");
+    expect(attackerMinVelX).toBeLessThanOrEqual(-6.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticDownHitCornerPushPhysicsFrames());
+  });
+
+  it("creates a synthetic imported Projectile down.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedProjectileDownHitCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-down-hit-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-down-hit-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-6.5);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticDownHitCornerPushPhysicsFrames(),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile down.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-down-hit-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-down-hit-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.StateTypeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["metadata:statetypeset"]).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-6.5);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8857 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8857 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticDownHitCornerPushPhysicsFrames(),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 984 }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 983 }),
       ]),

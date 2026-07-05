@@ -224,6 +224,36 @@ describe("CombatResolver", () => {
     ).toMatchObject({ kind: "hit", cornerPush: 5 });
   });
 
+  it("uses down cornerpush for liedown hits before ground or air fallbacks", () => {
+    const attack = {
+      damage: 40,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      cornerPush: 5,
+      airCornerPush: 8,
+      downCornerPush: 11,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "L" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", cornerPush: 11 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "L" }),
+        attack: { ...attack, downCornerPush: undefined },
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", cornerPush: 5 });
+  });
+
   it("keeps guard eligibility and damage scaling helpers isolated", () => {
     expect(isRuntimeGuarding(true, "I", "S", "MA")).toBe(true);
     expect(isRuntimeGuarding(true, "I", "C", "H")).toBe(false);

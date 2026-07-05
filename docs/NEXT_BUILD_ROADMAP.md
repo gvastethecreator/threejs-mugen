@@ -27,14 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required default air.cornerpush.veloff derivation trace gates
+R1 required explicit down.cornerpush.veloff runtime-selection trace gates
+  -> synthetic-imported-down-hit-cornerpush.json checksum b372c07b is required in qa:trace
+  -> synthetic-imported-projectile-down-hit-cornerpush.json checksum 5f2a653f is required in qa:trace
+  -> synthetic-imported-helper-projectile-down-hit-cornerpush.json checksum 5231ad5c is required in qa:trace
+  -> CombatResolver selects downCornerPush when defender StateType = L before ground/air fallback
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile force P2 into a passive imported StateTypeSet liedown setup before contact
+  -> all three routes hit at the stage edge, require P2 stateType = L actor-frame evidence, and require attacker/owner X velocity evidence from explicit down.cornerpush.veloff = 7
+  -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> pnpm qa:trace passes 391/391 artifacts, 361 required and 30 optional
+  -> no score movement; exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact down-hit physics, throws, teams/simul, and full Common1/projectile parity remain blocked
+
+Previous R1 required default air.cornerpush.veloff derivation trace gates
   -> synthetic-imported-air-hit-cornerpush-default.json checksum 73129a04 is required in qa:trace
   -> synthetic-imported-projectile-air-hit-cornerpush-default.json checksum 9bfae4d6 is required in qa:trace
   -> synthetic-imported-helper-projectile-air-hit-cornerpush-default.json checksum 9c81047d is required in qa:trace
   -> direct HitDef, player-owned Projectile, and helper-parented Projectile omit corner-push params and derive air-hit cornerpush through air.cornerpush.veloff -> ground.cornerpush.veloff plus the guard/ground velocity fallback path
   -> all three routes hit an airborne defender at the stage edge, keep the defender in Common1-style airborne hit state 5020, and require attacker/owner X velocity evidence from derived corner pushback
   -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 388/388 artifacts, 358 required and 30 optional
+  -> pnpm qa:trace passed 388/388 artifacts, 358 required and 30 optional
   -> no score movement; exact corner-push timing/decay, wall friction, exact air get-hit physics/timing, hit effects, throws, teams/simul, and full Common1/projectile parity remain blocked
 
 Previous R1 required default airguard.cornerpush.veloff trace gates

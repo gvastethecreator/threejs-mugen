@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Down cornerpush runtime-selection required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-down-hit-cornerpush.json`, `synthetic-imported-projectile-down-hit-cornerpush.json`, and `synthetic-imported-helper-projectile-down-hit-cornerpush.json` trace coverage.
+- `CombatResolver` now selects `downCornerPush` when the defender is already `StateType = L`, before ground/air fallback.
+- `RuntimeTraceGatePresets` now builds direct-HitDef, player-owned Projectile, and helper-parented Projectile liedown-hit routes that force P2 into passive imported `StateTypeSet` state type `L` before contact.
+- `scripts/qa_traces.cjs` registers all three artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte `HitDef` docs define `down.cornerpush.veloff` and its default from `ground.cornerpush.veloff`; Elecbyte `Projectile` docs state Projectile takes `HitDef` parameters and helper-spawned projectiles are root-owned.
+- Focused test: `pnpm exec vitest run src/tests/CombatResolver.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "cornerpush"` -> 2 files passed, 14 tests passed, 384 skipped.
+- Trace gate: `pnpm qa:trace` -> 391/391 artifacts, 361 required and 30 optional; `synthetic-imported-down-hit-cornerpush.json` checksum `b372c07b`; `synthetic-imported-projectile-down-hit-cornerpush.json` checksum `5f2a653f`; `synthetic-imported-helper-projectile-down-hit-cornerpush.json` checksum `5231ad5c`.
+
+Claim allowed:
+
+- Bounded direct-HitDef down-hit corner-push selection: P2 is forced into passive liedown state type `L`, a direct `HitDef` at the stage edge uses explicit `down.cornerpush.veloff = 7`, and P1 attacker X velocity proves down corner push was selected instead of ground/air fallback.
+- Bounded player-owned Projectile down-hit corner-push selection: Projectile contact against state type `L` uses explicit projectile `down.cornerpush.veloff = 7`, records projectile lifecycle payload evidence, and proves owner X velocity from down corner push.
+- Bounded helper-parented Projectile down-hit corner-push selection: helper-spawned Projectile contact against state type `L` uses explicit `down.cornerpush.veloff = 7`, records owner/helper target links, helper payload, projectile payload, and owner X velocity evidence.
+
+Claim blocked:
+
+- Exact lie-down tables, recovery timing, corner-push timing/decay, wall friction, exact Common1 down-hit physics, hit effects, throws, teams/simul, score movement, and full MUGEN/IKEMEN Common1/projectile parity.
+
+Next:
+
+- Continue R1 with exact Common1 guard/fall/recovery timing, corner-push decay/friction, helper/projectile custom-state breadth, or another official-doc-backed route that expands blocked behavior with new required trace evidence. Do not reselect bounded down-hit corner-push selection unless adding one blocked dimension.
+
 ## 2026-07-04 - HitOverride guardflag force flags required trace gates
 
 Changed:
