@@ -960,6 +960,8 @@ time = 20
     const projectile = compileControllerIr(
       controller(1000, "Projectile", [], {
         projid: "77",
+        id: "78",
+        chainID: "43",
         projanim: "910",
         offset: "62,-45",
         postype: "p1",
@@ -1001,6 +1003,8 @@ time = 20
     expect(projectile.operation).toMatchObject({
       kind: "projectile",
       projectileId: 77,
+      targetId: 78,
+      chainId: 43,
       projAnim: 910,
       offset: [62, -45],
       postype: "p1",

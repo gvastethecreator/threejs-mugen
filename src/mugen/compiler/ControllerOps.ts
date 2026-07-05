@@ -129,6 +129,8 @@ export type AssertSpecialControllerOp = {
 export type ProjectileControllerOp = {
   kind: "projectile";
   projectileId?: number;
+  targetId?: number;
+  chainId?: number;
   projAnim?: number;
   offset?: [number, number];
   pos?: [number, number];
@@ -1329,6 +1331,8 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
   return definedObject({
     kind: "projectile" as const,
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
+    targetId: firstNumber(findParam(controller, "id")),
+    chainId: firstNumber(findParam(controller, "chainid")),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
     offset: pairWithDefaultOrUndefined(numberPair(findParam(controller, "offset"))),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),

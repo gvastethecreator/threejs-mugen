@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile GetHitVar hitid/chainid required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-hitid-chainid.json` and `synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json` trace coverage.
+- `ProjectileControllerOp`, runtime Projectile creation, and Projectile combat hit-var storage now preserve separate Projectile identity (`projid`) and HitDef hit metadata (`id`, `chainID`) as `targetId` / `chainId`.
+- `RuntimeTraceGatePresets` now gates player-owned Projectile normal-hit `GetHitVar(hitid)` / `GetHitVar(chainid)` evidence through defender-owned Common1-style state `5000 -> 337`.
+- `RuntimeTraceGatePresets` now gates helper-parented/root-owned Projectile normal-hit `GetHitVar(hitid)` / `GetHitVar(chainid)` evidence through defender-owned `5000 -> 338`, including owner/helper target links and helper/projectile lifecycle payload evidence.
+- `scripts/qa_traces.cjs` registers both Projectile `hitid/chainid` artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference documents `Projectile` as taking `HitDef` parameters and helper-created Projectiles becoming root-owned; Elecbyte Trigger Reference documents `GetHitVar` params including `hitid` and `chainid`.
+- Focused test: `pnpm exec vitest run src/tests/ProjectileSystem.test.ts src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile GetHitVar hitid|bounded projectile hit mutation|creates a bounded projectile actor|compiles Projectile controllers"` -> 4 files passed, 5 tests passed, 465 skipped.
+- Trace gate: `pnpm qa:trace` -> 409/409 artifacts, 379 required and 30 optional; `synthetic-imported-projectile-gethitvar-hitid-chainid.json` trace checksum `80392a85`, initial checksum `befdf3d1`, final checksum `514a6803`; `synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json` trace checksum `24df4416`, initial checksum `473a2b67`, final checksum `f84c36ad`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile normal-hit id metadata: Projectile effect id `77` hits P2 while the HitDef `id = 78` / `chainID = 44` route records target link `p1 -> p2 / 78`, consumes/removes the projectile, routes P2 through defender-owned state `5000 -> 337`, and proves `GetHitVar(hitid) = 78`, `GetHitVar(chainid) = 44`, plus `!GetHitVar(guarded)`.
+- Bounded helper-parented/root-owned Projectile normal-hit id metadata: helper-spawned Projectile effect id `8891` hits P2 while the HitDef `id = 78` / `chainID = 44` route records target links `p1 -> p2 / 78` and `p1-helper-0 -> p2 / 78`, preserves helper/projectile lifecycle payload evidence, routes P2 through `5000 -> 338`, and proves `GetHitVar(hitid) = 78`, `GetHitVar(chainid) = 44`, plus `!GetHitVar(guarded)`.
+
+Claim blocked:
+
+- Exact chain-hit eligibility arbitration, combo accumulation, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/GetHitVar parity.
+
+Next:
+
+- Continue R1 with exact chain/combo behavior, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 metadata gap. Do not reselect this Projectile `hitid/chainid` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Projectile GetHitVar normal-hit metadata required trace gates
 
 Changed:

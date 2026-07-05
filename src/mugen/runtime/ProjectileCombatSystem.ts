@@ -157,7 +157,7 @@ export class RuntimeProjectileCombatWorld {
         defender.runtime.guardSlideTime = result.slideTime ?? 0;
         defender.runtime.guardControlTime = result.controlTime ?? 0;
         defender.runtime.guarding = true;
-        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(true, result.damage, result.stun, result.pause, result.kill);
+        defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, true, result.damage, result.stun, result.pause, result.kill);
         applyRuntimeControl(defender.runtime, false);
         input.applyGuardHit?.(defender);
         log(
@@ -172,7 +172,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.guardSlideTime = 0;
       defender.runtime.guardControlTime = 0;
       defender.runtime.guarding = false;
-      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(false, result.damage, result.stun, result.pause, result.kill);
+      defender.runtime.hitVars = runtimeGetHitVarsFromProjectileResult(projectile, false, result.damage, result.stun, result.pause, result.kill);
       input.applyHitState?.(attacker, defender, projectile);
       input.recordReceivedDamage?.(defender, result.damage);
       log(
@@ -243,6 +243,7 @@ function decrementProjectilePriority(priority: number): number {
 }
 
 function runtimeGetHitVarsFromProjectileResult(
+  projectile: RuntimeProjectile,
   guarded: boolean,
   damage: number,
   hitTime: number,
@@ -252,6 +253,8 @@ function runtimeGetHitVarsFromProjectileResult(
   return {
     damage: Math.max(0, Math.round(damage)),
     kill,
+    hitId: projectile.targetId,
+    ...(projectile.chainId !== undefined ? { chainId: projectile.chainId } : {}),
     animType: 0,
     groundType: 1,
     airType: 1,

@@ -28,7 +28,7 @@ const action: MugenAnimationAction = {
 
 describe("ProjectileCombatSystem", () => {
   it("owns bounded projectile hit mutation behind RuntimeProjectileCombatWorld", () => {
-    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42 })];
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42, targetId: 78, chainId: 43 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 10, powerMax: 40 }));
     const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
     const logs: string[] = [];
@@ -62,10 +62,10 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.hitPause).toBe(4);
     expect(defender.hitStun).toBe(13);
     expect(defender.runtime.moveType).toBe("H");
-    expect(defender.runtime.hitVars?.damage).toBe(42);
+    expect(defender.runtime.hitVars).toMatchObject({ damage: 42, hitId: 78, chainId: 43 });
     expect(receivedDamage).toBe(42);
     expect(attacker.runtime.power).toBe(40);
-    expect(targets).toEqual(["p2:77"]);
+    expect(targets).toEqual(["p2:78"]);
     expect(effects).toEqual(["p1:p2:projectile-0:hit"]);
     expect(logs).toEqual(["P1 projectile hit P2 for 42; hits remaining 0, miss 0; hit removal anim none"]);
     expect(projectiles).toEqual([]);
@@ -99,6 +99,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.runtime.hitVars).toEqual({
       damage: 4,
       kill: true,
+      hitId: 77,
       animType: 0,
       groundType: 1,
       airType: 1,

@@ -27,15 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile/helper normal-hit GetHitVar metadata trace gates
+R1 required Projectile/helper normal-hit GetHitVar hitid/chainid trace gates
+  -> synthetic-imported-projectile-gethitvar-hitid-chainid.json trace checksum 80392a85 / final checksum 514a6803 is required in qa:trace
+  -> synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json trace checksum 24df4416 / final checksum f84c36ad is required in qa:trace
+  -> player-owned Projectile effect id 77 preserves separate HitDef id 78 and chainID 44, routes P2 through defender-owned Common1-style 5000 -> 337, and proves GetHitVar(hitid) = 78, GetHitVar(chainid) = 44, and !GetHitVar(guarded)
+  -> helper-parented/root-owned Projectile effect id 8891 preserves the same HitDef id 78 and chainID 44, routes P2 through 5000 -> 338, and proves GetHitVar(hitid) = 78, GetHitVar(chainid) = 44, and !GetHitVar(guarded)
+  -> player route keeps projectile lifecycle plus target link p1 -> p2 / 78 while effect id stays 77
+  -> helper route keeps owner/helper target links p1 -> p2 / 78 and p1-helper-0 -> p2 / 78 plus helper/projectile lifecycle payload evidence while effect id stays 8891
+  -> pnpm qa:trace passes 409/409 artifacts, 379 required and 30 optional
+  -> no score movement; exact chain-hit eligibility arbitration, combo accumulation, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+
+Previous R1 required Projectile/helper normal-hit GetHitVar damage/hittime/xvel/yvel metadata trace gates
   -> synthetic-imported-projectile-gethitvar-hit-metadata.json trace checksum 6b7ad6e5 / final checksum 36365083 is required in qa:trace
   -> synthetic-imported-helper-projectile-gethitvar-hit-metadata.json trace checksum 4a65158a / final checksum dfbc9fe9 is required in qa:trace
   -> player-owned Projectile id 77 routes P2 through defender-owned Common1-style 5000 -> 335 and proves GetHitVar(damage) = 31, GetHitVar(hittime) = 13, GetHitVar(xvel) = 4, GetHitVar(yvel) = -2, and !GetHitVar(guarded)
   -> helper-parented/root-owned Projectile id 8890 routes P2 through 5000 -> 336 and proves GetHitVar(damage) = 37, GetHitVar(hittime) = 14, GetHitVar(xvel) = 4, GetHitVar(yvel) = -2, and !GetHitVar(guarded)
   -> player route keeps projectile lifecycle plus target link p1 -> p2 / 77
   -> helper route keeps owner/helper target links p1 -> p2 / 8890 and p1-helper-0 -> p2 / 8890 plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 407/407 artifacts, 377 required and 30 optional
-  -> no score movement; exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, combo/chain/id breadth, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
+  -> pnpm qa:trace passed 407/407 artifacts, 377 required and 30 optional
+  -> remains required; exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, multi-hit arbitration, broader combo/chain/id breadth, custom-state inheritance, throws, teams/simul, visual/audio parity, and full Projectile/GetHitVar parity remain blocked
 
 Previous R1 required Projectile/helper guard slide-stop trace gates
   -> synthetic-imported-projectile-guard-slide-stop.json trace checksum 965c2d12 / final checksum 0973a73c is required in qa:trace

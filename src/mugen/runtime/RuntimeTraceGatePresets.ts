@@ -12015,6 +12015,124 @@ export function createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifa
   });
 }
 
+export function createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-gethitvar-hitid-chainid",
+    displayName: "Synthetic Imported Projectile GetHitVar HitId ChainId",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 337,
+      hitTimeBranchAnimNo: 337,
+      hitTimeBranchExpression: "GetHitVar(hitid) = 78 && GetHitVar(chainid) = 44 && !GetHitVar(guarded)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-gethitvar-hitid-chainid-attacker",
+    displayName: "Synthetic Imported Projectile GetHitVar HitId ChainId Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileTargetId: 78,
+    projectileChainId: 44,
+    projectileGroundVelocity: [4, -2],
+    projectileHitAnim: 911,
+  });
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-projectile-gethitvar-hitid-chainid-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-gethitvar-hitid-chainid-settle", frames: 24, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-gethitvar-hitid-chainid-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-gethitvar-hitid-chainid-golden",
+      label: "Synthetic imported Projectile GetHitVar hitid/chainid route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile GetHitVar hitid/chainid trace proves bounded player-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving a separate Projectile id. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-parented Projectile breadth, custom-state inheritance, or full MUGEN/IKEMEN Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-gethitvar-hitid-chainid-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 337],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredControllerEventSequences: [
+          {
+            label: "5000 Projectile normal hit GetHitVar(hitid/chainid) branch order",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+          },
+        ],
+        requiredActorFrames: [
+          {
+            ...defaultGetHitProgressionPhysicsFrames()[0],
+            observedVelXAtLeast: 4,
+            observedVelXAtMost: 4,
+            observedVelYAtLeast: -2,
+            observedVelYAtMost: -2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 337,
+            animNo: 337,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            minFrames: 1,
+          },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1",
+            effectId: 77,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 78 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 337,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -12762,6 +12880,153 @@ export function createSyntheticImportedHelperProjectileGetHitVarHitMetadataTrace
             source: "imported",
             actorKind: "player",
             stateNo: 336,
+            moveType: "H",
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
+    displayName: "Synthetic Imported Helper Projectile GetHitVar HitId ChainId",
+    defaultGetHitProgression: {
+      shakeStateNo: 5000,
+      slideStateNo: 5001,
+      hitTimeBranchStateNo: 338,
+      hitTimeBranchAnimNo: 338,
+      hitTimeBranchExpression: "GetHitVar(hitid) = 78 && GetHitVar(chainid) = 44 && !GetHitVar(guarded)",
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid-attacker",
+    displayName: "Synthetic Imported Helper Projectile GetHitVar HitId ChainId Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1253,
+      waitAnimNo: 1005,
+      branchStateNo: 1254,
+      branchAnimNo: 1006,
+      projectileAnimNo: 1007,
+      projectileId: 8891,
+      targetId: 78,
+      chainId: 44,
+      pos: [360, -34],
+      damage: [37, 2],
+      hitPause: 4,
+      hitTime: 14,
+      groundVelocity: [4, -2],
+    },
+  });
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-gethitvar-hitid-chainid-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-gethitvar-hitid-chainid-settle", frames: 28, p1: [], p2: [] },
+  ]);
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid-golden",
+      label: "Synthetic imported Helper Projectile GetHitVar hitid/chainid route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Helper Projectile GetHitVar hitid/chainid trace proves bounded helper-parented/root-owned Projectile normal-hit HitDef id and chainID metadata can route defender-owned Common1-style get-hit CNS from state 5000 while preserving separate owner/helper target links. It does not claim exact chain-hit eligibility arbitration, combo accumulation, helper-owned custom states, custom-state inheritance, or full MUGEN/IKEMEN helper Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 5000, 338],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+        requiredExecutedOperations: ["helper", "projectile"],
+        requiredControllerEventSequences: [
+          {
+            label: "helper-local Projectile spawn telemetry",
+            actorId: "p1",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+              { stateNo: 1200, operation: "projectile" },
+            ],
+          },
+          {
+            label: "5000 helper Projectile normal hit GetHitVar(hitid/chainid) branch order",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+          },
+        ],
+        requiredActorFrames: [
+          {
+            ...defaultGetHitProgressionPhysicsFrames()[0],
+            observedVelXAtLeast: 4,
+            observedVelXAtMost: 4,
+            observedVelYAtLeast: -2,
+            observedVelYAtMost: -2,
+          },
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 338,
+            animNo: 338,
+            stateType: "S",
+            moveType: "H",
+            physics: "S",
+            minFrames: 1,
+          },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1253, animNo: 1005, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1254, animNo: 1006, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1007, moveType: "A", minFrames: 1 },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1254, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8891,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 78 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 78 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 338,
             moveType: "H",
           },
         ],
@@ -28627,6 +28892,8 @@ export type SyntheticImportedTraceFighterOptions = {
   withProjectile?: boolean;
   omitProjectileId?: boolean;
   projectileId?: number;
+  projectileTargetId?: number;
+  projectileChainId?: number;
   projectileP2StateNo?: number;
   projectileP2GetP1State?: boolean;
   projectileMissOnOverride?: boolean;
@@ -28812,6 +29079,8 @@ export type SyntheticImportedTraceFighterOptions = {
     projectileAnimNo: number;
     projectileId?: number;
     omitProjectileId?: boolean;
+    targetId?: number;
+    chainId?: number;
     pos?: [number, number];
     velocity?: [number, number];
     damage?: [number, number?];
@@ -29286,7 +29555,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -31721,6 +31990,8 @@ function projectileControllerBlock(
   kill?: boolean,
   guardKill?: boolean,
   projectileId = 77,
+  targetId?: number,
+  chainId?: number,
   p2StateNo?: number,
   p2GetP1State?: boolean,
   missOnOverride?: boolean,
@@ -31753,6 +32024,8 @@ function projectileControllerBlock(
   const guardVelocityLine = omitGuardVelocity ? "" : `guard.velocity = ${(guardVelocity ?? [-2]).join(",")}`;
   const killLine = kill === undefined ? "" : `kill = ${kill ? 1 : 0}`;
   const guardKillLine = guardKill === undefined ? "" : `guard.kill = ${guardKill ? 1 : 0}`;
+  const targetIdLine = targetId === undefined ? "" : `id = ${targetId}`;
+  const chainIdLine = chainId === undefined ? "" : `chainID = ${chainId}`;
   const p2StateNoLine = p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`;
   const p2GetP1StateLine = p2StateNo === undefined ? "" : `p2getp1state = ${p2GetP1State === false ? 0 : 1}`;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
@@ -31770,6 +32043,8 @@ ${airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${airGua
 type = Projectile
 trigger1 = Time = 2
 ${projectileIdLine}
+${targetIdLine}
+${chainIdLine}
 projpriority = ${priority}
 projhits = ${hits}
 projmisstime = ${missTime}
@@ -33047,7 +33322,9 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const branchAnimNo = route.branchAnimNo ?? route.branchStateNo;
   const projectileId = route.projectileId ?? 8853;
   const projectileIdLine = route.omitProjectileId ? "" : `projid = ${projectileId}`;
-  const targetId = route.omitProjectileId ? 0 : projectileId;
+  const targetId = route.targetId ?? (route.omitProjectileId ? 0 : projectileId);
+  const hitTargetIdLine = route.targetId === undefined ? "" : `id = ${route.targetId}`;
+  const chainIdLine = route.chainId === undefined ? "" : `chainID = ${route.chainId}`;
   const branchTrigger = route.branchTrigger ?? `ProjHit(${projectileId})`;
   const pos = route.pos ?? [360, -34];
   const velocity = route.velocity ?? [0, 0];
@@ -33090,6 +33367,8 @@ ctrl = 0
 type = Projectile
 trigger1 = Time = 0
 ${projectileIdLine}
+${hitTargetIdLine}
+${chainIdLine}
 projpriority = 2
 projhits = 1
 projmisstime = 0

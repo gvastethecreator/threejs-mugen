@@ -80,6 +80,8 @@ describe("ProjectileSystem", () => {
       serialId: "p1-projectile-0",
       controller: controller({
         projid: "77",
+        id: "78",
+        chainID: "43",
         velocity: "5,-1",
         accel: "0.5,0.25",
         velmul: "0.5,1.5",
@@ -151,7 +153,8 @@ describe("ProjectileSystem", () => {
       opacity: 0.78,
       damage: 60,
       attr: "S,SP",
-      targetId: 77,
+      targetId: 78,
+      chainId: 43,
       hitPause: 9,
       hitStun: 21,
       push: 7,

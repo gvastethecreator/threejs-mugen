@@ -102,6 +102,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded defender-owned normal get-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-kill.json`
 - synthetic bounded defender-owned normal get-hit `GetHitVar(hitcount)` metadata through `synthetic-imported-gethitvar-hitcount.json`
 - synthetic bounded defender-owned normal get-hit `GetHitVar(hitid)` / `GetHitVar(chainid)` metadata through `synthetic-imported-gethitvar-hitid-chainid.json`
+- synthetic bounded player-owned and helper-parented/root-owned Projectile normal-hit `GetHitVar(hitid)` / `GetHitVar(chainid)` metadata through `synthetic-imported-projectile-gethitvar-hitid-chainid.json` and `synthetic-imported-helper-projectile-gethitvar-hitid-chainid.json`
 - synthetic bounded AssertSpecial shadow presentation evidence for local `noshadow` and global `globalnoshadow`
 - synthetic bounded AssertSpecial `GlobalNoShadow` helper/explod actor-frame evidence through `synthetic-imported-assertspecial-helper-explod-shadow.json`
 - synthetic bounded default lie-down fast recovery shortcut
