@@ -404,6 +404,30 @@ describe("HelperSystem", () => {
     expect(runtimeMoveHitCountValue(active.contact, 1228, true)).toBe(0);
   });
 
+  it("preserves helper-local MoveGuarded when destination state declares movehitpersist", () => {
+    const contact = createRuntimeContactMemory();
+    markRuntimeMoveContact(contact, 1200, "guard", "p2");
+    const active = helper({
+      stateNo: 1200,
+      contact,
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1230" })]),
+          stateProgram(stateDef(1230, { moveType: "A", moveHitPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1230);
+    expect(runtimeMoveContactValue(active.contact, 1230, "contact")).toBe(1);
+    expect(runtimeMoveContactValue(active.contact, 1230, "guard")).toBe(1);
+    expect(runtimeMoveContactValue(active.contact, 1230, "hit")).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1230, false)).toBe(0);
+    expect(runtimeMoveHitCountValue(active.contact, 1230, true)).toBe(0);
+  });
+
   it("resets helper-local MoveContact and MoveHit when destination state omits movehitpersist", () => {
     const contact = createRuntimeContactMemory();
     markRuntimeMoveContact(contact, 1200, "hit", "p2");

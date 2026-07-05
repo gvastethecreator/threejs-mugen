@@ -27,11 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required helper StateDef movehitpersist trace gate
+R1 required helper guarded StateDef movehitpersist trace gate
+  -> synthetic-imported-helper-moveguardedpersist.json checksum d5ce7897 is required in qa:trace
+  -> helper-local guarded HitDef contact activates in helper state 1200, enters helper state 1230 with movehitpersist = 1, preserves MoveContact / MoveGuarded while MoveHit / HitCount / UniqHitCount reset, and routes helper 1200 -> 1230 -> 1231 with helper-owned guard sound/FightFX evidence
+  -> pnpm qa:trace passes 420/420 artifacts, 390 required and 30 optional
+  -> no score movement; helper MoveReversed breadth, helper Projectile/custom-state movehitpersist breadth, exact guard chip/KO/no-KO flow, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded guard contact package, and full helper Move* lifetime parity remain blocked
+
+Previous R1 required helper StateDef movehitpersist trace gate
   -> synthetic-imported-helper-movehitpersist.json checksum 2354ef95 is required in qa:trace
   -> helper-local HitDef contact activates in helper state 1200, enters helper state 1228 with movehitpersist = 1, preserves MoveContact / MoveHit while HitCount / UniqHitCount reset, and routes helper 1200 -> 1228 -> 1229 with helper-owned sound/FightFX evidence
-  -> pnpm qa:trace passes 419/419 artifacts, 389 required and 30 optional
-  -> no score movement; guarded/reversed helper Move* breadth, helper Projectile/custom-state movehitpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper Move* lifetime parity remain blocked
+  -> pnpm qa:trace passed 419/419 artifacts, 389 required and 30 optional
+  -> remains required; helper MoveReversed breadth, helper Projectile/custom-state movehitpersist breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full helper Move* lifetime parity remain blocked
 
 Previous R1 required helper StateDef hitcountpersist trace gate
   -> synthetic-imported-helper-hitcountpersist.json checksum fc9588d8 is required in qa:trace

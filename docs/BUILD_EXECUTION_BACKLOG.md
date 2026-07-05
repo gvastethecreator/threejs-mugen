@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper StateDef movehitpersist guarded required trace gate
+
+Changed:
+
+- Added helper `HitDef` route support for `guardsound` / `guard.sparkno` telemetry in synthetic imported traces.
+- Added custom branch-trigger lists for helper `movehitpersist` route generation so guarded Move* branches can prove `MoveGuarded` persistence separately from `MoveHit`.
+- Added required `synthetic-imported-helper-moveguardedpersist.json` trace coverage for a helper-owned guarded direct `HitDef` route `1200 -> 1230 -> 1231`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-helper-moveguardedpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `movehitpersist` as carrying Move* trigger info from the previous state, including guarded state; Elecbyte Trigger Reference says MoveContact, MoveGuarded, MoveHit, and MoveReversed reset after state transition unless `movehitpersist` overrides this behavior; Elecbyte state-controller docs define helpers as another player instance.
+- Focused tests: `pnpm vitest run src/tests/HelperSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "moveguardedpersist|MoveGuardedPersist|MoveGuarded|MoveGuarded evidence"` -> 2 files passed, 2 tests passed.
+- Tests: `pnpm test` -> 151 files passed, 1303 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Trace gate: `pnpm qa:trace` -> 420/420 artifacts, 390 required and 30 optional; `synthetic-imported-helper-moveguardedpersist.json` checksum `d5ce7897`.
+
+Claim allowed:
+
+- Bounded helper-owned guarded direct `HitDef` Move* memory can persist across one helper `ChangeState` into a destination helper `StateDef` declaring `movehitpersist = 1`.
+- The gate proves helper `1200 -> 1230 -> 1231`, `MoveContact` / `MoveGuarded` branching with `MoveHit = 0`, `HitCount = 0`, and `UniqHitCount = 0`, helper-owned guard sound/FightFX contact evidence from helper state `1200`, P2 guarding frame evidence, and final P2 life `1000`.
+
+Claim blocked:
+
+- Helper MoveReversed persistence breadth, helper Projectile/custom-state `movehitpersist` breadth, exact guard chip/KO/no-KO flow, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact helper hitpause/target lifetime, helper-owned custom states, visual/audio parity beyond the bounded guard contact package, score movement, and full MUGEN/IKEMEN helper Move* lifetime parity.
+
+Next:
+
+- Continue R1 with helper MoveReversed persistence, helper Projectile/custom-state StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper guarded `movehitpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Helper StateDef movehitpersist required trace gate
 
 Changed:

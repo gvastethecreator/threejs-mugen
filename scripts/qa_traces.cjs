@@ -1947,6 +1947,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperMoveHitPersistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-moveguardedpersist",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperMoveGuardedPersistTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-target",
       required: true,
       artifact: presets.createSyntheticImportedHelperTargetTraceArtifact(),
@@ -3183,6 +3188,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-hitdefpersist",
     "synthetic-imported-helper-hitcountpersist",
     "synthetic-imported-helper-movehitpersist",
+    "synthetic-imported-helper-moveguardedpersist",
     "synthetic-imported-helper-target",
     "synthetic-imported-helper-default-target",
     "synthetic-imported-helper-bare-target",
