@@ -135,6 +135,7 @@ import {
   defaultCrouchGuardSlideStopControllerSequence,
   defaultStandGuardSlideStopControllerSequence,
   syntheticAirGuardCornerPushPhysicsFrames,
+  syntheticAirHitCornerPushPhysicsFrames,
   syntheticAirGuardLandingPhysicsFrames,
   syntheticAirGuardLandingWalkReturnActorFrameSequence,
   syntheticAirGuardHitPhysicsFrames,
@@ -166,6 +167,7 @@ import {
   createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact,
   createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact,
   createSyntheticImportedAirGuardLandingTraceArtifact,
+  createSyntheticImportedAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedAirGuardCornerPushTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
@@ -237,6 +239,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact,
@@ -358,6 +361,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardCornerPushDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
@@ -10881,6 +10885,92 @@ describe("RuntimeTraceGatePresets", () => {
     expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(8);
     expect(attackerMinVelX).toBeLessThanOrEqual(-2.5);
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardCornerPushPhysicsFrames(-2.5));
+  });
+
+  it("creates a synthetic imported default air.cornerpush.veloff direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedAirHitCornerPushDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-air-hit-cornerpush-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-air-hit-cornerpush-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    const airHitFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 5020);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(airHitFrame?.stateType).toBe("A");
+    expect(attackerMinVelX).toBeLessThanOrEqual(-3.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirHitCornerPushPhysicsFrames());
+  });
+
+  it("creates a synthetic imported Projectile default air.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-air-hit-cornerpush-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-air-hit-cornerpush-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-2.5);
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirHitCornerPushPhysicsFrames(-2.5),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile default air.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-air-hit-cornerpush-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-air-hit-cornerpush-default-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-2.5);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8857 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8857 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirHitCornerPushPhysicsFrames(-2.5),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 984 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 983 }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported air guard landing artifact", () => {

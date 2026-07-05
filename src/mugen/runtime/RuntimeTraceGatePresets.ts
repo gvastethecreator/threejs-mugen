@@ -8197,6 +8197,35 @@ export function syntheticAirGuardCornerPushPhysicsFrames(
   ];
 }
 
+export function syntheticAirHitCornerPushPhysicsFrames(
+  observedAttackerVelXAtMost = -3.5,
+): RuntimeTraceActorFrameRequirement[] {
+  return [
+    {
+      actorId: "p2",
+      source: "imported",
+      actorKind: "player",
+      stateNo: 5020,
+      animNo: 5020,
+      stateType: "A",
+      moveType: "H",
+      physics: "A",
+      minFrames: 1,
+      observedPosYAtMost: -1,
+      bodyWidthFront: 39,
+      bodyWidthBack: 39,
+      playerPush: true,
+    },
+    {
+      actorId: "p1",
+      source: "imported",
+      actorKind: "player",
+      observedVelXAtMost: observedAttackerVelXAtMost,
+      minFrames: 1,
+    },
+  ];
+}
+
 export function syntheticAirGuardLandingPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
   return [
     ...syntheticAirGuardHitPhysicsFrames(),
@@ -13106,6 +13135,16 @@ export function createImportedDefaultGetHitTraceArtifact(
     notes?: string[];
     attacker?: DemoFighterDefinition;
     script?: RuntimeTraceInputFrame[];
+    requiredEffectKinds?: RuntimeTraceGate["requiredEffectKinds"];
+    requiredExecutedStates?: number[];
+    requiredExecutedControllers?: string[];
+    requiredExecutedOperations?: string[];
+    requiredActorFrames?: RuntimeTraceGate["requiredActorFrames"];
+    requiredWorldLifecycleEvents?: RuntimeTraceGate["requiredWorldLifecycleEvents"];
+    requiredEffectStores?: RuntimeTraceGate["requiredEffectStores"];
+    requiredEffectPayloads?: RuntimeTraceGate["requiredEffectPayloads"];
+    requiredTargetLinks?: RuntimeTraceGate["requiredTargetLinks"];
+    requiredFinalActors?: RuntimeTraceGate["requiredFinalActors"];
   } = {},
 ): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
@@ -13137,14 +13176,20 @@ export function createImportedDefaultGetHitTraceArtifact(
         label: options.gateLabel ?? "imported-default-gethit-golden",
         requiredActorSources: ["imported"],
         requiredActorKinds: ["player"],
+        requiredEffectKinds: options.requiredEffectKinds,
         requiredRoutedStates: [200],
-        requiredExecutedStates: [200, getHitStateNo],
-        requiredExecutedControllers: ["ChangeState", "HitDef"],
-        requiredExecutedOperations: ["hitdef"],
+        requiredExecutedStates: options.requiredExecutedStates ?? [200, getHitStateNo],
+        requiredExecutedControllers: options.requiredExecutedControllers ?? ["ChangeState", "HitDef"],
+        requiredExecutedOperations: options.requiredExecutedOperations ?? ["hitdef"],
         requiredActiveCommands: ["x"],
         requiredEventCategories: ["hit"],
         requiredCombatReasons: ["hit"],
-        requiredFinalActors: [
+        requiredActorFrames: options.requiredActorFrames,
+        requiredWorldLifecycleEvents: options.requiredWorldLifecycleEvents,
+        requiredEffectStores: options.requiredEffectStores,
+        requiredEffectPayloads: options.requiredEffectPayloads,
+        requiredTargetLinks: options.requiredTargetLinks,
+        requiredFinalActors: options.requiredFinalActors ?? [
           {
             actorId: "p2",
             source: "imported",
@@ -13202,6 +13247,185 @@ export function createSyntheticImportedDefaultAirGetHitTraceArtifact(
       ],
     },
   );
+}
+
+export function createSyntheticImportedAirHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-air-hit-cornerpush-default-grid",
+    displayName: "Trace Air Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 240, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-hit-cornerpush-default",
+    displayName: "Synthetic Imported Air Hit Cornerpush Default",
+    defaultGetHitState: { stateNo: 5020, animNo: 5020 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Air Hit Cornerpush Default Attacker",
+    groundVelocity: [-3],
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGetHitScript(),
+    targetId: "synthetic-imported-air-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported default air.cornerpush.veloff direct HitDef route",
+    gateLabel: "synthetic-imported-air-hit-cornerpush-default-golden",
+    getHitStateNo: 5020,
+    requiredActorFrames: syntheticAirHitCornerPushPhysicsFrames(),
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, moveType: "H", life: 963 }],
+    notes: [
+      "Synthetic imported default air.cornerpush.veloff direct HitDef trace proves omitted air-hit cornerpush derives through ground.cornerpush.veloff from guard.velocity/ground.velocity, then pushes the attacking player away when the airborne defender reaches the stage corner. It does not claim exact MUGEN/IKEMEN cornerpush timing/decay, wall friction, exact air get-hit physics, or full Common1 parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileAirHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-projectile-air-hit-cornerpush-default-grid",
+    displayName: "Trace Projectile Air Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: 6, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "projectile-air-hit-cornerpush-default-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "projectile-air-hit-cornerpush-default-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "projectile-air-hit-cornerpush-default-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-hit-cornerpush-default",
+    displayName: "Synthetic Imported Projectile Air Hit Cornerpush Default",
+    defaultGetHitState: { stateNo: 5020, animNo: 5020 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Projectile Air Hit Cornerpush Default Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileOffset: [62, -120],
+    projectileGroundVelocity: [-3],
+    projectileAirVelocity: [-4, -3],
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script,
+    targetId: "synthetic-imported-projectile-air-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Projectile default air.cornerpush.veloff route",
+    gateLabel: "synthetic-imported-projectile-air-hit-cornerpush-default-golden",
+    getHitStateNo: 5020,
+    requiredEffectKinds: ["projectile"],
+    requiredExecutedStates: [200, 5020],
+    requiredExecutedControllers: ["ChangeState", "Projectile"],
+    requiredExecutedOperations: ["projectile"],
+    requiredActorFrames: [
+      ...syntheticAirHitCornerPushPhysicsFrames(-2.5),
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+    requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, moveType: "H", life: 969 }],
+    notes: [
+      "Synthetic imported Projectile default air.cornerpush.veloff trace proves omitted Projectile air-hit cornerpush derives through the Projectile HitDef parameter set from ground.cornerpush.veloff and pushes the owning player away when the airborne defender reaches the stage corner. It does not claim exact projectile ownership/timing/effects, cornerpush decay, exact air get-hit physics, or full MUGEN/IKEMEN projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileAirHitCornerPushDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...trainingStage,
+    id: "trace-helper-projectile-air-hit-cornerpush-default-grid",
+    displayName: "Trace Helper Projectile Air Hit Cornerpush Default Grid",
+    playerStart: {
+      p1: { x: -54, y: 0, facing: 1 },
+      p2: { x: 286, y: 0, facing: -1 },
+    },
+  };
+  const script = expandRuntimeTraceScript([
+    { label: "helper-projectile-air-hit-cornerpush-default-jump", frames: 2, p1: [], p2: ["U"] },
+    { label: "helper-projectile-air-hit-cornerpush-default-x", frames: 14, p1: ["x"], p2: [] },
+    { label: "helper-projectile-air-hit-cornerpush-default-settle", frames: 4, p1: [], p2: [] },
+  ]);
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-hit-cornerpush-default",
+    displayName: "Synthetic Imported Helper Projectile Air Hit Cornerpush Default",
+    defaultGetHitState: { stateNo: 5020, animNo: 5020 },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-hit-cornerpush-default-attacker",
+    displayName: "Synthetic Imported Helper Projectile Air Hit Cornerpush Default Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1245,
+      waitAnimNo: 984,
+      branchStateNo: 1246,
+      branchAnimNo: 985,
+      projectileAnimNo: 983,
+      projectileId: 8857,
+      pos: [360, -92],
+      airVelocity: [-4, -3],
+    },
+  });
+  return createImportedDefaultGetHitTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script,
+    targetId: "synthetic-imported-helper-projectile-air-hit-cornerpush-default-golden",
+    targetLabel: "Synthetic imported Helper Projectile default air.cornerpush.veloff route",
+    gateLabel: "synthetic-imported-helper-projectile-air-hit-cornerpush-default-golden",
+    getHitStateNo: 5020,
+    requiredEffectKinds: ["helper", "projectile"],
+    requiredExecutedStates: [200, 5020],
+    requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+    requiredExecutedOperations: ["helper", "projectile"],
+    requiredActorFrames: [
+      ...syntheticAirHitCornerPushPhysicsFrames(-2.5),
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1245, animNo: 984, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1246, animNo: 985, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 983, moveType: "A", minFrames: 1 },
+    ],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1246, minAge: 2 },
+      { actorId: "p1-projectile-0", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0", effectId: 8857, minAge: 1, minPriority: 2, maxHitsRemaining: 0, hasHit: true },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8857 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8857 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", stateNo: 5020, moveType: "H", life: 982 }],
+    notes: [
+      "Synthetic imported Helper Projectile default air.cornerpush.veloff trace proves omitted helper-parented Projectile air-hit cornerpush derives through the helper-local Projectile HitDef parameter set from ground.cornerpush.veloff and pushes the owning player away when the airborne defender reaches the stage corner. It does not claim helper-owned custom states, exact helper Projectile timing/effects, cornerpush decay, exact air get-hit physics, or full MUGEN/IKEMEN helper projectile parity.",
+    ],
+  });
 }
 
 export function createImportedDefaultGetHitProgressionTraceArtifact(
@@ -27062,6 +27286,12 @@ export type SyntheticImportedTraceFighterOptions = {
     omitProjectileId?: boolean;
     pos?: [number, number];
     velocity?: [number, number];
+    airVelocity?: [number, number?];
+    groundCornerPush?: number;
+    airCornerPush?: number;
+    downCornerPush?: number;
+    guardCornerPush?: number;
+    airGuardCornerPush?: number;
     guardFlag?: string;
     p2StateNo?: number;
     p2GetP1State?: boolean;
@@ -31280,6 +31510,14 @@ function helperProjHitRouteBlock(route: NonNullable<SyntheticImportedTraceFighte
   const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
+  const airVelocityLine = route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`;
+  const cornerPushLines = `
+${route.groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${route.groundCornerPush}`}
+${route.airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${route.airCornerPush}`}
+${route.downCornerPush === undefined ? "" : `down.cornerpush.veloff = ${route.downCornerPush}`}
+${route.guardCornerPush === undefined ? "" : `guard.cornerpush.veloff = ${route.guardCornerPush}`}
+${route.airGuardCornerPush === undefined ? "" : `airguard.cornerpush.veloff = ${route.airGuardCornerPush}`}
+`;
   const p2StateNoLine = route.p2StateNo === undefined ? "" : `p2stateno = ${route.p2StateNo}`;
   const p2GetP1StateLine = route.p2StateNo === undefined ? "" : `p2getp1state = ${route.p2GetP1State === false ? 0 : 1}`;
   const missOnOverrideLine = route.missOnOverride === undefined ? "" : `missonoverride = ${route.missOnOverride ? 1 : 0}`;
@@ -31319,6 +31557,7 @@ damage = 18,2
 pausetime = 3,3
 ground.hittime = 11
 ground.velocity = -3
+${airVelocityLine}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}
@@ -31326,6 +31565,7 @@ guardflag = ${guardFlag}
 guard.pausetime = 2,2
 guard.hittime = 7
 guard.velocity = -2
+${cornerPushLines}
 guard.dist = 100
 sprpriority = 6
 
