@@ -420,6 +420,7 @@ import {
   createSyntheticImportedBareTargetRedirectTraceArtifact,
   createSyntheticImportedDefaultTargetRedirectTraceArtifact,
   createSyntheticImportedTargetTraceArtifact,
+  createSyntheticImportedHitDefPersistTraceArtifact,
   createSyntheticImportedHitCountTraceArtifact,
   createSyntheticImportedHitAddTraceArtifact,
   createSyntheticImportedVariableTraceArtifact,
@@ -788,6 +789,33 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventCategories).toContain("hit");
     expect(evidence?.combatReasons).toContain("hit");
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 345, animNo: 345 });
+  });
+
+  it("creates a synthetic imported hitdefpersist artifact with active HitDef persistence evidence", () => {
+    const artifact = createSyntheticImportedHitDefPersistTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdefpersist-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([200, 346, 347]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["hitdef"]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 346, 347]));
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ stateNo: 347, animNo: 347 });
   });
 
   it("creates a synthetic imported no-op artifact for Null, ForceFeedback, debug clipboard, MakeDust, and DestroySelf controllers", () => {

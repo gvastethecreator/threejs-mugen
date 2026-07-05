@@ -35,20 +35,26 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required StateDef movehitpersist trace gate
-  -> RuntimeTraceGatePresets now builds synthetic-imported-movehitpersist.json
-  -> parser/runtime StateDef metadata recognizes movehitpersist = 1
-  -> RuntimeContactMemory can carry Move* trigger memory separately from HitCount / UniqHitCount state
+R1 required StateDef hitdefpersist trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-hitdefpersist.json
+  -> parser/runtime StateDef metadata recognizes hitdefpersist = 1
+  -> RuntimeStateEntryWorld can preserve a non-reversal active direct HitDef into a destination state
+  -> direct HitDef activates in 200, persists into 346, hits there, and routes P1 200 -> 346 -> 347
+  -> synthetic-imported-hitdefpersist.json checksum 4bb3e86c is required in qa:trace
+  -> pnpm qa:trace passes 416/416 artifacts, 386 required and 30 optional
+  -> no score movement; multi-HitDef stacking, helper/projectile/custom-state hitdefpersist breadth, ReversalDef interactions, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full HitDef lifetime parity remain blocked
+
+Previous R1 required StateDef movehitpersist trace gate
+  -> synthetic-imported-movehitpersist.json checksum 5c1ef583 remains required in qa:trace
   -> direct HitDef contact routes P1 200 -> 344 -> 345, proving MoveContact >= 1 && MoveHit >= 1 persists into state 344 while HitCount = 0 && UniqHitCount = 0
-  -> synthetic-imported-movehitpersist.json checksum 5c1ef583 is required in qa:trace
-  -> pnpm qa:trace passes 415/415 artifacts, 385 required and 30 optional
-  -> no score movement; guarded/reversed breadth, hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full Move* lifetime parity remain blocked
+  -> pnpm qa:trace passed 415/415 artifacts, 385 required and 30 optional
+  -> remains required; guarded/reversed breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full Move* lifetime parity remain blocked
 
 Previous R1 required StateDef hitcountpersist trace gate
   -> synthetic-imported-hitcountpersist.json checksum 6f032088 remains required in qa:trace
   -> direct HitDef contact routes P1 200 -> 342 -> 343, proving HitCount >= 1 && UniqHitCount >= 1 persists into state 342 while MoveHit = 0
   -> pnpm qa:trace passed 414/414 artifacts, 384 required and 30 optional
-  -> remains required; hitdefpersist, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full hit-count lifetime parity remain blocked
+  -> remains required; exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full hit-count lifetime parity remain blocked
 
 Previous R1 required Projectile/helper normal-hit HitCount trace gates
   -> RuntimeTraceGatePresets builds synthetic-imported-projectile-hitcount.json and synthetic-imported-helper-projectile-hitcount.json

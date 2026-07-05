@@ -162,6 +162,7 @@ physics = S
 anim = 200
 ctrl = 0
 velset = 0,0
+hitdefpersist = 1
 movehitpersist = 1
 hitcountpersist = 1
 
@@ -174,6 +175,7 @@ damage = 30
     expect(parsed.states[0]?.id).toBe(200);
     expect(parsed.states[0]?.anim).toBe(200);
     expect(parsed.states[0]?.velSet).toEqual([0, 0]);
+    expect(parsed.states[0]?.hitDefPersist).toBe(true);
     expect(parsed.states[0]?.moveHitPersist).toBe(true);
     expect(parsed.states[0]?.hitCountPersist).toBe(true);
     expect(parsed.controllers[0]?.type).toBe("HitDef");

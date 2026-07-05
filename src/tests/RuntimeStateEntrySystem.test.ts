@@ -61,6 +61,46 @@ describe("RuntimeStateEntrySystem", () => {
     expect(changeAction).toHaveBeenCalledWith(actor, 205, "self", actor, undefined);
   });
 
+  it("preserves active HitDef moves when the destination state declares hitdefpersist", () => {
+    const world = new RuntimeStateEntryWorld();
+    const state344 = state(344, { anim: 344, hitDefPersist: true });
+    const actor = entryActor({ states: [state344], animations: [344] });
+    actor.firedHitDefs.add("200:12:0");
+    actor.currentMove = { actionId: 200 };
+    actor.currentMoveLabel = "HitDef";
+    actor.moveTick = 3;
+    actor.hasHit = false;
+    const resetContactState = vi.fn();
+
+    world.enterState(actor, 344, undefined, {}, { resetContactState });
+
+    expect(actor.currentMove).toEqual({ actionId: 200 });
+    expect(actor.currentMoveLabel).toBe("HitDef");
+    expect(actor.moveTick).toBe(3);
+    expect(actor.hasHit).toBe(false);
+    expect(actor.firedHitDefs.size).toBe(0);
+    expect(resetContactState).toHaveBeenCalledWith(actor, state344);
+  });
+
+  it("does not preserve active reversal moves with hitdefpersist", () => {
+    const world = new RuntimeStateEntryWorld();
+    const state344 = state(344, { anim: 344, hitDefPersist: true });
+    const actor = entryActor({ states: [state344], animations: [344] });
+    actor.currentMove = { actionId: 200, isReversal: true };
+    actor.currentMoveLabel = "ReversalDef";
+    actor.moveTick = 3;
+    actor.hasHit = true;
+    actor.runtime.reversal = { attr: "S,NA", hitPause: 4 };
+
+    world.enterState(actor, 344);
+
+    expect(actor.currentMove).toBeUndefined();
+    expect(actor.currentMoveLabel).toBeUndefined();
+    expect(actor.moveTick).toBe(0);
+    expect(actor.hasHit).toBe(false);
+    expect(actor.runtime.reversal).toBeUndefined();
+  });
+
   it("enters owner-backed custom states with state-owner animation source", () => {
     const world = new RuntimeStateEntryWorld();
     const target = entryActor({ states: [state(0)], animations: [0] });

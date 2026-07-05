@@ -137,6 +137,8 @@ function applyStateParam(state: MugenStateDef, key: string, value: string): void
     if (parts.length >= 2 && parts.every((part) => Number.isFinite(part))) {
       state.velSet = [parts[0] ?? 0, parts[1] ?? 0];
     }
+  } else if (lower === "hitdefpersist") {
+    state.hitDefPersist = (parseNumber(value) ?? 0) !== 0;
   } else if (lower === "movehitpersist") {
     state.moveHitPersist = (parseNumber(value) ?? 0) !== 0;
   } else if (lower === "hitcountpersist") {

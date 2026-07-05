@@ -8,6 +8,7 @@ import type { CharacterRuntimeState } from "./types";
 
 export type RuntimeStateEntryMove = {
   actionId: number;
+  isReversal?: boolean;
 };
 
 export type RuntimeStateEntryDefinition = {
@@ -117,7 +118,7 @@ export class RuntimeStateEntryWorld {
       options.animOverride ?? state?.anim ?? move?.actionId ?? (options.preserveAnimationWhenMissing ? undefined : stateId);
 
     hooks.recordStateExecution?.(actor, stateId, owner);
-    this.cancelStaleMove(actor, move, stateId);
+    this.cancelStaleMove(actor, move, stateId, state);
     this.applyStateOwner(actor, owner, stateId);
     this.setStateNo(actor, stateId, { resetElapsed: true });
     actor.firedHitDefs.clear();
@@ -159,8 +160,16 @@ export class RuntimeStateEntryWorld {
     return (options.clearStateOwner ? actor : options.stateOwner ?? actor.stateOwner ?? actor) as TActor;
   }
 
-  private cancelStaleMove(actor: RuntimeStateEntryActor, move: RuntimeStateEntryMove | undefined, stateId: number): void {
+  private cancelStaleMove(
+    actor: RuntimeStateEntryActor,
+    move: RuntimeStateEntryMove | undefined,
+    stateId: number,
+    state?: MugenStateDef,
+  ): void {
     if (move || !actor.currentMove || actor.currentMove.actionId === stateId) {
+      return;
+    }
+    if (state?.hitDefPersist && !actor.currentMove.isReversal) {
       return;
     }
     actor.currentMove = undefined;

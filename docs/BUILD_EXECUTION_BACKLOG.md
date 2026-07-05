@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - StateDef hitdefpersist required trace gate
+
+Changed:
+
+- Added parser/model support for `StateDef hitdefpersist`.
+- `RuntimeStateEntryWorld` now preserves a non-reversal active direct `HitDef` move when the destination state declares `hitdefpersist = 1`; default state transitions still clear stale active moves.
+- Added required `synthetic-imported-hitdefpersist.json` trace coverage for a direct `HitDef` route `200 -> 346 -> 347`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-hitdefpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `hitdefpersist` as keeping active HitDefs enabled when transitioning into a destination state.
+- Tests: `pnpm test` -> 151 files passed, 1292 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Build: `pnpm build` -> passed with the existing Vite large-chunk warning.
+- Boundaries: `pnpm check:boundaries` -> passed.
+- Trace gate: `pnpm qa:trace` -> 416/416 artifacts, 386 required and 30 optional; `synthetic-imported-hitdefpersist.json` checksum `4bb3e86c`.
+
+Claim allowed:
+
+- Bounded direct `HitDef` can activate immediately before a state transition and remain active in one destination `StateDef` declaring `hitdefpersist = 1`.
+- The gate proves P1 can route `200 -> 346 -> 347` after the persisted active HitDef hits from state `346`.
+
+Claim blocked:
+
+- Multi-HitDef stacking, helper/projectile/custom-state breadth, ReversalDef interactions, exact target lifetime/tick order, exact hitpause lifetime, combo UI accumulation, multi-hit/multi-target/team counting, visual/audio parity, score movement, and full MUGEN/IKEMEN HitDef lifetime parity.
+
+Next:
+
+- Continue R1 with guarded/reversed movehitpersist breadth, helper/projectile StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitdefpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - StateDef movehitpersist required trace gate
 
 Changed:
@@ -24,11 +55,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Guarded/reversed route breadth, `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN Move* lifetime parity.
+- Guarded/reversed route breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state movehitpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN Move* lifetime parity.
 
 Next:
 
-- Continue R1 with `hitdefpersist`, guarded/reversed movehitpersist breadth, helper/projectile movehitpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `movehitpersist` gate unless adding one blocked dimension.
+- Continue R1 with guarded/reversed movehitpersist breadth, helper/projectile movehitpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `movehitpersist` gate unless adding one blocked dimension.
 
 ## 2026-07-05 - StateDef hitcountpersist required trace gate
 
@@ -54,11 +85,11 @@ Claim allowed:
 
 Claim blocked:
 
-- `hitdefpersist`, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN hit-count lifetime parity.
+- Helper/projectile/custom-state `hitdefpersist` breadth, exact combo UI accumulation, multi-hit/multi-target/team counting, helper/projectile/custom-state hitcountpersist breadth, chain-hit eligibility arbitration, exact hitpause and target lifetime/tick order, visual/audio parity, score movement, and full MUGEN/IKEMEN hit-count lifetime parity.
 
 Next:
 
-- Continue R1 with `hitdefpersist`, helper/projectile hitcountpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitcountpersist` gate unless adding one blocked dimension.
+- Continue R1 with helper/projectile hitcountpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitcountpersist` gate unless adding one blocked dimension.
 
 ## 2026-07-05 - Projectile HitCount required trace gates
 
@@ -89,7 +120,7 @@ Claim blocked:
 
 Next:
 
-- Continue R1 with exact combo/chain accumulation, Projectile/helper hitcountpersist breadth, `movehitpersist`, `hitdefpersist`, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 gap. Do not reselect this Projectile HitCount gate unless adding one blocked dimension.
+- Continue R1 with exact combo/chain accumulation, Projectile/helper hitcountpersist breadth, StateDef persistence breadth, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 gap. Do not reselect this Projectile HitCount gate unless adding one blocked dimension.
 
 ## 2026-07-05 - Projectile GetHitVar hitcount required trace gates
 

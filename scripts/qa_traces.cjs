@@ -56,6 +56,11 @@ async function main() {
       artifact: presets.createSyntheticImportedMoveHitPersistTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdefpersist",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefPersistTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-hitcount",
       required: true,
       artifact: presets.createSyntheticImportedHitCountTraceArtifact(),
@@ -3106,6 +3111,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-projectile-freeze",
     "synthetic-imported-superpause-effect-freeze",
     "synthetic-imported-movehitpersist",
+    "synthetic-imported-hitdefpersist",
     "synthetic-imported-hitcountpersist",
     "synthetic-imported-projectile-target-redirect",
     "synthetic-imported-projectile-hitcount",
