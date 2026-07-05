@@ -4,6 +4,7 @@ import type { MugenStateController } from "../model/MugenState";
 import {
   RuntimeEnvShakeControllerDispatchWorld,
   type RuntimeEnvShakeControllerDispatchResult,
+  type RuntimeEnvShakeResolver,
   type RuntimeEnvShakeWorld,
   type RuntimeEnvShakeWorldActor,
   RuntimeFallEnvShakeControllerDispatchWorld,
@@ -15,6 +16,7 @@ export type RuntimeMatchEnvShakeControllerBridgeInput<TActor extends RuntimeEnvS
   controller: ControllerIr;
   runtimeTick: number;
   envShakeWorld: RuntimeEnvShakeWorld;
+  resolveEnvShake?: RuntimeEnvShakeResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: EnvShakeControllerOp) => void;
 };

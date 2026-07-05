@@ -839,6 +839,56 @@ export function createSyntheticImportedEnvShakeTraceArtifact(options: RuntimeTra
   );
 }
 
+export function createSyntheticImportedDynamicEnvShakeTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-envshake-dynamic",
+      displayName: "Synthetic Imported Dynamic EnvShake",
+      action200Duration: 30,
+      withEnvShake: {
+        time: "var(0)",
+        freq: "var(1)",
+        ampl: "var(2)",
+        phase: "fvar(0)",
+        vars: [
+          { index: 0, value: 18 },
+          { index: 1, value: 45 },
+          { index: 2, value: -9 },
+        ],
+        fvars: [
+          { index: 0, value: 0.25 },
+        ],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-envshake-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic EnvShake event route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "EnvShake", "HitDef"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredEnvShakeEvents: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          time: 18,
+          freq: 45,
+          ampl: -9,
+          phase: 0.25,
+          stateNo: 200,
+        },
+      ],
+      notes: [
+        "Synthetic imported dynamic EnvShake trace proves EnvShake time/freq/ampl/phase expressions can resolve owner-local var/fvar values through active controller fallback and emit bounded runtime camera-shake telemetry. It does not claim typed envshake operation lowering for dynamic params, mul support, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, or screenpack parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedReceivedDamageTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-receiveddamage-attacker",
@@ -33744,10 +33794,12 @@ export type SyntheticImportedTraceFighterOptions = {
     fvars?: Array<{ index: number; value: number }>;
   };
   withEnvShake?: {
-    time?: number;
-    freq?: number;
-    ampl?: number;
-    phase?: number;
+    time?: number | string;
+    freq?: number | string;
+    ampl?: number | string;
+    phase?: number | string;
+    vars?: Array<{ index: number; value: number }>;
+    fvars?: Array<{ index: number; value: number }>;
   };
   withEnvColor?: {
     value?: [number, number, number];
@@ -35480,7 +35532,32 @@ under = ${options.under ? 1 : 0}
 }
 
 function envShakeControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withEnvShake"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic EnvShake Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  const fvarSeeds =
+    options.fvars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic EnvShake FVar ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+fv = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
   return `
+${varSeeds}${fvarSeeds}
 [State 200, EnvShake Probe]
 type = EnvShake
 trigger1 = Time = 1

@@ -354,6 +354,7 @@ import {
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
+  createSyntheticImportedDynamicEnvShakeTraceArtifact,
   createSyntheticImportedRemapPalTraceArtifact,
   createSyntheticImportedDynamicRemapPalTraceArtifact,
   createSyntheticImportedPalFxRemapPalTraceArtifact,
@@ -8859,6 +8860,52 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.envShakeEvents).toEqual(
       expect.arrayContaining([expect.objectContaining({ time: 16, freq: 30, ampl: -7, phase: 0.5, stateNo: 200 })]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic EnvShake artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicEnvShakeTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-envshake-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "EnvShake", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredEnvShakeEvents).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        time: 18,
+        freq: 45,
+        ampl: -9,
+        phase: 0.25,
+        stateNo: 200,
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.EnvShake).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.envshake).toBeUndefined();
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.envShakeEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", time: 18, freq: 45, ampl: -9, phase: 0.25, stateNo: 200 }),
+      ]),
+    );
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.envShakeEvents).toEqual(
+      expect.arrayContaining([expect.objectContaining({ time: 18, freq: 45, ampl: -9, phase: 0.25, stateNo: 200 })]),
     );
   });
 

@@ -25,8 +25,14 @@ export type RuntimeEnvShakeControllerDispatchOptions<TActor extends RuntimeEnvSh
   controller: ControllerIr;
   runtimeTick: number;
   envShakeWorld: RuntimeEnvShakeWorld;
+  resolveEnvShake?: RuntimeEnvShakeResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: EnvShakeControllerOp) => void;
+};
+
+export type RuntimeEnvShakeResolver = {
+  resolveNumber: (key: "time" | "ampl") => number | undefined;
+  resolveFloat: (key: "freq" | "phase") => number | undefined;
 };
 
 export type RuntimeEnvShakeControllerDispatchResult = {
@@ -56,17 +62,24 @@ export function createRuntimeEnvShakeEvent(
   controller: MugenStateController,
   runtimeTick: number,
   operation?: EnvShakeControllerOp,
+  resolveEnvShake?: RuntimeEnvShakeResolver,
 ): RuntimeEnvShakeEvent | undefined {
-  const time = operation?.time ?? clampShakeTime(firstNumber(findControllerParam(controller, "time")) ?? 0);
+  const time =
+    operation?.time ??
+    clampShakeTime(resolveEnvShake?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 0);
   if (time <= 0) {
     return undefined;
   }
   return {
     type: "EnvShake",
     time,
-    freq: operation?.freq ?? clampShakeFrequency(firstNumber(findControllerParam(controller, "freq")) ?? 60),
-    ampl: operation?.ampl ?? clampShakeAmplitude(firstNumber(findControllerParam(controller, "ampl")) ?? -4),
-    phase: operation?.phase ?? firstNumber(findControllerParam(controller, "phase")) ?? 0,
+    freq:
+      operation?.freq ??
+      clampShakeFrequency(resolveEnvShake?.resolveFloat("freq") ?? firstNumber(findControllerParam(controller, "freq")) ?? 60),
+    ampl:
+      operation?.ampl ??
+      clampShakeAmplitude(resolveEnvShake?.resolveNumber("ampl") ?? firstNumber(findControllerParam(controller, "ampl")) ?? -4),
+    phase: operation?.phase ?? resolveEnvShake?.resolveFloat("phase") ?? firstNumber(findControllerParam(controller, "phase")) ?? 0,
     stateNo: actor.runtime.stateNo,
     tick: actor.stateElapsed,
     runtimeTick,
@@ -104,8 +117,9 @@ export class RuntimeEnvShakeWorld {
     controller: MugenStateController,
     runtimeTick: number,
     operation?: EnvShakeControllerOp,
+    resolveEnvShake?: RuntimeEnvShakeResolver,
   ): RuntimeEnvShakeEvent | undefined {
-    const event = createRuntimeEnvShakeEvent(actor, controller, runtimeTick, operation);
+    const event = createRuntimeEnvShakeEvent(actor, controller, runtimeTick, operation, resolveEnvShake);
     if (!event) {
       return undefined;
     }
@@ -144,6 +158,7 @@ export class RuntimeEnvShakeControllerDispatchWorld {
       options.controller.source,
       options.runtimeTick,
       operation,
+      options.resolveEnvShake,
     );
     return {
       event,

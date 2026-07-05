@@ -1,5 +1,39 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic EnvShake trace gate
+
+Changed:
+
+- Added required `synthetic-imported-envshake-dynamic.json` trace coverage for active imported dynamic `EnvShake` camera-shake params.
+- `RuntimeEnvShakeSystem` and `RuntimeMatchEnvShakeBridgeSystem` now accept a bounded dynamic resolver for raw `EnvShake` params when no typed `envshake` operation exists.
+- `PlayableMatchRuntime` resolves dynamic `EnvShake time/freq/ampl/phase` through the active controller expression context, preserving owner/opponent/stage-time evaluation.
+- `RuntimeTraceGatePresets` now builds a dynamic EnvShake route that seeds `var(0)=18`, `var(1)=45`, `var(2)=-9`, and `fvar(0)=0.25`, then executes `time = var(0)`, `freq = var(1)`, `ampl = var(2)`, and `phase = fvar(0)`.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-envshake-dynamic` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `EnvShake time` as required shake duration, `freq` as shake speed, `ampl` as shake amplitude, and `phase` as phase offset.
+- Focused tests: `pnpm exec vitest run src/tests/EnvShakeSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "EnvShake|dynamic EnvShake"` -> 2 files passed, 13 matching tests passed.
+- Trace gate: `pnpm qa:trace` -> 450/450 artifacts, 420 required and 30 optional; `synthetic-imported-envshake-dynamic.json` checksum `90955e75`, final checksum `1af5fbf6`.
+- End gates: `pnpm test` -> 151 files passed, 1360 tests passed; `pnpm typecheck` passed; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm check:boundaries` passed; `git diff --check` passed with only CRLF normalization warnings for touched markdown docs.
+- Smoke/visual QA: not run; this cut changed runtime/controller docs and trace evidence, not frontend, renderer assets, Studio UI, sprites, CSS, or visible layout.
+
+Claim allowed:
+
+- Bounded active imported dynamic `EnvShake` params can resolve through active controller expression fallback and emit trace-gated runtime camera-shake telemetry. The synthetic route proves `time = 18`, `freq = 45`, `ampl = -9`, and `phase = 0.25` without typed `envshake` operation evidence.
+
+Claim blocked:
+
+- Dynamic typed-operation lowering for `EnvShake`, `mul` support, exact MUGEN/IKEMEN camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, score movement, and full presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 450/450 artifacts, 420 required and 30 optional. Latest runtime evidence is dynamic `EnvShake`; previous dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX precision from the next-10 queue, or continue R2 by moving the next raw presentation/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic AngleMul trace gate
 
 Changed:

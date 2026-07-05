@@ -57,6 +57,45 @@ describe("EnvShakeSystem", () => {
     });
   });
 
+  it("resolves dynamic EnvShake params without typed operation evidence", () => {
+    const dispatchWorld = new RuntimeEnvShakeControllerDispatchWorld();
+    const envShakeWorld = new RuntimeEnvShakeWorld();
+    const fighter = actor(200, 4);
+    const ir = compileControllerIr(
+      controller("EnvShake", { time: "var(0)", freq: "var(1)", ampl: "var(2)", phase: "fvar(0)" }),
+    );
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      runtimeTick: 120,
+      envShakeWorld,
+      resolveEnvShake: {
+        resolveNumber: (key) => ({ time: 18, ampl: -9 })[key],
+        resolveFloat: (key) => ({ freq: 45, phase: 0.25 })[key],
+      },
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.time}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(result.event).toMatchObject({
+      type: "EnvShake",
+      time: 18,
+      freq: 45,
+      ampl: -9,
+      phase: 0.25,
+      stateNo: 200,
+      runtimeTick: 120,
+    });
+    expect(fighter.envShakeEvents).toEqual([result.event]);
+    expect(recordedControllers).toEqual(["EnvShake"]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+  });
+
   it("creates FallEnvShake events from hit fall metadata", () => {
     const event = createRuntimeFallEnvShakeEvent(
       actor(5050, 9, { time: 15, freq: 178, ampl: 6, phase: 0.25 }),

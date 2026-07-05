@@ -901,6 +901,11 @@ async function main() {
       artifact: presets.createSyntheticImportedEnvShakeTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-envshake-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicEnvShakeTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-remappal",
       required: true,
       artifact: presets.createSyntheticImportedRemapPalTraceArtifact(),
@@ -3478,6 +3483,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-angle-dynamic",
     "synthetic-imported-envcolor",
     "synthetic-imported-envshake",
+    "synthetic-imported-envshake-dynamic",
     "synthetic-imported-remappal",
     "synthetic-imported-remappal-dynamic",
     "synthetic-imported-palfx-remappal",

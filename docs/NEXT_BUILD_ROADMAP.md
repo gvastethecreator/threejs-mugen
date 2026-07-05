@@ -27,7 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic AngleMul trace gate
+R1 required dynamic EnvShake trace gate
+  -> synthetic-imported-envshake-dynamic.json checksum 90955e75 / final checksum 1af5fbf6 is required in qa:trace
+  -> imported active state seeds var(0)=18, var(1)=45, var(2)=-9, and fvar(0)=0.25
+  -> active state executes EnvShake time = var(0), freq = var(1), ampl = var(2), and phase = fvar(0)
+  -> dynamic EnvShake resolves through active controller expression fallback instead of typed envshake evidence
+  -> final imported actor evidence requires env-shake telemetry time 18, freq 45, ampl -9, phase 0.25
+  -> pnpm qa:trace passes 450/450 artifacts, 420 required and 30 optional
+  -> official Elecbyte docs define EnvShake time as required duration, freq as shake speed, ampl as amplitude, and phase as phase offset
+  -> no score movement; dynamic typed-operation lowering for EnvShake, mul, exact camera waveform, pause/stage/layer interaction, helper ownership, screenpack ownership, and full presentation parity remain blocked
+
+Previous R1 required dynamic AngleMul trace gate
   -> synthetic-imported-anglemul-dynamic.json checksum 418ed880 / final checksum 4a6a3045 is required in qa:trace
   -> imported active state seeds var(0)=30 and fvar(0)=1.5
   -> active state executes AngleSet value = var(0), AngleMul value = fvar(0), and static AngleDraw

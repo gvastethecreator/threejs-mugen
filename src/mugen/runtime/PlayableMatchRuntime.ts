@@ -1041,12 +1041,16 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    envShake: ({ controller }) => {
+    envShake: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       matchEnvShakeBridgeWorld.applyController({
         actor: fighter,
         controller,
         runtimeTick: tick,
         envShakeWorld: fighter.envShakeWorld,
+        resolveEnvShake: {
+          resolveNumber: (key) => resolveEnvShakeNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          resolveFloat: (key) => resolveEnvShakeFloatParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1493,6 +1497,38 @@ function resolveAnglePairParam(
     return undefined;
   }
   return [x, y];
+}
+
+function resolveEnvShakeNumberParam(
+  controller: ControllerIr,
+  key: "time" | "ampl",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveEnvShakeFloatParam(
+  controller: ControllerIr,
+  key: "freq" | "phase",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
 }
 
 function resolveDispatchBoolean(
