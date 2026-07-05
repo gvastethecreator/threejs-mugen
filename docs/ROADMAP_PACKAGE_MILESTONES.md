@@ -1,6 +1,6 @@
 # Roadmap Package Milestones
 
-Last updated: 2026-07-04
+Last updated: 2026-07-05
 
 This file is the compact package ladder between the scorecard and the local issues. It answers which package is active, what proof moves it, what is blocked, and what the next agent should build first.
 
@@ -35,7 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required HitOverride guardflag plus forceair/forceguard/keepstate trace gates
+R1 required explicit airguard.velocity trace gates
+  -> RuntimeTraceGatePresets now builds synthetic-imported-air-guard-velocity.json, synthetic-imported-projectile-air-guard-velocity.json, and synthetic-imported-helper-projectile-air-guard-velocity.json
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile all author airguard.velocity = 8,-4
+  -> compiler/import/runtime paths preserve airGuardPush = 8 and airGuardVelocityY = -4
+  -> all three routes keep the airborne defender in Common1-style state 155 and require actor-frame velocity evidence with X >= 8 and Y <= -3.5
+  -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> synthetic-imported-air-guard-velocity.json checksum 5ebc1e7b is required in qa:trace
+  -> synthetic-imported-projectile-air-guard-velocity.json checksum 0094c369 is required in qa:trace
+  -> synthetic-imported-helper-projectile-air-guard-velocity.json checksum b547dfb3 is required in qa:trace
+  -> pnpm qa:trace passes 376/376 artifacts, 346 required and 30 optional
+  -> no score movement; default derivation from air.velocity, exact air guard physics/landing/timing, cornerpush, visual/audio guard effects, throws, teams/simul, and full guard parity remain blocked
+
+Previous R1 required HitOverride guardflag plus forceair/forceguard/keepstate trace gates
   -> RuntimeTraceGatePresets now builds synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json, synthetic-imported-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json, and synthetic-imported-helper-projectile-hitoverride-guardflag-forceair-forceguard-keepstate.json
   -> direct HitDef, player-owned Projectile id 77, and helper-parented Projectile id 8884 all use incoming guardflag = H
   -> P2 installs attr-matching slots 1 -> 776 with guardflag.not = HA, 2 -> 778 with guardflag = A, and 5 -> 779 with guardflag = H plus forceair/forceguard/keepstate

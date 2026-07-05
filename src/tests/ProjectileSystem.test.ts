@@ -99,6 +99,7 @@ describe("ProjectileSystem", () => {
         "guard.pausetime": "3,3",
         "guard.hittime": "8",
         "guard.velocity": "-4,-1",
+        "airguard.velocity": "-8,-2",
         attr: '"S,SP"',
         pausetime: "9",
         "ground.hittime": "21",
@@ -156,6 +157,8 @@ describe("ProjectileSystem", () => {
       guardStun: 8,
       guardPush: 4,
       guardVelocityY: -1,
+      airGuardPush: 8,
+      airGuardVelocityY: -2,
       removeOnHit: false,
       hasHit: false,
     });
@@ -212,6 +215,7 @@ describe("ProjectileSystem", () => {
       guardPauseTime: 2,
       guardHitTime: 7,
       guardVelocity: [-3, -1],
+      airGuardVelocity: [-6, -2],
       removeOnHit: false,
     };
     const projectile = createRuntimeProjectile({
@@ -271,6 +275,8 @@ describe("ProjectileSystem", () => {
       guardStun: 7,
       guardPush: 3,
       guardVelocityY: -1,
+      airGuardPush: 6,
+      airGuardVelocityY: -2,
       removeOnHit: false,
     });
   });

@@ -126,6 +126,8 @@ describe("CombatResolver", () => {
       guardControlTime: 6,
       guardPush: 5,
       guardVelocityY: -1,
+      airGuardPush: 9,
+      airGuardVelocityY: -3,
     };
 
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toEqual({
@@ -151,6 +153,39 @@ describe("CombatResolver", () => {
       powerGain: 12,
       kill: true,
     });
+  });
+
+  it("uses explicit air guard velocity only for airborne guards", () => {
+    const attack = {
+      damage: 40,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      guardFlag: "MA",
+      guardDamage: 10,
+      guardPush: 5,
+      guardVelocityY: -1,
+      airGuardPush: 9,
+      airGuardVelocityY: -3,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "A", moveType: "I" }),
+        attack,
+        holdingBack: true,
+      }),
+    ).toMatchObject({ kind: "guard", push: 9, hitVelocityY: -3 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "S", moveType: "I" }),
+        attack,
+        holdingBack: true,
+      }),
+    ).toMatchObject({ kind: "guard", push: 5, hitVelocityY: -1 });
   });
 
   it("keeps guard eligibility and damage scaling helpers isolated", () => {

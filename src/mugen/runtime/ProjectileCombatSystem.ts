@@ -121,6 +121,8 @@ export class RuntimeProjectileCombatWorld {
           guardControlTime: projectile.guardControlTime,
           guardPush: projectile.guardPush,
           guardVelocityY: projectile.guardVelocityY,
+          airGuardPush: projectile.airGuardPush,
+          airGuardVelocityY: projectile.airGuardVelocityY,
         },
         holdingBack: input.holdingBack,
       });

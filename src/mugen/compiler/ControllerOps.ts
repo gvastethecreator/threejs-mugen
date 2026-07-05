@@ -25,6 +25,7 @@ export type HitDefControllerOp = {
   guardSlideTime?: number;
   guardControlTime?: number;
   guardVelocity?: [number, number?];
+  airGuardVelocity?: [number, number?];
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
@@ -158,6 +159,7 @@ export type ProjectileControllerOp = {
   guardSlideTime?: number;
   guardControlTime?: number;
   guardVelocity?: [number, number?];
+  airGuardVelocity?: [number, number?];
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;
@@ -1080,6 +1082,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
   const damage = numberPair(findParam(controller, "damage"));
   const groundVelocity = numberPair(findParam(controller, "ground.velocity"));
   const guardVelocity = numberPair(findParam(controller, "guard.velocity"));
+  const airGuardVelocity = numberPair(findParam(controller, "airguard.velocity"));
   const p2StateNo = firstNumber(findParam(controller, "p2stateno"));
   return definedObject({
     kind: "hitdef" as const,
@@ -1102,6 +1105,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity,
+    airGuardVelocity,
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     p2StateNo,
     p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
@@ -1345,6 +1349,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardSlideTime: firstNumber(findParam(controller, "guard.slidetime")),
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity: numberPair(findParam(controller, "guard.velocity")),
+    airGuardVelocity: numberPair(findParam(controller, "airguard.velocity")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
     hitSpark: stripMugenString(findParam(controller, "sparkno")),

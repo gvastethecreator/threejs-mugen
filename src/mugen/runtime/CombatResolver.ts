@@ -19,6 +19,8 @@ export type RuntimeCombatAttack = {
   guardControlTime?: number;
   guardPush?: number;
   guardVelocityY?: number;
+  airGuardPush?: number;
+  airGuardVelocityY?: number;
 };
 
 export type RuntimeCombatHitResult =
@@ -142,7 +144,12 @@ export function resolveRuntimeCombatHit(input: {
   ) {
     const pause = input.attack.guardPause ?? Math.max(1, Math.round(input.attack.hitPause * 0.75));
     const stun = input.attack.guardStun ?? Math.max(1, Math.round(input.attack.hitStun * 0.55));
-    const push = input.attack.guardPush ?? Math.max(1, Math.round(input.attack.push * 0.55));
+    const isAirGuard = input.defender.stateType === "A";
+    const push =
+      (isAirGuard ? input.attack.airGuardPush : undefined) ??
+      input.attack.guardPush ??
+      Math.max(1, Math.round(input.attack.push * 0.55));
+    const hitVelocityY = (isAirGuard ? input.attack.airGuardVelocityY : undefined) ?? input.attack.guardVelocityY;
     return {
       kind: "guard",
       damage: scaleRuntimeIncomingDamage(
@@ -155,7 +162,7 @@ export function resolveRuntimeCombatHit(input: {
       slideTime: input.attack.guardSlideTime,
       controlTime: input.attack.guardControlTime,
       push,
-      hitVelocityY: input.attack.guardVelocityY,
+      hitVelocityY,
       powerGain: 12,
     };
   }

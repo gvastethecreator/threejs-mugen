@@ -148,6 +148,8 @@ function buildStateMoves(
         guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
         guardPush: Math.abs(numberPair(hitDef.params["guard.velocity"])?.[0] ?? 0) || undefined,
         guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
+        airGuardPush: Math.abs(numberPair(hitDef.params["airguard.velocity"])?.[0] ?? 0) || undefined,
+        airGuardVelocityY: numberPair(hitDef.params["airguard.velocity"])?.[1] ?? undefined,
         hitSound: stripMugenString(hitDef.params.hitsound),
         guardSound: stripMugenString(hitDef.params.guardsound),
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
@@ -246,6 +248,8 @@ function buildMove(
       | "guardControlTime"
       | "guardPush"
       | "guardVelocityY"
+      | "airGuardPush"
+      | "airGuardVelocityY"
       | "hitSound"
       | "guardSound"
       | "hitSpark"
@@ -291,6 +295,8 @@ function buildMove(
     guardControlTime: overrides.guardControlTime,
     guardPush: overrides.guardPush,
     guardVelocityY: overrides.guardVelocityY,
+    airGuardPush: overrides.airGuardPush,
+    airGuardVelocityY: overrides.airGuardVelocityY,
     hitSound: overrides.hitSound,
     guardSound: overrides.guardSound,
     hitSpark: overrides.hitSpark,

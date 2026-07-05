@@ -62,6 +62,8 @@ export type RuntimeProjectile = {
   guardControlTime?: number;
   guardPush: number;
   guardVelocityY?: number;
+  airGuardPush?: number;
+  airGuardVelocityY?: number;
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;
@@ -129,6 +131,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
   const push = Math.abs(groundVelocity?.[0] ?? 18);
   const guardVelocity = normalizeOptionalVelocityPair(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const airGuardVelocity =
+    normalizeOptionalVelocityPair(operation?.airGuardVelocity) ?? velocityPair(findControllerParam(input.controller, "airguard.velocity"));
   const guardDamage = Math.max(0, operation?.guardDamage ?? secondNumber(findControllerParam(input.controller, "damage")) ?? 0);
   const guardPause = Math.max(
     0,
@@ -198,6 +202,8 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardControlTime,
     guardPush: Math.abs(guardVelocity?.[0] ?? Math.max(1, Math.round(push * 0.55))),
     guardVelocityY: guardVelocity?.[1],
+    airGuardPush: airGuardVelocity ? Math.abs(airGuardVelocity[0]) : undefined,
+    airGuardVelocityY: airGuardVelocity?.[1],
     hitSound,
     guardSound,
     hitSpark,

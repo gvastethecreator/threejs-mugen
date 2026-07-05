@@ -82,9 +82,11 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findParam(source, "guard.slidetime")) ?? existing?.guardSlideTime;
     const guardControlTime = operation?.guardControlTime ?? firstNumber(findParam(source, "guard.ctrltime")) ?? existing?.guardControlTime;
     const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(source, "guard.velocity"));
+    const airGuardVelocity = operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity"));
     const guardDistance =
       operation?.guardDistance ?? firstNumber(findParam(source, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
     const guardPush = Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
+    const airGuardPush = airGuardVelocity ? Math.abs(airGuardVelocity[0]) : existing?.airGuardPush;
     const groundType = operation?.groundType ?? hitType(findParam(source, "ground.type") ?? findParam(source, "type")) ?? existing?.hitVars?.groundType ?? 1;
     const airType = operation?.airType ?? hitType(findParam(source, "air.type")) ?? existing?.hitVars?.airType ?? groundType;
     const animType =
@@ -144,6 +146,8 @@ export class RuntimeHitDefControllerDispatchWorld {
       guardControlTime,
       guardPush,
       guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
+      airGuardPush,
+      airGuardVelocityY: airGuardVelocity?.[1] ?? existing?.airGuardVelocityY,
       hitSound: operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound,
       guardSound: operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound,
       hitSpark: operation?.hitSpark ?? stripMugenString(findParam(source, "sparkno")) ?? existing?.hitSpark,
