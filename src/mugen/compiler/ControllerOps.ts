@@ -18,6 +18,7 @@ export type HitDefControllerOp = {
   pauseTime?: number;
   groundHitTime?: number;
   groundVelocity?: [number, number?];
+  airVelocity?: [number, number?];
   guardDistance?: number;
   guardFlag?: string;
   guardPauseTime?: number;
@@ -148,6 +149,7 @@ export type ProjectileControllerOp = {
   hitPause: number;
   hitStun: number;
   groundVelocity?: [number, number?];
+  airVelocity?: [number, number?];
   p2StateNo?: number;
   p2GetP1State?: boolean;
   missOnOverride?: boolean;
@@ -1081,6 +1083,7 @@ function compileDamageScaleControllerOp(
 function compileHitDefControllerOp(controller: MugenStateController, context: ControllerCompileContext): HitDefControllerOp {
   const damage = numberPair(findParam(controller, "damage"));
   const groundVelocity = numberPair(findParam(controller, "ground.velocity"));
+  const airVelocity = numberPair(findParam(controller, "air.velocity"));
   const guardVelocity = numberPair(findParam(controller, "guard.velocity"));
   const airGuardVelocity = numberPair(findParam(controller, "airguard.velocity"));
   const p2StateNo = firstNumber(findParam(controller, "p2stateno"));
@@ -1098,6 +1101,7 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     pauseTime: firstNumber(findParam(controller, "pausetime")),
     groundHitTime: firstNumber(findParam(controller, "ground.hittime")),
     groundVelocity,
+    airVelocity,
     guardDistance: firstNumber(findParam(controller, "guard.dist")),
     guardFlag: stripMugenString(findParam(controller, "guardflag")),
     guardPauseTime: firstNumber(findParam(controller, "guard.pausetime")),
@@ -1335,6 +1339,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     hitPause: firstNumber(findParam(controller, "pausetime")) ?? 6,
     hitStun: firstNumber(findParam(controller, "ground.hittime")) ?? 18,
     groundVelocity: numberPair(findParam(controller, "ground.velocity")),
+    airVelocity: numberPair(findParam(controller, "air.velocity")),
     p2StateNo: firstNumber(findParam(controller, "p2stateno")),
     p2GetP1State:
       firstNumber(findParam(controller, "p2stateno")) !== undefined

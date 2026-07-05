@@ -166,6 +166,7 @@ import {
   createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact,
   createSyntheticImportedAirGuardLandingTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
+  createSyntheticImportedAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedAirGuardVelocityTraceArtifact,
   createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
@@ -233,6 +234,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
   createSyntheticImportedHelperProjContactTimeAnyTraceArtifact,
@@ -351,6 +353,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
@@ -10804,6 +10807,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardVelocityPhysicsFrames());
   });
 
+  it("creates a synthetic imported default airguard.velocity direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedAirGuardVelocityDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-air-guard-velocity-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-air-guard-velocity-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(9);
+    expect(airGuardFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardVelocityPhysicsFrames(9, -3.5));
+  });
+
   it("creates a synthetic imported air guard landing artifact", () => {
     const artifact = createSyntheticImportedAirGuardLandingTraceArtifact({
       generatedAt: "2026-07-02T00:00:00.000Z",
@@ -11735,6 +11761,35 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Projectile default airguard.velocity artifact", () => {
+    const artifact = createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-air-guard-velocity-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-air-guard-velocity-default-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(9);
+    expect(airGuardFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+  });
+
   it("creates a synthetic imported Helper Projectile GetHitVar guarded artifact with defender guard-state branch evidence", () => {
     const artifact = createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",
@@ -12108,6 +12163,45 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredActorFrames).toEqual(
       expect.arrayContaining([
         ...syntheticAirGuardVelocityPhysicsFrames(),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982 }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile default airguard.velocity artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-air-guard-velocity-default-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-air-guard-velocity-default-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitVelSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["kinematic:hitvelset"]).toBeGreaterThanOrEqual(1);
+    expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(9);
+    expect(airGuardFrame?.minVel.y).toBeLessThanOrEqual(-3.5);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8856 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8856 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980 }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982 }),
       ]),

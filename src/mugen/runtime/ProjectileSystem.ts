@@ -3,6 +3,7 @@ import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../co
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
+import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
 
@@ -131,8 +132,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
   const push = Math.abs(groundVelocity?.[0] ?? 18);
   const guardVelocity = normalizeOptionalVelocityPair(operation?.guardVelocity) ?? velocityPair(findControllerParam(input.controller, "guard.velocity"));
+  const airVelocity = normalizeOptionalVelocityPair(operation?.airVelocity) ?? velocityPair(findControllerParam(input.controller, "air.velocity"));
   const airGuardVelocity =
-    normalizeOptionalVelocityPair(operation?.airGuardVelocity) ?? velocityPair(findControllerParam(input.controller, "airguard.velocity"));
+    normalizeOptionalVelocityPair(operation?.airGuardVelocity) ??
+    velocityPair(findControllerParam(input.controller, "airguard.velocity")) ??
+    deriveDefaultAirGuardVelocity(airVelocity);
   const guardDamage = Math.max(0, operation?.guardDamage ?? secondNumber(findControllerParam(input.controller, "damage")) ?? 0);
   const guardPause = Math.max(
     0,

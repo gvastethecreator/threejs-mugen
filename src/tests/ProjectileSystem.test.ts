@@ -183,6 +183,33 @@ describe("ProjectileSystem", () => {
     expect(projectile.targetId).toBe(0);
   });
 
+  it("derives missing Projectile airguard.velocity from air.velocity", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-air-default",
+      controller: controller({
+        projanim: "1005",
+        damage: "24,2",
+        guardflag: "A",
+        "ground.velocity": "-4",
+        "air.velocity": "-6,-8",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile).toMatchObject({
+      guardDamage: 2,
+      guardFlag: "A",
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+    });
+  });
+
   it("prefers typed projectile operations over raw controller params", () => {
     const operation: ProjectileControllerOp = {
       kind: "projectile",

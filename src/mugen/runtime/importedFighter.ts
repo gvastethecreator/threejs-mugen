@@ -3,6 +3,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAn
 import type { MugenCharacter } from "../model/MugenCharacter";
 import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
+import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 
 type FrameWindow = {
   index: number;
@@ -128,6 +129,7 @@ function buildStateMoves(
     }
     const actionId = state.anim ?? state.id;
     const fallbackHitbox = { x1: 14, y1: -72, x2: 78, y2: -38 };
+    const airGuardVelocity = numberPair(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberPair(hitDef.params["air.velocity"]));
     result.set(
       state.id,
       buildMove(animations.get(actionId), state.id, numberParam(hitDef.params.damage, 45), fallbackHitbox, {
@@ -148,8 +150,8 @@ function buildStateMoves(
         guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
         guardPush: Math.abs(numberPair(hitDef.params["guard.velocity"])?.[0] ?? 0) || undefined,
         guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
-        airGuardPush: Math.abs(numberPair(hitDef.params["airguard.velocity"])?.[0] ?? 0) || undefined,
-        airGuardVelocityY: numberPair(hitDef.params["airguard.velocity"])?.[1] ?? undefined,
+        airGuardPush: Math.abs(airGuardVelocity?.[0] ?? 0) || undefined,
+        airGuardVelocityY: airGuardVelocity?.[1] ?? undefined,
         hitSound: stripMugenString(hitDef.params.hitsound),
         guardSound: stripMugenString(hitDef.params.guardsound),
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),

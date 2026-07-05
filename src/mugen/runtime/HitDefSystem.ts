@@ -5,6 +5,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
 import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
+import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
 import { findControllerParam } from "./StateProgramExecutor";
@@ -82,7 +83,9 @@ export class RuntimeHitDefControllerDispatchWorld {
     const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findParam(source, "guard.slidetime")) ?? existing?.guardSlideTime;
     const guardControlTime = operation?.guardControlTime ?? firstNumber(findParam(source, "guard.ctrltime")) ?? existing?.guardControlTime;
     const guardVelocity = operation?.guardVelocity ?? velocityPair(findParam(source, "guard.velocity"));
-    const airGuardVelocity = operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity"));
+    const airVelocity = operation?.airVelocity ?? velocityPair(findParam(source, "air.velocity"));
+    const airGuardVelocity =
+      operation?.airGuardVelocity ?? velocityPair(findParam(source, "airguard.velocity")) ?? deriveDefaultAirGuardVelocity(airVelocity);
     const guardDistance =
       operation?.guardDistance ?? firstNumber(findParam(source, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
     const guardPush = Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));

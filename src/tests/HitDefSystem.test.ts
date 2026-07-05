@@ -114,6 +114,33 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
     expect(actor.currentMove?.targetId).toBe(0);
   });
 
+  it("derives missing airguard.velocity from air.velocity", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        damage: "20,3",
+        guardflag: "A",
+        "ground.velocity": "-3",
+        "air.velocity": "-6,-8",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove).toMatchObject({
+      guardDamage: 3,
+      guardFlag: "A",
+      airGuardPush: 9,
+      airGuardVelocityY: -4,
+    });
+  });
+
   it("deduplicates repeated HitDef dispatches for the same state line and frame", () => {
     const world = new RuntimeHitDefControllerDispatchWorld();
     const actor = hitDefActor();

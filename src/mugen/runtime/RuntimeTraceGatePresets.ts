@@ -3,6 +3,7 @@ import type { MugenStageDefinition } from "../model/MugenStage";
 import { parseCmd } from "../parsers/CmdParser";
 import { parseCns } from "../parsers/CnsParser";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
+import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { MatchWorld } from "./MatchWorld";
 import type {
   RuntimeTraceActorFrameRequirement,
@@ -8141,7 +8142,10 @@ export function syntheticAirGuardHitPhysicsFrames(): RuntimeTraceActorFrameRequi
   ];
 }
 
-export function syntheticAirGuardVelocityPhysicsFrames(): RuntimeTraceActorFrameRequirement[] {
+export function syntheticAirGuardVelocityPhysicsFrames(
+  observedVelXAtLeast = 8,
+  observedVelYAtMost = -3.5,
+): RuntimeTraceActorFrameRequirement[] {
   return [
     {
       actorId: "p2",
@@ -8169,8 +8173,8 @@ export function syntheticAirGuardVelocityPhysicsFrames(): RuntimeTraceActorFrame
       physics: "N",
       minFrames: 1,
       observedPosYAtMost: -10,
-      observedVelXAtLeast: 8,
-      observedVelYAtMost: -3.5,
+      observedVelXAtLeast,
+      observedVelYAtMost,
       bodyWidthFront: 39,
       bodyWidthBack: 39,
       playerPush: true,
@@ -8929,6 +8933,56 @@ export function createSyntheticImportedAirGuardVelocityTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedAirGuardVelocityDefaultTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-velocity-default",
+    displayName: "Synthetic Imported Air Guard Velocity Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-velocity-default-attacker",
+    displayName: "Synthetic Imported Air Guard Velocity Default Attacker",
+    guardDamage: 5,
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+    airVelocity: [-6, -8],
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "CtrlSet", "HitDef", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["hitdef", "resource:ctrlset", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
+    requiredActorFrames: syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [
+      {
+        actorId: "p2",
+        source: "imported",
+        actorKind: "player",
+        life: 995,
+        ctrl: true,
+      },
+    ],
+    targetId: "synthetic-imported-air-guard-velocity-default-golden",
+    targetLabel: "Synthetic imported default airguard.velocity direct HitDef route",
+    notes: [
+      "Synthetic imported default airguard.velocity direct HitDef trace proves omitted HitDef airguard.velocity derives from air.velocity x * 1.5 and y / 2, reaches guard resolution, and is observed in Common1-style state 155. It does not claim exact air guard timing/landing, cornerpush, effects, or full MUGEN/IKEMEN guard parity.",
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileAirGuardVelocityTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -8985,6 +9039,66 @@ export function createSyntheticImportedProjectileAirGuardVelocityTraceArtifact(
     targetLabel: "Synthetic imported Projectile airguard.velocity route",
     notes: [
       "Synthetic imported Projectile airguard.velocity trace proves explicit Projectile airguard.velocity x/y is parsed through the Projectile HitDef param set, reaches projectile guard resolution, and is observed in Common1-style state 155 air guard velocity. It does not claim default airguard.velocity derivation from air.velocity, exact projectile ownership/timing/effects, cornerpush, or full MUGEN/IKEMEN projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage: MugenStageDefinition = options.stage ?? {
+    ...projectileCombatStage(),
+    id: "trace-projectile-air-guard-velocity-default-grid",
+    displayName: "Trace Projectile Air Guard Velocity Default Grid",
+    playerStart: {
+      p1: { x: -160, y: 0, facing: 1 },
+      p2: { x: 120, y: 0, facing: -1 },
+    },
+  };
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-guard-velocity-default",
+    displayName: "Synthetic Imported Projectile Air Guard Velocity Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-air-guard-velocity-default-attacker",
+    displayName: "Synthetic Imported Projectile Air Guard Velocity Default Attacker",
+    withHitDef: false,
+    withProjectile: true,
+    projectileGuardHitTime: 18,
+    projectileOffset: [62, -120],
+    projectileAirVelocity: [-6, -8],
+    guardFlag: "A",
+    guardSlideTime: 5,
+    guardControlTime: 7,
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage,
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [defaultAirGuardHitControllerSequence()],
+    requiredActorFrames: [
+      ...syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 996, ctrl: true }],
+    targetId: "synthetic-imported-projectile-air-guard-velocity-default-golden",
+    targetLabel: "Synthetic imported Projectile default airguard.velocity route",
+    notes: [
+      "Synthetic imported Projectile default airguard.velocity trace proves omitted Projectile airguard.velocity derives from air.velocity x * 1.5 and y / 2 through the Projectile HitDef parameter set, reaches projectile guard resolution, and is observed in Common1-style state 155. It does not claim exact projectile ownership/timing/effects, cornerpush, or full MUGEN/IKEMEN projectile parity.",
     ],
   });
 }
@@ -9082,6 +9196,103 @@ export function createSyntheticImportedHelperProjectileAirGuardVelocityTraceArti
     requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
     notes: [
       "Synthetic imported Helper Projectile airguard.velocity trace proves explicit helper-parented Projectile airguard.velocity x/y is parsed through the helper-local Projectile HitDef param set, reaches projectile guard resolution, and is observed in Common1-style state 155 air guard velocity. It does not claim helper-owned custom states, default airguard.velocity derivation from air.velocity, exact helper Projectile timing/effects, cornerpush, or full MUGEN/IKEMEN helper projectile parity.",
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-guard-velocity-default",
+    displayName: "Synthetic Imported Helper Projectile Air Guard Velocity Default",
+    defaultGuardHit: {
+      shakeStateNo: 150,
+      slideStateNo: 151,
+      crouchShakeStateNo: 152,
+      crouchSlideStateNo: 153,
+      airShakeStateNo: 154,
+      airSlideStateNo: 155,
+      guardStateNo: 130,
+    },
+  });
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-air-guard-velocity-default-attacker",
+    displayName: "Synthetic Imported Helper Projectile Air Guard Velocity Default Attacker",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1243,
+      waitAnimNo: 980,
+      branchStateNo: 1244,
+      branchAnimNo: 981,
+      projectileAnimNo: 982,
+      projectileId: 8856,
+      pos: [360, -92],
+      guardFlag: "A",
+      guardHitTime: 18,
+      guardSlideTime: 5,
+      guardControlTime: 7,
+      airVelocity: [-6, -8],
+    },
+  });
+  return createImportedDefaultGuardStateTraceArtifact(defender, {
+    ...options,
+    stage: options.stage ?? farCombatStage(),
+    attacker,
+    script: importedDefaultAirGuardStateScript(),
+    targetId: "synthetic-imported-helper-projectile-air-guard-velocity-default-golden",
+    targetLabel: "Synthetic imported Helper Projectile default airguard.velocity route",
+    requiredExecutedStates: [200, 154, 155],
+    requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "HitVelSet", "VelAdd"],
+    requiredExecutedOperations: ["helper", "projectile", "kinematic:hitvelset"],
+    requiredControllerEventSequences: [
+      {
+        label: "helper-local Projectile spawn telemetry",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 1200, controller: "Projectile", name: "Helper ProjGuard Spawn" },
+          { stateNo: 1200, operation: "projectile" },
+        ],
+      },
+      defaultAirGuardHitControllerSequence(),
+    ],
+    requiredActorFrames: [
+      ...syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980, minFrames: 1 },
+      { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1244, animNo: 981, minFrames: 1 },
+      { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982, moveType: "A", minFrames: 1 },
+    ],
+    requiredActiveCommands: ["holdback", "x"],
+    requiredWorldLifecycleEvents: [
+      { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+      { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+      { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+    ],
+    requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+    requiredEffectPayloads: [
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1244, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8856,
+        minAge: 1,
+        minPriority: 2,
+        maxHitsRemaining: 0,
+        hasHit: true,
+      },
+    ],
+    requiredTargetLinks: [
+      { ownerId: "p1", actorId: "p2", targetId: 8856 },
+      { ownerId: "p1-helper-0", actorId: "p2", targetId: 8856 },
+    ],
+    requiredFinalActors: [{ actorId: "p2", source: "imported", actorKind: "player", life: 998, ctrl: true }],
+    notes: [
+      "Synthetic imported Helper Projectile default airguard.velocity trace proves omitted helper-parented Projectile airguard.velocity derives from air.velocity x * 1.5 and y / 2 through the helper-local Projectile HitDef parameter set, reaches projectile guard resolution, and is observed in Common1-style state 155. It does not claim helper-owned custom states, exact helper Projectile timing/effects, cornerpush, or full MUGEN/IKEMEN helper projectile parity.",
     ],
   });
 }
@@ -26082,6 +26293,7 @@ export type SyntheticImportedTraceFighterOptions = {
   guardSlideTime?: number;
   guardControlTime?: number;
   groundVelocity?: [number, number?];
+  airVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
   hitSound?: string;
   guardSound?: string;
@@ -26225,6 +26437,7 @@ export type SyntheticImportedTraceFighterOptions = {
   modifyProjectileHits?: number;
   modifyProjectileMissTime?: number;
   projectileGroundVelocity?: [number, number?];
+  projectileAirVelocity?: [number, number?];
   projectileAirGuardVelocity?: [number, number?];
   projectileHits?: number;
   projectileMissTime?: number;
@@ -26412,6 +26625,7 @@ export type SyntheticImportedTraceFighterOptions = {
     guardSlideTime?: number;
     guardControlTime?: number;
     guardHitTime?: number;
+    airVelocity?: [number, number?];
     airGuardVelocity?: [number, number?];
     guardKill?: boolean;
     hitSound?: string;
@@ -26623,6 +26837,8 @@ export function createSyntheticImportedTraceFighter(options: SyntheticImportedTr
   const hitDefIdLine = options.omitHitDefId ? "" : `id = ${targetMemoryId}`;
   const hitDefChainIdLine = options.hitDefChainId === undefined ? "" : `chainID = ${options.hitDefChainId}`;
   const hitDefHitCountLine = options.hitDefHitCount === undefined ? "" : `numhits = ${options.hitDefHitCount}`;
+  const airVelocityLine = options.airVelocity === undefined ? "" : `air.velocity = ${options.airVelocity.join(",")}`;
+  const resolvedAirGuardVelocity = options.airGuardVelocity ?? deriveDefaultAirGuardVelocity(options.airVelocity);
   const numTargetId = options.numTargetId ?? targetMemoryId;
   const targetRedirectId = options.targetRedirectId ?? targetMemoryId;
   const targetRedirectExpression = options.targetRedirectExpression ?? `Target(${targetRedirectId}), Life < 1000`;
@@ -26679,6 +26895,7 @@ ${hitVarLines}
 pausetime = 4,4
 ground.hittime = 9
 ground.velocity = ${groundVelocity.join(",")}
+${airVelocityLine}
 ${options.hitSound === undefined ? "" : `hitsound = ${options.hitSound}`}
 ${options.guardSound === undefined ? "" : `guardsound = ${options.guardSound}`}
 ${options.hitSpark === undefined ? "" : `sparkno = ${options.hitSpark}`}
@@ -26811,7 +27028,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock() : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirGuardVelocity) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
   velocity: options.modifyProjectileVelocity,
@@ -26986,8 +27203,8 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     guardSlideTime: options.guardSlideTime,
     guardControlTime: options.guardControlTime,
     guardPush: options.guardDamage === undefined && options.guardFlag === undefined ? undefined : 2,
-    airGuardPush: options.airGuardVelocity ? Math.abs(options.airGuardVelocity[0]) : undefined,
-    airGuardVelocityY: options.airGuardVelocity?.[1],
+    airGuardPush: resolvedAirGuardVelocity ? Math.abs(resolvedAirGuardVelocity[0]) : undefined,
+    airGuardVelocityY: resolvedAirGuardVelocity?.[1],
     fall: options.fall,
     hitbox: { x1: 12, y1: -70, x2: 76, y2: -35 },
   };
@@ -29249,6 +29466,7 @@ function projectileControllerBlock(
   p2StateNo?: number,
   p2GetP1State?: boolean,
   missOnOverride?: boolean,
+  airVelocity?: [number, number?],
   airGuardVelocity?: [number, number?],
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -29271,6 +29489,7 @@ function projectileControllerBlock(
   const p2StateNoLine = p2StateNo === undefined ? "" : `p2stateno = ${p2StateNo}`;
   const p2GetP1StateLine = p2StateNo === undefined ? "" : `p2getp1state = ${p2GetP1State === false ? 0 : 1}`;
   const missOnOverrideLine = missOnOverride === undefined ? "" : `missonoverride = ${missOnOverride ? 1 : 0}`;
+  const airVelocityLine = airVelocity === undefined ? "" : `air.velocity = ${airVelocity.join(",")}`;
   const airGuardVelocityLine = airGuardVelocity === undefined ? "" : `airguard.velocity = ${airGuardVelocity.join(",")}`;
   return `
 [State 200, Fast Projectile]
@@ -29296,6 +29515,7 @@ ${guardKillLine}
 pausetime = 4,4
 ground.hittime = 13
 ground.velocity = ${groundVelocity.join(",")}
+${airVelocityLine}
 ${p2StateNoLine}
 ${p2GetP1StateLine}
 ${missOnOverrideLine}
@@ -30654,6 +30874,7 @@ function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFigh
   const guardSlideTimeLine = route.guardSlideTime === undefined ? "" : `guard.slidetime = ${route.guardSlideTime}`;
   const guardControlTimeLine = route.guardControlTime === undefined ? "" : `guard.ctrltime = ${route.guardControlTime}`;
   const guardKillLine = route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`;
+  const airVelocityLine = route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`;
   const airGuardVelocityLine = route.airGuardVelocity === undefined ? "" : `airguard.velocity = ${route.airGuardVelocity.join(",")}`;
   const guardHitTime = route.guardHitTime ?? 7;
   const guardFlag = route.guardFlag ?? "MA";
@@ -30688,6 +30909,7 @@ ${guardKillLine}
 pausetime = 3,3
 ground.hittime = 11
 ground.velocity = -3
+${airVelocityLine}
 guardflag = ${guardFlag}
 guard.pausetime = 2,2
 guard.hittime = ${guardHitTime}
