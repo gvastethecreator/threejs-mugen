@@ -82,6 +82,21 @@ describe("PauseSystem", () => {
     });
   });
 
+  it("uses FightFX action 30 metadata when SuperPause anim is omitted", () => {
+    const result = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1" }),
+      10,
+    );
+
+    expect(result.pause?.superAnim).toEqual({
+      raw: "30",
+      source: "fightfx",
+      actionNo: 30,
+      offset: { x: 0, y: 0 },
+    });
+  });
+
   it("omits SuperPause animation metadata when anim disables the route", () => {
     const result = createMatchPauseFromController(
       actor("p1", 200),
@@ -173,6 +188,12 @@ describe("PauseSystem", () => {
       actorId: "p1",
       darken: true,
       sourceStateNo: 200,
+      superAnim: {
+        raw: "30",
+        source: "fightfx",
+        actionNo: 30,
+        offset: { x: 0, y: 0 },
+      },
     });
     expect(world.canActorMove("p1")).toBe(true);
     expect(world.canActorMove("p2")).toBe(false);

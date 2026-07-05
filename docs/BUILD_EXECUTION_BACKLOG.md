@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause default anim trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-default-anim.json` trace coverage for imported `SuperPause` with omitted `anim`.
+- `RuntimePauseWorld` now snapshots Elecbyte's default SuperPause animation metadata as FightFX action `30` with offset `0,0` when `anim` is omitted; explicit `anim = -1` still suppresses `superAnim` metadata.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-superpause-default-anim` as required coverage and includes it in the manual required coverage list.
+- Existing no-anim SuperPause artifacts now intentionally include default `superAnim` metadata, so their current checksums drifted: base `synthetic-imported-superpause` `8b42cce6` / final `04e54ef5`, sound `de3ac4b2` / final `6e227fe6`, dynamic params `052bb481` / final `1847a3f3`, p2defmul `ec1ba95e` / final `6d009665`, projectile freeze `3580c1f9` / final `3f435f88`, effect freeze `bce48c86` / final `2a3c9d55`, and targetbind-pause `a25b552d` / final `a9c6dc05`. Explicit `S200` and dynamic `var(6)` anim gates stayed stable.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified, `SuperPause anim = anim_no` default `30`, `S` player-AIR prefix behavior, `anim = -1`, and `pos = x_pos, y_pos` default `0,0`.
+- Focused test: `pnpm vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "SuperPause"` -> 2 files passed, 18 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 463/463 artifacts, 433 required and 30 optional; `synthetic-imported-superpause-default-anim.json` checksum `318c5e9f`, final checksum `747e7619`.
+
+Claim allowed:
+
+- Bounded imported `SuperPause` with omitted `anim` records default FightFX action `30` metadata before trace snapshotting. The synthetic route proves `superAnim.raw = 30`, `source = fightfx`, `actionNo = 30`, and `offset = 0,0` with match-pause/freeze evidence.
+
+Claim blocked:
+
+- Renderer playback, renderer suppression semantics for `anim = -1`, actual FightFX/common asset lookup or rendering, dynamic `S` player-AIR prefix breadth, `pausebg`, `unhittable`, super-background rendering, exact sound/spark timing, helper/team/redirect ownership, score movement, and full MUGEN/IKEMEN super presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 463/463 artifacts, 433 required and 30 optional. Latest runtime evidence is SuperPause omitted-`anim` default FightFX metadata. Previous dynamic and explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with SuperPause `anim = -1` renderer suppression, FightFX/common asset lookup/rendering, `pausebg`, or `unhittable`, or continue R2 by moving another mutable helper/effect/combat behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause dynamic anim/pos trace gate
 
 Changed:

@@ -446,6 +446,7 @@ import {
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedProjectileTargetStateTraceArtifact,
   createSyntheticImportedSuperPauseAnimPosTraceArtifact,
+  createSyntheticImportedSuperPauseDefaultAnimTraceArtifact,
   createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseDynamicParamsTraceArtifact,
@@ -19526,6 +19527,65 @@ describe("RuntimeTraceGatePresets", () => {
       ]),
     );
     expect(evidence?.matchPauseFreezes.find((freeze) => freeze.actorId === "p2")?.frozenFrames).toBeGreaterThanOrEqual(6);
+  });
+
+  it("creates a synthetic imported SuperPause artifact with default FightFX anim evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseDefaultAnimTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-default-anim-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-default-anim-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      {
+        type: "SuperPause",
+        actorId: "p1",
+        sourceStateNo: 200,
+        darken: true,
+        minFrames: 2,
+        minRemaining: 7,
+        minMoveTime: 1,
+        superAnimRaw: "30",
+        superAnimSource: "fightfx",
+        superAnimActionNo: 30,
+        superAnimOffsetX: 0,
+        superAnimOffsetY: 0,
+      },
+    ]);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.matchPauses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorId: "p1",
+          sourceStateNo: 200,
+          darken: true,
+          maxRemaining: 7,
+          maxMoveTime: 1,
+          superAnim: {
+            raw: "30",
+            source: "fightfx",
+            actionNo: 30,
+            offset: { x: 0, y: 0 },
+          },
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported SuperPause sound artifact with dynamic sound evidence", () => {

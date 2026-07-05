@@ -21818,6 +21818,64 @@ export function createSyntheticImportedSuperPauseTraceArtifact(options: RuntimeT
   });
 }
 
+export function createSyntheticImportedSuperPauseDefaultAnimTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-default-anim-attacker",
+    displayName: "Synthetic Imported SuperPause Default Anim Attacker",
+    withSuperPause: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-default-anim-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-default-anim-golden",
+      label: "Synthetic imported SuperPause default anim route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause default anim trace proves omitted anim snapshots Elecbyte's FightFX action 30 metadata with a zero axis offset. It does not claim renderer playback, FightFX/common asset lookup, anim = -1 suppression rendering, pausebg, unhittable, super backgrounds, or full MUGEN/IKEMEN super presentation parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-default-anim-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredMatchPauses: [
+          {
+            type: "SuperPause",
+            actorId: "p1",
+            sourceStateNo: 200,
+            darken: true,
+            minFrames: 2,
+            minRemaining: 7,
+            minMoveTime: 1,
+            superAnimRaw: "30",
+            superAnimSource: "fightfx",
+            superAnimActionNo: 30,
+            superAnimOffsetX: 0,
+            superAnimOffsetY: 0,
+          },
+        ],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

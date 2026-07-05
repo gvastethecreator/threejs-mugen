@@ -458,7 +458,8 @@ function superPauseAnimParam(
   if (controllerType !== "superpause") {
     return undefined;
   }
-  const parsed = parseSuperPauseAnimParam(operation?.anim ?? findControllerParam(controller, "anim"), resolveParams?.animActionNo?.());
+  const rawAnim = operation?.anim ?? findControllerParam(controller, "anim");
+  const parsed = parseSuperPauseAnimParam(rawAnim ?? "30", rawAnim === undefined ? undefined : resolveParams?.animActionNo?.());
   if (!parsed) {
     return undefined;
   }

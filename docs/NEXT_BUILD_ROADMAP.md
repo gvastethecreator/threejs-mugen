@@ -27,15 +27,21 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause dynamic anim/pos trace gate
+R1 required SuperPause default anim trace gate
+  -> synthetic-imported-superpause-default-anim.json checksum 318c5e9f / final checksum 747e7619 is required in qa:trace
+  -> imported active state executes SuperPause without anim
+  -> RuntimePauseWorld snapshots Elecbyte default anim metadata as raw 30, source fightfx, actionNo 30, offset 0,0
+  -> match-pause evidence requires default superAnim metadata and P2 freeze
+  -> pnpm qa:trace passes 463/463 artifacts, 433 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable, SuperPause anim default 30, S player-AIR prefix behavior, anim = -1, and pos default 0,0
+  -> no score movement; renderer playback/suppression for anim = -1, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+
+Previous R1 required SuperPause dynamic anim/pos trace gate
   -> synthetic-imported-superpause-dynamic-anim-pos.json checksum e6bfbf75 / final checksum eb49d9db is required in qa:trace
   -> imported active state seeds var(6)=7001, var(7)=18, and var(8)=-36
   -> SuperPause executes anim = var(6) and pos = var(7),var(8)
   -> RuntimePauseControllerParamResolvers resolves dynamic anim/pos through active expression fallback before RuntimePauseWorld snapshots optional superAnim metadata
   -> match-pause evidence requires raw var(6), source fightfx, actionNo 7001, offset 18,-36, and P2 freeze
-  -> pnpm qa:trace passes 462/462 artifacts, 432 required and 30 optional
-  -> official Elecbyte docs define numeric controller params as expression-capable, SuperPause anim, S player-AIR prefix behavior, anim = -1, and pos offset
-  -> no score movement; default anim 30, anim = -1 renderer suppression, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause anim/pos trace gate
   -> synthetic-imported-superpause-anim-pos.json checksum f7dcdc9d / final checksum 7bd4afe8 is required in qa:trace
@@ -43,10 +49,10 @@ Previous R1 required SuperPause anim/pos trace gate
   -> PauseControllerOp preserves static anim/pos, RuntimePauseWorld snapshots optional superAnim metadata, and RuntimeTraceGate can require it
   -> match-pause evidence requires raw S200, source player, actionNo 200, offset 24,-48, and P2 freeze
   -> that checkpoint passed 461/461 artifacts, 431 required and 30 optional
-  -> no score movement; default anim 30, anim = -1 renderer suppression, FightFX/common asset lookup/rendering, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+  -> no score movement; renderer suppression for anim = -1, FightFX/common asset lookup/rendering, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause dynamic params trace gate
-  -> synthetic-imported-superpause-dynamic-params.json checksum 9547ac9f / final checksum aecfdc8b is required in qa:trace
+  -> synthetic-imported-superpause-dynamic-params.json current checksum 052bb481 / final checksum 1847a3f3 is required in qa:trace after default superAnim metadata drift
   -> imported active state seeds var(2)=9, var(3)=2, var(4)=0, and var(5)=75
   -> SuperPause executes time = var(2), movetime = var(3), darken = var(4), and poweradd = var(5)
   -> runtime resolves those raw params through active expression fallback before applying the pause
@@ -57,7 +63,7 @@ Previous R1 required SuperPause dynamic params trace gate
   -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
 
 Previous R1 required SuperPause p2defmul trace gate
-  -> synthetic-imported-superpause-p2defmul.json checksum e69e5c84 / final checksum c02dce91 is required in qa:trace
+  -> synthetic-imported-superpause-p2defmul.json current checksum ec1ba95e / final checksum 6d009665 is required in qa:trace after default superAnim metadata drift
   -> imported active state starts SuperPause after direct target memory exists
   -> SuperPause executes p2defmul = 2
   -> runtime maps positive defence multiplier to temporary current-target damage multiplier 0.5
@@ -67,7 +73,7 @@ Previous R1 required SuperPause p2defmul trace gate
   -> no score movement; p2defmul = 0 / Super.TargetDefenceMul, exact recovery lifetime, stacking, helper/redirect/multi-target ownership, and full super damage-scaling parity remain blocked
 
 Previous R1 required SuperPause sound trace gate
-  -> synthetic-imported-superpause-sound.json checksum 1547deff / final checksum 6e227fe6 is required in qa:trace
+  -> synthetic-imported-superpause-sound.json current checksum de3ac4b2 / final checksum 6e227fe6 is required in qa:trace after default superAnim metadata drift
   -> imported active state seeds var(0)=10 and var(1)=0
   -> SuperPause executes sound = Svar(0),var(1)
   -> dynamic SuperPause sound group/index resolves through runtime expression fallback at pause start
