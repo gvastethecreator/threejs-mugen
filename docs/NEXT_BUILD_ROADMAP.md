@@ -27,13 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic PlayerPush trace gate
+R1 required dynamic sound-pan trace gate
+  -> synthetic-imported-sound-dynamic-pan.json checksum 24c0cce2 / final checksum dea16ed4 is required in qa:trace
+  -> imported active state seeds var(0)=-24, var(1)=2, and var(2)=64
+  -> active state executes PlaySnd value = S5,2, channel = var(1), pan = var(0); SndPan channel = var(1), abspan = var(2); StopSnd channel = var(1)
+  -> dynamic audio numeric params resolve through runtime expression fallback instead of typed audio:* evidence
+  -> sound-event evidence requires PlaySnd channel 2 pan -24, SndPan channel 2 absPan 64, and StopSnd channel 2
+  -> pnpm qa:trace passes 454/454 artifacts, 424 required and 30 optional
+  -> official Elecbyte docs define SndPan channel/pan/abspan, StopSnd channel, PlaySnd panning linkage, and numeric controller params as expression-capable
+  -> no score movement; dynamic sound refs, typed-operation lowering for dynamic audio params, exact Web Audio panning, channel priority/timing/mixing, helper/redirect ownership, and full audio parity remain blocked
+
+Previous R1 required dynamic PlayerPush trace gate
   -> synthetic-imported-playerpush-dynamic.json checksum 13c5f954 / final checksum 0627d0e5 is required in qa:trace
   -> imported active state seeds var(0)=0
   -> active state executes PlayerPush value = var(0)
   -> dynamic PlayerPush resolves through runtime expression fallback instead of typed collision:playerpush evidence
   -> actor-frame/final evidence requires playerPush = false
-  -> pnpm qa:trace passes 453/453 artifacts, 423 required and 30 optional
+  -> that checkpoint passed 453/453 artifacts, 423 required and 30 optional
   -> official Elecbyte docs define PlayerPush value as a one-tick push-checking flag and numeric controller params as expression-capable
   -> no score movement; dynamic typed-operation lowering for PlayerPush, exact overlap resolution, team/helper ownership, exact tick order, and full constraint parity remain blocked
 
@@ -1322,7 +1332,7 @@ R1 PlaySnd/SndPan/StopSnd panning handoff
   -> MugenAudioSystem resolves explicit-channel audio actions through a pure channel-action boundary: normal PlaySnd replaces, low-priority PlaySnd skips, StopSnd channel -1 / omitted channel stops all tracked channels
   -> MugenAudioSystem applies volumescale as bounded Web Audio gain scaling while preserving default gain when omitted; legacy volume is kept as diagnostics and ignored by modern playback
   -> MugenAudioSystem applies freqmul as bounded Web Audio playback-rate scaling, maps loop to source looping, tracks unchannelled sources for stop-all cleanup, resolves pan/abspan through a bounded stereo-pan boundary, and lets SndPan update active explicit channel panners
-  -> bounded channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, and SndPan only; no exact priority classes, pre-RC8 volume gain semantics, dynamic pan params, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
+  -> bounded channel arbitration, volumescale, legacy volume diagnostics, freqmul, loop, pan, abspan, SndPan, and dynamic numeric event telemetry only; no exact priority classes, pre-RC8 volume gain semantics, dynamic sound refs, exact panning semantics, global channel fallback, timing/mixing, pause/superpause audio, score movement, or full audio parity claim
 R1 FightFX prefix package selection
   -> imported DEF [Info] fightfx.prefix now becomes lowercase runtime fighter fightFxPrefix metadata
   -> character [Files] fx = ... entries load IKEMEN-style FightFX DEF [Info] prefix packages with AIR/SFF/SND assets

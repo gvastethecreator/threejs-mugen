@@ -23,8 +23,13 @@ export type RuntimeAudioControllerDispatchOptions<TActor extends RuntimeAudioWor
   controller: ControllerIr;
   runtimeTick: number;
   audioWorld: RuntimeAudioWorld;
+  resolveAudio?: RuntimeAudioParamResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: AudioControllerOp) => void;
+};
+
+export type RuntimeAudioParamResolver = {
+  resolveNumber: (key: "channel" | "lowpriority" | "volumescale" | "volume" | "freqmul" | "loop" | "pan" | "abspan") => number | undefined;
 };
 
 export type RuntimeAudioControllerDispatchResult = {
@@ -38,21 +43,22 @@ export function createRuntimeSoundEvent(
   controller: MugenStateController,
   runtimeTick: number,
   operation?: AudioControllerOp,
+  resolveAudio?: RuntimeAudioParamResolver,
 ): RuntimeSoundEvent {
   const rawValue = operation?.value ?? findControllerParam(controller, "value");
   const parsed = parseMugenSoundRef(rawValue);
-  const lowPriority = operation?.lowPriority ?? firstBoolean(findControllerParam(controller, "lowpriority"));
-  const volumeScale = operation?.volumeScale ?? firstNumber(findControllerParam(controller, "volumescale"));
-  const legacyVolume = operation?.legacyVolume ?? firstNumber(findControllerParam(controller, "volume"));
-  const freqMul = operation?.freqMul ?? firstNumber(findControllerParam(controller, "freqmul"));
-  const loop = operation?.loop ?? firstBoolean(findControllerParam(controller, "loop"));
-  const pan = operation?.pan ?? firstNumber(findControllerParam(controller, "pan"));
-  const absPan = operation?.absPan ?? firstNumber(findControllerParam(controller, "abspan"));
+  const lowPriority = operation?.lowPriority ?? booleanParam(controller, resolveAudio, "lowpriority");
+  const volumeScale = operation?.volumeScale ?? numberParam(controller, resolveAudio, "volumescale");
+  const legacyVolume = operation?.legacyVolume ?? numberParam(controller, resolveAudio, "volume");
+  const freqMul = operation?.freqMul ?? numberParam(controller, resolveAudio, "freqmul");
+  const loop = operation?.loop ?? booleanParam(controller, resolveAudio, "loop");
+  const pan = operation?.pan ?? numberParam(controller, resolveAudio, "pan");
+  const absPan = operation?.absPan ?? numberParam(controller, resolveAudio, "abspan");
   return {
     type: operation ? operationSoundEventType(operation) : soundEventType(controller),
     group: parsed?.group,
     index: parsed?.index,
-    channel: operation?.channel ?? firstNumber(findControllerParam(controller, "channel")),
+    channel: operation?.channel ?? numberParam(controller, resolveAudio, "channel"),
     ...(lowPriority !== undefined ? { lowPriority } : {}),
     ...(volumeScale !== undefined ? { volumeScale } : {}),
     ...(legacyVolume !== undefined ? { legacyVolume } : {}),
@@ -79,8 +85,9 @@ export class RuntimeAudioWorld {
     controller: MugenStateController,
     runtimeTick: number,
     operation?: AudioControllerOp,
+    resolveAudio?: RuntimeAudioParamResolver,
   ): RuntimeSoundEvent {
-    const event = createRuntimeSoundEvent(actor, controller, runtimeTick, operation);
+    const event = createRuntimeSoundEvent(actor, controller, runtimeTick, operation, resolveAudio);
     pushRuntimeSoundEvent(actor.soundEvents, event);
     return event;
   }
@@ -120,7 +127,13 @@ export class RuntimeAudioControllerDispatchWorld {
     if (operation) {
       options.recordOperation?.(options.actor, operation);
     }
-    const event = options.audioWorld.emitController(options.actor, options.controller.source, options.runtimeTick, operation);
+    const event = options.audioWorld.emitController(
+      options.actor,
+      options.controller.source,
+      options.runtimeTick,
+      operation,
+      options.resolveAudio,
+    );
     return {
       event,
       recordedController: Boolean(options.recordController),
@@ -186,7 +199,19 @@ function firstNumber(value: string | undefined): number | undefined {
   return Number.isFinite(numberValue) ? numberValue : undefined;
 }
 
-function firstBoolean(value: string | undefined): boolean | undefined {
-  const numberValue = firstNumber(value);
+function numberParam(
+  controller: MugenStateController,
+  resolveAudio: RuntimeAudioParamResolver | undefined,
+  key: Parameters<RuntimeAudioParamResolver["resolveNumber"]>[0],
+): number | undefined {
+  return firstNumber(findControllerParam(controller, key)) ?? resolveAudio?.resolveNumber(key);
+}
+
+function booleanParam(
+  controller: MugenStateController,
+  resolveAudio: RuntimeAudioParamResolver | undefined,
+  key: "lowpriority" | "loop",
+): boolean | undefined {
+  const numberValue = numberParam(controller, resolveAudio, key);
   return numberValue === undefined ? undefined : numberValue !== 0;
 }

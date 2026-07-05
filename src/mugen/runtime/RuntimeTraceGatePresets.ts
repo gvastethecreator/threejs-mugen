@@ -757,6 +757,34 @@ export function createSyntheticImportedSoundTraceArtifact(options: RuntimeTraceG
   );
 }
 
+export function createSyntheticImportedDynamicSoundPanTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-sound-dynamic-pan",
+      displayName: "Synthetic Imported Dynamic Sound Pan",
+      action200Duration: 30,
+      withDynamicSoundControllers: true,
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-sound-dynamic-pan-golden",
+      targetLabel: "Synthetic imported dynamic PlaySnd/SndPan route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "PlaySnd", "SndPan", "StopSnd"],
+      requiredExecutedOperations: ["variable:varset", "hitdef"],
+      requiredSoundEvents: [
+        { actorId: "p1", type: "PlaySnd", group: 5, index: 2, channel: 2, pan: -24, stateNo: 200 },
+        { actorId: "p1", type: "SndPan", channel: 2, absPan: 64, stateNo: 200 },
+        { actorId: "p1", type: "StopSnd", channel: 2, stateNo: 200 },
+      ],
+      notes: [
+        "Synthetic imported dynamic sound-pan trace proves active PlaySnd, SndPan, and StopSnd numeric params can resolve through expression fallback into bounded sound-event telemetry without typed audio operation evidence. It does not claim dynamic sound refs, exact Web Audio panning, channel priority, timing, mixing, helper/redirect ownership, or full MUGEN/IKEMEN audio parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedNoOpTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -33575,6 +33603,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withVariableOps?: { stateNo: number };
   withResourceOps?: { stateNo: number };
   withSoundControllers?: boolean;
+  withDynamicSoundControllers?: boolean;
   withNoOpControllers?: boolean;
   receivedDamageRoute?: { sourceStateNo: number; finalStateNo: number };
   moveReversedStateNo?: number;
@@ -34323,6 +34352,7 @@ ${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
+${options.withDynamicSoundControllers ? dynamicSoundControllerBlock() : ""}
 ${options.withNoOpControllers ? noOpControllerBlock() : ""}
 ${options.moveReversedStateNo === undefined ? "" : contactBranchBlock("MoveReversed >= 1", options.moveReversedStateNo, "MoveReversed Branch")}
 ${options.moveGuardStateNo === undefined ? "" : contactBranchBlock("MoveGuarded", options.moveGuardStateNo, "MoveGuarded Branch")}
@@ -37705,6 +37735,46 @@ pan = -48
 type = StopSnd
 trigger1 = Time = 3
 channel = 2
+`;
+}
+
+function dynamicSoundControllerBlock(): string {
+  return `
+[State 200, Dynamic Sound Pan Var]
+type = VarSet
+trigger1 = Time = 0
+v = 0
+value = -24
+
+[State 200, Dynamic Sound Channel Var]
+type = VarSet
+trigger1 = Time = 0
+v = 1
+value = 2
+
+[State 200, Dynamic Sound AbsPan Var]
+type = VarSet
+trigger1 = Time = 0
+v = 2
+value = 64
+
+[State 200, Dynamic Play Sound Pan Probe]
+type = PlaySnd
+trigger1 = Time = 1
+value = S5,2
+channel = var(1)
+pan = var(0)
+
+[State 200, Dynamic SndPan Probe]
+type = SndPan
+trigger1 = Time = 2
+channel = var(1)
+abspan = var(2)
+
+[State 200, Dynamic Stop Sound Probe]
+type = StopSnd
+trigger1 = Time = 3
+channel = var(1)
 `;
 }
 

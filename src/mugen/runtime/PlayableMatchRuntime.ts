@@ -11,7 +11,7 @@ import {
   RuntimeActorConstraintWorld,
   type RuntimeWidthResolver,
 } from "./ActorConstraintSystem";
-import { RuntimeAudioControllerDispatchWorld, RuntimeAudioWorld } from "./AudioEventSystem";
+import { RuntimeAudioControllerDispatchWorld, type RuntimeAudioParamResolver, RuntimeAudioWorld } from "./AudioEventSystem";
 import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
@@ -1044,12 +1044,15 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    sound: ({ controller }) => {
+    sound: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       audioControllerDispatchWorld.apply({
         actor: fighter,
         controller,
         runtimeTick: tick,
         audioWorld: fighter.audioWorld,
+        resolveAudio: {
+          resolveNumber: (key) => resolveAudioNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1629,6 +1632,22 @@ function resolveEnvColorTripletParam(
     return undefined;
   }
   return [r, g, b];
+}
+
+function resolveAudioNumberParam(
+  controller: ControllerIr,
+  key: Parameters<RuntimeAudioParamResolver["resolveNumber"]>[0],
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
 }
 
 function resolveDispatchBoolean(

@@ -131,6 +131,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSoundTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-sound-dynamic-pan",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicSoundPanTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-noop",
       required: true,
       artifact: presets.createSyntheticImportedNoOpTraceArtifact(),
@@ -3522,6 +3527,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-gametime",
     "synthetic-imported-state-context",
     "synthetic-imported-sound",
+    "synthetic-imported-sound-dynamic-pan",
     "synthetic-imported-noop",
     "synthetic-imported-enemynear-index",
     "synthetic-imported-p2-state-context",

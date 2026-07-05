@@ -65,6 +65,35 @@ describe("AudioEventSystem", () => {
     expect(event.index).toBeUndefined();
   });
 
+  it("resolves raw dynamic audio number params through fallback telemetry", () => {
+    const event = createRuntimeSoundEvent(
+      actor(200, 5),
+      controller("SndPan", { channel: "var(0)", pan: "var(1)" }),
+      122,
+      undefined,
+      {
+        resolveNumber: (key) => {
+          if (key === "channel") {
+            return 2;
+          }
+          if (key === "pan") {
+            return -40;
+          }
+          return undefined;
+        },
+      },
+    );
+
+    expect(event).toMatchObject({
+      type: "SndPan",
+      channel: 2,
+      pan: -40,
+      stateNo: 200,
+      tick: 5,
+      runtimeTick: 122,
+    });
+  });
+
   it("preserves invalid raw values as debug telemetry instead of dropping the event", () => {
     const event = createRuntimeSoundEvent(actor(1000, 1), controller("PlaySnd", { value: "fightfx.fail" }), 2);
 
@@ -186,6 +215,31 @@ describe("AudioEventSystem", () => {
     expect(recordedControllers).toEqual(["PlaySnd"]);
     expect(recordedOperations).toEqual(["audio:playsnd"]);
     expect(result).toMatchObject({ recordedController: true, recordedOperation: true });
+  });
+
+  it("dispatches dynamic audio params without typed operation telemetry", () => {
+    const dispatchWorld = new RuntimeAudioControllerDispatchWorld();
+    const audioWorld = new RuntimeAudioWorld();
+    const fighter = { ...actor(200, 4), soundEvents: [] as RuntimeSoundEvent[] };
+    const ir = compileControllerIr(controller("SndPan", { channel: "2", pan: "var(0)" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor: fighter,
+      controller: ir,
+      runtimeTick: 120,
+      audioWorld,
+      resolveAudio: { resolveNumber: (key) => (key === "pan" ? -36 : undefined) },
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(result.event).toMatchObject({ type: "SndPan", channel: 2, pan: -36, stateNo: 200, runtimeTick: 120 });
+    expect(fighter.soundEvents).toEqual([result.event]);
+    expect(recordedControllers).toEqual(["SndPan"]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
   });
 
   it("wraps direct HitDef sound telemetry behind RuntimeAudioWorld", () => {

@@ -1313,15 +1313,28 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
 
 function compileAudioControllerOp(controller: MugenStateController, type: AudioControllerOp["controllerType"]): AudioControllerOp | undefined {
   const value = staticSoundValueParam(controller, "value");
-  const channel = firstNumber(findParam(controller, "channel"));
-  const lowPriority = type === "playsnd" ? booleanNumber(findParam(controller, "lowpriority")) : undefined;
-  const volumeScale = type === "playsnd" ? firstNumber(findParam(controller, "volumescale")) : undefined;
-  const legacyVolume = type === "playsnd" ? firstNumber(findParam(controller, "volume")) : undefined;
-  const freqMul = type === "playsnd" ? firstNumber(findParam(controller, "freqmul")) : undefined;
-  const loop = type === "playsnd" ? booleanNumber(findParam(controller, "loop")) : undefined;
-  const pan = type === "playsnd" || type === "sndpan" ? firstNumber(findParam(controller, "pan")) : undefined;
-  const absPan = type === "playsnd" || type === "sndpan" ? firstNumber(findParam(controller, "abspan")) : undefined;
+  const channel = staticOptionalAudioNumberParam(controller, "channel");
+  const lowPriority = type === "playsnd" ? staticOptionalAudioBooleanParam(controller, "lowpriority") : undefined;
+  const volumeScale = type === "playsnd" ? staticOptionalAudioNumberParam(controller, "volumescale") : undefined;
+  const legacyVolume = type === "playsnd" ? staticOptionalAudioNumberParam(controller, "volume") : undefined;
+  const freqMul = type === "playsnd" ? staticOptionalAudioNumberParam(controller, "freqmul") : undefined;
+  const loop = type === "playsnd" ? staticOptionalAudioBooleanParam(controller, "loop") : undefined;
+  const pan = type === "playsnd" || type === "sndpan" ? staticOptionalAudioNumberParam(controller, "pan") : undefined;
+  const absPan = type === "playsnd" || type === "sndpan" ? staticOptionalAudioNumberParam(controller, "abspan") : undefined;
   if (type === "playsnd" && value === undefined) {
+    return undefined;
+  }
+  if (
+    hasDynamicAudioNumberParam(controller, "channel") ||
+    (type === "playsnd" &&
+      (hasDynamicAudioNumberParam(controller, "lowpriority") ||
+        hasDynamicAudioNumberParam(controller, "volumescale") ||
+        hasDynamicAudioNumberParam(controller, "volume") ||
+        hasDynamicAudioNumberParam(controller, "freqmul") ||
+        hasDynamicAudioNumberParam(controller, "loop"))) ||
+    ((type === "playsnd" || type === "sndpan") &&
+      (hasDynamicAudioNumberParam(controller, "pan") || hasDynamicAudioNumberParam(controller, "abspan")))
+  ) {
     return undefined;
   }
   if (type === "sndpan" && (channel === undefined || (pan === undefined && absPan === undefined))) {
@@ -1340,6 +1353,19 @@ function compileAudioControllerOp(controller: MugenStateController, type: AudioC
     pan,
     absPan,
   });
+}
+
+function staticOptionalAudioNumberParam(controller: MugenStateController, key: string): number | undefined {
+  return firstNumber(findParam(controller, key));
+}
+
+function staticOptionalAudioBooleanParam(controller: MugenStateController, key: string): boolean | undefined {
+  return booleanNumber(findParam(controller, key));
+}
+
+function hasDynamicAudioNumberParam(controller: MugenStateController, key: string): boolean {
+  const raw = findParam(controller, key);
+  return raw !== undefined && firstNumber(raw) === undefined;
 }
 
 function isNoopController(type: string): type is NoopControllerOp["controllerType"] {
