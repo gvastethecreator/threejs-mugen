@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import type { ControllerIr, StateProgramIr } from "../mugen/compiler/RuntimeIr";
+import type { DemoMove } from "../mugen/runtime/demoFighters";
 import type { HelperControllerOp } from "../mugen/compiler/ControllerOps";
 import type { MugenAnimationAction } from "../mugen/model/MugenAnimation";
-import type { MugenStateController } from "../mugen/model/MugenState";
+import type { MugenStateController, MugenStateDef } from "../mugen/model/MugenState";
 import type { MugenStageDefinition } from "../mugen/model/MugenStage";
 import {
   advanceRuntimeHelpers,
@@ -56,6 +58,70 @@ function controller(params: Record<string, string>): MugenStateController {
     triggers: [],
     line: 1,
     rawHeader: "[State 6000, Helper]",
+  };
+}
+
+function stateDef(id: number, overrides: Partial<MugenStateDef> = {}): MugenStateDef {
+  return {
+    id,
+    type: "S",
+    moveType: "I",
+    physics: "N",
+    anim: 6100,
+    line: 1,
+    controllers: [],
+    rawParams: {},
+    ...overrides,
+  };
+}
+
+function controllerIr(stateId: number, type: string, params: Record<string, string> = {}): ControllerIr {
+  const source: MugenStateController = {
+    stateId,
+    type,
+    params,
+    triggers: [],
+    line: 1,
+    rawHeader: `[State ${stateId}, ${type}]`,
+  };
+  return {
+    source,
+    stateId,
+    type,
+    normalizedType: type.toLowerCase(),
+    supportLevel: "executable",
+    triggers: [],
+    params,
+    line: 1,
+    unsupportedFeatures: [],
+  };
+}
+
+function stateProgram(source: MugenStateDef, controllers: ControllerIr[] = []): StateProgramIr {
+  return {
+    source,
+    id: source.id,
+    supportLevel: "executable",
+    controllers,
+    compiledControllers: controllers.length,
+  };
+}
+
+function activeMove(overrides: Partial<DemoMove> = {}): DemoMove {
+  return {
+    actionId: 1200,
+    startup: 0,
+    activeStart: 0,
+    activeEnd: 8,
+    recovery: 20,
+    damage: 33,
+    priority: 4,
+    requiresHitDef: false,
+    hitPause: 3,
+    hitStun: 8,
+    push: 2,
+    hitbox: { x1: 10, y1: -45, x2: 36, y2: -18 },
+    ...overrides,
   };
 }
 
@@ -258,6 +324,56 @@ describe("HelperSystem", () => {
     advanceRuntimeHelpers([frozen, superMover], stage, { pauseKind: "SuperPause" });
     expect(superMover).toMatchObject({ age: 2, pos: { x: 12, y: 0 }, superMoveTime: 0 });
     expect(frozen).toMatchObject({ age: 0, pos: { x: 0, y: 0 } });
+  });
+
+  it("preserves active helper HitDef moves when destination state declares hitdefpersist", () => {
+    const active = helper({
+      stateNo: 1200,
+      currentMove: activeMove(),
+      currentMoveLabel: "HitDef",
+      moveTick: 3,
+      hasHit: false,
+      firedHitDefs: new Set(["1200:1:0"]),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1224" })]),
+          stateProgram(stateDef(1224, { moveType: "A", hitDefPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1224);
+    expect(active.currentMove).toMatchObject({ actionId: 1200, damage: 33 });
+    expect(active.currentMoveLabel).toBe("HitDef");
+    expect(active.moveTick).toBe(4);
+    expect(active.firedHitDefs.size).toBe(0);
+    expect(active.moveType).toBe("A");
+  });
+
+  it("clears active helper reversal moves even when destination state declares hitdefpersist", () => {
+    const active = helper({
+      stateNo: 1200,
+      currentMove: activeMove({ isReversal: true }),
+      currentMoveLabel: "ReversalDef",
+      moveTick: 3,
+      firedHitDefs: new Set(["1200:1:0"]),
+      runtimeProgram: {
+        states: [
+          stateProgram(stateDef(1200, { moveType: "A" }), [controllerIr(1200, "ChangeState", { value: "1224" })]),
+          stateProgram(stateDef(1224, { moveType: "A", hitDefPersist: true })),
+        ],
+      },
+    });
+
+    advanceRuntimeHelpers([active], stage);
+
+    expect(active.stateNo).toBe(1224);
+    expect(active.currentMove).toBeUndefined();
+    expect(active.currentMoveLabel).toBeUndefined();
+    expect(active.moveTick).toBe(0);
+    expect(active.firedHitDefs.size).toBe(0);
   });
 
   it("projects helpers into effect actor snapshots with cloned collision boxes", () => {

@@ -26861,6 +26861,155 @@ export function createSyntheticImportedHelperHitDefTraceArtifact(options: Runtim
   });
 }
 
+export function createSyntheticImportedHelperHitDefPersistTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperHitDefScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-hitdefpersist-attacker",
+    displayName: "Synthetic Imported Helper HitDefPersist Attacker",
+    withHelper: true,
+    helperPostype: "p2",
+    helperPos: [0, -28],
+    helperTriggerTime: 2,
+    helperIgnoreHitPause: true,
+    helperSingleInstance: true,
+    helperHitDefRoute: {
+      branchStateNo: 1225,
+      branchAnimNo: 964,
+      damage: 33,
+      hitSound: "S5,1",
+      hitSpark: "F7006",
+      sparkXy: [11, -56],
+      hitDefPersistRoute: {
+        entryStateNo: 1224,
+        entryAnimNo: 963,
+        finalStateNo: 1225,
+        finalAnimNo: 964,
+      },
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7006, 8106),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-hitdefpersist-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-hitdefpersist-golden",
+      label: "Synthetic imported helper-owned hitdefpersist route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported helper-owned hitdefpersist trace proves a helper-local direct HitDef activated immediately before helper ChangeState can remain active in the helper destination StateDef when hitdefpersist = 1, then hit from that destination state. Exact helper hitpause/tick order, helper-owned custom states, target lifetime, teams, and full MUGEN/IKEMEN helper HitDef lifetime parity remain future work.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-hitdefpersist-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["hit"],
+        requiredCombatReasons: ["hit"],
+        requiredSoundEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            type: "PlaySnd",
+            group: 5,
+            index: 1,
+            stateNo: 1224,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredHitEffectEvents: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            kind: "hit",
+            sparkNo: 7006,
+            raw: "F7006",
+            rawPrefix: "F",
+            offsetX: 11,
+            offsetY: -56,
+            assetSource: "fightfx",
+            assetActionId: 7006,
+            assetFrameIndex: 0,
+            ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+            assetSpriteGroup: 8106,
+            assetSpriteIndex: 0,
+            minAssetFrameCount: 2,
+            minAssetTotalDuration: 11,
+            requiredAssetFrameIndices: [0, 1],
+            stateNo: 1224,
+            contactKind: "hit",
+            requireContactId: true,
+          },
+        ],
+        requiredContactEffectPackages: [
+          {
+            actorId: "p1-helper-0",
+            source: "effect",
+            actorKind: "helper",
+            contactKind: "hit",
+            sound: {
+              type: "PlaySnd",
+              group: 5,
+              index: 1,
+              stateNo: 1224,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+            hitEffect: {
+              kind: "hit",
+              sparkNo: 7006,
+              raw: "F7006",
+              rawPrefix: "F",
+              offsetX: 11,
+              offsetY: -56,
+              assetSource: "fightfx",
+              assetActionId: 7006,
+              assetFrameIndex: 0,
+              ...SYNTHETIC_HIT_SPARK_FIRST_FRAME_REQUIREMENT,
+              assetSpriteGroup: 8106,
+              assetSpriteIndex: 0,
+              minAssetFrameCount: 2,
+              minAssetTotalDuration: 11,
+              requiredAssetFrameIndices: [0, 1],
+              stateNo: 1224,
+              contactKind: "hit",
+              requireContactId: true,
+            },
+          },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1224, animNo: 963, moveType: "A", clsn1Count: 1, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1225, animNo: 964, moveType: "I", minFrames: 1 },
+          { actorId: "p2", actorKind: "player", observedLifeAtMost: 967, minFrames: 1 },
+        ],
+        requiredFinalActors: [{ actorId: "p2", actorKind: "player", life: 967 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1225, minAge: 2 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperTargetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedOneShotXScript();
@@ -29699,6 +29848,12 @@ export type SyntheticImportedTraceFighterOptions = {
     hitSound?: string;
     hitSpark?: string;
     sparkXy?: [number, number];
+    hitDefPersistRoute?: {
+      entryStateNo: number;
+      entryAnimNo?: number;
+      finalStateNo: number;
+      finalAnimNo?: number;
+    };
     targetState?: {
       stateNo: number;
       triggerTime?: number;
@@ -30645,12 +30800,31 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperHitDefRoute === undefined
               ? []
-              : ([
-                  [
-                    options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo,
-                    helperTraceAction(options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo),
-                  ],
-                ] as Array<[number, MugenAnimationAction]>)),
+              : (options.helperHitDefRoute.hitDefPersistRoute
+                  ? [
+                      [
+                        options.helperHitDefRoute.hitDefPersistRoute.entryAnimNo ??
+                          options.helperHitDefRoute.hitDefPersistRoute.entryStateNo,
+                        helperTraceAction(
+                          options.helperHitDefRoute.hitDefPersistRoute.entryAnimNo ??
+                            options.helperHitDefRoute.hitDefPersistRoute.entryStateNo,
+                        ),
+                      ],
+                      [
+                        options.helperHitDefRoute.hitDefPersistRoute.finalAnimNo ??
+                          options.helperHitDefRoute.hitDefPersistRoute.finalStateNo,
+                        helperTraceAction(
+                          options.helperHitDefRoute.hitDefPersistRoute.finalAnimNo ??
+                            options.helperHitDefRoute.hitDefPersistRoute.finalStateNo,
+                        ),
+                      ],
+                    ]
+                  : [
+                      [
+                        options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo,
+                        helperTraceAction(options.helperHitDefRoute.branchAnimNo ?? options.helperHitDefRoute.branchStateNo),
+                      ],
+                    ]) as Array<[number, MugenAnimationAction]>),
             ...(options.helperNumExplodRoute === undefined
               ? []
               : ([
@@ -34316,6 +34490,26 @@ function helperHitDefRouteBlock(route: NonNullable<SyntheticImportedTraceFighter
     route.targetState === undefined
       ? ""
       : helperTargetStateControllerBlock(route.branchStateNo, route.targetId ?? 0, route.targetState.stateNo, route.targetState.triggerTime ?? 1);
+  const branchLines =
+    route.hitDefPersistRoute === undefined
+      ? `
+[State 1200, Helper HitDef Branch]
+type = ChangeState
+trigger1 = Time >= 1
+trigger1 = ${branchTrigger}
+value = ${route.branchStateNo}
+ctrl = 0
+
+[Statedef ${route.branchStateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${branchAnimNo}
+ctrl = 0
+${targetControllerLines}
+${targetStateLines}
+`
+      : helperHitDefPersistRouteBlock(route.hitDefPersistRoute, branchTrigger);
   return `
 [Statedef 1200]
 type = S
@@ -34338,22 +34532,42 @@ ${hitSoundLine}
 ${hitSparkLine}
 ${sparkXyLine}
 priority = 4, Hit
+${branchLines}
+`;
+}
 
-[State 1200, Helper HitDef Branch]
+function helperHitDefPersistRouteBlock(
+  route: NonNullable<NonNullable<SyntheticImportedTraceFighterOptions["helperHitDefRoute"]>["hitDefPersistRoute"]>,
+  branchTrigger: string,
+): string {
+  return `
+[State 1200, Helper HitDefPersist Entry]
+type = ChangeState
+trigger1 = Time = 0
+value = ${route.entryStateNo}
+ctrl = 0
+
+[Statedef ${route.entryStateNo}]
+type = S
+movetype = A
+physics = N
+anim = ${route.entryAnimNo ?? route.entryStateNo}
+ctrl = 0
+hitdefpersist = 1
+
+[State ${route.entryStateNo}, Persisted Helper HitDef Branch]
 type = ChangeState
 trigger1 = Time >= 1
 trigger1 = ${branchTrigger}
-value = ${route.branchStateNo}
+value = ${route.finalStateNo}
 ctrl = 0
 
-[Statedef ${route.branchStateNo}]
+[Statedef ${route.finalStateNo}]
 type = S
 movetype = I
 physics = N
-anim = ${branchAnimNo}
+anim = ${route.finalAnimNo ?? route.finalStateNo}
 ctrl = 0
-${targetControllerLines}
-${targetStateLines}
 `;
 }
 

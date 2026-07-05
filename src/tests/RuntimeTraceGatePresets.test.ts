@@ -268,6 +268,7 @@ import {
   createSyntheticImportedHelperProjCancelTimeIdTraceArtifact,
   createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact,
   createSyntheticImportedHelperHitDefTraceArtifact,
+  createSyntheticImportedHelperHitDefPersistTraceArtifact,
   createSyntheticImportedHelperTargetTraceArtifact,
   createSyntheticImportedHelperDefaultTargetTraceArtifact,
   createSyntheticImportedHelperBareTargetTraceArtifact,
@@ -4735,6 +4736,77 @@ describe("RuntimeTraceGatePresets", () => {
         contactKind: "hit",
         hitEffect: expect.objectContaining({ kind: "hit", sparkNo: 7006, offsetX: 9, offsetY: -58 }),
       }),
+    ]);
+  });
+
+  it("creates a synthetic imported Helper HitDefPersist artifact with persisted helper HitDef evidence", () => {
+    const artifact = createSyntheticImportedHelperHitDefPersistTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-hitdefpersist-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-hitdefpersist-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1224, animNo: 963 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1225, animNo: 964 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", actorKind: "player", life: 967 })]),
+    );
+    expect(evidence?.soundEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          type: "PlaySnd",
+          group: 5,
+          index: 1,
+          stateNo: 1224,
+          contactKind: "hit",
+        }),
+      ]),
+    );
+    expect(evidence?.contactEffectPackages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          source: "effect",
+          actorKind: "helper",
+          contactKind: "hit",
+          sound: expect.objectContaining({ type: "PlaySnd", group: 5, index: 1, stateNo: 1224, contactKind: "hit" }),
+          hitEffect: expect.objectContaining({
+            kind: "hit",
+            sparkNo: 7006,
+            raw: "F7006",
+            rawPrefix: "F",
+            assetSource: "fightfx",
+            assetActionId: 7006,
+            assetFrameCount: 2,
+            assetTotalDuration: 11,
+            offset: { x: 11, y: -56 },
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1225, minAge: 2 },
     ]);
   });
 

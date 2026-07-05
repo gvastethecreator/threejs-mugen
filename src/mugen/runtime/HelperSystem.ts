@@ -2,7 +2,7 @@ import type { ControllerOp, HelperControllerOp } from "../compiler/ControllerOps
 import type { ControllerIr, RuntimeProgramIr } from "../compiler/RuntimeIr";
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
-import type { MugenStateController } from "../model/MugenState";
+import type { MugenStateController, MugenStateDef } from "../model/MugenState";
 import { evaluateExpression } from "./ExpressionEvaluator";
 import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSystem";
 import {
@@ -660,14 +660,11 @@ function resolveHelperNumber(
 }
 
 function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?: number): void {
+  const state = findHelperState(helper, stateNo);
+  cancelHelperStaleMove(helper, stateNo, state);
   helper.stateNo = stateNo;
   helper.stateTime = 0;
-  helper.currentMove = undefined;
-  helper.currentMoveLabel = undefined;
-  helper.moveTick = 0;
-  helper.hasHit = false;
   helper.firedHitDefs.clear();
-  const state = helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
   if (state?.type) {
     helper.stateType = normalizeRuntimeStateType(state.type, helper.stateType);
   }
@@ -684,6 +681,23 @@ function changeHelperState(helper: RuntimeHelper, stateNo: number, animOverride?
   if (animNo !== undefined) {
     changeHelperAction(helper, animNo);
   }
+}
+
+function findHelperState(helper: RuntimeHelper, stateNo: number): MugenStateDef | undefined {
+  return helper.runtimeProgram?.states.find((candidate) => candidate.id === stateNo)?.source;
+}
+
+function cancelHelperStaleMove(helper: RuntimeHelper, stateNo: number, state?: MugenStateDef): void {
+  if (!helper.currentMove || helper.currentMove.actionId === stateNo) {
+    return;
+  }
+  if (state?.hitDefPersist && !helper.currentMove.isReversal) {
+    return;
+  }
+  helper.currentMove = undefined;
+  helper.currentMoveLabel = undefined;
+  helper.moveTick = 0;
+  helper.hasHit = false;
 }
 
 function changeHelperAction(helper: RuntimeHelper, animNo: number): void {

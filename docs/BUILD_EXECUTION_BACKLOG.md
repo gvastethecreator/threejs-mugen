@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper StateDef hitdefpersist required trace gate
+
+Changed:
+
+- Added helper `ChangeState` support for destination `StateDef hitdefpersist = 1`.
+- `changeHelperState` now preserves a non-reversal active helper `HitDef` move when the destination helper state declares `hitdefpersist = 1`; default helper state transitions still clear stale active moves.
+- Added required `synthetic-imported-helper-hitdefpersist.json` trace coverage for a helper-owned direct `HitDef` route `1200 -> 1224 -> 1225`.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-helper-hitdefpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte CNS `StateDef` docs define `hitdefpersist` as keeping active HitDefs enabled across a state transition; Elecbyte state-controller docs define helpers as another player instance.
+- Focused tests: `pnpm vitest run src/tests/HelperSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "hitdefpersist|Helper HitDefPersist|preserves active helper|clears active helper"` -> 2 files passed, 4 tests passed.
+- Typecheck: `pnpm typecheck` -> passed.
+- Trace gate: `pnpm qa:trace` -> 417/417 artifacts, 387 required and 30 optional; `synthetic-imported-helper-hitdefpersist.json` checksum `9d5c64c4`.
+
+Claim allowed:
+
+- Bounded helper-owned direct `HitDef` can activate immediately before a helper state transition and remain active in one helper destination `StateDef` declaring `hitdefpersist = 1`.
+- The gate proves helper-owned hit sound/FightFX contact evidence from helper state `1224`, final P2 life `967`, and helper route `1200 -> 1224 -> 1225`.
+
+Claim blocked:
+
+- Multi-HitDef stacking, player-owned Projectile hitdefpersist breadth, helper Projectile hitdefpersist breadth, custom-state hitdefpersist breadth, ReversalDef interactions, exact helper hitpause/tick order, exact target lifetime, combo UI accumulation, multi-hit/multi-target/team counting, visual/audio parity beyond the bounded contact package, score movement, and full MUGEN/IKEMEN HitDef lifetime parity.
+
+Next:
+
+- Continue R1 with Projectile/custom-state StateDef persistence breadth, guarded/reversed movehitpersist breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper `hitdefpersist` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - StateDef hitdefpersist required trace gate
 
 Changed:
@@ -25,11 +54,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Multi-HitDef stacking, helper/projectile/custom-state breadth, ReversalDef interactions, exact target lifetime/tick order, exact hitpause lifetime, combo UI accumulation, multi-hit/multi-target/team counting, visual/audio parity, score movement, and full MUGEN/IKEMEN HitDef lifetime parity.
+- Multi-HitDef stacking, player/helper Projectile hitdefpersist breadth, custom-state breadth, ReversalDef interactions, exact target lifetime/tick order, exact hitpause lifetime, combo UI accumulation, multi-hit/multi-target/team counting, visual/audio parity, score movement, and full MUGEN/IKEMEN HitDef lifetime parity.
 
 Next:
 
-- Continue R1 with guarded/reversed movehitpersist breadth, helper/projectile StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitdefpersist` gate unless adding one blocked dimension.
+- Continue R1 with guarded/reversed movehitpersist breadth, Projectile/custom-state StateDef persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this direct `hitdefpersist` gate unless adding one blocked dimension.
 
 ## 2026-07-05 - StateDef movehitpersist required trace gate
 

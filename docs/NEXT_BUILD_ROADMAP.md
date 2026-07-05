@@ -27,11 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required StateDef hitdefpersist trace gate
+R1 required helper StateDef hitdefpersist trace gate
+  -> synthetic-imported-helper-hitdefpersist.json checksum 9d5c64c4 is required in qa:trace
+  -> helper-local HitDef activates in helper state 1200, enters helper state 1224 with hitdefpersist = 1, remains active, hits from that destination state with helper-owned sound/FightFX evidence, and routes helper 1200 -> 1224 -> 1225
+  -> pnpm qa:trace passes 417/417 artifacts, 387 required and 30 optional
+  -> no score movement; multi-HitDef stacking, player/helper Projectile hitdefpersist breadth, custom-state hitdefpersist breadth, ReversalDef interactions, exact helper hitpause/tick order, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity beyond the bounded contact package, and full HitDef lifetime parity remain blocked
+
+Previous R1 required StateDef hitdefpersist trace gate
   -> synthetic-imported-hitdefpersist.json checksum 4bb3e86c is required in qa:trace
   -> direct HitDef activates in state 200, enters state 346 with hitdefpersist = 1, remains active, hits from that destination state, and routes P1 200 -> 346 -> 347
-  -> pnpm qa:trace passes 416/416 artifacts, 386 required and 30 optional
-  -> no score movement; multi-HitDef stacking, helper/projectile/custom-state hitdefpersist breadth, ReversalDef interactions, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full HitDef lifetime parity remain blocked
+  -> pnpm qa:trace passed 416/416 artifacts, 386 required and 30 optional
+  -> remains required; multi-HitDef stacking, Projectile/custom-state hitdefpersist breadth, ReversalDef interactions, exact combo UI accumulation, multi-hit/multi-target/team counting, chain-hit eligibility arbitration, exact hitpause/target lifetime, visual/audio parity, and full HitDef lifetime parity remain blocked
 
 Previous R1 required StateDef movehitpersist trace gate
   -> synthetic-imported-movehitpersist.json checksum 5c1ef583 remains required in qa:trace
