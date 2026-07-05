@@ -79,6 +79,14 @@ export class RuntimeContactMemoryWorld {
     return createRuntimeContactMemoryWithStatePersistence(memory, stateNo, options);
   }
 
+  createForStateEntry(
+    memory: RuntimeContactMemory,
+    stateNo: number,
+    options: RuntimeContactPersistenceOptions = {},
+  ): RuntimeContactMemory {
+    return createRuntimeContactMemoryForStateEntry(memory, stateNo, options);
+  }
+
   resetMoveContact(memory: RuntimeContactMemory): void {
     resetRuntimeMoveContact(memory);
   }
@@ -224,6 +232,16 @@ export function createRuntimeContactMemoryWithStatePersistence(
   return persisted;
 }
 
+export function createRuntimeContactMemoryForStateEntry(
+  memory: RuntimeContactMemory,
+  stateNo: number,
+  options: RuntimeContactPersistenceOptions = {},
+): RuntimeContactMemory {
+  const persisted = createRuntimeContactMemoryWithStatePersistence(memory, stateNo, options);
+  copyProjectileContactPersistence(memory, persisted, stateNo);
+  return persisted;
+}
+
 export function createRuntimeContactMemoryWithPersistedMoveHit(memory: RuntimeContactMemory, stateNo: number): RuntimeContactMemory {
   return createRuntimeContactMemoryWithStatePersistence(memory, stateNo, { moveHit: true });
 }
@@ -248,6 +266,29 @@ function copyMoveContactPersistence(memory: RuntimeContactMemory, persisted: Run
   if (memory.moveReversedState !== undefined && memory.moveReversedTime !== undefined) {
     persisted.moveReversedState = stateNo;
     persisted.moveReversedTime = memory.moveReversedTime;
+  }
+}
+
+function copyProjectileContactPersistence(memory: RuntimeContactMemory, persisted: RuntimeContactMemory, stateNo: number): void {
+  if (memory.projectileContactState !== undefined && memory.projectileContactTime !== undefined) {
+    persisted.projectileContactState = stateNo;
+    persisted.projectileContactTime = memory.projectileContactTime;
+    persisted.projectileId = memory.projectileId;
+  }
+  if (memory.projectileHitState !== undefined && memory.projectileHitTime !== undefined) {
+    persisted.projectileHitState = stateNo;
+    persisted.projectileHitTime = memory.projectileHitTime;
+    persisted.projectileId = memory.projectileId;
+  }
+  if (memory.projectileGuardState !== undefined && memory.projectileGuardTime !== undefined) {
+    persisted.projectileGuardState = stateNo;
+    persisted.projectileGuardTime = memory.projectileGuardTime;
+    persisted.projectileId = memory.projectileId;
+  }
+  if (memory.projectileCancelState !== undefined && memory.projectileCancelTime !== undefined) {
+    persisted.projectileCancelState = stateNo;
+    persisted.projectileCancelTime = memory.projectileCancelTime;
+    persisted.projectileCancelId = memory.projectileCancelId;
   }
 }
 

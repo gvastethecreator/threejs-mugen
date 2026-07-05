@@ -1079,13 +1079,10 @@ const {
 });
 
 function resetContactState(fighter: FighterMatchState, state?: MugenStateDef): void {
-  fighter.contact =
-    state?.moveHitPersist || state?.hitCountPersist
-      ? fighter.contactWorld.createWithStatePersistence(fighter.contact, fighter.runtime.stateNo, {
-          moveHit: Boolean(state.moveHitPersist),
-          hitCount: Boolean(state.hitCountPersist),
-        })
-      : fighter.contactWorld.create();
+  fighter.contact = fighter.contactWorld.createForStateEntry(fighter.contact, fighter.runtime.stateNo, {
+    moveHit: Boolean(state?.moveHitPersist),
+    hitCount: Boolean(state?.hitCountPersist),
+  });
 }
 
 function advanceContactTimers(fighter: FighterMatchState): void {

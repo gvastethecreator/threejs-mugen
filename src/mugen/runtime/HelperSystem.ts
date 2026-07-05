@@ -8,7 +8,7 @@ import { createRuntimeSoundEvent, pushRuntimeSoundEvent } from "./AudioEventSyst
 import {
   advanceRuntimeContactTimers,
   createRuntimeContactMemory,
-  createRuntimeContactMemoryWithStatePersistence,
+  createRuntimeContactMemoryForStateEntry,
   runtimeMoveContactValue,
   runtimeMoveHitCountValue,
   runtimeMoveReversedValue,
@@ -705,13 +705,10 @@ function cancelHelperStaleMove(helper: RuntimeHelper, stateNo: number, state?: M
 }
 
 function resetHelperContactState(helper: RuntimeHelper, stateNo: number, state?: MugenStateDef): void {
-  helper.contact =
-    state?.moveHitPersist || state?.hitCountPersist
-      ? createRuntimeContactMemoryWithStatePersistence(helper.contact, stateNo, {
-          moveHit: Boolean(state.moveHitPersist),
-          hitCount: Boolean(state.hitCountPersist),
-        })
-      : createRuntimeContactMemory();
+  helper.contact = createRuntimeContactMemoryForStateEntry(helper.contact, stateNo, {
+    moveHit: Boolean(state?.moveHitPersist),
+    hitCount: Boolean(state?.hitCountPersist),
+  });
 }
 
 function changeHelperAction(helper: RuntimeHelper, animNo: number): void {

@@ -4,6 +4,7 @@ import {
   advanceRuntimeContactTimers,
   applyRuntimeHitAdd,
   createRuntimeContactMemory,
+  createRuntimeContactMemoryForStateEntry,
   createRuntimeContactMemoryWithPersistedHitCount,
   createRuntimeContactMemoryWithPersistedMoveHit,
   hasRuntimeProjectileContact,
@@ -111,6 +112,24 @@ describe("ContactMemorySystem", () => {
     expect(runtimeMoveHitCountValue(persisted, 344, false)).toBe(0);
     expect(runtimeMoveHitCountValue(persisted, 344, true)).toBe(0);
     expect(hasRuntimeProjectileContact(persisted, 344, "hit", 77)).toBe(false);
+  });
+
+  it("carries projectile contact timers into state entry without Move* persistence", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeProjectileContact(memory, 200, 77, "guard", "p2");
+    markRuntimeMoveReversed(memory, 200);
+    advanceRuntimeContactTimers(memory);
+
+    const persisted = createRuntimeContactMemoryForStateEntry(memory, 348);
+
+    expect(hasRuntimeProjectileContact(persisted, 348, "contact", 77)).toBe(true);
+    expect(hasRuntimeProjectileContact(persisted, 348, "guard", 77)).toBe(true);
+    expect(runtimeProjectileContactTime(persisted, 348, "contact", 77)).toBe(1);
+    expect(runtimeProjectileContactTime(persisted, 348, "guard", 77)).toBe(1);
+    expect(runtimeMoveContactValue(persisted, 348, "contact")).toBe(0);
+    expect(runtimeMoveReversedValue(persisted, 348)).toBe(0);
+    expect(runtimeMoveHitCountValue(persisted, 348, false)).toBe(0);
   });
 
   it("tracks projectile cancel ids and timers separately from contact", () => {

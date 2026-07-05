@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjContact state-transition required trace gate
+
+Changed:
+
+- Added bounded Proj* state-entry carry so player/helper state transitions keep Projectile contact/cancel timers while Move* and HitCount still obey `movehitpersist` / `hitcountpersist`.
+- Added optional player-owned Projectile `ProjContact` state-transition route generation for synthetic imported traces.
+- Added `projremove = 0` support for synthetic player Projectile gates that need active post-contact payload evidence.
+- Added required `synthetic-imported-projectile-projcontactpersist.json` trace coverage for player `200 -> 348 -> 349` after a player-owned Projectile guard contact.
+- `scripts/qa_traces.cjs` registers `synthetic-imported-projectile-projcontactpersist` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines first-form `ProjContact` as one-tick projectile contact evidence and `ProjContactTime(id)` as ticks since the player's last projectile contact; Elecbyte CNS docs define `movehitpersist` separately for Move* trigger state-entry persistence.
+- Focused tests: `pnpm vitest run src/tests/ContactMemorySystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "carries projectile contact|ProjContactPersist"` -> 2 files passed, 3 tests passed.
+- Typecheck spot check: `pnpm exec tsc --noEmit --pretty false` -> passed.
+- Trace gate: `pnpm qa:trace` -> 423/423 artifacts, 393 required and 30 optional; `synthetic-imported-projectile-projcontactpersist.json` checksum `8e678b1b`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile contact markers can be read by owner CNS from a later owner `StateDef` through `ProjContact` / `ProjContactTime`.
+- The gate proves player `200 -> 348 -> 349`, Projectile id `8896`, projectile anim `910`, active post-contact projectile payload (`hasHit = true`, `hitsRemaining = 0`), owner target link `p1 -> p2 / 8896`, guard event/reason, and shared guard sound/FightFX package telemetry (`S6,15`, `F7022`, `sparkxy = 16,-58`).
+- State-entry contact reset still keeps Move* and HitCount separate: Proj* timers carry through state entry without implying direct Move* persistence.
+
+Claim blocked:
+
+- Exact `ProjContact` one-tick lifetime/order, second-form suffix syntax parity, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with exact `ProjContact` lifetime/order, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this player Projectile `ProjContact` state-transition gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Helper Projectile ProjContact state-transition required trace gate
 
 Changed:
@@ -25,11 +56,11 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact `ProjContact` tick order/lifetime, multi-projectile selection, player-side projectile state-transition persistence, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, score movement, and full MUGEN/IKEMEN helper Projectile parity.
+- Exact `ProjContact` tick order/lifetime, second-form suffix syntax parity, multi-projectile selection, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, score movement, and full MUGEN/IKEMEN helper Projectile parity.
 
 Next:
 
-- Continue R1 with player-side Projectile contact persistence breadth, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper `ProjContact` state-transition gate unless adding one blocked dimension.
+- Continue R1 with exact Projectile contact lifetime/order, second-form suffix syntax, helper Projectile/custom-state persistence breadth, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap. Do not reselect this helper `ProjContact` state-transition gate unless adding one blocked dimension.
 
 ## 2026-07-05 - Helper StateDef movehitpersist reversed required trace gate
 

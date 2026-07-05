@@ -35,12 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required helper Projectile ProjContact state-transition trace gate
-  -> RuntimeTraceGatePresets now builds synthetic-imported-helper-projcontactpersist.json
-  -> helper-parented owner-side Projectile id 8895 is guarded, helper state 1300 observes ProjContact/ProjContactTime, transitions into 1302, then branches to 1301 from that later helper StateDef with helper/projectile lifecycle and owner target-link evidence
+R1 required player Projectile ProjContact state-transition trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projcontactpersist.json
+  -> ContactMemorySystem now carries Projectile contact/cancel timers through state entry while keeping Move* and HitCount tied to their StateDef persistence flags
+  -> player-owned Projectile id 8896 is guarded, owner state 200 observes ProjContact/ProjContactTime, transitions into 348, then branches to 349 from that later owner StateDef with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
+  -> synthetic-imported-projectile-projcontactpersist.json checksum 8e678b1b is required in qa:trace
+  -> pnpm qa:trace passes 423/423 artifacts, 393 required and 30 optional
+  -> no score movement; exact ProjContact tick order/lifetime, second-form suffix syntax parity, multi-projectile selection, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+
+Previous R1 required helper Projectile ProjContact state-transition trace gate
   -> synthetic-imported-helper-projcontactpersist.json checksum 65639428 is required in qa:trace
-  -> pnpm qa:trace passes 422/422 artifacts, 392 required and 30 optional
-  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection, player-side projectile state-transition persistence, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full helper Projectile parity remain blocked
+  -> helper-parented owner-side Projectile id 8895 is guarded, helper state 1300 observes ProjContact/ProjContactTime, transitions into 1302, then branches to 1301 from that later helper StateDef with helper/projectile lifecycle and owner target-link evidence
+  -> pnpm qa:trace passed 422/422 artifacts, 392 required and 30 optional
+  -> remains required; exact helper Projectile contact lifetime/order, multi-projectile selection, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full helper Projectile parity remain blocked
 
 Previous R1 required helper reversed StateDef movehitpersist trace gate
   -> RuntimeTraceGatePresets now builds synthetic-imported-helper-movereversedpersist.json
