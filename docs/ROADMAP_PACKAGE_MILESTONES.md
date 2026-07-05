@@ -35,6 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R2 RuntimeSpriteEffectControllerWorld Trans ownership cut
+  -> RuntimeSpriteEffectControllerWorld owns active-state Trans dispatch as a sprite-effect side effect
+  -> StateProgramExecutor now classifies Trans as side-effect "trans", not a generic runtime-controller route
+  -> RuntimeActiveSideEffectDispatchWorld routes Trans through spriteEffect hooks
+  -> RuntimeSpriteEffectWorld applies bounded renderOpacity mutation through typed sprite-effect:trans operations or raw fallback params
+  -> focused SpriteEffectSystem, RuntimeActiveSideEffectDispatchSystem, and StateProgramExecutor coverage proves classification, route, telemetry, and renderOpacity mutation
+  -> pnpm qa:trace stays stable at 439/439 artifacts, 409 required and 30 optional; pnpm qa:smoke passed because presentation-state routing was touched
+  -> no score movement; exact visual tick-order, blend/material parity, helper/redirect ownership, renderer parity, and full presentation parity remain blocked
+
 R1 required helper Projectile ProjTime same-id guard-then-hit trace gate
   -> RuntimeTraceGatePresets now builds synthetic-imported-helper-projtime-same-id-last-contact.json for two helper-parented owner-side Projectiles id 8918
   -> first helper-parented Projectile contact is guarded, later same-id contact hits, and helper routes 1200 -> 1306 -> 1307 through ProjHitTime(8918) >= 1 / ProjHitTime(0) >= 1 / ProjContactTime(8918) >= 1 / ProjContactTime(0) >= 1 while ProjGuardedTime(8918) < 0 / ProjGuardedTime(0) < 0
@@ -1968,9 +1977,9 @@ R2 RuntimeTargetControllerDispatchWorld ownership extraction
   -> no helper/projectile target ownership, exact multi-target semantics, throw binding, full CNS VM parity, or score claim
 R2 RuntimeSpriteEffectControllerWorld ownership extraction
   -> RuntimeSpriteEffectControllerWorld now owns bounded active-state sprite-effect side-effect dispatch
-  -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, and Angle*
+  -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, Trans, and Angle*
   -> RuntimeSpriteEffectWorld remains the mutation/ticking owner for actor presentation state
-  -> focused SpriteEffectSystem coverage proves PalFX telemetry/mutation and AfterImage sampling through the dispatch boundary
+  -> focused SpriteEffectSystem coverage proves PalFX telemetry/mutation, AfterImage sampling, and Trans render-opacity mutation through the dispatch boundary
   -> no exact visual tick order, helper/redirect ownership, renderer parity, full CNS VM parity, or score claim
 R2 RuntimeStateEntrySetupWorld ownership extraction
   -> RuntimeStateEntrySetupWorld now owns bounded imported State -1 setup-controller selection before command routing

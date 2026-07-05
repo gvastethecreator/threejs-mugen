@@ -9,6 +9,7 @@ export type StateProgramSideEffect =
   | "palfx"
   | "afterimage"
   | "afterimagetime"
+  | "trans"
   | "angle"
   | "explod"
   | "removeexplod"
@@ -70,6 +71,7 @@ const sideEffects: Record<string, StateProgramSideEffect> = {
   palfx: "palfx",
   afterimage: "afterimage",
   afterimagetime: "afterimagetime",
+  trans: "trans",
   angleset: "angle",
   angleadd: "angle",
   angledraw: "angle",
@@ -120,7 +122,6 @@ const runtimeControllers = new Set([
   "defencemulset",
   "attackmulset",
   "remappal",
-  "trans",
   "posfreeze",
   "screenbound",
   "forcefeedback",

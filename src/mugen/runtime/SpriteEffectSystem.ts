@@ -11,7 +11,13 @@ export type RuntimeAngleSpriteEffectOp =
   | Extract<SpriteEffectControllerOp, { controllerType: "angleadd" }>
   | Extract<SpriteEffectControllerOp, { controllerType: "angledraw" }>;
 
-export type RuntimeSpriteEffectControllerEffect = "sprpriority" | "palfx" | "afterimage" | "afterimagetime" | "angle";
+export type RuntimeSpriteEffectControllerEffect =
+  | "sprpriority"
+  | "palfx"
+  | "afterimage"
+  | "afterimagetime"
+  | "trans"
+  | "angle";
 
 export type RuntimeSpriteEffectControllerActor = {
   runtime: CharacterRuntimeState;
@@ -67,6 +73,14 @@ export class RuntimeSpriteEffectWorld {
     applyRuntimeAfterImageTimeController(state, controller, operation);
   }
 
+  applyTrans(
+    state: CharacterRuntimeState,
+    controller: { params: Record<string, string> },
+    operation?: Extract<SpriteEffectControllerOp, { controllerType: "trans" }>,
+  ): void {
+    applyRuntimeTransController(state, controller, operation);
+  }
+
   applyAngle(
     state: CharacterRuntimeState,
     controller: { type: string; params: Record<string, string> },
@@ -116,6 +130,12 @@ export class RuntimeSpriteEffectControllerWorld {
         input.controller.source,
         operation?.controllerType === "afterimagetime" ? operation : undefined,
       );
+    } else if (input.effect === "trans") {
+      input.spriteEffectWorld.applyTrans(
+        input.actor.runtime,
+        input.controller.source,
+        operation?.controllerType === "trans" ? operation : undefined,
+      );
     } else {
       input.spriteEffectWorld.applyAngle(
         input.actor.runtime,
@@ -142,6 +162,7 @@ export function isRuntimeSpriteEffectControllerEffect(effect: string): effect is
     effect === "palfx" ||
     effect === "afterimage" ||
     effect === "afterimagetime" ||
+    effect === "trans" ||
     effect === "angle"
   );
 }

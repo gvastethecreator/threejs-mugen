@@ -27,6 +27,15 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R2 RuntimeSpriteEffectControllerWorld Trans ownership cut
+  -> RuntimeSpriteEffectControllerWorld owns active-state Trans dispatch as a sprite-effect side effect
+  -> StateProgramExecutor now classifies Trans as side-effect "trans", not a generic runtime-controller route
+  -> RuntimeActiveSideEffectDispatchWorld routes Trans through spriteEffect hooks
+  -> RuntimeSpriteEffectWorld applies bounded renderOpacity mutation through typed sprite-effect:trans operations or raw fallback params
+  -> focused SpriteEffectSystem, RuntimeActiveSideEffectDispatchSystem, and StateProgramExecutor coverage proves classification, route, telemetry, and renderOpacity mutation
+  -> pnpm qa:trace stays stable at 439/439 artifacts, 409 required and 30 optional; pnpm qa:smoke passed because presentation-state routing was touched
+  -> ownership cleanup only; no score movement, no exact visual tick-order, no blend/material parity, no helper/redirect ownership, no renderer parity, no full presentation claim
+
 R2 RuntimeEffectActorAdvanceWorld ownership cut
   -> RuntimeEffectActorAdvanceWorld owns bounded effect-actor advance ordering inside RuntimeEffectActorWorld
   -> active effects advance Helpers before Projectiles
@@ -1980,9 +1989,9 @@ R2 RuntimeTargetControllerDispatchWorld ownership extraction
   -> no helper/projectile target ownership, exact multi-target semantics, throw binding, full CNS VM parity, or score movement claim
 R2 RuntimeSpriteEffectControllerWorld ownership extraction
   -> RuntimeSpriteEffectControllerWorld now owns bounded active-state sprite-effect side-effect dispatch
-  -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, and Angle*
+  -> PlayableMatchRuntime delegates controller telemetry, typed sprite-effect operation selection, operation telemetry, and mutation handoff for SprPriority, PalFX, AfterImage, AfterImageTime, Trans, and Angle*
   -> RuntimeSpriteEffectWorld remains the mutation/ticking owner for actor presentation state
-  -> focused SpriteEffectSystem coverage proves PalFX telemetry/mutation and AfterImage sampling through the dispatch boundary
+  -> focused SpriteEffectSystem coverage proves PalFX telemetry/mutation, AfterImage sampling, and Trans render-opacity mutation through the dispatch boundary
   -> no exact visual tick order, helper/redirect ownership, renderer parity, full CNS VM parity, or score movement claim
 R2 RuntimeStateEntrySetupWorld ownership extraction
   -> RuntimeStateEntrySetupWorld now owns bounded imported State -1 setup-controller selection before command routing

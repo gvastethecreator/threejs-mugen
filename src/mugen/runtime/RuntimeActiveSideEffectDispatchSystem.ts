@@ -166,6 +166,7 @@ function isActiveSpriteEffect(effect: StateProgramSideEffect): effect is Runtime
     effect === "palfx" ||
     effect === "afterimage" ||
     effect === "afterimagetime" ||
+    effect === "trans" ||
     effect === "angle"
   );
 }

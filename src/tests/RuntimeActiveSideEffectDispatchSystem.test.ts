@@ -18,6 +18,7 @@ describe("RuntimeActiveSideEffectDispatchWorld", () => {
     ["palfx", "sprite-effect", "spriteEffect"],
     ["afterimage", "sprite-effect", "spriteEffect"],
     ["afterimagetime", "sprite-effect", "spriteEffect"],
+    ["trans", "sprite-effect", "spriteEffect"],
     ["angle", "sprite-effect", "spriteEffect"],
     ["explod", "effect-spawn", "effectSpawn"],
     ["removeexplod", "effect-spawn", "effectSpawn"],

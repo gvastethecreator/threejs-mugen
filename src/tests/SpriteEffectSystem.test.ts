@@ -257,12 +257,14 @@ describe("SpriteEffectSystem", () => {
       controller("AfterImage", { time: "3", length: "2", timegap: "1", framegap: "1" }),
       () => sample(serial++),
     );
+    world.applyTrans(state, controller("Trans", { trans: "addalpha,128,128" }));
     world.applyAngle(state, controller("AngleSet", { value: "35" }));
     world.applyAngle(state, controller("AngleDraw", {}));
 
     expect(state.spritePriority).toBe(4);
     expect(state.paletteFx).toMatchObject({ remaining: 2, time: 2, add: [10, 20, 30] });
     expect(state.afterImage?.samples.map((item) => item.spriteIndex)).toEqual([0]);
+    expect(state.renderOpacity).toBe(0.5);
     expect(state.renderAngle).toBe(35);
 
     world.tick(state, () => sample(serial++));
@@ -306,6 +308,26 @@ describe("SpriteEffectSystem", () => {
     expect(recordedControllers).toEqual(["PalFX"]);
     expect(recordedOperations).toEqual(["sprite-effect:palfx"]);
     expect(result).toEqual({ applied: true, recordedController: true, recordedOperation: true });
+  });
+
+  it("dispatches Trans controllers through the active-state sprite boundary", () => {
+    const world = new RuntimeSpriteEffectControllerWorld();
+    const actor = { runtime: runtimeState() };
+    const ir = compileControllerIr(controller("Trans", { trans: "addalpha,128,128" }));
+    const recordedOperations: string[] = [];
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      effect: "trans",
+      spriteEffectWorld: new RuntimeSpriteEffectWorld(),
+      sampleFactory: () => undefined,
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.controllerType}`),
+    });
+
+    expect(actor.runtime.renderOpacity).toBe(0.5);
+    expect(recordedOperations).toEqual(["sprite-effect:trans"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
   });
 
   it("dispatches AfterImage controllers through the active-state sprite boundary", () => {
