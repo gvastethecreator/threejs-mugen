@@ -1578,12 +1578,22 @@ function compileEnvShakeControllerOp(controller: MugenStateController): EnvShake
   };
 }
 
-function compileEnvColorControllerOp(controller: MugenStateController): EnvColorControllerOp {
+function compileEnvColorControllerOp(controller: MugenStateController): EnvColorControllerOp | undefined {
+  const color = strictNumberTripletOrDefault(findParam(controller, "value"), [255, 255, 255], 0, 255);
+  const time = staticNumberParam(controller, "time", 1);
+  const under = staticNumberParam(controller, "under", 0);
+  if (color === undefined || time === undefined || under === undefined) {
+    return undefined;
+  }
+  const clampedTime = clampEnvColorTime(time);
+  if (clampedTime <= 0) {
+    return undefined;
+  }
   return {
     kind: "envcolor",
-    color: strictNumberTripletOrDefault(findParam(controller, "value"), [255, 255, 255], 0, 255) ?? [255, 255, 255],
-    time: clampEnvColorTime(firstNumber(findParam(controller, "time")) ?? 1),
-    under: (firstNumber(findParam(controller, "under")) ?? 0) !== 0,
+    color,
+    time: clampedTime,
+    under: under !== 0,
   };
 }
 

@@ -984,6 +984,9 @@ time = 20
 
   it("compiles EnvColor controllers into typed stage flash operations", () => {
     const envColor = compileControllerIr(controller(200, "EnvColor", [], { value: "16,96,300", time: "999", under: "1" }));
+    const dynamic = compileControllerIr(
+      controller(200, "EnvColor", [], { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" }),
+    );
 
     expect(envColor.operation).toEqual({
       kind: "envcolor",
@@ -991,6 +994,7 @@ time = 20
       time: 240,
       under: true,
     });
+    expect(dynamic.operation).toBeUndefined();
   });
 
   it("compiles Projectile controllers into typed projectile operations", () => {

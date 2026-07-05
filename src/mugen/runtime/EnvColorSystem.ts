@@ -12,9 +12,16 @@ export type RuntimeEnvColorControllerDispatchOptions<TActor> = {
     controller: MugenStateController,
     runtimeTick: number,
     operation?: EnvColorControllerOp,
+    resolveEnvColor?: RuntimeEnvColorResolver,
   ) => RuntimeEnvColorEvent | undefined | void;
+  resolveEnvColor?: RuntimeEnvColorResolver;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: EnvColorControllerOp) => void;
+};
+
+export type RuntimeEnvColorResolver = {
+  resolveNumber: (key: "time" | "under") => number | undefined;
+  resolveTriplet: (key: "value") => [number, number, number] | undefined;
 };
 
 export type RuntimeEnvColorControllerDispatchResult = {
@@ -27,16 +34,22 @@ export function createRuntimeEnvColorEvent(
   controller: MugenStateController,
   runtimeTick: number,
   operation?: EnvColorControllerOp,
+  resolveEnvColor?: RuntimeEnvColorResolver,
 ): RuntimeEnvColorEvent | undefined {
-  const time = operation?.time ?? clampFlashTime(firstNumber(findControllerParam(controller, "time")) ?? 1);
+  const time =
+    operation?.time ??
+    clampFlashTime(resolveEnvColor?.resolveNumber("time") ?? firstNumber(findControllerParam(controller, "time")) ?? 1);
   if (time <= 0) {
     return undefined;
   }
   return {
     type: "EnvColor",
-    color: operation?.color ?? colorTriplet(findControllerParam(controller, "value"), [255, 255, 255]),
+    color:
+      operation?.color ??
+      clampColorTriplet(resolveEnvColor?.resolveTriplet("value")) ??
+      colorTriplet(findControllerParam(controller, "value"), [255, 255, 255]),
     time,
-    under: operation?.under ?? (firstNumber(findControllerParam(controller, "under")) ?? 0) !== 0,
+    under: operation?.under ?? (resolveEnvColor?.resolveNumber("under") ?? firstNumber(findControllerParam(controller, "under")) ?? 0) !== 0,
     runtimeTick,
   };
 }
@@ -53,8 +66,9 @@ export class RuntimeEnvColorWorld {
     controller: MugenStateController,
     runtimeTick: number,
     operation?: EnvColorControllerOp,
+    resolveEnvColor?: RuntimeEnvColorResolver,
   ): RuntimeEnvColorEvent | undefined {
-    const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation);
+    const event = createRuntimeEnvColorEvent(controller, runtimeTick, operation, resolveEnvColor);
     if (!event) {
       return undefined;
     }
@@ -78,7 +92,7 @@ export class RuntimeEnvColorControllerDispatchWorld {
     if (operation) {
       options.recordOperation?.(options.actor, operation);
     }
-    const event = options.emitController(options.controller.source, options.runtimeTick, operation) ?? undefined;
+    const event = options.emitController(options.controller.source, options.runtimeTick, operation, options.resolveEnvColor) ?? undefined;
     return {
       event,
       recordedController: Boolean(options.recordController),
@@ -122,6 +136,13 @@ function colorTriplet(value: string | undefined, fallback: [number, number, numb
     return fallback;
   }
   return [clampColor(numbers[0]!), clampColor(numbers[1]!), clampColor(numbers[2]!)];
+}
+
+function clampColorTriplet(value: [number, number, number] | undefined): [number, number, number] | undefined {
+  if (!value) {
+    return undefined;
+  }
+  return [clampColor(value[0]), clampColor(value[1]), clampColor(value[2])];
 }
 
 function clampColor(value: number): number {

@@ -35,7 +35,17 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required dynamic EnvShake trace gate
+R1 required dynamic EnvColor trace gate
+  -> synthetic-imported-envcolor-dynamic.json checksum dbe548a7 / final checksum 2ff8dd42 is required in qa:trace
+  -> imported active state seeds var(0)=32, var(1)=128, var(2)=240, var(3)=14, and var(4)=1
+  -> active state executes EnvColor value = var(0),var(1),var(2), time = var(3), and under = var(4)
+  -> dynamic EnvColor resolves through active controller expression fallback instead of typed envcolor evidence
+  -> stage-frame evidence requires envColor 32,128,240 with under = true
+  -> pnpm qa:trace passes 451/451 artifacts, 421 required and 30 optional
+  -> official Elecbyte docs define EnvColor value/time/under and numeric controller params as expression-capable
+  -> no score movement; dynamic typed-operation lowering for EnvColor, exact blend math, layer/window behavior, pause timing, renderer parity, and full presentation parity remain blocked
+
+Previous R1 required dynamic EnvShake trace gate
   -> synthetic-imported-envshake-dynamic.json checksum 90955e75 / final checksum 1af5fbf6 is required in qa:trace
   -> imported active state seeds var(0)=18, var(1)=45, var(2)=-9, and fvar(0)=0.25
   -> active state executes EnvShake time = var(0), freq = var(1), ampl = var(2), and phase = fvar(0)

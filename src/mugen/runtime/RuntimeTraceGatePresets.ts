@@ -5732,6 +5732,69 @@ export function createSyntheticImportedEnvColorUnderTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedDynamicEnvColorTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-envcolor-dynamic",
+    displayName: "Synthetic Imported Dynamic EnvColor",
+    action200Duration: 30,
+    withDynamicEnvColor: {
+      value: ["var(0)", "var(1)", "var(2)"],
+      time: "var(3)",
+      under: "var(4)",
+      vars: [
+        { index: 0, value: 32 },
+        { index: 1, value: 128 },
+        { index: 2, value: 240 },
+        { index: 3, value: 14 },
+        { index: 4, value: 1 },
+      ],
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-envcolor-dynamic-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-envcolor-dynamic-golden",
+      label: "Synthetic imported dynamic EnvColor route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported dynamic EnvColor trace proves value/time/under expressions can resolve owner-local var values through active controller fallback and reach bounded stage-flash telemetry. It does not claim typed envcolor operation lowering for dynamic params, exact MUGEN/IKEMEN blend, layer/window behavior, pause timing, renderer parity, or full presentation parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-envcolor-dynamic-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "EnvColor", "HitDef"],
+        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredStageFrames: [
+          {
+            stageId: stage.id,
+            envColorR: 32,
+            envColorG: 128,
+            envColorB: 240,
+            envColorUnder: true,
+            observedEnvColorOpacityAtLeast: 0.2,
+            minFrames: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 function createSyntheticImportedEnvColorLayerTraceArtifact(
   options: RuntimeTraceGatePresetOptions,
   layer: {
@@ -33806,6 +33869,12 @@ export type SyntheticImportedTraceFighterOptions = {
     time?: number;
     under?: boolean;
   };
+  withDynamicEnvColor?: {
+    value: [string, string, string];
+    time: string;
+    under: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withRemapPal?: {
     source: [number, number];
     dest: [number, number];
@@ -34103,6 +34172,7 @@ ${options.withAngle === undefined ? "" : angleControllerBlock(options.withAngle)
 ${options.withDynamicAngle === undefined ? "" : dynamicAngleControllerBlock(options.withDynamicAngle)}
 ${options.withEnvShake === undefined ? "" : envShakeControllerBlock(options.withEnvShake)}
 ${options.withEnvColor === undefined ? "" : envColorControllerBlock(options.withEnvColor)}
+${options.withDynamicEnvColor === undefined ? "" : dynamicEnvColorControllerBlock(options.withDynamicEnvColor)}
 ${options.withRemapPal === undefined ? "" : remapPalControllerBlock(options.withRemapPal)}
 ${options.withDynamicRemapPal === undefined ? "" : dynamicRemapPalControllerBlock(options.withDynamicRemapPal)}
 ${options.withAfterImage === undefined ? "" : afterImageControllerBlock(options.withAfterImage)}
@@ -35528,6 +35598,30 @@ trigger1 = Time >= 0
 value = ${(options.value ?? [255, 255, 255]).join(",")}
 time = ${options.time ?? 1}
 under = ${options.under ? 1 : 0}
+`;
+}
+
+function dynamicEnvColorControllerBlock(options: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicEnvColor"]>): string {
+  const varSeeds =
+    options.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic EnvColor Var ${seed.index}]
+type = VarSet
+trigger1 = Time = 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `
+${varSeeds}
+[State 200, Dynamic EnvColor Probe]
+type = EnvColor
+trigger1 = Time = 1
+value = ${options.value.join(",")}
+time = ${options.time}
+under = ${options.under}
 `;
 }
 

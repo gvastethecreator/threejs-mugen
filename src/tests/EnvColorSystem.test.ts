@@ -41,6 +41,42 @@ describe("EnvColorSystem", () => {
     });
   });
 
+  it("resolves dynamic EnvColor params without typed operation evidence", () => {
+    const dispatchWorld = new RuntimeEnvColorControllerDispatchWorld();
+    const envColorWorld = new RuntimeEnvColorWorld();
+    const actor = { id: "p1" };
+    const ir = compileControllerIr(controller("EnvColor", { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" }));
+    const recordedControllers: string[] = [];
+    const recordedOperations: string[] = [];
+
+    const result = dispatchWorld.apply({
+      actor,
+      controller: ir,
+      runtimeTick: 24,
+      emitController: (source, runtimeTick, operation, resolveEnvColor) =>
+        envColorWorld.emitController(source, runtimeTick, operation, resolveEnvColor),
+      resolveEnvColor: {
+        resolveNumber: (key) => ({ time: 14, under: 1 })[key],
+        resolveTriplet: () => [32, 128, 240],
+      },
+      recordController: (_actor, source) => recordedControllers.push(source.type),
+      recordOperation: (_actor, operation) => recordedOperations.push(`${operation.kind}:${operation.time}`),
+    });
+
+    expect(ir.operation).toBeUndefined();
+    expect(result.event).toEqual({
+      type: "EnvColor",
+      color: [32, 128, 240],
+      time: 14,
+      under: true,
+      runtimeTick: 24,
+    });
+    expect(envColorWorld.snapshotStageFlash(25)).toMatchObject({ color: [32, 128, 240], remaining: 13, under: true });
+    expect(recordedControllers).toEqual(["EnvColor"]);
+    expect(recordedOperations).toEqual([]);
+    expect(result).toMatchObject({ recordedController: true, recordedOperation: false });
+  });
+
   it("ignores zero-length EnvColor controllers", () => {
     expect(createRuntimeEnvColorEvent(controller("EnvColor", { time: "0" }), 10)).toBeUndefined();
   });

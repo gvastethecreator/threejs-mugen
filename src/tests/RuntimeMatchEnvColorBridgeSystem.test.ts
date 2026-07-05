@@ -47,6 +47,34 @@ describe("RuntimeMatchEnvColorBridgeWorld", () => {
       }),
     ).toBeUndefined();
   });
+
+  it("forwards dynamic EnvColor resolver through the match bridge", () => {
+    const bridge = new RuntimeMatchEnvColorBridgeWorld();
+    const envColorWorld = new RuntimeEnvColorWorld();
+
+    const event = bridge.apply({
+      controller: controller("EnvColor", { value: "var(0),var(1),var(2)", time: "var(3)", under: "var(4)" }),
+      runtimeTick: 50,
+      envColorWorld,
+      resolveEnvColor: {
+        resolveNumber: (key) => ({ time: 14, under: 1 })[key],
+        resolveTriplet: () => [32, 128, 240],
+      },
+    });
+
+    expect(event).toEqual({
+      type: "EnvColor",
+      color: [32, 128, 240],
+      time: 14,
+      under: true,
+      runtimeTick: 50,
+    });
+    expect(envColorWorld.snapshotStageFlash(51)).toMatchObject({
+      color: [32, 128, 240],
+      remaining: 13,
+      under: true,
+    });
+  });
 });
 
 function controller(type: string, params: Record<string, string>): MugenStateController {

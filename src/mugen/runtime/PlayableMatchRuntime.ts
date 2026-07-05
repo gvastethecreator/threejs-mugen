@@ -12,7 +12,11 @@ import {
   RuntimeContactControllerDispatchWorld,
   RuntimeContactMemoryWorld,
 } from "./ContactMemorySystem";
-import { RuntimeEnvColorControllerDispatchWorld, RuntimeEnvColorWorld } from "./EnvColorSystem";
+import {
+  RuntimeEnvColorControllerDispatchWorld,
+  type RuntimeEnvColorResolver,
+  RuntimeEnvColorWorld,
+} from "./EnvColorSystem";
 import { scaleRuntimeIncomingDamage } from "./CombatResolver";
 import { demoFighters, type DemoFighterDefinition, type DemoMove } from "./demoFighters";
 import { RuntimeDirectCombatWorld } from "./DirectCombatSystem";
@@ -220,7 +224,11 @@ type PauseControllerHandler = (
   controller: MugenStateController,
   operation?: PauseControllerOp,
 ) => MatchPauseControllerResult | undefined;
-type EnvColorControllerHandler = (controller: MugenStateController, operation?: EnvColorControllerOp) => void;
+type EnvColorControllerHandler = (
+  controller: MugenStateController,
+  operation?: EnvColorControllerOp,
+  resolveEnvColor?: RuntimeEnvColorResolver,
+) => void;
 
 type EnterStateOptions = RuntimeStateEntryOptions<FighterMatchState>;
 type AnimationElementOptions = RuntimeStateEntryAnimationElementOptions;
@@ -424,7 +432,7 @@ export class PlayableMatchRuntime {
               this.stage.bounds,
               this.tick,
               (target, controller, operation) => this.applyMatchPauseController(target, controller, operation),
-              (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+              (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
         });
         return { paused: result.paused, result };
@@ -473,7 +481,7 @@ export class PlayableMatchRuntime {
               this.stage.bounds,
               this.tick,
               (pauseActor, controller, operation) => this.applyMatchPauseController(pauseActor, controller, operation),
-              (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+              (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
           applyAutoGuardStart: (defender, attacker) =>
             applyAutoGuardStart(defender, attacker, this.guardWorld, this.guardDistanceWorld),
@@ -559,7 +567,7 @@ export class PlayableMatchRuntime {
           this.stage.bounds,
           this.tick,
           (fighter, controller, operation) => this.applyMatchPauseController(fighter, controller, operation),
-          (controller, operation) => this.recordEnvColorEvent(controller, this.tick, operation),
+          (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
         ),
     });
   }
@@ -659,10 +667,16 @@ export class PlayableMatchRuntime {
     this.playing = resetState.playing;
   }
 
-  private recordEnvColorEvent(controller: MugenStateController, runtimeTick: number, operation?: EnvColorControllerOp): void {
+  private recordEnvColorEvent(
+    controller: MugenStateController,
+    runtimeTick: number,
+    operation?: EnvColorControllerOp,
+    resolveEnvColor?: RuntimeEnvColorResolver,
+  ): void {
     matchEnvColorBridgeWorld.apply({
       controller,
       operation,
+      resolveEnvColor,
       runtimeTick,
       envColorWorld: this.envColorWorld,
     });
@@ -1032,12 +1046,18 @@ function runActiveStateControllers(
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
-    envColor: ({ controller }) => {
+    envColor: ({ controller, actor, opponent: targetOpponent, owner: stateOwner, tick: activeTick }) => {
       envColorControllerDispatchWorld.apply({
         actor: fighter,
         controller,
         runtimeTick: tick,
-        emitController: (source, _runtimeTick, operation) => onEnvColorController?.(source, operation),
+        emitController: (source, _runtimeTick, operation, resolveEnvColor) =>
+          onEnvColorController?.(source, operation, resolveEnvColor),
+        resolveEnvColor: {
+          resolveNumber: (key) => resolveEnvColorNumberParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+          resolveTriplet: (key) =>
+            resolveEnvColorTripletParam(controller, key, actor, targetOpponent, stateOwner, stageBounds, activeTick),
+        },
         ...runtimeActiveControllerTelemetryHooks,
       });
     },
@@ -1529,6 +1549,48 @@ function resolveEnvShakeFloatParam(
     return undefined;
   }
   return resolveDispatchFloat(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveEnvColorNumberParam(
+  controller: ControllerIr,
+  key: "time" | "under",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): number | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  return resolveDispatchNumber(undefined, raw, fighter, opponent, owner, stageBounds, stageTime);
+}
+
+function resolveEnvColorTripletParam(
+  controller: ControllerIr,
+  key: "value",
+  fighter: FighterMatchState,
+  opponent: FighterMatchState,
+  owner: FighterMatchState,
+  stageBounds?: MugenStageDefinition["bounds"],
+  stageTime?: number,
+): [number, number, number] | undefined {
+  const raw = findParam(controller, key);
+  if (!raw) {
+    return undefined;
+  }
+  const [rExpression, gExpression, bExpression] = raw.split(",").map((part) => part.trim());
+  if (!rExpression || !gExpression || !bExpression) {
+    return undefined;
+  }
+  const r = resolveDispatchNumber(undefined, rExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const g = resolveDispatchNumber(undefined, gExpression, fighter, opponent, owner, stageBounds, stageTime);
+  const b = resolveDispatchNumber(undefined, bExpression, fighter, opponent, owner, stageBounds, stageTime);
+  if (r === undefined || g === undefined || b === undefined) {
+    return undefined;
+  }
+  return [r, g, b];
 }
 
 function resolveDispatchBoolean(

@@ -351,6 +351,7 @@ import {
   createSyntheticImportedAngleMulTraceArtifact,
   createSyntheticImportedDynamicAngleMulTraceArtifact,
   createSyntheticImportedDynamicAngleTraceArtifact,
+  createSyntheticImportedDynamicEnvColorTraceArtifact,
   createSyntheticImportedEnvColorTraceArtifact,
   createSyntheticImportedEnvColorUnderTraceArtifact,
   createSyntheticImportedEnvShakeTraceArtifact,
@@ -8813,6 +8814,54 @@ describe("RuntimeTraceGatePresets", () => {
           stageId: "trace-close-training-grid",
           envColor: expect.objectContaining({
             color: [16, 96, 255],
+            under: true,
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported dynamic EnvColor artifact with expression fallback evidence", () => {
+    const artifact = createSyntheticImportedDynamicEnvColorTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-envcolor-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-envcolor-dynamic-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "EnvColor", "HitDef"]);
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef"]);
+    expect(artifact.gates[0]?.requirements.requiredStageFrames).toEqual([
+      {
+        stageId: "trace-close-training-grid",
+        envColorR: 32,
+        envColorG: 128,
+        envColorB: 240,
+        envColorUnder: true,
+        observedEnvColorOpacityAtLeast: 0.2,
+        minFrames: 1,
+      },
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.EnvColor).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.envcolor).toBeUndefined();
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.stageFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          stageId: "trace-close-training-grid",
+          envColor: expect.objectContaining({
+            color: [32, 128, 240],
             under: true,
           }),
         }),

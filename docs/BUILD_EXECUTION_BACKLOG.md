@@ -1,5 +1,40 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Dynamic EnvColor trace gate
+
+Changed:
+
+- Added required `synthetic-imported-envcolor-dynamic.json` trace coverage for active imported dynamic `EnvColor` stage-flash params.
+- `ControllerOps` now leaves dynamic `EnvColor value` / `time` / `under` params on the raw fallback path instead of emitting false typed `envcolor` defaults.
+- `RuntimeEnvColorSystem` and `RuntimeMatchEnvColorBridgeSystem` now accept a bounded dynamic resolver for raw `EnvColor` params when no typed `envcolor` operation exists.
+- `PlayableMatchRuntime` resolves dynamic `EnvColor value/time/under` through the active controller expression context, preserving owner/opponent/stage-time evaluation.
+- `RuntimeTraceGatePresets` now builds a dynamic EnvColor route that seeds `var(0)=32`, `var(1)=128`, `var(2)=240`, `var(3)=14`, and `var(4)=1`, then executes `value = var(0),var(1),var(2)`, `time = var(3)`, and `under = var(4)`.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-envcolor-dynamic` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `EnvColor value` as RGB components, `time` as display duration, `under` as the under-characters/projectiles layer flag, and general numeric controller params as expression-capable.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeCompiler.test.ts src/tests/EnvColorSystem.test.ts src/tests/RuntimeMatchEnvColorBridgeSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "EnvColor|compiles EnvColor"` -> 4 files passed, 16 matching tests passed.
+- Trace gate: `pnpm qa:trace` -> 451/451 artifacts, 421 required and 30 optional; `synthetic-imported-envcolor-dynamic.json` checksum `dbe548a7`, final checksum `2ff8dd42`.
+- End gates: `pnpm test` -> 151 files passed, 1363 tests passed; `pnpm typecheck` passed; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm check:boundaries` passed; `git diff --check` passed with only CRLF normalization warnings for touched markdown docs.
+- Smoke/visual QA: not run yet; this cut changed runtime/controller docs and trace evidence, not frontend, renderer assets, Studio UI, sprites, CSS, or visible layout.
+
+Claim allowed:
+
+- Bounded active imported dynamic `EnvColor` params can resolve through active controller expression fallback and emit trace-gated stage-flash telemetry. The synthetic route proves `value = 32,128,240`, `time = 14`, and `under = 1` without typed `envcolor` operation evidence.
+
+Claim blocked:
+
+- Dynamic typed-operation lowering for `EnvColor`, exact MUGEN/IKEMEN blend math, layer/window behavior, pause timing, renderer parity, score movement, and full presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 451/451 artifacts, 421 required and 30 optional. Latest runtime evidence is dynamic `EnvColor`; previous dynamic EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed runtime oracle, preferably Common1/FightFX precision from the next-10 queue, or continue R2 by moving the next raw presentation/resource/audio fallback into a named boundary with required trace evidence.
+
 ## 2026-07-05 - Dynamic EnvShake trace gate
 
 Changed:
