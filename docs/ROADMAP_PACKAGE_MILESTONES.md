@@ -35,7 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required player Projectile ProjHit/ProjGuarded any-id suffix trace gates
+R1 required player Projectile ProjContact any-id suffix trace gate
+  -> ExpressionCompiler/ExpressionEvaluator normalize Elecbyte legacy ProjContact/ProjHit/ProjGuarded suffix forms, including omitted-ID, ID 0, and second-form timing relations
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projcontact-suffix-any.json
+  -> player-owned Projectile id 8902 is guarded, owner state 200 routes on omitted-ID ProjContact = 1, >= 1, then branches 360 -> 361 through ID 0 first-form ProjContact0 = 1 with active projectile payload, owner target-link, guard sound, and FightFX spark package evidence
+  -> synthetic-imported-projectile-projcontact-suffix-any.json checksum 2fb80418 is required in qa:trace
+  -> pnpm qa:trace passes 429/429 artifacts, 399 required and 30 optional
+  -> no score movement; exact ProjContact tick order/lifetime, multi-projectile selection beyond one matching any-id route, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond the bounded guard contact package, and full Projectile parity remain blocked
+
+Previous R1 required player Projectile ProjHit/ProjGuarded any-id suffix trace gates
   -> ExpressionCompiler/ExpressionEvaluator normalize Elecbyte legacy ProjContact/ProjHit/ProjGuarded suffix forms, including omitted-ID, ID 0, and second-form timing relations
   -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhit-suffix-any.json and synthetic-imported-projectile-projguarded-suffix-any.json
   -> player-owned Projectile id 8900 hits, owner state 200 routes on omitted-ID ProjHit = 1, >= 1, then branches 356 -> 357 through ID 0 first-form ProjHit0 = 1 with active projectile payload, owner target-link, hit sound, and FightFX spark package evidence
