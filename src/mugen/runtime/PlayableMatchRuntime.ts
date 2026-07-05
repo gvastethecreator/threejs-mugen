@@ -123,6 +123,7 @@ import {
   RuntimePauseWorld,
   RuntimePausedMatchWorld,
   type MatchPauseControllerResult,
+  type RuntimePauseControllerParamResolvers,
 } from "./PauseSystem";
 import { dispatchStateProgramController, findControllerParam } from "./StateProgramExecutor";
 import {
@@ -233,7 +234,7 @@ type PauseControllerHandler = (
   controller: MugenStateController,
   operation?: PauseControllerOp,
   resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
-  resolveP2DefMul?: () => number | undefined,
+  resolveParams?: RuntimePauseControllerParamResolvers,
 ) => MatchPauseControllerResult | undefined;
 type EnvColorControllerHandler = (
   controller: MugenStateController,
@@ -449,8 +450,8 @@ export class PlayableMatchRuntime {
               this.effectSpawnWorld,
               this.stage.bounds,
               this.tick,
-              (target, controller, operation, resolveSoundValue, resolveP2DefMul) =>
-                this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveP2DefMul),
+              (target, controller, operation, resolveSoundValue, resolveParams) =>
+                this.applyMatchPauseController(target, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
         });
@@ -500,8 +501,8 @@ export class PlayableMatchRuntime {
               this.stunWorld,
               this.stage.bounds,
               this.tick,
-              (pauseActor, controller, operation, resolveSoundValue, resolveP2DefMul) =>
-                this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveP2DefMul),
+              (pauseActor, controller, operation, resolveSoundValue, resolveParams) =>
+                this.applyMatchPauseController(pauseActor, controller, operation, resolveSoundValue, resolveParams),
               (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
             ),
           applyAutoGuardStart: (defender, attacker) =>
@@ -587,8 +588,8 @@ export class PlayableMatchRuntime {
           this.stunWorld,
           this.stage.bounds,
           this.tick,
-          (fighter, controller, operation, resolveSoundValue, resolveP2DefMul) =>
-            this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveP2DefMul),
+          (fighter, controller, operation, resolveSoundValue, resolveParams) =>
+            this.applyMatchPauseController(fighter, controller, operation, resolveSoundValue, resolveParams),
           (controller, operation, resolveEnvColor) => this.recordEnvColorEvent(controller, this.tick, operation, resolveEnvColor),
         ),
     });
@@ -599,7 +600,7 @@ export class PlayableMatchRuntime {
     controller: MugenStateController,
     operation?: PauseControllerOp,
     resolveSoundValue?: () => RuntimeResolvedSoundValue | undefined,
-    resolveP2DefMul?: () => number | undefined,
+    resolveParams?: RuntimePauseControllerParamResolvers,
   ): MatchPauseControllerResult {
     return this.matchPauseControllerWorld.apply({
       actor: fighter,
@@ -612,7 +613,7 @@ export class PlayableMatchRuntime {
       emitSound: (actor, sound, runtimeTick, resolvedSound) =>
         actor.audioWorld.emitSuperPauseSound(actor, sound, runtimeTick, resolvedSound),
       resolveSoundValue,
-      resolveP2DefMul,
+      resolveParams,
       log: (message) => this.logs.unshift(message),
     });
   }
@@ -1126,7 +1127,16 @@ function runActiveStateControllers(
             source,
             operation,
             () => resolveAudioSoundValueParam(source, "sound", actor, targetOpponent, stateOwner, stageBounds, activeTick),
-            () => resolvePauseNumberParam(source, "p2defmul", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+            {
+              time: () => resolvePauseNumberParam(source, "time", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              moveTime: () =>
+                resolvePauseNumberParam(source, "movetime", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              darken: () => resolvePauseNumberParam(source, "darken", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              powerAdd: () =>
+                resolvePauseNumberParam(source, "poweradd", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              p2DefMul: () =>
+                resolvePauseNumberParam(source, "p2defmul", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+            },
           ),
         ...runtimeActiveControllerTelemetryHooks,
       });
@@ -1724,7 +1734,7 @@ function resolveEnvColorTripletParam(
 
 function resolvePauseNumberParam(
   controller: MugenStateController,
-  key: "p2defmul",
+  key: "time" | "movetime" | "darken" | "poweradd" | "p2defmul",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,

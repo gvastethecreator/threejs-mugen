@@ -97,6 +97,7 @@ export type RuntimePauseControllerDispatchOptions<TActor extends MatchPauseActor
     actor: TActor,
     controller: MugenStateController,
     operation?: PauseControllerOp,
+    resolveParams?: RuntimePauseControllerParamResolvers,
   ) => MatchPauseControllerResult | undefined;
   recordController?: (actor: TActor, controller: MugenStateController) => void;
   recordOperation?: (actor: TActor, operation: PauseControllerOp) => void;
@@ -122,9 +123,17 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
     resolvedSound?: RuntimeResolvedSoundRef,
   ) => RuntimeSoundEvent | undefined;
   resolveSoundValue?: () => RuntimeResolvedSoundRef | undefined;
-  resolveP2DefMul?: () => number | undefined;
+  resolveParams?: RuntimePauseControllerParamResolvers;
   applyTargetDefenseMultiplier?: (actor: TActor, multiplier: number) => number;
   log: (message: string) => void;
+};
+
+export type RuntimePauseControllerParamResolvers = {
+  time?: () => number | undefined;
+  moveTime?: () => number | undefined;
+  darken?: () => number | undefined;
+  powerAdd?: () => number | undefined;
+  p2DefMul?: () => number | undefined;
 };
 
 export class RuntimePauseWorld {
@@ -156,8 +165,9 @@ export class RuntimePauseWorld {
     controller: MugenStateController,
     tick: number,
     operation?: PauseControllerOp,
+    resolveParams?: RuntimePauseControllerParamResolvers,
   ): MatchPauseControllerResult {
-    const result = createMatchPauseFromController(actor, controller, tick, operation);
+    const result = createMatchPauseFromController(actor, controller, tick, operation, resolveParams);
     if (result.pause) {
       this.pause = result.pause;
     }
@@ -169,7 +179,13 @@ export class RuntimeMatchPauseControllerWorld {
   apply<TActor extends MatchPauseActor & { label: string }>(
     input: RuntimeMatchPauseControllerWorldInput<TActor>,
   ): MatchPauseControllerResult {
-    const result = input.pauseWorld.applyController(input.actor, input.controller, input.runtimeTick, input.operation);
+    const result = input.pauseWorld.applyController(
+      input.actor,
+      input.controller,
+      input.runtimeTick,
+      input.operation,
+      input.resolveParams,
+    );
     if (!result.pause) {
       return result;
     }
@@ -179,7 +195,7 @@ export class RuntimeMatchPauseControllerWorld {
     const targetDefenseMultiplier = superPauseTargetDefenseMultiplierParam(
       input.controller,
       input.operation,
-      input.resolveP2DefMul,
+      input.resolveParams?.p2DefMul,
     );
     const targetDefenseTargets =
       result.pause.type === "SuperPause" && targetDefenseMultiplier !== undefined
@@ -320,14 +336,20 @@ export function createMatchPauseFromController(
   controller: MugenStateController,
   tick: number,
   operation?: PauseControllerOp,
+  resolveParams?: RuntimePauseControllerParamResolvers,
 ): MatchPauseControllerResult {
   const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
   const type = controllerType === "superpause" ? "SuperPause" : "Pause";
-  const time = clampPauseTime(operation?.time ?? firstNumber(findControllerParam(controller, "time")) ?? 0);
-  const moveTime = Math.min(time, clampPauseTime(operation?.moveTime ?? firstNumber(findControllerParam(controller, "movetime")) ?? 0));
+  const time = clampPauseTime(resolveParams?.time?.() ?? operation?.time ?? firstNumber(findControllerParam(controller, "time")) ?? 0);
+  const moveTime = Math.min(
+    time,
+    clampPauseTime(resolveParams?.moveTime?.() ?? operation?.moveTime ?? firstNumber(findControllerParam(controller, "movetime")) ?? 0),
+  );
   if (time <= 0) {
     return { powerDelta: 0 };
   }
+  const darken = resolveParams?.darken?.();
+  const powerAdd = resolveParams?.powerAdd?.();
 
   return {
     pause: {
@@ -335,11 +357,16 @@ export function createMatchPauseFromController(
       remaining: time,
       moveTime,
       actorId: actor.id,
-      darken: type === "SuperPause" ? operation?.darken ?? (firstNumber(findControllerParam(controller, "darken")) ?? 1) !== 0 : false,
+      darken:
+        type === "SuperPause"
+          ? darken !== undefined
+            ? darken !== 0
+            : operation?.darken ?? (firstNumber(findControllerParam(controller, "darken")) ?? 1) !== 0
+          : false,
       sourceStateNo: actor.runtime.stateNo,
       startedAt: tick,
     },
-    powerDelta: type === "SuperPause" ? operation?.powerAdd ?? (firstNumber(findControllerParam(controller, "poweradd")) ?? 0) : 0,
+    powerDelta: type === "SuperPause" ? powerAdd ?? operation?.powerAdd ?? (firstNumber(findControllerParam(controller, "poweradd")) ?? 0) : 0,
   };
 }
 
@@ -396,13 +423,13 @@ function superPauseSoundParam(controller: MugenStateController, operation?: Paus
 function superPauseTargetDefenseMultiplierParam(
   controller: MugenStateController,
   operation: PauseControllerOp | undefined,
-  resolveP2DefMul: (() => number | undefined) | undefined,
+  resolveTargetDefenseValue: (() => number | undefined) | undefined,
 ): number | undefined {
   const controllerType = operation?.controllerType ?? (controller.type.toLowerCase() === "superpause" ? "superpause" : "pause");
   if (controllerType !== "superpause") {
     return undefined;
   }
-  const p2DefMul = operation?.p2DefMul ?? resolveP2DefMul?.() ?? firstNumber(findControllerParam(controller, "p2defmul"));
+  const p2DefMul = operation?.p2DefMul ?? resolveTargetDefenseValue?.() ?? firstNumber(findControllerParam(controller, "p2defmul"));
   if (p2DefMul === undefined || p2DefMul <= 0) {
     return undefined;
   }

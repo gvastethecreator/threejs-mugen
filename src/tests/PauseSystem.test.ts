@@ -255,7 +255,7 @@ describe("PauseSystem", () => {
         },
       },
       applyPowerDelta: () => calls.push("power"),
-      resolveP2DefMul: () => 2,
+      resolveParams: { p2DefMul: () => 2 },
       applyTargetDefenseMultiplier: (_activeActor, multiplier) => {
         calls.push(`def:${multiplier}`);
         return 1;
@@ -270,6 +270,52 @@ describe("PauseSystem", () => {
       "apply:p1:SuperPause:44:raw",
       "def:0.5",
       "log:P1 triggered SuperPause for 7f (1f movetime)",
+    ]);
+  });
+
+  it("resolves dynamic SuperPause numeric params through active controller context", () => {
+    const world = new RuntimeMatchPauseControllerWorld();
+    const calls: string[] = [];
+    const source = controller("SuperPause", {
+      time: "var(2)",
+      movetime: "var(3)",
+      darken: "var(4)",
+      poweradd: "var(5)",
+    });
+    const result = world.apply({
+      actor: { ...actor("p1", 3000), label: "P1" },
+      controller: source,
+      operation: {
+        kind: "pause",
+        controllerType: "superpause",
+        time: 0,
+        moveTime: 0,
+        darken: true,
+        powerAdd: 0,
+      },
+      runtimeTick: 44,
+      pauseWorld: {
+        applyController: (activeActor, activeController, tick, operation, resolveParams) => {
+          calls.push(`apply:${activeActor.id}:${activeController.type}:${tick}:${operation?.controllerType ?? "raw"}`);
+          return createMatchPauseFromController(activeActor, activeController, tick, operation, resolveParams);
+        },
+      },
+      applyPowerDelta: (activeActor, powerDelta) => calls.push(`power:${activeActor.id}:${powerDelta}`),
+      resolveParams: {
+        time: () => 9,
+        moveTime: () => 2,
+        darken: () => 0,
+        powerAdd: () => 75,
+      },
+      log: (message) => calls.push(`log:${message}`),
+    });
+
+    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 9, moveTime: 2, darken: false });
+    expect(result.powerDelta).toBe(75);
+    expect(calls).toEqual([
+      "apply:p1:SuperPause:44:superpause",
+      "power:p1:75",
+      "log:P1 triggered SuperPause for 9f (2f movetime)",
     ]);
   });
 

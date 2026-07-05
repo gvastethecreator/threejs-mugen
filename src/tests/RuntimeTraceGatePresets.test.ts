@@ -446,6 +446,7 @@ import {
   createSyntheticImportedProjectileTargetRedirectTraceArtifact,
   createSyntheticImportedProjectileTargetStateTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
+  createSyntheticImportedSuperPauseDynamicParamsTraceArtifact,
   createSyntheticImportedSuperPauseP2DefMulTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseSoundTraceArtifact,
@@ -19562,6 +19563,61 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({ type: "PlaySnd", group: 10, index: 0, raw: "Svar(0),var(1)", stateNo: 200 }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported SuperPause artifact with dynamic param evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseDynamicParamsTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-dynamic-params-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-dynamic-params-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["variable:varset", "hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      { type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: false, minFrames: 3, minRemaining: 9, minMoveTime: 2 },
+    ]);
+    expect(gate?.requirements.requiredMatchPauseAdvances).toEqual([
+      { type: "SuperPause", actorId: "p1", minAdvancedFrames: 2, minPreviousMoveTime: 2 },
+    ]);
+    expect(gate?.requirements.requiredFinalActors).toEqual([
+      expect.objectContaining({ actorId: "p1", source: "imported", actorKind: "player", power: 75 }),
+    ]);
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedControllers.SuperPause).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["pause:superpause"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.matchPauses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: "SuperPause",
+          actorId: "p1",
+          sourceStateNo: 200,
+          darken: false,
+          maxRemaining: 9,
+          maxMoveTime: 2,
+        }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "SuperPause", actorId: "p1", advancedFrames: expect.any(Number), maxPreviousMoveTime: 2 }),
+      ]),
+    );
+    expect(evidence?.matchPauseAdvances.find((advance) => advance.actorId === "p1")?.advancedFrames).toBeGreaterThanOrEqual(2);
+    expect(evidence?.finalActors).toEqual(expect.arrayContaining([expect.objectContaining({ id: "p1", power: 75 })]));
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")?.power).toBe(75);
   });
 
   it("creates a synthetic imported SuperPause p2defmul artifact with target damage-scale evidence", () => {

@@ -27,15 +27,25 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause p2defmul trace gate
+R1 required SuperPause dynamic params trace gate
+  -> synthetic-imported-superpause-dynamic-params.json checksum 9547ac9f / final checksum aecfdc8b is required in qa:trace
+  -> imported active state seeds var(2)=9, var(3)=2, var(4)=0, and var(5)=75
+  -> SuperPause executes time = var(2), movetime = var(3), darken = var(4), and poweradd = var(5)
+  -> runtime resolves those raw params through active expression fallback before applying the pause
+  -> match-pause evidence requires max remaining 9, max movetime 2, darken false, P1 source-movetime advance, and P2 freeze
+  -> final P1 power 75 proves dynamic poweradd reached resource mutation
+  -> pnpm qa:trace passes 460/460 artifacts, 430 required and 30 optional
+  -> official Elecbyte docs define numeric controller params as expression-capable, Pause movetime, and SuperPause time/darken/poweradd
+  -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, pausebg, anim/pos, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
+
+Previous R1 required SuperPause p2defmul trace gate
   -> synthetic-imported-superpause-p2defmul.json checksum e69e5c84 / final checksum c02dce91 is required in qa:trace
   -> imported active state starts SuperPause after direct target memory exists
   -> SuperPause executes p2defmul = 2
   -> runtime maps positive defence multiplier to temporary current-target damage multiplier 0.5
   -> source-movetime TargetLifeAdd -20 applies as -10 after the initial hit leaves P2 at 963
   -> final P2 life 953, match-pause/freeze evidence, and target-link evidence remain required
-  -> pnpm qa:trace passes 459/459 artifacts, 429 required and 30 optional
-  -> official Elecbyte docs define numeric controller params as expression-capable, SuperPause p2defmul, and TargetLifeAdd defense scaling
+  -> that checkpoint passed 459/459 artifacts, 429 required and 30 optional
   -> no score movement; p2defmul = 0 / Super.TargetDefenceMul, exact recovery lifetime, stacking, helper/redirect/multi-target ownership, and full super damage-scaling parity remain blocked
 
 Previous R1 required SuperPause sound trace gate

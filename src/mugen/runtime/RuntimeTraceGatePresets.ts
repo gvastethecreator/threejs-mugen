@@ -21865,6 +21865,61 @@ export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseDynamicParamsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-dynamic-params-attacker",
+    displayName: "Synthetic Imported SuperPause Dynamic Params Attacker",
+    withSuperPause: true,
+    superPauseDynamicParams: { time: 9, moveTime: 2, darken: 0, powerAdd: 75 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-dynamic-params-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-dynamic-params-golden",
+      label: "Synthetic imported SuperPause dynamic params route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause dynamic params trace proves active expression fallback resolves time, movetime, darken, and poweradd before applying bounded pause telemetry. It does not claim typed-operation lowering for dynamic pause params, bottom-to-zero edge parity, pausebg, anim/pos, unhittable, super backgrounds, helper/team ownership, or full MUGEN/IKEMEN pause VM parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-dynamic-params-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredMatchPauses: [
+          { type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: false, minFrames: 3, minRemaining: 9, minMoveTime: 2 },
+        ],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+        requiredMatchPauseAdvances: [{ type: "SuperPause", actorId: "p1", minAdvancedFrames: 2, minPreviousMoveTime: 2 }],
+        requiredFinalActors: [
+          {
+            actorId: "p1",
+            source: "imported",
+            actorKind: "player",
+            power: 75,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseP2DefMulTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33705,6 +33760,7 @@ export type SyntheticImportedTraceFighterOptions = {
   withDelayedSuperPause?: boolean;
   superPauseSound?: string;
   superPauseSoundVarSeed?: { group: number; index: number };
+  superPauseDynamicParams?: { time: number; moveTime: number; darken: number; powerAdd: number };
   superPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
@@ -34500,6 +34556,7 @@ ${options.withDynamicPlayerPush === undefined ? "" : dynamicPlayerPushController
 ${options.withTurn ? turnControllerBlock() : ""}
 ${options.hitDefDynamicSoundVarSeed === undefined ? "" : dynamicHitDefSoundSeedBlock(options.hitDefDynamicSoundVarSeed)}
 ${options.superPauseSoundVarSeed === undefined ? "" : superPauseSoundVarSeedBlock(options.superPauseSoundVarSeed)}
+${options.superPauseDynamicParams === undefined ? "" : superPauseDynamicParamVarSeedBlock(options.superPauseDynamicParams)}
 ${options.withSprPriority === undefined ? "" : sprPriorityControllerBlock(options.withSprPriority)}
 ${options.withDynamicSprPriority === undefined ? "" : dynamicSprPriorityControllerBlock(options.withDynamicSprPriority)}
 ${options.withPalFx === undefined ? "" : palFxControllerBlock(options.withPalFx)}
@@ -34528,7 +34585,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul) : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
@@ -37327,15 +37384,19 @@ time = 4
 `;
 }
 
-function superPauseControllerBlock(sound?: string, p2DefMul?: number): string {
+function superPauseControllerBlock(
+  sound?: string,
+  p2DefMul?: number,
+  dynamicParams?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicParams"]>,
+): string {
   return `
 [State 200, Super Pause]
 type = SuperPause
 trigger1 = Time = 2
-time = 7
-movetime = 1
-darken = 1
-poweradd = 100
+time = ${dynamicParams === undefined ? "7" : "var(2)"}
+movetime = ${dynamicParams === undefined ? "1" : "var(3)"}
+darken = ${dynamicParams === undefined ? "1" : "var(4)"}
+poweradd = ${dynamicParams === undefined ? "100" : "var(5)"}
 ${p2DefMul === undefined ? "" : `p2defmul = ${p2DefMul}`}
 ${sound === undefined ? "" : `sound = ${sound}`}
 `;
@@ -38056,6 +38117,36 @@ type = VarSet
 trigger1 = Time = 0
 v = 1
 value = ${seed.index}
+`;
+}
+
+function superPauseDynamicParamVarSeedBlock(
+  seed: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicParams"]>,
+): string {
+  return `
+[State 200, Dynamic SuperPause Time Var]
+type = VarSet
+trigger1 = Time = 0
+v = 2
+value = ${seed.time}
+
+[State 200, Dynamic SuperPause Movetime Var]
+type = VarSet
+trigger1 = Time = 0
+v = 3
+value = ${seed.moveTime}
+
+[State 200, Dynamic SuperPause Darken Var]
+type = VarSet
+trigger1 = Time = 0
+v = 4
+value = ${seed.darken}
+
+[State 200, Dynamic SuperPause PowerAdd Var]
+type = VarSet
+trigger1 = Time = 0
+v = 5
+value = ${seed.powerAdd}
 `;
 }
 

@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause dynamic params trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-dynamic-params.json` trace coverage for imported `SuperPause time/movetime/darken/poweradd` expression fallback.
+- `RuntimePauseWorld` / `RuntimeMatchPauseControllerWorld` now accept `RuntimePauseControllerParamResolvers` so raw pause params can override static typed defaults when active expression context has values.
+- `PlayableMatchRuntime` now passes `time`, `movetime`, `darken`, `poweradd`, and `p2defmul` resolvers through active, paused-match, and hitpause-ignored pause controller bridges.
+- `scripts/qa_traces.cjs` now registers `synthetic-imported-superpause-dynamic-params` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified, `Pause movetime` as source movement during the pause-start window, and `SuperPause time/darken/poweradd` as SuperPause params.
+- Focused test: `pnpm vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts -t "dynamic SuperPause|dynamic param"` -> 2 files passed, 2 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 460/460 artifacts, 430 required and 30 optional; `synthetic-imported-superpause-dynamic-params.json` checksum `9547ac9f`, final checksum `aecfdc8b`.
+
+Claim allowed:
+
+- Bounded active imported `SuperPause time/movetime/darken/poweradd` expressions resolve through runtime expression fallback before pause application. The synthetic route proves `var(2)=9`, `var(3)=2`, `var(4)=0`, and `var(5)=75`, yielding SuperPause remaining `9`, move time `2`, `darken = false`, and final P1 power `75`.
+
+Claim blocked:
+
+- Typed-operation lowering for dynamic pause params, bottom-to-zero exactness for invalid pause expressions, Pause-over-Pause/SuperPause preemption and delay, `pausebg`, `anim/pos`, `unhittable`, super background/spark/audio parity, helper/team/redirect ownership, score movement, and full MUGEN/IKEMEN pause VM parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 460/460 artifacts, 430 required and 30 optional. Latest runtime evidence is dynamic SuperPause numeric param fallback; previous SuperPause `p2defmul`, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize.
+
+Next:
+
+- Continue R1 with another official-doc-backed Common1/FightFX/runtime oracle, or continue R2 by moving another mutable behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause p2defmul trace gate
 
 Changed:
