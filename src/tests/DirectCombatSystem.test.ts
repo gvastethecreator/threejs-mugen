@@ -234,6 +234,31 @@ describe("DirectCombatSystem", () => {
     expect(runtimeMoveHitCountValue(attacker.contact, 210, false)).toBe(1);
     expect(runtimeReceivedDamageValue(defender.contact, 5000)).toBe(30);
   });
+
+  it("applies guarded cornerpush to the attacker at stage bounds", () => {
+    const world = new RuntimeDirectCombatWorld(new RuntimeContactMemoryWorld());
+    const attacker = actor("p1", "Attacker", { facing: 1, pos: { x: 220, y: 0 }, vel: { x: 0, y: 0 } });
+    const defender = actor("p2", "Defender", {
+      facing: -1,
+      pos: { x: 286, y: 0 },
+      vel: { x: 0, y: 0 },
+      bodyWidth: { front: 39, back: 39 },
+    });
+
+    world.applyResolvedHit(attacker, defender, move(), {
+      kind: "guard",
+      damage: 0,
+      kill: true,
+      pause: 1,
+      stun: 2,
+      push: 8,
+      cornerPush: 6,
+      powerGain: 0,
+    }, hooks(), { stageBounds: { left: -320, right: 320 } });
+
+    expect(defender.runtime.vel.x).toBe(8);
+    expect(attacker.runtime.vel.x).toBe(-6);
+  });
 });
 
 type ActorOverrides = Partial<CharacterRuntimeState> &

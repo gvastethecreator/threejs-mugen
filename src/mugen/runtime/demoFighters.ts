@@ -48,6 +48,11 @@ export type DemoMove = {
   guardVelocityY?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  cornerPush?: number;
+  airCornerPush?: number;
+  downCornerPush?: number;
+  guardCornerPush?: number;
+  airGuardCornerPush?: number;
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;

@@ -15,6 +15,7 @@ import type { RuntimeContactPresentationActor } from "./RuntimeContactPresentati
 import { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
 import { isRuntimeHoldingBack } from "./RuntimeInput";
 import { RuntimeTargetWorld } from "./TargetSystem";
+import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type { RuntimeHitEffectEvent, RuntimeSoundEvent } from "./types";
 import {
   canRuntimeBeHitBy,
@@ -60,6 +61,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   contactPresentationWorld: RuntimeContactPresentationWorld;
   targetWorld: RuntimeTargetWorld;
   runtimeTick: number;
+  stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (defender: TDefender) => CollisionBox[] | undefined;
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>;
   defaultHurtBoxes?: CollisionBox[];
@@ -112,6 +114,7 @@ export class RuntimeHelperCombatWorld {
           applyHitStateTransitions: () => {},
           applyDefaultGetHit: () => applyDefaultHelperGetHitState(input.defender, input.getHitStateWorld, input.stateHooks),
         },
+        { stageBounds: input.stageBounds },
       );
       if (move.targetId !== undefined) {
         rememberRuntimeHelperTarget(helper, input.defender.id, move.targetId, input.targetWorld);

@@ -26,6 +26,7 @@ import type { RuntimeReversalWorld } from "./ReversalSystem";
 import type { RuntimeTarget, RuntimeTargetBinding, RuntimeTargetWorld } from "./TargetSystem";
 import type { CharacterRuntimeState } from "./types";
 import type { RuntimeProjectile } from "./ProjectileSystem";
+import type { RuntimeStageBounds } from "./HitDefCornerPush";
 
 const defaultHurtBoxes: CollisionBox[] = [{ x1: -24, y1: -96, x2: 24, y2: 0 }];
 
@@ -65,6 +66,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
   runtimeTick: number;
+  stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   log: (line: string) => void;
@@ -80,6 +82,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   hitStateTransitionWorld: RuntimeHitStateTransitionWorld;
   contactPresentationWorld: RuntimeContactPresentationWorld;
   runtimeTick: number;
+  stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
@@ -220,7 +223,7 @@ export class RuntimeCombatResolutionWorld {
         ),
       applyDefaultGetHit: (target, moveArg) =>
         this.applyDefaultGetHitState(target, moveArg, input.getHitStateWorld, input.stateHooks),
-    });
+    }, { stageBounds: input.stageBounds });
     input.contactPresentationWorld.emitHitDefContact({
       attacker,
       defender,
@@ -271,6 +274,7 @@ export class RuntimeCombatResolutionWorld {
       recordReceivedDamage: (target, damage) => {
         target.contactWorld.markReceivedDamage(target.contact, target.runtime.stateNo, damage);
       },
+      stageBounds: input.stageBounds,
     });
   }
 

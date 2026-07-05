@@ -7,6 +7,7 @@ import type { RuntimeHitOverrideWorld } from "./HitOverrideSystem";
 import type { RuntimeHitStateTransitionWorld } from "./HitStateTransitionSystem";
 import type { RuntimeProjectile } from "./ProjectileSystem";
 import type { RuntimeContactPresentationWorld } from "./RuntimeContactPresentationSystem";
+import type { RuntimeStageBounds } from "./HitDefCornerPush";
 import type {
   RuntimeCombatResolutionActor,
   RuntimeCombatResolutionStateHooks,
@@ -40,6 +41,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   effectLifecycleWorld: Pick<RuntimeEffectLifecycleWorld, "markGetHit">;
   targetWorld: RuntimeTargetWorld;
   runtimeTick: number;
+  stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (actor: TActor) => CollisionBox[] | undefined;
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
@@ -78,6 +80,7 @@ export class RuntimeMatchCombatBridgeWorld {
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
+          stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           stateHooks: input.combatStateHooks,
           log: input.log,
@@ -94,6 +97,7 @@ export class RuntimeMatchCombatBridgeWorld {
           hitStateTransitionWorld: input.hitStateTransitionWorld,
           contactPresentationWorld: input.contactPresentationWorld,
           runtimeTick: input.runtimeTick,
+          stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           stateHooks: input.combatStateHooks,
           rememberProjectileTarget: input.rememberProjectileTarget,
@@ -110,6 +114,7 @@ export class RuntimeMatchCombatBridgeWorld {
           contactPresentationWorld: input.contactPresentationWorld,
           targetWorld: input.targetWorld,
           runtimeTick: input.runtimeTick,
+          stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
           stateHooks: input.helperStateHooks,
           defaultHurtBoxes: input.defaultHurtBoxes,

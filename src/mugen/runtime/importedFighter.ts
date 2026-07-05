@@ -3,6 +3,7 @@ import type { MugenAnimationAction, MugenAnimationFrame } from "../model/MugenAn
 import type { MugenCharacter } from "../model/MugenCharacter";
 import type { MugenSystemHitSparkLibrary } from "../model/MugenSystemAssets";
 import type { DemoFighterDefinition, DemoMove } from "./demoFighters";
+import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 
 type FrameWindow = {
@@ -129,7 +130,18 @@ function buildStateMoves(
     }
     const actionId = state.anim ?? state.id;
     const fallbackHitbox = { x1: 14, y1: -72, x2: 78, y2: -38 };
+    const groundVelocity = numberPair(hitDef.params["ground.velocity"]);
+    const guardVelocity = numberPair(hitDef.params["guard.velocity"]);
     const airGuardVelocity = numberPair(hitDef.params["airguard.velocity"]) ?? deriveDefaultAirGuardVelocity(numberPair(hitDef.params["air.velocity"]));
+    const cornerPush = resolveHitDefCornerPush({
+      attr: hitDef.params.attr,
+      guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0],
+      groundCornerPush: firstNumber(hitDef.params["ground.cornerpush.veloff"]) ?? undefined,
+      airCornerPush: firstNumber(hitDef.params["air.cornerpush.veloff"]) ?? undefined,
+      downCornerPush: firstNumber(hitDef.params["down.cornerpush.veloff"]) ?? undefined,
+      guardCornerPush: firstNumber(hitDef.params["guard.cornerpush.veloff"]) ?? undefined,
+      airGuardCornerPush: firstNumber(hitDef.params["airguard.cornerpush.veloff"]) ?? undefined,
+    });
     result.set(
       state.id,
       buildMove(animations.get(actionId), state.id, numberParam(hitDef.params.damage, 45), fallbackHitbox, {
@@ -138,8 +150,8 @@ function buildStateMoves(
         targetId: firstNumber(hitDef.params.id) ?? undefined,
         hitPause: firstNumber(hitDef.params.pausetime) ?? undefined,
         hitStun: firstNumber(hitDef.params["ground.hittime"]) ?? undefined,
-        push: Math.abs(numberPair(hitDef.params["ground.velocity"])?.[0] ?? 20),
-        hitVelocityY: numberPair(hitDef.params["ground.velocity"])?.[1] ?? undefined,
+        push: Math.abs(groundVelocity?.[0] ?? 20),
+        hitVelocityY: groundVelocity?.[1] ?? undefined,
         guardDistance: firstNumber(hitDef.params["guard.dist"]) ?? undefined,
         guardFlag: hitDef.params.guardflag,
         guardDamage: secondNumber(hitDef.params.damage) ?? undefined,
@@ -148,10 +160,15 @@ function buildStateMoves(
         guardStun: firstNumber(hitDef.params["guard.hittime"]) ?? undefined,
         guardSlideTime: firstNumber(hitDef.params["guard.slidetime"]) ?? undefined,
         guardControlTime: firstNumber(hitDef.params["guard.ctrltime"]) ?? undefined,
-        guardPush: Math.abs(numberPair(hitDef.params["guard.velocity"])?.[0] ?? 0) || undefined,
-        guardVelocityY: numberPair(hitDef.params["guard.velocity"])?.[1] ?? undefined,
+        guardPush: Math.abs(guardVelocity?.[0] ?? 0) || undefined,
+        guardVelocityY: guardVelocity?.[1] ?? undefined,
         airGuardPush: Math.abs(airGuardVelocity?.[0] ?? 0) || undefined,
         airGuardVelocityY: airGuardVelocity?.[1] ?? undefined,
+        cornerPush: cornerPush.cornerPush,
+        airCornerPush: cornerPush.airCornerPush,
+        downCornerPush: cornerPush.downCornerPush,
+        guardCornerPush: cornerPush.guardCornerPush,
+        airGuardCornerPush: cornerPush.airGuardCornerPush,
         hitSound: stripMugenString(hitDef.params.hitsound),
         guardSound: stripMugenString(hitDef.params.guardsound),
         hitSpark: hitDefSparkParam(hitDef.params, constants, "sparkno"),
@@ -252,6 +269,11 @@ function buildMove(
       | "guardVelocityY"
       | "airGuardPush"
       | "airGuardVelocityY"
+      | "cornerPush"
+      | "airCornerPush"
+      | "downCornerPush"
+      | "guardCornerPush"
+      | "airGuardCornerPush"
       | "hitSound"
       | "guardSound"
       | "hitSpark"

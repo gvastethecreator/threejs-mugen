@@ -5,6 +5,7 @@ import type { CollisionBox } from "../model/CollisionBox";
 import type { MugenStateController } from "../model/MugenState";
 import { DEFAULT_RUNTIME_GUARD_DISTANCE } from "./CombatResolver";
 import type { DemoMove } from "./demoFighters";
+import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { runtimeAnimationFrameDuration } from "./RuntimeAnimationSystem";
 import { applyRuntimeControl } from "./RuntimeResourceSystem";
@@ -90,6 +91,17 @@ export class RuntimeHitDefControllerDispatchWorld {
       operation?.guardDistance ?? firstNumber(findParam(source, "guard.dist")) ?? existing?.guardDistance ?? DEFAULT_RUNTIME_GUARD_DISTANCE;
     const guardPush = Math.abs(guardVelocity?.[0] ?? existing?.guardPush ?? Math.max(1, Math.round(push * 0.55)));
     const airGuardPush = airGuardVelocity ? Math.abs(airGuardVelocity[0]) : existing?.airGuardPush;
+    const attr = operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA";
+    const cornerPush = resolveHitDefCornerPush({
+      attr,
+      guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0] ?? existing?.guardPush,
+      groundCornerPush: operation?.groundCornerPush ?? firstNumber(findParam(source, "ground.cornerpush.veloff")) ?? existing?.cornerPush,
+      airCornerPush: operation?.airCornerPush ?? firstNumber(findParam(source, "air.cornerpush.veloff")) ?? existing?.airCornerPush,
+      downCornerPush: operation?.downCornerPush ?? firstNumber(findParam(source, "down.cornerpush.veloff")) ?? existing?.downCornerPush,
+      guardCornerPush: operation?.guardCornerPush ?? firstNumber(findParam(source, "guard.cornerpush.veloff")) ?? existing?.guardCornerPush,
+      airGuardCornerPush:
+        operation?.airGuardCornerPush ?? firstNumber(findParam(source, "airguard.cornerpush.veloff")) ?? existing?.airGuardCornerPush,
+    });
     const groundType = operation?.groundType ?? hitType(findParam(source, "ground.type") ?? findParam(source, "type")) ?? existing?.hitVars?.groundType ?? 1;
     const airType = operation?.airType ?? hitType(findParam(source, "air.type")) ?? existing?.hitVars?.airType ?? groundType;
     const animType =
@@ -123,7 +135,7 @@ export class RuntimeHitDefControllerDispatchWorld {
       kill,
       priority,
       requiresHitDef: false,
-      attr: operation?.attr ?? stripMugenString(findParam(source, "attr")) ?? existing?.attr ?? "S,NA",
+      attr,
       targetId,
       hitPause,
       hitStun,
@@ -151,6 +163,11 @@ export class RuntimeHitDefControllerDispatchWorld {
       guardVelocityY: guardVelocity?.[1] ?? existing?.guardVelocityY,
       airGuardPush,
       airGuardVelocityY: airGuardVelocity?.[1] ?? existing?.airGuardVelocityY,
+      cornerPush: cornerPush.cornerPush,
+      airCornerPush: cornerPush.airCornerPush,
+      downCornerPush: cornerPush.downCornerPush,
+      guardCornerPush: cornerPush.guardCornerPush,
+      airGuardCornerPush: cornerPush.airGuardCornerPush,
       hitSound: operation?.hitSound ?? stripMugenString(findParam(source, "hitsound")) ?? existing?.hitSound,
       guardSound: operation?.guardSound ?? stripMugenString(findParam(source, "guardsound")) ?? existing?.guardSound,
       hitSpark: operation?.hitSpark ?? stripMugenString(findParam(source, "sparkno")) ?? existing?.hitSpark,

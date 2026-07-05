@@ -29,7 +29,10 @@ export class RuntimeMatchPostFighterWorld {
   ) {}
 
   advanceRuntime<TActor extends RuntimeMatchPostFighterActor>(input: RuntimeMatchPostFighterInput<TActor>): void {
-    const combatResolvers = this.combatBridgeWorld.createResolvers(input);
+    const combatResolvers = this.combatBridgeWorld.createResolvers({
+      ...input,
+      stageBounds: input.stageBounds ?? input.stage.bounds,
+    });
 
     this.interactionWorld.advanceRuntime({
       p1: input.p1,

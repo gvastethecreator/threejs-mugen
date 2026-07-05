@@ -498,6 +498,7 @@ export class PlayableMatchRuntime {
           contactPresentationWorld: this.contactPresentationWorld,
           targetWorld: this.targetWorld,
           runtimeTick: this.tick,
+          stageBounds: this.stage.bounds,
           getHurtBoxes: getRuntimeHurtBoxes,
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,

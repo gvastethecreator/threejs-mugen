@@ -134,6 +134,7 @@ import {
   defaultAirGuardLandingControllerSequence,
   defaultCrouchGuardSlideStopControllerSequence,
   defaultStandGuardSlideStopControllerSequence,
+  syntheticAirGuardCornerPushPhysicsFrames,
   syntheticAirGuardLandingPhysicsFrames,
   syntheticAirGuardLandingWalkReturnActorFrameSequence,
   syntheticAirGuardHitPhysicsFrames,
@@ -165,6 +166,7 @@ import {
   createSyntheticImportedAssertSpecialRoundNotOverTraceArtifact,
   createSyntheticImportedAssertSpecialTimerFreezeTraceArtifact,
   createSyntheticImportedAirGuardLandingTraceArtifact,
+  createSyntheticImportedAirGuardCornerPushTraceArtifact,
   createSyntheticImportedAirGuardStateTraceArtifact,
   createSyntheticImportedAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedAirGuardVelocityTraceArtifact,
@@ -234,6 +236,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedHelperProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedHelperProjContactTraceArtifact,
@@ -353,6 +356,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityDefaultTraceArtifact,
   createSyntheticImportedProjectileAirGuardVelocityTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
@@ -10830,6 +10834,29 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardVelocityPhysicsFrames(9, -3.5));
   });
 
+  it("creates a synthetic imported airguard.cornerpush.veloff direct HitDef artifact", () => {
+    const artifact = createSyntheticImportedAirGuardCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-air-guard-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-air-guard-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    const airGuardFrame = evidence?.actorFrames.find((actor) => actor.actorId === "p2" && actor.stateNo === 155);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(airGuardFrame?.maxVel.x).toBeGreaterThanOrEqual(8);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-5.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(syntheticAirGuardCornerPushPhysicsFrames());
+  });
+
   it("creates a synthetic imported air guard landing artifact", () => {
     const artifact = createSyntheticImportedAirGuardLandingTraceArtifact({
       generatedAt: "2026-07-02T00:00:00.000Z",
@@ -11790,6 +11817,32 @@ describe("RuntimeTraceGatePresets", () => {
     );
   });
 
+  it("creates a synthetic imported Projectile airguard.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedProjectileAirGuardCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-air-guard-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-projectile-air-guard-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-5.5);
+    expect(artifact.gates[0]?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirGuardCornerPushPhysicsFrames(),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 910 }),
+      ]),
+    );
+  });
+
   it("creates a synthetic imported Helper Projectile GetHitVar guarded artifact with defender guard-state branch evidence", () => {
     const artifact = createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact({
       generatedAt: "2026-06-25T00:00:00.000Z",
@@ -12202,6 +12255,42 @@ describe("RuntimeTraceGatePresets", () => {
     expect(gate?.requirements.requiredActorFrames).toEqual(
       expect.arrayContaining([
         ...syntheticAirGuardVelocityPhysicsFrames(9, -3.5),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982 }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile airguard.cornerpush.veloff artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileAirGuardCornerPushTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-air-guard-cornerpush-golden",
+        source: "imported",
+      },
+      gates: [{ label: "synthetic-imported-helper-projectile-air-guard-cornerpush-golden", passed: true, failures: [] }],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    const attackerMinVelX = Math.min(...(evidence?.actorFrames.filter((actor) => actor.actorId === "p1").map((actor) => actor.minVel.x) ?? []));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(attackerMinVelX).toBeLessThanOrEqual(-5.5);
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8856 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8856 }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual(
+      expect.arrayContaining([
+        ...syntheticAirGuardCornerPushPhysicsFrames(),
         expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1243, animNo: 980 }),
         expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 982 }),
       ]),

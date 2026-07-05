@@ -141,6 +141,35 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toEqual([]);
   });
 
+  it("applies guarded Projectile cornerpush to the owner at stage bounds", () => {
+    let projectiles = [projectile({ pos: { x: 260, y: 0 }, facing: 1, guardDamage: 0, guardPush: 8, guardCornerPush: 6 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 220, y: 0 }, facing: 1, vel: { x: 0, y: 0 } }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 286, y: 0 },
+      facing: -1,
+      vel: { x: 0, y: 0 },
+      bodyWidth: { front: 39, back: 39 },
+    }));
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: true,
+      log: () => undefined,
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+      stageBounds: { left: -320, right: 320 },
+    });
+
+    expect(defender.runtime.vel.x).toBe(8);
+    expect(attacker.runtime.vel.x).toBe(-6);
+  });
+
   it("owns bounded projectile clash mutation behind RuntimeProjectileCombatWorld", () => {
     let leftProjectiles = [
       projectile({ serialId: "p1-projectile-0", ownerId: "p1", priority: 5, pos: { x: 0, y: 0 }, facing: 1 }),

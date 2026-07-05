@@ -21,6 +21,11 @@ export type RuntimeCombatAttack = {
   guardVelocityY?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  cornerPush?: number;
+  airCornerPush?: number;
+  downCornerPush?: number;
+  guardCornerPush?: number;
+  airGuardCornerPush?: number;
 };
 
 export type RuntimeCombatHitResult =
@@ -34,6 +39,7 @@ export type RuntimeCombatHitResult =
       controlTime?: number;
       push: number;
       hitVelocityY?: number;
+      cornerPush?: number;
       powerGain: number;
     }
   | {
@@ -44,6 +50,7 @@ export type RuntimeCombatHitResult =
       stun: number;
       push: number;
       hitVelocityY?: number;
+      cornerPush?: number;
       powerGain: number;
     };
 
@@ -150,6 +157,7 @@ export function resolveRuntimeCombatHit(input: {
       input.attack.guardPush ??
       Math.max(1, Math.round(input.attack.push * 0.55));
     const hitVelocityY = (isAirGuard ? input.attack.airGuardVelocityY : undefined) ?? input.attack.guardVelocityY;
+    const cornerPush = (isAirGuard ? input.attack.airGuardCornerPush : undefined) ?? input.attack.guardCornerPush;
     return {
       kind: "guard",
       damage: scaleRuntimeIncomingDamage(
@@ -163,10 +171,12 @@ export function resolveRuntimeCombatHit(input: {
       controlTime: input.attack.guardControlTime,
       push,
       hitVelocityY,
+      cornerPush,
       powerGain: 12,
     };
   }
 
+  const isAirHit = input.defender.stateType === "A";
   return {
     kind: "hit",
     damage: scaleRuntimeIncomingDamage(input.defender, scaleRuntimeOutgoingDamage(input.attacker, input.attack.damage)),
@@ -175,6 +185,7 @@ export function resolveRuntimeCombatHit(input: {
     stun: input.attack.hitStun,
     push: input.attack.push,
     hitVelocityY: input.attack.hitVelocityY,
+    cornerPush: (isAirHit ? input.attack.airCornerPush : undefined) ?? input.attack.cornerPush,
     powerGain: 35,
   };
 }

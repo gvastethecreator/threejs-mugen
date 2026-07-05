@@ -7,6 +7,7 @@ import {
   canRuntimeDamageKill,
   type RuntimeCombatHitResult,
 } from "./CombatResolver";
+import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
 import {
   RuntimeContactMemoryWorld,
   type RuntimeContactMemory,
@@ -39,6 +40,10 @@ export type RuntimeDirectCombatOutcome = {
   kind: RuntimeCombatHitResult["kind"];
   damage: number;
   message: string;
+};
+
+export type RuntimeDirectCombatOptions = {
+  stageBounds?: RuntimeStageBounds;
 };
 
 export type RuntimeDirectPriorityHooks = {
@@ -100,12 +105,13 @@ export class RuntimeDirectCombatWorld {
     move: DemoMove,
     result: RuntimeCombatHitResult,
     hooks: RuntimeDirectCombatHooks<TActor>,
+    options: RuntimeDirectCombatOptions = {},
   ): RuntimeDirectCombatOutcome {
     attacker.hasHit = true;
     if (result.kind === "guard") {
-      return this.applyGuard(attacker, defender, move, result, hooks);
+      return this.applyGuard(attacker, defender, move, result, hooks, options);
     }
-    return this.applyHit(attacker, defender, move, result, hooks);
+    return this.applyHit(attacker, defender, move, result, hooks, options);
   }
 
   private applyGuard<TActor extends RuntimeDirectCombatActor>(
@@ -114,6 +120,7 @@ export class RuntimeDirectCombatWorld {
     move: DemoMove,
     result: Extract<RuntimeCombatHitResult, { kind: "guard" }>,
     hooks: RuntimeDirectCombatHooks<TActor>,
+    options: RuntimeDirectCombatOptions,
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "guard", defender.id);
     interruptCurrentMove(defender);
@@ -126,6 +133,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+    applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
       guarded: true,
       damage: result.damage,
@@ -152,6 +160,7 @@ export class RuntimeDirectCombatWorld {
     move: DemoMove,
     result: Extract<RuntimeCombatHitResult, { kind: "hit" }>,
     hooks: RuntimeDirectCombatHooks<TActor>,
+    options: RuntimeDirectCombatOptions,
   ): RuntimeDirectCombatOutcome {
     this.contactWorld.markMoveContact(attacker.contact, attacker.runtime.stateNo, "hit", defender.id);
     attacker.hitPause = result.pause;
@@ -165,6 +174,7 @@ export class RuntimeDirectCombatWorld {
     defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
     defender.runtime.vel.x = attacker.runtime.facing * result.push;
     defender.runtime.hitVelocity = { x: attacker.runtime.facing * result.push, y: result.hitVelocityY ?? 0 };
+    applyRuntimeCornerPush(attacker.runtime, defender.runtime, options.stageBounds, result.cornerPush, result.push);
     defender.runtime.hitVars = runtimeGetHitVarsFromMove(move, {
       damage: result.damage,
       hitShakeTime: result.pause,

@@ -3,6 +3,7 @@ import type { ModifyProjectileControllerOp, ProjectileControllerOp } from "../co
 import type { MugenAnimationAction } from "../model/MugenAnimation";
 import type { MugenStageDefinition } from "../model/MugenStage";
 import type { MugenStateController } from "../model/MugenState";
+import { resolveHitDefCornerPush } from "./HitDefCornerPush";
 import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
@@ -65,6 +66,11 @@ export type RuntimeProjectile = {
   guardVelocityY?: number;
   airGuardPush?: number;
   airGuardVelocityY?: number;
+  cornerPush?: number;
+  airCornerPush?: number;
+  downCornerPush?: number;
+  guardCornerPush?: number;
+  airGuardCornerPush?: number;
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;
@@ -148,6 +154,16 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   );
   const guardSlideTime = operation?.guardSlideTime ?? firstNumber(findControllerParam(input.controller, "guard.slidetime"));
   const guardControlTime = operation?.guardControlTime ?? firstNumber(findControllerParam(input.controller, "guard.ctrltime"));
+  const attr = operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP";
+  const cornerPush = resolveHitDefCornerPush({
+    attr,
+    guardVelocityX: guardVelocity?.[0] ?? groundVelocity?.[0],
+    groundCornerPush: operation?.groundCornerPush ?? firstNumber(findControllerParam(input.controller, "ground.cornerpush.veloff")),
+    airCornerPush: operation?.airCornerPush ?? firstNumber(findControllerParam(input.controller, "air.cornerpush.veloff")),
+    downCornerPush: operation?.downCornerPush ?? firstNumber(findControllerParam(input.controller, "down.cornerpush.veloff")),
+    guardCornerPush: operation?.guardCornerPush ?? firstNumber(findControllerParam(input.controller, "guard.cornerpush.veloff")),
+    airGuardCornerPush: operation?.airGuardCornerPush ?? firstNumber(findControllerParam(input.controller, "airguard.cornerpush.veloff")),
+  });
   const hitSound = operation?.hitSound ?? stripMugenString(findControllerParam(input.controller, "hitsound"));
   const guardSound = operation?.guardSound ?? stripMugenString(findControllerParam(input.controller, "guardsound"));
   const hitSpark = operation?.hitSpark ?? stripMugenString(findControllerParam(input.controller, "sparkno"));
@@ -188,7 +204,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     damage: Math.max(0, Math.round(baseDamage * (input.damageScale ?? 1))),
     kill,
     guardKill,
-    attr: operation?.attr ?? stripMugenString(findControllerParam(input.controller, "attr")) ?? "S,SP",
+    attr,
     targetId: projectileId,
     hitPause,
     hitStun,
@@ -208,6 +224,11 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     guardVelocityY: guardVelocity?.[1],
     airGuardPush: airGuardVelocity ? Math.abs(airGuardVelocity[0]) : undefined,
     airGuardVelocityY: airGuardVelocity?.[1],
+    cornerPush: cornerPush.cornerPush,
+    airCornerPush: cornerPush.airCornerPush,
+    downCornerPush: cornerPush.downCornerPush,
+    guardCornerPush: cornerPush.guardCornerPush,
+    airGuardCornerPush: cornerPush.airGuardCornerPush,
     hitSound,
     guardSound,
     hitSpark,

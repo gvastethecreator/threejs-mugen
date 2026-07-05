@@ -128,6 +128,9 @@ describe("CombatResolver", () => {
       guardVelocityY: -1,
       airGuardPush: 9,
       airGuardVelocityY: -3,
+      cornerPush: 13,
+      guardCornerPush: 6,
+      airGuardCornerPush: 10,
     };
 
     expect(resolveRuntimeCombatHit({ attacker, defender, attack, holdingBack: false })).toEqual({
@@ -137,6 +140,7 @@ describe("CombatResolver", () => {
       stun: 20,
       push: 12,
       hitVelocityY: -2,
+      cornerPush: 13,
       powerGain: 35,
       kill: true,
     });
@@ -150,6 +154,7 @@ describe("CombatResolver", () => {
       controlTime: 6,
       push: 5,
       hitVelocityY: -1,
+      cornerPush: 6,
       powerGain: 12,
       kill: true,
     });
@@ -167,6 +172,8 @@ describe("CombatResolver", () => {
       guardVelocityY: -1,
       airGuardPush: 9,
       airGuardVelocityY: -3,
+      guardCornerPush: 6,
+      airGuardCornerPush: 10,
     };
 
     expect(
@@ -176,7 +183,7 @@ describe("CombatResolver", () => {
         attack,
         holdingBack: true,
       }),
-    ).toMatchObject({ kind: "guard", push: 9, hitVelocityY: -3 });
+    ).toMatchObject({ kind: "guard", push: 9, hitVelocityY: -3, cornerPush: 10 });
 
     expect(
       resolveRuntimeCombatHit({
@@ -185,7 +192,36 @@ describe("CombatResolver", () => {
         attack,
         holdingBack: true,
       }),
-    ).toMatchObject({ kind: "guard", push: 5, hitVelocityY: -1 });
+    ).toMatchObject({ kind: "guard", push: 5, hitVelocityY: -1, cornerPush: 6 });
+  });
+
+  it("uses aerial cornerpush only for airborne hits", () => {
+    const attack = {
+      damage: 40,
+      hitPause: 8,
+      hitStun: 20,
+      push: 12,
+      cornerPush: 5,
+      airCornerPush: 8,
+    };
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "A" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", cornerPush: 8 });
+
+    expect(
+      resolveRuntimeCombatHit({
+        attacker: actor(),
+        defender: actor({ stateType: "S" }),
+        attack,
+        holdingBack: false,
+      }),
+    ).toMatchObject({ kind: "hit", cornerPush: 5 });
   });
 
   it("keeps guard eligibility and damage scaling helpers isolated", () => {

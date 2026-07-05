@@ -24,6 +24,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
         "guard.hittime": "9",
         "guard.velocity": "-2,0",
         "airguard.velocity": "-6,-2",
+        "ground.cornerpush.veloff": "3",
+        "air.cornerpush.veloff": "4",
+        "down.cornerpush.veloff": "5",
+        "guard.cornerpush.veloff": "6",
+        "airguard.cornerpush.veloff": "7",
         sparkno: "S7000",
         "guard.sparkno": "F7004",
         sparkxy: "12,-40",
@@ -81,6 +86,11 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       guardVelocityY: 0,
       airGuardPush: 6,
       airGuardVelocityY: -2,
+      cornerPush: 3,
+      airCornerPush: 4,
+      downCornerPush: 5,
+      guardCornerPush: 6,
+      airGuardCornerPush: 7,
       hitSpark: "S7000",
       guardSpark: "F7004",
       sparkXy: [12, -40],
@@ -139,6 +149,55 @@ describe("RuntimeHitDefControllerDispatchWorld", () => {
       airGuardPush: 9,
       airGuardVelocityY: -4,
     });
+  });
+
+  it("derives official cornerpush defaults from guard velocity", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        attr: "S,NA",
+        guardflag: "MA",
+        "ground.velocity": "-10",
+        "guard.velocity": "-4",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove?.cornerPush).toBeCloseTo(5.2);
+    expect(actor.currentMove?.airCornerPush).toBeCloseTo(5.2);
+    expect(actor.currentMove?.downCornerPush).toBeCloseTo(5.2);
+    expect(actor.currentMove?.guardCornerPush).toBeCloseTo(5.2);
+    expect(actor.currentMove?.airGuardCornerPush).toBeCloseTo(5.2);
+  });
+
+  it("uses zero ground cornerpush default for aerial HitDef attr", () => {
+    const world = new RuntimeHitDefControllerDispatchWorld();
+    const actor = hitDefActor();
+    const ir = compileControllerIr(
+      controller("HitDef", {
+        attr: "A,NA",
+        guardflag: "A",
+        "guard.velocity": "-4",
+      }),
+    );
+
+    const result = world.apply({
+      actor,
+      controller: ir,
+      frame: activeFrame(),
+    });
+
+    expect(result.activated).toBe(true);
+    expect(actor.currentMove?.cornerPush).toBe(0);
+    expect(actor.currentMove?.guardCornerPush).toBe(0);
+    expect(actor.currentMove?.airGuardCornerPush).toBe(0);
   });
 
   it("deduplicates repeated HitDef dispatches for the same state line and frame", () => {

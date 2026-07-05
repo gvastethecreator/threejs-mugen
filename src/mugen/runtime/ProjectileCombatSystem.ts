@@ -8,6 +8,7 @@ import {
   resolveRuntimeCombatHit,
   runtimeWorldBox,
 } from "./CombatResolver";
+import { applyRuntimeCornerPush, type RuntimeStageBounds } from "./HitDefCornerPush";
 import {
   canRuntimeProjectileContact,
   describeRuntimeProjectileRemoval,
@@ -55,6 +56,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   emitProjectileContactEffects?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile, kind: "hit" | "guard") => void;
   recordReceivedDamage?: (defender: TActor, damage: number) => void;
   removeProjectilesMarkedForRemoval: () => void;
+  stageBounds?: RuntimeStageBounds;
 };
 
 export type RuntimeProjectileClashInput = {
@@ -123,6 +125,11 @@ export class RuntimeProjectileCombatWorld {
           guardVelocityY: projectile.guardVelocityY,
           airGuardPush: projectile.airGuardPush,
           airGuardVelocityY: projectile.airGuardVelocityY,
+          cornerPush: projectile.cornerPush,
+          airCornerPush: projectile.airCornerPush,
+          downCornerPush: projectile.downCornerPush,
+          guardCornerPush: projectile.guardCornerPush,
+          airGuardCornerPush: projectile.airGuardCornerPush,
         },
         holdingBack: input.holdingBack,
       });
@@ -133,6 +140,7 @@ export class RuntimeProjectileCombatWorld {
       defender.runtime.life = applyRuntimeDamage(defender.runtime.life, result.damage, canRuntimeDamageKill(defender.runtime, result.kill));
       defender.runtime.vel.x = projectile.facing * result.push;
       defender.runtime.hitVelocity = { x: projectile.facing * result.push, y: result.hitVelocityY ?? 0 };
+      applyRuntimeCornerPush(attacker.runtime, defender.runtime, input.stageBounds, result.cornerPush, result.push);
       if (result.hitVelocityY !== undefined) {
         defender.runtime.vel.y = result.hitVelocityY;
       }

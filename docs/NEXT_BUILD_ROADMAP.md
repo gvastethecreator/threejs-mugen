@@ -27,7 +27,17 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required default airguard.velocity derivation trace gates
+R1 required explicit airguard.cornerpush.veloff trace gates
+  -> synthetic-imported-air-guard-cornerpush.json checksum 9fdb8a81 is required in qa:trace
+  -> synthetic-imported-projectile-air-guard-cornerpush.json checksum 15f26082 is required in qa:trace
+  -> synthetic-imported-helper-projectile-air-guard-cornerpush.json checksum 35d7148b is required in qa:trace
+  -> direct HitDef, player-owned Projectile, and helper-parented Projectile parse/preserve ground/air/down/guard/airguard cornerpush params
+  -> all three routes guard an airborne defender at the stage edge, keep the defender in Common1-style state 155, and require attacker/owner X velocity evidence from corner pushback
+  -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
+  -> pnpm qa:trace passes 382/382 artifacts, 352 required and 30 optional
+  -> no score movement; exact corner-push timing/decay, wall friction, exact air guard physics/landing/timing, guard effects, throws, teams/simul, and full guard parity remain blocked
+
+Previous R1 required default airguard.velocity derivation trace gates
   -> synthetic-imported-air-guard-velocity-default.json checksum b1710269 is required in qa:trace
   -> synthetic-imported-projectile-air-guard-velocity-default.json checksum bd1a774e is required in qa:trace
   -> synthetic-imported-helper-projectile-air-guard-velocity-default.json checksum 3351e770 is required in qa:trace
@@ -35,8 +45,8 @@ R1 required default airguard.velocity derivation trace gates
   -> compiler/import/runtime paths derive airGuardPush = 9 and airGuardVelocityY = -4 from official air.x * 1.5 / air.y / 2 default
   -> all three routes keep the airborne defender in Common1-style state 155 and require actor-frame velocity evidence with X >= 9 and Y <= -3.5
   -> helper Projectile route also records owner/helper target links plus helper/projectile lifecycle payload evidence
-  -> pnpm qa:trace passes 379/379 artifacts, 349 required and 30 optional
-  -> no score movement; exact air guard physics/landing/timing, cornerpush, visual/audio guard effects, throws, teams/simul, and full guard parity remain blocked
+  -> pnpm qa:trace passed 379/379 artifacts, 349 required and 30 optional
+  -> no score movement; exact air guard physics/landing/timing, visual/audio guard effects, throws, teams/simul, and full guard parity remain blocked
 
 Previous R1 required explicit airguard.velocity trace gates
   -> synthetic-imported-air-guard-velocity.json checksum 5ebc1e7b remains required in qa:trace
@@ -44,7 +54,7 @@ Previous R1 required explicit airguard.velocity trace gates
   -> synthetic-imported-helper-projectile-air-guard-velocity.json checksum b547dfb3 remains required in qa:trace
   -> direct HitDef, player-owned Projectile, and helper-parented Projectile all parse authored airguard.velocity = 8,-4
   -> pnpm qa:trace passed 376/376 artifacts, 346 required and 30 optional
-  -> no score movement; exact air guard physics/landing/timing, cornerpush, visual/audio guard effects, throws, teams/simul, and full guard parity remain blocked
+  -> no score movement; exact air guard physics/landing/timing, exact corner-push timing/decay, visual/audio guard effects, throws, teams/simul, and full guard parity remain blocked
 
 Previous R1 required HitOverride guardflag plus forceair/forceguard/keepstate trace gates
   -> synthetic-imported-hitoverride-guardflag-forceair-forceguard-keepstate.json checksum 35fa8224 is required in qa:trace

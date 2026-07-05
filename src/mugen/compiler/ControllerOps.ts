@@ -27,6 +27,11 @@ export type HitDefControllerOp = {
   guardControlTime?: number;
   guardVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
+  groundCornerPush?: number;
+  airCornerPush?: number;
+  downCornerPush?: number;
+  guardCornerPush?: number;
+  airGuardCornerPush?: number;
   p1StateNo?: number;
   p2StateNo?: number;
   p2GetP1State?: boolean;
@@ -162,6 +167,11 @@ export type ProjectileControllerOp = {
   guardControlTime?: number;
   guardVelocity?: [number, number?];
   airGuardVelocity?: [number, number?];
+  groundCornerPush?: number;
+  airCornerPush?: number;
+  downCornerPush?: number;
+  guardCornerPush?: number;
+  airGuardCornerPush?: number;
   hitSound?: string;
   guardSound?: string;
   hitSpark?: string;
@@ -1110,6 +1120,11 @@ function compileHitDefControllerOp(controller: MugenStateController, context: Co
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity,
     airGuardVelocity,
+    groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
+    airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
+    downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),
+    guardCornerPush: firstNumber(findParam(controller, "guard.cornerpush.veloff")),
+    airGuardCornerPush: firstNumber(findParam(controller, "airguard.cornerpush.veloff")),
     p1StateNo: firstNumber(findParam(controller, "p1stateno")),
     p2StateNo,
     p2GetP1State: p2StateNo !== undefined ? (firstNumber(findParam(controller, "p2getp1state")) ?? 1) !== 0 : undefined,
@@ -1355,6 +1370,11 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     guardControlTime: firstNumber(findParam(controller, "guard.ctrltime")),
     guardVelocity: numberPair(findParam(controller, "guard.velocity")),
     airGuardVelocity: numberPair(findParam(controller, "airguard.velocity")),
+    groundCornerPush: firstNumber(findParam(controller, "ground.cornerpush.veloff")),
+    airCornerPush: firstNumber(findParam(controller, "air.cornerpush.veloff")),
+    downCornerPush: firstNumber(findParam(controller, "down.cornerpush.veloff")),
+    guardCornerPush: firstNumber(findParam(controller, "guard.cornerpush.veloff")),
+    airGuardCornerPush: firstNumber(findParam(controller, "airguard.cornerpush.veloff")),
     hitSound: stripMugenString(findParam(controller, "hitsound")),
     guardSound: stripMugenString(findParam(controller, "guardsound")),
     hitSpark: stripMugenString(findParam(controller, "sparkno")),

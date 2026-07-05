@@ -100,6 +100,11 @@ describe("ProjectileSystem", () => {
         "guard.hittime": "8",
         "guard.velocity": "-4,-1",
         "airguard.velocity": "-8,-2",
+        "ground.cornerpush.veloff": "3",
+        "air.cornerpush.veloff": "4",
+        "down.cornerpush.veloff": "5",
+        "guard.cornerpush.veloff": "6",
+        "airguard.cornerpush.veloff": "7",
         attr: '"S,SP"',
         pausetime: "9",
         "ground.hittime": "21",
@@ -159,6 +164,11 @@ describe("ProjectileSystem", () => {
       guardVelocityY: -1,
       airGuardPush: 8,
       airGuardVelocityY: -2,
+      cornerPush: 3,
+      airCornerPush: 4,
+      downCornerPush: 5,
+      guardCornerPush: 6,
+      airGuardCornerPush: 7,
       removeOnHit: false,
       hasHit: false,
     });
@@ -243,6 +253,11 @@ describe("ProjectileSystem", () => {
       guardHitTime: 7,
       guardVelocity: [-3, -1],
       airGuardVelocity: [-6, -2],
+      groundCornerPush: 3,
+      airCornerPush: 4,
+      downCornerPush: 5,
+      guardCornerPush: 6,
+      airGuardCornerPush: 7,
       removeOnHit: false,
     };
     const projectile = createRuntimeProjectile({
@@ -304,8 +319,39 @@ describe("ProjectileSystem", () => {
       guardVelocityY: -1,
       airGuardPush: 6,
       airGuardVelocityY: -2,
+      cornerPush: 3,
+      airCornerPush: 4,
+      downCornerPush: 5,
+      guardCornerPush: 6,
+      airGuardCornerPush: 7,
       removeOnHit: false,
     });
+  });
+
+  it("derives Projectile cornerpush defaults from guard velocity", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "p1-projectile-corner-default",
+      controller: controller({
+        projanim: "1005",
+        attr: "S,SP",
+        guardflag: "MA",
+        "ground.velocity": "-10",
+        "guard.velocity": "-4",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm",
+      spriteOwnerLabel: "Kung Fu Man",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+    });
+
+    expect(projectile.cornerPush).toBeCloseTo(5.2);
+    expect(projectile.airCornerPush).toBeCloseTo(5.2);
+    expect(projectile.downCornerPush).toBeCloseTo(5.2);
+    expect(projectile.guardCornerPush).toBeCloseTo(5.2);
+    expect(projectile.airGuardCornerPush).toBeCloseTo(5.2);
   });
 
   it("advances projectile movement with acceleration, loops frames, and removes stale actors", () => {
