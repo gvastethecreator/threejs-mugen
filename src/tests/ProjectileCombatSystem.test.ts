@@ -28,7 +28,7 @@ const action: MugenAnimationAction = {
 
 describe("ProjectileCombatSystem", () => {
   it("owns bounded projectile hit mutation behind RuntimeProjectileCombatWorld", () => {
-    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42, targetId: 78, chainId: 43 })];
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42, targetId: 78, chainId: 43, hitDefHitCount: 3 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1, power: 10, powerMax: 40 }));
     const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
     const logs: string[] = [];
@@ -62,7 +62,7 @@ describe("ProjectileCombatSystem", () => {
     expect(defender.hitPause).toBe(4);
     expect(defender.hitStun).toBe(13);
     expect(defender.runtime.moveType).toBe("H");
-    expect(defender.runtime.hitVars).toMatchObject({ damage: 42, hitId: 78, chainId: 43 });
+    expect(defender.runtime.hitVars).toMatchObject({ damage: 42, hitId: 78, chainId: 43, hitCount: 3 });
     expect(receivedDamage).toBe(42);
     expect(attacker.runtime.power).toBe(40);
     expect(targets).toEqual(["p2:78"]);
@@ -100,6 +100,7 @@ describe("ProjectileCombatSystem", () => {
       damage: 4,
       kill: true,
       hitId: 77,
+      hitCount: 1,
       animType: 0,
       groundType: 1,
       airType: 1,

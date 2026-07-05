@@ -50,6 +50,7 @@ export type RuntimeProjectile = {
   attr?: string;
   targetId?: number;
   chainId?: number;
+  hitDefHitCount?: number;
   hitPause: number;
   hitStun: number;
   p2StateNo?: number;
@@ -137,6 +138,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
   const projectileId = operation?.projectileId ?? firstNumber(findControllerParam(input.controller, "projid") ?? findControllerParam(input.controller, "id")) ?? 0;
   const targetId = operation?.targetId ?? firstNumber(findControllerParam(input.controller, "id")) ?? projectileId;
   const chainId = operation?.chainId ?? firstNumber(findControllerParam(input.controller, "chainid"));
+  const hitDefHitCount = operation?.hitDefHitCount ?? firstNumber(findControllerParam(input.controller, "numhits")) ?? 1;
   const baseDamage = Math.max(0, operation?.damage ?? firstNumber(findControllerParam(input.controller, "damage")) ?? 30);
   const hitPause = Math.max(0, Math.round(operation?.hitPause ?? firstNumber(findControllerParam(input.controller, "pausetime")) ?? 6));
   const hitStun = Math.max(1, Math.round(operation?.hitStun ?? firstNumber(findControllerParam(input.controller, "ground.hittime")) ?? 18));
@@ -215,6 +217,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     attr,
     targetId,
     chainId,
+    hitDefHitCount: Math.max(0, Math.trunc(hitDefHitCount)),
     hitPause,
     hitStun,
     p2StateNo: operation?.p2StateNo ?? firstNumber(findControllerParam(input.controller, "p2stateno")),

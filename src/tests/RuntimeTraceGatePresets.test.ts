@@ -247,6 +247,7 @@ import {
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushTraceArtifact,
   createSyntheticImportedHelperProjectileDownHitCornerPushDefaultTraceArtifact,
@@ -376,6 +377,7 @@ import {
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
   createSyntheticImportedProjectileCancelTimeVarTraceArtifact,
   createSyntheticImportedProjectileGetHitVarAirGuardHitShakeTimeTraceArtifact,
+  createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact,
   createSyntheticImportedProjectileGetHitVarHitMetadataTraceArtifact,
   createSyntheticImportedProjectileDownHitCornerPushTraceArtifact,
@@ -12344,6 +12346,59 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
   });
 
+  it("creates a synthetic imported Projectile GetHitVar hitcount artifact with normal get-hit branch evidence", () => {
+    const artifact = createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-gethitvar-hitcount-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-gethitvar-hitcount-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 339]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 339, animNo: 339 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 911, moveType: "I" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 77, hasHit: true }) }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]));
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 339,
+      moveType: "H",
+    });
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "5000 Projectile normal hit GetHitVar(hitcount) branch order",
+        actorId: "p2",
+        allowSameTick: true,
+        steps: [{ stateNo: 5000, controller: "ChangeState", name: "Normal HitTime Branch" }],
+      },
+    ]);
+  });
+
   it("creates a synthetic imported Projectile GetHitVar guard kill artifact with defender branch evidence", () => {
     const artifact = createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact({
       generatedAt: "2026-07-04T00:00:00.000Z",
@@ -12856,6 +12911,82 @@ describe("RuntimeTraceGatePresets", () => {
         }),
         expect.objectContaining({
           label: "5000 helper Projectile normal hit GetHitVar(hitid/chainid) branch order",
+          actorId: "p2",
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile GetHitVar hitcount artifact with normal get-hit branch evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-gethitvar-hitcount-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-gethitvar-hitcount-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 5000, 340]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("hit");
+    expect(evidence?.combatReasons).toContain("hit");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p2", source: "imported", actorKind: "player", stateNo: 340, animNo: 340 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1255, animNo: 1008 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1256, animNo: 1009 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1010 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1-projectile-0", effect: expect.objectContaining({ id: 8892, hasHit: true }) }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8892 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8892 }),
+      ]),
+    );
+    expect(evidence?.controllerEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" }),
+        expect.objectContaining({ actorId: "p1", stateNo: 1200, operation: "projectile" }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      source: "imported",
+      stateNo: 340,
+      moveType: "H",
+    });
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          label: "helper-local Projectile spawn telemetry",
+          actorId: "p1",
+          steps: [
+            { stateNo: 1200, controller: "Projectile", name: "Helper ProjHit Spawn" },
+            { stateNo: 1200, operation: "projectile" },
+          ],
+        }),
+        expect.objectContaining({
+          label: "5000 helper Projectile normal hit GetHitVar(hitcount) branch order",
           actorId: "p2",
         }),
       ]),

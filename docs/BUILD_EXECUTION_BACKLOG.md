@@ -1,5 +1,34 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile GetHitVar hitcount required trace gates
+
+Changed:
+
+- Added required `synthetic-imported-projectile-gethitvar-hitcount.json` and `synthetic-imported-helper-projectile-gethitvar-hitcount.json` trace coverage.
+- `ProjectileControllerOp`, runtime Projectile creation, and Projectile combat hit-var storage now preserve HitDef `numhits` as bounded `GetHitVar(hitcount)` metadata separately from Projectile lifetime `projhits`.
+- `RuntimeTraceGatePresets` now gates player-owned Projectile normal-hit `GetHitVar(hitcount)` evidence through defender-owned Common1-style state `5000 -> 339`.
+- `RuntimeTraceGatePresets` now gates helper-parented/root-owned Projectile normal-hit `GetHitVar(hitcount)` evidence through defender-owned `5000 -> 340`, including owner/helper target links and helper/projectile lifecycle payload evidence.
+- `scripts/qa_traces.cjs` registers both Projectile `hitcount` artifacts as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference documents `Projectile` as taking `HitDef` parameters, `projhits` as Projectile lifetime count, and helper-created Projectiles becoming root-owned; Elecbyte Trigger Reference documents `GetHitVar(hitcount)` as the hit-count metadata for the current combo/get-hit context.
+- Focused test: `pnpm exec vitest run src/tests/ProjectileSystem.test.ts src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Projectile GetHitVar hitcount|Helper Projectile GetHitVar hitcount|bounded projectile hit mutation|creates a bounded projectile actor|prefers typed projectile operations|compiles Projectile controllers"` -> 4 files passed, 6 tests passed, 466 skipped.
+- Trace gate: `pnpm qa:trace` -> 411/411 artifacts, 381 required and 30 optional; `synthetic-imported-projectile-gethitvar-hitcount.json` trace checksum `fa445b05`, initial checksum `41a80f3b`, final checksum `0c2197f7`; `synthetic-imported-helper-projectile-gethitvar-hitcount.json` trace checksum `ded0c9b3`, initial checksum `ec06cb59`, final checksum `bba71972`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile normal-hit HitDef `numhits` metadata: Projectile effect id `77` uses `projhits = 1` for lifetime and `numhits = 3` for hit-var metadata, records target link `p1 -> p2 / 77`, consumes/removes the projectile, routes P2 through defender-owned state `5000 -> 339`, and proves `GetHitVar(hitcount) = 3` plus `!GetHitVar(guarded)`.
+- Bounded helper-parented/root-owned Projectile normal-hit HitDef `numhits` metadata: helper-spawned Projectile effect id `8892` uses `projhits = 1` for lifetime and `numhits = 4` for hit-var metadata, records target links `p1 -> p2 / 8892` and `p1-helper-0 -> p2 / 8892`, preserves helper/projectile lifecycle payload evidence, routes P2 through `5000 -> 340`, and proves `GetHitVar(hitcount) = 4` plus `!GetHitVar(guarded)`.
+
+Claim blocked:
+
+- Exact combo accumulation, chain-hit eligibility arbitration, multi-hit timing, exact hitpause lifetime, exact target lifetime/tick order, helper-owned custom states, custom-state inheritance, throws, teams/simul, visual/audio parity, score movement, and full MUGEN/IKEMEN Projectile/GetHitVar parity.
+
+Next:
+
+- Continue R1 with exact combo/chain accumulation, target lifetime ordering, helper Projectile custom-state inheritance, or another official-doc-backed Projectile/Common1 metadata gap. Do not reselect this Projectile `hitcount` gate unless adding one blocked dimension.
+
 ## 2026-07-05 - Projectile GetHitVar hitid/chainid required trace gates
 
 Changed:

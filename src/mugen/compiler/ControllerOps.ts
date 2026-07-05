@@ -131,6 +131,7 @@ export type ProjectileControllerOp = {
   projectileId?: number;
   targetId?: number;
   chainId?: number;
+  hitDefHitCount?: number;
   projAnim?: number;
   offset?: [number, number];
   pos?: [number, number];
@@ -1333,6 +1334,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     projectileId: firstNumber(findParam(controller, "projid") ?? findParam(controller, "id")),
     targetId: firstNumber(findParam(controller, "id")),
     chainId: firstNumber(findParam(controller, "chainid")),
+    hitDefHitCount: firstNumber(findParam(controller, "numhits")),
     projAnim: firstNumber(findParam(controller, "projanim") ?? findParam(controller, "anim")),
     offset: pairWithDefaultOrUndefined(numberPair(findParam(controller, "offset"))),
     pos: pairWithDefaultOrUndefined(numberPair(findParam(controller, "pos"))),

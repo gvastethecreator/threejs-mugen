@@ -255,6 +255,7 @@ function runtimeGetHitVarsFromProjectileResult(
     kill,
     hitId: projectile.targetId,
     ...(projectile.chainId !== undefined ? { chainId: projectile.chainId } : {}),
+    hitCount: projectile.hitDefHitCount ?? 1,
     animType: 0,
     groundType: 1,
     airType: 1,

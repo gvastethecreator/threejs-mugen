@@ -576,6 +576,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGetHitVarHitIdChainIdTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-gethitvar-hitcount",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGetHitVarHitCountTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-gethitvar-guarded",
       required: true,
       artifact: presets.createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact(),
@@ -679,6 +684,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-gethitvar-hitid-chainid",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileGetHitVarHitIdChainIdTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-gethitvar-hitcount",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGetHitVarHitCountTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-air-guard-velocity",
