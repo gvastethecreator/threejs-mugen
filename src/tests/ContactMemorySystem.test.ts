@@ -69,6 +69,29 @@ describe("ContactMemorySystem", () => {
     expect(runtimeMoveHitCountValue(memory, 200, false)).toBe(0);
   });
 
+  it("uses the same-id last contact kind for Proj*Time reads", () => {
+    const memory = createRuntimeContactMemory();
+
+    markRuntimeProjectileContact(memory, 200, 77, "guard");
+    advanceRuntimeContactTimers(memory);
+    advanceRuntimeContactTimers(memory);
+    markRuntimeProjectileContact(memory, 200, 77, "hit");
+    advanceRuntimeContactTimers(memory);
+
+    expect(hasRuntimeProjectileContact(memory, 200, "guard", 77)).toBe(true);
+    expect(hasRuntimeProjectileContact(memory, 200, "hit", 77)).toBe(true);
+    expect(runtimeProjectileContactTime(memory, 200, "contact", 77)).toBe(1);
+    expect(runtimeProjectileContactTime(memory, 200, "hit", 77)).toBe(1);
+    expect(runtimeProjectileContactTime(memory, 200, "guard", 77)).toBe(-1);
+    expect(runtimeProjectileContactTime(memory, 200, "guard")).toBe(-1);
+
+    const persisted = createRuntimeContactMemoryForStateEntry(memory, 380);
+
+    expect(runtimeProjectileContactTime(persisted, 380, "contact", 77)).toBe(1);
+    expect(runtimeProjectileContactTime(persisted, 380, "hit", 77)).toBe(1);
+    expect(runtimeProjectileContactTime(persisted, 380, "guard", 77)).toBe(-1);
+  });
+
   it("feeds projectile hits into move hit counts with unique targets", () => {
     const memory = createRuntimeContactMemory();
 

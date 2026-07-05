@@ -23,6 +23,7 @@ export type RuntimeContactMemory = {
   projectileHitState?: number;
   projectileGuardState?: number;
   projectileId?: number;
+  projectileLastContactKind?: Extract<RuntimeContactKind, "hit" | "guard">;
   projectileContactTime?: number;
   projectileHitTime?: number;
   projectileGuardTime?: number;
@@ -274,6 +275,7 @@ function copyProjectileContactPersistence(memory: RuntimeContactMemory, persiste
     persisted.projectileContactState = stateNo;
     persisted.projectileContactTime = memory.projectileContactTime;
     persisted.projectileId = memory.projectileId;
+    persisted.projectileLastContactKind = memory.projectileLastContactKind;
   }
   if (memory.projectileHitState !== undefined && memory.projectileHitTime !== undefined) {
     persisted.projectileHitState = stateNo;
@@ -378,6 +380,7 @@ export function markRuntimeProjectileContact(
 ): void {
   memory.projectileContactState = stateNo;
   memory.projectileId = projectileId;
+  memory.projectileLastContactKind = kind;
   memory.projectileContactTime = 0;
   markRuntimeMoveContact(memory, stateNo, kind, targetActorId);
   if (kind === "hit") {
@@ -467,10 +470,18 @@ export function runtimeProjectileContactTime(
     return -1;
   }
   if (kind === "hit") {
-    return memory.projectileHitState === stateNo ? memory.projectileHitTime ?? 0 : -1;
+    const isLatestHit =
+      memory.projectileContactState === stateNo &&
+      memory.projectileLastContactKind === "hit" &&
+      memory.projectileHitState === stateNo;
+    return isLatestHit ? memory.projectileHitTime ?? 0 : -1;
   }
   if (kind === "guard") {
-    return memory.projectileGuardState === stateNo ? memory.projectileGuardTime ?? 0 : -1;
+    const isLatestGuard =
+      memory.projectileContactState === stateNo &&
+      memory.projectileLastContactKind === "guard" &&
+      memory.projectileGuardState === stateNo;
+    return isLatestGuard ? memory.projectileGuardTime ?? 0 : -1;
   }
   return memory.projectileContactState === stateNo ? memory.projectileContactTime ?? 0 : -1;
 }

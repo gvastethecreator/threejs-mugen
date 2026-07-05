@@ -35,6 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required player Projectile ProjTime same-id last-contact trace gate
+  -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projtime-same-id-last-contact.json for two same-id Projectiles id 8915
+  -> first contact is guarded, later contact hits, and owner routes 200 -> 380 -> 381 through ProjHitTime(8915) >= 1 / ProjHitTime(0) >= 1 / ProjContactTime(8915) >= 1 / ProjContactTime(0) >= 1 while ProjGuardedTime(8915) < 0 / ProjGuardedTime(0) < 0
+  -> forbidden state 382 proves stale same-id guarded time does not survive after the later hit
+  -> guard package S6,28 / F7035 / sparkxy 29,-71 and hit package S5,29 / F7035 / sparkxy 30,-72 are required
+  -> synthetic-imported-projectile-projtime-same-id-last-contact.json checksum fb4c2450 is required in qa:trace
+  -> pnpm qa:trace passes 436/436 artifacts, 406 required and 30 optional
+  -> no score movement; inverse same-id ordering, exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
   -> RuntimeTraceGatePresets now builds synthetic-imported-projectile-projhittime-multi-id.json, synthetic-imported-projectile-projcontacttime-multi-id.json, and synthetic-imported-projectile-projguardedtime-multi-id.json with two Projectile controller/op executions and wrong-id trap branches
   -> player-owned wrong-id/non-contact Projectile ids 8909/8911/8913 stay isolated while valid hit/contact/guard Projectile ids 8910/8912/8914 route owner states 200 -> 371 -> 372, 200 -> 374 -> 375, and 200 -> 377 -> 378 through fixed-id ProjHitTime(8910) >= 1 / ProjContactTime(8912) >= 1 / ProjGuardedTime(8914) >= 1 plus ID 0 any-projectile reads

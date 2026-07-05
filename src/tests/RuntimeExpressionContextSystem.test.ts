@@ -182,8 +182,11 @@ describe("RuntimeExpressionContextWorld", () => {
     expect(world.evaluateNumber("ProjContactTime(0) + ProjContactTime(77)", { actor, opponent })).toBe(22);
     expect(world.evaluateTrigger(compiledTrigger("ProjHitTime(0) >= 0 && ProjHitTime(77) >= 0"), { actor, opponent })).toBe(true);
     expect(world.evaluateNumber("ProjHitTime(0) + ProjHitTime(77)", { actor, opponent })).toBe(22);
-    expect(world.evaluateTrigger(compiledTrigger("ProjGuarded(77) && ProjGuardedTime(0) >= 0"), { actor, opponent })).toBe(true);
-    expect(world.evaluateNumber("ProjGuardedTime(0) + ProjGuardedTime(77)", { actor, opponent })).toBe(6);
+    expect(world.evaluateTrigger(compiledTrigger("ProjGuarded(77) && ProjGuardedTime(0) < 0"), { actor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjGuardedTime(0) + ProjGuardedTime(77)", { actor, opponent })).toBe(-2);
+    const guardActor = { ...actor, contact: { ...actor.contact, projectileLastContactKind: "guard" as const } };
+    expect(world.evaluateTrigger(compiledTrigger("ProjGuarded(77) && ProjGuardedTime(0) >= 0"), { actor: guardActor, opponent })).toBe(true);
+    expect(world.evaluateNumber("ProjGuardedTime(0) + ProjGuardedTime(77)", { actor: guardActor, opponent })).toBe(6);
     expect(world.evaluateTrigger(compiledTrigger("ProjCancelTime(0) >= 0 && ProjCancelTime(77) >= 0"), { actor, opponent })).toBe(true);
     expect(world.evaluateNumber("ProjCancelTime(0) + ProjCancelTime(77)", { actor, opponent })).toBe(10);
     expect(world.evaluateNumber("ProjContactTime(99)", { actor, opponent })).toBe(-1);
@@ -370,6 +373,7 @@ function contactMemory(): RuntimeContactMemory {
     projectileHitState: 200,
     projectileGuardState: 200,
     projectileId: 77,
+    projectileLastContactKind: "hit",
     projectileContactTime: 11,
     projectileHitTime: 11,
     projectileGuardTime: 3,

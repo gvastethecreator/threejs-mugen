@@ -1,5 +1,33 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Player Projectile ProjTime same-id last-contact required trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-projtime-same-id-last-contact.json` trace coverage for player-owned same-ID `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` last-contact-kind arbitration.
+- `ContactMemorySystem` now records `projectileLastContactKind` for projectile runtime contact memory, keeps legacy `ProjHit` / `ProjGuarded` historical markers intact, and lets `Proj*Time` reads follow the latest hit-or-guard contact kind for the active state.
+- `RuntimeTraceGatePresets` adds a guard-then-hit same-id route: two Projectiles share id `8915`, the first contact is guarded, the second contact hits, and owner state `200 -> 380 -> 381` only routes when hit/contact time reads are active and guarded time reads are inactive.
+- `scripts/qa_traces.cjs` registers the artifact as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte Trigger Reference defines `ProjContactTime`, `ProjGuardedTime`, and `ProjHitTime` as last-projectile-contact reads with required nonnegative ID, ID `0` skipping projectile-ID filtering, and `-1` when no matching last contact exists; Elecbyte CNS docs list old-style `ProjHit`, `ProjContact`, and `ProjGuarded` as superseded by `Proj*Time`.
+- Focused tests: `pnpm vitest run src/tests/ContactMemorySystem.test.ts`; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "same-id last-contact"`.
+- Trace gate: `pnpm qa:trace` -> 436/436 artifacts, 406 required and 30 optional; `synthetic-imported-projectile-projtime-same-id-last-contact.json` checksum `fb4c2450`.
+
+Claim allowed:
+
+- Bounded player-owned same-ID Projectile `Proj*Time` last-contact-kind arbitration for guard-then-hit ordering. `ProjHitTime(8915)`, `ProjHitTime(0)`, `ProjContactTime(8915)`, and `ProjContactTime(0)` route after the later hit, while `ProjGuardedTime(8915)` and `ProjGuardedTime(0)` stay `-1`.
+- The required gate proves two Projectile controller/op executions, two active Projectile payloads, owner target-link id `8915`, guard package `S6,28` / `F7035` / `sparkxy = 29,-71`, hit package `S5,29` / `F7035` / `sparkxy = 30,-72`, and forbidden trap state `382` suppression.
+
+Claim blocked:
+
+- Inverse hit-to-guard same-id ordering, exact `ProjHitTime` / `ProjContactTime` / `ProjGuardedTime` tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, score movement, and full MUGEN/IKEMEN Projectile parity.
+
+Next:
+
+- Continue R1 with inverse same-id ordering, helper Projectile/custom-state Proj*Time breadth, exact projectile lifetime/order, combo/chain accumulation, target lifetime ordering, or another official-doc-backed Common1/FightFX gap.
+
 ## 2026-07-05 - Player Projectile ProjHitTime, ProjContactTime, and ProjGuardedTime multi-id arbitration required trace gates
 
 Changed:

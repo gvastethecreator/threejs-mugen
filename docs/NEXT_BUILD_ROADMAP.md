@@ -27,6 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required player Projectile ProjTime same-id last-contact trace gate
+  -> synthetic-imported-projectile-projtime-same-id-last-contact.json checksum fb4c2450 is required in qa:trace
+  -> two player Projectiles share id 8915; guarded contact first, later hit second; owner state 200 routes 200 -> 380 -> 381 through fixed-id and ID 0 hit/contact time reads while fixed-id and ID 0 guarded time reads stay inactive
+  -> forbidden state 382 proves stale same-id guarded time does not survive the later same-id hit
+  -> evidence keeps two Projectile controller/op executions, two Projectile payloads/lifecycle rows, owner target-link id 8915, guard package S6,28 / F7035 / sparkxy 29,-71, and hit package S5,29 / F7035 / sparkxy 30,-72
+  -> pnpm qa:trace passes 436/436 artifacts, 406 required and 30 optional
+  -> no score movement; inverse same-id ordering, exact Proj*Time tick order/lifetime, helper Projectile/custom-state persistence breadth, Move* interaction breadth, redirects, teams, helper-owned custom-state targets, visual/audio parity beyond bounded packages, and full Projectile parity remain blocked
+
 R1 required player Projectile ProjHitTime/ProjContactTime/ProjGuardedTime multi-id arbitration trace gates
   -> synthetic-imported-projectile-projhittime-multi-id.json checksum 5d897825, synthetic-imported-projectile-projcontacttime-multi-id.json checksum d9b3cecf, and synthetic-imported-projectile-projguardedtime-multi-id.json checksum e52d0d01 are required in qa:trace
   -> player-owned wrong-id/non-contact Projectile ids 8909/8911/8913 are isolated from valid hit/contact/guard Projectile ids 8910/8912/8914; owner state 200 routes 200 -> 371 -> 372, 200 -> 374 -> 375, and 200 -> 377 -> 378 through fixed-id ProjHitTime(8910) >= 1 / ProjContactTime(8912) >= 1 / ProjGuardedTime(8914) >= 1 plus ID 0 any-projectile reads, while forbidden states 373/376/379 prove wrong ids do not route
