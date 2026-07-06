@@ -27,14 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile default bounds terminal trace gate
-  -> synthetic-imported-projectile-default-bounds-terminal.json checksum 52879717 / final checksum df3e2061 is required in qa:trace
-  -> ProjectileSystem derives omitted projedgebound = 40, projstagebound = 40, and projheightbound = -240,1 for current 240p runtime while omitting default fields from effect snapshots
-  -> imported player-owned Projectile id 77 uses authored projremanim = 927, offset 80,-45, velocity 160,0, long projremovetime = 90, and omitted bound params; no contact occurs, default bounds removal happens before timeout, and terminal anim 927 plays
-  -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 927, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
-  -> pnpm qa:trace passes 494/494 artifacts, 464 required and 30 optional
-  -> official Elecbyte docs define omitted projedgebound/projstagebound as 40 in 240p and omitted projheightbound as -240,1 in 240p
-  -> no score movement; exact camera/screen/stage split, localcoord scaling beyond current 240p runtime, helper-owned default-bound trace parity, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+R1 required Helper Projectile default bounds terminal trace gate
+  -> synthetic-imported-helper-projectile-default-bounds-terminal.json checksum e85d7bbf / final checksum bea653fa is required in qa:trace
+  -> helper route spawns helper p1-helper-0, then root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projremanim = 1134, offset 80,-220, velocity 160,0, long projremovetime = 90, and omitted bound params; no contact occurs, default bounds removal happens before timeout, and terminal anim 1134 plays
+  -> evidence requires typed Helper/Projectile op, active x command evidence, helper/projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 1134, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
+  -> pnpm qa:trace passes 495/495 artifacts, 465 required and 30 optional
+  -> official Elecbyte docs define Helper-created Projectiles as root-owned, omitted projedgebound/projstagebound as 40 in 240p, and omitted projheightbound as -240,1 in 240p
+  -> no score movement; exact camera/screen/stage split, localcoord scaling beyond current 240p runtime, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile bounds parity remain blocked
+
+Previous R1 required Projectile default bounds terminal trace gate
+  -> synthetic-imported-projectile-default-bounds-terminal.json checksum 52879717 / final checksum df3e2061 remains required in qa:trace
 
 Previous R1 required Helper Projectile projstagebound terminal trace gate
   -> synthetic-imported-helper-projectile-stagebound-terminal.json checksum 488ce550 / final checksum dd0d956d remains required in qa:trace

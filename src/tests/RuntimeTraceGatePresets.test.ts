@@ -274,6 +274,7 @@ import {
   createSyntheticImportedHelperProjContactTimeAnyTraceArtifact,
   createSyntheticImportedHelperProjContactPersistTraceArtifact,
   createSyntheticImportedHelperProjectileRemoveHitFallbackTerminalTraceArtifact,
+  createSyntheticImportedHelperProjectileDefaultBoundsTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileHeightBoundTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileEdgeBoundTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileStageBoundTerminalTraceArtifact,
@@ -2727,6 +2728,98 @@ describe("RuntimeTraceGatePresets", () => {
         }),
       ]),
     );
+  });
+
+  it("creates a synthetic imported Helper Projectile default bounds terminal artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileDefaultBoundsTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-default-bounds-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-default-bounds-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1324, animNo: 1132 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1134, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    const projectileEffect = evidence?.effectPayloads.find((payload) => payload.actorId === "p1-projectile-0")?.effect;
+    expect(projectileEffect).toEqual(
+      expect.objectContaining({
+        kind: "projectile",
+        id: 8934,
+        hasHit: false,
+        hitsRemaining: 1,
+        removalReason: "bounds",
+        terminalReason: "bounds",
+        terminalDuration: 2,
+      }),
+    );
+    expect(projectileEffect).not.toHaveProperty("edgeBound");
+    expect(projectileEffect).not.toHaveProperty("stageBound");
+    expect(projectileEffect).not.toHaveProperty("heightBound");
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "helper", stateNo: 1324 }),
+        }),
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8934,
+            removalReason: "bounds",
+            terminalReason: "bounds",
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1324, minAge: 1 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8934,
+        hasHit: false,
+        minHitsRemaining: 1,
+        removalReason: "bounds",
+        terminalReason: "bounds",
+        minTerminalAge: 1,
+        minTerminalDuration: 2,
+      },
+    ]);
   });
 
   it("creates a synthetic imported Helper Projectile projheightbound terminal artifact with explicit height-bound evidence", () => {
