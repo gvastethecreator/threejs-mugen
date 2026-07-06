@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Crouch Guard ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-crouch-guard-reversal.json` trace coverage for bounded crouch guard-input `ReversalDef` priority.
+- The trace preset executes a guardable imported direct `HitDef` against a defender holding down-back. The defender is stabilized in authored state `10` with `AssertSpecial nowalk` and active `ReversalDef p1stateno = 777` / `p2stateno = 888`; it stops at reversal and requires imported player actors, typed `assertspecial` / `hitdef` / `reversaldef` operation evidence, reversal event/combat-reason evidence, active `x` / `holdback` / `holddown` command evidence, P1 state/action `888`, P2 state/action `777`, both actors at life `1000`, and forbidden states `5000`, `150`, `151`, `152`, and `153`.
+- Extended the synthetic imported trace fighter fixture helper so passive `ReversalDef` / `AssertSpecial` controllers can be authored in a defender state such as crouch state `10` while keeping required operation and animation-collision evidence.
+- Registered the artifact in `scripts/qa_traces.cjs` so the crouch guard-input reversal route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines guard entry while P2 holds away, `AssertSpecial nowalk`, ReversalDef contact, `reversal.attr`, and `p1stateno`/`p2stateno`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "crouch guard ReversalDef"` -> 1 passed, 463 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 471/471 artifacts, 441 required and 30 optional.
+- Trace artifact: `synthetic-imported-crouch-guard-reversal.json` checksum `405f475e`, final checksum `d1f39c08`.
+- Final verification passed: `pnpm qa:trace` -> 471/471 artifacts, 441 required and 30 optional; `pnpm test` -> 151 files / 1408 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `git diff --check` with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- A no-walk-stabilized down-back defender in authored crouch state `10` can counter a guardable direct `HitDef` through active `ReversalDef` before default get-hit `5000`, stand guard states `150` / `151`, or crouch guard states `152` / `153` execute.
+
+Claim blocked:
+
+- Walk-back guard distance, air guard breadth, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 471/471 artifacts, 441 required and 30 optional. Latest required runtime evidence is `synthetic-imported-crouch-guard-reversal.json`; previous stand guard-input/custom-state/helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with walk-back guard distance, air guard ReversalDef breadth, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Guard ReversalDef trace gate
 
 Changed:
@@ -25,7 +58,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 470/470 artifacts, 440 required and 30 optional. Latest required runtime evidence is `synthetic-imported-guard-reversal.json`; previous custom-state/helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At that checkpoint, runtime/port was at `pnpm qa:trace` 470/470 artifacts, 440 required and 30 optional, with `synthetic-imported-guard-reversal.json` as the newest required runtime evidence. Previous custom-state/helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 

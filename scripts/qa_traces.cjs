@@ -486,6 +486,11 @@ async function main() {
       artifact: presets.createSyntheticImportedGuardReversalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-crouch-guard-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedCrouchGuardReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),

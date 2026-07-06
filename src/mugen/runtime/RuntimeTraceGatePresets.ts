@@ -4780,6 +4780,59 @@ export function createSyntheticImportedGuardReversalTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedCrouchGuardReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedCrouchGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-reversal-attacker",
+    displayName: "Synthetic Imported Crouch Guard Reversal Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-crouch-guard-reversal-defender",
+    displayName: "Synthetic Imported Crouch Guard Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888, hitPause: 3 },
+    passiveAssertSpecialFlags: ["nowalk"],
+    passiveControllerStates: [{ stateNo: 10, stateType: "C", physics: "C", animNo: 10 }],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-crouch-guard-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-crouch-guard-reversal-golden",
+      label: "Synthetic imported crouch guard ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported crouch guard ReversalDef trace proves a no-walk-stabilized defender holding down-back against a guardable direct HitDef can still counter through ReversalDef before crouch/stand guard hit states or guard contact telemetry are entered. It does not claim walk-back guard distance, air guard breadth, custom-state breadth beyond direct routes, exact attr grammar, hitpause/tick order, projectile reflection/removal semantics, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-crouch-guard-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [5000, 150, 151, 152, 153],
+        requiredExecutedControllers: ["AssertSpecial", "ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredActiveCommands: ["x", "holdback", "holddown"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
@@ -34040,6 +34093,13 @@ export function importedGuardScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedCrouchGuardScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-crouch-guard-x", frames: 14, p1: ["x"], p2: ["B", "D"] },
+    { label: "crouch-guard-settle", frames: 4, p1: [], p2: ["B", "D"] },
+  ]);
+}
+
 export function importedP2GuardDenyScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-guarddeny-x", frames: 14, p1: ["B"], p2: ["x"] },
@@ -34244,6 +34304,13 @@ export type SyntheticImportedTraceFighterOptions = {
   passiveHitOverride?: SyntheticImportedPassiveHitOverride;
   passiveHitOverrides?: SyntheticImportedPassiveHitOverride[];
   passiveReversalDef?: { attr: string; p1StateNo: number; p2StateNo?: number; hitPause?: number; targetId?: number };
+  passiveControllerStates?: Array<{
+    stateNo: number;
+    stateType?: "S" | "C" | "A" | "L";
+    physics?: "S" | "C" | "A" | "N";
+    animNo?: number;
+    ctrl?: number;
+  }>;
   defenseMultiplier?: number;
   attackMultiplier?: number;
   guardDamage?: number;
@@ -35141,6 +35208,9 @@ value = 200
 triggerall = command = "x"
 trigger1 = ctrl
 `).controllers;
+  const passiveReversalAnimNos = new Set(
+    options.passiveReversalDef ? [0, ...(options.passiveControllerStates?.map((state) => state.animNo ?? state.stateNo) ?? [])] : [],
+  );
   const stateFile = parseCns(`
 ${dataConstantsBlock(options)}
 ${sizeConstantsBlock(options.sizeConstants)}
@@ -35343,6 +35413,7 @@ ${options.defaultGetHitProgression ? defaultGetHitProgressionBlock(options.defau
 ${options.defaultGuardHit ? defaultGuardHitBlock(options.defaultGuardHit) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartStateBlock() : ""}
 ${options.withAutoGuardStartStates ? autoGuardStartStateBlock() : ""}
+${passiveControllerStateBlocks(options)}
 ${options.helperIsHelperRoute ? helperIsHelperRouteBlock(options.helperIsHelperRoute) : ""}
 ${options.helperEnemyNearRoute ? helperEnemyNearRouteBlock(options.helperEnemyNearRoute) : ""}
 ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(options.helperParentRootRedirectRoute) : ""}
@@ -35430,10 +35501,10 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     fightFxPrefix: options.fightFxPrefix,
     hitSparkLibraries: options.hitSparkLibraries,
     animations: new Map([
-      [0, options.passiveReversalDef ? reversalTraceAction(0) : traceAction(0)],
-      [10, traceAction(10)],
-      [20, traceAction(20)],
-      [40, traceAction(40)],
+      [0, passiveReversalAnimNos.has(0) ? reversalTraceAction(0) : traceAction(0)],
+      [10, passiveReversalAnimNos.has(10) ? reversalTraceAction(10) : traceAction(10)],
+      [20, passiveReversalAnimNos.has(20) ? reversalTraceAction(20) : traceAction(20)],
+      [40, passiveReversalAnimNos.has(40) ? reversalTraceAction(40) : traceAction(40)],
       [200, options.action200FrameDurations ? traceActionWithDurations(200, options.action200FrameDurations) : traceAction(200, options.action200Duration)],
       [230, traceAction(230)],
       [500, traceAction(500)],
@@ -36210,10 +36281,14 @@ keepstate = ${config.keepState ? 1 : 0}
 `;
 }
 
-function passiveReversalDefController(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>): string {
+function passiveReversalDefController(
+  config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>,
+  stateNo = 0,
+  suffix = "",
+): string {
   const hitPause = config.hitPause ?? 0;
   return `
-[State 0, Passive ReversalDef]
+[State ${stateNo}, Passive ReversalDef${suffix}]
 type = ReversalDef
 trigger1 = 1
 reversal.attr = ${config.attr}
@@ -36222,6 +36297,27 @@ p1stateno = ${config.p1StateNo}
 ${config.p2StateNo === undefined ? "" : `p2stateno = ${config.p2StateNo}`}
 ${config.targetId === undefined ? "" : `id = ${config.targetId}`}
 `;
+}
+
+function passiveControllerStateBlocks(options: SyntheticImportedTraceFighterOptions): string {
+  if (!options.passiveControllerStates?.length || (!options.passiveReversalDef && !options.passiveAssertSpecialFlags?.length)) {
+    return "";
+  }
+  return options.passiveControllerStates
+    .map((state, index) => {
+      const suffix = ` ${index + 2}`;
+      return `
+[Statedef ${state.stateNo}]
+type = ${state.stateType ?? "S"}
+movetype = I
+physics = ${state.physics ?? "S"}
+anim = ${state.animNo ?? state.stateNo}
+ctrl = ${state.ctrl ?? 1}
+${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef, state.stateNo, suffix) : ""}
+${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger, suffix, state.stateNo) : ""}
+`;
+    })
+    .join("");
 }
 
 function passiveReversalStateBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["passiveReversalDef"]>): string {
@@ -36244,13 +36340,13 @@ ctrl = 0
 `;
 }
 
-function passiveAssertSpecialController(flags: string[], trigger = "1", suffix = ""): string {
+function passiveAssertSpecialController(flags: string[], trigger = "1", suffix = "", stateNo = 0): string {
   const flagParams = flags
     .slice(0, 3)
     .map((flag, index) => `${index === 0 ? "flag" : `flag${index + 1}`} = ${flag}`)
     .join("\n");
   return `
-[State 0, Passive AssertSpecial${suffix}]
+[State ${stateNo}, Passive AssertSpecial${suffix}]
 type = AssertSpecial
 trigger1 = ${trigger}
 ${flagParams}
