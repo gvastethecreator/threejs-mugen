@@ -247,6 +247,7 @@ import {
   createSyntheticImportedHelperProjectileDefaultTargetControllersTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
+  createSyntheticImportedHelperProjectileGuardKoTraceArtifact,
   createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardedTraceArtifact,
   createSyntheticImportedHelperProjectileGetHitVarGuardKillTraceArtifact,
@@ -4513,6 +4514,63 @@ describe("RuntimeTraceGatePresets", () => {
           effect: expect.objectContaining({ kind: "projectile", id: 8854, hitsRemaining: 0, hasHit: true }),
         }),
       ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile guard chip KO artifact with round evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileGuardKoTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-guard-ko-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-guard-ko-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported Helper Projectile Guard KO projectile for 2000"))).toBe(
+      true,
+    );
+    expect(evidence?.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          state: "ko",
+          winner: "Synthetic Imported Helper Projectile Guard KO",
+          message: "Synthetic Imported Helper Projectile Guard KO wins",
+        }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8920 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8920 }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 0 })]),
     );
   });
 

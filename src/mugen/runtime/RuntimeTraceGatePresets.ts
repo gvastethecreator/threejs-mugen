@@ -30470,6 +30470,100 @@ export function createSyntheticImportedHelperProjGuardTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedHelperProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-ko-attacker",
+    displayName: "Synthetic Imported Helper Projectile Guard KO",
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1310,
+      waitAnimNo: 1100,
+      branchStateNo: 1311,
+      branchAnimNo: 1101,
+      projectileAnimNo: 1102,
+      projectileId: 8920,
+      pos: [360, -34],
+      damage: [18, 2000],
+      guardSound: "S6,0",
+      guardSpark: "F7004",
+      sparkXy: [15, -63],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-guard-ko-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-guard-ko-golden",
+      label: "Synthetic imported Helper Projectile guard chip KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile guard chip KO trace proves bounded helper-parented/root-owned Projectile default guard.kill behavior can let lethal guard chip damage reach 0 life and emit RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, helper-owned custom states, teams, or full helper Projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-guard-ko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+        requiredExecutedOperations: ["helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported Helper Projectile Guard KO projectile for 2000"],
+        requiredRoundFrames: [
+          { state: "ko", winner: "Synthetic Imported Helper Projectile Guard KO", message: "Synthetic Imported Helper Projectile Guard KO wins" },
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1310, animNo: 1100, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1102, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1310, minAge: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8920,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8920 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8920 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 0,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperProjectileGuardScript();
@@ -35106,6 +35200,7 @@ export type SyntheticImportedTraceFighterOptions = {
     guardCornerPush?: number;
     airGuardCornerPush?: number;
     guardKill?: boolean;
+    damage?: [number, number?];
     hitSound?: string;
     guardSound?: string;
     hitSpark?: string;
@@ -40412,6 +40507,7 @@ function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFigh
   const guardSlideTimeLine = route.guardSlideTime === undefined ? "" : `guard.slidetime = ${route.guardSlideTime}`;
   const guardControlTimeLine = route.guardControlTime === undefined ? "" : `guard.ctrltime = ${route.guardControlTime}`;
   const guardKillLine = route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`;
+  const damage = route.damage ?? [18, 2];
   const groundVelocity = route.groundVelocity ?? [-3];
   const guardVelocityLine = route.omitGuardVelocity ? "" : `guard.velocity = ${(route.guardVelocity ?? [-2]).join(",")}`;
   const airVelocityLine = route.airVelocity === undefined ? "" : `air.velocity = ${route.airVelocity.join(",")}`;
@@ -40451,7 +40547,7 @@ ${guardSoundLine}
 ${hitSparkLine}
 ${guardSparkLine}
 ${sparkXyLine}
-damage = 18,2
+damage = ${damage.join(",")}
 ${guardKillLine}
 pausetime = 3,3
 ground.hittime = 11

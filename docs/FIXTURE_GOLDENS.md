@@ -58,6 +58,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded owner-backed get-hit `GetHitVar(fallcount)` post-impact metadata through `synthetic-imported-gethitvar-fallcount.json`
 - synthetic bounded owner-backed get-hit `GetHitVar(xoff/yoff/zoff)` snap metadata through `synthetic-imported-gethitvar-snap.json`
 - synthetic bounded defender-owned stand/crouch/air guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-guard-kill.json`, `synthetic-imported-gethitvar-crouch-guard-kill.json`, and `synthetic-imported-gethitvar-air-guard-kill.json`
+- synthetic bounded helper-parented/root-owned Projectile default lethal guard-chip KO through `synthetic-imported-helper-projectile-guard-ko.json`
 - synthetic bounded player-owned Projectile default lethal guard-chip KO through `synthetic-imported-projectile-guard-ko.json`
 - synthetic bounded direct-HitDef default lethal guard-chip KO through `synthetic-imported-hitdef-guard-ko.json`
 - synthetic bounded direct-HitDef explicit `missonoverride = 0` custom-state `HitOverride guardflag` / `guardflag.not` filtering through `synthetic-imported-hitoverride-missonoverride-zero-guardflag-filter.json`

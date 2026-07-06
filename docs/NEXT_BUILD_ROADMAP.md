@@ -27,13 +27,20 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile guard chip KO trace gate
-  -> synthetic-imported-projectile-guard-ko.json checksum 2285474a / final checksum c968c723 is required in qa:trace
+R1 required Helper Projectile guard chip KO trace gate
+  -> synthetic-imported-helper-projectile-guard-ko.json checksum 49c99564 / final checksum 560dc839 is required in qa:trace
+  -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, damage 18,2000, and default guard.kill behavior
+  -> evidence requires typed helper/projectile ops, helper/projectile spawn evidence, owner/helper target-link evidence, guard event/reason evidence, active x command evidence, round KO winner/message, and final P2 life 0
+  -> pnpm qa:trace passes 477/477 artifacts, 447 required and 30 optional
+  -> official Elecbyte docs define Projectile as taking HitDef parameters, helper-created Projectiles as root-owned, and guard.kill = 0 as nonlethal chip clamp
+  -> no score movement; exact KO slowdown, lifebar behavior, guard-finish timing, helper-owned custom states, team/simul guard KO breadth, exact effect terminal/presentation timing, score movement, and full helper Projectile guard round-flow parity remain blocked
+
+Previous R1 required Projectile guard chip KO trace gate
+  -> synthetic-imported-projectile-guard-ko.json checksum 2285474a / final checksum c968c723 remains required in qa:trace
   -> imported player-owned Projectile guard route uses damage 31,2000 with default guard.kill behavior
   -> evidence requires typed projectile op, Projectile lifecycle and target-link evidence, guard event/reason evidence, active x command evidence, round KO winner/message, and final P2 life 0
-  -> pnpm qa:trace passes 476/476 artifacts, 446 required and 30 optional
-  -> official Elecbyte docs define Projectile as taking HitDef parameters, including guard.kill, with guard.kill = 0 as nonlethal chip clamp
-  -> no score movement; exact KO slowdown, lifebar behavior, guard-finish timing, helper Projectile guard-chip KO/no-KO, team/simul guard KO breadth, exact effect terminal/presentation timing, score movement, and full projectile guard round-flow parity remain blocked
+  -> pnpm qa:trace passed 476/476 artifacts, 446 required and 30 optional
+  -> no score movement; it remains bounded player-owned Projectile guard-chip KO evidence only
 
 Previous R1 required direct HitDef guard chip KO trace gate
   -> synthetic-imported-hitdef-guard-ko.json checksum b7db75f4 / final checksum 0f9afa50 remains required in qa:trace
