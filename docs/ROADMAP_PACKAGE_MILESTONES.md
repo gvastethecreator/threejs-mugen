@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required Projectile bounds remove terminal trace gate
+-> synthetic-imported-projectile-bounds-remove-terminal.json checksum 10d27a3c / final checksum 39b81931 is required in qa:trace
+-> imported player-owned Projectile id 77 uses authored projremanim = 923, offset 80,-45, velocity 160,0, and long projremovetime = 90; no contact occurs, bounds removal happens before timeout, and terminal anim 923 plays
+-> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 923, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
+-> pnpm qa:trace passes 487/487 artifacts, 457 required and 30 optional
+-> official Elecbyte docs define projremanim as expired-time/removal-boundaries playback and define projedgebound, projstagebound, and projheightbound automatic removal bounds
+-> no score movement; exact bounds thresholds, edge/stage/height bound parameter parity, exact terminal timing, helper-owned bounds-removal parity, fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+
 R1 required Helper Projectile remove hit fallback terminal trace gate
 -> synthetic-imported-helper-projectile-remove-hit-fallback-terminal.json checksum 0ed9e229 / final checksum 9cd6d27b is required in qa:trace
 -> helper p1-helper-0 spawned root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projhitanim = 1122, omitted projremanim, static velocity, projremovetime = 24, and no contact before timeout, then fell back to projhitanim for timeout terminal playback

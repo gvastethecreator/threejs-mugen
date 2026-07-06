@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Projectile bounds remove terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-bounds-remove-terminal.json` trace coverage for bounded player-owned Projectile stage-bound removal terminal playback.
+- Added `projectileRemoveTime` to the synthetic imported Projectile route with default `24`, preserving older gates while allowing a long-lived fast projectile to leave stage bounds before timeout.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the player Projectile timeout, fallback, guard terminal, and cancel terminal gates.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projremanim` as the animation used when a projectile is removed by expired time or removal boundaries, and defines `projedgebound`, `projstagebound`, and `projheightbound` as automatic removal bounds.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile bounds remove terminal"` -> 1 passed, 479 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 487/487 artifacts, 457 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-bounds-remove-terminal.json` checksum `10d27a3c`, final checksum `39b81931`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile stage-bound removal can resolve authored `projremanim = 923`, produce visible terminal playback, record Projectile spawn/remove lifecycle evidence, and preserve payload evidence with `hasHit = false`, `hitsRemaining = 1`, `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN bounds thresholds, edge/stage/height bound parameter parity, exact terminal timing, helper-owned bounds-removal parity, fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 487/487 artifacts, 457 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-bounds-remove-terminal.json`; previous helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact Projectile bounds parameter parity (`projedgebound`, `projstagebound`, `projheightbound`), helper-owned bounds-removal parity, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile remove hit fallback terminal trace gate
 
 Changed:
