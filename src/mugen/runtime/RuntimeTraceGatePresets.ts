@@ -4780,6 +4780,81 @@ export function createSyntheticImportedGuardReversalTraceArtifact(options: Runti
   });
 }
 
+export function createSyntheticImportedWalkBackGuardReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedWalkBackGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-walkback-guard-reversal-attacker",
+    displayName: "Synthetic Imported Walkback Guard Reversal Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-walkback-guard-reversal-defender",
+    displayName: "Synthetic Imported Walkback Guard Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888, hitPause: 3 },
+    passiveControllerStates: [{ stateNo: 20, stateType: "S", physics: "S", animNo: 20 }],
+    selfCommandEntry: { commandName: "holdback", stateNo: 20 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-walkback-guard-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-walkback-guard-reversal-golden",
+      label: "Synthetic imported walk-back guard ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported walk-back guard ReversalDef trace proves a defender holding back can enter authored walk state 20, move away without AssertSpecial nowalk, keep active ReversalDef in that authored state, and still counter a guardable direct HitDef before default get-hit or stand guard hit states are entered. It does not claim proximity-only guard.dist ReversalDef contact, exact guard-distance boxes, crouch/air guard breadth, custom-state breadth beyond direct routes, exact attr grammar, hitpause/tick order, projectile reflection/removal semantics, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-walkback-guard-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [20, 200, 777, 888],
+        forbiddenExecutedStates: [5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredControllerEventSequences: [
+          {
+            label: "walk-back reversal setup",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 20, controller: "ReversalDef" }],
+          },
+        ],
+        requiredActiveCommands: ["x", "holdback"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            stateNo: 20,
+            animNo: 20,
+            stateType: "S",
+            moveType: "I",
+            physics: "S",
+            clsn1Count: 1,
+            clsn2Count: 1,
+            observedPosXAtLeast: 38,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedCrouchGuardReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedCrouchGuardScript();
@@ -34170,6 +34245,14 @@ export function importedGuardScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedWalkBackGuardScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "walkback-guard-prime", frames: 2, p1: [], p2: ["B"] },
+    { label: "walkback-guard-reversal-x", frames: 14, p1: ["x"], p2: ["B"] },
+    { label: "walkback-guard-reversal-settle", frames: 4, p1: [], p2: ["B"] },
+  ]);
+}
+
 export function importedCrouchGuardScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-crouch-guard-x", frames: 14, p1: ["x"], p2: ["B", "D"] },
@@ -35288,6 +35371,7 @@ trigger1 = ctrl
   const passiveReversalAnimNos = new Set(
     options.passiveReversalDef ? [0, ...(options.passiveControllerStates?.map((state) => state.animNo ?? state.stateNo) ?? [])] : [],
   );
+  const passiveControllerStateNos = new Set(options.passiveControllerStates?.map((state) => state.stateNo) ?? []);
   const stateFile = parseCns(`
 ${dataConstantsBlock(options)}
 ${sizeConstantsBlock(options.sizeConstants)}
@@ -35475,7 +35559,7 @@ ${options.ownerMetricsStateEntry ? simpleStateBlock(options.ownerMetricsStateEnt
 ${options.identityEntry ? simpleStateBlock(options.identityEntry.stateNo, "I") : ""}
 ${options.selfStateNoExistEntry ? simpleStateBlock(options.selfStateNoExistEntry.stateNo, "I") : ""}
 ${options.selfAnimExistEntry ? simpleStateBlock(options.selfAnimExistEntry.stateNo, "I") : ""}
-${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
+${options.selfCommandEntry && options.selfCommandEntry.stateNo !== options.assertSpecialControlState?.stateNo && !passiveControllerStateNos.has(options.selfCommandEntry.stateNo) ? simpleStateBlock(options.selfCommandEntry.stateNo, "I") : ""}
 ${options.stageTimeEntry ? simpleStateBlock(options.stageTimeEntry.stateNo, "I") : ""}
 ${options.gameTimeEntry ? simpleStateBlock(options.gameTimeEntry.stateNo, "I") : ""}
 ${options.stateContextEntry ? simpleStateBlock(options.stateContextEntry.stateNo, "I") : ""}
@@ -35764,7 +35848,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.selfAnimExistEntry === undefined
         ? []
         : ([[options.selfAnimExistEntry.stateNo, traceAction(options.selfAnimExistEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
-      ...(options.selfCommandEntry === undefined
+      ...(options.selfCommandEntry === undefined || passiveControllerStateNos.has(options.selfCommandEntry.stateNo)
         ? []
         : ([[options.selfCommandEntry.stateNo, traceAction(options.selfCommandEntry.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.stageTimeEntry === undefined

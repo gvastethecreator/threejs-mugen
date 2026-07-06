@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Walk-back Guard ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-walkback-guard-reversal.json` trace coverage for bounded authored walk-back state `20` `ReversalDef` priority.
+- The trace preset executes a guardable imported direct `HitDef` against a defender holding back. The defender routes through authored state `20`, moves away without `AssertSpecial nowalk`, carries active `ReversalDef p1stateno = 777` / `p2stateno = 888`, and the gate requires imported player actors, typed `hitdef` / `reversaldef` operation evidence, state-20 `ReversalDef` controller events, S/I/S actor-frame evidence with Clsn1+Clsn2 and observed X movement beyond `38`, reversal event/combat-reason evidence, active `x` / `holdback` command evidence, P1 state/action `888`, P2 state/action `777`, both actors at life `1000`, and forbidden states `5000`, `150`, and `151`.
+- Tightened the synthetic imported fixture generator so a self-command route into a passive controller state reuses that authored state/action instead of generating duplicate `StateDef` / AIR overrides.
+- Registered the artifact in `scripts/qa_traces.cjs` so authored walk-back reversal priority cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines guard entry while P2 holds away, `guardflag`, `guard.dist`, ReversalDef Clsn1 contact, `reversal.attr`, and `p1stateno`/`p2stateno`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "walk-back guard ReversalDef"` -> 1 passed, 465 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 473/473 artifacts, 443 required and 30 optional.
+- Closeout gates: `pnpm test` -> 151 files / 1410 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `git diff --check` -> passed with CRLF normalization warnings only.
+- Trace artifact: `synthetic-imported-walkback-guard-reversal.json` checksum `70c83b8c`, final checksum `b7a8cb9d`.
+
+Claim allowed:
+
+- An authored state-20 walk-back defender can hold back, move away without no-walk stabilization, and counter a guardable direct `HitDef` through active `ReversalDef` before default get-hit `5000` or stand guard states `150` / `151` execute.
+
+Claim blocked:
+
+- Proximity-only `guard.dist` ReversalDef contact, exact guard-distance boxes, crouch/air breadth beyond existing gates, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 473/473 artifacts, 443 required and 30 optional. Latest required runtime evidence is `synthetic-imported-walkback-guard-reversal.json`; previous air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and direct ReversalDef gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with proximity-only `guard.dist` ReversalDef contact, exact guard-distance boxes, custom-state ReversalDef breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Air Guard ReversalDef trace gate
 
 Changed:
