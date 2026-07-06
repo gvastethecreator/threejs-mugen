@@ -93,6 +93,7 @@ describe("ProjectileSystem", () => {
         projcancelanim: "1202",
         projedgebound: "48",
         projstagebound: "32",
+        projheightbound: "-96,64",
         projremovetime: "9999",
         projpriority: "12",
         projhits: "3",
@@ -150,6 +151,7 @@ describe("ProjectileSystem", () => {
       removeTime: 1200,
       edgeBound: 48,
       stageBound: 32,
+      heightBound: { low: -96, high: 64 },
       priority: 10,
       hitsRemaining: 3,
       missTime: 4,
@@ -530,6 +532,28 @@ describe("ProjectileSystem", () => {
     expect(runtimeProjectilesToSnapshots([tight], 1000)[0]).toMatchObject({
       effect: {
         edgeBound: 24,
+        removalReason: "bounds",
+      },
+    });
+  });
+
+  it("uses explicit projheightbound for vertical removal", () => {
+    const tight = projectile({
+      serialId: "height-tight",
+      pos: { x: 0, y: -130 },
+      vel: { x: 0, y: -8 },
+      heightBound: { low: -132, high: 40 },
+    });
+    const defaultBound = projectile({ serialId: "height-default", pos: { x: 0, y: -130 }, vel: { x: 0, y: -8 } });
+
+    const remaining = advanceRuntimeProjectiles([tight, defaultBound], stage);
+
+    expect(remaining.map((entry) => entry.serialId)).toEqual(["height-default"]);
+    expect(tight).toMatchObject({ removalReason: "bounds" });
+    expect(defaultBound.removalReason).toBeUndefined();
+    expect(runtimeProjectilesToSnapshots([tight], 1000)[0]).toMatchObject({
+      effect: {
+        heightBound: { low: -132, high: 40 },
         removalReason: "bounds",
       },
     });

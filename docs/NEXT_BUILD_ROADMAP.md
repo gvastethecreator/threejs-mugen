@@ -27,13 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Projectile projedgebound terminal trace gate
-  -> synthetic-imported-projectile-edgebound-terminal.json checksum e4361063 / final checksum 6dcae566 is required in qa:trace
-  -> imported player-owned Projectile id 77 uses authored projremanim = 925, offset 80,-45, velocity 160,0, long projremovetime = 90, and explicit projedgebound = 24; no contact occurs, bounded screen-edge-proxy removal happens before timeout at pos x 400, and terminal anim 925 plays at ticks 5..6
-  -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 925, and payload evidence with edgeBound 24, hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
-  -> pnpm qa:trace passes 489/489 artifacts, 459 required and 30 optional
-  -> official Elecbyte docs define projedgebound as the distance off screen edge before automatic projectile removal and projremanim as expired-time/removal-boundaries playback
-  -> no score movement; exact default projedgebound values, exact camera/screen-edge geometry, exact projstagebound-vs-projedgebound split, projheightbound parity, exact terminal timing, helper-owned bounds-removal parity, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+R1 required Projectile projheightbound terminal trace gate
+  -> synthetic-imported-projectile-heightbound-terminal.json checksum 1164a584 / final checksum 363aced8 is required in qa:trace
+  -> imported player-owned Projectile id 77 uses authored projremanim = 926, offset 80,-45, velocity 0,-120, long projremovetime = 90, and explicit projheightbound = -120,60; no contact occurs, vertical y-bound removal happens before timeout, and terminal anim 926 plays
+  -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 926, and payload evidence with heightBound low -120 high 60, hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
+  -> pnpm qa:trace passes 490/490 artifacts, 460 required and 30 optional
+  -> official Elecbyte docs define projheightbound as the least and greatest y values a projectile may reach before automatic removal, with y decreasing as height increases
+  -> no score movement; exact default projheightbound values, exact coordinate/camera/height scaling parity, exact stage-vs-screen/edge split, helper-owned height-bound removal parity, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+
+Previous R1 required Projectile projedgebound terminal trace gate
+  -> synthetic-imported-projectile-edgebound-terminal.json checksum e4361063 / final checksum 6dcae566 remains required in qa:trace
 
 Previous R1 required Projectile projstagebound terminal trace gate
   -> synthetic-imported-projectile-stagebound-terminal.json checksum fe3df8e7 / final checksum b467573f remains required in qa:trace

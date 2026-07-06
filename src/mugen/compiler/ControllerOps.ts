@@ -152,6 +152,7 @@ export type ProjectileControllerOp = {
   cancelAnim?: number;
   edgeBound?: number;
   stageBound?: number;
+  heightBound?: { low: number; high: number };
   removeTime: number;
   spritePriority: number;
   priority: number;
@@ -1435,6 +1436,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
     edgeBound: firstNumber(findParam(controller, "projedgebound")),
     stageBound: firstNumber(findParam(controller, "projstagebound")),
+    heightBound: projectileHeightBound(numberPair(findParam(controller, "projheightbound"))),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 4,
     priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")) ?? 1,
@@ -1787,6 +1789,15 @@ function pairWithDefault(value: [number, number?] | undefined): [number, number]
 
 function pairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {
   return value ? pairWithDefault(value) : undefined;
+}
+
+function projectileHeightBound(value: [number, number?] | undefined): { low: number; high: number } | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const low = value[0];
+  const high = value[1] ?? value[0];
+  return { low: Math.min(low, high), high: Math.max(low, high) };
 }
 
 function scalePairWithDefaultOrUndefined(value: [number, number?] | undefined): [number, number] | undefined {

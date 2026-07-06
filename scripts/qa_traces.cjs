@@ -1992,6 +1992,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileEdgeBoundTerminalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-heightbound-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileHeightBoundTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-multihit",
       required: true,
       artifact: presets.createSyntheticImportedProjectileMultiHitTraceArtifact(),
@@ -3628,6 +3633,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-bounds-remove-terminal",
     "synthetic-imported-projectile-stagebound-terminal",
     "synthetic-imported-projectile-edgebound-terminal",
+    "synthetic-imported-projectile-heightbound-terminal",
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-guard-cornerpush-default",

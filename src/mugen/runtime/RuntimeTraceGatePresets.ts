@@ -27111,6 +27111,75 @@ export function createSyntheticImportedProjectileEdgeBoundTerminalTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileHeightBoundTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileHeightBoundTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-heightbound-terminal-attacker",
+    displayName: "Synthetic Imported Projectile HeightBound Terminal",
+    withHitDef: false,
+    withProjectile: true,
+    projectileRemoveAnim: 926,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, -120],
+    projectileRemoveTime: 90,
+    projectileHeightBound: [-120, 60],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-heightbound-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-heightbound-terminal-golden",
+      label: "Synthetic imported Projectile projheightbound terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile projheightbound terminal trace proves bounded player-owned Projectile removal can honor explicit projheightbound metadata as the vertical y-bound removal threshold, resolve authored projremanim metadata into runtime removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve the explicit height-bound payload through the effect actor world. Elecbyte documents projheightbound as the least and greatest y values a projectile may reach before automatic removal. It does not claim exact default projheightbound values, exact coordinate/camera/height scaling parity, exact stage-vs-screen/edge split, helper-owned height-bound removal parity, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, or full Projectile bounds parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-heightbound-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 926, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            hasHit: false,
+            minHitsRemaining: 1,
+            heightBound: { low: -120, high: 60 },
+            removalReason: "bounds",
+            terminalReason: "bounds",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileGuardScript();
@@ -35331,6 +35400,13 @@ export function importedProjectileEdgeBoundTerminalScript(): RuntimeTraceInputFr
   ]);
 }
 
+export function importedProjectileHeightBoundTerminalScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-projectile-heightbound-terminal-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "projectile-heightbound-terminal-runoff", frames: 8, p1: [], p2: [] },
+  ]);
+}
+
 export function importedProjectileMotionScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-projectile-motion-x", frames: 8, p1: ["x"], p2: [] },
@@ -35872,6 +35948,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileRemoveTime?: number;
   projectileEdgeBound?: number;
   projectileStageBound?: number;
+  projectileHeightBound?: [number, number];
   withModifyProjectile?: boolean;
   modifyProjectileTriggerTime?: number;
   modifyProjectileVelocity?: [number, number];
@@ -36699,7 +36776,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage, options.projectileRemoveTime, options.projectileEdgeBound, options.projectileStageBound, options.projectileHeightBound) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -39649,6 +39726,7 @@ function projectileControllerBlock(
   removeTime = 24,
   edgeBound?: number,
   stageBound?: number,
+  heightBound?: [number, number],
   label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -39680,6 +39758,7 @@ function projectileControllerBlock(
   const airGuardVelocityLine = airGuardVelocity === undefined ? "" : `airguard.velocity = ${airGuardVelocity.join(",")}`;
   const edgeBoundLine = edgeBound === undefined ? "" : `projedgebound = ${edgeBound}`;
   const stageBoundLine = stageBound === undefined ? "" : `projstagebound = ${stageBound}`;
+  const heightBoundLine = heightBound === undefined ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
   const cornerPushLines = `
 ${groundCornerPush === undefined ? "" : `ground.cornerpush.veloff = ${groundCornerPush}`}
 ${airCornerPush === undefined ? "" : `air.cornerpush.veloff = ${airCornerPush}`}
@@ -39711,6 +39790,7 @@ ${scaleLine}
 projremovetime = ${removeTime}
 ${edgeBoundLine}
 ${stageBoundLine}
+${heightBoundLine}
 damage = ${damage.join(",")}
 ${killLine}
 ${guardKillLine}
