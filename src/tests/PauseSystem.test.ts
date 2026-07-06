@@ -59,6 +59,21 @@ describe("PauseSystem", () => {
     });
   });
 
+  it("captures SuperPause pausebg telemetry", () => {
+    const result = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1", pausebg: "0" }),
+      10,
+    );
+
+    expect(result.pause).toMatchObject({
+      type: "SuperPause",
+      pauseBg: false,
+      darken: true,
+    });
+    expect(toMatchPauseSnapshot(result.pause!)).toMatchObject({ pauseBg: false });
+  });
+
   it("captures explicit SuperPause player animation metadata and offset", () => {
     const result = createMatchPauseFromController(
       actor("p1", 200),
@@ -117,6 +132,7 @@ describe("PauseSystem", () => {
         controllerType: "superpause",
         time: 9,
         moveTime: 3,
+        pauseBg: true,
         darken: false,
         powerAdd: 75,
       },
@@ -138,6 +154,7 @@ describe("PauseSystem", () => {
       controllerType: "pause",
       time: 0,
       moveTime: 2,
+      pauseBg: true,
       darken: false,
       powerAdd: 0,
     });
@@ -215,6 +232,7 @@ describe("PauseSystem", () => {
       controllerType: "superpause" as const,
       time: 12,
       moveTime: 4,
+      pauseBg: true,
       darken: true,
       powerAdd: 25,
     };
@@ -344,6 +362,7 @@ describe("PauseSystem", () => {
         controllerType: "superpause",
         time: 0,
         moveTime: 0,
+        pauseBg: true,
         darken: true,
         powerAdd: 0,
       },
@@ -358,13 +377,14 @@ describe("PauseSystem", () => {
       resolveParams: {
         time: () => 9,
         moveTime: () => 2,
+        pauseBg: () => 0,
         darken: () => 0,
         powerAdd: () => 75,
       },
       log: (message) => calls.push(`log:${message}`),
     });
 
-    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 9, moveTime: 2, darken: false });
+    expect(result.pause).toMatchObject({ type: "SuperPause", remaining: 9, moveTime: 2, pauseBg: false, darken: false });
     expect(result.powerDelta).toBe(75);
     expect(calls).toEqual([
       "apply:p1:SuperPause:44:superpause",
@@ -389,6 +409,7 @@ describe("PauseSystem", () => {
         controllerType: "superpause",
         time: 7,
         moveTime: 1,
+        pauseBg: true,
         darken: true,
         powerAdd: 0,
         anim: "var(6)",

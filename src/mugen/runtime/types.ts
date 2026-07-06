@@ -469,6 +469,7 @@ export type RuntimeMatchPauseSnapshot = {
   remaining: number;
   moveTime: number;
   actorId: string;
+  pauseBg?: boolean;
   darken: boolean;
   sourceStateNo: number;
   superAnim?: RuntimeSuperPauseAnimSnapshot;

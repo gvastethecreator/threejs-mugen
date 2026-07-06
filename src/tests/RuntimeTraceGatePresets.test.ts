@@ -451,6 +451,7 @@ import {
   createSyntheticImportedSuperPauseDynamicAnimPosTraceArtifact,
   createSyntheticImportedSuperPauseEffectFreezeTraceArtifact,
   createSyntheticImportedSuperPauseDynamicParamsTraceArtifact,
+  createSyntheticImportedSuperPausePauseBgTraceArtifact,
   createSyntheticImportedSuperPauseP2DefMulTraceArtifact,
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseSoundTraceArtifact,
@@ -19631,6 +19632,47 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(disabledPause).toEqual(expect.objectContaining({ darken: true, maxRemaining: 7, maxMoveTime: 1 }));
     expect(disabledPause?.superAnim).toBeUndefined();
+  });
+
+  it("creates a synthetic imported SuperPause artifact with pausebg evidence", () => {
+    const artifact = createSyntheticImportedSuperPausePauseBgTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-pausebg-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-pausebg-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "pause:superpause"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      {
+        type: "SuperPause",
+        actorId: "p1",
+        sourceStateNo: 200,
+        pauseBg: false,
+        darken: true,
+        minFrames: 2,
+        minRemaining: 7,
+        minMoveTime: 1,
+      },
+    ]);
+    const pauseBgPause = evidence?.matchPauses.find(
+      (pause) => pause.type === "SuperPause" && pause.actorId === "p1" && pause.sourceStateNo === 200,
+    );
+    expect(pauseBgPause).toEqual(expect.objectContaining({ pauseBg: false, darken: true, maxRemaining: 7, maxMoveTime: 1 }));
   });
 
   it("creates a synthetic imported SuperPause sound artifact with dynamic sound evidence", () => {

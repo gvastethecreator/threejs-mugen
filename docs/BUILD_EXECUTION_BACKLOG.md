@@ -1,5 +1,35 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause pausebg trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-pausebg.json` trace coverage for imported `SuperPause pausebg = 0`.
+- `PauseControllerOp`, `PauseSystem`, and active imported pause-param resolution now preserve `pausebg` as bounded `pauseBg` match-pause metadata, omitting the default-true field from snapshots and tracing `pauseBg = false` when authored.
+- `RuntimeTraceGate` can require `requiredMatchPauses[].pauseBg = false`, and `scripts/qa_traces.cjs` registers `synthetic-imported-superpause-pausebg` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `pausebg = 0` as letting the background continue updating during pause and default `pausebg = 1` as stopping it.
+- Focused test: `pnpm exec vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts src/tests/RuntimeCompiler.test.ts src/tests/RuntimeCompatibilityTelemetrySystem.test.ts -t SuperPause` -> 3 files passed, 1 skipped, 22 selected tests passed.
+- Trace gate: `pnpm qa:trace` -> 465/465 artifacts, 435 required and 30 optional; `synthetic-imported-superpause-pausebg.json` checksum `49bcfe16`, final checksum `397a8fae`.
+
+Claim allowed:
+
+- Bounded imported SuperPause `pausebg = 0` reaches match-pause snapshot and trace evidence as `pauseBg = false`.
+
+Claim blocked:
+
+- Actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup or rendering, dynamic `S` player-AIR prefix breadth, `unhittable`, super-background rendering, exact sound/spark timing, helper/team/redirect ownership, score movement, and full MUGEN/IKEMEN super presentation parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 465/465 artifacts, 435 required and 30 optional. Latest runtime evidence is SuperPause `pausebg = 0` metadata. Previous SuperPause `anim = -1`, default/dynamic/explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with actual renderer/background update parity for `pausebg`, exact stage/BGCtrl pause timing, FightFX/common SuperPause lookup/rendering, renderer visual suppression/playback parity, or `unhittable`, or continue R2 by moving another mutable helper/effect/combat behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause anim-disabled trace gate
 
 Changed:

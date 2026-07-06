@@ -96,9 +96,17 @@ describe("RuntimeCompatibilityTelemetryWorld", () => {
     expect(world.operationKey({ kind: "helper-bind", controllerType: "bindtoparent", pos: [0, 0], time: 1 } as ControllerOp)).toBe(
       "helper-bind:bindtoparent",
     );
-    expect(world.operationKey({ kind: "pause", controllerType: "superpause", time: 10, moveTime: 2, darken: true, powerAdd: 0 })).toBe(
-      "pause:superpause",
-    );
+    expect(
+      world.operationKey({
+        kind: "pause",
+        controllerType: "superpause",
+        time: 10,
+        moveTime: 2,
+        pauseBg: true,
+        darken: true,
+        powerAdd: 0,
+      }),
+    ).toBe("pause:superpause");
     expect(world.operationKey({ kind: "audio", controllerType: "playsnd", value: "S5,0", channel: 2 })).toBe("audio:playsnd");
     expect(world.operationKey({ kind: "noop", controllerType: "forcefeedback" })).toBe("noop:forcefeedback");
     expect(world.operationKey({ kind: "envshake", time: 16, freq: 30, ampl: -7, phase: 0.5 })).toBe("envshake");

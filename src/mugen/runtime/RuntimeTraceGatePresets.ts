@@ -21931,6 +21931,61 @@ export function createSyntheticImportedSuperPauseAnimDisabledTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPausePauseBgTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedSuperPauseScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-pausebg-attacker",
+    displayName: "Synthetic Imported SuperPause PauseBg Attacker",
+    withSuperPause: true,
+    superPausePauseBg: 0,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-superpause-pausebg-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-pausebg-golden",
+      label: "Synthetic imported SuperPause pausebg route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause pausebg trace proves pausebg = 0 reaches match-pause snapshot metadata. It does not claim renderer background animation parity, FightFX/common asset lookup, pausebg stage timing parity, unhittable, super backgrounds, or full MUGEN/IKEMEN super presentation parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-pausebg-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "SuperPause"],
+        requiredExecutedOperations: ["hitdef", "pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause"],
+        requiredMatchPauses: [
+          {
+            type: "SuperPause",
+            actorId: "p1",
+            sourceStateNo: 200,
+            pauseBg: false,
+            darken: true,
+            minFrames: 2,
+            minRemaining: 7,
+            minMoveTime: 1,
+          },
+        ],
+        requiredMatchPauseFreezes: [{ type: "SuperPause", actorId: "p2", minFrozenFrames: 6 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33994,6 +34049,7 @@ export type SyntheticImportedTraceFighterOptions = {
   superPauseDynamicParams?: { time: number; moveTime: number; darken: number; powerAdd: number };
   superPauseAnim?: { anim: string; pos?: [number | string, number | string] };
   superPauseDynamicAnim?: { actionNo: number; pos: [number, number] };
+  superPausePauseBg?: number | string;
   superPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
@@ -34819,7 +34875,7 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim) : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
@@ -37624,6 +37680,7 @@ function superPauseControllerBlock(
   dynamicParams?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicParams"]>,
   superAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseAnim"]>,
   dynamicAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicAnim"]>,
+  pauseBg?: number | string,
 ): string {
   const anim = superAnim?.anim ?? (dynamicAnim === undefined ? undefined : "var(6)");
   const pos = superAnim?.pos ?? (dynamicAnim === undefined ? undefined : ["var(7)", "var(8)"] as const);
@@ -37635,6 +37692,7 @@ time = ${dynamicParams === undefined ? "7" : "var(2)"}
 movetime = ${dynamicParams === undefined ? "1" : "var(3)"}
 darken = ${dynamicParams === undefined ? "1" : "var(4)"}
 poweradd = ${dynamicParams === undefined ? "100" : "var(5)"}
+${pauseBg === undefined ? "" : `pausebg = ${pauseBg}`}
 ${p2DefMul === undefined ? "" : `p2defmul = ${p2DefMul}`}
 ${sound === undefined ? "" : `sound = ${sound}`}
 ${anim === undefined ? "" : `anim = ${anim}`}

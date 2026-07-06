@@ -359,6 +359,7 @@ export type RuntimeTraceMatchPauseRequirement = {
   type?: RuntimeTracePauseEvidenceType;
   actorId?: string;
   sourceStateNo?: number;
+  pauseBg?: boolean;
   darken?: boolean;
   minFrames?: number;
   minRemaining?: number;
@@ -401,6 +402,7 @@ export type RuntimeTraceGateMatchPauseEvidence = {
   type: RuntimeTracePauseEvidenceType;
   actorId: string;
   sourceStateNo?: number;
+  pauseBg?: boolean;
   darken: boolean;
   firstTick: number;
   lastTick: number;
@@ -1421,6 +1423,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 type: pause.type,
                 actorId: pause.actorId,
                 sourceStateNo: pause.sourceStateNo,
+                ...(pause.pauseBg === false ? { pauseBg: false } : {}),
                 darken: pause.darken,
                 firstTick: frame.tick,
                 lastTick: frame.tick,
@@ -2004,11 +2007,11 @@ function matchPauseOccurrenceKey(frame: Omit<RuntimeTraceFrame, "input" | "event
 }
 
 function matchPauseEvidenceKey(pause: RuntimeMatchPauseSnapshot): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
 }
 
 function matchPauseGateEvidenceKey(pause: RuntimeTraceGateMatchPauseEvidence): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
 }
 
 function matchPauseSuperAnimKey(superAnim: RuntimeTraceGateMatchPauseEvidence["superAnim"]): string {
@@ -2026,6 +2029,7 @@ function matchesMatchPauseRequirement(
     (requirement.type === undefined || pause.type === requirement.type) &&
     (requirement.actorId === undefined || pause.actorId === requirement.actorId) &&
     (requirement.sourceStateNo === undefined || pause.sourceStateNo === requirement.sourceStateNo) &&
+    (requirement.pauseBg === undefined || (pause.pauseBg ?? true) === requirement.pauseBg) &&
     (requirement.darken === undefined || pause.darken === requirement.darken) &&
     (requirement.minFrames === undefined || pause.frames >= requirement.minFrames) &&
     (requirement.minRemaining === undefined || pause.maxRemaining >= requirement.minRemaining) &&

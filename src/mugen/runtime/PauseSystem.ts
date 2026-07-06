@@ -131,6 +131,7 @@ export type RuntimeMatchPauseControllerWorldInput<TActor extends MatchPauseActor
 export type RuntimePauseControllerParamResolvers = {
   time?: () => number | undefined;
   moveTime?: () => number | undefined;
+  pauseBg?: () => number | undefined;
   darken?: () => number | undefined;
   powerAdd?: () => number | undefined;
   p2DefMul?: () => number | undefined;
@@ -352,6 +353,9 @@ export function createMatchPauseFromController(
     return { powerDelta: 0 };
   }
   const darken = resolveParams?.darken?.();
+  const pauseBg = resolveParams?.pauseBg?.();
+  const pauseBgEnabled =
+    pauseBg !== undefined ? pauseBg !== 0 : operation?.pauseBg ?? (firstNumber(findControllerParam(controller, "pausebg")) ?? 1) !== 0;
   const powerAdd = resolveParams?.powerAdd?.();
   const superAnim = type === "SuperPause" ? superPauseAnimParam(controller, operation, resolveParams) : undefined;
 
@@ -361,6 +365,7 @@ export function createMatchPauseFromController(
       remaining: time,
       moveTime,
       actorId: actor.id,
+      ...(pauseBgEnabled ? {} : { pauseBg: false }),
       darken:
         type === "SuperPause"
           ? darken !== undefined
@@ -394,6 +399,7 @@ export function toMatchPauseSnapshot(pause: RuntimeMatchPause): RuntimeMatchPaus
     remaining: pause.remaining,
     moveTime: pause.moveTime,
     actorId: pause.actorId,
+    ...(pause.pauseBg === false ? { pauseBg: false } : {}),
     darken: pause.darken,
     sourceStateNo: pause.sourceStateNo,
     ...(pause.superAnim

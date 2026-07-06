@@ -27,14 +27,20 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause anim-disabled trace gate
-  -> synthetic-imported-superpause-anim-disabled.json checksum fc7a2ca4 / final checksum 5be3ca6c is required in qa:trace
+R1 required SuperPause pausebg trace gate
+  -> synthetic-imported-superpause-pausebg.json checksum 49bcfe16 / final checksum 397a8fae is required in qa:trace
+  -> imported active state executes SuperPause with pausebg = 0
+  -> RuntimeTraceGate can require pauseBg = false on match-pause evidence
+  -> match-pause evidence requires pauseBg = false and P2 freeze
+  -> pnpm qa:trace passes 465/465 artifacts, 435 required and 30 optional
+  -> official Elecbyte docs define pausebg = 0 as continuing background updates during pause and default pausebg = 1 as stopping them
+  -> no score movement; actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+
+Previous R1 required SuperPause anim-disabled trace gate
+  -> synthetic-imported-superpause-anim-disabled.json checksum fc7a2ca4 / final checksum 5be3ca6c remains required in qa:trace
   -> imported active state executes SuperPause with anim = -1
   -> RuntimeTraceGate can require superAnimAbsent = true on match-pause evidence
   -> match-pause evidence requires no superAnim metadata and P2 freeze
-  -> pnpm qa:trace passes 464/464 artifacts, 434 required and 30 optional
-  -> official Elecbyte docs define anim = -1 as no SuperPause animation
-  -> no score movement; renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause default anim trace gate
   -> synthetic-imported-superpause-default-anim.json checksum 318c5e9f / final checksum 747e7619 remains required in qa:trace
@@ -55,7 +61,7 @@ Previous R1 required SuperPause anim/pos trace gate
   -> PauseControllerOp preserves static anim/pos, RuntimePauseWorld snapshots optional superAnim metadata, and RuntimeTraceGate can require it
   -> match-pause evidence requires raw S200, source player, actionNo 200, offset 24,-48, and P2 freeze
   -> that checkpoint passed 461/461 artifacts, 431 required and 30 optional
-  -> no score movement; renderer visual suppression/playback parity, FightFX/common asset lookup/rendering, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+  -> no score movement; renderer visual suppression/playback parity, FightFX/common asset lookup/rendering, actual renderer/background update parity for pausebg, exact stage/BGCtrl pause timing, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause dynamic params trace gate
   -> synthetic-imported-superpause-dynamic-params.json current checksum 052bb481 / final checksum 1847a3f3 is required in qa:trace after default superAnim metadata drift
@@ -66,7 +72,7 @@ Previous R1 required SuperPause dynamic params trace gate
   -> final P1 power 75 proves dynamic poweradd reached resource mutation
   -> that checkpoint passed 460/460 artifacts, 430 required and 30 optional
   -> official Elecbyte docs define numeric controller params as expression-capable, Pause movetime, and SuperPause time/darken/poweradd
-  -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, pausebg, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
+  -> no score movement; typed-operation lowering for dynamic pause params, bottom-to-zero exactness, Pause-over-Pause/SuperPause preemption/delay, actual renderer/background update parity for pausebg, exact stage/BGCtrl pause timing, unhittable, super backgrounds, helper/team/redirect ownership, and full pause VM parity remain blocked
 
 Previous R1 required SuperPause p2defmul trace gate
   -> synthetic-imported-superpause-p2defmul.json current checksum ec1ba95e / final checksum 6d009665 is required in qa:trace after default superAnim metadata drift
@@ -2565,7 +2571,7 @@ I1/R1 character FightFX prefix package expansion
 
 Do not reselect `synthetic-imported-helper-projtime-same-id-last-contact`, `synthetic-imported-helper-projtime-same-id-hit-then-guard`, `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
 
-Do not reselect `synthetic-imported-superpause-dynamic-anim-pos` or `synthetic-imported-superpause-anim-pos` as fresh next work; they are now closed and required. Remaining SuperPause work should target a different unsupported surface such as default `anim = 30`, actual FightFX/common asset lookup/rendering, `pausebg`, or `unhittable`.
+Do not reselect `synthetic-imported-superpause-pausebg`, `synthetic-imported-superpause-anim-disabled`, `synthetic-imported-superpause-default-anim`, `synthetic-imported-superpause-dynamic-anim-pos`, or `synthetic-imported-superpause-anim-pos` as fresh next work; they are now closed and required. Remaining SuperPause work should target a different unsupported surface such as actual renderer/background update parity for `pausebg`, exact stage/BGCtrl pause timing, actual FightFX/common asset lookup/rendering, renderer visual suppression/playback parity, or `unhittable`.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
 
