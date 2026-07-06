@@ -77,6 +77,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   attacker: TActor;
   defender: TActor;
   hitOverrideWorld: RuntimeHitOverrideWorld;
+  reversalWorld: RuntimeReversalWorld;
   effectLifecycleWorld: { markGetHit: (actor: TActor) => void };
   guardWorld: RuntimeGuardWorld;
   getHitStateWorld: RuntimeGetHitStateWorld;
@@ -152,7 +153,6 @@ export class RuntimeCombatResolutionWorld {
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
       attrMatches: hitAttributeMatches,
-      canDefenderBeHit: input.canDefenderBeHit,
     });
     if (reversal) {
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {
@@ -271,6 +271,33 @@ export class RuntimeCombatResolutionWorld {
         });
         logger(result.message);
       },
+      applyProjectileReversal: (source, target, projectile, attackBox) => {
+        const incomingMove = runtimeProjectileIncomingMove(projectile);
+        const reversal = input.reversalWorld.findActive(target, incomingMove, attackBox, {
+          isMoveActive: runtimeMoveIsActive,
+          worldBox: runtimeWorldBox,
+          boxesIntersect: collisionBoxesIntersect,
+          attrMatches: hitAttributeMatches,
+        });
+        if (!reversal) {
+          return false;
+        }
+        const outcome = input.reversalWorld.apply(target, source, reversal, {
+          rememberTarget: (reverser, attacker, targetId) => this.rememberTarget(reverser, attacker, targetId),
+          canEnterState: input.stateHooks.canEnterState,
+          enterState: input.stateHooks.enterState,
+          enterTargetHitState: (attacker, reverser, stateNo, getP1State) =>
+            input.hitStateTransitionWorld.enterTargetHitState(
+              attacker,
+              reverser,
+              stateNo,
+              getP1State,
+              this.hitStateTransitionHooks(input.stateHooks),
+            ),
+        });
+        input.log(outcome.message);
+        return true;
+      },
       applyGuardHit: (target) => this.applyDefaultGuardHitState(target, input.guardWorld, input.stateHooks),
       applyHitState: (source, target, projectile) =>
         this.applyProjectileHitState(source, target, projectile, input.hitStateTransitionWorld, input.getHitStateWorld, input.stateHooks),
@@ -387,4 +414,22 @@ function shouldRuntimeHitOverrideMissDirect(move: DemoMove): boolean {
 
 function runtimeMoveIsActive(move: DemoMove, tick: number): boolean {
   return tick >= move.activeStart && tick <= move.activeEnd;
+}
+
+function runtimeProjectileIncomingMove(projectile: RuntimeProjectile): DemoMove {
+  return {
+    actionId: projectile.animNo,
+    startup: 0,
+    activeStart: 0,
+    activeEnd: Number.MAX_SAFE_INTEGER,
+    recovery: 0,
+    damage: projectile.damage,
+    attr: projectile.attr ?? "S,SP",
+    targetId: projectile.targetId,
+    hitPause: projectile.hitPause,
+    hitStun: projectile.hitStun,
+    push: projectile.push,
+    guardFlag: projectile.guardFlag,
+    hitbox: projectile.hitbox,
+  };
 }

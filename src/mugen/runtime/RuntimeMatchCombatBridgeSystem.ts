@@ -93,6 +93,7 @@ export class RuntimeMatchCombatBridgeWorld {
           attacker,
           defender,
           hitOverrideWorld: input.hitOverrideWorld,
+          reversalWorld: input.reversalWorld,
           effectLifecycleWorld: input.effectLifecycleWorld,
           guardWorld: input.guardWorld,
           getHitStateWorld: input.getHitStateWorld,

@@ -41,7 +41,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
           return { kind: "skipped", reason: "missing-move" };
         },
         resolveProjectile: (input) => {
-          calls.push(`projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}`);
+          calls.push(`projectile:${input.attacker.id}:${input.defender.id}:${tagOf(input.effectLifecycleWorld)}:${tagOf(input.reversalWorld)}`);
           input.rememberProjectileTarget?.(input.attacker, input.defender, projectile);
           input.log("projectile-log");
         },
@@ -86,7 +86,7 @@ describe("RuntimeMatchCombatBridgeWorld", () => {
       "direct:p1:p2:77:combat-hooks",
       "hurt:p2",
       "log:direct-log",
-      "projectile:p1:p2:effect-lifecycle",
+      "projectile:p1:p2:effect-lifecycle:reversal",
       "remember:p1:p2:proj-1",
       "log:projectile-log",
       "helper:p1:p2:target-world:reversal:helper-hooks:1",

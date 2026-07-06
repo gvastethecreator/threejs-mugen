@@ -169,6 +169,41 @@ describe("ProjectileCombatSystem", () => {
     expect(logs).toEqual(["P2 rejected P1 projectile S,SP via SuperPause unhittable"]);
   });
 
+  it("checks projectile reversal before SuperPause and HitOverride rejection paths", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({
+      pos: { x: 12, y: 0 },
+      facing: -1,
+      life: 1000,
+      hitOverrides: [{ slot: 1, attr: "S,SP", stateNo: 777, remaining: 30 }],
+    }));
+    const calls: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      canDefenderBeHit: () => false,
+      log: (line) => calls.push(`log:${line}`),
+      rememberTarget: () => calls.push("target"),
+      applyHitOverride: () => calls.push("override"),
+      applyProjectileReversal: (_source, _target, entry, attackBox) => {
+        calls.push(`reversal:${entry.serialId}:${attackBox.x1},${attackBox.y1},${attackBox.x2},${attackBox.y2}`);
+        return true;
+      },
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(calls).toEqual(["reversal:projectile-0:6,-18,34,6"]);
+    expect(defender.runtime.life).toBe(1000);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+  });
+
   it("applies guarded Projectile cornerpush to the owner at stage bounds", () => {
     let projectiles = [projectile({ pos: { x: 260, y: 0 }, facing: 1, guardDamage: 0, guardPush: 8, guardCornerPush: 6 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 220, y: 0 }, facing: 1, vel: { x: 0, y: 0 } }));

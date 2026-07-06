@@ -100,7 +100,6 @@ export class RuntimeHelperCombatWorld {
         worldBox: runtimeWorldBox,
         boxesIntersect: collisionBoxesIntersect,
         attrMatches: hitAttributeMatches,
-        canDefenderBeHit: input.canDefenderBeHit,
       });
       if (reversal) {
         const outcome = input.reversalWorld.apply(input.defender, attacker, reversal, {

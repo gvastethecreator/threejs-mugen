@@ -50,6 +50,12 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
     hitPause: number,
     log: (line: string) => void,
   ) => void;
+  applyProjectileReversal?: (
+    attacker: TActor,
+    defender: TActor,
+    projectile: RuntimeProjectile,
+    attackBox: CollisionBox,
+  ) => boolean;
   applyGuardHit?: (defender: TActor) => void;
   applyHitState?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   markDefenderGotHit?: (defender: TActor) => void;
@@ -80,12 +86,11 @@ export class RuntimeProjectileCombatWorld {
         continue;
       }
       const hitBoxes = getRuntimeProjectileHitboxes(projectile);
-      const hit = hitBoxes.some((hitBox) =>
-        hurtBoxes.some((hurtBox) =>
-          collisionBoxesIntersect(runtimeProjectileWorldBox(projectile, hitBox), runtimeWorldBox(defender.runtime, hurtBox)),
-        ),
-      );
-      if (!hit) {
+      const contactAttackBox = findProjectileContactAttackBox(projectile, defender, hitBoxes, hurtBoxes);
+      if (!contactAttackBox) {
+        continue;
+      }
+      if (input.applyProjectileReversal?.(attacker, defender, projectile, contactAttackBox)) {
         continue;
       }
       if (input.canDefenderBeHit?.(defender) === false) {
@@ -269,6 +274,21 @@ function runtimeGetHitVarsFromProjectileResult(
     hitTime,
     ...(guarded ? { guarded: true } : {}),
   };
+}
+
+function findProjectileContactAttackBox<TActor extends RuntimeProjectileCombatActor>(
+  projectile: RuntimeProjectile,
+  defender: TActor,
+  hitBoxes: CollisionBox[],
+  hurtBoxes: CollisionBox[],
+): CollisionBox | undefined {
+  for (const hitBox of hitBoxes) {
+    const attackBox = runtimeProjectileWorldBox(projectile, hitBox);
+    if (hurtBoxes.some((hurtBox) => collisionBoxesIntersect(attackBox, runtimeWorldBox(defender.runtime, hurtBox)))) {
+      return attackBox;
+    }
+  }
+  return undefined;
 }
 
 function projectilesIntersect(left: RuntimeProjectile, right: RuntimeProjectile): boolean {

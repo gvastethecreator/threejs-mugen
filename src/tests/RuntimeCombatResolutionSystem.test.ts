@@ -26,6 +26,7 @@ import type {
   RuntimeProjectileCombatActor,
   RuntimeProjectileCombatInput,
 } from "../mugen/runtime/ProjectileCombatSystem";
+import { resolveRuntimeProjectileCombat } from "../mugen/runtime/ProjectileCombatSystem";
 import type { RuntimeProjectile } from "../mugen/runtime/ProjectileSystem";
 import { RuntimeTargetWorld } from "../mugen/runtime/TargetSystem";
 import type { CharacterRuntimeState } from "../mugen/runtime/types";
@@ -341,6 +342,52 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("prioritizes ReversalDef over SuperPause-unhittable Projectile contact", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const projectile = projectileActor({ pos: { x: 0, y: 0 }, facing: 1 });
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 300 }),
+      projectiles: [projectile],
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 12, y: 0 }, stateNo: 0, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "S,SP",
+      hitbox: { x1: -20, y1: -24, x2: 30, y2: 12 },
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    });
+    const logs: string[] = [];
+
+    world.resolveProjectile({
+      attacker,
+      defender,
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld,
+      effectLifecycleWorld: { markGetHit: (target) => logs.push(`mark:${target.id}`) },
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 19,
+      getHurtBoxes: () => [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      canDefenderBeHit: () => false,
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(logs).toEqual(["P2 reversed P1 p1->777 p2->888"]);
+    expect(attacker.hasHit).toBe(true);
+    expect(defender.runtime.stateNo).toBe(777);
+    expect(attacker.runtime.stateNo).toBe(888);
+    expect(defender.runtime.life).toBe(100);
+    expect(projectile).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+  });
+
   it("routes projectile callbacks through target, contact, presentation, and damage ownership hooks", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({ projectileId: 88, serialId: "p1-projectile-0", hitSound: "S6,0", hitSpark: "S7001" });
@@ -359,6 +406,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       attacker,
       defender,
       hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
       effectLifecycleWorld: { markGetHit: (target) => calls.push(`mark:${target.id}`) },
       guardWorld: new RuntimeGuardWorld(),
       getHitStateWorld: new RuntimeGetHitStateWorld(),
@@ -397,6 +445,7 @@ describe("RuntimeCombatResolutionSystem", () => {
       attacker,
       defender,
       hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
       effectLifecycleWorld: { markGetHit: (target) => calls.push(`mark:${target.id}`) },
       guardWorld: new RuntimeGuardWorld(),
       getHitStateWorld: new RuntimeGetHitStateWorld(),
@@ -429,6 +478,7 @@ type ActorOptions = {
   moveTick?: number;
   hasHit?: boolean;
   projectileResolver?: ProjectileResolver;
+  projectiles?: RuntimeProjectile[];
 };
 
 function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorld, options: ActorOptions = {}): TestActor {
@@ -471,7 +521,19 @@ function actor(id: string, label: string, contactWorld: RuntimeContactMemoryWorl
         removedExplodsOnGetHit += 1;
       },
       resolveProjectileCombat: (ownerId, input) => {
-        options.projectileResolver?.(ownerId, input);
+        if (options.projectileResolver) {
+          options.projectileResolver(ownerId, input);
+          return;
+        }
+        if (options.projectiles) {
+          resolveRuntimeProjectileCombat({
+            ...input,
+            projectiles: options.projectiles,
+            removeProjectilesMarkedForRemoval: () => {
+              options.projectiles = options.projectiles?.filter((entry) => !entry.removalReason);
+            },
+          });
+        }
       },
       helpers: () => [],
     },

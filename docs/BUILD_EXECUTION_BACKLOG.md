@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile ReversalDef priority gate
+
+Changed:
+
+- Added a bounded `applyProjectileReversal` contact callback to `RuntimeProjectileCombatWorld` before SuperPause `canDefenderBeHit`, HitBy/NotHitBy, and HitOverride routing.
+- `RuntimeCombatResolutionWorld.resolveProjectile` now maps contacted Projectile attack boxes into existing `RuntimeReversalWorld.findActive/apply` behavior.
+- `RuntimeMatchCombatBridgeWorld` now forwards `reversalWorld` into projectile combat, matching direct and helper-direct combat wiring.
+- Removed stale `canDefenderBeHit` hook fields from direct/helper ReversalDef lookups; `RuntimeReversalWorld.findActive` did not consume them.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines Projectile as taking HitDef parameters and ReversalDef as contact/attr-driven attack reversal.
+- Focused tests: `pnpm vitest run src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeCombatResolutionSystem.test.ts src/tests/RuntimeMatchCombatBridgeSystem.test.ts src/tests/RuntimeHelperCombatSystem.test.ts` -> 4 files passed, 30 tests.
+- Final verification passed: `pnpm test` -> 151 files / 1403 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `pnpm qa:trace` -> 466/466 artifacts, 436 required and 30 optional; `git diff --check`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile contact can trigger active `ReversalDef` before SuperPause `canDefenderBeHit` rejection and HitOverride routing, using the current player-owner reversal mutation path.
+
+Claim blocked:
+
+- Projectile reflection/removal semantics, helper-owned Projectile reversal breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port remains at `pnpm qa:trace` 466/466 artifacts, 436 required and 30 optional. Latest implementation evidence is player-owned Projectile `ReversalDef` priority with no trace drift; latest required trace evidence remains SuperPause `unhittable` source immunity. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only for ZSS/Lua/config/screenpack/model-stage/video-BG signals; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with helper-owned Projectile reversal breadth, projectile reflection/removal semantics, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or a required trace fixture for this reversal route; or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause unhittable trace gate
 
 Changed:
