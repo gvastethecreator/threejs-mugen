@@ -452,6 +452,7 @@ import {
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
   createSyntheticImportedProjectileGuardKillTraceArtifact,
   createSyntheticImportedProjectileGuardKoTraceArtifact,
+  createSyntheticImportedProjectileGuardTerminalTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
   createSyntheticImportedHitDefProjectileTargetMixTraceArtifact,
   createSyntheticImportedProjectileTraceArtifact,
@@ -23195,6 +23196,69 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile guard terminal artifact with hit removal playback evidence", () => {
+    const artifact = createSyntheticImportedProjectileGuardTerminalTraceArtifact({ generatedAt: "2026-07-06T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-guard-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-guard-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeUndefined();
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeUndefined();
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported Projectile Guard Terminal projectile"))).toBe(true);
+    expect(evidence?.eventLines.some((line) => line.includes("hit removal anim 912"))).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "guarded Synthetic Imported Projectile Guard Terminal projectile",
+      "hit removal anim 912",
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 912, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          ownerId: "p1",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+            terminalDuration: 2,
+          }),
+        }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
   });
 

@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Player Projectile guard terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-guard-terminal.json` trace coverage for bounded player-owned Projectile guarded-contact terminal playback.
+- Reused the player Projectile guard route with authored `projhitanim = 912`, Projectile lifecycle evidence, target-link evidence, guard event/reason evidence, terminal actor-frame evidence, and terminal payload evidence.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the player Projectile guard KO/no-KO gates.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html) defines Projectile `projhitanim`, `projremanim`, `projcancelanim`, and `projremove` removal-animation behavior.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile guard terminal"` -> 1 passed, 472 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 480/480 artifacts, 450 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-guard-terminal.json` checksum `26f1e7f9`, final checksum `f9df24d0`.
+- Closeout gates: `pnpm test` -> 151 files / 1417 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `git diff --check` -> passed with CRLF normalization warnings on touched docs.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile guarded contact can resolve authored `projhitanim = 912` into hit-removal terminal playback while preserving Projectile target-link, lifecycle, actor-frame, and terminal payload evidence.
+
+Claim blocked:
+
+- Exact terminal timing, exact sprite/layer/palette parity, helper-owned Projectile terminal parity, team/simul breadth, score movement, and full Projectile guard round-flow parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 480/480 artifacts, 450 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-guard-terminal.json`; previous player Projectile guard.kill no-KO/KO, helper Projectile no-KO/KO, direct `HitDef` KO, direct nonlethal `guard.kill = 0`, guarddist/ReversalDef no-contact, walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and projectile package gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact terminal timing, exact sprite/layer/palette parity, helper-owned Projectile terminal parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Player Projectile guard.kill no-KO trace gate
 
 Changed:

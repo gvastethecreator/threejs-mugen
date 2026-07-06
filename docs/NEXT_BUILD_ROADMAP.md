@@ -27,13 +27,19 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required player Projectile guard.kill no-KO trace gate
-  -> synthetic-imported-projectile-guard-kill.json checksum 905eb8e3 / final checksum c6cc7787 is required in qa:trace
+R1 required player Projectile guard terminal trace gate
+  -> synthetic-imported-projectile-guard-terminal.json checksum 26f1e7f9 / final checksum f9df24d0 is required in qa:trace
+  -> imported player-owned Projectile id 77 uses authored projhitanim = 912 on a guarded contact
+  -> evidence requires typed projectile op, Projectile spawn/remove lifecycle evidence, target-link evidence, guard event/reason evidence, active x command evidence, event text "hit removal anim 912", actor-frame evidence for terminal anim 912, and terminal payload evidence with removalReason/terminalReason = hit
+  -> pnpm qa:trace passes 480/480 artifacts, 450 required and 30 optional
+  -> official Elecbyte docs define Projectile projhitanim/projremanim/projcancelanim/projremove removal-animation behavior
+  -> no score movement; exact terminal timing, exact sprite/layer/palette parity, helper-owned Projectile terminal parity, team/simul breadth, score movement, and full Projectile guard round-flow parity remain blocked
+
+Previous R1 required player Projectile guard.kill no-KO trace gate
+  -> synthetic-imported-projectile-guard-kill.json checksum 905eb8e3 / final checksum c6cc7787 remains required in qa:trace
   -> imported player-owned Projectile id 77 uses damage 31,2000 and explicit guard.kill = 0
   -> evidence requires typed projectile op, Projectile spawn/remove lifecycle evidence, target-link evidence, guard event/reason evidence, active x command evidence, no KO round frame, and final P2 life 1
-  -> pnpm qa:trace passes 479/479 artifacts, 449 required and 30 optional
-  -> official Elecbyte docs define Projectile as taking HitDef parameters and guard.kill = 0 as nonlethal chip clamp
-  -> no score movement; exact KO slowdown/lifebar/guard-finish timing, exact no-KO guard recovery timing, team/simul guard KO/no-KO breadth, exact effect terminal/presentation timing, score movement, and full Projectile guard round-flow parity remain blocked
+  -> pnpm qa:trace passed 479/479 artifacts, 449 required and 30 optional
 
 Previous R1 required Helper Projectile guard.kill no-KO trace gate
   -> synthetic-imported-helper-projectile-guard-kill.json checksum 2c09049f / final checksum 653039f6 remains required in qa:trace

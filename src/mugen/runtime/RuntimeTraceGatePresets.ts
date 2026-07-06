@@ -26700,6 +26700,80 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedProjectileGuardTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-terminal-attacker",
+    displayName: "Synthetic Imported Projectile Guard Terminal",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 912,
+    projectileGuardSound: "S6,0",
+    projectileGuardSpark: "F7004",
+    projectileSparkXy: [15, -63],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-guard-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-guard-terminal-golden",
+      label: "Synthetic imported Projectile guard terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile guard terminal trace proves bounded player-owned Projectile guard contact can resolve authored projhitanim metadata into hit removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve terminal payload evidence through the effect actor world. Elecbyte documents Projectile-specific projhitanim/projremanim/projcancelanim removal animation parameters. It does not claim exact terminal timing, exact sprite/layer/palette parity, helper-owned Projectile terminal parity, teams, or full Projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-guard-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: [
+          "guarded Synthetic Imported Projectile Guard Terminal projectile",
+          "hit removal anim 912",
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 912, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileGuardScript();
