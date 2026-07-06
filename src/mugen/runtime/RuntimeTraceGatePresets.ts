@@ -12212,6 +12212,74 @@ export function createSyntheticImportedInGuardDistFarTraceArtifact(options: Runt
   });
 }
 
+export function createSyntheticImportedGuardDistReversalNoContactTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guarddist-reversal-no-contact-attacker",
+    displayName: "Synthetic Imported GuardDist Reversal No Contact Attacker",
+    guardDamage: 5,
+    guardFlag: "MA",
+    guardDistance: 96,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guarddist-reversal-no-contact-defender",
+    displayName: "Synthetic Imported GuardDist Reversal No Contact Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888 },
+    withInGuardDistGuardStart: true,
+  });
+  const stage = options.stage ?? guardDistanceOnlyStage();
+  const script = importedInGuardDistScript();
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-guarddist-reversal-no-contact-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-guarddist-reversal-no-contact-golden",
+      label: "Synthetic imported guard.dist ReversalDef no-contact route",
+      source: "imported",
+      notes: [
+        "Synthetic imported guard.dist ReversalDef no-contact trace proves a defender with active ReversalDef and held-back guard-distance eligibility does not reverse from guard.dist proximity alone when Clsn1 boxes do not contact. It proves the bounded negative priority route only, not exact guard-distance boxes, exact guard-start timing, or full ReversalDef/guard parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-guarddist-reversal-no-contact-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [130, 200],
+        forbiddenExecutedStates: [777, 888, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredControllerEventSequences: [
+          {
+            label: "no-contact reversal stays inactive",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [{ stateNo: 0, controller: "ReversalDef" }],
+          },
+        ],
+        requiredActiveCommands: ["x"],
+        requiredCombatReasons: ["whiff"],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "imported",
+            actorKind: "player",
+            stateNo: 130,
+            animNo: 130,
+            ctrl: false,
+            stateType: "S",
+            moveType: "I",
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAutoGuardStartTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const attacker = createSyntheticImportedTraceFighter({
     id: "synthetic-imported-auto-guard-start-attacker",
@@ -35381,12 +35449,12 @@ movetype = I
 physics = S
 anim = 0
 ctrl = 1
+${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.withInGuardDistGuardStart ? inGuardDistGuardStartControllerBlock() : ""}
 ${options.passiveNotHitBy ? passiveHitByController("NotHitBy", "Reject Attrs", options.passiveNotHitBy) : ""}
 ${options.passiveHitBy ? passiveHitByController("HitBy", "Allow Attrs", options.passiveHitBy) : ""}
 ${options.passiveHitOverride ? passiveHitOverrideController(options.passiveHitOverride) : ""}
 ${passiveHitOverrideControllers(options.passiveHitOverrides)}
-${options.passiveReversalDef ? passiveReversalDefController(options.passiveReversalDef) : ""}
 ${options.passiveAssertSpecialFlags?.length ? passiveAssertSpecialController(options.passiveAssertSpecialFlags, options.passiveAssertSpecialTrigger) : ""}
 ${options.passiveAssertSpecialFlagGroups?.map((flags, index) => passiveAssertSpecialController(flags, options.passiveAssertSpecialTrigger, ` ${index + 2}`)).join("") ?? ""}
 ${options.defenseMultiplier !== undefined ? defenseMultiplierController(options.defenseMultiplier) : ""}

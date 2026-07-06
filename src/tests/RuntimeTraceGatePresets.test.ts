@@ -186,6 +186,7 @@ import {
   createSyntheticImportedAliveTraceArtifact,
   createSyntheticImportedInGuardDistTraceArtifact,
   createSyntheticImportedInGuardDistFarTraceArtifact,
+  createSyntheticImportedGuardDistReversalNoContactTraceArtifact,
   createSyntheticImportedStateExitTraceArtifact,
   createSyntheticImportedCrouchGuardStateTraceArtifact,
   createSyntheticImportedDiagonalCrouchGuardStateTraceArtifact,
@@ -13643,6 +13644,55 @@ describe("RuntimeTraceGatePresets", () => {
       animNo: 0,
       ctrl: true,
       source: "imported",
+    });
+  });
+
+  it("creates a synthetic imported guard.dist ReversalDef no-contact artifact", () => {
+    const artifact = createSyntheticImportedGuardDistReversalNoContactTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-guarddist-reversal-no-contact-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-guarddist-reversal-no-contact-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedStates).toEqual([130, 200]);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([777, 888, 5000, 150, 151]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([130, 200]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([777, 888, 5000, 150, 151]));
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.controllerEvents).toEqual(expect.arrayContaining([expect.objectContaining({ actorId: "p2", stateNo: 0, controller: "ReversalDef" })]));
+    expect(evidence?.combatReasons).toContain("whiff");
+    expect(evidence?.combatReasons).not.toEqual(expect.arrayContaining(["reversal", "guard", "hit", "override", "reject"]));
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["reversal", "guard", "hit", "override", "reject"]));
+    expect(artifact.trace.events.some((event) => event.category === "reversal")).toBe(false);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 200,
+      animNo: 200,
+      moveType: "A",
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 130,
+      animNo: 130,
+      ctrl: false,
+      source: "imported",
+      life: 1000,
+      moveType: "I",
     });
   });
 

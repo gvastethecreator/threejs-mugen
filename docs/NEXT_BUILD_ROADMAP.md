@@ -27,14 +27,18 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required walk-back guard ReversalDef trace gate
-  -> synthetic-imported-walkback-guard-reversal.json checksum 70c83b8c / final checksum b7a8cb9d is required in qa:trace
-  -> imported direct HitDef is guardable and runs against a defender holding back; defender enters authored state 20, moves away without AssertSpecial nowalk, and state 20 carries active ReversalDef p1stateno 777 / p2stateno 888
-  -> trace stops at reversal before default get-hit 5000 or stand guard states 150/151 can execute
-  -> evidence requires typed hitdef/reversaldef ops, state-20 ReversalDef controller events, S/I/S actor-frame evidence with Clsn1+Clsn2 and observed X movement beyond 38, reversal event/combat reason, active x/holdback commands, P1 state/action 888, P2 state/action 777, and both actors life 1000
-  -> pnpm qa:trace passes 473/473 artifacts, 443 required and 30 optional
-  -> official Elecbyte docs define guard entry while P2 holds away, guardflag, guard.dist, ReversalDef Clsn1 contact, reversal.attr, and p1stateno/p2stateno
-  -> no score movement; proximity-only guard.dist ReversalDef contact, exact guard-distance boxes, crouch/air breadth beyond existing gates, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity remain blocked
+R1 required guard.dist ReversalDef no-contact trace gate
+  -> synthetic-imported-guarddist-reversal-no-contact.json checksum ca20c823 / final checksum 2bc9b86d is required in qa:trace
+  -> imported direct HitDef has guard.dist 96 in the near-but-not-contacting guard-distance stage while P2 has active ReversalDef p1stateno 777 / p2stateno 888 and an explicit InGuardDist guard-start route
+  -> trace remains whiff/no-contact, enters guard-start state 130, and forbids reversal/get-hit/guard-hit states 777/888/5000/150/151
+  -> evidence requires typed hitdef/reversaldef ops, P2 state-0 ReversalDef controller evidence, ChangeState evidence, whiff combat reason, final P2 state/action 130, and P2 life 1000
+  -> pnpm qa:trace passes 474/474 artifacts, 444 required and 30 optional
+  -> official Elecbyte docs define guard.dist guard-entry distance and ReversalDef Clsn1/Clsn1 contact
+  -> no score movement; exact guard-distance boxes, positive proximity-only guard.dist ReversalDef contact, exact guard-start timing, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef/guard parity remain blocked
+
+Previous R1 required walk-back guard ReversalDef trace gate
+  -> synthetic-imported-walkback-guard-reversal.json checksum 70c83b8c / final checksum b7a8cb9d remains required in qa:trace
+  -> bounded authored walk-back state 20 reversal-priority evidence before default get-hit or stand guard states
 
 Previous R1 required air guard ReversalDef trace gate
   -> synthetic-imported-air-guard-reversal.json checksum 966b17b8 / final checksum 2fa19142 remains required in qa:trace

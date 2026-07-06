@@ -1,5 +1,38 @@
 # Build Execution Backlog
 
+## 2026-07-06 - GuardDist ReversalDef no-contact trace gate
+
+Changed:
+
+- Added required `synthetic-imported-guarddist-reversal-no-contact.json` trace coverage for the bounded negative `guard.dist` / `ReversalDef` route.
+- The trace executes a guardable imported direct `HitDef` with `guard.dist = 96` in the near-but-not-contacting guard-distance stage while P2 has active `ReversalDef p1stateno = 777` / `p2stateno = 888` and an explicit `InGuardDist` guard-start route. The gate requires imported player actors, routed state `200`, executed states `130` and `200`, typed `hitdef` / `reversaldef` operation evidence, P2 state-0 `ReversalDef` controller evidence, `ChangeState` evidence for guard-start, whiff combat reason, final P2 state/action `130`, and forbidden reversal/get-hit/guard-hit states `777`, `888`, `5000`, `150`, and `151`.
+- Reordered the synthetic imported fixture state-0 passive `ReversalDef` block before the explicit `InGuardDist` guard-start `ChangeState` so combined no-contact guard-distance/ReversalDef fixtures can prove the reversal was active before guard-start routing.
+- Registered the artifact in `scripts/qa_traces.cjs` so guard-distance proximity alone cannot silently become a false `ReversalDef` trigger.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `guard.dist` as the x-distance for guard entry while P2 holds away, and defines `ReversalDef` as requiring P2 Clsn1 contacting P1 Clsn1 while active.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "guard.dist ReversalDef no-contact"` -> 1 passed, 466 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 474/474 artifacts, 444 required and 30 optional.
+- Trace artifact: `synthetic-imported-guarddist-reversal-no-contact.json` checksum `ca20c823`, final checksum `2bc9b86d`.
+- Closeout gates: `pnpm test` -> 151 files / 1411 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `git diff --check` -> passed with CRLF normalization warnings on touched docs.
+
+Claim allowed:
+
+- In the bounded near-but-not-contacting guard-distance setup, active `ReversalDef` does not reverse from `guard.dist` proximity alone; the route remains a whiff and can enter the explicit `InGuardDist` guard-start state instead of routing P1/P2 through reversal states.
+
+Claim blocked:
+
+- Exact guard-distance boxes, positive proximity-only `guard.dist` ReversalDef contact, exact guard-start timing, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef/guard parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 474/474 artifacts, 444 required and 30 optional. Latest required runtime evidence is `synthetic-imported-guarddist-reversal-no-contact.json`; previous walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and direct ReversalDef gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact guard-distance boxes, custom-state ReversalDef breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, exact guarded get-hit/chip semantics, guard KO/no-KO, exact target lifetime, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Walk-back Guard ReversalDef trace gate
 
 Changed:

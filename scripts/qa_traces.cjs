@@ -1276,6 +1276,11 @@ async function main() {
       artifact: presets.createSyntheticImportedInGuardDistFarTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-guarddist-reversal-no-contact",
+      required: true,
+      artifact: presets.createSyntheticImportedGuardDistReversalNoContactTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-auto-guard-start",
       required: true,
       artifact: presets.createSyntheticImportedAutoGuardStartTraceArtifact(),
