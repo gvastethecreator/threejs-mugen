@@ -58,6 +58,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded owner-backed get-hit `GetHitVar(fallcount)` post-impact metadata through `synthetic-imported-gethitvar-fallcount.json`
 - synthetic bounded owner-backed get-hit `GetHitVar(xoff/yoff/zoff)` snap metadata through `synthetic-imported-gethitvar-snap.json`
 - synthetic bounded defender-owned stand/crouch/air guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-guard-kill.json`, `synthetic-imported-gethitvar-crouch-guard-kill.json`, and `synthetic-imported-gethitvar-air-guard-kill.json`
+- synthetic bounded player-owned and helper-parented/root-owned Projectile 640x480 character `localcoord` omitted default bounds terminal playback through `synthetic-imported-projectile-localcoord-default-bounds-terminal.json` and `synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json`
 - synthetic bounded helper-parented/root-owned Projectile omitted official 240p default bounds terminal playback through `synthetic-imported-helper-projectile-default-bounds-terminal.json`
 - synthetic bounded player-owned Projectile omitted official 240p default bounds terminal playback through `synthetic-imported-projectile-default-bounds-terminal.json`
 - synthetic bounded helper-parented/root-owned Projectile explicit `projstagebound` terminal playback through `synthetic-imported-helper-projectile-stagebound-terminal.json`

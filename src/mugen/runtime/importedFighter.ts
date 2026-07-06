@@ -44,6 +44,7 @@ export function createImportedFighterDefinition(character: MugenCharacter): Demo
     source: "imported",
     displayName,
     authorName: character.definition.info.author,
+    localCoord: character.definition.info.localCoord,
     palette: "#d8dde7",
     spriteGroupBase: 0,
     speed: 3.2,

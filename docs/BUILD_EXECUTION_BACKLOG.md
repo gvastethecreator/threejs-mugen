@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Projectile localcoord default bounds trace gates
+
+Changed:
+
+- Parsed character `[Info] localcoord` into `MugenCharacterDef.info.localCoord` and carried it into imported runtime fighter definitions.
+- Routed `localCoord` through player-owned Projectile and helper-parented/root-owned Projectile spawn paths.
+- Scaled omitted Projectile defaults from character coordinate width: 640x480 localcoord derives `projedgebound = 80`, `projstagebound = 80`, and `projheightbound = -480,2`; explicit bounds remain authored.
+- Added required `synthetic-imported-projectile-localcoord-default-bounds-terminal.json` and `synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json` trace coverage.
+
+Evidence:
+
+- Official docs checked: [Elecbyte Coordinate Space](https://www.elecbyte.com/mugendocs/coordspace.html) defines character `localcoord` and width-ratio coordinate translation; [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines 480p omitted Projectile defaults and Helper-created Projectiles as root-owned.
+- Focused tests: `pnpm vitest run src/tests/DefParser.test.ts src/tests/importedFighter.test.ts src/tests/ProjectileSystem.test.ts` -> 33 passed; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "localcoord default bounds"` -> 2 passed, 488 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 497/497 artifacts, 467 required and 30 optional.
+- Trace artifacts: `synthetic-imported-projectile-localcoord-default-bounds-terminal.json` checksum `af7ee80e`, final checksum `3fcb4661`; `synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json` checksum `46b0164c`, final checksum `b1531c44`.
+
+Claim allowed:
+
+- Bounded imported player-owned and helper-parented/root-owned Projectiles inherit parsed 640x480 character localcoord, derive omitted default bounds to `80` / `80` / `-480,2`, remove by bounds before timeout, and expose scaled payload evidence plus visible terminal playback.
+
+Claim blocked:
+
+- Exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params/controllers, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 497/497 artifacts, 467 required and 30 optional. Latest required runtime evidence is the paired player/helper Projectile localcoord default-bounds gates; previous 240p player/helper default bounds, helper/player explicit bounds, bounds-removal, terminal fallback/cancel, guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile default bounds terminal trace gate
 
 Changed:

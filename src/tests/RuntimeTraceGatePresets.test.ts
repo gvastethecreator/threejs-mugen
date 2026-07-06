@@ -275,6 +275,7 @@ import {
   createSyntheticImportedHelperProjContactPersistTraceArtifact,
   createSyntheticImportedHelperProjectileRemoveHitFallbackTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultBoundsTerminalTraceArtifact,
+  createSyntheticImportedHelperProjectileLocalCoordDefaultBoundsTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileHeightBoundTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileEdgeBoundTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileStageBoundTerminalTraceArtifact,
@@ -463,6 +464,7 @@ import {
   createSyntheticImportedProjectileGuardTerminalTraceArtifact,
   createSyntheticImportedProjectileBoundsRemoveTerminalTraceArtifact,
   createSyntheticImportedProjectileDefaultBoundsTerminalTraceArtifact,
+  createSyntheticImportedProjectileLocalCoordDefaultBoundsTerminalTraceArtifact,
   createSyntheticImportedProjectileStageBoundTerminalTraceArtifact,
   createSyntheticImportedProjectileEdgeBoundTerminalTraceArtifact,
   createSyntheticImportedProjectileHeightBoundTerminalTraceArtifact,
@@ -2812,6 +2814,72 @@ describe("RuntimeTraceGatePresets", () => {
         ownerId: "p1",
         parentId: "p1-helper-0",
         effectId: 8934,
+        hasHit: false,
+        minHitsRemaining: 1,
+        removalReason: "bounds",
+        terminalReason: "bounds",
+        minTerminalAge: 1,
+        minTerminalDuration: 2,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper Projectile localcoord default bounds terminal artifact", () => {
+    const artifact = createSyntheticImportedHelperProjectileLocalCoordDefaultBoundsTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1325, animNo: 1135 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1137, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8935,
+            edgeBound: 80,
+            stageBound: 80,
+            heightBound: { low: -480, high: 2 },
+            removalReason: "bounds",
+            terminalReason: "bounds",
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1325, minAge: 1 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        parentId: "p1-helper-0",
+        effectId: 8935,
+        edgeBound: 80,
+        stageBound: 80,
+        heightBound: { low: -480, high: 2 },
         hasHit: false,
         minHitsRemaining: 1,
         removalReason: "bounds",
@@ -23987,6 +24055,69 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.targetLinks ?? []).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
     );
+  });
+
+  it("creates a synthetic imported Projectile localcoord default bounds terminal artifact", () => {
+    const artifact = createSyntheticImportedProjectileLocalCoordDefaultBoundsTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 928, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          ownerId: "p1",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            edgeBound: 80,
+            stageBound: 80,
+            heightBound: { low: -480, high: 2 },
+            removalReason: "bounds",
+            terminalReason: "bounds",
+          }),
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 77,
+        edgeBound: 80,
+        stageBound: 80,
+        heightBound: { low: -480, high: 2 },
+        hasHit: false,
+        minHitsRemaining: 1,
+        removalReason: "bounds",
+        terminalReason: "bounds",
+        minTerminalAge: 1,
+        minTerminalDuration: 2,
+      },
+    ]);
   });
 
   it("creates a synthetic imported Projectile projstagebound terminal artifact with explicit stage-bound evidence", () => {

@@ -49,6 +49,7 @@ export type RuntimeHelper = {
   spriteOwnerId: string;
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
+  localCoord?: [number, number];
   runtimeProgram?: Pick<RuntimeProgramIr, "states">;
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
@@ -148,6 +149,7 @@ export type RuntimeHelperSpawnInput = {
   spriteOwnerId: string;
   spriteOwnerDefinitionId: string;
   spriteOwnerLabel: string;
+  localCoord?: [number, number];
   runtimeProgram?: Pick<RuntimeProgramIr, "states">;
   animations?: Map<number, MugenAnimationAction>;
   action: MugenAnimationAction;
@@ -170,6 +172,7 @@ export function createRuntimeHelper(input: RuntimeHelperSpawnInput): RuntimeHelp
     spriteOwnerId: input.spriteOwnerId,
     spriteOwnerDefinitionId: input.spriteOwnerDefinitionId,
     spriteOwnerLabel: input.spriteOwnerLabel,
+    localCoord: input.localCoord,
     runtimeProgram: input.runtimeProgram,
     animations: input.animations,
     action: input.action,

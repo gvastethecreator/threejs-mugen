@@ -47,6 +47,7 @@ export function parseDef(text: string, file?: string): MugenCharacterDef {
       versionDate: getValue(infoRaw, "versiondate"),
       mugenVersion: getValue(infoRaw, "mugenversion"),
       author: getValue(infoRaw, "author"),
+      localCoord: numberPair(getValue(infoRaw, "localcoord")),
     },
     files: {
       cmd: getValue(filesRaw, "cmd"),
@@ -85,4 +86,12 @@ function getSection(
 function getValue(section: Record<string, string>, expected: string): string | undefined {
   const match = Object.entries(section).find(([key]) => key.toLowerCase() === expected.toLowerCase());
   return match?.[1];
+}
+
+function numberPair(value: string | undefined): [number, number] | undefined {
+  const parts = value?.split(",").map((part) => Number(part.trim()));
+  if (parts?.length !== 2 || !Number.isFinite(parts[0]) || !Number.isFinite(parts[1])) {
+    return undefined;
+  }
+  return [parts[0], parts[1]];
 }

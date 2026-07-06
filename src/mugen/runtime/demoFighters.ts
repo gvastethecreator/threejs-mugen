@@ -88,6 +88,7 @@ export type DemoFighterDefinition = {
   source?: "demo" | "imported";
   displayName: string;
   authorName?: string;
+  localCoord?: [number, number];
   palette: string;
   spriteGroupBase: number;
   speed: number;

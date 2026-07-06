@@ -9,6 +9,7 @@ name = "Kung Fu Man"
 displayname = "KFM"
 mugenversion = 1.0
 author = Elecbyte
+localcoord = 640,480
 
 [Files]
 cmd = kfm.cmd
@@ -23,6 +24,7 @@ pal1 = kfm.act
 
     expect(parsed.info.name).toBe("Kung Fu Man");
     expect(parsed.info.displayName).toBe("KFM");
+    expect(parsed.info.localCoord).toEqual([640, 480]);
     expect(parsed.files.cmd).toBe("kfm.cmd");
     expect(parsed.files.states).toEqual(["extra.st"]);
     expect(parsed.files.commonStates).toEqual(["common1.cns"]);

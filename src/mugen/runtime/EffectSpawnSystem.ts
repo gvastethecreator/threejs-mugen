@@ -19,7 +19,7 @@ import type { CharacterRuntimeState } from "./types";
 export type RuntimeEffectSpawnActor = {
   id: string;
   label: string;
-  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states">;
+  definition: Pick<DemoFighterDefinition, "id" | "animations" | "states" | "localCoord">;
   runtimeProgram?: Pick<RuntimeProgramIr, "states">;
   runtime: Pick<CharacterRuntimeState, "pos" | "facing" | "stateNo" | "animNo" | "attackMultiplier">;
   stateOwner?: RuntimeEffectSpawnActor;
@@ -157,6 +157,7 @@ export class RuntimeEffectSpawnWorld {
       spriteOwnerId: owner.id,
       spriteOwnerDefinitionId: owner.definition.id,
       spriteOwnerLabel: owner.label,
+      localCoord: owner.definition.localCoord,
       runtimeProgram: owner.runtimeProgram,
       animations: owner.definition.animations,
       action,
@@ -199,6 +200,7 @@ export class RuntimeEffectSpawnWorld {
       terminalActions: resolveProjectileTerminalActions(owner, controller, operation),
       pos: resolveEffectSpawnPosition(fighter, opponent, operation?.postype ?? findParam(controller, "postype"), localPos),
       fallbackFacing: fighter.runtime.facing,
+      localCoord: owner.definition.localCoord,
       damageScale: fighter.runtime.attackMultiplier,
     });
     return true;

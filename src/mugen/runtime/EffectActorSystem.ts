@@ -505,6 +505,7 @@ export function spawnRuntimeHelperProjectileActor(
     spriteOwnerId: helper.spriteOwnerId,
     spriteOwnerDefinitionId: helper.spriteOwnerDefinitionId,
     spriteOwnerLabel: helper.spriteOwnerLabel,
+    localCoord: helper.localCoord,
     action,
     animNo,
     terminalActions: resolveHelperProjectileTerminalActions(helper, controller, operation),

@@ -27040,6 +27040,77 @@ export function createSyntheticImportedProjectileDefaultBoundsTerminalTraceArtif
   });
 }
 
+export function createSyntheticImportedProjectileLocalCoordDefaultBoundsTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileBoundsTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-localcoord-default-bounds-terminal-attacker",
+    displayName: "Synthetic Imported Projectile LocalCoord Default Bounds Terminal",
+    localCoord: [640, 480],
+    withHitDef: false,
+    withProjectile: true,
+    projectileRemoveAnim: 928,
+    projectileOffset: [80, -45],
+    projectileVelocity: [160, 0],
+    projectileRemoveTime: 90,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden",
+      label: "Synthetic imported Projectile localcoord default bounds terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile localcoord default bounds terminal trace proves bounded player-owned Projectile removal can scale omitted official Projectile bounds defaults for a 640x480 character localcoord, resolve authored projremanim metadata into runtime removal evidence, and play a visible terminal projectile action when that AIR action exists. Elecbyte documents character localcoord, coordinate translation by target/source width ratio, and 480p omitted Projectile bounds as projedgebound/projstagebound 80 and projheightbound -480,2. It does not claim exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params, exact terminal timing, helper-owned localcoord parity beyond its companion gate, exact sprite/layer/palette parity, team/simul breadth, score movement, or full Projectile bounds parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-localcoord-default-bounds-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 928, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            edgeBound: 80,
+            stageBound: 80,
+            heightBound: { low: -480, high: 2 },
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "bounds",
+            terminalReason: "bounds",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileStageBoundTerminalTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -28807,6 +28878,88 @@ export function createSyntheticImportedHelperProjectileDefaultBoundsTerminalTrac
             ownerId: "p1",
             parentId: "p1-helper-0",
             effectId: 8934,
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "bounds",
+            terminalReason: "bounds",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperProjectileLocalCoordDefaultBoundsTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileBoundsTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-attacker",
+    displayName: "Synthetic Imported Helper Projectile LocalCoord Default Bounds Terminal",
+    localCoord: [640, 480],
+    withHelper: true,
+    helperProjectileRoute: {
+      stateNo: 1325,
+      animNo: 1135,
+      projectileAnimNo: 1136,
+      projectileRemoveAnim: 1137,
+      projectileId: 8935,
+      pos: [80, -220],
+      velocity: [160, 0],
+      removeTime: 90,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden",
+      label: "Synthetic imported Helper Projectile localcoord default bounds terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile localcoord default bounds terminal trace proves bounded helper-parented/root-owned Projectile removal can inherit the character localcoord and scale omitted official Projectile bounds defaults for 640x480, resolve authored projremanim metadata into runtime removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve helper parent evidence through the effect actor world. Elecbyte documents Helper-created Projectiles as immediately assigned to root, character localcoord, coordinate translation by target/source width ratio, and 480p omitted Projectile bounds as projedgebound/projstagebound 80 and projheightbound -480,2. It does not claim exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, or full helper Projectile bounds parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1325, animNo: 1135, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1137, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1325, minAge: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8935,
+            edgeBound: 80,
+            stageBound: 80,
+            heightBound: { low: -480, high: 2 },
             hasHit: false,
             minHitsRemaining: 1,
             removalReason: "bounds",
@@ -36136,6 +36289,7 @@ export type SyntheticImportedTraceFighterOptions = {
   id?: string;
   displayName?: string;
   authorName?: string;
+  localCoord?: [number, number];
   hitDefAttr?: string;
   attackStateType?: "S" | "C" | "A" | "L";
   hitDefDamage?: number;
@@ -37362,6 +37516,7 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
     source: "imported",
     displayName: options.displayName ?? "Synthetic Imported Trace",
     authorName: options.authorName,
+    localCoord: options.localCoord,
     palette: "#fff",
     spriteGroupBase: 0,
     speed: 3,

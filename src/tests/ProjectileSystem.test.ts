@@ -242,6 +242,72 @@ describe("ProjectileSystem", () => {
     expect(verticalHigh).toMatchObject({ removalReason: "bounds" });
   });
 
+  it("scales omitted Projectile removal bounds from character localcoord width", () => {
+    const createDefaultBoundProjectile = (serialId: string, pos: { x: number; y: number }, velocity: string) =>
+      createRuntimeProjectile({
+        serialId,
+        controller: controller({
+          projanim: "1005",
+          velocity,
+        }),
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm-480",
+        spriteOwnerLabel: "Kung Fu Man 480p",
+        action,
+        animNo: 1005,
+        pos,
+        fallbackFacing: 1,
+        localCoord: [640, 480],
+      });
+    const horizontal = createDefaultBoundProjectile("default-horizontal-480p", { x: 198, y: 0 }, "3,0");
+    const verticalLow = createDefaultBoundProjectile("default-vertical-low-480p", { x: 0, y: -478 }, "0,-3");
+    const verticalHigh = createDefaultBoundProjectile("default-vertical-high-480p", { x: 0, y: 1 }, "0,2");
+
+    expect(horizontal).toMatchObject({
+      edgeBound: 80,
+      stageBound: 80,
+      heightBound: { low: -480, high: 2 },
+    });
+    expect(runtimeProjectilesToSnapshots([horizontal], 1000)[0]?.effect).toMatchObject({
+      edgeBound: 80,
+      stageBound: 80,
+      heightBound: { low: -480, high: 2 },
+    });
+
+    const remaining = advanceRuntimeProjectiles([horizontal, verticalLow, verticalHigh], stage);
+
+    expect(remaining).toEqual([]);
+    expect(horizontal).toMatchObject({ removalReason: "bounds" });
+    expect(verticalLow).toMatchObject({ removalReason: "bounds" });
+    expect(verticalHigh).toMatchObject({ removalReason: "bounds" });
+  });
+
+  it("does not rescale explicit Projectile removal bounds from localcoord", () => {
+    const projectile = createRuntimeProjectile({
+      serialId: "explicit-bounds-480p",
+      controller: controller({
+        projanim: "1005",
+        projedgebound: "48",
+        projstagebound: "32",
+        projheightbound: "-96,64",
+      }),
+      spriteOwnerId: "p1",
+      spriteOwnerDefinitionId: "kfm-480",
+      spriteOwnerLabel: "Kung Fu Man 480p",
+      action,
+      animNo: 1005,
+      pos: { x: 0, y: 0 },
+      fallbackFacing: 1,
+      localCoord: [640, 480],
+    });
+
+    expect(projectile).toMatchObject({
+      edgeBound: 48,
+      stageBound: 32,
+      heightBound: { low: -96, high: 64 },
+    });
+  });
+
   it("derives missing Projectile airguard.velocity from air.velocity", () => {
     const projectile = createRuntimeProjectile({
       serialId: "p1-projectile-air-default",

@@ -28,6 +28,20 @@ describe("createImportedFighterDefinition", () => {
     expect(fighter?.moves.kick.actionId).toBe(230);
   });
 
+  it("carries parsed character localcoord into imported fighters", () => {
+    const character = fakeCharacter(
+      new Map<number, MugenAnimationAction>([
+        [0, action(0, [[0, 0, 0]])],
+        [200, action(200, [[200, 0, 0], [200, 1, 4, { x1: 8, y1: -60, x2: 70, y2: -30 }]])],
+      ]),
+    );
+    character.definition.info.localCoord = [640, 480];
+
+    const fighter = createImportedFighterDefinition(character);
+
+    expect(fighter?.localCoord).toEqual([640, 480]);
+  });
+
   it("does not create a runtime fighter without decoded sprites", () => {
     const character = fakeCharacter(new Map([[0, action(0, [[0, 0, 0]])]]), false);
 

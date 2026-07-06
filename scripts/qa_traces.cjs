@@ -1987,6 +1987,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileDefaultBoundsTerminalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-localcoord-default-bounds-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileLocalCoordDefaultBoundsTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-stagebound-terminal",
       required: true,
       artifact: presets.createSyntheticImportedProjectileStageBoundTerminalTraceArtifact(),
@@ -2235,6 +2240,11 @@ async function main() {
       name: "synthetic-imported-helper-projectile-default-bounds-terminal",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjectileDefaultBoundsTerminalTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileLocalCoordDefaultBoundsTerminalTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-projectile-heightbound-terminal",
@@ -3657,6 +3667,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-remove-hit-fallback-terminal",
     "synthetic-imported-projectile-bounds-remove-terminal",
     "synthetic-imported-projectile-default-bounds-terminal",
+    "synthetic-imported-projectile-localcoord-default-bounds-terminal",
     "synthetic-imported-projectile-stagebound-terminal",
     "synthetic-imported-projectile-edgebound-terminal",
     "synthetic-imported-projectile-heightbound-terminal",
@@ -3681,6 +3692,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal",
     "synthetic-imported-helper-projectile-remove-hit-fallback-terminal",
     "synthetic-imported-helper-projectile-default-bounds-terminal",
+    "synthetic-imported-helper-projectile-localcoord-default-bounds-terminal",
     "synthetic-imported-helper-projectile-heightbound-terminal",
     "synthetic-imported-helper-projectile-edgebound-terminal",
     "synthetic-imported-helper-projectile-stagebound-terminal",

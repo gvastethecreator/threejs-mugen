@@ -35,7 +35,16 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Helper Projectile default bounds terminal trace gate
+R1 required Projectile localcoord default bounds trace gates
+-> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace
+-> parsed character [Info] localcoord = 640,480 is carried through imported runtime fighter definitions into player-owned and helper-parented/root-owned Projectile spawn paths
+-> omitted Projectile defaults derive projedgebound = 80, projstagebound = 80, and projheightbound = -480,2 from character localcoord width; explicit bounds stay authored
+-> evidence requires typed Projectile and Helper/Projectile ops, active x command evidence, spawn/remove lifecycle evidence, terminal actor-frame evidence for anims 928 and 1137, and payload evidence with scaled bounds plus removalReason/terminalReason = bounds
+-> pnpm qa:trace passes 497/497 artifacts, 467 required and 30 optional
+-> official Elecbyte docs define character localcoord, coordinate translation by width ratio, 480p omitted Projectile defaults, and Helper-created Projectiles as root-owned
+-> no score movement; exact GameWidth/GameHeight negotiation, exact camera/screen/stage split, full localcoord scaling across all Projectile params/controllers, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+
+Previous R1 required Helper Projectile default bounds terminal trace gate
 -> synthetic-imported-helper-projectile-default-bounds-terminal.json checksum e85d7bbf / final checksum bea653fa is required in qa:trace
 -> helper route spawns helper p1-helper-0, then root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projremanim = 1134, offset 80,-220, velocity 160,0, long projremovetime = 90, and omitted bound params; no contact occurs, default bounds removal happens before timeout, and terminal anim 1134 plays
 -> evidence requires typed Helper/Projectile op, active x command evidence, helper/projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 1134, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2

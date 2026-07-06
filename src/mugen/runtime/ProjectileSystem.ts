@@ -12,6 +12,7 @@ import type { ActorSnapshot } from "./types";
 const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
 const DEFAULT_PROJECTILE_STAGE_BOUND = 40;
 const DEFAULT_PROJECTILE_HEIGHT_BOUND = { low: -240, high: 1 } as const;
+const DEFAULT_PROJECTILE_LOCAL_COORD_WIDTH = 320;
 
 export type RuntimeProjectile = {
   serialId: string;
@@ -124,6 +125,7 @@ export type RuntimeProjectileSpawnInput = {
   terminalActions?: RuntimeProjectileTerminalActions;
   pos: { x: number; y: number };
   fallbackFacing: 1 | -1;
+  localCoord?: [number, number];
   damageScale?: number;
 };
 
@@ -158,6 +160,10 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     velocityPair(findControllerParam(input.controller, "airguard.velocity")) ??
     deriveDefaultAirGuardVelocity(airVelocity);
   const guardDamage = Math.max(0, operation?.guardDamage ?? secondNumber(findControllerParam(input.controller, "damage")) ?? 0);
+  const defaultBoundScale = projectileDefaultBoundScale(input.localCoord);
+  const edgeBound = operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"));
+  const stageBound = operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound"));
+  const heightBound = operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")));
   const guardPause = Math.max(
     0,
     Math.round(operation?.guardPauseTime ?? firstNumber(findControllerParam(input.controller, "guard.pausetime")) ?? Math.max(1, Math.round(hitPause * 0.75))),
@@ -212,13 +218,9 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     frameElapsed: 0,
     age: 0,
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
-    edgeBound: clampProjectileStageBound(
-      operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound")) ?? DEFAULT_PROJECTILE_EDGE_BOUND,
-    ),
-    stageBound: clampProjectileStageBound(operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound")) ?? DEFAULT_PROJECTILE_STAGE_BOUND),
-    heightBound:
-      optionalProjectileHeightBound(operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")))) ??
-      defaultProjectileHeightBound(),
+    edgeBound: clampProjectileStageBound(edgeBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_EDGE_BOUND, defaultBoundScale)),
+    stageBound: clampProjectileStageBound(stageBound ?? scaledDefaultProjectileBound(DEFAULT_PROJECTILE_STAGE_BOUND, defaultBoundScale)),
+    heightBound: optionalProjectileHeightBound(heightBound) ?? defaultProjectileHeightBound(defaultBoundScale),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
     hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
@@ -793,15 +795,30 @@ function runtimeProjectileHorizontalRemovalBound(projectile: RuntimeProjectile):
 }
 
 function runtimeProjectileVerticalRemovalBound(projectile: RuntimeProjectile): { low: number; high: number } {
-  return projectile.heightBound ?? defaultProjectileHeightBound();
+  return projectile.heightBound ?? defaultProjectileHeightBound(1);
 }
 
-function defaultProjectileHeightBound(): { low: number; high: number } {
-  return { low: DEFAULT_PROJECTILE_HEIGHT_BOUND.low, high: DEFAULT_PROJECTILE_HEIGHT_BOUND.high };
+function defaultProjectileHeightBound(scale: number): { low: number; high: number } {
+  return {
+    low: scaledDefaultProjectileBound(DEFAULT_PROJECTILE_HEIGHT_BOUND.low, scale),
+    high: scaledDefaultProjectileBound(DEFAULT_PROJECTILE_HEIGHT_BOUND.high, scale),
+  };
 }
 
 function isDefaultProjectileHeightBound(value: { low: number; high: number }): boolean {
   return value.low === DEFAULT_PROJECTILE_HEIGHT_BOUND.low && value.high === DEFAULT_PROJECTILE_HEIGHT_BOUND.high;
+}
+
+function projectileDefaultBoundScale(localCoord: [number, number] | undefined): number {
+  const width = localCoord?.[0];
+  if (typeof width !== "number" || !Number.isFinite(width) || width <= 0) {
+    return 1;
+  }
+  return width / DEFAULT_PROJECTILE_LOCAL_COORD_WIDTH;
+}
+
+function scaledDefaultProjectileBound(value: number, scale: number): number {
+  return Math.round(value * scale);
 }
 
 function clampProjectilePriority(value: number): number {
