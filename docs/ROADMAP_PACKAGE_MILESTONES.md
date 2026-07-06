@@ -35,6 +35,14 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required player Projectile remove hit fallback terminal trace gate
+-> synthetic-imported-projectile-remove-hit-fallback-terminal.json checksum 3bbdfbfc / final checksum 76ca3f77 is required in qa:trace
+-> imported player-owned Projectile id 77 uses authored projhitanim = 920, omits projremanim, keeps static position/velocity, and has no contact before projremovetime timeout
+-> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 920 at ticks 26..27, and payload evidence with hasHit false, hitsRemaining 1, hitAnimNo 920, removalReason/terminalReason = timeout, removeTime 24, and terminalDuration 2
+-> pnpm qa:trace passes 483/483 artifacts, 453 required and 30 optional
+-> official Elecbyte docs define omitted projremanim as falling back to projhitanim and projremovetime as timeout removal
+-> no score movement; exact terminal timing, bounds-removal parity, projcancelanim fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
+
 R1 required player Projectile remove terminal trace gate
 -> synthetic-imported-projectile-remove-terminal.json checksum 8a65629c / final checksum 7ba3479b is required in qa:trace
 -> imported player-owned Projectile id 77 uses authored projremanim = 919, static position/velocity, and no contact before projremovetime timeout

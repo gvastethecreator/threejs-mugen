@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Player Projectile remove hit fallback terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-remove-hit-fallback-terminal.json` trace coverage for bounded player-owned Projectile timeout-removal fallback playback.
+- Added a no-contact timeout preset using authored `projhitanim = 920`, omitted `projremanim`, static projectile motion, terminal actor-frame evidence, lifecycle evidence, and timeout payload evidence.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the player Projectile remove/terminal gates.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines omitted `projremanim` as falling back to `projhitanim`, and `projremovetime` as timeout removal.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile remove hit fallback terminal"` -> 1 passed, 475 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 483/483 artifacts, 453 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-remove-hit-fallback-terminal.json` checksum `3bbdfbfc`, final checksum `76ca3f77`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile timeout removal can fall back from omitted `projremanim` to authored `projhitanim = 920`, producing visible terminal playback, spawn/remove lifecycle evidence, and payload evidence with `hasHit = false`, `hitAnimNo = 920`, `removalReason = timeout`, `terminalReason = timeout`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact terminal timing, bounds-removal parity, `projcancelanim` fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 483/483 artifacts, 453 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-remove-hit-fallback-terminal.json`; previous explicit `projremanim`, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with bounds-removal terminal parity, `projcancelanim` fallback breadth, helper-owned remove fallback parity, exact terminal timing, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Player Projectile remove terminal trace gate
 
 Changed:

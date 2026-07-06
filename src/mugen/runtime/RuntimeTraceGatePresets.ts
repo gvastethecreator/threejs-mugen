@@ -26840,6 +26840,72 @@ export function createSyntheticImportedProjectileRemoveTerminalTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileRemoveHitFallbackTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-remove-hit-fallback-terminal-attacker",
+    displayName: "Synthetic Imported Projectile Remove Hit Fallback Terminal",
+    withHitDef: false,
+    withProjectile: true,
+    projectileHitAnim: 920,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-remove-hit-fallback-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-remove-hit-fallback-terminal-golden",
+      label: "Synthetic imported Projectile remove hit fallback terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile remove hit fallback terminal trace proves bounded player-owned Projectile timeout removal can fall back from omitted projremanim to authored projhitanim metadata, play a visible terminal projectile action when that AIR action exists, and preserve terminal payload evidence through the effect actor world. Elecbyte documents Projectile projremanim as the timeout/bounds removal animation and says omitted projremanim uses projhitanim instead. It does not claim exact terminal timing, bounds-removal parity, projcancelanim fallback breadth, exact sprite/layer/palette parity, helper-owned Projectile remove fallback parity, teams, or full Projectile terminal parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-remove-hit-fallback-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 920, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "timeout",
+            terminalReason: "timeout",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileGuardScript();
