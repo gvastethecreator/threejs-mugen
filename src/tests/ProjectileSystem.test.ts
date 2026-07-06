@@ -91,6 +91,7 @@ describe("ProjectileSystem", () => {
         projhitanim: "1200",
         projremanim: "1201",
         projcancelanim: "1202",
+        projstagebound: "32",
         projremovetime: "9999",
         projpriority: "12",
         projhits: "3",
@@ -146,6 +147,7 @@ describe("ProjectileSystem", () => {
       removeAnimNo: 1201,
       cancelAnimNo: 1202,
       removeTime: 1200,
+      stageBound: 32,
       priority: 10,
       hitsRemaining: 3,
       missTime: 4,
@@ -497,6 +499,23 @@ describe("ProjectileSystem", () => {
     expect(active.frameIndex).toBe(0);
   });
 
+  it("uses explicit projstagebound for horizontal stage removal", () => {
+    const tight = projectile({ serialId: "tight", pos: { x: 140, y: 0 }, vel: { x: 8, y: 0 }, stageBound: 24 });
+    const defaultBound = projectile({ serialId: "default", pos: { x: 140, y: 0 }, vel: { x: 8, y: 0 } });
+
+    const remaining = advanceRuntimeProjectiles([tight, defaultBound], stage);
+
+    expect(remaining.map((entry) => entry.serialId)).toEqual(["default"]);
+    expect(tight).toMatchObject({ removalReason: "bounds" });
+    expect(defaultBound.removalReason).toBeUndefined();
+    expect(runtimeProjectilesToSnapshots([tight], 1000)[0]).toMatchObject({
+      effect: {
+        stageBound: 24,
+        removalReason: "bounds",
+      },
+    });
+  });
+
   it("blocks further contact after projhits are exhausted even when projremove keeps the actor alive", () => {
     const shot = projectile({ hitsRemaining: 1, removeOnHit: false });
 
@@ -700,6 +719,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     frameElapsed: 0,
     age: 0,
     removeTime: 10,
+    stageBound: 240,
     priority: 1,
     hitsRemaining: 1,
     missTime: 0,

@@ -35,11 +35,19 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Projectile bounds remove terminal trace gate
+R1 required Projectile projstagebound terminal trace gate
+-> synthetic-imported-projectile-stagebound-terminal.json checksum fe3df8e7 / final checksum b467573f is required in qa:trace
+-> imported player-owned Projectile id 77 uses authored projremanim = 924, offset 80,-45, velocity 160,0, long projremovetime = 90, and explicit projstagebound = 24; no contact occurs, bounds removal happens before timeout at pos x 400, and terminal anim 924 plays at ticks 5..6
+-> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 924, and payload evidence with stageBound 24, hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
+-> pnpm qa:trace passes 488/488 artifacts, 458 required and 30 optional
+-> official Elecbyte docs define projstagebound as the distance off screen edge before automatic projectile removal and projremanim as expired-time/removal-boundaries playback
+-> no score movement; exact default projstagebound values, projedgebound/projheightbound parity, exact screen-edge/camera semantics, exact terminal timing, helper-owned bounds-removal parity, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
+
+Previous R1 required Projectile bounds remove terminal trace gate
 -> synthetic-imported-projectile-bounds-remove-terminal.json checksum 10d27a3c / final checksum 39b81931 is required in qa:trace
 -> imported player-owned Projectile id 77 uses authored projremanim = 923, offset 80,-45, velocity 160,0, and long projremovetime = 90; no contact occurs, bounds removal happens before timeout, and terminal anim 923 plays
 -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 923, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
--> pnpm qa:trace passes 487/487 artifacts, 457 required and 30 optional
+-> pnpm qa:trace passed 487/487 artifacts, 457 required and 30 optional
 -> official Elecbyte docs define projremanim as expired-time/removal-boundaries playback and define projedgebound, projstagebound, and projheightbound automatic removal bounds
 -> no score movement; exact bounds thresholds, edge/stage/height bound parameter parity, exact terminal timing, helper-owned bounds-removal parity, fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity remain blocked
 

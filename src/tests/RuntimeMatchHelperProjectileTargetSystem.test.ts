@@ -77,6 +77,7 @@ function projectileActor(parentId: string, targetId?: number): RuntimeProjectile
     frameElapsed: 0,
     age: 0,
     removeTime: 60,
+    stageBound: 240,
     spritePriority: 0,
     priority: 1,
     hitsRemaining: 1,

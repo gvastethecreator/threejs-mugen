@@ -9,6 +9,8 @@ import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
 
+const DEFAULT_PROJECTILE_STAGE_BOUND = 240;
+
 export type RuntimeProjectile = {
   serialId: string;
   projectileId?: number;
@@ -38,6 +40,7 @@ export type RuntimeProjectile = {
   frameElapsed: number;
   age: number;
   removeTime: number;
+  stageBound: number;
   spritePriority: number;
   priority: number;
   hitsRemaining: number;
@@ -205,6 +208,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     frameElapsed: 0,
     age: 0,
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
+    stageBound: clampProjectileStageBound(operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound")) ?? DEFAULT_PROJECTILE_STAGE_BOUND),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
     hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
@@ -342,15 +346,14 @@ export function advanceRuntimeProjectiles(
         next < projectile.action.frames.length ? next : projectile.action.loopStart ?? projectile.action.frames.length - 1;
     }
   }
-  const margin = 240;
   return projectiles.filter((projectile) => {
     if (projectile.hasHit && projectile.removeOnHit) {
       markRuntimeProjectileForRemoval(projectile, "hit");
     } else if (projectile.removeTime >= 0 && projectile.age >= projectile.removeTime) {
       markRuntimeProjectileForRemoval(projectile, "timeout");
     } else if (
-      projectile.pos.x < stage.bounds.left - margin ||
-      projectile.pos.x > stage.bounds.right + margin ||
+      projectile.pos.x < stage.bounds.left - projectile.stageBound ||
+      projectile.pos.x > stage.bounds.right + projectile.stageBound ||
       projectile.pos.y < -360 ||
       projectile.pos.y > 180
     ) {
@@ -383,6 +386,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           id: projectile.projectileId,
           age: projectile.age,
           removeTime: projectile.removeTime,
+          ...(projectile.stageBound === DEFAULT_PROJECTILE_STAGE_BOUND ? {} : { stageBound: projectile.stageBound }),
           spritePriority: projectile.spritePriority,
           priority: projectile.priority,
           hitsRemaining: projectile.hitsRemaining,
@@ -746,6 +750,10 @@ function normalizeOptionalVelocityPair(value: [number, number?] | undefined): [n
 
 function clampProjectileTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(1200, Math.round(value)));
+}
+
+function clampProjectileStageBound(value: number): number {
+  return Math.max(0, Math.min(2000, Math.round(value)));
 }
 
 function clampProjectilePriority(value: number): number {

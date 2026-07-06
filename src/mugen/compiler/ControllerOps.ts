@@ -150,6 +150,7 @@ export type ProjectileControllerOp = {
   hitAnim?: number;
   removeAnim?: number;
   cancelAnim?: number;
+  stageBound?: number;
   removeTime: number;
   spritePriority: number;
   priority: number;
@@ -1431,6 +1432,7 @@ function compileProjectileControllerOp(controller: MugenStateController): Projec
     hitAnim: firstNumber(findParam(controller, "projhitanim")),
     removeAnim: firstNumber(findParam(controller, "projremanim")),
     cancelAnim: firstNumber(findParam(controller, "projcancelanim")),
+    stageBound: firstNumber(findParam(controller, "projstagebound")),
     removeTime: firstNumber(findParam(controller, "projremovetime") ?? findParam(controller, "removetime")) ?? -1,
     spritePriority: firstNumber(findParam(controller, "sprpriority")) ?? 4,
     priority: firstNumber(findParam(controller, "projpriority") ?? findParam(controller, "priority")) ?? 1,

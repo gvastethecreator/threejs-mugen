@@ -655,5 +655,6 @@ function projectileActor(overrides: Partial<RuntimeProjectile> = {}): RuntimePro
     hasHit: false,
     terminalActions: {},
     ...overrides,
+    stageBound: overrides.stageBound ?? 240,
   };
 }

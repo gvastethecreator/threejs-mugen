@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Projectile projstagebound terminal trace gate
+
+Changed:
+
+- Added explicit `projstagebound` parsing/execution for player-owned Projectile stage-bound removal.
+- Added required `synthetic-imported-projectile-stagebound-terminal.json` trace coverage for bounded authored `projstagebound = 24` terminal playback.
+- Registered explicit non-default `stageBound` in Projectile snapshots and trace payload requirements so gates can prove the authored bound value without changing default-bound artifacts.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projstagebound` as the distance off screen edge before automatic projectile removal and `projremanim` as the removal animation for expired time or removal boundaries.
+- Focused tests: `pnpm vitest run src/tests/ProjectileSystem.test.ts` -> 18 passed; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "projstagebound terminal"` -> 1 passed, 480 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 488/488 artifacts, 458 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-stagebound-terminal.json` checksum `fe3df8e7`, final checksum `b467573f`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile removal honors explicit `projstagebound = 24` as the horizontal stage-bound threshold, resolves authored `projremanim = 924`, plays visible terminal anim `924` at ticks `5..6`, records Projectile spawn/remove lifecycle evidence, and preserves payload evidence with `stageBound = 24`, `hasHit = false`, `hitsRemaining = 1`, `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact default `projstagebound` values, `projedgebound` / `projheightbound` parity, exact screen-edge/camera semantics, exact terminal timing, helper-owned bounds-removal parity, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 488/488 artifacts, 458 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-stagebound-terminal.json`; previous generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with `projedgebound`, `projheightbound`, exact default bound values, exact screen/camera edge semantics, helper-owned bounds-removal parity, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Projectile bounds remove terminal trace gate
 
 Changed:
@@ -25,7 +56,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 487/487 artifacts, 457 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-bounds-remove-terminal.json`; previous helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At that checkpoint, runtime/port was at `pnpm qa:trace` 487/487 artifacts, 457 required and 30 optional. Required runtime evidence was `synthetic-imported-projectile-bounds-remove-terminal.json`; helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 

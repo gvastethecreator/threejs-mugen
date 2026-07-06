@@ -554,6 +554,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     removeOnHit: true,
     hasHit: false,
     ...overrides,
+    stageBound: overrides.stageBound ?? 240,
     terminalActions: overrides.terminalActions ?? {},
   };
 }
