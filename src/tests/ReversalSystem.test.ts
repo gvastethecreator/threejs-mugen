@@ -118,6 +118,21 @@ describe("ReversalSystem", () => {
     expect(world.findActive(defender, incoming, incoming.hitbox, findHooks({ isMoveActive: () => false }))).toBeUndefined();
   });
 
+  it("does not let canDefenderBeHit short-circuit ReversalDef detection", () => {
+    const world = new RuntimeReversalWorld();
+    const defender = actor("p2", "Defender", { pos: { x: 18, y: 0 } });
+    const incoming = move({ attr: "SA,AA", hitbox: { x1: 10, y1: -20, x2: 20, y2: -5 } });
+    world.activate(defender, {
+      attr: "SA,AA",
+      hitbox: { x1: 0, y1: -22, x2: 18, y2: -4 },
+      hitPause: 4,
+    });
+
+    expect(world.findActive(defender, incoming, incoming.hitbox, findHooks({ canDefenderBeHit: () => false }))?.reversalAttr).toBe("SA,AA");
+    const reversal = world.findActive(defender, incoming, incoming.hitbox, findHooks());
+    expect(reversal?.reversalAttr).toBe("SA,AA");
+  });
+
   it("applies bounded reversal result and delegates state routing through hooks", () => {
     const contactWorld = new RecordingContactWorld();
     const world = new RuntimeReversalWorld(contactWorld);
@@ -249,7 +264,10 @@ function box(): CollisionBox {
   return { x1: 0, y1: -40, x2: 40, y2: -10 };
 }
 
-function findHooks(overrides: Partial<Pick<RuntimeReversalHooks, "isMoveActive" | "worldBox" | "boxesIntersect" | "attrMatches">> = {}) {
+function findHooks(
+  overrides: Partial<Pick<RuntimeReversalHooks, "isMoveActive" | "worldBox" | "boxesIntersect" | "attrMatches" | "canDefenderBeHit">> =
+    {},
+) {
   return {
     isMoveActive: () => true,
     worldBox: (state: CharacterRuntimeState, source: CollisionBox) => ({

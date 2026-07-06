@@ -40,6 +40,7 @@ export type RuntimeReversalHooks<TActor extends RuntimeReversalActor = RuntimeRe
   worldBox: (state: CharacterRuntimeState, box: CollisionBox) => CollisionBox;
   boxesIntersect: (left: CollisionBox, right: CollisionBox) => boolean;
   attrMatches: (reversalAttr: string, incomingAttr: string) => boolean;
+  canDefenderBeHit?: (defender: TActor) => boolean;
   rememberTarget: (attacker: TActor, defender: TActor, targetId: number | undefined) => void;
   canEnterState: (actor: TActor, stateNo: number) => boolean;
   enterState: (actor: TActor, stateNo: number) => void;

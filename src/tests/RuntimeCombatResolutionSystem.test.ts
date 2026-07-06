@@ -296,6 +296,51 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs).toEqual(["P1 rejected P2 S,NA via SuperPause unhittable"]);
   });
 
+  it("prioritizes ReversalDef over SuperPause-unhittable direct contact", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ stateNo: 200 }),
+      currentMove: move({ attr: "S,NA" }),
+      moveTick: 2,
+    });
+    const defender = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "S,NA",
+      hitbox: { x1: 0, y1: -40, x2: 50, y2: -1 },
+      hitPause: 5,
+      p1StateNo: 777,
+      p2StateNo: 888,
+    });
+    const logs: string[] = [];
+
+    const result = world.resolveDirect({
+      attacker,
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld,
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 19,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      canDefenderBeHit: () => false,
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(result).toMatchObject({ kind: "reversal", message: "P2 reversed P1 p1->777 p2->888" });
+    expect(attacker.hasHit).toBe(true);
+    expect(logs).toEqual(["P2 reversed P1 p1->777 p2->888"]);
+    expect(defender.runtime.stateNo).toBe(777);
+    expect(defender.runtime.life).toBe(100);
+  });
+
   it("routes projectile callbacks through target, contact, presentation, and damage ownership hooks", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({ projectileId: 88, serialId: "p1-projectile-0", hitSound: "S6,0", hitSpark: "S7001" });

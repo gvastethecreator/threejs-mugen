@@ -152,6 +152,7 @@ export class RuntimeCombatResolutionWorld {
       worldBox: runtimeWorldBox,
       boxesIntersect: collisionBoxesIntersect,
       attrMatches: hitAttributeMatches,
+      canDefenderBeHit: input.canDefenderBeHit,
     });
     if (reversal) {
       const outcome = input.reversalWorld.apply(defender, attacker, reversal, {

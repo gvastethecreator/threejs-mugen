@@ -198,6 +198,48 @@ describe("RuntimeHelperCombatSystem", () => {
     expect(defender.runtime.life).toBe(100);
   });
 
+  it("prioritizes ReversalDef over helper direct contact while SuperPause-unhittable is active", () => {
+    const effectActorWorld = new RuntimeEffectActorWorld();
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const reversalWorld = new RuntimeReversalWorld(contactWorld);
+    const helper = effectActorWorld.spawnHelper("p1", helperInput({ id: "47", name: '"Countered by Helper"' }));
+    helper.currentMove = move({ attr: "S,NA" });
+    helper.moveTick = 1;
+    const defender = defenderActor("p2", "P2", contactWorld, {
+      definition: fighterDefinition("imported"),
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, stateNo: 0, life: 100 }),
+    });
+    reversalWorld.activate(defender, {
+      attr: "S,NA",
+      hitbox: { x1: 0, y1: -30, x2: 50, y2: -1 },
+      hitPause: 5,
+      p2StateNo: 777,
+    });
+    const logs: string[] = [];
+
+    new RuntimeHelperCombatWorld().resolveDirect({
+      owner: owner("p1", effectActorWorld, fighterDefinition("imported")),
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      reversalWorld,
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      targetWorld: new RuntimeTargetWorld(),
+      runtimeTick: 57,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      canDefenderBeHit: () => false,
+      stateHooks: stateHooks([], [5000]),
+      log: (line) => logs.push(line),
+    });
+
+    expect(helper.hasHit).toBe(true);
+    expect(helper.currentMove).toBeUndefined();
+    expect(logs).toEqual(["P2 reversed Helper Countered by Helper p2->777"]);
+    expect(helper.stateNo).toBe(777);
+    expect(helper.targets).toEqual([]);
+  });
+
   it("lets defender ReversalDef counter helper direct HitDef and mark helper MoveReversed", () => {
     const effectActorWorld = new RuntimeEffectActorWorld();
     const contactWorld = new RuntimeContactMemoryWorld();
