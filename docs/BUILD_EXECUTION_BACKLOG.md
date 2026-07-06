@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Helper Projectile ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-reversal.json` trace coverage for bounded helper-parented/root-owned Projectile `ReversalDef` priority.
+- The trace preset uses a visual Helper that spawns Projectile id `8878` with `ownerId = p1`, `rootId = p1`, and `parentId = p1-helper-0`; it stops at the initial reversal contact and requires imported player actors, helper/projectile lifecycle evidence, typed `helper` / `projectile` / `reversaldef` operation evidence, reversal event/combat-reason evidence, P2 state/action `777`, P1 owner-backed state/action `888`, both actors at life `1000`, and an unconsumed Projectile payload.
+- Registered the artifact in `scripts/qa_traces.cjs` so the helper-parented Projectile reversal route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines Projectile as taking HitDef parameters, helper-created Projectiles as immediately assigned to root, and ReversalDef as contact/attr-driven attack reversal.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "helper Projectile ReversalDef"` -> 1 passed, 460 skipped.
+- Final verification passed: `pnpm qa:trace` -> 468/468 artifacts, 438 required and 30 optional; `pnpm test` -> 151 files / 1405 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `git diff --check`.
+- Trace artifact: `synthetic-imported-helper-projectile-reversal.json` checksum `a1d82380`, final checksum `ca66a49a`.
+
+Claim allowed:
+
+- Bounded helper-parented/root-owned Projectile contact can trigger active `ReversalDef` before hit/guard/HitOverride/SuperPause-style reject paths consume the initial contact.
+
+Claim blocked:
+
+- Projectile reflection/removal semantics after reversal, helper-owned custom-state tables, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 468/468 artifacts, 438 required and 30 optional. Latest required runtime evidence is `synthetic-imported-helper-projectile-reversal.json`; previous player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with projectile reflection/removal semantics after reversal, helper-owned custom-state tables, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-05 - Projectile ReversalDef trace gate
 
 Changed:
@@ -21,15 +52,15 @@ Claim allowed:
 
 Claim blocked:
 
-- Projectile reflection/removal semantics after reversal, helper-owned Projectile reversal breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
+- Projectile reflection/removal semantics after reversal, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 467/467 artifacts, 437 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-reversal.json`; previous SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At this checkpoint, Runtime/port was at `pnpm qa:trace` 467/467 artifacts, 437 required and 30 optional. Required runtime evidence included `synthetic-imported-projectile-reversal.json`; previous SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 
-- Continue R1 with projectile reflection/removal semantics, helper-owned Projectile reversal breadth, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+- Continue R1 with projectile reflection/removal semantics, helper-parented Projectile trace breadth, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
 
 ## 2026-07-05 - Projectile ReversalDef priority gate
 
@@ -52,7 +83,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Projectile reflection/removal semantics, helper-owned Projectile reversal breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
+- Projectile reflection/removal semantics, helper-parented Projectile trace breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
 
 Global port report:
 
@@ -60,7 +91,7 @@ Global port report:
 
 Next:
 
-- Continue R1 with helper-owned Projectile reversal breadth, projectile reflection/removal semantics, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or a required trace fixture for this reversal route; or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+- Continue R1 with helper-parented Projectile trace breadth, projectile reflection/removal semantics, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or a required trace fixture for this reversal route; or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
 
 ## 2026-07-05 - SuperPause unhittable trace gate
 

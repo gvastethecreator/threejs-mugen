@@ -4484,6 +4484,93 @@ export function createSyntheticImportedHelperProjectileHitOverrideMissOnOverride
   });
 }
 
+export function createSyntheticImportedHelperProjectileReversalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-reversal-x", frames: 4, p1: ["x"], p2: [] },
+  ]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-reversal-attacker",
+    displayName: "Synthetic Imported Helper Projectile Reversal Attacker",
+    withHelper: true,
+    helperProjHitRoute: {
+      waitStateNo: 1290,
+      waitAnimNo: 1050,
+      branchStateNo: 1291,
+      branchAnimNo: 1051,
+      projectileAnimNo: 1052,
+      projectileId: 8878,
+      pos: [342, 4],
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-reversal-defender",
+    displayName: "Synthetic Imported Helper Projectile Reversal Defender",
+    passiveReversalDef: { attr: "S,SP", p1StateNo: 777, p2StateNo: 888, hitPause: 3, targetId: 8878 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-helper-projectile-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-reversal-golden",
+      label: "Synthetic imported helper Projectile ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported helper Projectile ReversalDef trace proves a helper-parented/root-owned Projectile can be reversed before SuperPause/HitOverride-style reject routes consume contact. The trace stops at the initial reversal and does not claim projectile reflection/removal semantics, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [1291, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile", "ReversalDef"],
+        requiredExecutedOperations: ["helper", "projectile", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1290, animNo: 1050, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1052, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { actorId: "p1-helper-0", kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1290, minAge: 1, targetCount: 0 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8878,
+            minHitsRemaining: 1,
+            hasHit: false,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = expandRuntimeTraceScript([{ label: "imported-projectile-reversal-x", frames: 9, p1: ["x"], p2: [] }]);

@@ -326,6 +326,7 @@ import {
   createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact,
   createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact,
   createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact,
+  createSyntheticImportedHelperProjectileReversalTraceArtifact,
   createSyntheticImportedProjectileReversalTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
   createSyntheticImportedHitByRejectTraceArtifact,
@@ -7796,6 +7797,72 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({
           ownerId: "p1",
           effect: expect.objectContaining({ kind: "projectile", id: 77, hitsRemaining: 1, hasHit: false }),
+        }),
+      ]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 888,
+      animNo: 888,
+      life: 1000,
+      moveType: "H",
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 777,
+      animNo: 777,
+      life: 1000,
+      moveType: "H",
+    });
+  });
+
+  it("creates a synthetic imported helper Projectile ReversalDef artifact before hit or override contact", () => {
+    const artifact = createSyntheticImportedHelperProjectileReversalTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(evidence?.executedStates).not.toContain(1291);
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "override", "reject"]));
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "helper", id: 42, stateNo: 1290, targetCount: 0 }),
+        }),
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "projectile", id: 8878, hitsRemaining: 1, hasHit: false }),
         }),
       ]),
     );
