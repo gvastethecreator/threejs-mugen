@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Custom-state ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-custom-state-reversal.json` trace coverage for bounded direct custom-state `ReversalDef` priority.
+- The trace preset executes imported direct `HitDef p2stateno = 889` / `p2getp1state = 1` against a defender with active `ReversalDef p1stateno = 777` / `p2stateno = 888`; it stops at the reversal result and requires imported player actors, typed `hitdef` / `reversaldef` operation evidence, reversal event/combat-reason evidence, P1 defender-owned custom state/action `888` with `customOwnerId = p2`, P2 state/action `777`, both actors at life `1000`, and forbidden states `889`, `5000`, `150`, and `151`.
+- Registered the artifact in `scripts/qa_traces.cjs` so the direct custom-state reversal route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines ReversalDef contact, `reversal.attr`, `p1stateno`/`p2stateno`, and MoveHit detection; Projectile docs were checked while rejecting unclear reflection/removal scope.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "custom-state ReversalDef"` -> 1 passed, 461 skipped.
+- Final verification passed: `pnpm qa:trace` -> 469/469 artifacts, 439 required and 30 optional; `pnpm test` -> 151 files / 1406 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `git diff --check` with CRLF-normalization warnings only.
+- Trace artifact: `synthetic-imported-custom-state-reversal.json` checksum `18065db0`, final checksum `ac8d0073`.
+
+Claim allowed:
+
+- Bounded direct owner-backed `p2stateno` custom-state entry can be countered by active `ReversalDef` before state `889` is entered, then route the attacker through ReversalDef `p2stateno`.
+
+Claim blocked:
+
+- Guard/custom-state breadth beyond this direct route, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 469/469 artifacts, 439 required and 30 optional. Latest required runtime evidence is `synthetic-imported-custom-state-reversal.json`; previous helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with guard/custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-05 - Helper Projectile ReversalDef trace gate
 
 Changed:

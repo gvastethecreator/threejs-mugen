@@ -476,6 +476,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileReversalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-custom-state-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedCustomStateReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),

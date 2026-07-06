@@ -328,6 +328,7 @@ import {
   createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact,
   createSyntheticImportedHelperProjectileReversalTraceArtifact,
   createSyntheticImportedProjectileReversalTraceArtifact,
+  createSyntheticImportedCustomStateReversalTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
   createSyntheticImportedHitByRejectTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
@@ -7907,6 +7908,51 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.evidence.eventCategories).toContain("reversal");
     expect(artifact.gates[0]?.evidence.combatReasons).toContain("reversal");
     expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed"))).toBe(true);
+  });
+
+  it("creates a synthetic imported custom-state ReversalDef artifact before p2stateno entry", () => {
+    const artifact = createSyntheticImportedCustomStateReversalTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-custom-state-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-custom-state-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(evidence?.executedStates).not.toContain(889);
+    expect(evidence?.executedStates).not.toContain(5000);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "override", "reject"]));
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("p2->888"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 888,
+      animNo: 888,
+      customOwnerId: "p2",
+      life: 1000,
+      moveType: "H",
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 777,
+      animNo: 777,
+      life: 1000,
+      moveType: "H",
+    });
   });
 
   it("creates a synthetic imported damage-scale artifact with typed multiplier evidence", () => {

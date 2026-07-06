@@ -4674,6 +4674,60 @@ export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTra
   });
 }
 
+export function createSyntheticImportedCustomStateReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedXScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-custom-state-reversal-attacker",
+    displayName: "Synthetic Imported Custom State Reversal Attacker",
+    hitDefAttr: "S,NA",
+    customStateRoute: {
+      startStateNo: 889,
+      selfStateAfter: 4,
+    },
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-custom-state-reversal-defender",
+    displayName: "Synthetic Imported Custom State Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888, hitPause: 3 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-custom-state-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-custom-state-reversal-golden",
+      label: "Synthetic imported custom-state ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported custom-state ReversalDef trace proves a defender-side ReversalDef can counter an incoming direct HitDef before the HitDef's owner-backed p2stateno custom state is entered, then route the attacker through the ReversalDef p2stateno. It does not claim guard/custom-state breadth, exact attr grammar, hitpause/tick order, projectile reflection/removal semantics, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-custom-state-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [889, 5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, customOwnerId: "p2", life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();

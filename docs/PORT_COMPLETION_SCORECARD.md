@@ -1,6 +1,6 @@
 # Port Completion Scorecard
 
-Last updated: 2026-07-05
+Last updated: 2026-07-06
 
 This is the answer source for "how far are we from a usable port?" It measures the current repo against three different horizons, because a playable local sandbox, practical MUGEN compatibility, and a full IKEMEN-GO-class port are not the same milestone.
 
@@ -59,7 +59,9 @@ The project is currently in the **16-35 partial runtime band** for imported comp
 | Studio/product surface | 25 | Workbench, Assets, Inspector, Debug, Evidence, Modules, Build. | True editing, regeneration, persistent projects, export/publish workflow. |
 | Modular engine | 10 | Boundary docs and module contract draft. | Platformer/shared core proof blocked until fighting contracts stabilize. |
 
-Combat/Common1 latest evidence addendum: required `synthetic-imported-helper-projectile-reversal.json` checksum `a1d82380` / final checksum `ca66a49a` proves bounded helper-parented/root-owned Projectile `ReversalDef` priority without score movement. The trace creates a visual Helper that spawns Projectile id `8878` with `ownerId = p1`, `rootId = p1`, and `parentId = p1-helper-0`, stops at the initial reversal contact, requires typed `helper`, `projectile`, and `reversaldef` operation evidence plus reversal event/combat reason evidence, keeps helper target memory empty and the Projectile payload unconsumed at that sampled frame, forbids hit/guard/override/reject routes, and ends P2 in state/action `777` while P1 enters owner-backed state/action `888` with both actors at life `1000`. `pnpm qa:trace` now passes 468/468 artifacts, 438 required and 30 optional. Remaining blockers are projectile reflection/removal semantics after reversal, helper-owned custom-state tables, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+Combat/Common1 latest evidence addendum: required `synthetic-imported-custom-state-reversal.json` checksum `18065db0` / final checksum `ac8d0073` proves bounded direct custom-state `ReversalDef` priority without score movement. The trace executes imported direct `HitDef p2stateno = 889` / `p2getp1state = 1` against a defender with active `ReversalDef p1stateno = 777` / `p2stateno = 888`, stops at the reversal result, requires typed `hitdef` and `reversaldef` operation evidence plus reversal event/combat reason evidence, forbids the HitDef owner-backed custom state `889`, default get-hit `5000`, and guard states `150` / `151`, and ends P1 in defender-owned custom state/action `888` (`customOwnerId = p2`) while P2 enters state/action `777`, both at life `1000`. `pnpm qa:trace` now passes 469/469 artifacts, 439 required and 30 optional. Remaining blockers are guard/custom-state breadth beyond this direct route, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Combat/Common1 previous evidence addendum: required `synthetic-imported-helper-projectile-reversal.json` checksum `a1d82380` / final checksum `ca66a49a` proves bounded helper-parented/root-owned Projectile `ReversalDef` priority without score movement and remains required.
 
 Combat/Common1 previous evidence addendum: required `synthetic-imported-projectile-reversal.json` checksum `5c4ddf48` / final checksum `bb0bbb99` proves bounded player-owned Projectile `ReversalDef` priority without score movement and remains required.
 
