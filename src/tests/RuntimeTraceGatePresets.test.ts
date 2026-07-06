@@ -329,6 +329,7 @@ import {
   createSyntheticImportedHelperProjectileReversalTraceArtifact,
   createSyntheticImportedProjectileReversalTraceArtifact,
   createSyntheticImportedCustomStateReversalTraceArtifact,
+  createSyntheticImportedGuardReversalTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
   createSyntheticImportedHitByRejectTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
@@ -7944,6 +7945,55 @@ describe("RuntimeTraceGatePresets", () => {
       stateNo: 888,
       animNo: 888,
       customOwnerId: "p2",
+      life: 1000,
+      moveType: "H",
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 777,
+      animNo: 777,
+      life: 1000,
+      moveType: "H",
+    });
+  });
+
+  it("creates a synthetic imported guard ReversalDef artifact before guard contact", () => {
+    const artifact = createSyntheticImportedGuardReversalTraceArtifact({ generatedAt: "2026-07-06T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-guard-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-guard-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(gate?.requirements.requiredExecutedStates).toEqual([200, 777, 888]);
+    expect(gate?.requirements.forbiddenExecutedStates).toEqual([5000, 150, 151]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["AssertSpecial", "ChangeState", "HitDef", "ReversalDef"]);
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(evidence?.executedStates).not.toEqual(expect.arrayContaining([5000, 150, 151]));
+    expect(evidence?.executedControllers.AssertSpecial).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toEqual(expect.arrayContaining(["x", "holdback"]));
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "override", "reject"]));
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("p2->888"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 888,
+      animNo: 888,
       life: 1000,
       moveType: "H",
     });

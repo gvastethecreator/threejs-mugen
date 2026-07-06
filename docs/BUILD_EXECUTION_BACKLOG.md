@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Guard ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-guard-reversal.json` trace coverage for bounded guard-input `ReversalDef` priority.
+- The trace preset executes a guardable imported direct `HitDef` against a defender holding back, stabilized with `AssertSpecial nowalk`, and active `ReversalDef p1stateno = 777` / `p2stateno = 888`; it stops at reversal and requires imported player actors, typed `assertspecial` / `hitdef` / `reversaldef` operation evidence, reversal event/combat-reason evidence, P1 state/action `888`, P2 state/action `777`, both actors at life `1000`, and forbidden states `5000`, `150`, and `151`.
+- Registered the artifact in `scripts/qa_traces.cjs` so the guard-input reversal route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines guard entry while P2 holds away, `guardflag`, ReversalDef contact, `reversal.attr`, and `p1stateno`/`p2stateno`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "guard ReversalDef"` -> 1 passed, 462 skipped.
+- Final verification passed: `pnpm qa:trace` -> 470/470 artifacts, 440 required and 30 optional; `pnpm test` -> 151 files / 1407 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `git diff --check` with CRLF-normalization warnings only.
+- Trace artifact: `synthetic-imported-guard-reversal.json` checksum `6f8df3a4`, final checksum `e0771a15`.
+
+Claim allowed:
+
+- A no-walk-stabilized held-back defender can counter a guardable direct `HitDef` through active `ReversalDef` before default get-hit `5000` or guard states `150` / `151` execute.
+
+Claim blocked:
+
+- Walk-back guard distance, crouch/air guard breadth, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 470/470 artifacts, 440 required and 30 optional. Latest required runtime evidence is `synthetic-imported-guard-reversal.json`; previous custom-state/helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with walk-back guard distance, crouch/air guard ReversalDef breadth, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Custom-state ReversalDef trace gate
 
 Changed:
@@ -25,7 +56,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 469/469 artifacts, 439 required and 30 optional. Latest required runtime evidence is `synthetic-imported-custom-state-reversal.json`; previous helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At that checkpoint, runtime/port was at `pnpm qa:trace` 469/469 artifacts, 439 required and 30 optional, with `synthetic-imported-custom-state-reversal.json` as the newest required runtime evidence. Previous helper/player Projectile ReversalDef, SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 

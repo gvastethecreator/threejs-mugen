@@ -35,14 +35,20 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required custom-state ReversalDef trace gate
-  -> synthetic-imported-custom-state-reversal.json checksum 18065db0 / final checksum ac8d0073 is required in qa:trace
+R1 required guard ReversalDef trace gate
+  -> synthetic-imported-guard-reversal.json checksum 6f8df3a4 / final checksum e0771a15 is required in qa:trace
+  -> imported direct HitDef is guardable and runs against a defender holding back, stabilized with AssertSpecial nowalk, with active ReversalDef p1stateno 777 / p2stateno 888
+  -> trace stops at reversal before default get-hit 5000 or guard states 150/151 can execute
+  -> evidence requires typed assertspecial/hitdef/reversaldef ops, reversal event/combat reason, P1 state/action 888, P2 state/action 777, and both actors life 1000
+  -> pnpm qa:trace passes 470/470 artifacts, 440 required and 30 optional
+  -> official Elecbyte docs define guard entry while P2 holds away, guardflag, ReversalDef contact, reversal.attr, and p1stateno/p2stateno
+  -> no score movement; walk-back guard distance, crouch/air guard breadth, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity remain blocked
+
+Previous R1 required custom-state ReversalDef trace gate
+  -> synthetic-imported-custom-state-reversal.json checksum 18065db0 / final checksum ac8d0073 remains required in qa:trace
   -> imported direct HitDef declares p2stateno 889 / p2getp1state 1 against a defender with active ReversalDef p1stateno 777 / p2stateno 888
-  -> trace stops at the reversal result before the HitDef owner-backed custom state 889, default get-hit 5000, or guard states 150/151 can execute
-  -> evidence requires typed hitdef/reversaldef ops, reversal event/combat reason, P1 defender-owned custom state/action 888 with customOwnerId p2, P2 state/action 777, and both actors life 1000
-  -> pnpm qa:trace passes 469/469 artifacts, 439 required and 30 optional
-  -> official Elecbyte docs define ReversalDef contact, reversal.attr, p1stateno/p2stateno, and MoveHit detection; Projectile docs were checked while rejecting unclear reflection/removal scope
-  -> no score movement; guard/custom-state breadth beyond this direct route, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity remain blocked
+  -> trace stops at reversal before the HitDef owner-backed custom state 889, default get-hit 5000, or guard states 150/151 can execute
+  -> no score movement; it remains bounded direct custom-state reversal-priority evidence only
 
 Previous R1 required helper Projectile ReversalDef trace gate
   -> synthetic-imported-helper-projectile-reversal.json checksum a1d82380 / final checksum ca66a49a is required in qa:trace

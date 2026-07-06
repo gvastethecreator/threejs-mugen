@@ -481,6 +481,11 @@ async function main() {
       artifact: presets.createSyntheticImportedCustomStateReversalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-guard-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedGuardReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),

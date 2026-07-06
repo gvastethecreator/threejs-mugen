@@ -4728,6 +4728,58 @@ export function createSyntheticImportedCustomStateReversalTraceArtifact(options:
   });
 }
 
+export function createSyntheticImportedGuardReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guard-reversal-attacker",
+    displayName: "Synthetic Imported Guard Reversal Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "MA",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-guard-reversal-defender",
+    displayName: "Synthetic Imported Guard Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888, hitPause: 3 },
+    passiveAssertSpecialFlags: ["nowalk"],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-guard-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-guard-reversal-golden",
+      label: "Synthetic imported guard ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported guard ReversalDef trace proves a no-walk-stabilized defender holding back against a guardable direct HitDef can still counter through ReversalDef before stand-guard hit states or guard contact telemetry are entered. It does not claim walk-back guard distance, crouch/air guard breadth, custom-state breadth beyond the direct route, exact attr grammar, hitpause/tick order, projectile reflection/removal semantics, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-guard-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [5000, 150, 151],
+        requiredExecutedControllers: ["AssertSpecial", "ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredActiveCommands: ["x", "holdback"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
