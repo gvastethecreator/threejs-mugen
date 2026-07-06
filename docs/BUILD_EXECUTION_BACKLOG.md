@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Helper Projectile projedgebound terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-edgebound-terminal.json` trace coverage for helper-parented/root-owned Projectile explicit `projedgebound = 24` terminal playback.
+- Extended the synthetic helper Projectile route builder with explicit `projedgebound` emission so helper-parented Projectiles can prove bounded horizontal screen-edge removal.
+- Registered the helper edge-bound artifact in `pnpm qa:trace` required coverage.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projedgebound` as the distance off the screen edge before automatic removal, defines `projremanim` as expired-time/removal-boundaries playback, and notes that Projectiles created by Helpers immediately become root-owned.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile projedgebound terminal"` -> 1 passed, 484 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 492/492 artifacts, 462 required and 30 optional.
+- Trace artifact: `synthetic-imported-helper-projectile-edgebound-terminal.json` checksum `6f99970d`, final checksum `1ab7d718`.
+
+Claim allowed:
+
+- Bounded imported helper-parented/root-owned Projectile removal honors explicit `projedgebound = 24` as the current horizontal screen-edge removal proxy, resolves authored `projremanim = 1128`, plays visible terminal anim `1128`, records helper plus Projectile spawn/remove lifecycle evidence with parent `p1-helper-0`, and preserves payload evidence with `edgeBound = 24`, `hasHit = false`, `hitsRemaining = 1`, `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact default `projedgebound` values, exact camera/screen-edge geometry, exact stage-vs-screen split, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 492/492 artifacts, 462 required and 30 optional. Latest required runtime evidence is `synthetic-imported-helper-projectile-edgebound-terminal.json`; previous helper `projheightbound`, player-owned `projheightbound`, explicit `projedgebound`, explicit `projstagebound`, generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with helper `projstagebound`, exact Projectile default bound values, exact camera/screen/height semantics, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile projheightbound terminal trace gate
 
 Changed:
@@ -12,7 +43,7 @@ Evidence:
 
 - Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projheightbound` as the least and greatest y values a projectile may reach before automatic removal, defines `projremanim` as expired-time/removal-boundaries playback, and notes that Projectiles created by Helpers immediately become root-owned.
 - Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile projheightbound terminal"` -> 1 passed, 483 skipped.
-- Runtime trace gate: `pnpm qa:trace` -> 491/491 artifacts, 461 required and 30 optional.
+- Runtime trace gate at this previous checkpoint: `pnpm qa:trace` -> 491/491 artifacts, 461 required and 30 optional.
 - Trace artifact: `synthetic-imported-helper-projectile-heightbound-terminal.json` checksum `debb08b1`, final checksum `0821ec70`.
 
 Claim allowed:
@@ -25,7 +56,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 491/491 artifacts, 461 required and 30 optional. Latest required runtime evidence is `synthetic-imported-helper-projectile-heightbound-terminal.json`; previous player-owned `projheightbound`, explicit `projedgebound`, explicit `projstagebound`, generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At that previous checkpoint, runtime/port was at `pnpm qa:trace` 491/491 artifacts, 461 required and 30 optional. The required runtime evidence was `synthetic-imported-helper-projectile-heightbound-terminal.json`; player-owned `projheightbound`, explicit `projedgebound`, explicit `projstagebound`, generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilize. No score movement.
 
 Next:
 
