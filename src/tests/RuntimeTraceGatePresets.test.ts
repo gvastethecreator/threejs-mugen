@@ -247,6 +247,7 @@ import {
   createSyntheticImportedHelperProjectileDefaultTargetControllersTraceArtifact,
   createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
+  createSyntheticImportedHelperProjectileGuardTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGuardKoTraceArtifact,
   createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact,
@@ -4638,6 +4639,83 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1 })]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile guard terminal artifact with hit removal playback evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileGuardTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-guard-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-guard-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeUndefined();
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeUndefined();
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported Helper Projectile Guard Terminal projectile"))).toBe(
+      true,
+    );
+    expect(evidence?.eventLines.some((line) => line.includes("hit removal anim 1109"))).toBe(true);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1314, animNo: 1107 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1315, animNo: 1108 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1109, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-helper-0",
+          effect: expect.objectContaining({ kind: "helper", stateNo: 1315 }),
+        }),
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8922,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+            terminalDuration: 4,
+          }),
+        }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 8922 }),
+        expect.objectContaining({ ownerId: "p1-helper-0", actorId: "p2", targetId: 8922 }),
+      ]),
     );
   });
 

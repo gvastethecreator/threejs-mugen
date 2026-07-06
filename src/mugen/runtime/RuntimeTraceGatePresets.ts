@@ -30799,6 +30799,100 @@ export function createSyntheticImportedHelperProjectileGuardKillTraceArtifact(op
   });
 }
 
+export function createSyntheticImportedHelperProjectileGuardTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-terminal-attacker",
+    displayName: "Synthetic Imported Helper Projectile Guard Terminal",
+    withHitDef: false,
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1314,
+      waitAnimNo: 1107,
+      branchStateNo: 1315,
+      branchAnimNo: 1108,
+      projectileAnimNo: 1106,
+      projectileHitAnim: 1109,
+      projectileRemoveOnHit: true,
+      projectileId: 8922,
+      pos: [360, -34],
+      guardSound: "S6,0",
+      guardSpark: "F7004",
+      sparkXy: [15, -63],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-guard-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-guard-terminal-golden",
+      label: "Synthetic imported Helper Projectile guard terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile guard terminal trace proves bounded helper-parented/root-owned Projectile guard contact can resolve authored projhitanim metadata into hit removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve root plus helper target links through terminal payload evidence. Elecbyte documents Projectile-specific projhitanim/projremanim/projcancelanim removal animation parameters and helper-created Projectiles as root-owned. It does not claim exact terminal timing, exact sprite/layer/palette parity, helper-owned custom-state terminal parity, teams, or full helper Projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-guard-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+        requiredExecutedOperations: ["helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: [
+          "guarded Synthetic Imported Helper Projectile Guard Terminal projectile",
+          "hit removal anim 1109",
+        ],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1314, animNo: 1107, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1315, animNo: 1108, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1109, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1315, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8922,
+            hasHit: true,
+            removalReason: "hit",
+            terminalReason: "hit",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8922 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8922 },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperProjectileGuardScript();
@@ -35416,6 +35510,8 @@ export type SyntheticImportedTraceFighterOptions = {
     branchAnimNo?: number;
     branchTrigger?: string;
     projectileAnimNo: number;
+    projectileHitAnim?: number;
+    projectileRemoveOnHit?: boolean;
     projectileId?: number;
     pos?: [number, number];
     velocity?: [number, number];
@@ -36524,6 +36620,14 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperProjGuardRoute.branchAnimNo ?? options.helperProjGuardRoute.branchStateNo),
                   ],
                   [options.helperProjGuardRoute.projectileAnimNo, projectileTraceAction(options.helperProjGuardRoute.projectileAnimNo)],
+                  ...(options.helperProjGuardRoute.projectileHitAnim === undefined
+                    ? []
+                    : ([
+                        [
+                          options.helperProjGuardRoute.projectileHitAnim,
+                          projectileTraceAction(options.helperProjGuardRoute.projectileHitAnim),
+                        ],
+                      ] as Array<[number, MugenAnimationAction]>)),
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperProjContactRoute === undefined
               ? []
@@ -40739,6 +40843,8 @@ function helperProjGuardRouteBlock(route: NonNullable<SyntheticImportedTraceFigh
   const hitSparkLine = route.hitSpark === undefined ? "" : `sparkno = ${route.hitSpark}`;
   const guardSparkLine = route.guardSpark === undefined ? "" : `guard.sparkno = ${route.guardSpark}`;
   const sparkXyLine = route.sparkXy === undefined ? "" : `sparkxy = ${route.sparkXy[0]},${route.sparkXy[1]}`;
+  const projectileHitAnimLine = route.projectileHitAnim === undefined ? "" : `projhitanim = ${route.projectileHitAnim}`;
+  const projectileRemoveLine = `projremove = ${route.projectileRemoveOnHit === undefined ? 0 : route.projectileRemoveOnHit ? 1 : 0}`;
   const guardSlideTimeLine = route.guardSlideTime === undefined ? "" : `guard.slidetime = ${route.guardSlideTime}`;
   const guardControlTimeLine = route.guardControlTime === undefined ? "" : `guard.ctrltime = ${route.guardControlTime}`;
   const guardKillLine = route.guardKill === undefined ? "" : `guard.kill = ${route.guardKill ? 1 : 0}`;
@@ -40773,10 +40879,11 @@ projpriority = 2
 projhits = 1
 projmisstime = 0
 projanim = ${route.projectileAnimNo}
+${projectileHitAnimLine}
 offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 48
-projremove = 0
+${projectileRemoveLine}
 ${hitSoundLine}
 ${guardSoundLine}
 ${hitSparkLine}

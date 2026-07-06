@@ -2177,6 +2177,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileGuardKillTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-guard-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGuardTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projguardedtime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(),
@@ -3594,6 +3599,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-guard-velocity-default",
     "synthetic-imported-helper-projectile-guard-timing-default",
     "synthetic-imported-helper-projectile-guard-slide-stop",
+    "synthetic-imported-helper-projectile-guard-terminal",
     "synthetic-imported-helper-projectile-air-guard-cornerpush",
     "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
     "synthetic-imported-helper-projectile-guard-cornerpush-default",
