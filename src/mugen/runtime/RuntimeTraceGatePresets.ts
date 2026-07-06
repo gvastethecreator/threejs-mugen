@@ -28323,6 +28323,84 @@ export function createSyntheticImportedHelperProjectileTraceArtifact(options: Ru
   });
 }
 
+export function createSyntheticImportedHelperProjectileRemoveHitFallbackTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileRemoveTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-remove-hit-fallback-terminal-attacker",
+    displayName: "Synthetic Imported Helper Projectile Remove Hit Fallback Terminal",
+    withHelper: true,
+    helperProjectileRoute: {
+      stateNo: 1320,
+      animNo: 1120,
+      projectileAnimNo: 1121,
+      projectileHitAnim: 1122,
+      projectileId: 8930,
+      pos: [80, -45],
+      velocity: [0, 0],
+      removeTime: 24,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-remove-hit-fallback-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-remove-hit-fallback-terminal-golden",
+      label: "Synthetic imported Helper Projectile remove hit fallback terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile remove hit fallback terminal trace proves bounded helper-parented/root-owned Projectile timeout removal can fall back from omitted projremanim to authored projhitanim metadata, play a visible terminal projectile action when that AIR action exists, and preserve helper parent plus terminal payload evidence through the effect actor world. Elecbyte documents helper-created Projectiles as immediately assigned to root, documents Projectile projremanim as the timeout/bounds removal animation, and says omitted projremanim uses projhitanim instead. It does not claim exact terminal timing, bounds-removal parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, or full helper Projectile terminal parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-remove-hit-fallback-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1320, animNo: 1120, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1122, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1320, minAge: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8930,
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "timeout",
+            terminalReason: "timeout",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperRemoveExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -35092,6 +35170,13 @@ export function importedHelperScript(): RuntimeTraceInputFrame[] {
   ]);
 }
 
+export function importedHelperProjectileRemoveTerminalScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-helper-projectile-remove-terminal-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "helper-projectile-remove-terminal-timeout", frames: 30, p1: [], p2: [] },
+  ]);
+}
+
 export function importedHelperHitDefScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-helper-hitdef-x", frames: 12, p1: ["x"], p2: [] },
@@ -35706,7 +35791,18 @@ export type SyntheticImportedTraceFighterOptions = {
   helperParentRootRedirectRoute?: { stateNo: number; animNo?: number };
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
   helperExplodRoute?: { stateNo: number; animNo?: number; explodAnimNo: number; pos?: [number, number] };
-  helperProjectileRoute?: { stateNo: number; animNo?: number; projectileAnimNo: number; projectileId?: number; pos?: [number, number] };
+  helperProjectileRoute?: {
+    stateNo: number;
+    animNo?: number;
+    projectileAnimNo: number;
+    projectileHitAnim?: number;
+    projectileRemoveAnim?: number;
+    projectileId?: number;
+    pos?: [number, number];
+    velocity?: [number, number];
+    removeTime?: number;
+    priority?: number;
+  };
   helperRemoveExplodRoute?: {
     removeStateNo: number;
     removeAnimNo?: number;
@@ -36863,6 +36959,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperProjectileRoute.animNo ?? options.helperProjectileRoute.stateNo),
                   ],
                   [options.helperProjectileRoute.projectileAnimNo, projectileTraceAction(options.helperProjectileRoute.projectileAnimNo)],
+                  ...[
+                    options.helperProjectileRoute.projectileHitAnim,
+                    options.helperProjectileRoute.projectileRemoveAnim,
+                  ]
+                    .filter((animNo): animNo is number => animNo !== undefined)
+                    .map((animNo): [number, MugenAnimationAction] => [animNo, projectileTerminalTraceAction(animNo)]),
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperRemoveExplodRoute === undefined
               ? []
@@ -40688,6 +40790,11 @@ function helperProjectileRouteBlock(route: NonNullable<SyntheticImportedTraceFig
   const animNo = route.animNo ?? route.stateNo;
   const projectileId = route.projectileId ?? 8850;
   const pos = route.pos ?? [34, -34];
+  const velocity = route.velocity ?? [4, 0];
+  const removeTime = route.removeTime ?? 48;
+  const priority = route.priority ?? 2;
+  const hitAnimLine = route.projectileHitAnim === undefined ? "" : `projhitanim = ${route.projectileHitAnim}`;
+  const removeAnimLine = route.projectileRemoveAnim === undefined ? "" : `projremanim = ${route.projectileRemoveAnim}`;
   return `
 [Statedef 1200]
 type = S
@@ -40700,13 +40807,15 @@ ctrl = 0
 type = Projectile
 trigger1 = Time = 0
 projid = ${projectileId}
-projpriority = 2
+projpriority = ${priority}
 projhits = 1
 projmisstime = 0
 projanim = ${route.projectileAnimNo}
+${hitAnimLine}
+${removeAnimLine}
 offset = ${pos[0]},${pos[1]}
-velocity = 4,0
-projremovetime = 48
+velocity = ${velocity[0]},${velocity[1]}
+projremovetime = ${removeTime}
 damage = 18,2
 pausetime = 3,3
 ground.hittime = 11

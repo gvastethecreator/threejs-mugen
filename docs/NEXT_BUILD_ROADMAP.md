@@ -27,6 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required Helper Projectile remove hit fallback terminal trace gate
+  -> synthetic-imported-helper-projectile-remove-hit-fallback-terminal.json checksum 0ed9e229 / final checksum 9cd6d27b is required in qa:trace
+  -> helper p1-helper-0 spawned root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projhitanim = 1122, omitted projremanim, static velocity, projremovetime = 24, and no contact before timeout, then fell back to projhitanim for timeout terminal playback
+  -> evidence requires typed helper/projectile ops, active x command evidence, helper state/action 1320 / anim 1120, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 1122, and payload evidence with hasHit false, hitsRemaining 1, hitAnimNo 1122, removalReason/terminalReason = timeout, and terminalDuration 2
+  -> pnpm qa:trace passes 486/486 artifacts, 456 required and 30 optional
+  -> official Elecbyte docs define helper-created Projectiles as root-owned, omitted projremanim as falling back to projhitanim, and projremovetime timeout removal
+  -> no score movement; exact terminal timing, bounds-removal parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile terminal parity remain blocked
+
 R1 required Helper Projectile cancel remove fallback terminal trace gate
   -> synthetic-imported-helper-projectile-cancel-remove-fallback-terminal.json checksum cf33c924 / final checksum bd3a1279 is required in qa:trace
   -> helper p1-helper-0 spawned root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projremanim = 1028, omitted projcancelanim, lost a Projectile priority clash against P2 priority 3 > 1, and fell back to projremanim for cancel terminal playback
