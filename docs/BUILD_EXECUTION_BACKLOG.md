@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Player Projectile guard.kill no-KO trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-guard-kill.json` trace coverage for bounded player-owned Projectile `guard.kill = 0` nonlethal guard-chip behavior.
+- Reused the player Projectile guard route with explicit `guard.kill = 0`, `damage = 31,2000`, Projectile lifecycle evidence, target-link evidence, and final life clamp evidence.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the player Projectile guard KO gate.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html) defines Projectile as taking HitDef parameters and `guard.kill = 0` as preventing KO from guard damage.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile guard.kill no-KO"` -> 2 passed, 470 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 479/479 artifacts, 449 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-guard-kill.json` checksum `905eb8e3`, final checksum `c6cc7787`.
+- Closeout gates: `pnpm test` -> 151 files / 1416 tests passed; `pnpm typecheck` -> passed; `pnpm build` -> passed with the existing large-chunk warning; `git diff --check` -> passed with CRLF normalization warnings on touched docs.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile `guard.kill = 0` can clamp lethal guarded chip damage (`damage = 31,2000`) to defender life `1` without round KO evidence while preserving Projectile target-link evidence.
+
+Claim blocked:
+
+- Exact KO slowdown/lifebar/guard-finish timing, exact no-KO guard recovery timing, team/simul guard KO/no-KO breadth, exact effect terminal/presentation timing, score movement, and full Projectile guard round-flow parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 479/479 artifacts, 449 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-guard-kill.json`; previous helper Projectile no-KO, helper Projectile KO, player-owned Projectile KO, direct `HitDef` KO, direct nonlethal `guard.kill = 0`, guarddist/ReversalDef no-contact, walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and projectile package gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, exact projectile terminal/effect presentation, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile guard.kill no-KO trace gate
 
 Changed:

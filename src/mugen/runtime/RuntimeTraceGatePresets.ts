@@ -26768,6 +26768,72 @@ export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: R
   });
 }
 
+export function createSyntheticImportedProjectileGuardKillTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-kill-attacker",
+    displayName: "Synthetic Imported Projectile Guard Kill",
+    withHitDef: false,
+    withProjectile: true,
+    projectileDamage: [31, 2000],
+    guardKill: false,
+    projectileGuardSound: "S6,0",
+    projectileGuardSpark: "F7004",
+    projectileSparkXy: [15, -63],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-guard-kill-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-guard-kill-golden",
+      label: "Synthetic imported Projectile guard.kill no-KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile guard.kill no-KO trace proves bounded player-owned Projectile guard chip with guard.kill = 0 can clamp lethal guarded damage to 1 life without RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, helper Projectile ownership parity, teams, or full projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-guard-kill-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported Projectile Guard Kill projectile for 2000"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: false, minHitsRemaining: 1 },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileClashTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileClashStage();
   const script = importedProjectileClashScript();

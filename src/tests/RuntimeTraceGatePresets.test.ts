@@ -450,6 +450,7 @@ import {
   createSyntheticImportedProjectileGetHitVarGuardKillTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardHitShakeTimeTraceArtifact,
   createSyntheticImportedProjectileGetHitVarGuardedTraceArtifact,
+  createSyntheticImportedProjectileGuardKillTraceArtifact,
   createSyntheticImportedProjectileGuardKoTraceArtifact,
   createSyntheticImportedProjectileGuardTraceArtifact,
   createSyntheticImportedHitDefProjectileTargetMixTraceArtifact,
@@ -23143,6 +23144,57 @@ describe("RuntimeTraceGatePresets", () => {
     );
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 0 })]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile guard.kill no-KO artifact with clamp evidence", () => {
+    const artifact = createSyntheticImportedProjectileGuardKillTraceArtifact({ generatedAt: "2026-07-06T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-guard-kill-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-guard-kill-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.HitDef).toBeUndefined();
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.hitdef).toBeUndefined();
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported Projectile Guard Kill projectile for 2000"))).toBe(true);
+    expect(evidence?.roundFrames.some((frame) => frame.state === "ko")).toBe(false);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          ownerId: "p1",
+          effect: expect.objectContaining({ kind: "projectile", id: 77, hasHit: false, hitsRemaining: 1 }),
+        }),
+      ]),
+    );
+    expect(evidence?.targetLinks).toEqual(
+      expect.arrayContaining([expect.objectContaining({ ownerId: "p1", actorId: "p2", targetId: 77 })]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1 })]),
     );
   });
 
