@@ -375,6 +375,7 @@ import {
   createSyntheticImportedDynamicAfterImageTraceArtifact,
   createSyntheticImportedDynamicAfterImageTimeTraceArtifact,
   createSyntheticImportedHitDefPriorityTraceArtifact,
+  createSyntheticImportedHitDefGuardKoTraceArtifact,
   createSyntheticImportedHitDefGuardKillTraceArtifact,
   createSyntheticImportedHitDefKillTraceArtifact,
   createSyntheticImportedProjectileClashTraceArtifact,
@@ -9874,6 +9875,43 @@ describe("RuntimeTraceGatePresets", () => {
     expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported HitDef Guard Kill Attacker for 2000"))).toBe(true);
     expect(evidence?.finalActors).toEqual(
       expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 1 })]),
+    );
+  });
+
+  it("creates a synthetic imported HitDef guard chip KO artifact with round evidence", () => {
+    const artifact = createSyntheticImportedHitDefGuardKoTraceArtifact({ generatedAt: "2026-07-06T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-hitdef-guard-ko-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-hitdef-guard-ko-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedOperations.hitdef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.eventCategories).toContain("guard");
+    expect(evidence?.combatReasons).toContain("guard");
+    expect(evidence?.eventLines.some((line) => line.includes("guarded Synthetic Imported HitDef Guard KO for 2000"))).toBe(true);
+    expect(evidence?.roundFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          state: "ko",
+          winner: "Synthetic Imported HitDef Guard KO",
+          message: "Synthetic Imported HitDef Guard KO wins",
+        }),
+      ]),
+    );
+    expect(evidence?.finalActors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id: "p2", source: "demo", life: 0 })]),
     );
   });
 

@@ -6990,6 +6990,59 @@ export function createSyntheticImportedHitDefGuardKillTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedHitDefGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedHitDefGuardKillScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-hitdef-guard-ko-attacker",
+    displayName: "Synthetic Imported HitDef Guard KO",
+    guardDamage: 2000,
+    guardFlag: "MA",
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-hitdef-guard-ko-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-hitdef-guard-ko-golden",
+      label: "Synthetic imported HitDef guard chip KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported HitDef guard chip KO trace proves bounded default guard.kill behavior can let lethal guard chip damage reach 0 life and emit RoundSnapshot KO evidence. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, projectiles, helpers, teams, or full guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-hitdef-guard-ko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef"],
+        requiredExecutedOperations: ["hitdef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported HitDef Guard KO for 2000"],
+        requiredRoundFrames: [
+          { state: "ko", winner: "Synthetic Imported HitDef Guard KO", message: "Synthetic Imported HitDef Guard KO wins" },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 0,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedAssertSpecialNoKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedHitDefKillScript();

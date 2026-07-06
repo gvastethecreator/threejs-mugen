@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Guard chip KO trace gate
+
+Changed:
+
+- Added required `synthetic-imported-hitdef-guard-ko.json` trace coverage for bounded default lethal guard-chip behavior.
+- The trace reuses the guarded direct `HitDef` route without `guard.kill = 0`, sets `guard.damage = 2000`, and proves P2 can block, take guard chip to life `0`, and emit a `RoundSnapshot` KO/winner/message instead of being clamped to life `1`.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the existing `synthetic-imported-hitdef-guard-kill.json` nonlethal guard-chip clamp gate.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `damage = hit_damage, guard_damage`; `guard.kill` defaults to `1`, and `guard.kill = 0` prevents KO from guard damage.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "guard chip KO|guard ReversalDef|walk-back guard ReversalDef|air guard ReversalDef"` -> 5 passed, 463 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 475/475 artifacts, 445 required and 30 optional.
+- Trace artifact: `synthetic-imported-hitdef-guard-ko.json` checksum `b7db75f4`, final checksum `0f9afa50`.
+
+Claim allowed:
+
+- Bounded imported direct `HitDef` default `guard.kill` behavior can allow lethal guarded chip damage to reduce life to `0` and produce round KO evidence; the older `guard.kill = 0` gate remains the bounded nonlethal clamp oracle.
+
+Claim blocked:
+
+- Exact KO slowdown, lifebar behavior, guard-finish timing, score movement, projectile/helper guard-chip KO, team/simul guard KO breadth, and full MUGEN/IKEMEN guard round-flow parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 475/475 artifacts, 445 required and 30 optional. Latest required runtime evidence is `synthetic-imported-hitdef-guard-ko.json`; previous guarddist/ReversalDef no-contact, walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and nonlethal `guard.kill = 0` gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact guard-distance boxes, exact guard-start timing, projectile/helper guard-chip KO/no-KO breadth, KO slowdown/lifebar timing, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - GuardDist ReversalDef no-contact trace gate
 
 Changed:
@@ -27,7 +58,7 @@ Claim blocked:
 
 Global port report:
 
-- Runtime/port is at `pnpm qa:trace` 474/474 artifacts, 444 required and 30 optional. Latest required runtime evidence is `synthetic-imported-guarddist-reversal-no-contact.json`; previous walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and direct ReversalDef gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+- At that checkpoint, runtime/port was at `pnpm qa:trace` 474/474 artifacts, 444 required and 30 optional, with `synthetic-imported-guarddist-reversal-no-contact.json` as the newest required runtime evidence. Previous walk-back/air/crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and direct ReversalDef gates remained required. Studio/UI remained on its last smoke-verified surfaces; IKEMEN remained scanner-only; modular extraction remained guarded until fighting contracts stabilized. No score movement.
 
 Next:
 

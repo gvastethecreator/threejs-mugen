@@ -1011,6 +1011,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHitDefGuardKillTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-hitdef-guard-ko",
+      required: true,
+      artifact: presets.createSyntheticImportedHitDefGuardKoTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-guard",
       required: true,
       artifact: presets.createSyntheticImportedGuardTraceArtifact(),
