@@ -27,13 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Helper Projectile projedgebound terminal trace gate
-  -> synthetic-imported-helper-projectile-edgebound-terminal.json checksum 6f99970d / final checksum 1ab7d718 is required in qa:trace
-  -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projremanim = 1128, offset 80,-220, velocity 160,0, long projremovetime = 90, and explicit projedgebound = 24; no contact occurs, horizontal screen-edge-proxy removal happens before timeout, and terminal anim 1128 plays
-  -> evidence requires typed helper/projectile ops, active x command evidence, helper/projectile spawn/remove lifecycle evidence, actor-frame evidence for helper anim 1126 and terminal projectile anim 1128, and payload evidence with edgeBound 24, hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
-  -> pnpm qa:trace passes 492/492 artifacts, 462 required and 30 optional
-  -> official Elecbyte docs define projedgebound as distance off the screen edge before automatic removal, define projremanim as removal-boundary playback, and state helper-created Projectiles become root-owned
-  -> no score movement; exact default projedgebound values, exact camera/screen-edge geometry, exact stage-vs-screen split, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile bounds parity remain blocked
+R1 required Helper Projectile projstagebound terminal trace gate
+  -> synthetic-imported-helper-projectile-stagebound-terminal.json checksum ed518fa6 / final checksum dd0d956d is required in qa:trace
+  -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, authored projremanim = 1131, offset 80,-220, velocity 160,0, long projremovetime = 90, and explicit projstagebound = 24; no contact occurs, horizontal stage-bound removal happens before timeout, and terminal anim 1131 plays
+  -> evidence requires typed helper/projectile ops, active x command evidence, helper/projectile spawn/remove lifecycle evidence, actor-frame evidence for helper anim 1129 and terminal projectile anim 1131, and payload evidence with stageBound 24, hasHit false, hitsRemaining 1, removalReason/terminalReason = bounds, and terminalDuration 2
+  -> pnpm qa:trace passes 493/493 artifacts, 463 required and 30 optional
+  -> official Elecbyte docs define projstagebound as distance off the stage edge before automatic removal, define projremanim as removal-boundary playback, and state helper-created Projectiles become root-owned
+  -> no score movement; exact default projstagebound values, exact camera/stage-edge geometry, exact stage-vs-screen split, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile bounds parity remain blocked
+
+Previous R1 required Helper Projectile projedgebound terminal trace gate
+  -> synthetic-imported-helper-projectile-edgebound-terminal.json checksum 6f99970d / final checksum 1ab7d718 remains required in qa:trace
 
 Previous R1 required Helper Projectile projheightbound terminal trace gate
   -> synthetic-imported-helper-projectile-heightbound-terminal.json checksum debb08b1 / final checksum 0821ec70 remains required in qa:trace

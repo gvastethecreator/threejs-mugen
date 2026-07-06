@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Helper Projectile projstagebound terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-stagebound-terminal.json` trace coverage for helper-parented/root-owned Projectile explicit `projstagebound = 24` terminal playback.
+- Extended the synthetic helper Projectile route builder with explicit `projstagebound` emission so helper-parented Projectiles can prove bounded horizontal stage-edge removal.
+- Registered the helper stage-bound artifact in `pnpm qa:trace` required coverage.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projstagebound` as the distance off the stage edge before automatic removal, defines `projremanim` as expired-time/removal-boundaries playback, and notes that Projectiles created by Helpers immediately become root-owned.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile projstagebound terminal"` -> 1 passed, 485 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 493/493 artifacts, 463 required and 30 optional.
+- Trace artifact: `synthetic-imported-helper-projectile-stagebound-terminal.json` checksum `ed518fa6`, final checksum `dd0d956d`.
+
+Claim allowed:
+
+- Bounded imported helper-parented/root-owned Projectile removal honors explicit `projstagebound = 24` as the current horizontal stage-bound removal proxy, resolves authored `projremanim = 1131`, plays visible terminal anim `1131`, records helper plus Projectile spawn/remove lifecycle evidence with parent `p1-helper-0`, and preserves payload evidence with `stageBound = 24`, `hasHit = false`, `hitsRemaining = 1`, `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact default `projstagebound` values, exact camera/stage-edge geometry, exact stage-vs-screen split, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 493/493 artifacts, 463 required and 30 optional. Latest required runtime evidence is `synthetic-imported-helper-projectile-stagebound-terminal.json`; previous helper `projedgebound`, helper `projheightbound`, player-owned `projheightbound`, explicit `projedgebound`, explicit `projstagebound`, generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact Projectile default bound values, exact camera/screen/stage/height semantics, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile projedgebound terminal trace gate
 
 Changed:

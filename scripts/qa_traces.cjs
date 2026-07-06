@@ -2237,6 +2237,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileEdgeBoundTerminalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-stagebound-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileStageBoundTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projguardedtime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(),
@@ -3666,6 +3671,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-helper-projectile-remove-hit-fallback-terminal",
     "synthetic-imported-helper-projectile-heightbound-terminal",
     "synthetic-imported-helper-projectile-edgebound-terminal",
+    "synthetic-imported-helper-projectile-stagebound-terminal",
     "synthetic-imported-helper-projectile-air-guard-cornerpush",
     "synthetic-imported-helper-projectile-air-guard-cornerpush-default",
     "synthetic-imported-helper-projectile-guard-cornerpush-default",

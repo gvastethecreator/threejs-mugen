@@ -28835,6 +28835,86 @@ export function createSyntheticImportedHelperProjectileEdgeBoundTerminalTraceArt
   });
 }
 
+export function createSyntheticImportedHelperProjectileStageBoundTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileStageBoundTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-stagebound-terminal-attacker",
+    displayName: "Synthetic Imported Helper Projectile StageBound Terminal",
+    withHelper: true,
+    helperProjectileRoute: {
+      stateNo: 1323,
+      animNo: 1129,
+      projectileAnimNo: 1130,
+      projectileRemoveAnim: 1131,
+      projectileId: 8933,
+      pos: [80, -220],
+      velocity: [160, 0],
+      removeTime: 90,
+      projectileStageBound: 24,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-stagebound-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-stagebound-terminal-golden",
+      label: "Synthetic imported Helper Projectile projstagebound terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile projstagebound terminal trace proves bounded helper-parented/root-owned Projectile removal can honor explicit projstagebound metadata as the horizontal stage-bound removal threshold, resolve authored projremanim metadata into runtime removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve helper parent plus explicit stage-bound payload evidence through the effect actor world. Elecbyte documents helper-created Projectiles as immediately assigned to root and documents projstagebound as the distance off the stage edge before automatic removal. It does not claim exact default projstagebound values, exact camera/stage-edge geometry, exact stage-vs-screen split, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, or full helper Projectile bounds parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-stagebound-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1323, animNo: 1129, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1131, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1323, minAge: 1 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8933,
+            hasHit: false,
+            minHitsRemaining: 1,
+            stageBound: 24,
+            removalReason: "bounds",
+            terminalReason: "bounds",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperRemoveExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -36269,6 +36349,7 @@ export type SyntheticImportedTraceFighterOptions = {
     removeTime?: number;
     priority?: number;
     projectileEdgeBound?: number;
+    projectileStageBound?: number;
     projectileHeightBound?: [number, number];
   };
   helperRemoveExplodRoute?: {
@@ -41274,6 +41355,7 @@ function helperProjectileRouteBlock(route: NonNullable<SyntheticImportedTraceFig
   const hitAnimLine = route.projectileHitAnim === undefined ? "" : `projhitanim = ${route.projectileHitAnim}`;
   const removeAnimLine = route.projectileRemoveAnim === undefined ? "" : `projremanim = ${route.projectileRemoveAnim}`;
   const edgeBoundLine = route.projectileEdgeBound === undefined ? "" : `projedgebound = ${route.projectileEdgeBound}`;
+  const stageBoundLine = route.projectileStageBound === undefined ? "" : `projstagebound = ${route.projectileStageBound}`;
   const heightBoundLine = route.projectileHeightBound === undefined ? "" : `projheightbound = ${route.projectileHeightBound[0]},${route.projectileHeightBound[1]}`;
   return `
 [Statedef 1200]
@@ -41294,6 +41376,7 @@ projanim = ${route.projectileAnimNo}
 ${hitAnimLine}
 ${removeAnimLine}
 ${edgeBoundLine}
+${stageBoundLine}
 ${heightBoundLine}
 offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
