@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Helper Projectile cancel remove fallback terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-helper-projectile-cancel-remove-fallback-terminal.json` trace coverage for bounded helper-parented/root-owned Projectile cancel-removal fallback playback.
+- Extended the synthetic helper Projectile cancel route so tests can omit `projcancelanim` while authoring `projremanim`, without changing existing explicit-cancel routes.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the helper Projectile terminal and helper `ProjCancelTime` gates.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines helper-created Projectiles as root-owned, omitted `projcancelanim` as falling back to `projremanim`, and `projpriority` projectile cancellation behavior.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper Projectile cancel remove fallback terminal"` -> 1 passed, 477 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 485/485 artifacts, 455 required and 30 optional.
+- Trace artifact: `synthetic-imported-helper-projectile-cancel-remove-fallback-terminal.json` checksum `cf33c924`, final checksum `bd3a1279`.
+
+Claim allowed:
+
+- Bounded imported helper-parented/root-owned Projectile priority cancellation can fall back from omitted `projcancelanim` to authored `projremanim = 1028`, producing visible terminal playback, helper branch evidence `1272 -> 1273`, P1 helper Projectile remove lifecycle evidence, P2 active Projectile evidence, and payload evidence with `hasHit = true`, `removeAnimNo = 1028`, `removalReason = cancel`, `terminalReason = cancel`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact cancel tick-order/lifetime, exact terminal timing, bounds-removal parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full helper Projectile terminal parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 485/485 artifacts, 455 required and 30 optional. Latest required runtime evidence is `synthetic-imported-helper-projectile-cancel-remove-fallback-terminal.json`; previous player cancel fallback, remove fallback, explicit remove, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact cancel tick-order/lifetime, bounds-removal terminal parity, broader fallback breadth, exact terminal timing, exact sprite/layer/palette parity, helper-owned remove fallback parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Player Projectile cancel remove fallback terminal trace gate
 
 Changed:

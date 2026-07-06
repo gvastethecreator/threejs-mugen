@@ -27915,6 +27915,101 @@ export function createSyntheticImportedHelperProjCancelTimeDynamicTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperProjectileCancelRemoveFallbackTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileClashStage();
+  const script = importedProjectilePriorityCancelScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-p1",
+    displayName: "Synthetic Imported Helper Projectile Cancel Remove Fallback P1",
+    withHelper: true,
+    helperProjCancelRoute: {
+      waitStateNo: 1272,
+      waitAnimNo: 1025,
+      branchStateNo: 1273,
+      branchAnimNo: 1026,
+      projectileAnimNo: 1027,
+      removeAnimNo: 1028,
+      projectileId: 8870,
+      priority: 1,
+      pos: [360, -45],
+      velocity: [0, 0],
+    },
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-p2",
+    displayName: "Synthetic Imported Helper Projectile Cancel Remove Fallback P2",
+    withProjectile: true,
+    projectilePriority: 3,
+    projectileOffset: [150, -73],
+    projectileVelocity: [0, 0],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
+    label: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden",
+      label: "Synthetic imported Helper Projectile cancel remove fallback terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile cancel remove fallback terminal trace proves bounded helper-parented/root-owned Projectile cancellation can fall back from omitted projcancelanim to authored projremanim metadata, play a visible terminal projectile action when that AIR action exists, and preserve helper parent plus terminal payload evidence through the effect actor world. Elecbyte documents helper-created Projectiles as immediately assigned to root, documents Projectile projcancelanim as the animation used when a projectile is cancelled by hitting another projectile, and says omitted projcancelanim uses projremanim instead. It does not claim exact cancel tick-order/lifetime, exact terminal timing, bounds-removal parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, or full helper Projectile terminal parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["runtime"],
+        requiredEventSubstrings: ["Projectile clash", "canceled", "3 > 1", "p1-projectile-0 cancel removal anim 1028"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1272, animNo: 1025, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1273, animNo: 1026, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1028, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minHelpers: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 },
+          { ownerId: "p2", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1273, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8870,
+            hasHit: true,
+            removalReason: "cancel",
+            terminalReason: "cancel",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperIsHelperTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -35782,7 +35877,8 @@ export type SyntheticImportedTraceFighterOptions = {
     branchAnimNo?: number;
     branchTrigger?: string;
     projectileAnimNo: number;
-    cancelAnimNo: number;
+    cancelAnimNo?: number;
+    removeAnimNo?: number;
     projectileId?: number;
     priority?: number;
     pos?: [number, number];
@@ -36881,7 +36977,12 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                     helperTraceAction(options.helperProjCancelRoute.branchAnimNo ?? options.helperProjCancelRoute.branchStateNo),
                   ],
                   [options.helperProjCancelRoute.projectileAnimNo, projectileTraceAction(options.helperProjCancelRoute.projectileAnimNo)],
-                  [options.helperProjCancelRoute.cancelAnimNo, projectileTerminalTraceAction(options.helperProjCancelRoute.cancelAnimNo)],
+                  ...[
+                    options.helperProjCancelRoute.cancelAnimNo,
+                    options.helperProjCancelRoute.removeAnimNo,
+                  ]
+                    .filter((animNo): animNo is number => animNo !== undefined)
+                    .map((animNo): [number, MugenAnimationAction] => [animNo, projectileTerminalTraceAction(animNo)]),
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperHitDefRoute === undefined
               ? []
@@ -41284,6 +41385,8 @@ function helperProjCancelRouteBlock(route: NonNullable<SyntheticImportedTraceFig
   const pos = route.pos ?? [360, -45];
   const velocity = route.velocity ?? [36, 0];
   const branchTrigger = route.branchTrigger ?? `ProjCancelTime(${projectileId}) >= 0`;
+  const cancelAnimLine = route.cancelAnimNo === undefined ? "" : `projcancelanim = ${route.cancelAnimNo}`;
+  const removeAnimLine = route.removeAnimNo === undefined ? "" : `projremanim = ${route.removeAnimNo}`;
   return `
 [Statedef 1200]
 type = S
@@ -41300,7 +41403,8 @@ projpriority = ${priority}
 projhits = 1
 projmisstime = 0
 projanim = ${route.projectileAnimNo}
-projcancelanim = ${route.cancelAnimNo}
+${cancelAnimLine}
+${removeAnimLine}
 offset = ${pos[0]},${pos[1]}
 velocity = ${velocity[0]},${velocity[1]}
 projremovetime = 48

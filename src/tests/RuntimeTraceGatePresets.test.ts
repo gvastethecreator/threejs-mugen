@@ -248,6 +248,7 @@ import {
   createSyntheticImportedHelperProjectileDefaultTargetTraceArtifact,
   createSyntheticImportedHelperProjGuardTraceArtifact,
   createSyntheticImportedHelperProjectileGuardTerminalTraceArtifact,
+  createSyntheticImportedHelperProjectileCancelRemoveFallbackTerminalTraceArtifact,
   createSyntheticImportedHelperProjectileGuardKillTraceArtifact,
   createSyntheticImportedHelperProjectileGuardKoTraceArtifact,
   createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact,
@@ -23862,6 +23863,79 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({
           ownerId: "p1",
           effect: expect.objectContaining({ kind: "helper", id: 42, stateNo: 1267 }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper Projectile cancel remove fallback terminal artifact with visible fallback evidence", () => {
+    const artifact = createSyntheticImportedHelperProjectileCancelRemoveFallbackTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-projectile-cancel-remove-fallback-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.effectKinds).toEqual(expect.arrayContaining(["helper", "projectile"]));
+    expect(evidence?.executedControllers.Helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.helper).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventLines.some((line) => line.includes("p1-projectile-0 cancel removal anim 1028"))).toBe(true);
+    expect(gate?.requirements.requiredEventSubstrings).toEqual([
+      "Projectile clash",
+      "canceled",
+      "3 > 1",
+      "p1-projectile-0 cancel removal anim 1028",
+    ]);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+      ]),
+    );
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1272, animNo: 1025 }),
+        expect.objectContaining({ source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1273, animNo: 1026 }),
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1028, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8870,
+            hasHit: true,
+            removalReason: "cancel",
+            terminalReason: "cancel",
+            removeAnimNo: 1028,
+            terminalDuration: 2,
+          }),
+        }),
+        expect.objectContaining({
+          ownerId: "p1",
+          effect: expect.objectContaining({ kind: "helper", id: 42, stateNo: 1273 }),
         }),
       ]),
     );
