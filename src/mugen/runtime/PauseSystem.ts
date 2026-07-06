@@ -132,6 +132,7 @@ export type RuntimePauseControllerParamResolvers = {
   time?: () => number | undefined;
   moveTime?: () => number | undefined;
   pauseBg?: () => number | undefined;
+  unhittable?: () => number | undefined;
   darken?: () => number | undefined;
   powerAdd?: () => number | undefined;
   p2DefMul?: () => number | undefined;
@@ -157,6 +158,10 @@ export class RuntimePauseWorld {
 
   canActorMove(actorId: string): boolean {
     return canActorMoveDuringPause(this.pause, actorId);
+  }
+
+  canActorBeHit(actorId: string): boolean {
+    return canActorBeHitDuringPause(this.pause, actorId);
   }
 
   tick(): RuntimeMatchPause | undefined {
@@ -356,6 +361,13 @@ export function createMatchPauseFromController(
   const pauseBg = resolveParams?.pauseBg?.();
   const pauseBgEnabled =
     pauseBg !== undefined ? pauseBg !== 0 : operation?.pauseBg ?? (firstNumber(findControllerParam(controller, "pausebg")) ?? 1) !== 0;
+  const unhittable = resolveParams?.unhittable?.();
+  const superPauseUnhittable =
+    type === "SuperPause"
+      ? unhittable !== undefined
+        ? unhittable !== 0
+        : operation?.unhittable ?? (firstNumber(findControllerParam(controller, "unhittable")) ?? 1) !== 0
+      : false;
   const powerAdd = resolveParams?.powerAdd?.();
   const superAnim = type === "SuperPause" ? superPauseAnimParam(controller, operation, resolveParams) : undefined;
 
@@ -366,6 +378,7 @@ export function createMatchPauseFromController(
       moveTime,
       actorId: actor.id,
       ...(pauseBgEnabled ? {} : { pauseBg: false }),
+      ...(type === "SuperPause" && !superPauseUnhittable ? { unhittable: false } : {}),
       darken:
         type === "SuperPause"
           ? darken !== undefined
@@ -384,6 +397,10 @@ export function canActorMoveDuringPause(pause: RuntimeMatchPause | undefined, ac
   return pause !== undefined && pause.actorId === actorId && pause.moveTime > 0;
 }
 
+export function canActorBeHitDuringPause(pause: RuntimeMatchPause | undefined, actorId: string): boolean {
+  return !(pause?.type === "SuperPause" && pause.actorId === actorId && pause.unhittable !== false);
+}
+
 export function tickMatchPause(pause: RuntimeMatchPause): RuntimeMatchPause | undefined {
   const next: RuntimeMatchPause = {
     ...pause,
@@ -400,6 +417,7 @@ export function toMatchPauseSnapshot(pause: RuntimeMatchPause): RuntimeMatchPaus
     moveTime: pause.moveTime,
     actorId: pause.actorId,
     ...(pause.pauseBg === false ? { pauseBg: false } : {}),
+    ...(pause.unhittable === false ? { unhittable: false } : {}),
     darken: pause.darken,
     sourceStateNo: pause.sourceStateNo,
     ...(pause.superAnim

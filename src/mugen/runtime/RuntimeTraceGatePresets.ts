@@ -21986,6 +21986,63 @@ export function createSyntheticImportedSuperPausePauseBgTraceArtifact(
   });
 }
 
+export function createSyntheticImportedSuperPauseUnhittableTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedSuperPauseUnhittableScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-superpause-unhittable-attacker",
+    displayName: "Synthetic Imported SuperPause Unhittable Attacker",
+    withHitDef: false,
+    withDelayedSuperPause: true,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: immediateDirectStrikeFighter(), stage }), script, {
+    label: "synthetic-imported-superpause-unhittable-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-superpause-unhittable-golden",
+      label: "Synthetic imported SuperPause unhittable route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported SuperPause unhittable trace proves default unhittable rejects same-tick direct contact against the pause source. It does not claim exact MUGEN/IKEMEN projectile/helper/team hit immunity breadth, reversal priority, renderer presentation, super backgrounds, or full SuperPause parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-superpause-unhittable-golden",
+        requiredActorSources: ["imported", "demo"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "SuperPause"],
+        requiredExecutedOperations: ["pause:superpause"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["pause", "reject"],
+        requiredEventSubstrings: ["via SuperPause unhittable"],
+        requiredCombatReasons: ["reject"],
+        requiredMatchPauses: [
+          {
+            type: "SuperPause",
+            actorId: "p1",
+            sourceStateNo: 200,
+            unhittable: true,
+            darken: true,
+            minFrames: 2,
+            minRemaining: 7,
+            minMoveTime: 1,
+          },
+        ],
+        requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", life: 1000 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedSuperPauseSoundTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -33214,6 +33271,28 @@ export function closeCombatStage(): MugenStageDefinition {
   };
 }
 
+function immediateDirectStrikeFighter(): DemoFighterDefinition {
+  const base = demoFighters[0]!;
+  const punch: DemoMove = {
+    ...base.moves.punch,
+    startup: 0,
+    activeStart: 0,
+    activeEnd: 6,
+    recovery: 8,
+    damage: 55,
+  };
+  return {
+    ...base,
+    id: "synthetic-superpause-unhittable-striker",
+    displayName: "Synthetic SuperPause Unhittable Striker",
+    moves: {
+      ...base.moves,
+      punch,
+    },
+    animations: new Map(base.animations),
+  };
+}
+
 export function assertSpecialControlStage(): MugenStageDefinition {
   return {
     ...trainingStage,
@@ -33532,6 +33611,14 @@ export function importedSuperPauseScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-superpause-x", frames: 8, p1: ["x"], p2: [] },
     { label: "superpause-settle", frames: 3, p1: [], p2: [] },
+  ]);
+}
+
+export function importedSuperPauseUnhittableScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-superpause-unhittable-prime", frames: 1, p1: ["x"], p2: [] },
+    { label: "imported-superpause-unhittable-contact", frames: 1, p1: [], p2: ["x"] },
+    { label: "imported-superpause-unhittable-settle", frames: 6, p1: [], p2: [] },
   ]);
 }
 
@@ -34050,6 +34137,7 @@ export type SyntheticImportedTraceFighterOptions = {
   superPauseAnim?: { anim: string; pos?: [number | string, number | string] };
   superPauseDynamicAnim?: { actionNo: number; pos: [number, number] };
   superPausePauseBg?: number | string;
+  superPauseUnhittable?: number | string;
   superPauseP2DefMul?: number;
   pauseMovePosAdd?: { x: number; y: number; time?: number };
   action200Duration?: number;
@@ -34875,8 +34963,8 @@ ${options.withBindToTarget ? bindToTargetBlock(targetMemoryId, options.bindToTar
 ${options.withTargetDrop ? targetDropBlock(options.targetDropTriggerTime) : ""}
 ${options.withPrePauseTargetBind ? prePauseTargetBindBlock(targetMemoryId) : ""}
 ${options.withPause ? pauseControllerBlock() : ""}
-${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg) : ""}
-${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock() : ""}
+${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable) : ""}
+${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
 ${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
@@ -37681,6 +37769,7 @@ function superPauseControllerBlock(
   superAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseAnim"]>,
   dynamicAnim?: NonNullable<SyntheticImportedTraceFighterOptions["superPauseDynamicAnim"]>,
   pauseBg?: number | string,
+  unhittable?: number | string,
 ): string {
   const anim = superAnim?.anim ?? (dynamicAnim === undefined ? undefined : "var(6)");
   const pos = superAnim?.pos ?? (dynamicAnim === undefined ? undefined : ["var(7)", "var(8)"] as const);
@@ -37693,6 +37782,7 @@ movetime = ${dynamicParams === undefined ? "1" : "var(3)"}
 darken = ${dynamicParams === undefined ? "1" : "var(4)"}
 poweradd = ${dynamicParams === undefined ? "100" : "var(5)"}
 ${pauseBg === undefined ? "" : `pausebg = ${pauseBg}`}
+${unhittable === undefined ? "" : `unhittable = ${unhittable}`}
 ${p2DefMul === undefined ? "" : `p2defmul = ${p2DefMul}`}
 ${sound === undefined ? "" : `sound = ${sound}`}
 ${anim === undefined ? "" : `anim = ${anim}`}
@@ -37710,7 +37800,7 @@ movetime = 1
 `;
 }
 
-function delayedSuperPauseControllerBlock(): string {
+function delayedSuperPauseControllerBlock(unhittable?: number | string): string {
   return `
 [State 200, Delayed Super Pause]
 type = SuperPause
@@ -37719,6 +37809,7 @@ time = 7
 movetime = 1
 darken = 1
 poweradd = 100
+${unhittable === undefined ? "" : `unhittable = ${unhittable}`}
 `;
 }
 

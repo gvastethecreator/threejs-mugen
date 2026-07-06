@@ -46,6 +46,7 @@ export type RuntimeMatchCombatBridgeInput<TActor extends RuntimeMatchCombatBridg
   combatStateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   helperStateHooks: RuntimeHelperCombatStateHooks<TActor>;
   defaultHurtBoxes: CollisionBox[];
+  canActorBeHit?: (actorId: string) => boolean;
   rememberProjectileTarget?: (source: TActor, target: TActor, projectile: RuntimeProjectile) => void;
   log: (line: string) => void;
 };
@@ -82,6 +83,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           stateHooks: input.combatStateHooks,
           log: input.log,
         });
@@ -99,6 +101,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           stateHooks: input.combatStateHooks,
           rememberProjectileTarget: input.rememberProjectileTarget,
           log: input.log,
@@ -117,6 +120,7 @@ export class RuntimeMatchCombatBridgeWorld {
           runtimeTick: input.runtimeTick,
           stageBounds: input.stageBounds,
           getHurtBoxes: input.getHurtBoxes,
+          canDefenderBeHit: (defender) => input.canActorBeHit?.(defender.id) ?? true,
           stateHooks: input.helperStateHooks,
           defaultHurtBoxes: input.defaultHurtBoxes,
           log: input.log,

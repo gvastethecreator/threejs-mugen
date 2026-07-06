@@ -35,14 +35,23 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required SuperPause pausebg trace gate
+R1 required SuperPause unhittable trace gate
+  -> synthetic-imported-superpause-unhittable.json checksum 1598af8f / final checksum f59f5704 is required in qa:trace
+  -> imported active state executes default SuperPause while a demo striker attempts same-tick direct contact
+  -> runtime stores bounded match-pause source immunity and combat systems reject protected-source contact
+  -> trace evidence requires SuperPause match-pause/freeze, reject event substring "via SuperPause unhittable", and final imported P1 life 1000
+  -> pnpm qa:trace passes 466/466 artifacts, 436 required and 30 optional
+  -> official Elecbyte docs define SuperPause unhittable as default player hit immunity during SuperPause, with unhittable = 0 opting out
+  -> no score movement; exact MUGEN/IKEMEN projectile/helper/team breadth, reversal priority, exact pause layering, renderer/super-background presentation, score movement, and full SuperPause parity remain blocked
+
+Previous R1 required SuperPause pausebg trace gate
   -> synthetic-imported-superpause-pausebg.json checksum 49bcfe16 / final checksum 397a8fae is required in qa:trace
   -> imported active state executes SuperPause pausebg = 0
   -> runtime stores bounded match-pause pauseBg metadata as false
   -> trace evidence requires pauseBg = false, source actor/state, darken, remaining/movetime, and P2 freeze
   -> pnpm qa:trace passes 465/465 artifacts, 435 required and 30 optional
   -> official Elecbyte docs define pausebg = 0 as continuing background updates during pause and default pausebg = 1 as stopping them
-  -> no score movement; actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+  -> no score movement; actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause anim-disabled trace gate
   -> synthetic-imported-superpause-anim-disabled.json checksum fc7a2ca4 / final checksum 5be3ca6c remains required in qa:trace

@@ -1677,6 +1677,11 @@ async function main() {
       artifact: presets.createSyntheticImportedSuperPausePauseBgTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-superpause-unhittable",
+      required: true,
+      artifact: presets.createSyntheticImportedSuperPauseUnhittableTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-superpause-sound",
       required: true,
       artifact: presets.createSyntheticImportedSuperPauseSoundTraceArtifact(),
@@ -3357,6 +3362,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-superpause-default-anim",
     "synthetic-imported-superpause-anim-disabled",
     "synthetic-imported-superpause-pausebg",
+    "synthetic-imported-superpause-unhittable",
     "synthetic-imported-superpause-sound",
     "synthetic-imported-superpause-dynamic-params",
     "synthetic-imported-superpause-anim-pos",

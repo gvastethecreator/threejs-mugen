@@ -67,6 +67,7 @@ export type RuntimeHelperCombatInput<TDefender extends RuntimeHelperCombatDefend
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes: (defender: TDefender) => CollisionBox[] | undefined;
+  canDefenderBeHit?: (defender: TDefender) => boolean;
   stateHooks: RuntimeHelperCombatStateHooks<TDefender>;
   defaultHurtBoxes?: CollisionBox[];
   log?: (line: string) => void;
@@ -115,6 +116,10 @@ export class RuntimeHelperCombatWorld {
       }
       const hurtBoxes = input.getHurtBoxes(input.defender) ?? input.defaultHurtBoxes ?? defaultHelperCombatHurtBoxes;
       if (!hasRuntimeBoxContact(attackBox, input.defender.runtime, hurtBoxes)) {
+        continue;
+      }
+      if (input.canDefenderBeHit?.(input.defender) === false) {
+        input.log?.(`${input.defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via SuperPause unhittable`);
         continue;
       }
       if (!canRuntimeBeHitBy(input.defender.runtime, move.attr ?? "S,NA")) {

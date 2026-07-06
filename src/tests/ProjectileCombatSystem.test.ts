@@ -143,6 +143,32 @@ describe("ProjectileCombatSystem", () => {
     expect(projectiles).toEqual([]);
   });
 
+  it("rejects projectile contact while SuperPause unhittable protects the defender", () => {
+    let projectiles = [projectile({ pos: { x: 0, y: 0 }, facing: 1, damage: 42 })];
+    const attacker = actor("p1", "P1", runtimeState({ pos: { x: 0, y: 0 }, facing: 1 }));
+    const defender = actor("p2", "P2", runtimeState({ pos: { x: 12, y: 0 }, facing: -1, life: 1000 }));
+    const logs: string[] = [];
+
+    new RuntimeProjectileCombatWorld().resolveCombat({
+      attacker,
+      defender,
+      projectiles,
+      hurtBoxes: [{ x1: -24, y1: -24, x2: 24, y2: 12 }],
+      holdingBack: false,
+      canDefenderBeHit: () => false,
+      log: (line) => logs.push(line),
+      rememberTarget: () => undefined,
+      applyHitOverride: () => undefined,
+      removeProjectilesMarkedForRemoval: () => {
+        projectiles = projectiles.filter((entry) => !entry.removalReason);
+      },
+    });
+
+    expect(defender.runtime.life).toBe(1000);
+    expect(projectiles[0]).toMatchObject({ hasHit: false, hitsRemaining: 1 });
+    expect(logs).toEqual(["P2 rejected P1 projectile S,SP via SuperPause unhittable"]);
+  });
+
   it("applies guarded Projectile cornerpush to the owner at stage bounds", () => {
     let projectiles = [projectile({ pos: { x: 260, y: 0 }, facing: 1, guardDamage: 0, guardPush: 8, guardCornerPush: 6 })];
     const attacker = actor("p1", "P1", runtimeState({ pos: { x: 220, y: 0 }, facing: 1, vel: { x: 0, y: 0 } }));

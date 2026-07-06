@@ -3,6 +3,7 @@ import { compileControllerIr } from "../mugen/compiler/StateControllerCompiler";
 import type { MugenStateController } from "../mugen/model/MugenState";
 import {
   canActorMoveDuringPause,
+  canActorBeHitDuringPause,
   createMatchPauseFromController,
   RuntimeMatchPauseControllerWorld,
   RuntimePausedMatchWorld,
@@ -72,6 +73,26 @@ describe("PauseSystem", () => {
       darken: true,
     });
     expect(toMatchPauseSnapshot(result.pause!)).toMatchObject({ pauseBg: false });
+  });
+
+  it("captures SuperPause unhittable and explicit opt-out telemetry", () => {
+    const defaultResult = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1" }),
+      10,
+    );
+    const optOutResult = createMatchPauseFromController(
+      actor("p1", 200),
+      controller("SuperPause", { time: "7", movetime: "1", unhittable: "0" }),
+      10,
+    );
+
+    expect(canActorBeHitDuringPause(defaultResult.pause, "p1")).toBe(false);
+    expect(canActorBeHitDuringPause(defaultResult.pause, "p2")).toBe(true);
+    expect(toMatchPauseSnapshot(defaultResult.pause!)).not.toHaveProperty("unhittable");
+    expect(optOutResult.pause).toMatchObject({ type: "SuperPause", unhittable: false });
+    expect(canActorBeHitDuringPause(optOutResult.pause, "p1")).toBe(true);
+    expect(toMatchPauseSnapshot(optOutResult.pause!)).toMatchObject({ unhittable: false });
   });
 
   it("captures explicit SuperPause player animation metadata and offset", () => {

@@ -259,6 +259,43 @@ describe("RuntimeCombatResolutionSystem", () => {
     expect(logs).toEqual(["P2 rejected P1 S,NA because missonoverride = 1 forces active override miss"]);
   });
 
+  it("rejects direct HitDef contact while SuperPause unhittable protects the defender", () => {
+    const contactWorld = new RuntimeContactMemoryWorld();
+    const world = new RuntimeCombatResolutionWorld();
+    const attacker = actor("p2", "P2", contactWorld, {
+      runtime: runtimeState({ stateNo: 200 }),
+      currentMove: move({ attr: "S,NA" }),
+      moveTick: 2,
+    });
+    const defender = actor("p1", "P1", contactWorld, {
+      runtime: runtimeState({ pos: { x: 18, y: 0 }, life: 100 }),
+    });
+    const logs: string[] = [];
+
+    const result = world.resolveDirect({
+      attacker,
+      defender,
+      directCombatWorld: new RuntimeDirectCombatWorld(contactWorld),
+      hitOverrideWorld: new RuntimeHitOverrideWorld(),
+      reversalWorld: new RuntimeReversalWorld(contactWorld),
+      guardWorld: new RuntimeGuardWorld(),
+      getHitStateWorld: new RuntimeGetHitStateWorld(),
+      hitStateTransitionWorld: new RuntimeHitStateTransitionWorld(),
+      contactPresentationWorld: new RuntimeContactPresentationWorld(),
+      runtimeTick: 12,
+      getHurtBoxes: () => [{ x1: -24, y1: -40, x2: 24, y2: 0 }],
+      canDefenderBeHit: () => false,
+      stateHooks: hooks(),
+      log: (line) => logs.push(line),
+    });
+
+    expect(result).toEqual({ kind: "skipped", reason: "superpause-unhittable" });
+    expect(attacker.hasHit).toBe(false);
+    expect(defender.runtime.life).toBe(100);
+    expect(defender.runtime.moveType).toBe("I");
+    expect(logs).toEqual(["P1 rejected P2 S,NA via SuperPause unhittable"]);
+  });
+
   it("routes projectile callbacks through target, contact, presentation, and damage ownership hooks", () => {
     const contactWorld = new RuntimeContactMemoryWorld();
     const projectile = projectileActor({ projectileId: 88, serialId: "p1-projectile-0", hitSound: "S6,0", hitSpark: "S7001" });

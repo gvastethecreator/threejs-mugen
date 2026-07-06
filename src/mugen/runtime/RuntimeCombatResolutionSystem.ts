@@ -68,6 +68,7 @@ export type RuntimeCombatResolutionDirectInput<TActor extends RuntimeCombatResol
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
+  canDefenderBeHit?: (defender: TActor) => boolean;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   log: (line: string) => void;
 };
@@ -84,6 +85,7 @@ export type RuntimeCombatResolutionProjectileInput<TActor extends RuntimeCombatR
   runtimeTick: number;
   stageBounds?: RuntimeStageBounds;
   getHurtBoxes?: (actor: TActor) => CollisionBox[] | undefined;
+  canDefenderBeHit?: (defender: TActor) => boolean;
   stateHooks: RuntimeCombatResolutionStateHooks<TActor>;
   rememberProjectileTarget?: (attacker: TActor, defender: TActor, projectile: RuntimeProjectile) => void;
   log: (line: string) => void;
@@ -108,6 +110,7 @@ export type RuntimeDirectCombatSkipReason =
   | "reversal-move"
   | "inactive"
   | "no-contact"
+  | "superpause-unhittable"
   | "hitby-rejected"
   | "hitoverride-custom-state-miss";
 
@@ -171,6 +174,11 @@ export class RuntimeCombatResolutionWorld {
     const hurtBoxes = input.getHurtBoxes?.(defender) ?? defaultHurtBoxes;
     if (!hasRuntimeBoxContact(attackBox, defender.runtime, hurtBoxes)) {
       return { kind: "skipped", reason: "no-contact" };
+    }
+    if (input.canDefenderBeHit?.(defender) === false) {
+      const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via SuperPause unhittable`;
+      input.log(message);
+      return { kind: "skipped", reason: "superpause-unhittable" };
     }
     if (!canRuntimeBeHitBy(defender.runtime, move.attr ?? "S,NA")) {
       const message = `${defender.label} rejected ${attacker.label} ${move.attr ?? "S,NA"} via HitBy/NotHitBy`;
@@ -244,6 +252,7 @@ export class RuntimeCombatResolutionWorld {
       defender: input.defender,
       hurtBoxes,
       holdingBack: isRuntimeHoldingBack(input.defender.currentInput),
+      canDefenderBeHit: input.canDefenderBeHit,
       log: input.log,
       rememberTarget: (source, target, targetId, projectile) => {
         this.rememberTarget(source, target, targetId);

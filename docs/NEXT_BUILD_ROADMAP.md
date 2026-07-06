@@ -27,14 +27,23 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required SuperPause pausebg trace gate
+R1 required SuperPause unhittable trace gate
+  -> synthetic-imported-superpause-unhittable.json checksum 1598af8f / final checksum f59f5704 is required in qa:trace
+  -> imported active state executes default SuperPause while a demo striker attempts same-tick direct contact
+  -> RuntimePauseWorld exposes source immunity through canActorBeHit(), and combat bridge/direct/projectile/helper paths consult it before applying contact
+  -> trace evidence requires SuperPause match-pause/freeze, reject event substring "via SuperPause unhittable", and final imported P1 life 1000
+  -> pnpm qa:trace passes 466/466 artifacts, 436 required and 30 optional
+  -> official Elecbyte docs define SuperPause unhittable as default player hit immunity during SuperPause, with unhittable = 0 opting out
+  -> no score movement; exact MUGEN/IKEMEN projectile/helper/team breadth, reversal priority, exact pause layering, renderer/super-background presentation, score movement, and full SuperPause parity remain blocked
+
+Previous R1 required SuperPause pausebg trace gate
   -> synthetic-imported-superpause-pausebg.json checksum 49bcfe16 / final checksum 397a8fae is required in qa:trace
   -> imported active state executes SuperPause with pausebg = 0
   -> RuntimeTraceGate can require pauseBg = false on match-pause evidence
   -> match-pause evidence requires pauseBg = false and P2 freeze
   -> pnpm qa:trace passes 465/465 artifacts, 435 required and 30 optional
   -> official Elecbyte docs define pausebg = 0 as continuing background updates during pause and default pausebg = 1 as stopping them
-  -> no score movement; actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, unhittable, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
+  -> no score movement; actual renderer/background update parity, exact stage/BGCtrl pause timing, renderer visual suppression/playback parity, actual FightFX/common asset lookup/rendering, dynamic S-prefix player-AIR breadth, super backgrounds, helper/team/redirect ownership, and full super presentation parity remain blocked
 
 Previous R1 required SuperPause anim-disabled trace gate
   -> synthetic-imported-superpause-anim-disabled.json checksum fc7a2ca4 / final checksum 5be3ca6c remains required in qa:trace
@@ -2571,7 +2580,7 @@ I1/R1 character FightFX prefix package expansion
 
 Do not reselect `synthetic-imported-helper-projtime-same-id-last-contact`, `synthetic-imported-helper-projtime-same-id-hit-then-guard`, `synthetic-imported-helper-projguardedtime-any`, `synthetic-imported-helper-projcontacttime-any`, or `synthetic-imported-helper-projhittime-any` as fresh next work; they are now closed and required.
 
-Do not reselect `synthetic-imported-superpause-pausebg`, `synthetic-imported-superpause-anim-disabled`, `synthetic-imported-superpause-default-anim`, `synthetic-imported-superpause-dynamic-anim-pos`, or `synthetic-imported-superpause-anim-pos` as fresh next work; they are now closed and required. Remaining SuperPause work should target a different unsupported surface such as actual renderer/background update parity for `pausebg`, exact stage/BGCtrl pause timing, actual FightFX/common asset lookup/rendering, renderer visual suppression/playback parity, or `unhittable`.
+Do not reselect `synthetic-imported-superpause-unhittable`, `synthetic-imported-superpause-pausebg`, `synthetic-imported-superpause-anim-disabled`, `synthetic-imported-superpause-default-anim`, `synthetic-imported-superpause-dynamic-anim-pos`, or `synthetic-imported-superpause-anim-pos` as fresh next work; they are now closed and required. Remaining SuperPause work should target a different unsupported surface such as actual renderer/background update parity for `pausebg`, exact stage/BGCtrl pause timing, actual FightFX/common asset lookup/rendering, renderer visual suppression/playback parity, exact projectile/helper/team/reversal `unhittable` breadth, or super-background presentation.
 
 Do not reselect `synthetic-imported-default-crouch-gethit-progression` or the bounded `5010 -> 5011 -> 0` crouch HitShakeOver/HitOver trace as fresh next work; it is now closed and required.
 

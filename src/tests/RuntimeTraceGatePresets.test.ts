@@ -456,6 +456,7 @@ import {
   createSyntheticImportedSuperPauseProjectileFreezeTraceArtifact,
   createSyntheticImportedSuperPauseSoundTraceArtifact,
   createSyntheticImportedSuperPauseTraceArtifact,
+  createSyntheticImportedSuperPauseUnhittableTraceArtifact,
   createSyntheticImportedTargetBindPauseTraceArtifact,
   createSyntheticImportedBindToTargetHeadTraceArtifact,
   createSyntheticImportedBindToTargetMidTraceArtifact,
@@ -19673,6 +19674,53 @@ describe("RuntimeTraceGatePresets", () => {
       (pause) => pause.type === "SuperPause" && pause.actorId === "p1" && pause.sourceStateNo === 200,
     );
     expect(pauseBgPause).toEqual(expect.objectContaining({ pauseBg: false, darken: true, maxRemaining: 7, maxMoveTime: 1 }));
+  });
+
+  it("creates a synthetic imported SuperPause artifact with unhittable rejection evidence", () => {
+    const artifact = createSyntheticImportedSuperPauseUnhittableTraceArtifact({
+      generatedAt: "2026-07-05T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-superpause-unhittable-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-superpause-unhittable-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "SuperPause"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["pause:superpause"]);
+    expect(gate?.requirements.requiredEventSubstrings).toEqual(["via SuperPause unhittable"]);
+    expect(gate?.requirements.requiredMatchPauses).toEqual([
+      {
+        type: "SuperPause",
+        actorId: "p1",
+        sourceStateNo: 200,
+        unhittable: true,
+        darken: true,
+        minFrames: 2,
+        minRemaining: 7,
+        minMoveTime: 1,
+      },
+    ]);
+    expect(evidence?.eventCategories).toEqual(expect.arrayContaining(["pause", "reject"]));
+    expect(evidence?.combatReasons).toContain("reject");
+    expect(evidence?.matchPauses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "SuperPause", actorId: "p1", sourceStateNo: 200, darken: true, maxRemaining: 7 }),
+      ]),
+    );
+    expect(artifact.trace.events.some((event) => event.line.includes("via SuperPause unhittable"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({ source: "imported", life: 1000 });
   });
 
   it("creates a synthetic imported SuperPause sound artifact with dynamic sound evidence", () => {

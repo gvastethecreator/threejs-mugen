@@ -533,6 +533,7 @@ export class PlayableMatchRuntime {
           combatStateHooks: runtimeCombatStateHooks,
           helperStateHooks: runtimeHelperCombatStateHooks,
           defaultHurtBoxes: defaultRuntimeHurtBoxes,
+          canActorBeHit: (actorId) => this.pauseWorld.canActorBeHit(actorId),
           rememberProjectileTarget: (source, target, projectile) =>
             matchHelperProjectileTargetWorld.remember({
               owner: source,
@@ -1133,6 +1134,8 @@ function runActiveStateControllers(
                 resolvePauseNumberParam(source, "movetime", actor, targetOpponent, stateOwner, stageBounds, activeTick),
               pauseBg: () =>
                 resolvePauseNumberParam(source, "pausebg", actor, targetOpponent, stateOwner, stageBounds, activeTick),
+              unhittable: () =>
+                resolvePauseNumberParam(source, "unhittable", actor, targetOpponent, stateOwner, stageBounds, activeTick),
               darken: () => resolvePauseNumberParam(source, "darken", actor, targetOpponent, stateOwner, stageBounds, activeTick),
               powerAdd: () =>
                 resolvePauseNumberParam(source, "poweradd", actor, targetOpponent, stateOwner, stageBounds, activeTick),
@@ -1740,7 +1743,7 @@ function resolveEnvColorTripletParam(
 
 function resolvePauseNumberParam(
   controller: MugenStateController,
-  key: "time" | "movetime" | "pausebg" | "darken" | "poweradd" | "p2defmul",
+  key: "time" | "movetime" | "pausebg" | "unhittable" | "darken" | "poweradd" | "p2defmul",
   fighter: FighterMatchState,
   opponent: FighterMatchState,
   owner: FighterMatchState,

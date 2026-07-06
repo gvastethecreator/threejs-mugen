@@ -35,6 +35,7 @@ export type RuntimeProjectileCombatInput<TActor extends RuntimeProjectileCombatA
   projectiles: RuntimeProjectile[];
   hurtBoxes: CollisionBox[];
   holdingBack: boolean;
+  canDefenderBeHit?: (defender: TActor) => boolean;
   log: (line: string) => void;
   rememberTarget: (
     attacker: TActor,
@@ -85,6 +86,10 @@ export class RuntimeProjectileCombatWorld {
         ),
       );
       if (!hit) {
+        continue;
+      }
+      if (input.canDefenderBeHit?.(defender) === false) {
+        log(`${defender.label} rejected ${attacker.label} projectile ${projectile.attr ?? "S,SP"} via SuperPause unhittable`);
         continue;
       }
       if (!canRuntimeBeHitBy(defender.runtime, projectile.attr ?? "S,SP")) {

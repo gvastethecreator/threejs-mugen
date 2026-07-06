@@ -360,6 +360,7 @@ export type RuntimeTraceMatchPauseRequirement = {
   actorId?: string;
   sourceStateNo?: number;
   pauseBg?: boolean;
+  unhittable?: boolean;
   darken?: boolean;
   minFrames?: number;
   minRemaining?: number;
@@ -403,6 +404,7 @@ export type RuntimeTraceGateMatchPauseEvidence = {
   actorId: string;
   sourceStateNo?: number;
   pauseBg?: boolean;
+  unhittable?: boolean;
   darken: boolean;
   firstTick: number;
   lastTick: number;
@@ -1424,6 +1426,7 @@ export function summarizeTraceGateEvidence(trace: RuntimeTrace): RuntimeTraceGat
                 actorId: pause.actorId,
                 sourceStateNo: pause.sourceStateNo,
                 ...(pause.pauseBg === false ? { pauseBg: false } : {}),
+                ...(pause.unhittable === false ? { unhittable: false } : {}),
                 darken: pause.darken,
                 firstTick: frame.tick,
                 lastTick: frame.tick,
@@ -2007,11 +2010,11 @@ function matchPauseOccurrenceKey(frame: Omit<RuntimeTraceFrame, "input" | "event
 }
 
 function matchPauseEvidenceKey(pause: RuntimeMatchPauseSnapshot): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.unhittable === false ? "hittable" : "unhittable"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
 }
 
 function matchPauseGateEvidenceKey(pause: RuntimeTraceGateMatchPauseEvidence): string {
-  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
+  return `${pause.type}:${pause.actorId}:${pause.sourceStateNo ?? "*"}:${pause.pauseBg === false ? "nopausebg" : "pausebg"}:${pause.unhittable === false ? "hittable" : "unhittable"}:${pause.darken ? "darken" : "normal"}:${matchPauseSuperAnimKey(pause.superAnim)}`;
 }
 
 function matchPauseSuperAnimKey(superAnim: RuntimeTraceGateMatchPauseEvidence["superAnim"]): string {
@@ -2030,6 +2033,7 @@ function matchesMatchPauseRequirement(
     (requirement.actorId === undefined || pause.actorId === requirement.actorId) &&
     (requirement.sourceStateNo === undefined || pause.sourceStateNo === requirement.sourceStateNo) &&
     (requirement.pauseBg === undefined || (pause.pauseBg ?? true) === requirement.pauseBg) &&
+    (requirement.unhittable === undefined || (pause.unhittable ?? true) === requirement.unhittable) &&
     (requirement.darken === undefined || pause.darken === requirement.darken) &&
     (requirement.minFrames === undefined || pause.frames >= requirement.minFrames) &&
     (requirement.minRemaining === undefined || pause.maxRemaining >= requirement.minRemaining) &&

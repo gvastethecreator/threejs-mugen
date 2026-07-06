@@ -92,6 +92,7 @@ export type PauseControllerOp = {
   moveTime: number;
   pauseBg: boolean;
   darken: boolean;
+  unhittable?: boolean;
   powerAdd: number;
   p2DefMul?: number;
   sound?: string;
@@ -1313,6 +1314,7 @@ function compilePauseControllerOp(controller: MugenStateController, type: "pause
     moveTime: firstNumber(findParam(controller, "movetime")) ?? 0,
     pauseBg: (firstNumber(findParam(controller, "pausebg")) ?? 1) !== 0,
     darken: type === "superpause" ? (firstNumber(findParam(controller, "darken")) ?? 1) !== 0 : false,
+    unhittable: type === "superpause" ? (firstNumber(findParam(controller, "unhittable")) ?? 1) !== 0 : undefined,
     powerAdd: type === "superpause" ? firstNumber(findParam(controller, "poweradd")) ?? 0 : 0,
     p2DefMul: type === "superpause" ? firstNumber(findParam(controller, "p2defmul")) : undefined,
     sound: type === "superpause" ? staticSoundValueParam(controller, "sound") : undefined,

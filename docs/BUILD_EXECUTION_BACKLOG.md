@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-05 - SuperPause unhittable trace gate
+
+Changed:
+
+- Added required `synthetic-imported-superpause-unhittable.json` trace coverage for imported default `SuperPause unhittable = 1`.
+- `PauseControllerOp`, `PauseSystem`, and active imported pause-param resolution now preserve optional `unhittable` metadata with default-true source immunity and `unhittable = 0` opt-out.
+- `RuntimePauseWorld.canActorBeHit()` exposes SuperPause source immunity, and `RuntimeMatchCombatBridgeWorld` routes it into direct HitDef, player Projectile, and helper-direct combat before contact is applied.
+- `RuntimeTraceGate` can require `requiredMatchPauses[].unhittable = true`, and `scripts/qa_traces.cjs` registers `synthetic-imported-superpause-unhittable` as required coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines `SuperPause unhittable` as making the player unable to be hit during SuperPause by default, with `unhittable = 0` opting out.
+- Focused test: `pnpm exec vitest run src/tests/PauseSystem.test.ts src/tests/RuntimeCombatResolutionSystem.test.ts src/tests/ProjectileCombatSystem.test.ts src/tests/RuntimeHelperCombatSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts` -> 5 files passed, 509 tests.
+- Final verification passed: `pnpm test` -> 151 files / 1398 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `pnpm qa:trace` -> 466/466 artifacts, 436 required and 30 optional; `pnpm check:boundaries`; `git diff --check`.
+- Trace artifact: `synthetic-imported-superpause-unhittable.json` checksum `1598af8f`, final checksum `f59f5704`.
+
+Claim allowed:
+
+- Bounded imported default SuperPause prevents direct same-tick contact against the pause source through match-pause combat filtering, and focused runtime tests cover direct, player Projectile, and helper-direct rejection plus `unhittable = 0` opt-out metadata.
+
+Claim blocked:
+
+- Exact MUGEN/IKEMEN projectile/helper/team breadth, reversal priority, exact pause layering, renderer/super-background presentation, score movement, and full SuperPause parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 466/466 artifacts, 436 required and 30 optional. Latest runtime evidence is SuperPause `unhittable` source immunity. Previous SuperPause `pausebg`, `anim = -1`, default/dynamic/explicit SuperPause `anim/pos`, dynamic SuperPause params, SuperPause p2defmul, SuperPause sound, dynamic HitDef guardsound/hitsound, dynamic `PlaySnd value`, dynamic sound-pan, PlayerPush, Width, EnvColor, EnvShake, dynamic/static Angle, AfterImageTime, AfterImage, Trans, PalFX, SprPriority, RemapPal, AssertSpecial, Projectile/helper, guard/Common1, and custom-state gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact projectile/helper/team/reversal `unhittable` breadth, actual renderer/background update parity for `pausebg`, exact stage/BGCtrl pause timing, FightFX/common SuperPause lookup/rendering, renderer visual suppression/playback parity, or super-background presentation, or continue R2 by moving another mutable helper/effect/combat behavior into a named world boundary with focused tests.
+
 ## 2026-07-05 - SuperPause pausebg trace gate
 
 Changed:
