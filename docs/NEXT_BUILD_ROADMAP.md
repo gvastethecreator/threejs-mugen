@@ -27,6 +27,16 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required Projectile ReversalDef trace gate
+  -> synthetic-imported-projectile-reversal.json checksum 5c4ddf48 / final checksum bb0bbb99 is required in qa:trace
+  -> imported active state executes player-owned Projectile id 77 against a defender with active ReversalDef
+  -> RuntimeProjectileCombatWorld, RuntimeCombatResolutionWorld, and RuntimeMatchCombatBridgeWorld route Projectile contact through RuntimeReversalWorld
+  -> trace stops at the initial reversal contact before later projectile reflection/removal semantics are claimed
+  -> evidence requires typed projectile/reversaldef ops, reversal event/combat reason, Projectile payload still unconsumed at the sampled frame, P2 state/action 777, P1 owner-backed state/action 888, and both actors life 1000
+  -> pnpm qa:trace passes 467/467 artifacts, 437 required and 30 optional
+  -> official Elecbyte docs define Projectile as taking HitDef params and ReversalDef as contact/attr-driven attack reversal
+  -> no score movement; projectile reflection/removal semantics after reversal, helper-owned Projectile reversal breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity remain blocked
+
 R1 required SuperPause unhittable trace gate
   -> synthetic-imported-superpause-unhittable.json checksum 1598af8f / final checksum f59f5704 is required in qa:trace
   -> imported active state executes default SuperPause while a demo striker attempts same-tick direct contact

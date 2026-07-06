@@ -326,6 +326,7 @@ import {
   createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideForceAirGuardKeepStateTraceArtifact,
   createSyntheticImportedProjectileHitOverrideDefaultMissOnOverrideGuardFlagFilterTraceArtifact,
   createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact,
+  createSyntheticImportedProjectileReversalTraceArtifact,
   createSyntheticImportedHitByAllowTraceArtifact,
   createSyntheticImportedHitByRejectTraceArtifact,
   createSyntheticImportedRejectTraceArtifact,
@@ -7759,6 +7760,57 @@ describe("RuntimeTraceGatePresets", () => {
       life: 1000,
       ctrl: true,
       moveType: "I",
+    });
+  });
+
+  it("creates a synthetic imported Projectile ReversalDef artifact before hit or override contact", () => {
+    const artifact = createSyntheticImportedProjectileReversalTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-reversal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-reversal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.actorSources).toEqual(["imported"]);
+    expect(evidence?.effectKinds).toContain("projectile");
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 777, 888]));
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.ReversalDef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.reversaldef).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("reversal");
+    expect(evidence?.eventCategories).not.toEqual(expect.arrayContaining(["hit", "guard", "override", "reject"]));
+    expect(evidence?.combatReasons).toContain("reversal");
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p1",
+          effect: expect.objectContaining({ kind: "projectile", id: 77, hitsRemaining: 1, hasHit: false }),
+        }),
+      ]),
+    );
+    expect(artifact.trace.events.some((event) => event.category === "reversal" && event.line.includes("reversed"))).toBe(true);
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      stateNo: 888,
+      animNo: 888,
+      life: 1000,
+      moveType: "H",
+    });
+    expect(artifact.trace.finalActors.find((actor) => actor.id === "p2")).toMatchObject({
+      stateNo: 777,
+      animNo: 777,
+      life: 1000,
+      moveType: "H",
     });
   });
 

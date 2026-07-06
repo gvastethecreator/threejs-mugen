@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-05 - Projectile ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-reversal.json` trace coverage for bounded player-owned Projectile `ReversalDef` priority.
+- The trace preset stops at the initial reversal contact and requires imported player actors, Projectile lifecycle evidence, typed `projectile` / `reversaldef` operation evidence, reversal event/combat-reason evidence, P2 state/action `777`, and P1 owner-backed state/action `888`.
+- Registered the artifact in `scripts/qa_traces.cjs` so the route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines Projectile as taking HitDef parameters and ReversalDef as contact/attr-driven attack reversal.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile ReversalDef"` -> 1 passed, 459 skipped.
+- Final verification passed: `pnpm test` -> 151 files / 1404 tests; `pnpm typecheck`; `pnpm build` with the existing large-chunk warning; `pnpm qa:trace` -> 467/467 artifacts, 437 required and 30 optional; `git diff --check`.
+- Trace artifact: `synthetic-imported-projectile-reversal.json` checksum `5c4ddf48`, final checksum `bb0bbb99`.
+
+Claim allowed:
+
+- Bounded player-owned Projectile contact can trigger active `ReversalDef` and route the defender/attacker through reversal states before SuperPause/HitOverride-style reject paths consume the initial contact.
+
+Claim blocked:
+
+- Projectile reflection/removal semantics after reversal, helper-owned Projectile reversal breadth, guard/custom-state counter breadth, exact attr grammar, hitpause/tick order, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 467/467 artifacts, 437 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-reversal.json`; previous SuperPause `unhittable`, `pausebg`, anim metadata, dynamic audio/presentation, Projectile/HitOverride, Common1, helper, target, and recovery gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with projectile reflection/removal semantics, helper-owned Projectile reversal breadth, guard/custom-state ReversalDef breadth, exact attr grammar, hitpause/tick ordering, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-05 - Projectile ReversalDef priority gate
 
 Changed:

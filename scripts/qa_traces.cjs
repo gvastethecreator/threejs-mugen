@@ -466,6 +466,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileHitOverrideMissOnOverrideOneTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),

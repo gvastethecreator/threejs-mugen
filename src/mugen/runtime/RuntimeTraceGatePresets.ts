@@ -4484,6 +4484,63 @@ export function createSyntheticImportedHelperProjectileHitOverrideMissOnOverride
   });
 }
 
+export function createSyntheticImportedProjectileReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = expandRuntimeTraceScript([{ label: "imported-projectile-reversal-x", frames: 9, p1: ["x"], p2: [] }]);
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-reversal-attacker",
+    displayName: "Synthetic Imported Projectile Reversal Attacker",
+    withHitDef: false,
+    withProjectile: true,
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-reversal-defender",
+    displayName: "Synthetic Imported Projectile Reversal Defender",
+    passiveReversalDef: { attr: "S,SP", p1StateNo: 777, p2StateNo: 888, hitPause: 3, targetId: 77 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-projectile-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-reversal-golden",
+      label: "Synthetic imported Projectile ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile ReversalDef trace proves a player-owned Projectile can be reversed before SuperPause/HitOverride-style reject routes consume contact. The trace stops at the initial reversal and does not claim projectile reflection/removal semantics, helper-owned Projectile reversal breadth, exact attr grammar, hitpause/tick order, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [5000, 150, 151],
+        requiredExecutedControllers: ["ChangeState", "Projectile", "ReversalDef"],
+        requiredExecutedOperations: ["projectile", "reversaldef"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectPayloads: [{ kind: "projectile", ownerId: "p1", effectId: 77, minHitsRemaining: 1, hasHit: false }],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
