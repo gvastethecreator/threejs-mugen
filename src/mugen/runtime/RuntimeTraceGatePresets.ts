@@ -30564,6 +30564,101 @@ export function createSyntheticImportedHelperProjectileGuardKoTraceArtifact(opti
   });
 }
 
+export function createSyntheticImportedHelperProjectileGuardKillTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-projectile-guard-kill-attacker",
+    displayName: "Synthetic Imported Helper Projectile Guard Kill",
+    withHelper: true,
+    helperProjGuardRoute: {
+      waitStateNo: 1312,
+      waitAnimNo: 1103,
+      branchStateNo: 1313,
+      branchAnimNo: 1104,
+      projectileAnimNo: 1105,
+      projectileId: 8921,
+      pos: [360, -34],
+      damage: [18, 2000],
+      guardKill: false,
+      guardSound: "S6,0",
+      guardSpark: "F7004",
+      sparkXy: [15, -63],
+    },
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-projectile-guard-kill-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-projectile-guard-kill-golden",
+      label: "Synthetic imported Helper Projectile guard.kill no-KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper Projectile guard.kill no-KO trace proves bounded helper-parented/root-owned Projectile guard.kill = 0 behavior clamps lethal guarded chip damage to 1 life without RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill, and helper-created Projectiles as root-owned. It does not claim exact MUGEN/IKEMEN guard-finish timing, lifebar behavior, helper-owned custom states, teams, or full helper Projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-projectile-guard-kill-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Helper", "Projectile"],
+        requiredExecutedOperations: ["helper", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported Helper Projectile Guard Kill projectile for 2000"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1312, animNo: 1103, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1313, animNo: 1104, minFrames: 1 },
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 1105, moveType: "A", minFrames: 1 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1313, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            parentId: "p1-helper-0",
+            effectId: 8921,
+            minAge: 1,
+            minPriority: 2,
+            maxHitsRemaining: 0,
+            hasHit: true,
+          },
+        ],
+        requiredTargetLinks: [
+          { ownerId: "p1", actorId: "p2", targetId: 8921 },
+          { ownerId: "p1-helper-0", actorId: "p2", targetId: 8921 },
+        ],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 1,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperProjectileGuardScript();

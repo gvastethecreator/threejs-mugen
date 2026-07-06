@@ -2162,6 +2162,11 @@ async function main() {
       artifact: presets.createSyntheticImportedHelperProjectileGuardKoTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-helper-projectile-guard-kill",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperProjectileGuardKillTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-helper-projguardedtime-any",
       required: true,
       artifact: presets.createSyntheticImportedHelperProjGuardedTimeAnyTraceArtifact(),

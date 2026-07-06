@@ -35,13 +35,18 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Helper Projectile guard chip KO trace gate
-  -> synthetic-imported-helper-projectile-guard-ko.json checksum 49c99564 / final checksum 560dc839 is required in qa:trace
-  -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, damage 18,2000, and default guard.kill behavior
-  -> evidence requires typed helper/projectile ops, helper/projectile spawn evidence, owner/helper target-link evidence, guard event/reason evidence, active x command evidence, round KO winner/message, and final P2 life 0
-  -> pnpm qa:trace passes 477/477 artifacts, 447 required and 30 optional
+R1 required Helper Projectile guard.kill no-KO trace gate
+  -> synthetic-imported-helper-projectile-guard-kill.json checksum 2c09049f / final checksum 653039f6 is required in qa:trace
+  -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, damage 18,2000, and explicit guard.kill = 0
+  -> evidence requires typed helper/projectile ops, helper/projectile spawn+active evidence, owner/helper target-link evidence, guard event/reason evidence, active x command evidence, helper branch state 1313, no KO round frame, and final P2 life 1
+  -> pnpm qa:trace passes 478/478 artifacts, 448 required and 30 optional
   -> official Elecbyte docs define Projectile as taking HitDef parameters, helper-created Projectiles as root-owned, and guard.kill = 0 as nonlethal chip clamp
-  -> no score movement; exact KO slowdown, lifebar behavior, guard-finish timing, helper-owned custom states, team/simul guard KO breadth, exact effect terminal/presentation timing, score movement, and full helper Projectile guard round-flow parity remain blocked
+  -> no score movement; exact KO slowdown/lifebar/guard-finish timing, exact no-KO guard recovery timing, helper-owned custom states, team/simul guard KO/no-KO breadth, exact effect terminal/presentation timing, score movement, and full helper Projectile guard round-flow parity remain blocked
+
+Previous R1 required Helper Projectile guard chip KO trace gate
+  -> synthetic-imported-helper-projectile-guard-ko.json checksum 49c99564 / final checksum 560dc839 remains required in qa:trace
+  -> bounded helper-parented/root-owned Projectile default lethal guard-chip KO evidence, final P2 life 0, and round KO winner/message
+  -> pnpm qa:trace passed 477/477 artifacts, 447 required and 30 optional
 
 Previous R1 required Projectile guard chip KO trace gate
   -> synthetic-imported-projectile-guard-ko.json checksum 2285474a / final checksum c968c723 remains required in qa:trace
