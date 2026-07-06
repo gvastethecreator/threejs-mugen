@@ -313,6 +313,7 @@ export type RuntimeTraceEffectPayloadRequirement = {
   minAge?: number;
   maxAge?: number;
   minRemoveTime?: number;
+  edgeBound?: number;
   stageBound?: number;
   minSpritePriority?: number;
   name?: string;
@@ -1960,7 +1961,8 @@ function matchesProjectilePayloadRequirement(
     requirement.terminalReason !== undefined ||
     requirement.minTerminalAge !== undefined ||
     requirement.minTerminalDuration !== undefined ||
-    requirement.stageBound !== undefined;
+    requirement.stageBound !== undefined ||
+    requirement.edgeBound !== undefined;
   if (!hasProjectileRequirement) {
     return true;
   }
@@ -1974,6 +1976,7 @@ function matchesProjectilePayloadRequirement(
     (requirement.terminalReason === undefined || effect.terminalReason === requirement.terminalReason) &&
     (requirement.minTerminalAge === undefined || (effect.terminalAge ?? -Infinity) >= requirement.minTerminalAge) &&
     (requirement.minTerminalDuration === undefined || (effect.terminalDuration ?? -Infinity) >= requirement.minTerminalDuration) &&
+    (requirement.edgeBound === undefined || effect.edgeBound === requirement.edgeBound) &&
     (requirement.stageBound === undefined || effect.stageBound === requirement.stageBound)
   );
 }

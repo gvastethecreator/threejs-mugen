@@ -40,6 +40,7 @@ export type RuntimeProjectile = {
   frameElapsed: number;
   age: number;
   removeTime: number;
+  edgeBound?: number;
   stageBound: number;
   spritePriority: number;
   priority: number;
@@ -208,6 +209,7 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     frameElapsed: 0,
     age: 0,
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
+    edgeBound: optionalProjectileBound(operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"))),
     stageBound: clampProjectileStageBound(operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound")) ?? DEFAULT_PROJECTILE_STAGE_BOUND),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
@@ -352,8 +354,8 @@ export function advanceRuntimeProjectiles(
     } else if (projectile.removeTime >= 0 && projectile.age >= projectile.removeTime) {
       markRuntimeProjectileForRemoval(projectile, "timeout");
     } else if (
-      projectile.pos.x < stage.bounds.left - projectile.stageBound ||
-      projectile.pos.x > stage.bounds.right + projectile.stageBound ||
+      projectile.pos.x < stage.bounds.left - runtimeProjectileHorizontalRemovalBound(projectile) ||
+      projectile.pos.x > stage.bounds.right + runtimeProjectileHorizontalRemovalBound(projectile) ||
       projectile.pos.y < -360 ||
       projectile.pos.y > 180
     ) {
@@ -386,6 +388,7 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           id: projectile.projectileId,
           age: projectile.age,
           removeTime: projectile.removeTime,
+          ...(projectile.edgeBound === undefined ? {} : { edgeBound: projectile.edgeBound }),
           ...(projectile.stageBound === DEFAULT_PROJECTILE_STAGE_BOUND ? {} : { stageBound: projectile.stageBound }),
           spritePriority: projectile.spritePriority,
           priority: projectile.priority,
@@ -752,8 +755,16 @@ function clampProjectileTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(1200, Math.round(value)));
 }
 
+function optionalProjectileBound(value: number | undefined): number | undefined {
+  return value === undefined ? undefined : clampProjectileStageBound(value);
+}
+
 function clampProjectileStageBound(value: number): number {
   return Math.max(0, Math.min(2000, Math.round(value)));
+}
+
+function runtimeProjectileHorizontalRemovalBound(projectile: RuntimeProjectile): number {
+  return Math.min(projectile.stageBound, projectile.edgeBound ?? projectile.stageBound);
 }
 
 function clampProjectilePriority(value: number): number {

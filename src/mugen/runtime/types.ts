@@ -345,6 +345,7 @@ export type ActorEffectSnapshot =
       id?: number;
       age: number;
       removeTime: number;
+      edgeBound?: number;
       stageBound?: number;
       spritePriority: number;
       priority: number;

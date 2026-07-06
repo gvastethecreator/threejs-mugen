@@ -91,6 +91,7 @@ describe("ProjectileSystem", () => {
         projhitanim: "1200",
         projremanim: "1201",
         projcancelanim: "1202",
+        projedgebound: "48",
         projstagebound: "32",
         projremovetime: "9999",
         projpriority: "12",
@@ -147,6 +148,7 @@ describe("ProjectileSystem", () => {
       removeAnimNo: 1201,
       cancelAnimNo: 1202,
       removeTime: 1200,
+      edgeBound: 48,
       stageBound: 32,
       priority: 10,
       hitsRemaining: 3,
@@ -511,6 +513,23 @@ describe("ProjectileSystem", () => {
     expect(runtimeProjectilesToSnapshots([tight], 1000)[0]).toMatchObject({
       effect: {
         stageBound: 24,
+        removalReason: "bounds",
+      },
+    });
+  });
+
+  it("uses explicit projedgebound as a horizontal screen-edge removal proxy", () => {
+    const tight = projectile({ serialId: "edge-tight", pos: { x: 140, y: 0 }, vel: { x: 8, y: 0 }, edgeBound: 24 });
+    const defaultBound = projectile({ serialId: "edge-default", pos: { x: 140, y: 0 }, vel: { x: 8, y: 0 } });
+
+    const remaining = advanceRuntimeProjectiles([tight, defaultBound], stage);
+
+    expect(remaining.map((entry) => entry.serialId)).toEqual(["edge-default"]);
+    expect(tight).toMatchObject({ removalReason: "bounds" });
+    expect(defaultBound.removalReason).toBeUndefined();
+    expect(runtimeProjectilesToSnapshots([tight], 1000)[0]).toMatchObject({
+      effect: {
+        edgeBound: 24,
         removalReason: "bounds",
       },
     });

@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Projectile projedgebound terminal trace gate
+
+Changed:
+
+- Added explicit `projedgebound` parsing/execution for player-owned Projectile horizontal bounds removal through the current bounded screen-edge proxy.
+- Added required `synthetic-imported-projectile-edgebound-terminal.json` trace coverage for authored `projedgebound = 24` terminal playback.
+- Registered explicit non-default `edgeBound` in Projectile snapshots and trace payload requirements so gates can prove the authored edge-bound value without changing default-bound artifacts.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projedgebound` as the distance off screen edge before automatic projectile removal and `projremanim` as the removal animation for expired time or removal boundaries.
+- Focused tests: `pnpm vitest run src/tests/ProjectileSystem.test.ts` -> 19 passed; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "projedgebound terminal"` -> 1 passed, 481 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 489/489 artifacts, 459 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-edgebound-terminal.json` checksum `e4361063`, final checksum `6dcae566`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile removal honors explicit `projedgebound = 24` as the current horizontal screen-edge removal proxy, resolves authored `projremanim = 925`, plays visible terminal anim `925` at ticks `5..6`, records Projectile spawn/remove lifecycle evidence, and preserves payload evidence with `edgeBound = 24`, `hasHit = false`, `hitsRemaining = 1`, `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact default `projedgebound` values, exact camera/screen-edge geometry, exact `projstagebound` vs `projedgebound` split, `projheightbound` parity, exact terminal timing, helper-owned bounds-removal parity, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 489/489 artifacts, 459 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-edgebound-terminal.json`; previous explicit `projstagebound`, generic bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with `projheightbound`, exact default bound values, exact camera/screen-edge geometry, exact stage-vs-screen bound split, helper-owned bounds-removal parity, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Projectile projstagebound terminal trace gate
 
 Changed:
@@ -10,7 +41,7 @@ Changed:
 
 Evidence:
 
-- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projstagebound` as the distance off screen edge before automatic projectile removal and `projremanim` as the removal animation for expired time or removal boundaries.
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines `projstagebound` as the distance off the stage edge before automatic projectile removal and `projremanim` as the removal animation for expired time or removal boundaries.
 - Focused tests: `pnpm vitest run src/tests/ProjectileSystem.test.ts` -> 18 passed; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "projstagebound terminal"` -> 1 passed, 480 skipped.
 - Runtime trace gate: `pnpm qa:trace` -> 488/488 artifacts, 458 required and 30 optional.
 - Trace artifact: `synthetic-imported-projectile-stagebound-terminal.json` checksum `fe3df8e7`, final checksum `b467573f`.
