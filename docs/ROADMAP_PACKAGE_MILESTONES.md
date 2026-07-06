@@ -35,13 +35,20 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required guard chip KO trace gate
-  -> synthetic-imported-hitdef-guard-ko.json checksum b7db75f4 / final checksum 0f9afa50 is required in qa:trace
+R1 required Projectile guard chip KO trace gate
+  -> synthetic-imported-projectile-guard-ko.json checksum 2285474a / final checksum c968c723 is required in qa:trace
+  -> imported player-owned Projectile guard route uses damage 31,2000 with default guard.kill behavior
+  -> evidence requires typed projectile op, Projectile lifecycle and target-link evidence, guard event/reason evidence, active x command evidence, round KO winner/message, and final P2 life 0
+  -> pnpm qa:trace passes 476/476 artifacts, 446 required and 30 optional
+  -> official Elecbyte docs define Projectile as taking HitDef parameters, including guard.kill, with guard.kill = 0 as nonlethal chip clamp
+  -> no score movement; exact KO slowdown, lifebar behavior, guard-finish timing, helper Projectile guard-chip KO/no-KO, team/simul guard KO breadth, exact effect terminal/presentation timing, score movement, and full projectile guard round-flow parity remain blocked
+
+Previous R1 required direct HitDef guard chip KO trace gate
+  -> synthetic-imported-hitdef-guard-ko.json checksum b7db75f4 / final checksum 0f9afa50 remains required in qa:trace
   -> imported direct HitDef guard route uses guard.damage 2000 with default guard.kill behavior
   -> evidence requires typed hitdef op, guard event/reason evidence, active x command evidence, round KO winner/message, and final P2 life 0
-  -> pnpm qa:trace passes 475/475 artifacts, 445 required and 30 optional
-  -> official Elecbyte docs define damage hit_damage/guard_damage and guard.kill default lethal behavior with guard.kill = 0 as nonlethal chip clamp
-  -> no score movement; exact KO slowdown, lifebar behavior, guard-finish timing, score movement, projectile/helper guard-chip KO, team/simul guard KO breadth, and full guard round-flow parity remain blocked
+  -> pnpm qa:trace passed 475/475 artifacts, 445 required and 30 optional
+  -> no score movement; it remains bounded direct guard-chip KO evidence only
 
 Previous R1 required guard.dist ReversalDef no-contact trace gate
   -> synthetic-imported-guarddist-reversal-no-contact.json checksum ca20c823 / final checksum 2bc9b86d is required in qa:trace

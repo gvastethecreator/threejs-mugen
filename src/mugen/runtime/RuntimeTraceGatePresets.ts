@@ -26700,6 +26700,74 @@ export function createSyntheticImportedProjectileGuardTraceArtifact(options: Run
   });
 }
 
+export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileCombatStage();
+  const script = importedProjectileGuardScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-guard-ko-attacker",
+    displayName: "Synthetic Imported Projectile Guard KO",
+    withHitDef: false,
+    withProjectile: true,
+    projectileDamage: [31, 2000],
+    projectileGuardSound: "S6,0",
+    projectileGuardSpark: "F7004",
+    projectileSparkXy: [15, -63],
+    hitSparkLibraries: syntheticHitSparkLibrary("fightfx", 7004, 8104),
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-guard-ko-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-guard-ko-golden",
+      label: "Synthetic imported Projectile guard chip KO route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile guard chip KO trace proves bounded player-owned Projectile default guard.kill behavior can let lethal guard chip damage reach 0 life and emit RoundSnapshot KO evidence. Elecbyte documents Projectile as taking HitDef parameters, including guard.kill. It does not claim exact MUGEN/IKEMEN KO slowdown, lifebar, guard-finish timing, helper Projectile guard-chip KO, teams, or full projectile guard round-flow parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-guard-ko-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["guard"],
+        requiredCombatReasons: ["guard"],
+        requiredEventSubstrings: ["guarded Synthetic Imported Projectile Guard KO projectile for 2000"],
+        requiredRoundFrames: [
+          { state: "ko", winner: "Synthetic Imported Projectile Guard KO", message: "Synthetic Imported Projectile Guard KO wins" },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "projectile", ownerId: "p1", effectId: 77, hasHit: false, minHitsRemaining: 1 },
+        ],
+        requiredTargetLinks: [{ ownerId: "p1", actorId: "p2", targetId: 77 }],
+        requiredFinalActors: [
+          {
+            actorId: "p2",
+            source: "demo",
+            actorKind: "player",
+            life: 0,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileClashTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileClashStage();
   const script = importedProjectileClashScript();
@@ -34747,6 +34815,7 @@ export type SyntheticImportedTraceFighterOptions = {
   projectileTargetId?: number;
   projectileChainId?: number;
   projectileHitDefHitCount?: number;
+  projectileDamage?: [number, number?];
   projectileP2StateNo?: number;
   projectileP2GetP1State?: boolean;
   projectileMissOnOverride?: boolean;
@@ -35568,7 +35637,7 @@ ${options.withPause ? pauseControllerBlock() : ""}
 ${options.withSuperPause ? superPauseControllerBlock(options.superPauseSound, options.superPauseP2DefMul, options.superPauseDynamicParams, options.superPauseAnim, options.superPauseDynamicAnim, options.superPausePauseBg, options.superPauseUnhittable) : ""}
 ${options.withDelayedSuperPause ? delayedSuperPauseControllerBlock(options.superPauseUnhittable) : ""}
 ${options.pauseMovePosAdd ? pauseMovePosAddBlock(options.pauseMovePosAdd) : ""}
-${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime) : ""}
+${options.withProjectile ? projectileControllerBlock(options.projectilePriority, options.projectileOffset, options.projectileVelocity, options.projectileGroundVelocity, options.projectileHits, options.projectileMissTime, options.projectileRemoveOnHit, options.projectileHitAnim, options.projectileRemoveAnim, options.projectileCancelAnim, options.projectileAccel, options.projectileVelocityMultiplier, options.projectileScale, options.projectileHitSound, options.projectileGuardSound, options.projectileHitSpark, options.projectileGuardSpark, options.projectileSparkXy, options.omitProjectileId, options.guardSlideTime, options.guardControlTime, options.projectileGuardHitTime, options.guardFlag, options.hitDefKill, options.guardKill, options.projectileId, options.projectileTargetId, options.projectileChainId, options.projectileP2StateNo, options.projectileP2GetP1State, options.projectileMissOnOverride, options.projectileAirVelocity, options.projectileAirGuardVelocity, options.projectileGroundCornerPush, options.projectileAirCornerPush, options.projectileDownCornerPush, options.projectileGuardCornerPush, options.projectileAirGuardCornerPush, options.projectileGuardVelocity, options.omitProjectileGuardVelocity, options.omitProjectileGuardHitTime, options.projectileHitDefHitCount, options.projectileTriggerTime, options.projectileDamage) : ""}
 ${options.secondaryProjectile ? secondaryProjectileControllerBlock(options.secondaryProjectile) : ""}
 ${options.withModifyProjectile ? modifyProjectileControllerBlock({
   triggerTime: options.modifyProjectileTriggerTime,
@@ -38495,6 +38564,7 @@ function projectileControllerBlock(
   omitGuardHitTime = false,
   hitDefHitCount?: number,
   triggerTime = 2,
+  damage: [number, number?] = [31, 4],
   label = "Fast Projectile",
 ): string {
   const hitAnimLine = hitAnim === undefined ? "" : `projhitanim = ${hitAnim}`;
@@ -38553,7 +38623,7 @@ ${accelLine}
 ${velocityMultiplierLine}
 ${scaleLine}
 projremovetime = 24
-damage = 31,4
+damage = ${damage.join(",")}
 ${killLine}
 ${guardKillLine}
 pausetime = 4,4

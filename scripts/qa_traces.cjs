@@ -1952,6 +1952,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-guard-ko",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileGuardKoTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-multihit",
       required: true,
       artifact: presets.createSyntheticImportedProjectileMultiHitTraceArtifact(),
