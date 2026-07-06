@@ -491,6 +491,11 @@ async function main() {
       artifact: presets.createSyntheticImportedCrouchGuardReversalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-air-guard-reversal",
+      required: true,
+      artifact: presets.createSyntheticImportedAirGuardReversalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-reversal",
       required: true,
       artifact: presets.createSyntheticImportedReversalTraceArtifact(),

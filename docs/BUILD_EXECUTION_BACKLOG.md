@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Air Guard ReversalDef trace gate
+
+Changed:
+
+- Added required `synthetic-imported-air-guard-reversal.json` trace coverage for bounded air guard-input `ReversalDef` priority.
+- The trace preset executes an air-guardable imported direct `HitDef` against a defender that enters authored state `40`, holds back, is stabilized with `AssertSpecial nowalk`, and carries active `ReversalDef p1stateno = 777` / `p2stateno = 888`; it stops at reversal and requires imported player actors, typed `assertspecial` / `hitdef` / `reversaldef` operation evidence, state-40 `ReversalDef` / `AssertSpecial` controller events, air actor-frame evidence, reversal event/combat-reason evidence, active `x` / `holdback` command evidence, P1 state/action `888`, P2 state/action `777`, both actors at life `1000`, and forbidden states `5000`, `150`, `151`, `152`, `153`, `154`, and `155`.
+- Registered the artifact in `scripts/qa_traces.cjs` so the air guard-input reversal route cannot silently disappear from required QA coverage.
+
+Evidence:
+
+- Official docs checked: Elecbyte State Controller Reference defines guard entry while P2 holds away, `guardflag` air guarding, `AssertSpecial nowalk`, air state/physics values, ReversalDef contact, `reversal.attr`, and `p1stateno`/`p2stateno`.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "air guard ReversalDef"` -> 1 passed, 464 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 472/472 artifacts, 442 required and 30 optional.
+- Trace artifact: `synthetic-imported-air-guard-reversal.json` checksum `966b17b8`, final checksum `2fa19142`.
+
+Claim allowed:
+
+- A no-walk-stabilized airborne defender in authored state `40` can counter an air-guardable direct `HitDef` through active `ReversalDef` before default get-hit `5000`, stand guard states `150` / `151`, crouch guard states `152` / `153`, or air guard states `154` / `155` execute.
+
+Claim blocked:
+
+- Walk-back guard distance, custom-state breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick order, multi-projectile/multi-target/team breadth, score movement, and full ReversalDef parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 472/472 artifacts, 442 required and 30 optional. Latest required runtime evidence is `synthetic-imported-air-guard-reversal.json`; previous crouch/stand guard-input, custom-state, helper Projectile, player Projectile, and direct ReversalDef gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with walk-back guard distance, custom-state ReversalDef breadth beyond direct routes, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Crouch Guard ReversalDef trace gate
 
 Changed:

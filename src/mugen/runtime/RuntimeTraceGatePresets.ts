@@ -4833,6 +4833,83 @@ export function createSyntheticImportedCrouchGuardReversalTraceArtifact(options:
   });
 }
 
+export function createSyntheticImportedAirGuardReversalTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  const stage = options.stage ?? closeCombatStage();
+  const script = importedDefaultAirGuardStateScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-reversal-attacker",
+    displayName: "Synthetic Imported Air Guard Reversal Attacker",
+    hitDefAttr: "S,NA",
+    guardFlag: "A",
+  });
+  const defender = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-air-guard-reversal-defender",
+    displayName: "Synthetic Imported Air Guard Reversal Defender",
+    passiveReversalDef: { attr: "SA,AA", p1StateNo: 777, p2StateNo: 888, hitPause: 3 },
+    passiveAssertSpecialFlags: ["nowalk"],
+    passiveControllerStates: [{ stateNo: 40, stateType: "A", physics: "A", animNo: 40 }],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: defender, stage }), script, {
+    label: "synthetic-imported-air-guard-reversal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-air-guard-reversal-golden",
+      label: "Synthetic imported air guard ReversalDef priority route",
+      source: "imported",
+      notes: [
+        "Synthetic imported air guard ReversalDef trace proves a no-walk-stabilized airborne defender holding back in state 40 against an air-guardable direct HitDef can still counter through ReversalDef before default get-hit or stand/crouch/air guard hit states are entered. It does not claim walk-back guard distance, custom-state breadth beyond direct routes, exact attr grammar, hitpause/tick order, projectile reflection/removal semantics, or full ReversalDef parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-air-guard-reversal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200, 777, 888],
+        forbiddenExecutedStates: [5000, 150, 151, 152, 153, 154, 155],
+        requiredExecutedControllers: ["AssertSpecial", "ChangeState", "HitDef", "ReversalDef"],
+        requiredExecutedOperations: ["hitdef", "reversaldef"],
+        requiredControllerEventSequences: [
+          {
+            label: "state-40 air reversal setup",
+            actorId: "p2",
+            allowSameTick: true,
+            steps: [
+              { stateNo: 40, controller: "ReversalDef" },
+              { stateNo: 40, controller: "AssertSpecial" },
+            ],
+          },
+        ],
+        requiredActiveCommands: ["x", "holdback"],
+        requiredEventCategories: ["reversal"],
+        requiredCombatReasons: ["reversal"],
+        requiredActorFrames: [
+          {
+            actorId: "p2",
+            stateNo: 40,
+            animNo: 40,
+            stateType: "A",
+            moveType: "I",
+            physics: "A",
+            clsn1Count: 1,
+            clsn2Count: 1,
+            minFrames: 1,
+          },
+        ],
+        requiredFinalActors: [
+          { actorId: "p1", source: "imported", actorKind: "player", stateNo: 888, animNo: 888, life: 1000, moveType: "H" },
+          { actorId: "p2", source: "imported", actorKind: "player", stateNo: 777, animNo: 777, life: 1000, moveType: "H" },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedDamageScaleTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? closeCombatStage();
   const script = importedXScript();
