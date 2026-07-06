@@ -427,6 +427,7 @@ import {
   createSyntheticImportedDynamicSoundValueTraceArtifact,
   createSyntheticImportedProjectileMultiHitTraceArtifact,
   createSyntheticImportedProjectilePriorityCancelTraceArtifact,
+  createSyntheticImportedProjectileCancelRemoveFallbackTerminalTraceArtifact,
   createSyntheticImportedProjectileCancelTimeTraceArtifact,
   createSyntheticImportedProjectileCancelTimeDynamicTraceArtifact,
   createSyntheticImportedProjectileCancelTimeAnyTraceArtifact,
@@ -23567,6 +23568,76 @@ describe("RuntimeTraceGatePresets", () => {
         expect.objectContaining({
           ownerId: "p2",
           nextSerials: expect.objectContaining({ projectile: 1 }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Projectile cancel remove fallback terminal artifact with visible fallback evidence", () => {
+    const artifact = createSyntheticImportedProjectileCancelRemoveFallbackTerminalTraceArtifact({
+      generatedAt: "2026-07-06T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden",
+        source: "imported",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ChangeState).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.Projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.projectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.eventCategories).toContain("runtime");
+    expect(
+      evidence?.eventLines.some(
+        (line) =>
+          line.includes("Projectile clash") &&
+          line.includes("canceled") &&
+          line.includes("3 > 1") &&
+          line.includes("p2-projectile-0 cancel removal anim 921"),
+      ),
+    ).toBe(true);
+    expect(artifact.gates[0]?.requirements.requiredEventSubstrings).toEqual([
+      "Projectile clash",
+      "canceled",
+      "3 > 1",
+      "p2-projectile-0 cancel removal anim 921",
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 921, moveType: "I", clsn1Count: 0 }),
+      ]),
+    );
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+        expect.objectContaining({ type: "remove", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }),
+      ]),
+    );
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ownerId: "p2",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            hasHit: true,
+            removalReason: "cancel",
+            terminalReason: "cancel",
+            removeAnimNo: 921,
+            terminalDuration: 2,
+          }),
         }),
       ]),
     );

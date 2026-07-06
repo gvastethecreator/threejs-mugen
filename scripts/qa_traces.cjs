@@ -1992,6 +1992,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectilePriorityCancelTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-cancel-remove-fallback-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileCancelRemoveFallbackTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-canceltime",
       required: true,
       artifact: presets.createSyntheticImportedProjectileCancelTimeTraceArtifact(),
@@ -3490,6 +3495,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-modifyprojectile",
     "synthetic-imported-projectile-multihit",
     "synthetic-imported-projectile-priority-cancel",
+    "synthetic-imported-projectile-cancel-remove-fallback-terminal",
     "synthetic-imported-projectile-canceltime",
     "synthetic-imported-projectile-canceltime-any",
     "synthetic-imported-projectile-canceltime-dynamic",

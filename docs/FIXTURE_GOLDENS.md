@@ -59,6 +59,7 @@ Required artifacts should prove engine plumbing without private assets:
 - synthetic bounded owner-backed get-hit `GetHitVar(xoff/yoff/zoff)` snap metadata through `synthetic-imported-gethitvar-snap.json`
 - synthetic bounded defender-owned stand/crouch/air guard-hit `GetHitVar(kill)` metadata through `synthetic-imported-gethitvar-guard-kill.json`, `synthetic-imported-gethitvar-crouch-guard-kill.json`, and `synthetic-imported-gethitvar-air-guard-kill.json`
 - synthetic bounded player-owned Projectile timeout-removal fallback from omitted `projremanim` to `projhitanim` playback through `synthetic-imported-projectile-remove-hit-fallback-terminal.json`
+- synthetic bounded player-owned Projectile cancel-removal fallback from omitted `projcancelanim` to `projremanim` playback through `synthetic-imported-projectile-cancel-remove-fallback-terminal.json`
 - synthetic bounded player-owned Projectile timeout-removal terminal `projremanim` playback through `synthetic-imported-projectile-remove-terminal.json`
 - synthetic bounded helper-parented/root-owned Projectile guarded-contact terminal `projhitanim` playback through `synthetic-imported-helper-projectile-guard-terminal.json`
 - synthetic bounded player-owned Projectile guarded-contact terminal `projhitanim` playback through `synthetic-imported-projectile-guard-terminal.json`

@@ -1,5 +1,36 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Player Projectile cancel remove fallback terminal trace gate
+
+Changed:
+
+- Added required `synthetic-imported-projectile-cancel-remove-fallback-terminal.json` trace coverage for bounded player-owned Projectile cancel-removal fallback playback.
+- Added a priority-cancel preset where P2 authors `projremanim = 921`, omits `projcancelanim`, loses a `projpriority` clash, and visibly plays terminal anim `921`.
+- Registered the artifact in `scripts/qa_traces.cjs` beside the player Projectile priority/cancel-time gates.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines omitted `projcancelanim` as falling back to `projremanim`, and defines `projpriority` projectile cancellation behavior.
+- Focused test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "cancel remove fallback terminal"` -> 1 passed, 476 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 484/484 artifacts, 454 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-cancel-remove-fallback-terminal.json` checksum `4966ed30`, final checksum `98170d08`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile priority cancellation can fall back from omitted `projcancelanim` to authored `projremanim = 921`, producing visible terminal playback, P2 Projectile remove lifecycle evidence, P1 active Projectile evidence, and payload evidence with `hasHit = true`, `removeAnimNo = 921`, `removalReason = cancel`, `terminalReason = cancel`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact cancel tick-order/lifetime, exact terminal timing, bounds-removal parity, helper-owned cancel fallback parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile terminal parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 484/484 artifacts, 454 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-cancel-remove-fallback-terminal.json`; previous remove fallback, explicit remove, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with exact cancel tick-order/lifetime, bounds-removal terminal parity, helper-owned cancel/remove fallback parity, exact terminal timing, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Player Projectile remove hit fallback terminal trace gate
 
 Changed:
@@ -21,7 +52,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact terminal timing, bounds-removal parity, `projcancelanim` fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity.
+- Exact terminal timing, bounds-removal parity, helper-owned cancel fallback parity and broader fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity.
 
 Global port report:
 
@@ -29,7 +60,7 @@ Global port report:
 
 Next:
 
-- Continue R1 with bounds-removal terminal parity, `projcancelanim` fallback breadth, helper-owned remove fallback parity, exact terminal timing, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+- Continue R1 with bounds-removal terminal parity, helper-owned cancel fallback parity and broader fallback breadth, helper-owned remove fallback parity, exact terminal timing, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
 
 ## 2026-07-06 - Player Projectile remove terminal trace gate
 
@@ -53,7 +84,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Exact terminal timing, bounds-removal parity, `projhitanim`/`projcancelanim` fallback breadth beyond existing gates, exact sprite/layer/palette parity, helper-owned remove terminal parity, team/simul breadth, score movement, and full Projectile terminal parity.
+- Exact terminal timing, bounds-removal parity, `projhitanim`/helper-owned cancel fallback parity and broader fallback breadth beyond existing gates, exact sprite/layer/palette parity, helper-owned remove terminal parity, team/simul breadth, score movement, and full Projectile terminal parity.
 
 Global port report:
 
@@ -61,7 +92,7 @@ Global port report:
 
 Next:
 
-- Continue R1 with bounds-removal terminal parity, `projhitanim`/`projremanim`/`projcancelanim` fallback breadth, exact terminal timing, exact sprite/layer/palette parity, helper-owned remove terminal parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+- Continue R1 with bounds-removal terminal parity, `projhitanim`/`projremanim`/helper-owned cancel fallback parity and broader fallback breadth, exact terminal timing, exact sprite/layer/palette parity, helper-owned remove terminal parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause/tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
 
 ## 2026-07-06 - Helper Projectile guard terminal trace gate
 

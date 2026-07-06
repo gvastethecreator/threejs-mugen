@@ -35,13 +35,21 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
+R1 required player Projectile cancel remove fallback terminal trace gate
+-> synthetic-imported-projectile-cancel-remove-fallback-terminal.json checksum 4966ed30 / final checksum 98170d08 is required in qa:trace
+-> P2 authored projremanim = 921, omitted projcancelanim, lost a Projectile priority clash against P1 priority 3 > 1, and fell back to projremanim for cancel terminal playback
+-> evidence requires typed projectile op, active x command evidence, Projectile clash/cancel event evidence, P2 Projectile spawn/remove lifecycle evidence, P1 active Projectile evidence, actor-frame evidence for terminal anim 921, and payload evidence with hasHit true, removeAnimNo 921, removalReason/terminalReason = cancel, and terminalDuration 2
+-> pnpm qa:trace passes 484/484 artifacts, 454 required and 30 optional
+-> official Elecbyte docs define omitted projcancelanim as falling back to projremanim and define projpriority cancellation behavior
+-> no score movement; exact cancel tick-order/lifetime, exact terminal timing, bounds-removal parity, helper-owned cancel fallback parity, broader fallback breadth, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
+
 R1 required player Projectile remove hit fallback terminal trace gate
 -> synthetic-imported-projectile-remove-hit-fallback-terminal.json checksum 3bbdfbfc / final checksum 76ca3f77 is required in qa:trace
 -> imported player-owned Projectile id 77 uses authored projhitanim = 920, omits projremanim, keeps static position/velocity, and has no contact before projremovetime timeout
 -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 920 at ticks 26..27, and payload evidence with hasHit false, hitsRemaining 1, hitAnimNo 920, removalReason/terminalReason = timeout, removeTime 24, and terminalDuration 2
 -> pnpm qa:trace passes 483/483 artifacts, 453 required and 30 optional
 -> official Elecbyte docs define omitted projremanim as falling back to projhitanim and projremovetime as timeout removal
--> no score movement; exact terminal timing, bounds-removal parity, projcancelanim fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
+-> no score movement; exact terminal timing, bounds-removal parity, helper-owned cancel fallback parity and broader fallback breadth, exact sprite/layer/palette parity, helper-owned remove fallback parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
 
 R1 required player Projectile remove terminal trace gate
 -> synthetic-imported-projectile-remove-terminal.json checksum 8a65629c / final checksum 7ba3479b is required in qa:trace

@@ -27170,6 +27170,82 @@ export function createSyntheticImportedProjectilePriorityCancelTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileCancelRemoveFallbackTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? projectileClashStage();
+  const script = importedProjectilePriorityCancelScript();
+  const p1 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-cancel-remove-fallback-terminal-p1",
+    displayName: "Synthetic Imported Projectile Cancel Remove Fallback P1",
+    withProjectile: true,
+    projectilePriority: 3,
+    projectileOffset: [100, -45],
+  });
+  const p2 = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-cancel-remove-fallback-terminal-p2",
+    displayName: "Synthetic Imported Projectile Cancel Remove Fallback P2",
+    withProjectile: true,
+    projectilePriority: 1,
+    projectileOffset: [100, -45],
+    projectileRemoveAnim: 921,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1, p2, stage }), script, {
+    label: "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden",
+      label: "Synthetic imported Projectile cancel remove fallback terminal route",
+      source: "imported",
+      notes: [
+        "Synthetic imported Projectile cancel remove fallback terminal trace proves bounded player-owned Projectile cancellation can fall back from omitted projcancelanim to authored projremanim metadata, play a visible terminal projectile action when that AIR action exists, and preserve terminal payload evidence through the effect actor world. Elecbyte documents Projectile projcancelanim as the animation used when a projectile is cancelled by hitting another projectile and says omitted projcancelanim uses projremanim instead. It does not claim exact cancel tick-order/lifetime, exact terminal timing, bounds-removal parity, helper-owned Projectile cancel fallback parity, exact sprite/layer/palette parity, teams, or full Projectile terminal parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-cancel-remove-fallback-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile"],
+        requiredExecutedOperations: ["hitdef", "projectile"],
+        requiredActiveCommands: ["x"],
+        requiredEventCategories: ["runtime"],
+        requiredEventSubstrings: ["Projectile clash", "canceled", "3 > 1", "p2-projectile-0 cancel removal anim 921"],
+        requiredActorFrames: [{ source: "effect", actorKind: "projectile", ownerId: "p2", animNo: 921, moveType: "I", clsn1Count: 0 }],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "remove", kind: "projectile", ownerId: "p2", rootId: "p2", parentId: "p2" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [
+          { ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 },
+          { ownerId: "p2", minNextProjectileSerial: 1 },
+        ],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p2",
+            effectId: 77,
+            hasHit: true,
+            removalReason: "cancel",
+            terminalReason: "cancel",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileCancelTimeTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
