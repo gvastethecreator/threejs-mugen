@@ -1967,6 +1967,11 @@ async function main() {
       artifact: presets.createSyntheticImportedProjectileGuardTerminalTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-projectile-remove-terminal",
+      required: true,
+      artifact: presets.createSyntheticImportedProjectileRemoveTerminalTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-projectile-multihit",
       required: true,
       artifact: presets.createSyntheticImportedProjectileMultiHitTraceArtifact(),
@@ -3582,6 +3587,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-projectile-guard-timing-default",
     "synthetic-imported-projectile-guard-slide-stop",
     "synthetic-imported-projectile-guard-terminal",
+    "synthetic-imported-projectile-remove-terminal",
     "synthetic-imported-projectile-air-guard-cornerpush",
     "synthetic-imported-projectile-air-guard-cornerpush-default",
     "synthetic-imported-projectile-guard-cornerpush-default",

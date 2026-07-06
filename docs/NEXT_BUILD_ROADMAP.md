@@ -27,7 +27,15 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required Helper Projectile guard terminal trace gate
+R1 required player Projectile remove terminal trace gate
+  -> synthetic-imported-projectile-remove-terminal.json checksum 8a65629c / final checksum 7ba3479b is required in qa:trace
+  -> imported player-owned Projectile id 77 uses authored projremanim = 919, static position/velocity, and no contact before projremovetime timeout
+  -> evidence requires typed projectile op, active x command evidence, Projectile spawn/remove lifecycle evidence, actor-frame evidence for terminal anim 919 at ticks 26..27, and payload evidence with hasHit false, hitsRemaining 1, removalReason/terminalReason = timeout, removeTime 24, and terminalDuration 2
+  -> pnpm qa:trace passes 482/482 artifacts, 452 required and 30 optional
+  -> official Elecbyte docs define projremanim as timeout/bounds removal animation and projremovetime as timeout removal
+  -> no score movement; exact terminal timing, bounds-removal parity, fallback breadth beyond existing projhitanim/projcancelanim gates, exact sprite/layer/palette parity, helper-owned remove terminal parity, team/simul breadth, score movement, and full Projectile terminal parity remain blocked
+
+Previous R1 required Helper Projectile guard terminal trace gate
   -> synthetic-imported-helper-projectile-guard-terminal.json checksum 4e6644f4 / final checksum ef2e177d is required in qa:trace
   -> helper p1-helper-0 spawns root-owned Projectile p1-projectile-0 with parent p1-helper-0, id 8922, and authored projhitanim = 1109 on a guarded contact
   -> evidence requires typed helper/projectile ops, helper state evidence 1314 -> 1315, Projectile spawn/remove lifecycle evidence, owner/helper target-link evidence, guard event/reason evidence, active x command evidence, event text "hit removal anim 1109", actor-frame evidence for terminal anim 1109, and terminal payload evidence with removalReason/terminalReason = hit

@@ -26774,6 +26774,72 @@ export function createSyntheticImportedProjectileGuardTerminalTraceArtifact(
   });
 }
 
+export function createSyntheticImportedProjectileRemoveTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileRemoveTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-remove-terminal-attacker",
+    displayName: "Synthetic Imported Projectile Remove Terminal",
+    withHitDef: false,
+    withProjectile: true,
+    projectileRemoveAnim: 919,
+    projectileOffset: [80, -45],
+    projectileVelocity: [0, 0],
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-remove-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-remove-terminal-golden",
+      label: "Synthetic imported Projectile remove terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile remove terminal trace proves bounded player-owned Projectile timeout removal can resolve authored projremanim metadata into runtime removal evidence, play a visible terminal projectile action when that AIR action exists, and preserve terminal payload evidence through the effect actor world. Elecbyte documents Projectile projremanim as the animation used when a projectile is removed by expired time or removal boundaries, with projremovetime controlling timeout removal. It does not claim exact terminal timing, bounds-removal parity, projhitanim/projcancelanim fallback breadth, exact sprite/layer/palette parity, helper-owned Projectile remove terminal parity, teams, or full Projectile terminal parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-remove-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 919, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "timeout",
+            terminalReason: "timeout",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileGuardKoTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? projectileCombatStage();
   const script = importedProjectileGuardScript();
@@ -34714,6 +34780,13 @@ export function importedProjectileScript(): RuntimeTraceInputFrame[] {
   return expandRuntimeTraceScript([
     { label: "imported-projectile-x", frames: 14, p1: ["x"], p2: [] },
     { label: "projectile-settle", frames: 6, p1: [], p2: [] },
+  ]);
+}
+
+export function importedProjectileRemoveTerminalScript(): RuntimeTraceInputFrame[] {
+  return expandRuntimeTraceScript([
+    { label: "imported-projectile-remove-terminal-x", frames: 8, p1: ["x"], p2: [] },
+    { label: "projectile-remove-terminal-timeout", frames: 30, p1: [], p2: [] },
   ]);
 }
 
