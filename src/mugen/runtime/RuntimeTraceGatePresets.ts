@@ -26973,6 +26973,73 @@ export function createSyntheticImportedProjectileBoundsRemoveTerminalTraceArtifa
   });
 }
 
+export function createSyntheticImportedProjectileDefaultBoundsTerminalTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedProjectileBoundsTerminalScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-projectile-default-bounds-terminal-attacker",
+    displayName: "Synthetic Imported Projectile Default Bounds Terminal",
+    withHitDef: false,
+    withProjectile: true,
+    projectileRemoveAnim: 927,
+    projectileOffset: [80, -45],
+    projectileVelocity: [160, 0],
+    projectileRemoveTime: 90,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-projectile-default-bounds-terminal-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-projectile-default-bounds-terminal-golden",
+      label: "Synthetic imported Projectile default bounds terminal route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Projectile default bounds terminal trace proves bounded player-owned Projectile removal can use omitted official 240p Projectile bounds defaults, resolve authored projremanim metadata into runtime removal evidence, and play a visible terminal projectile action when that AIR action exists. Elecbyte documents omitted projedgebound/projstagebound as 40 pixels in 240p and omitted projheightbound as -240,1 in 240p. It does not claim exact camera/screen/stage split, localcoord scaling beyond the current 240p runtime, exact terminal timing, helper-owned default bounds parity, exact sprite/layer/palette parity, team/simul breadth, score movement, or full Projectile bounds parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-projectile-default-bounds-terminal-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "Projectile"],
+        requiredExecutedOperations: ["projectile"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "projectile", ownerId: "p1", animNo: 927, moveType: "I", clsn1Count: 0 },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "remove", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            hasHit: false,
+            minHitsRemaining: 1,
+            removalReason: "bounds",
+            terminalReason: "bounds",
+            minTerminalAge: 1,
+            minTerminalDuration: 2,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedProjectileStageBoundTerminalTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

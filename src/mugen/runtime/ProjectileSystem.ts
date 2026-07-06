@@ -9,8 +9,9 @@ import { deriveDefaultAirGuardVelocity } from "./HitDefVelocity";
 import { findControllerParam } from "./StateProgramExecutor";
 import type { ActorSnapshot } from "./types";
 
-const DEFAULT_PROJECTILE_STAGE_BOUND = 240;
-const DEFAULT_PROJECTILE_HEIGHT_BOUND = { low: -360, high: 180 } as const;
+const DEFAULT_PROJECTILE_EDGE_BOUND = 40;
+const DEFAULT_PROJECTILE_STAGE_BOUND = 40;
+const DEFAULT_PROJECTILE_HEIGHT_BOUND = { low: -240, high: 1 } as const;
 
 export type RuntimeProjectile = {
   serialId: string;
@@ -211,9 +212,13 @@ export function createRuntimeProjectile(input: RuntimeProjectileSpawnInput): Run
     frameElapsed: 0,
     age: 0,
     removeTime: clampProjectileTime(operation?.removeTime ?? firstNumber(findControllerParam(input.controller, "projremovetime") ?? findControllerParam(input.controller, "removetime")) ?? -1),
-    edgeBound: optionalProjectileBound(operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound"))),
+    edgeBound: clampProjectileStageBound(
+      operation?.edgeBound ?? firstNumber(findControllerParam(input.controller, "projedgebound")) ?? DEFAULT_PROJECTILE_EDGE_BOUND,
+    ),
     stageBound: clampProjectileStageBound(operation?.stageBound ?? firstNumber(findControllerParam(input.controller, "projstagebound")) ?? DEFAULT_PROJECTILE_STAGE_BOUND),
-    heightBound: optionalProjectileHeightBound(operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")))),
+    heightBound:
+      optionalProjectileHeightBound(operation?.heightBound ?? projectileHeightBound(numberPair(findControllerParam(input.controller, "projheightbound")))) ??
+      defaultProjectileHeightBound(),
     spritePriority: Math.max(-5, Math.min(10, Math.round(operation?.spritePriority ?? firstNumber(findControllerParam(input.controller, "sprpriority")) ?? 4))),
     priority: clampProjectilePriority(operation?.priority ?? firstNumber(findControllerParam(input.controller, "projpriority") ?? findControllerParam(input.controller, "priority")) ?? 1),
     hitsRemaining: clampProjectileHits(operation?.hitCount ?? firstNumber(findControllerParam(input.controller, "projhits")) ?? 1),
@@ -391,9 +396,9 @@ export function runtimeProjectilesToSnapshots(projectiles: RuntimeProjectile[], 
           id: projectile.projectileId,
           age: projectile.age,
           removeTime: projectile.removeTime,
-          ...(projectile.edgeBound === undefined ? {} : { edgeBound: projectile.edgeBound }),
+          ...(projectile.edgeBound === undefined || projectile.edgeBound === DEFAULT_PROJECTILE_EDGE_BOUND ? {} : { edgeBound: projectile.edgeBound }),
           ...(projectile.stageBound === DEFAULT_PROJECTILE_STAGE_BOUND ? {} : { stageBound: projectile.stageBound }),
-          ...(projectile.heightBound === undefined ? {} : { heightBound: projectile.heightBound }),
+          ...(projectile.heightBound === undefined || isDefaultProjectileHeightBound(projectile.heightBound) ? {} : { heightBound: projectile.heightBound }),
           spritePriority: projectile.spritePriority,
           priority: projectile.priority,
           hitsRemaining: projectile.hitsRemaining,
@@ -759,10 +764,6 @@ function clampProjectileTime(value: number): number {
   return value < 0 ? -1 : Math.max(1, Math.min(1200, Math.round(value)));
 }
 
-function optionalProjectileBound(value: number | undefined): number | undefined {
-  return value === undefined ? undefined : clampProjectileStageBound(value);
-}
-
 function optionalProjectileHeightBound(value: { low: number; high: number } | undefined): { low: number; high: number } | undefined {
   if (!value) {
     return undefined;
@@ -788,11 +789,19 @@ function clampProjectileHeightBound(value: number): number {
 }
 
 function runtimeProjectileHorizontalRemovalBound(projectile: RuntimeProjectile): number {
-  return Math.min(projectile.stageBound, projectile.edgeBound ?? projectile.stageBound);
+  return Math.min(projectile.stageBound, projectile.edgeBound ?? DEFAULT_PROJECTILE_EDGE_BOUND);
 }
 
 function runtimeProjectileVerticalRemovalBound(projectile: RuntimeProjectile): { low: number; high: number } {
-  return projectile.heightBound ?? DEFAULT_PROJECTILE_HEIGHT_BOUND;
+  return projectile.heightBound ?? defaultProjectileHeightBound();
+}
+
+function defaultProjectileHeightBound(): { low: number; high: number } {
+  return { low: DEFAULT_PROJECTILE_HEIGHT_BOUND.low, high: DEFAULT_PROJECTILE_HEIGHT_BOUND.high };
+}
+
+function isDefaultProjectileHeightBound(value: { low: number; high: number }): boolean {
+  return value.low === DEFAULT_PROJECTILE_HEIGHT_BOUND.low && value.high === DEFAULT_PROJECTILE_HEIGHT_BOUND.high;
 }
 
 function clampProjectilePriority(value: number): number {

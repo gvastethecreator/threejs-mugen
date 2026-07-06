@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-06 - Projectile default bounds terminal trace gate
+
+Changed:
+
+- Corrected runtime Projectile omitted-bound defaults to Elecbyte 240p values: `projedgebound = 40`, `projstagebound = 40`, and `projheightbound = -240,1`.
+- Kept default bound values omitted from effect snapshots while preserving explicit bound payload fields for non-default gates.
+- Added required `synthetic-imported-projectile-default-bounds-terminal.json` trace coverage for player-owned Projectile omitted-bound terminal playback.
+- Registered the default-bounds artifact in `pnpm qa:trace` required coverage.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html#Projectile) defines omitted `projedgebound`/`projstagebound` as `40` in 240p and omitted `projheightbound` as `-240,1` in 240p.
+- Focused tests: `pnpm vitest run src/tests/ProjectileSystem.test.ts` -> 21 passed; `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Projectile default bounds terminal|Projectile bounds remove terminal|Projectile projstagebound terminal|Projectile projedgebound terminal|Projectile projheightbound terminal"` -> 8 passed, 479 skipped.
+- Runtime trace gate: `pnpm qa:trace` -> 494/494 artifacts, 464 required and 30 optional.
+- Trace artifact: `synthetic-imported-projectile-default-bounds-terminal.json` checksum `52879717`, final checksum `df3e2061`.
+
+Claim allowed:
+
+- Bounded imported player-owned Projectile derives official 240p omitted bound values and can remove by default bounds before timeout with visible `projremanim = 927` terminal playback, typed Projectile evidence, lifecycle evidence, and payload evidence for `removalReason = bounds`, `terminalReason = bounds`, and terminal duration `2`.
+
+Claim blocked:
+
+- Exact camera/screen/stage split, localcoord scaling beyond current 240p runtime, helper-owned default-bound trace parity, exact terminal timing, exact sprite/layer/palette parity, team/simul breadth, score movement, and full Projectile bounds parity.
+
+Global port report:
+
+- Runtime/port is at `pnpm qa:trace` 494/494 artifacts, 464 required and 30 optional. Latest required runtime evidence is `synthetic-imported-projectile-default-bounds-terminal.json`; previous helper explicit `projstagebound`, helper explicit `projedgebound`, helper explicit `projheightbound`, player-owned explicit height/edge/stage bounds, bounds-removal, helper/player timeout fallback, helper/player cancel fallback, explicit timeout removal, helper/player Projectile terminal, player/helper Projectile guard.kill no-KO/KO, direct `HitDef` KO/no-KO, guarddist/ReversalDef no-contact, guard-input ReversalDef, SuperPause, dynamic audio/presentation, AssertSpecial, and Projectile timing gates remain required. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only; modular extraction remains guarded until fighting contracts stabilize. No score movement.
+
+Next:
+
+- Continue R1 with helper-owned default-bound trace parity, exact camera/screen/stage/height semantics, exact terminal timing, exact cancel tick-order/lifetime, exact sprite/layer/palette parity, exact KO slowdown/lifebar timing, exact guard-finish/no-KO recovery timing, team/simul guard breadth, custom-state ReversalDef breadth, projectile reflection/removal semantics after reversal, helper-owned custom-state tables, exact attr grammar, hitpause tick ordering, multi-projectile/multi-target/team breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-06 - Helper Projectile projstagebound terminal trace gate
 
 Changed:

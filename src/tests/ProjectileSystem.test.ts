@@ -204,6 +204,44 @@ describe("ProjectileSystem", () => {
     expect(projectile.targetId).toBe(0);
   });
 
+  it("uses official 240p default Projectile removal bounds when params are omitted", () => {
+    const createDefaultBoundProjectile = (serialId: string, pos: { x: number; y: number }, velocity: string) =>
+      createRuntimeProjectile({
+        serialId,
+        controller: controller({
+          projanim: "1005",
+          velocity,
+        }),
+        spriteOwnerId: "p1",
+        spriteOwnerDefinitionId: "kfm",
+        spriteOwnerLabel: "Kung Fu Man",
+        action,
+        animNo: 1005,
+        pos,
+        fallbackFacing: 1,
+      });
+    const horizontal = createDefaultBoundProjectile("default-horizontal", { x: 152, y: 0 }, "9,0");
+    const verticalLow = createDefaultBoundProjectile("default-vertical-low", { x: 0, y: -236 }, "0,-5");
+    const verticalHigh = createDefaultBoundProjectile("default-vertical-high", { x: 0, y: 0 }, "0,2");
+
+    expect(horizontal).toMatchObject({
+      edgeBound: 40,
+      stageBound: 40,
+      heightBound: { low: -240, high: 1 },
+    });
+    const snapshotEffect = runtimeProjectilesToSnapshots([horizontal], 1000)[0]?.effect;
+    expect(snapshotEffect).not.toHaveProperty("edgeBound");
+    expect(snapshotEffect).not.toHaveProperty("stageBound");
+    expect(snapshotEffect).not.toHaveProperty("heightBound");
+
+    const remaining = advanceRuntimeProjectiles([horizontal, verticalLow, verticalHigh], stage);
+
+    expect(remaining).toEqual([]);
+    expect(horizontal).toMatchObject({ removalReason: "bounds" });
+    expect(verticalLow).toMatchObject({ removalReason: "bounds" });
+    expect(verticalHigh).toMatchObject({ removalReason: "bounds" });
+  });
+
   it("derives missing Projectile airguard.velocity from air.velocity", () => {
     const projectile = createRuntimeProjectile({
       serialId: "p1-projectile-air-default",
@@ -762,7 +800,7 @@ function projectile(overrides: Partial<RuntimeProjectile> = {}): RuntimeProjecti
     frameElapsed: 0,
     age: 0,
     removeTime: 10,
-    stageBound: 240,
+    stageBound: 40,
     priority: 1,
     hitsRemaining: 1,
     missTime: 0,
