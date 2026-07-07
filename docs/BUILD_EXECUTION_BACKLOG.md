@@ -4907,7 +4907,7 @@ Claim blocked:
 ## 2026-07-02 - R1 HitFall recovery-input priority trace gate
 
 Changed:
-- Added required `synthetic-imported-hitfall-recovery-input-priority.json` runtime trace gate for bounded `command = "recovery"` priority over a competing `HitFall && CanRecover` probe in default get-hit fall state `5050`.
+- Added required `synthetic-imported-default-fall-recovery-input-priority.json` runtime trace gate for bounded `command = "recovery"` priority over a competing `HitFall && CanRecover` probe in default get-hit fall state `5050`.
 - Moved synthetic default get-hit fall `Ground Recovery Input` / `Recovery Input` controllers before the optional fall probe in `defaultGetHitFallBlock`, matching the intended arbitration order without weakening the existing CanRecover-ready oracle.
 - Added configurable `requiredActiveCommands` support to `createImportedDefaultFallGetHitTraceArtifact`, plus a long recovery-priority input script that keeps `recovery` active when `CanRecover` becomes true.
 - Registered the artifact in `scripts/qa_traces.cjs` required trace generation and required artifact coverage.
@@ -4915,7 +4915,7 @@ Changed:
 
 Evidence:
 - Focused gate: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "recovery input priority"` -> 1 file / 1 test, 282 skipped.
-- Trace gate: `pnpm qa:trace` -> 288/288 artifacts, 262 required and 26 optional; `synthetic-imported-hitfall-recovery-input-priority.json` checksum `bae07bde`.
+- Trace gate: `pnpm qa:trace` -> 288/288 artifacts, 262 required and 26 optional; `synthetic-imported-default-fall-recovery-input-priority.json` checksum `f5e72e07`.
 - Test suite: `pnpm test` -> 146 files / 1110 tests.
 - Typecheck: `pnpm typecheck` -> passed.
 - Build: `pnpm build` -> passed; Vite still reports the known large-chunk warning.

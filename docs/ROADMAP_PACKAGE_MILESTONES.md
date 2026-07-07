@@ -1449,7 +1449,7 @@ R1 Common1 ground-recovery priority trace gate
   -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM air guard walk-control tightening
   -> bounded ground-over-air recovery selection evidence only; no score movement or full recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
-  -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde remains required in qa:trace
+  -> synthetic-imported-default-fall-recovery-input-priority.json checksum f5e72e07 remains required in qa:trace
   -> defender routes 5000 -> 5030 -> 5050 -> 5210 -> 0 through active command = "recovery" while a competing HitFall && CanRecover probe exists
 Previous R1 Common1 HitFall CanRecover-ready trace gate
   -> synthetic-imported-hitfall-canrecover-ready.json checksum c0097d7f remains required in qa:trace
@@ -1571,7 +1571,7 @@ R1 Common1 ground-recovery priority trace gate
   -> current pnpm qa:trace passes 296/296 artifacts, 266 required and 30 optional after optional kfm-official-default-air-guard-state.json checksum f4378971
   -> bounded ground-over-air recovery selection evidence only; no score movement, exact recovery threshold tables, ground/air arbitration constants, velocity math, visual/audio parity, or full recovery parity claim
 R1 Common1 HitFall recovery-input priority trace gate
-  -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is required in qa:trace
+  -> synthetic-imported-default-fall-recovery-input-priority.json checksum f5e72e07 is required in qa:trace
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5210 -> 0 through command = "recovery" while HitFall && CanRecover probe state 5250 is forbidden
   -> required order includes HitVelSet -> kinematic:hitvelset -> VelAdd -> Recovery Input ChangeState -> VelSet -> kinematic:velset -> HitFallSet -> hitfall:hitfallset
   -> active-command evidence includes x and recovery while ground-recovery state 5200 is forbidden

@@ -1508,8 +1508,13 @@ async function main() {
     });
     artifacts.push({
       name: "synthetic-imported-hitfall-recovery-input-priority",
-      required: true,
+      required: false,
       artifact: presets.createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-default-fall-recovery-input-priority",
+      required: true,
+      artifact: presets.createSyntheticImportedDefaultFallRecoveryInputPriorityTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-hitfall-recover-true",
@@ -3721,8 +3726,8 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-default-fall-official-ground-recovery",
     "synthetic-imported-default-fall-recovery-too-early",
     "synthetic-imported-default-fall-ground-recovery-priority",
+    "synthetic-imported-default-fall-recovery-input-priority",
     "synthetic-imported-hitfall-canrecover-ready",
-    "synthetic-imported-hitfall-recovery-input-priority",
     "synthetic-imported-hitfall-recover-true",
     "synthetic-imported-default-fall-official-recovery-too-early",
     "synthetic-imported-bounds",

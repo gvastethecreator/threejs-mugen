@@ -20528,6 +20528,86 @@ export function createSyntheticImportedHitFallRecoveryInputPriorityTraceArtifact
   );
 }
 
+export function createSyntheticImportedDefaultFallRecoveryInputPriorityTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedDefaultFallGetHitTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-default-fall-recovery-input-priority",
+      displayName: "Synthetic Imported Default Fall Recovery Input Priority",
+      defaultGetHitFall: {
+        shakeStateNo: 5000,
+        slideStateNo: 5001,
+        airStateNo: 5030,
+        fallStateNo: 5050,
+        recoveryInputStateNo: 5210,
+        fallProbeStateNo: 5250,
+        fallProbeName: "HitFall CanRecover Ready Probe",
+        fallProbeExpression: "HitFall && CanRecover",
+        fallSettleTime: 60,
+        fallProbeTime: 2,
+        includeRecoveryInput: true,
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-default-fall-recovery-input-priority-golden",
+      targetLabel: "Synthetic imported default-fall recovery-input priority route",
+      script: importedDefaultFallRecoveryInputPriorityScript(),
+      attacker: createSyntheticImportedTraceFighter({
+        id: "synthetic-imported-default-fall-recovery-input-priority-attacker",
+        displayName: "Synthetic Imported Default Fall Recovery Input Priority Attacker",
+        groundVelocity: [-3, -6],
+        fall: {
+          ...commonGetHitFallData(),
+          recover: true,
+          recoverTime: 10,
+        },
+      }),
+      requiredExecutedStates: [0, 200, 5000, 5030, 5050, 5210],
+      forbiddenExecutedStates: [5250, 5200],
+      requiredExecutedControllers: ["ChangeState", "HitDef", "HitVelSet", "VelAdd", "HitFallSet", "VelSet"],
+      requiredExecutedOperations: ["hitdef", "kinematic:hitvelset", "kinematic:velset", "hitfall:hitfallset"],
+      requiredActiveCommands: ["x", "recovery"],
+      requiredControllerEventSequences: [defaultHitFallRecoveryInputPriorityControllerSequence()],
+      requiredActorFrameSequences: [defaultHitFallRecoveryInputPriorityActorFrameSequence()],
+      requiredActorFrames: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5050,
+          moveType: "H",
+          observedHitFallRecoverTimeAtLeast: 1,
+          minFrames: 1,
+        },
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 5210,
+          moveType: "I",
+          observedHitFallRecoverTimeAtMost: 0,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [
+        {
+          actorId: "p2",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 0,
+          moveType: "I",
+          ctrl: true,
+        },
+      ],
+      notes: [
+        "Synthetic imported default-fall recovery-input priority trace proves a bounded defender-owned Common1-style fall route can prioritize command = \"recovery\" over a same-state HitFall && CanRecover probe once fall.recovertime reaches zero. It does not claim exact MUGEN/IKEMEN recovery thresholds, air/ground recovery arbitration constants, velocity math, tick-order parity, or full Common1 recovery parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedHitFallRecoverTrueTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {

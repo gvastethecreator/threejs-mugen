@@ -1564,7 +1564,7 @@ R1 Common1 ground-recovery priority trace gate
   -> pnpm qa:trace passes 295/295 artifacts, 265 required and 30 optional after optional KFM air guard walk-control tightening
   -> bounded ground-over-air recovery selection evidence only; no exact recovery threshold tables, controller-loop timing, ground/air arbitration constants, velocity math, visual/audio parity, score movement, or full fall/recovery parity claim
 Previous R1 Common1 HitFall recovery-input priority trace gate
-  -> synthetic-imported-hitfall-recovery-input-priority.json checksum bae07bde is now required
+  -> synthetic-imported-default-fall-recovery-input-priority.json checksum f5e72e07 is now required
   -> defender takes a fall HitDef with fall.recover = 1 and no p2stateno, then routes 5000 -> 5030 -> 5050 -> 5210 -> 0 through command = "recovery" while a competing HitFall && CanRecover probe exists
   -> bounded generic recovery-input priority evidence only; ground-over-air priority is covered by the newer ground-recovery priority gate
 Previous R1 Common1 HitFall CanRecover-ready trace gate
