@@ -27,6 +27,15 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
+R1 required dynamic RemapPal typed sprite-effect trace gate
+  -> synthetic-imported-remappal-dynamic.json checksum 5f04f2d4 / final checksum 71ad06f0 is required in qa:trace
+  -> imported active state seeds var(0)=5 and var(1)=7, then executes RemapPal source = 1,var(0) with dest = 2,var(1)
+  -> dynamic RemapPal source/dest resolves through runtime expression fallback, records typed sprite-effect:remappal evidence, and preserves paletteRemap source [1,5] -> dest [2,7] telemetry
+  -> actor-frame/final evidence requires paletteRemap source [1,5] -> dest [2,7]
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
+  -> official Elecbyte docs allow numeric controller params as expressions and define RemapPal source/dest semantics
+  -> no score movement; exact source-bank/default/removal semantics, ACT/SFF pixel parity, truecolor/PNG remap, exact PalFX order/math, renderer parity, helper/redirect ownership, and full palette VM parity remain blocked
+
 R1 required dynamic Trans typed sprite-effect trace gate
   -> synthetic-imported-trans-dynamic.json checksum 4bffcd82 / final checksum 5beea0f0 is required in qa:trace
   -> imported active state seeds var(0)=96 and var(1)=160, then executes Trans trans = addalpha with alpha = var(0),var(1)
@@ -639,15 +648,15 @@ Superseded R1 required dynamic SprPriority trace gate
   -> official Elecbyte docs allow numeric controller params as expressions and define SprPriority value as an int priority level
   -> no score movement; dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-R1 required dynamic RemapPal trace gate
-  -> synthetic-imported-remappal-dynamic.json checksum a44ec542 is required in qa:trace
+Superseded R1 required dynamic RemapPal trace gate
+  -> synthetic-imported-remappal-dynamic.json current checksum 5f04f2d4 / final checksum 71ad06f0 is required in qa:trace
   -> imported active state seeds var(0)=5 and var(1)=7, then executes RemapPal source = 1,var(0) and dest = 2,var(1)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic pair resolver into RuntimeSpriteEffectWorld.applyRemapPal
   -> PlayableMatchRuntime resolves source/dest pair expressions through the active controller expression context
-  -> final imported actor evidence requires paletteRemap source [1,5] -> dest [2,7]
-  -> pnpm qa:trace passes 441/441 artifacts, 411 required and 30 optional
+  -> final imported actor evidence requires paletteRemap source [1,5] -> dest [2,7] and typed sprite-effect:remappal operation evidence after runtime expression resolution
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define RemapPal source/dest
-  -> no score movement; typed-operation lowering for dynamic params, exact source-bank/default/removal semantics, ACT/SFF pixel parity, truecolor/PNG remap, helper/redirect ownership, exact PalFX order/math, renderer parity, and full palette parity remain blocked
+  -> no score movement; exact source-bank/default/removal semantics, ACT/SFF pixel parity, truecolor/PNG remap, helper/redirect ownership, exact PalFX order/math, renderer parity, and full palette parity remain blocked
 
 R1 required AssertSpecial NoJuggleCheck telemetry trace gate
   -> synthetic-imported-assertspecial-juggle-telemetry.json checksum 9436dfa0 is required in qa:trace

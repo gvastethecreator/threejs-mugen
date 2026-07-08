@@ -9,6 +9,7 @@ import {
   applyRuntimeRemapPalController,
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
+  resolveRuntimeRemapPalControllerOperation,
   resolveRuntimeSpritePriorityControllerOperation,
   resolveRuntimeTransControllerOperation,
   RuntimeSpriteEffectControllerWorld,
@@ -695,6 +696,10 @@ describe("SpriteEffectSystem", () => {
     const actor = { runtime: runtimeState() };
     const ir = compileControllerIr(controller("RemapPal", { source: "1,var(0)", dest: "2,var(1)" }));
     const recordedOperations: string[] = [];
+    const operation = resolveRuntimeRemapPalControllerOperation(
+      controller("RemapPal", { source: "1,var(0)", dest: "2,var(1)" }),
+      (key) => (key === "source" ? [1, 5] : [2, 7]),
+    );
 
     const result = world.apply({
       actor,
@@ -707,9 +712,20 @@ describe("SpriteEffectSystem", () => {
     });
 
     expect(ir.operation).toBeUndefined();
+    expect(operation).toEqual({ kind: "sprite-effect", controllerType: "remappal", source: [1, 5], dest: [2, 7] });
     expect(actor.runtime.paletteRemap).toEqual({ source: [1, 5], dest: [2, 7] });
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:remappal"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
+  });
+
+  it("does not record dynamic RemapPal as typed evidence until both palette pairs are complete", () => {
+    expect(resolveRuntimeRemapPalControllerOperation(controller("RemapPal", { source: "1,var(0)", dest: "2,7" }))).toBeUndefined();
+    expect(
+      resolveRuntimeRemapPalControllerOperation(
+        controller("RemapPal", { source: "1,var(0)", dest: "2,var(1)" }),
+        (key) => (key === "source" ? [1, 5] : undefined),
+      ),
+    ).toBeUndefined();
   });
 
   it("resolves dynamic SprPriority through the active-state sprite boundary", () => {

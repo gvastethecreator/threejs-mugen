@@ -11450,7 +11450,7 @@ describe("RuntimeTraceGatePresets", () => {
     ).toBe(true);
   });
 
-  it("creates a synthetic imported dynamic RemapPal artifact with expression fallback evidence", () => {
+  it("creates a synthetic imported dynamic RemapPal artifact with typed expression evidence", () => {
     const artifact = createSyntheticImportedDynamicRemapPalTraceArtifact({ generatedAt: "2026-07-05T00:00:00.000Z" });
 
     expect(artifact).toMatchObject({
@@ -11468,9 +11468,14 @@ describe("RuntimeTraceGatePresets", () => {
       ],
     });
     const evidence = artifact.gates[0]?.evidence;
+    expect(artifact.gates[0]?.requirements.requiredExecutedOperations).toEqual([
+      "variable:varset",
+      "sprite-effect:remappal",
+      "hitdef",
+    ]);
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(2);
     expect(evidence?.executedControllers.RemapPal).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:remappal"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:remappal"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

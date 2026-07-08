@@ -305,14 +305,42 @@ export function applyRuntimeRemapPalController(
   operation?: Extract<SpriteEffectControllerOp, { controllerType: "remappal" }>,
   resolvePair?: RuntimeRemapPalPairResolver,
 ): void {
-  const source = operation?.source ?? resolvePair?.("source") ?? palettePair(findControllerParam(controller, "source"));
-  const dest = operation?.dest ?? resolvePair?.("dest") ?? palettePair(findControllerParam(controller, "dest"));
+  const resolvedOperation = operation ?? resolveRuntimeRemapPalControllerOperation(controller, resolvePair);
+  const source =
+    resolvedOperation?.source ??
+    normalizePalettePair(resolvePair?.("source") ?? palettePair(findControllerParam(controller, "source")));
+  const dest =
+    resolvedOperation?.dest ??
+    normalizePalettePair(resolvePair?.("dest") ?? palettePair(findControllerParam(controller, "dest")));
   if (!source || !dest) {
     return;
   }
   state.paletteRemap = {
-    source: normalizePalettePair(source),
-    dest: normalizePalettePair(dest),
+    source,
+    dest,
+  };
+}
+
+export function resolveRuntimeRemapPalControllerOperation(
+  controller: { params: Record<string, string> },
+  resolvePair?: RuntimeRemapPalPairResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "remappal" }> | undefined {
+  const sourceParam = findControllerParam(controller, "source");
+  const destParam = findControllerParam(controller, "dest");
+  const source = normalizePalettePair(
+    (sourceParam === undefined ? undefined : resolvePair?.("source")) ?? palettePair(sourceParam),
+  );
+  const dest = normalizePalettePair(
+    (destParam === undefined ? undefined : resolvePair?.("dest")) ?? palettePair(destParam),
+  );
+  if (!source || !dest) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "remappal",
+    source,
+    dest,
   };
 }
 
@@ -575,6 +603,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
   if (input.effect === "sprpriority") {
     return resolveRuntimeSpritePriorityControllerOperation(input.controller.source, input.resolveSpritePriority);
   }
+  if (input.effect === "remappal") {
+    return resolveRuntimeRemapPalControllerOperation(input.controller.source, input.resolveRemapPalPair);
+  }
   if (input.effect === "trans") {
     return resolveRuntimeTransControllerOperation(input.controller.source, input.resolveTransAlpha);
   }
@@ -622,7 +653,10 @@ function numberPair(value: string | undefined): [number, number] | undefined {
   return [parts[0]!, parts[1]!];
 }
 
-function normalizePalettePair(pair: [number, number]): [number, number] {
+function normalizePalettePair(pair: [number, number] | undefined): [number, number] | undefined {
+  if (!pair || pair.some((numberValue) => !Number.isFinite(numberValue))) {
+    return undefined;
+  }
   return [Math.max(0, Math.round(pair[0])), Math.max(0, Math.round(pair[1]))];
 }
 

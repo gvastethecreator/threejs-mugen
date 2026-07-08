@@ -7208,7 +7208,7 @@ export function createSyntheticImportedDynamicRemapPalTraceArtifact(
       label: "Synthetic imported dynamic RemapPal route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic RemapPal trace proves source/dest expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded palette-remap telemetry. It does not claim typed sprite-effect operation lowering for dynamic params, ACT/SFF pixel remapping, palette application, PalFX interaction, helper/redirect ownership, or timing parity.",
+        "Synthetic imported dynamic RemapPal trace proves source/dest expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary, record typed sprite-effect operation evidence after resolution, and reach bounded palette-remap telemetry. It does not claim ACT/SFF pixel remapping, palette application, PalFX interaction, helper/redirect ownership, or timing parity.",
       ],
     },
     gates: [
@@ -7219,7 +7219,7 @@ export function createSyntheticImportedDynamicRemapPalTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "RemapPal", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:remappal", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {
