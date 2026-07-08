@@ -35,14 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Helper ModifyProjectile dynamic params trace gate
--> synthetic-imported-helper-modifyprojectile-dynamic-params.json checksum 2d88a550 / final checksum edb6d2d2 is required in qa:trace
--> helper-local ModifyProjectile resolves Parent/Root dynamic projid, velocity, accel, velmul, projscale, projremovetime, sprpriority, projpriority, projhits, projmisstime, and projremove
--> payload/frame evidence requires removeTime = 46, spritePriority = 9, priority = 5, hitsRemaining = 6, scale = 3,1, removeOnHit = false, helper-parented Projectile lifecycle, and observed projectile velocity after mutation
--> pnpm qa:trace passes 502/502 artifacts, 471 required and 31 optional
--> paired owner/helper dynamic params and bounds gates remain owner synthetic-imported-modifyprojectile-dynamic-params.json checksum 6ffbef92 / final checksum 5665a98e, helper bounds f582153e / adc63407, and owner bounds e2f7a077 / aa78704a
--> official Elecbyte docs define numeric controller-expression behavior and controller-param evaluation at trigger time
--> no score movement; default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, team/simul helper selection, and full Projectile parity remain blocked
+R1 required ModifyProjectile omitted bounds preservation trace gates
+-> synthetic-imported-modifyprojectile-omitted-bounds.json checksum 24cbb1dc / final checksum e94d1480 is required in qa:trace
+-> synthetic-imported-helper-modifyprojectile-omitted-bounds.json checksum 9db04bbc / final checksum 555d744b is required in qa:trace
+-> owner-side/helper-local ModifyProjectile preserves explicit projedgebound, projstagebound, and projheightbound when a later mutation omits those bound params
+-> payload/frame evidence requires non-bound mutation plus preserved explicit bounds 34 / 26 / -132,68
+-> pnpm qa:trace passes 504/504 artifacts, 473 required and 31 optional
+-> paired owner/helper dynamic params and bounds gates remain helper params 2d88a550 / edb6d2d2, owner params 6ffbef92 / 5665a98e, helper bounds f582153e / adc63407, and owner bounds e2f7a077 / aa78704a
+-> official Elecbyte docs define Projectile bound defaults; Ikemen-GO source snapshot 5f12c8c82ec06f5173b51f565cf2cd61ac2ab802 initializes Projectile defaults on spawn and assigns ModifyProjectile bound params only when present
+-> no score movement; exact camera/screen/stage split, exact tick order, helper/team namespace breadth, team/simul helper selection, and full Projectile parity remain blocked
 
 Previous R1 required Projectile localcoord default bounds trace gates
 -> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace

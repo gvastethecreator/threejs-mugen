@@ -26545,6 +26545,93 @@ export function createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifac
   });
 }
 
+export function createSyntheticImportedModifyProjectileOmittedBoundsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? effectPauseStage();
+  const script = importedProjectileMotionScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-modifyprojectile-omitted-bounds-attacker",
+    displayName: "Synthetic Imported ModifyProjectile Omitted Bounds Attacker",
+    withProjectile: true,
+    projectileOffset: [80, -45],
+    projectileVelocity: [1, 0],
+    projectileEdgeBound: 34,
+    projectileStageBound: 26,
+    projectileHeightBound: [-132, 68],
+    withModifyProjectile: true,
+    modifyProjectileTriggerTime: 3,
+    modifyProjectileVelocity: [10, -1],
+    modifyProjectileScale: [2, 0.75],
+    modifyProjectileRemoveTime: 28,
+    modifyProjectilePriority: 4,
+    modifyProjectileHits: 5,
+    modifyProjectileMissTime: 6,
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-modifyprojectile-omitted-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-modifyprojectile-omitted-bounds-golden",
+      label: "Synthetic imported ModifyProjectile omitted bounds route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported ModifyProjectile omitted-bounds trace proves bounded owner-side ModifyProjectile preserves a live Projectile's explicit removal bounds when a later mutation omits projedgebound, projstagebound, and projheightbound. It follows Ikemen-GO's direct assignment model for present params and does not claim exact camera/screen/stage split, helper/team namespace breadth, or full Projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-modifyprojectile-omitted-bounds-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Projectile", "ModifyProjectile"],
+        requiredExecutedOperations: ["hitdef", "projectile", "modifyprojectile"],
+        requiredActiveCommands: ["x"],
+        requiredWorldLifecycleEvents: [{ type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1" }],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minProjectiles: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          {
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 77,
+            minAge: 3,
+            minRemoveTime: 28,
+            minPriority: 4,
+            minHitsRemaining: 5,
+            scaleX: 2,
+            scaleY: 0.75,
+            edgeBound: 34,
+            stageBound: 26,
+            heightBound: { low: -132, high: 68 },
+          },
+        ],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 910,
+            moveType: "A",
+            minFrames: 3,
+            observedVelXAtLeast: 8,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.75,
+            observedScaleYAtMost: 0.75,
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact(
   options: RuntimeTraceGatePresetOptions = {},
 ): RuntimeTraceArtifact {
@@ -29729,6 +29816,112 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
             edgeBound: 28,
             stageBound: 24,
             heightBound: { low: -120, high: 60 },
+          },
+        ],
+      },
+    ],
+  });
+}
+
+export function createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-omitted-bounds-attacker",
+    displayName: "Synthetic Imported Helper ModifyProjectile Omitted Bounds Attacker",
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      projectileId: 8852,
+      projectileEdgeBound: 34,
+      projectileStageBound: 26,
+      projectileHeightBound: [-132, 68],
+      omitModifyBounds: true,
+      velocity: [9, -1],
+      scale: [2, 0.75],
+      removeTime: 52,
+      spritePriority: 8,
+      priority: 4,
+      hits: 3,
+      missTime: 5,
+      removeOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden",
+      label: "Synthetic imported Helper ModifyProjectile omitted bounds route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper ModifyProjectile omitted-bounds trace proves the bounded helper-local micro-VM preserves a helper-parented Projectile's explicit removal bounds when a later ModifyProjectile omits projedgebound, projstagebound, and projheightbound. It does not claim helper-owned Projectile combat/contact presentation, exact namespace breadth, team/simul helper selection, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper"],
+        requiredExecutedOperations: ["hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 945,
+            moveType: "A",
+            minFrames: 1,
+            observedVelXAtLeast: 6,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.75,
+            observedScaleYAtMost: 0.75,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 8852,
+            minAge: 3,
+            minRemoveTime: 52,
+            minSpritePriority: 8,
+            minPriority: 4,
+            minHitsRemaining: 3,
+            maxHitsRemaining: 3,
+            hasHit: false,
+            scaleX: 2,
+            scaleY: 0.75,
+            edgeBound: 34,
+            stageBound: 26,
+            heightBound: { low: -132, high: 68 },
           },
         ],
       },
@@ -37208,9 +37401,13 @@ export type SyntheticImportedTraceFighterOptions = {
     finalAnimNo?: number;
     projectileAnimNo: number;
     projectileId?: number;
+    projectileEdgeBound?: number;
+    projectileStageBound?: number;
+    projectileHeightBound?: [number, number];
     pos?: [number, number];
     modifyTriggerTime?: number;
     modifyProjectileId?: SyntheticNumberExpression;
+    omitModifyBounds?: boolean;
     velocity?: SyntheticPairExpression;
     accel?: SyntheticPairExpression;
     velocityMultiplier?: SyntheticPairExpression;
@@ -42440,6 +42637,13 @@ function helperModifyProjectileRouteBlock(route: NonNullable<SyntheticImportedTr
   const missTime = route.missTime ?? 5;
   const removeOnHit = route.removeOnHit ?? false;
   const removeOnHitValue = typeof removeOnHit === "boolean" ? (removeOnHit ? 1 : 0) : removeOnHit;
+  const projectileEdgeBoundLine = route.projectileEdgeBound === undefined ? "" : `projedgebound = ${route.projectileEdgeBound}`;
+  const projectileStageBoundLine = route.projectileStageBound === undefined ? "" : `projstagebound = ${route.projectileStageBound}`;
+  const projectileHeightBoundLine =
+    route.projectileHeightBound === undefined ? "" : `projheightbound = ${route.projectileHeightBound[0]},${route.projectileHeightBound[1]}`;
+  const edgeBoundLine = route.omitModifyBounds ? "" : `projedgebound = ${edgeBound}`;
+  const stageBoundLine = route.omitModifyBounds ? "" : `projstagebound = ${stageBound}`;
+  const heightBoundLine = route.omitModifyBounds ? "" : `projheightbound = ${heightBound[0]},${heightBound[1]}`;
   return `
 [Statedef 1200]
 type = S
@@ -42459,6 +42663,9 @@ projpriority = 2
 projhits = 1
 projmisstime = 0
 projremovetime = 40
+${projectileEdgeBoundLine}
+${projectileStageBoundLine}
+${projectileHeightBoundLine}
 projremove = 1
 sprpriority = 4
 
@@ -42483,9 +42690,9 @@ velocity = ${velocity[0]},${velocity[1]}
 accel = ${accel[0]},${accel[1]}
 velmul = ${velocityMultiplier[0]},${velocityMultiplier[1]}
 projscale = ${scale[0]},${scale[1]}
-projedgebound = ${edgeBound}
-projstagebound = ${stageBound}
-projheightbound = ${heightBound[0]},${heightBound[1]}
+${edgeBoundLine}
+${stageBoundLine}
+${heightBoundLine}
 projremovetime = ${removeTime}
 sprpriority = ${spritePriority}
 projpriority = ${priority}

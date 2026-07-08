@@ -1952,6 +1952,11 @@ async function main() {
       artifact: presets.createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-modifyprojectile-omitted-bounds",
+      required: true,
+      artifact: presets.createSyntheticImportedModifyProjectileOmittedBoundsTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-modifyprojectile-dynamic-params",
       required: true,
       artifact: presets.createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact(),
@@ -2120,6 +2125,11 @@ async function main() {
       name: "synthetic-imported-helper-modifyprojectile-dynamic-bounds",
       required: true,
       artifact: presets.createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact(),
+    });
+    artifacts.push({
+      name: "synthetic-imported-helper-modifyprojectile-omitted-bounds",
+      required: true,
+      artifact: presets.createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact(),
     });
     artifacts.push({
       name: "synthetic-imported-helper-modifyprojectile-dynamic-params",

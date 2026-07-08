@@ -231,6 +231,7 @@ import {
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperModifyExplodTraceArtifact,
   createSyntheticImportedHelperModifyProjectileTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedHelperModifyProjectileDynamicParamsTraceArtifact,
   createSyntheticImportedHelperProjHitTraceArtifact,
@@ -399,6 +400,7 @@ import {
   createSyntheticImportedModifyExplodTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileDynamicParamsTraceArtifact,
+  createSyntheticImportedModifyProjectileOmittedBoundsTraceArtifact,
   createSyntheticImportedModifyProjectileTraceArtifact,
   createSyntheticImportedProjectileReceivedDamageTraceArtifact,
   createSyntheticImportedProjectileHitTimeAnyTraceArtifact,
@@ -3304,6 +3306,74 @@ describe("RuntimeTraceGatePresets", () => {
             edgeBound: 28,
             stageBound: 24,
             heightBound: { low: -120, high: 60 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper ModifyProjectile omitted bounds artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileOmittedBoundsTraceArtifact({
+      generatedAt: "2026-07-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-modifyprojectile-omitted-bounds-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 8852,
+        minAge: 3,
+        minRemoveTime: 52,
+        minSpritePriority: 8,
+        minPriority: 4,
+        minHitsRemaining: 3,
+        maxHitsRemaining: 3,
+        hasHit: false,
+        scaleX: 2,
+        scaleY: 0.75,
+        edgeBound: 34,
+        stageBound: 26,
+        heightBound: { low: -132, high: 68 },
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8852,
+            priority: 4,
+            hitsRemaining: 3,
+            scale: { x: 2, y: 0.75 },
+            edgeBound: 34,
+            stageBound: 26,
+            heightBound: { low: -132, high: 68 },
           }),
         }),
       ]),
@@ -23738,6 +23808,63 @@ describe("RuntimeTraceGatePresets", () => {
             edgeBound: 52,
             stageBound: 36,
             heightBound: { low: -144, high: 72 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported ModifyProjectile omitted bounds artifact", () => {
+    const artifact = createSyntheticImportedModifyProjectileOmittedBoundsTraceArtifact({
+      generatedAt: "2026-07-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-modifyprojectile-omitted-bounds-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-modifyprojectile-omitted-bounds-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const evidence = artifact.gates[0]?.evidence;
+    expect(evidence?.executedControllers.ModifyProjectile).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations.modifyprojectile).toBeGreaterThanOrEqual(1);
+    expect(artifact.gates[0]?.requirements.requiredEffectPayloads).toEqual([
+      {
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 77,
+        minAge: 3,
+        minRemoveTime: 28,
+        minPriority: 4,
+        minHitsRemaining: 5,
+        scaleX: 2,
+        scaleY: 0.75,
+        edgeBound: 34,
+        stageBound: 26,
+        heightBound: { low: -132, high: 68 },
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 77,
+            priority: 4,
+            hitsRemaining: 5,
+            scale: { x: 2, y: 0.75 },
+            edgeBound: 34,
+            stageBound: 26,
+            heightBound: { low: -132, high: 68 },
           }),
         }),
       ]),

@@ -1,5 +1,40 @@
 # Build Execution Backlog
 
+## 2026-07-08 - ModifyProjectile omitted bounds preservation trace gates
+
+Changed:
+
+- Added required owner-side trace artifact `synthetic-imported-modifyprojectile-omitted-bounds.json` and helper-local trace artifact `synthetic-imported-helper-modifyprojectile-omitted-bounds.json`.
+- Extended the synthetic helper `ModifyProjectile` route fixture with explicit Projectile spawn bounds plus `omitModifyBounds`, so helper routes can prove later partial `ModifyProjectile` mutation does not reset authored bounds.
+- Registered both artifacts in `pnpm qa:trace`; owner/helper routes mutate velocity/scale/timing/priority payload fields while omitting `projedgebound`, `projstagebound`, and `projheightbound` from `ModifyProjectile`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html#Projectile) defines Projectile bound defaults; Ikemen-GO source snapshot `5f12c8c82ec06f5173b51f565cf2cd61ac2ab802` initializes Projectile defaults on spawn and assigns `ModifyProjectile` bound params only when present.
+- Focused preset test: `pnpm vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "omitted bounds"` -> 1 file / 2 tests passed.
+- Focused ModifyProjectile regression: `pnpm vitest run src/tests/ProjectileSystem.test.ts src/tests/EffectSpawnSystem.test.ts src/tests/EffectActorSystem.test.ts src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "ModifyProjectile"` -> 4 files / 15 tests passed.
+- Full tests: `pnpm test` -> 151 files / 1453 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-DhpKwbrW.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 504/504 artifacts, 473 required and 31 optional.
+- Trace artifacts: `synthetic-imported-modifyprojectile-omitted-bounds.json` checksum `24cbb1dc` / final checksum `e94d1480`; `synthetic-imported-helper-modifyprojectile-omitted-bounds.json` checksum `9db04bbc` / final checksum `555d744b`.
+
+Claim allowed:
+
+- Bounded owner-side and helper-local `ModifyProjectile` preserve a live Projectile's existing explicit removal bounds when a later `ModifyProjectile` omits `projedgebound`, `projstagebound`, and `projheightbound`, while still mutating other supported Projectile payload fields.
+
+Claim blocked:
+
+- Exact camera/screen/stage split, exact tick order, helper/team namespace breadth, team/simul helper selection, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 504/504 artifacts, 473 required and 31 optional. This runtime trace slice adds two required artifacts and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-08 - Helper ModifyProjectile dynamic params trace gate
 
 Changed:
