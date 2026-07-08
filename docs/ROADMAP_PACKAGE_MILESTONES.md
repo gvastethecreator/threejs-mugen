@@ -35,7 +35,15 @@ Docs-only changes here do not move scores. Scores move only through trace, test,
 Latest runtime checkpoint:
 
 ```txt
-R1 required Const240p/Const480p/Const720p trace gate
+R1 required Const240p/Const480p/Const720p controller-param trace gate
+-> synthetic-imported-const-controller-param.json checksum 7539c572 / final checksum e6a9395f is required in qa:trace
+-> imported State -1 presses x, enters active state/action 200, and executes VelSet x = Const240p(3) + Const480p(6), y = 0 - Const720p(12)
+-> player localCoord 640x480 converts the dynamic params to velocity x = 12 and y = -6, with controller order and actor-frame telemetry required
+-> pnpm qa:trace passes 509/509 artifacts, 478 required and 31 optional
+-> official Elecbyte State Controller Reference defines numeric controller params as expression-capable unless otherwise specified; Elecbyte Trigger Reference defines Const240p/480p/720p as player-coordinate width-ratio conversions
+-> no score movement; broad coordinate translation across all controller params, dynamic typed-operation lowering, renderer/screenpack viewport ownership, camera animation parity, IKEMEN config.json execution, helper/team/simul namespace breadth, and full viewport parity remain blocked
+
+Previous R1 required Const240p/Const480p/Const720p trace gate
 -> synthetic-imported-const-coordinate.json checksum ea879c1b is required in qa:trace
 -> imported State -1 presses x, uses player localCoord 640x480, evaluates Const240p(3) = 6, Const480p(6) = 6, Const720p(12) = 6, and routes into state/action 9304
 -> evaluator/compiler/controller contexts now treat Const240p/480p/720p as numeric coordinate conversions, not raw Const lookups, and support evaluated args such as Const720p(var(0))

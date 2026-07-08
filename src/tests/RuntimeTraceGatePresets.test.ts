@@ -544,6 +544,7 @@ import {
   createSyntheticImportedSelfCommandTraceArtifact,
   createSyntheticImportedSelfStateNoExistTraceArtifact,
   createSyntheticImportedConfigGameSpaceTraceArtifact,
+  createSyntheticImportedConstControllerParamTraceArtifact,
   createSyntheticImportedConstCoordinateTraceArtifact,
   createSyntheticImportedGameSpaceTraceArtifact,
   createSyntheticImportedScreenSpaceTraceArtifact,
@@ -2227,6 +2228,71 @@ describe("RuntimeTraceGatePresets", () => {
     expect(artifact.gates[0]?.requirements.requiredExecutedStates).toEqual([9304]);
     expect(artifact.gates[0]?.requirements.requiredExecutedControllers).toEqual(["ChangeState"]);
     expect(artifact.trace.finalActors.some((actor) => actor.id === "p1" && actor.stateNo === 9304)).toBe(true);
+  });
+
+  it("creates a synthetic imported Const240p/Const480p/Const720p controller-param artifact with VelSet evidence", () => {
+    const artifact = createSyntheticImportedConstControllerParamTraceArtifact({ generatedAt: "2026-07-08T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-const-controller-param-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.activeCommands).toContain("x");
+    expect(evidence?.routedStates).toContain(200);
+    expect(evidence?.executedStates).toContain(200);
+    expect(evidence?.executedControllers.VelSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["kinematic:velset"]).toBeGreaterThanOrEqual(1);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VelSet"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["kinematic:velset"]);
+    expect(gate?.requirements.requiredControllerEventSequences).toEqual([
+      {
+        label: "200 Const controller-param VelSet order",
+        actorId: "p1",
+        allowSameTick: true,
+        steps: [
+          { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
+          { stateNo: 200, operation: "kinematic:velset" },
+          { stateNo: 200, controller: "VelSet", name: "Const Controller Param Velocity" },
+        ],
+      },
+    ]);
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 200,
+        animNo: 200,
+        observedVelXAtLeast: 12,
+        observedVelYAtMost: -6,
+        minFrames: 2,
+      },
+    ]);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          minVel: expect.objectContaining({ y: -6 }),
+          maxVel: expect.objectContaining({ x: 12 }),
+        }),
+      ]),
+    );
   });
 
   it("creates a synthetic imported state-context artifact with ctrl and metadata branch evidence", () => {

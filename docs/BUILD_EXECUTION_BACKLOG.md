@@ -1,5 +1,40 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Const controller-param trace gate
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-const-controller-param.json` for bounded player-local `Const240p` / `Const480p` / `Const720p` evaluation inside active-state `VelSet` numeric params.
+- Reused the existing dynamic controller-param `VelSet` route so this slice proves parameter-context execution instead of only State -1 branch evaluation.
+- The route presses `x`, enters state/action `200`, seeds a static `VelSet`, then executes `VelSet x = Const240p(3) + Const480p(6), y = 0 - Const720p(12)` for a 640x480 player `localCoord`, proving velocity telemetry `x = 12` and `y = -6`.
+
+Evidence:
+
+- Official sources checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) states numeric state-controller parameters generally accept arithmetic expressions unless otherwise specified; [Elecbyte Trigger Reference](https://www.elecbyte.com/mugendocs/trigger.html) defines `Const240p`, `Const480p`, and `Const720p` as coordinate conversion functions into the player's coordinate space using width ratios.
+- Focused test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "controller-param artifact"` -> 1 file / 1 test passed.
+- Full tests: `pnpm test` -> 153 files / 1464 tests passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 509/509 artifacts, 478 required and 31 optional.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+- Trace artifact: `synthetic-imported-const-controller-param.json` checksum `7539c572` / final checksum `e6a9395f`.
+
+Claim allowed:
+
+- Bounded current runtime `VelSet` controller params can evaluate `Const240p`, `Const480p`, and `Const720p` against current player localcoord width and apply the resulting dynamic velocity.
+
+Claim blocked:
+
+- Broad coordinate translation across all controller params, dynamic typed-operation lowering for dynamic `VelSet` params, exact renderer/screenpack viewport ownership, camera animation parity, IKEMEN `config.json` execution, helper/team/simul namespace breadth, score movement, and full MUGEN/IKEMEN coordinate parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 509/509 artifacts, 478 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1 by extending player-local coordinate conversion into another high-value controller family, adding a Common1/FightFX oracle, or move an R2 mutable helper/target/effect path behind a named runtime boundary with focused tests.
+
 ## 2026-07-08 - Const coordinate conversion trace gate
 
 Changed:

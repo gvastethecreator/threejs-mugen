@@ -266,6 +266,11 @@ async function main() {
       artifact: presets.createSyntheticImportedConstCoordinateTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-const-controller-param",
+      required: true,
+      artifact: presets.createSyntheticImportedConstControllerParamTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-state-context",
       required: true,
       artifact: presets.createSyntheticImportedStateContextTraceArtifact(),

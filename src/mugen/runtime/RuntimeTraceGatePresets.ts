@@ -1497,6 +1497,61 @@ export function createSyntheticImportedConstCoordinateTraceArtifact(options: Run
   );
 }
 
+export function createSyntheticImportedConstControllerParamTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-const-controller-param",
+      displayName: "Synthetic Imported Const Controller Param",
+      localCoord: [640, 480],
+      action200Duration: 30,
+      withHitDef: false,
+      bottomParamVelSetRoute: {
+        seedVelocity: [2, -1],
+        xExpression: "Const240p(3) + Const480p(6)",
+        yExpression: "0 - Const720p(12)",
+        dynamicControllerName: "Const Controller Param Velocity",
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-const-controller-param-golden",
+      targetLabel: "Synthetic imported Const controller-param route",
+      requiredExecutedStates: [200],
+      requiredExecutedControllers: ["ChangeState", "VelSet"],
+      requiredExecutedOperations: ["kinematic:velset"],
+      requiredControllerEventSequences: [
+        {
+          label: "200 Const controller-param VelSet order",
+          actorId: "p1",
+          allowSameTick: true,
+          steps: [
+            { stateNo: 200, controller: "VelSet", name: "Seed Controller Param Velocity" },
+            { stateNo: 200, operation: "kinematic:velset" },
+            { stateNo: 200, controller: "VelSet", name: "Const Controller Param Velocity" },
+          ],
+        },
+      ],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 200,
+          animNo: 200,
+          observedVelXAtLeast: 12,
+          observedVelYAtMost: -6,
+          minFrames: 2,
+        },
+      ],
+      notes: [
+        "Synthetic imported Const controller-param trace proves bounded Const240p/Const480p/Const720p coordinate conversion can execute inside an active-state VelSet numeric parameter against a 640x480 player localcoord. The static seed VelSet provides typed kinematic evidence; the dynamic Const expression is proven through controller order and actor velocity telemetry. It does not claim broad coordinate translation across every controller param, exact renderer/screenpack viewport ownership, camera animation, helper/team namespaces, dynamic typed-operation lowering, score movement, or full MUGEN/IKEMEN coordinate parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedStateContextTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
