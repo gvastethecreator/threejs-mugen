@@ -1,5 +1,50 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper dynamic PosSet typed telemetry
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-helper-dynamic-posset.json` for a bounded first-generation visual Helper route.
+- The helper route seeds position with `PosSet x = 2, y = 3`, resolves `PosSet x = Parent,Life - 984` and `y = Root,StateNo - 220`, then routes on helper position `16,-20` into state/action `1404` / anim `944`.
+- `qa_traces` now registers the artifact as required and coverage-required.
+- Focused trace coverage now asserts helper actor-frame position, helper lifecycle/payload evidence, controller evidence, and typed `kinematic:posset` operation evidence.
+- Updated roadmap, support registry, QA gates, scorecard, progress tracker, fixture goldens, workplan, continuity docs, and the active R1 issue slice around checksum `50596bc2`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified and documents `PosSet` as setting optional `x` / `y` player coordinates.
+- Focused tests: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts --testNamePattern "Helper dynamic PosSet|Helper dynamic VelMul"` -> 1 file / 2 tests passed, 507 skipped.
+- Broad regression: `pnpm test -- RuntimeTraceGatePresets` -> 153 files / 1476 tests passed.
+- Runtime trace gate: `pnpm qa:trace` -> 516/516 artifacts, 485 required and 31 optional.
+- Trace artifact: `synthetic-imported-helper-dynamic-posset.json` checksum `50596bc2`.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded first-generation helper-local `PosSet` controller params can resolve through `Parent,Life` and `Root,StateNo`, set helper position to `16,-20`, emit typed `kinematic:posset` telemetry, and route helper state/action `1404` / anim `944`.
+
+Claim blocked:
+
+- Nested helper ancestry where root differs from parent, helper-spawned helpers, player `Parent` controller-param redirects, helper-local dynamic typed lowering beyond current `VelSet` / `VelAdd` / `VelMul` / `PosSet` routes, recursive redirection, debug warning text, teams/simul, score movement, and full helper/controller expression parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: helper-local dynamic `VelSet`, `VelAdd`, and `VelMul` had typed telemetry, but adjacent helper-local dynamic `PosSet` had no required oracle.
+- Quality delta: helper-local position mutation now uses the same dispatcher and typed-operation evidence path, without broadening helper VM parity claims.
+- Adjacent surface checked: helper runtime controller dispatch, helper Parent/Root read model, position actor-frame telemetry, trace requirements, support registry wording, roadmap truth docs, and aggregate trace coverage.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 516/516 artifacts, 485 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+- Previous required `synthetic-imported-helper-dynamic-velmul.json` checksum `08220a98`, `synthetic-imported-helper-dynamic-veladd.json` checksum `fbb8bcae`, and `synthetic-imported-helper-controller-param-parentroot.json` checksum `94919326` remain required for helper-local dynamic `VelMul`, `VelAdd`, and `VelSet`.
+
+Next:
+
+- Continue R1 only where the helper ownership boundary stays first-generation and explicit; pause before nested helper/root ancestry or helper-owned custom-state table work.
+
 ## 2026-07-08 - Helper dynamic VelMul typed telemetry
 
 Changed:

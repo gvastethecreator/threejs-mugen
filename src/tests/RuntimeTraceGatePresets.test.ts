@@ -228,6 +228,7 @@ import {
   createSyntheticImportedHelperControllerParamParentRootTraceArtifact,
   createSyntheticImportedHelperDynamicVelAddTraceArtifact,
   createSyntheticImportedHelperDynamicVelMulTraceArtifact,
+  createSyntheticImportedHelperDynamicPosSetTraceArtifact,
   createSyntheticImportedHelperExplodTraceArtifact,
   createSyntheticImportedHelperProjectileTraceArtifact,
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
@@ -2893,6 +2894,63 @@ describe("RuntimeTraceGatePresets", () => {
     ]);
     expect(gate?.requirements.requiredEffectPayloads).toEqual([
       { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1403, minAge: 1 },
+    ]);
+  });
+
+  it("creates a synthetic imported Helper dynamic PosSet artifact with typed helper telemetry", () => {
+    const artifact = createSyntheticImportedHelperDynamicPosSetTraceArtifact({
+      generatedAt: "2026-07-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-dynamic-posset-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-dynamic-posset-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.PosSet).toBeGreaterThanOrEqual(2);
+    expect(evidence?.executedOperations["kinematic:posset"]).toBeGreaterThanOrEqual(2);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "effect",
+          actorKind: "helper",
+          ownerId: "p1",
+          stateNo: 1404,
+          animNo: 944,
+          minPos: { x: 16, y: -20 },
+          maxPos: { x: 16, y: -20 },
+        }),
+      ]),
+    );
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        source: "effect",
+        actorKind: "helper",
+        ownerId: "p1",
+        stateNo: 1404,
+        animNo: 944,
+        observedPosXAtLeast: 16,
+        observedPosXAtMost: 16,
+        observedPosYAtLeast: -20,
+        observedPosYAtMost: -20,
+        minFrames: 1,
+      },
+    ]);
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "HitDef", "Helper", "PosSet"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual(["hitdef", "helper", "kinematic:posset"]);
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1404, minAge: 1 },
     ]);
   });
 

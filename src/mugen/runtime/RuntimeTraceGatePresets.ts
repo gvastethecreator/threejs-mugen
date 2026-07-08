@@ -29495,6 +29495,68 @@ export function createSyntheticImportedHelperDynamicVelMulTraceArtifact(
   });
 }
 
+export function createSyntheticImportedHelperDynamicPosSetTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-dynamic-posset-attacker",
+    displayName: "Synthetic Imported Helper Dynamic PosSet Attacker",
+    withHelper: true,
+    helperDynamicPosSetRoute: { stateNo: 1404, animNo: 944 },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-dynamic-posset-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-dynamic-posset-golden",
+      label: "Synthetic imported Helper dynamic PosSet route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper dynamic PosSet trace proves a bounded first-generation helper-local PosSet can evaluate numeric expression params through Parent and Root redirects, emit typed kinematic:posset telemetry through the helper runtime dispatcher, then route on the resulting helper position. It does not claim nested helper ancestry where root differs from parent, helper-spawned helpers, player Parent controller-param redirects, helper-local dynamic typed lowering beyond this PosSet route, recursive redirection, debug warning text, teams/simul, or full MUGEN/IKEMEN helper expression parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-dynamic-posset-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "HitDef", "Helper", "PosSet"],
+        requiredExecutedOperations: ["hitdef", "helper", "kinematic:posset"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          {
+            source: "effect",
+            actorKind: "helper",
+            ownerId: "p1",
+            stateNo: 1404,
+            animNo: 944,
+            observedPosXAtLeast: 16,
+            observedPosXAtMost: 16,
+            observedPosYAtLeast: -20,
+            observedPosYAtMost: -20,
+            minFrames: 1,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 1, minHelpers: 1, minNextHelperSerial: 1 }],
+        requiredEffectPayloads: [{ kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1404, minAge: 1 }],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperExplodTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -37895,6 +37957,7 @@ export type SyntheticImportedTraceFighterOptions = {
   helperControllerParamRedirectRoute?: { stateNo: number; animNo?: number };
   helperDynamicVelAddRoute?: { stateNo: number; animNo?: number };
   helperDynamicVelMulRoute?: { stateNo: number; animNo?: number };
+  helperDynamicPosSetRoute?: { stateNo: number; animNo?: number };
   helperExplodRoute?: { stateNo: number; animNo?: number; explodAnimNo: number; pos?: [number, number] };
   helperProjectileRoute?: {
     stateNo: number;
@@ -38763,6 +38826,7 @@ ${options.helperParentRootRedirectRoute ? helperParentRootRedirectRouteBlock(opt
 ${options.helperControllerParamRedirectRoute ? helperControllerParamRedirectRouteBlock(options.helperControllerParamRedirectRoute) : ""}
 ${options.helperDynamicVelAddRoute ? helperDynamicVelAddRouteBlock(options.helperDynamicVelAddRoute) : ""}
 ${options.helperDynamicVelMulRoute ? helperDynamicVelMulRouteBlock(options.helperDynamicVelMulRoute) : ""}
+${options.helperDynamicPosSetRoute ? helperDynamicPosSetRouteBlock(options.helperDynamicPosSetRoute) : ""}
 ${options.helperExplodRoute ? helperExplodRouteBlock(options.helperExplodRoute) : ""}
 ${options.helperProjectileRoute ? helperProjectileRouteBlock(options.helperProjectileRoute) : ""}
 ${options.helperRemoveExplodRoute ? helperRemoveExplodRouteBlock(options.helperRemoveExplodRoute) : ""}
@@ -39126,6 +39190,14 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
                   [
                     options.helperDynamicVelMulRoute.animNo ?? options.helperDynamicVelMulRoute.stateNo,
                     helperTraceAction(options.helperDynamicVelMulRoute.animNo ?? options.helperDynamicVelMulRoute.stateNo),
+                  ],
+                ] as Array<[number, MugenAnimationAction]>)),
+            ...(options.helperDynamicPosSetRoute === undefined
+              ? []
+              : ([
+                  [
+                    options.helperDynamicPosSetRoute.animNo ?? options.helperDynamicPosSetRoute.stateNo,
+                    helperTraceAction(options.helperDynamicPosSetRoute.animNo ?? options.helperDynamicPosSetRoute.stateNo),
                   ],
                 ] as Array<[number, MugenAnimationAction]>)),
             ...(options.helperExplodRoute?.animNo === undefined
@@ -43222,6 +43294,45 @@ type = ChangeState
 trigger1 = Time >= 1
 trigger1 = Vel X = 4
 trigger1 = Vel Y = -6
+value = ${route.stateNo}
+ctrl = 0
+
+[Statedef ${route.stateNo}]
+type = S
+movetype = I
+physics = N
+anim = ${animNo}
+ctrl = 0
+`;
+}
+
+function helperDynamicPosSetRouteBlock(route: NonNullable<SyntheticImportedTraceFighterOptions["helperDynamicPosSetRoute"]>): string {
+  const animNo = route.animNo ?? route.stateNo;
+  return `
+[Statedef 1200]
+type = S
+movetype = I
+physics = N
+anim = 920
+ctrl = 0
+
+[State 1200, Helper Dynamic PosSet Seed Position]
+type = PosSet
+trigger1 = Time = 0
+x = 2
+y = 3
+
+[State 1200, Helper Dynamic PosSet Probe]
+type = PosSet
+trigger1 = Time = 0
+x = Parent,Life - 984
+y = Root,StateNo - 220
+
+[State 1200, Helper Dynamic PosSet Route]
+type = ChangeState
+trigger1 = Time >= 1
+trigger1 = Pos X = 16
+trigger1 = Pos Y = -20
 value = ${route.stateNo}
 ctrl = 0
 
