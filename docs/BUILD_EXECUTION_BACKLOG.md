@@ -1,5 +1,48 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic Trans typed sprite-effect telemetry
+
+Changed:
+
+- Upgraded required `synthetic-imported-trans-dynamic.json` from render-opacity fallback evidence into typed `sprite-effect:trans` telemetry.
+- `SpriteEffectSystem` now exposes a bounded `resolveRuntimeTransControllerOperation` path that resolves `Trans alpha` through the active runtime expression resolver when compiled IR has no static operation, records the resolved typed operation, and still applies the same runtime opacity mutation.
+- `RuntimeTraceGatePresets` now requires `variable:varset`, `sprite-effect:trans`, and `hitdef` for the dynamic Trans route.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, architecture notes, and the active R1 issue slice around checksum `4bffcd82` / final checksum `5beea0f0`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines numeric state-controller params as arithmetic-expression capable unless otherwise specified, defines `Trans` as a current-tick transparency override, and defines `alpha = source_alpha,dest_alpha` for `addalpha` values 0-256.
+- Focused tests: `pnpm exec vitest run src\tests\SpriteEffectSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts --testNamePattern "Trans|dynamic PalFX|SprPriority" --reporter json --outputFile .scratch\qa\dynamic-trans-vitest-files.json` passed: 14 matching tests.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-trans.json` passed: 311 suites, 1492 tests.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 523/523 artifacts, 492 required and 31 optional.
+- Trace artifact: `synthetic-imported-trans-dynamic.json` checksum `4bffcd82`, final checksum `5beea0f0`; `sprite-effect:trans` executed 10 times and final imported actor `renderOpacity` stayed `0.375`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `Trans trans = addalpha` plus `alpha = var(0),var(1)` can resolve owner-local numeric expressions through runtime expression fallback, record typed `sprite-effect:trans` telemetry after resolution, and preserve actor-frame/final `renderOpacity = 0.375`.
+
+Claim blocked:
+
+- Dynamic typed lowering for other sprite-effect params, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, score movement, and full MUGEN/IKEMEN presentation parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `Trans` already had typed `sprite-effect:trans` evidence through `synthetic-imported-trans.json`, while dynamic `alpha` relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic Trans route now closes the operation-telemetry gap without broadening exact renderer blending or draw-order semantics.
+- Adjacent surface checked: static Trans gate, dynamic PalFX fallback expectation, dynamic SprPriority typed path, sprite-effect boundary recording, active-state resolver handoff, trace requirements, support registry wording, QA gates, scorecard, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port remains verified at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This upgrades one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim typed lowering for `PalFX`, `RemapPal`, `AfterImage`, `AfterImageTime`, or `Angle*` dynamic params, exact add/sub alpha math, renderer parity, or full presentation VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic SprPriority typed sprite-effect telemetry
 
 Changed:

@@ -10963,7 +10963,7 @@ describe("RuntimeTraceGatePresets", () => {
     const evidence = artifact.gates[0]?.evidence;
     expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
     expect(evidence?.executedControllers.Trans).toBeGreaterThanOrEqual(1);
-    expect(evidence?.executedOperations["sprite-effect:trans"]).toBeUndefined();
+    expect(evidence?.executedOperations["sprite-effect:trans"]).toBeGreaterThanOrEqual(1);
     expect(evidence?.actorFrames).toEqual(
       expect.arrayContaining([
         expect.objectContaining({

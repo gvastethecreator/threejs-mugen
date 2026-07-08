@@ -6719,7 +6719,7 @@ export function createSyntheticImportedDynamicTransTraceArtifact(
       label: "Synthetic imported dynamic Trans route",
       source: "mixed",
       notes: [
-        "Synthetic imported dynamic Trans trace proves alpha expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary and reaches bounded render opacity telemetry. It does not claim typed sprite-effect operation lowering for dynamic alpha, exact add/sub alpha math, palette interaction, draw-order parity, renderer parity, or timing parity.",
+        "Synthetic imported dynamic Trans trace proves alpha expression fallback can resolve owner-local var(...) values through the active sprite-effect boundary, records typed sprite-effect operation telemetry, and reaches bounded render opacity telemetry. It does not claim typed lowering for other dynamic sprite-effect families, exact add/sub alpha math, palette interaction, draw-order parity, renderer parity, or timing parity.",
       ],
     },
     gates: [
@@ -6730,7 +6730,7 @@ export function createSyntheticImportedDynamicTransTraceArtifact(
         requiredRoutedStates: [200],
         requiredExecutedStates: [200],
         requiredExecutedControllers: ["ChangeState", "VarSet", "Trans", "HitDef"],
-        requiredExecutedOperations: ["variable:varset", "hitdef"],
+        requiredExecutedOperations: ["variable:varset", "sprite-effect:trans", "hitdef"],
         requiredActiveCommands: ["x"],
         requiredActorFrames: [
           {

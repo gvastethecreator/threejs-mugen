@@ -27,14 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required dynamic SprPriority typed sprite-effect trace gate
-  -> synthetic-imported-sprpriority-dynamic.json checksum a9e0862d / final checksum 4919326d is required in qa:trace
-  -> imported active state seeds var(0)=4, then executes SprPriority value = var(0)
-  -> dynamic SprPriority resolves through runtime expression fallback, records typed sprite-effect:sprpriority evidence, and preserves spritePriority 4 telemetry
-  -> actor-frame/final evidence requires spritePriority 4
+R1 required dynamic Trans typed sprite-effect trace gate
+  -> synthetic-imported-trans-dynamic.json checksum 4bffcd82 / final checksum 5beea0f0 is required in qa:trace
+  -> imported active state seeds var(0)=96 and var(1)=160, then executes Trans trans = addalpha with alpha = var(0),var(1)
+  -> dynamic Trans alpha resolves through runtime expression fallback, records typed sprite-effect:trans evidence, and preserves renderOpacity 0.375 telemetry
+  -> actor-frame/final evidence requires renderOpacity 0.375
   -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
-  -> official Elecbyte docs allow numeric controller params as expressions and define SprPriority value as draw-priority semantics
-  -> no score movement; dynamic typed lowering for other sprite-effect params, exact layer/shadow/helper/Explod draw-order parity, renderer parity, helper/redirect ownership, and full presentation VM parity remain blocked
+  -> official Elecbyte docs allow numeric controller params as expressions and define Trans alpha addalpha semantics
+  -> no score movement; dynamic typed lowering for other sprite-effect params, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation VM parity remain blocked
 
 Previous R1 required dynamic LifeSet/PowerAdd/PowerSet typed-resource trace gate
   -> synthetic-imported-resourceset-dynamic.json checksum 1bd04945 / final checksum 35db4dcd is required in qa:trace
@@ -609,15 +609,15 @@ Previous R1 required dynamic AfterImage trace gate
   -> official Elecbyte docs allow numeric controller params as expressions and define AfterImage time/length/timegap/framegap/paladd/palmul/trans
   -> no score movement; typed-operation lowering for dynamic AfterImage params, exact trail blending, palette math, sampling cadence, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
-Previous R1 required dynamic Trans trace gate
-  -> synthetic-imported-trans-dynamic.json checksum 91a7baf9 is required in qa:trace
+Superseded R1 required dynamic Trans trace gate
+  -> synthetic-imported-trans-dynamic.json current checksum 4bffcd82 / final checksum 5beea0f0 is required in qa:trace
   -> imported active state seeds var(0)=96 and var(1)=160, then executes Trans trans = addalpha with alpha = var(0),var(1)
   -> RuntimeSpriteEffectControllerWorld forwards a dynamic alpha resolver into RuntimeSpriteEffectWorld.applyTrans
   -> PlayableMatchRuntime resolves alpha pair params through the active controller expression context
-  -> final imported actor evidence requires renderOpacity 0.375 and no typed sprite-effect:trans operation evidence
-  -> pnpm qa:trace passed 444/444 artifacts, 414 required and 30 optional
+  -> final imported actor evidence requires renderOpacity 0.375 and typed sprite-effect:trans operation evidence after runtime expression resolution
+  -> pnpm qa:trace passes 523/523 artifacts, 492 required and 31 optional
   -> official Elecbyte docs allow numeric controller params as expressions and define Trans alpha = source_alpha,dest_alpha for additive transparency
-  -> no score movement; typed-operation lowering for dynamic alpha, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
+  -> no score movement; dynamic typed lowering for other sprite-effect params, exact add/sub alpha math, palette/remap interaction, draw-order parity, renderer parity, helper/redirect ownership, and full presentation parity remain blocked
 
 Previous R1 required dynamic PalFX trace gate
   -> synthetic-imported-palfx-dynamic.json checksum c56e955a is required in qa:trace

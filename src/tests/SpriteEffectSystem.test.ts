@@ -10,6 +10,7 @@ import {
   applyRuntimeSpritePriorityController,
   applyRuntimeTransController,
   resolveRuntimeSpritePriorityControllerOperation,
+  resolveRuntimeTransControllerOperation,
   RuntimeSpriteEffectControllerWorld,
   RuntimeSpriteEffectWorld,
   tickRuntimeAfterImage,
@@ -574,6 +575,10 @@ describe("SpriteEffectSystem", () => {
     const actor = { runtime: runtimeState() };
     const ir = compileControllerIr(controller("Trans", { trans: "addalpha", alpha: "var(0),var(1)" }));
     const recordedOperations: string[] = [];
+    const operation = resolveRuntimeTransControllerOperation(
+      controller("Trans", { trans: "addalpha", alpha: "var(0),var(1)" }),
+      () => [96, 160],
+    );
 
     const result = world.apply({
       actor,
@@ -586,9 +591,14 @@ describe("SpriteEffectSystem", () => {
     });
 
     expect(ir.operation).toBeUndefined();
+    expect(operation).toEqual({ kind: "sprite-effect", controllerType: "trans", trans: "addalpha", opacity: 0.375 });
     expect(actor.runtime.renderOpacity).toBe(0.375);
-    expect(recordedOperations).toEqual([]);
-    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: false });
+    expect(recordedOperations).toEqual(["sprite-effect:trans"]);
+    expect(result).toEqual({ applied: true, recordedController: false, recordedOperation: true });
+  });
+
+  it("does not record dynamic Trans alpha as typed evidence until the alpha pair is complete", () => {
+    expect(resolveRuntimeTransControllerOperation(controller("Trans", { trans: "addalpha", alpha: "96,var(1)" }))).toBeUndefined();
   });
 
   it("resolves dynamic AfterImage through the active-state sprite boundary", () => {

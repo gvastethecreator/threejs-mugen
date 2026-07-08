@@ -438,6 +438,28 @@ export function applyRuntimeTransController(
     operation?.opacity ?? parseTransOpacity(trans, findControllerParam(controller, "alpha"), resolveAlpha);
 }
 
+export function resolveRuntimeTransControllerOperation(
+  controller: MugenStateController,
+  resolveAlpha?: RuntimeTransAlphaResolver,
+): Extract<SpriteEffectControllerOp, { controllerType: "trans" }> | undefined {
+  const trans = stripMugenString(findControllerParam(controller, "trans") ?? findControllerParam(controller, "value")) ?? "default";
+  const alphaParam = findControllerParam(controller, "alpha");
+  const resolvedAlpha = alphaParam === undefined ? undefined : normalizeTransAlpha(resolveAlpha?.("alpha"));
+  const staticAlpha = alphaParam === undefined ? undefined : transAlphaPair(alphaParam);
+  if (requiresResolvedTransAlpha(trans, alphaParam) && resolvedAlpha === undefined && staticAlpha === undefined) {
+    return undefined;
+  }
+  if (alphaParam === undefined && hasInvalidInlineTransAlpha(trans)) {
+    return undefined;
+  }
+  return {
+    kind: "sprite-effect",
+    controllerType: "trans",
+    trans,
+    opacity: parseTransOpacity(trans, alphaParam, () => resolvedAlpha ?? staticAlpha),
+  };
+}
+
 export function applyRuntimeAngleController(
   state: CharacterRuntimeState,
   controller: { type: string; params: Record<string, string> },
@@ -552,6 +574,9 @@ function resolvedSpriteEffectOperationFor<TActor extends RuntimeSpriteEffectCont
 ): SpriteEffectControllerOp | undefined {
   if (input.effect === "sprpriority") {
     return resolveRuntimeSpritePriorityControllerOperation(input.controller.source, input.resolveSpritePriority);
+  }
+  if (input.effect === "trans") {
+    return resolveRuntimeTransControllerOperation(input.controller.source, input.resolveTransAlpha);
   }
   return undefined;
 }
@@ -775,6 +800,31 @@ function transInlineAlphaSource(value: string): number | undefined {
   const [, sourceRaw] = value.split(",");
   const source = Number(sourceRaw?.trim());
   return Number.isFinite(source) ? source : undefined;
+}
+
+function transAlphaPair(value: string | undefined): [number, number] | undefined {
+  const values = value?.split(",").map((part) => Number(part.trim()));
+  if (!values || values.length < 2 || values.some((item) => !Number.isFinite(item))) {
+    return undefined;
+  }
+  return [Math.round(values[0]!), Math.round(values[1]!)];
+}
+
+function requiresResolvedTransAlpha(trans: string, alphaValue: string | undefined): boolean {
+  const normalized = trans.trim().toLowerCase();
+  return alphaValue !== undefined && (normalized.includes("addalpha") || normalized.includes("alpha"));
+}
+
+function hasInvalidInlineTransAlpha(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  if (!normalized.includes("addalpha") && !normalized.includes("alpha")) {
+    return false;
+  }
+  const [, ...alphaParts] = normalized.split(",");
+  return alphaParts.some((part) => {
+    const trimmed = part.trim();
+    return trimmed.length > 0 && !Number.isFinite(Number(trimmed));
+  });
 }
 
 function normalizeTransAlpha(value: [number, number] | undefined): [number, number] | undefined {
