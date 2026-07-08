@@ -1,5 +1,29 @@
 # Build Execution Backlog
 
+## 2026-07-08 - TypeScript 7 toolchain upgrade
+
+Summary:
+
+- Upgraded the repo dev dependency from `typescript ~6.0.2` / resolved `6.0.3` to `typescript ~7.0.2` / resolved `7.0.2`.
+- Added `docs/research/2026-07-08-typescript-7-upgrade.md` with primary-source notes from the official TypeScript 7 announcement, `typescript-go` `CHANGES.md`, and npm package version checks.
+- Kept the upgrade direct: no `@typescript/typescript6` compatibility alias was added because local audit found no direct TypeScript compiler API imports in `src` or `scripts`.
+- `pnpm-workspace.yaml` now records the minimum-release-age exclusions pnpm generated for the TypeScript 7 package plus its native optional platform packages.
+
+Evidence:
+
+- Official TypeScript 7 blog: TypeScript 7 ships through the standard `typescript` npm package and provides the new native `tsc`; TypeScript 7.0 does not ship a compiler API, so TypeScript 6 compatibility is only needed for tools that still need programmatic access.
+- Official `typescript-go` `CHANGES.md`: main intentional differences are concentrated around JavaScript/JSDoc/CommonJS behavior and component-level port differences; this repo typechecks TypeScript under `src` and does not include Node `.cjs` scripts in `tsconfig.json`.
+- Local audit: `pnpm why typescript` now reports only `typescript@7.0.2`; `pnpm exec tsc --version` reports `Version 7.0.2`.
+- Gates under TS7: `pnpm typecheck` passed, `pnpm build` passed with the existing Vite large-chunk warning, `pnpm test` passed 153 files / 1495 tests, `pnpm qa:trace` passed 523/523 artifacts, 492 required and 31 optional, `pnpm check:boundaries` passed, and `git diff --check` passed with a CRLF warning only.
+
+Claim allowed:
+
+- The current project toolchain can run the repo's typecheck, production build, unit suite, and runtime trace gates on TypeScript 7.0.2.
+
+Claim blocked:
+
+- This does not prove compatibility for future tools that import the TypeScript compiler API. If such a tool is added or fails later, revisit the official `@typescript/typescript6` side-by-side guidance with failing-output evidence.
+
 ## 2026-07-08 - Dynamic Angle typed sprite-effect telemetry
 
 Summary:
