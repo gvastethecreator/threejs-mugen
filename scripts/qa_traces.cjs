@@ -101,6 +101,11 @@ async function main() {
       artifact: presets.createSyntheticImportedDynamicLifeAddTraceArtifact(),
     });
     artifacts.push({
+      name: "synthetic-imported-resourceset-dynamic",
+      required: true,
+      artifact: presets.createSyntheticImportedDynamicResourceSetTraceArtifact(),
+    });
+    artifacts.push({
       name: "synthetic-imported-animation",
       required: true,
       artifact: presets.createSyntheticImportedAnimationTraceArtifact(),
@@ -3901,6 +3906,7 @@ function validateTraceCoverage(coverage) {
     "synthetic-imported-control",
     "synthetic-imported-control-dynamic",
     "synthetic-imported-lifeadd-dynamic",
+    "synthetic-imported-resourceset-dynamic",
     "synthetic-imported-animation",
     "synthetic-imported-animtime",
     "synthetic-imported-animelemtime",

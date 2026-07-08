@@ -141,6 +141,32 @@ describe("RuntimeControllerDispatchSystem", () => {
     expect(result.recordedOperation).toBe(true);
   });
 
+  it("records bounded dynamic LifeSet, PowerAdd, and PowerSet as typed resource telemetry", () => {
+    const world = new RuntimeControllerDispatchWorld();
+    const actor = runtimeActor({ life: 100, power: 25, vars: [1, 1, 1] });
+    const recordedOperations: ControllerOp[] = [];
+    const controllers = [
+      compileControllerIr(controllerSource("LifeSet", { value: "IfElse(var(0), 750, 0)" })),
+      compileControllerIr(controllerSource("PowerAdd", { value: "IfElse(var(1), 350, 0)" })),
+      compileControllerIr(controllerSource("PowerSet", { value: "IfElse(var(2), 900, 0)" })),
+    ];
+
+    const results = controllers.map((controller) =>
+      world.apply(actor, controller, {
+        recordOperation: (_actor, operation) => recordedOperations.push(operation),
+      }),
+    );
+
+    expect(actor.runtime.life).toBe(750);
+    expect(actor.runtime.power).toBe(900);
+    expect(recordedOperations).toEqual([
+      { kind: "resource", controllerType: "lifeset", value: 750 },
+      { kind: "resource", controllerType: "poweradd", value: 350 },
+      { kind: "resource", controllerType: "powerset", value: 900 },
+    ]);
+    expect(results.every((result) => result.recordedOperation)).toBe(true);
+  });
+
   it("reports unsupported controllers without mutating runtime state", () => {
     const world = new RuntimeControllerDispatchWorld();
     const actor = runtimeActor({ life: 777 });

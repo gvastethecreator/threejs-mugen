@@ -595,6 +595,54 @@ export function createSyntheticImportedDynamicLifeAddTraceArtifact(options: Runt
   );
 }
 
+export function createSyntheticImportedDynamicResourceSetTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
+  return createImportedXTraceArtifact(
+    createSyntheticImportedTraceFighter({
+      id: "synthetic-imported-resourceset-dynamic",
+      displayName: "Synthetic Imported Dynamic Resource Set Ops",
+      action200Duration: 30,
+      withDynamicResourceSetOps: {
+        stateNo: 291,
+        lifeSet: "IfElse(var(10), 750, 0)",
+        powerAdd: "IfElse(var(11), 350, 0)",
+        powerSet: "IfElse(var(12), 900, 0)",
+        vars: [
+          { index: 10, value: 1 },
+          { index: 11, value: 1 },
+          { index: 12, value: 1 },
+        ],
+      },
+    }),
+    {
+      ...options,
+      targetId: "synthetic-imported-resourceset-dynamic-golden",
+      targetLabel: "Synthetic imported dynamic LifeSet/Power route",
+      requireHitEvent: true,
+      requiredExecutedStates: [200, 291],
+      requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "LifeSet", "PowerAdd", "PowerSet"],
+      requiredExecutedOperations: ["variable:varset", "hitdef", "resource:lifeset", "resource:poweradd", "resource:powerset"],
+      requiredActorFrames: [
+        {
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 291,
+          animNo: 291,
+          observedLifeAtLeast: 750,
+          observedLifeAtMost: 750,
+          observedPowerAtLeast: 900,
+          observedPowerAtMost: 900,
+          minFrames: 1,
+        },
+      ],
+      requiredFinalActors: [{ actorId: "p1", source: "imported", actorKind: "player", stateNo: 291, animNo: 291, life: 750, power: 900 }],
+      notes: [
+        "Synthetic imported dynamic LifeSet/PowerAdd/PowerSet trace proves bounded owner-local value expressions can resolve through runtime expression fallback, emit typed resource telemetry, and expose life/power actor-frame evidence. It does not claim exact resource scaling, helper/team/redirect ownership, KO/round/lifebar flow, or full MUGEN/IKEMEN resource VM parity.",
+      ],
+    },
+  );
+}
+
 export function createSyntheticImportedAnimationTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   return createImportedXTraceArtifact(
     createSyntheticImportedTraceFighter({
@@ -38204,6 +38252,13 @@ export type SyntheticImportedTraceFighterOptions = {
     kill?: string;
     vars?: Array<{ index: number; value: number }>;
   };
+  withDynamicResourceSetOps?: {
+    stateNo: number;
+    lifeSet: string;
+    powerAdd: string;
+    powerSet: string;
+    vars?: Array<{ index: number; value: number }>;
+  };
   withAnimationOps?: boolean;
   changeAnim2ElemProbe?: { animNo: number; elem: number; elemTime: number; triggerTime?: number; frameDurations: number[] };
   action200FrameDurations?: number[];
@@ -39070,6 +39125,7 @@ ${options.animElemTimeExit === undefined ? "" : animElemTimeExitControllerBlock(
 ${options.withControlOps ? controlControllerBlock() : ""}
 ${options.withDynamicControlOps === undefined ? "" : dynamicControlControllerBlock(options.withDynamicControlOps)}
 ${options.withDynamicLifeAddOps === undefined ? "" : dynamicLifeAddControllerBlock(options.withDynamicLifeAddOps)}
+${options.withDynamicResourceSetOps === undefined ? "" : dynamicResourceSetControllerBlock(options.withDynamicResourceSetOps)}
 ${options.withVariableOps === undefined ? "" : variableControllerBlock(options.withVariableOps.stateNo)}
 ${options.withResourceOps === undefined ? "" : resourceControllerBlock(options.withResourceOps.stateNo)}
 ${options.withSoundControllers ? soundControllerBlock() : ""}
@@ -39193,6 +39249,7 @@ ${options.animElemTimeExit ? simpleStateBlock(options.animElemTimeExit.stateNo, 
 ${options.withVariableOps ? simpleStateBlock(options.withVariableOps.stateNo, "I") : ""}
 ${options.withResourceOps ? simpleStateBlock(options.withResourceOps.stateNo, "I") : ""}
 ${options.withDynamicLifeAddOps ? simpleStateBlock(options.withDynamicLifeAddOps.stateNo, "I") : ""}
+${options.withDynamicResourceSetOps ? simpleStateBlock(options.withDynamicResourceSetOps.stateNo, "I") : ""}
 ${options.hitPauseTimeIgnoreHitPauseStateNo === undefined ? "" : simpleStateBlock(options.hitPauseTimeIgnoreHitPauseStateNo, "I")}
 ${options.targetRedirectStateNo === undefined ? "" : simpleStateBlock(options.targetRedirectStateNo, "I")}
 ${options.targetRedirectBottomRoute === undefined ? "" : simpleStateBlock(options.targetRedirectBottomRoute.forbiddenStateNo, "I")}
@@ -39344,6 +39401,9 @@ ${options.targetDynamicRedirectStateNo === undefined ? "" : simpleStateBlock(opt
       ...(options.withVariableOps === undefined ? [] : ([[options.withVariableOps.stateNo, traceAction(options.withVariableOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withResourceOps === undefined ? [] : ([[options.withResourceOps.stateNo, traceAction(options.withResourceOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.withDynamicLifeAddOps === undefined ? [] : ([[options.withDynamicLifeAddOps.stateNo, traceAction(options.withDynamicLifeAddOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
+      ...(options.withDynamicResourceSetOps === undefined
+        ? []
+        : ([[options.withDynamicResourceSetOps.stateNo, traceAction(options.withDynamicResourceSetOps.stateNo)]] as Array<[number, MugenAnimationAction]>)),
       ...(options.receivedDamageRoute === undefined
         ? []
         : ([
@@ -42784,6 +42844,44 @@ kill = ${config.kill ?? "1"}
 [State 200, Dynamic LifeAdd Branch]
 type = ChangeState
 trigger1 = Life = 1
+value = ${config.stateNo}
+ctrl = 0
+`;
+}
+
+function dynamicResourceSetControllerBlock(config: NonNullable<SyntheticImportedTraceFighterOptions["withDynamicResourceSetOps"]>): string {
+  const vars =
+    config.vars
+      ?.map(
+        (seed) => `
+[State 200, Dynamic ResourceSet Var ${seed.index}]
+type = VarSet
+trigger1 = Time >= 0
+v = ${seed.index}
+value = ${seed.value}
+`,
+      )
+      .join("") ?? "";
+  return `${vars}
+[State 200, Dynamic LifeSet Probe]
+type = LifeSet
+trigger1 = MoveHit >= 1
+value = ${config.lifeSet}
+
+[State 200, Dynamic PowerAdd Probe]
+type = PowerAdd
+trigger1 = Life = 750
+value = ${config.powerAdd}
+
+[State 200, Dynamic PowerSet Probe]
+type = PowerSet
+trigger1 = Power >= 350
+value = ${config.powerSet}
+
+[State 200, Dynamic ResourceSet Branch]
+type = ChangeState
+trigger1 = Life = 750
+trigger1 = Power = 900
 value = ${config.stateNo}
 ctrl = 0
 `;

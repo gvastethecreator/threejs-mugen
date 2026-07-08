@@ -1,5 +1,48 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Dynamic LifeSet/PowerAdd/PowerSet typed resource telemetry
+
+Changed:
+
+- Added required `synthetic-imported-resourceset-dynamic.json` for bounded active imported dynamic `LifeSet`, `PowerAdd`, and `PowerSet` typed resource telemetry.
+- `RuntimeTraceGatePresets` now seeds owner-local `var(10)=1`, `var(11)=1`, and `var(12)=1`, executes `LifeSet value = IfElse(var(10), 750, 0)`, `PowerAdd value = IfElse(var(11), 350, 0)`, and `PowerSet value = IfElse(var(12), 900, 0)`, then requires `ChangeState`, `VarSet`, `HitDef`, `LifeSet`, `PowerAdd`, `PowerSet`, `variable:varset`, `hitdef`, `resource:lifeset`, `resource:poweradd`, `resource:powerset`, actor-frame state/action `291` with life `750` / power `900`, and final owner life `750` / power `900`.
+- `qa_traces` now treats `synthetic-imported-resourceset-dynamic` as a required critical artifact.
+- Updated roadmap, progress tracker, scorecard, QA gates, support registry, supported features, workplan, continuity docs, and the active R1 issue slice around checksum `1bd04945` / final checksum `35db4dcd`.
+
+Evidence:
+
+- Official source checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs/sctrls.html) defines `LifeSet`, `PowerAdd`, `PowerSet`, and numeric state-controller params as arithmetic-expression capable unless otherwise specified, with bottom expressions set to zero.
+- Focused tests: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\dynamic-resourceset-vitest-files.json src\tests\RuntimeResourceSystem.test.ts src\tests\RuntimeControllerDispatchSystem.test.ts src\tests\RuntimeTraceGatePresets.test.ts` passed.
+- Full Vitest suite: `pnpm exec vitest run --reporter json --outputFile .scratch\qa\full-vitest-dynamic-resourceset.json` passed.
+- Typecheck: `pnpm typecheck` passed.
+- Production build: `pnpm build` passed; Vite still reports the existing large-chunk warning for `dist/assets/index-*.js`.
+- Runtime trace gate: `pnpm qa:trace` -> 523/523 artifacts, 492 required and 31 optional.
+- Trace artifact: `synthetic-imported-resourceset-dynamic.json` checksum `1bd04945`, initial checksum `8940e162`, final checksum `35db4dcd`.
+- Boundary check: `pnpm check:boundaries` passed.
+- Diff check: `git diff --check` passed with CRLF-normalization warnings only on touched files.
+
+Claim allowed:
+
+- Bounded active imported dynamic `LifeSet value = IfElse(var(10), 750, 0)`, `PowerAdd value = IfElse(var(11), 350, 0)`, and `PowerSet value = IfElse(var(12), 900, 0)` can resolve owner-local numeric expressions through runtime expression fallback, record typed resource telemetry after resolution, and preserve owner life `750` / power `900`.
+
+Claim blocked:
+
+- Broader dynamic resource-family lowering beyond current owner-local routes, exact KO/round/lifebar flow, helper/team ownership, redirect breadth, exact resource scaling, score movement, and full MUGEN/IKEMEN resource parity remain blocked.
+
+Quality contract and adjacent audit:
+
+- Baseline beat: static `LifeSet` / `PowerAdd` / `PowerSet` already had typed resource evidence through `synthetic-imported-resource.json`, while dynamic values relied on raw execution without typed trace evidence.
+- Quality delta: the bounded dynamic resource-set route now closes the operation-telemetry and actor-frame/final resource evidence gap without broadening exact KO or resource-scaling semantics.
+- Adjacent surface checked: static resource gate, dynamic `LifeAdd` resolver shape, resource mutation clamps, runtime dispatcher operation recording, trace actor-frame/final resource assertions, critical `qa:trace` coverage, support registry wording, and roadmap truth docs.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 523/523 artifacts, 492 required and 31 optional. This adds one required runtime trace artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only outside bounded INI config parsing.
+
+Next:
+
+- Continue R1/R2 with another bounded runtime truth gap. Do not claim broader dynamic resource-family lowering, exact KO/round/lifebar flow, helper/team/redirect ownership, exact resource scaling, or full resource VM parity until those routes have their own gates.
+
 ## 2026-07-08 - Dynamic LifeAdd typed resource telemetry
 
 Changed:

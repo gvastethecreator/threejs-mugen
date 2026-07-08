@@ -440,6 +440,7 @@ import {
   createSyntheticImportedResourceTraceArtifact,
   createSyntheticImportedControlTraceArtifact,
   createSyntheticImportedDynamicLifeAddTraceArtifact,
+  createSyntheticImportedDynamicResourceSetTraceArtifact,
   createSyntheticImportedAnimationTraceArtifact,
   createSyntheticImportedChangeAnim2ElemTraceArtifact,
   createSyntheticImportedAnimElemOffsetTraceArtifact,
@@ -1334,6 +1335,80 @@ describe("RuntimeTraceGatePresets", () => {
         animNo: 290,
         observedLifeAtLeast: 1,
         observedLifeAtMost: 1,
+        minFrames: 1,
+      },
+    ]);
+  });
+
+  it("creates a synthetic imported dynamic LifeSet/Power artifact with resolved resource operation evidence", () => {
+    const artifact = createSyntheticImportedDynamicResourceSetTraceArtifact({ generatedAt: "2026-06-25T00:00:00.000Z" });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-resourceset-dynamic-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "imported-x-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedStates).toEqual(expect.arrayContaining([200, 291]));
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.LifeSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerAdd).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedControllers.PowerSet).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:lifeset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:poweradd"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.executedOperations["resource:powerset"]).toBeGreaterThanOrEqual(1);
+    expect(evidence?.actorFrames).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1",
+          source: "imported",
+          actorKind: "player",
+          stateNo: 291,
+          animNo: 291,
+          minLife: 750,
+          maxLife: 750,
+          minPower: 900,
+          maxPower: 900,
+        }),
+      ]),
+    );
+    expect(evidence?.finalActors.find((actor) => actor.id === "p1")).toMatchObject({
+      source: "imported",
+      stateNo: 291,
+      animNo: 291,
+      life: 750,
+      power: 900,
+    });
+    expect(gate?.requirements.requiredExecutedControllers).toEqual(["ChangeState", "VarSet", "HitDef", "LifeSet", "PowerAdd", "PowerSet"]);
+    expect(gate?.requirements.requiredExecutedOperations).toEqual([
+      "variable:varset",
+      "hitdef",
+      "resource:lifeset",
+      "resource:poweradd",
+      "resource:powerset",
+    ]);
+    expect(gate?.requirements.requiredActorFrames).toEqual([
+      {
+        actorId: "p1",
+        source: "imported",
+        actorKind: "player",
+        stateNo: 291,
+        animNo: 291,
+        observedLifeAtLeast: 750,
+        observedLifeAtMost: 750,
+        observedPowerAtLeast: 900,
+        observedPowerAtMost: 900,
         minFrames: 1,
       },
     ]);

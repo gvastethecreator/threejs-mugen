@@ -133,6 +133,23 @@ describe("RuntimeResourceSystem", () => {
     expect(state.life).toBe(1);
   });
 
+  it("resolves dynamic LifeSet, PowerAdd, and PowerSet values from bounded expression fallback", () => {
+    const state = runtimeState({ life: 100, power: 25, vars: [1, 1, 1] });
+    const lifeSet = resolveRuntimeResourceControllerOperation(controller({ value: "IfElse(var(0), 750, 0)" }, "LifeSet"), state);
+    const powerAdd = resolveRuntimeResourceControllerOperation(controller({ value: "IfElse(var(1), 350, 0)" }, "PowerAdd"), state);
+    const powerSet = resolveRuntimeResourceControllerOperation(controller({ value: "IfElse(var(2), 900, 0)" }, "PowerSet"), state);
+
+    expect(lifeSet).toEqual({ kind: "resource", controllerType: "lifeset", value: 750 });
+    expect(powerAdd).toEqual({ kind: "resource", controllerType: "poweradd", value: 350 });
+    expect(powerSet).toEqual({ kind: "resource", controllerType: "powerset", value: 900 });
+
+    applyRuntimeResourceController(state, lifeSet!);
+    applyRuntimeResourceController(state, powerAdd!);
+    applyRuntimeResourceController(state, powerSet!);
+    expect(state.life).toBe(750);
+    expect(state.power).toBe(900);
+  });
+
   it("applies var, fvar, and sysvar assignments", () => {
     const state = runtimeState({ vars: [2], fvars: [0.5] });
 
