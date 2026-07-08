@@ -27,14 +27,14 @@ G1 setup-project refresh
 Latest runtime truth:
 
 ```txt
-R1 required ModifyProjectile dynamic bounds trace gate
-  -> synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a is required in qa:trace
-  -> owner-side active-state ModifyProjectile resolves projedgebound = var(0), projstagebound = var(1), and projheightbound = var(2),var(3) through active controller context
-  -> payload evidence requires bounds edgeBound = 52, stageBound = 36, heightBound = -144,72 on matching live Projectile id 77
-  -> pnpm qa:trace passes 499/499 artifacts, 468 required and 31 optional
-  -> focused tests prove direct resolver fallback, owner-side dispatch, and helper-local Parent/Root dynamic bounds mutation for helper-parented Projectiles while same-id player-owned Projectiles stay excluded
-  -> official Elecbyte docs define Projectile bound params and numeric controller-expression behavior
-  -> no score movement; dynamic non-bound ModifyProjectile params, helper-local dynamic trace coverage, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
+R1 required helper ModifyProjectile dynamic bounds trace gate
+  -> synthetic-imported-helper-modifyprojectile-dynamic-bounds.json checksum f582153e / final checksum adc63407 is required in qa:trace
+  -> helper-local ModifyProjectile resolves projedgebound = Parent,Var(0), projstagebound = Root,Var(1), and projheightbound = Parent,Var(2),Root,Var(3)
+  -> payload evidence requires bounds edgeBound = 52, stageBound = 36, heightBound = -144,72 on helper-parented live Projectile id 8852
+  -> pnpm qa:trace passes 500/500 artifacts, 469 required and 31 optional
+  -> paired owner-side dynamic gate remains synthetic-imported-modifyprojectile-dynamic-bounds.json checksum e2f7a077 / final checksum aa78704a
+  -> official Elecbyte docs define helper-created Projectiles as root-owned, Projectile bound params, and numeric controller-expression behavior
+  -> no score movement; dynamic non-bound ModifyProjectile params, default-bound reset semantics, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, and full Projectile parity remain blocked
 
 Previous R1 required Projectile localcoord default bounds trace gates
   -> synthetic-imported-projectile-localcoord-default-bounds-terminal.json checksum af7ee80e / final checksum 3fcb4661 and synthetic-imported-helper-projectile-localcoord-default-bounds-terminal.json checksum 46b0164c / final checksum b1531c44 are required in qa:trace

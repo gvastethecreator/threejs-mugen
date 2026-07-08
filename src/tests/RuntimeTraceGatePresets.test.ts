@@ -231,6 +231,7 @@ import {
   createSyntheticImportedHelperRemoveExplodTraceArtifact,
   createSyntheticImportedHelperModifyExplodTraceArtifact,
   createSyntheticImportedHelperModifyProjectileTraceArtifact,
+  createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact,
   createSyntheticImportedHelperProjHitTraceArtifact,
   createSyntheticImportedHelperProjHitTimeAnyTraceArtifact,
   createSyntheticImportedHelperProjectileHitOverrideP2StateNoTraceArtifact,
@@ -3301,6 +3302,73 @@ describe("RuntimeTraceGatePresets", () => {
             edgeBound: 28,
             stageBound: 24,
             heightBound: { low: -120, high: 60 },
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it("creates a synthetic imported Helper dynamic ModifyProjectile bounds artifact", () => {
+    const artifact = createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact({
+      generatedAt: "2026-07-08T00:00:00.000Z",
+    });
+
+    expect(artifact).toMatchObject({
+      status: "passed",
+      target: {
+        id: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden",
+        source: "mixed",
+      },
+      gates: [
+        {
+          label: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden",
+          passed: true,
+          failures: [],
+        },
+      ],
+    });
+    const gate = artifact.gates[0];
+    const evidence = gate?.evidence;
+    expect(evidence?.executedControllers.VarSet).toBeGreaterThanOrEqual(4);
+    expect(evidence?.executedOperations["variable:varset"]).toBeGreaterThanOrEqual(4);
+    expect(evidence?.worldLifecycleEvents).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: "spawn", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+        expect.objectContaining({ type: "active", kind: "projectile", ownerId: "p1", parentId: "p1-helper-0" }),
+      ]),
+    );
+    expect(gate?.requirements.requiredEffectPayloads).toEqual([
+      { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+      {
+        actorId: "p1-projectile-0",
+        kind: "projectile",
+        ownerId: "p1",
+        effectId: 8852,
+        minAge: 3,
+        minRemoveTime: 52,
+        minSpritePriority: 8,
+        minPriority: 4,
+        minHitsRemaining: 3,
+        maxHitsRemaining: 3,
+        hasHit: false,
+        scaleX: 2,
+        scaleY: 0.5,
+        edgeBound: 52,
+        stageBound: 36,
+        heightBound: { low: -144, high: 72 },
+      },
+    ]);
+    expect(evidence?.effectPayloads).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actorId: "p1-projectile-0",
+          parentId: "p1-helper-0",
+          effect: expect.objectContaining({
+            kind: "projectile",
+            id: 8852,
+            edgeBound: 52,
+            stageBound: 36,
+            heightBound: { low: -144, high: 72 },
           }),
         }),
       ]),

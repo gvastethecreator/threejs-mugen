@@ -1,5 +1,37 @@
 # Build Execution Backlog
 
+## 2026-07-08 - Helper ModifyProjectile dynamic bounds trace gate
+
+Changed:
+
+- Added required trace artifact `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` and registered it in `pnpm qa:trace`.
+- Extended the synthetic helper `ModifyProjectile` route fixture so helper-local bounds can use expression strings and owner-side `VarSet` seeds before Helper spawn.
+- Gated helper-local `Parent` / `Root` redirected `projedgebound`, `projstagebound`, and `projheightbound` mutation for helper-parented Projectiles.
+
+Evidence:
+
+- Official docs checked: [Elecbyte State Controller Reference](https://www.elecbyte.com/mugendocs-11b1/sctrls.html#Projectile) defines helper-created Projectiles as root-owned, Projectile bound params, and numeric controller parameters as expression-capable unless otherwise specified.
+- Focused trace test: `pnpm exec vitest run src/tests/RuntimeTraceGatePresets.test.ts -t "Helper dynamic ModifyProjectile"` -> 1 file / 1 test passed.
+- Runtime trace gate: `pnpm qa:trace` -> 500/500 artifacts, 469 required and 31 optional.
+- Trace artifact: `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` checksum `f582153e`, final checksum `adc63407`; paired owner-side dynamic gate remains `synthetic-imported-modifyprojectile-dynamic-bounds.json` checksum `e2f7a077`, final checksum `aa78704a`.
+- Final verification: `pnpm test` -> 151 files / 1447 tests; `pnpm typecheck`; `pnpm build` passed with the existing Vite large-chunk warning; `pnpm qa:trace` -> 500/500 artifacts, 469 required and 31 optional; `git diff --check` passed with CRLF-normalization warnings only.
+
+Claim allowed:
+
+- Bounded helper-local `ModifyProjectile` can resolve `Parent` / `Root` redirected dynamic Projectile removal-bound expressions and mutate helper-parented live Projectiles inside the existing first-generation helper scope.
+
+Claim blocked:
+
+- Dynamic `ModifyProjectile` velocity/scale/timing/hit-count params, default-bound reset semantics through `ModifyProjectile`, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
+
+Global port report:
+
+- Runtime/port now verifies at `pnpm qa:trace` 500/500 artifacts, 469 required and 31 optional. This runtime trace slice adds one required artifact and does not move scores. Studio/UI remains on its last smoke-verified surfaces; IKEMEN remains scanner-only.
+
+Next:
+
+- Continue R1 with default-reset `ModifyProjectile` bounds semantics, dynamic non-bound `ModifyProjectile` params, exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+
 ## 2026-07-08 - ModifyProjectile dynamic bounds trace gate
 
 Changed:
@@ -24,7 +56,7 @@ Claim allowed:
 
 Claim blocked:
 
-- Dynamic `ModifyProjectile` velocity/scale/timing/hit-count params, helper-local dynamic trace coverage, default-bound reset semantics through `ModifyProjectile`, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked.
+- Dynamic `ModifyProjectile` velocity/scale/timing/hit-count params, default-bound reset semantics through `ModifyProjectile`, exact camera/screen/stage split, exact tick order, helper/team namespace breadth, score movement, and full MUGEN/IKEMEN Projectile parity remain blocked. Helper-local dynamic bounds trace coverage is closed by the later `synthetic-imported-helper-modifyprojectile-dynamic-bounds.json` gate.
 
 Global port report:
 
@@ -32,7 +64,7 @@ Global port report:
 
 Next:
 
-- Continue R1 with default-reset `ModifyProjectile` bounds semantics, dynamic non-bound `ModifyProjectile` params, helper-local dynamic trace coverage, exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
+- Continue R1 with default-reset `ModifyProjectile` bounds semantics, dynamic non-bound `ModifyProjectile` params, exact GameWidth/GameHeight and camera/screen/stage/height semantics, full localcoord scaling across Projectile params/controllers, exact terminal/cancel tick-order, team/simul breadth, or continue R2 by extracting another mutable combat/effect behavior behind a named world boundary with focused tests.
 
 ## 2026-07-08 - ModifyProjectile bounds mutation trace payload gate
 

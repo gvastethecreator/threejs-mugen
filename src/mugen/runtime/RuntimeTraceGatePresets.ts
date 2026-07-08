@@ -29631,6 +29631,119 @@ export function createSyntheticImportedHelperModifyProjectileTraceArtifact(optio
   });
 }
 
+export function createSyntheticImportedHelperModifyProjectileDynamicBoundsTraceArtifact(
+  options: RuntimeTraceGatePresetOptions = {},
+): RuntimeTraceArtifact {
+  const stage = options.stage ?? farCombatStage();
+  const script = importedHelperScript();
+  const attacker = createSyntheticImportedTraceFighter({
+    id: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-attacker",
+    displayName: "Synthetic Imported Helper Dynamic ModifyProjectile Bounds Attacker",
+    withHelper: true,
+    helperModifyProjectileRoute: {
+      modifyStateNo: 1214,
+      modifyAnimNo: 934,
+      finalStateNo: 1215,
+      finalAnimNo: 935,
+      projectileAnimNo: 945,
+      projectileId: 8852,
+      ownerVarSeeds: [
+        { index: 0, value: 52 },
+        { index: 1, value: 36 },
+        { index: 2, value: -144 },
+        { index: 3, value: 72 },
+      ],
+      velocity: [9, -1],
+      accel: [0.25, 0.25],
+      velocityMultiplier: [0.75, 1],
+      scale: [2, 0.5],
+      edgeBound: "Parent,Var(0)",
+      stageBound: "Root,Var(1)",
+      heightBound: ["Parent,Var(2)", "Root,Var(3)"],
+      removeTime: 52,
+      spritePriority: 8,
+      priority: 4,
+      hits: 3,
+      missTime: 5,
+      removeOnHit: false,
+    },
+  });
+  const trace = runRuntimeTrace(new MatchWorld({ p1: attacker, p2: demoFighters[1]!, stage }), script, {
+    label: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden",
+  });
+  return createRuntimeTraceArtifact({
+    trace,
+    script,
+    generatedAt: options.generatedAt,
+    target: {
+      id: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden",
+      label: "Synthetic imported Helper dynamic ModifyProjectile bounds route",
+      source: "mixed",
+      notes: [
+        "Synthetic imported Helper dynamic ModifyProjectile bounds trace proves the bounded helper-local micro-VM can resolve Parent/Root redirected projedgebound, projstagebound, and projheightbound expressions while mutating the helper-parented owner-side Projectile payload. It does not claim dynamic velocity/scale/timing params, helper-owned Projectile combat/contact presentation, default-bound reset semantics, exact namespace breadth, or full MUGEN/IKEMEN helper projectile parity.",
+      ],
+    },
+    gates: [
+      {
+        label: "synthetic-imported-helper-modifyprojectile-dynamic-bounds-golden",
+        requiredActorSources: ["imported"],
+        requiredActorKinds: ["player"],
+        requiredEffectKinds: ["helper", "projectile"],
+        requiredRoutedStates: [200],
+        requiredExecutedStates: [200],
+        requiredExecutedControllers: ["ChangeState", "VarSet", "HitDef", "Helper"],
+        requiredExecutedOperations: ["variable:varset", "hitdef", "helper"],
+        requiredActiveCommands: ["x"],
+        requiredActorFrames: [
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1214, animNo: 934, minFrames: 1 },
+          { source: "effect", actorKind: "helper", ownerId: "p1", stateNo: 1215, animNo: 935, minFrames: 1 },
+          {
+            source: "effect",
+            actorKind: "projectile",
+            ownerId: "p1",
+            animNo: 945,
+            moveType: "A",
+            minFrames: 1,
+            observedVelXAtLeast: 6,
+            observedScaleXAtLeast: 2,
+            observedScaleXAtMost: 2,
+            observedScaleYAtLeast: 0.5,
+            observedScaleYAtMost: 0.5,
+          },
+        ],
+        requiredWorldLifecycleEvents: [
+          { type: "spawn", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "active", kind: "helper", ownerId: "p1", rootId: "p1", parentId: "p1" },
+          { type: "spawn", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+          { type: "active", kind: "projectile", ownerId: "p1", rootId: "p1", parentId: "p1-helper-0" },
+        ],
+        requiredEffectStores: [{ ownerId: "p1", minTotal: 2, minHelpers: 1, minProjectiles: 1, minNextHelperSerial: 1, minNextProjectileSerial: 1 }],
+        requiredEffectPayloads: [
+          { kind: "helper", ownerId: "p1", effectId: 42, name: "Buddy", helperStateNo: 1215, minAge: 2 },
+          {
+            actorId: "p1-projectile-0",
+            kind: "projectile",
+            ownerId: "p1",
+            effectId: 8852,
+            minAge: 3,
+            minRemoveTime: 52,
+            minSpritePriority: 8,
+            minPriority: 4,
+            minHitsRemaining: 3,
+            maxHitsRemaining: 3,
+            hasHit: false,
+            scaleX: 2,
+            scaleY: 0.5,
+            edgeBound: 52,
+            stageBound: 36,
+            heightBound: { low: -144, high: 72 },
+          },
+        ],
+      },
+    ],
+  });
+}
+
 export function createSyntheticImportedHelperProjHitTraceArtifact(options: RuntimeTraceGatePresetOptions = {}): RuntimeTraceArtifact {
   const stage = options.stage ?? farCombatStage();
   const script = importedHelperScript();
@@ -36865,9 +36978,10 @@ export type SyntheticImportedTraceFighterOptions = {
     accel?: [number, number];
     velocityMultiplier?: [number, number];
     scale?: [number, number];
-    edgeBound?: number;
-    stageBound?: number;
-    heightBound?: [number, number];
+    edgeBound?: number | string;
+    stageBound?: number | string;
+    heightBound?: [number | string, number | string];
+    ownerVarSeeds?: Array<{ index: number; value: number; trigger?: string }>;
     removeTime?: number;
     spritePriority?: number;
     priority?: number;
@@ -37553,6 +37667,7 @@ ${options.numTargetStateNo === undefined ? "" : contactBranchBlock(`NumTarget(${
 ${options.targetRedirectStateNo === undefined ? "" : contactBranchBlock(targetRedirectExpression, options.targetRedirectStateNo, "Target Redirect Branch")}
 ${options.targetRedirectBottomRoute === undefined ? "" : targetRedirectBottomRouteBlock(options.targetRedirectBottomRoute)}
 ${options.targetDynamicRedirectStateNo === undefined ? "" : targetDynamicRedirectBlock(options.targetDynamicRedirectStateNo)}
+${options.helperModifyProjectileRoute?.ownerVarSeeds ? helperModifyProjectileOwnerVarSeedsBlock(options.helperModifyProjectileRoute.ownerVarSeeds) : ""}
 ${options.withHelper ? helperControllerBlock(options.helperVelocity, options.helperScale, {
   pauseMoveTime: options.helperPauseMoveTime,
   superMoveTime: options.helperSuperMoveTime,
@@ -40638,6 +40753,20 @@ ${priorityLine}
 ${hitsLine}
 ${missTimeLine}
 `;
+}
+
+function helperModifyProjectileOwnerVarSeedsBlock(seeds: Array<{ index: number; value: number; trigger?: string }>): string {
+  return seeds
+    .map(
+      (seed) => `
+[State 200, Helper ModifyProjectile Dynamic Var ${seed.index}]
+type = VarSet
+trigger1 = ${seed.trigger ?? "Time >= 0"}
+v = ${seed.index}
+value = ${seed.value}
+`,
+    )
+    .join("");
 }
 
 function contactBranchBlock(trigger: string, stateNo: number, label: string): string {
